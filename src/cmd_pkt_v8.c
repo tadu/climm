@@ -12,6 +12,7 @@
 #include "util.h"
 #include "util_ui.h"
 #include "util_io.h"
+#include "conv.h"
 #include "contact.h"
 #include "session.h"
 #include "packet.h"
@@ -57,7 +58,7 @@ static void SrvCallBackReconn (Connection *conn)
 {
     Contact *cont;
 
-    M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (conn->uin), COLNONE);
+    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (conn->uin)), ContactFindName (conn->uin), COLNONE);
     conn->connect = 0;
     if (reconn < 5)
     {

@@ -779,7 +779,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
         case 4:
             IMOffline (cont, event->conn);
 
-            M_printf ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
+            M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
             M_printf (i18n (2126, "User is offline, message (%s#%08lx:%08lx%s) queued.\n"),
                      COLSERVER, mid1, mid2, COLNONE);
 
@@ -1331,8 +1331,8 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
     BOOL peek = (format == 0xff && type == MSG_GET_AWAY);
     
     if (!peek)
-        M_printf ("%s " COLACK "%10s" COLNONE " " MSGSENTSTR "%s\n",
-                 s_now, ContactFindName (uin), MsgEllipsis (text));
+        M_printf ("%s " COLACK "%*s" COLNONE " " MSGSENTSTR "%s\n",
+                 s_now, uiG.nick_len + s_delta (ContactFindName (uin)), ContactFindName (uin), MsgEllipsis (text));
     
     if (!format || format == 0xff)
     {

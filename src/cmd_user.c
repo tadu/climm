@@ -1343,16 +1343,18 @@ static JUMP_F(CmdUserStatusDetail)
             continue;
         if (cont->uin > tuin)
             tuin = cont->uin;
-        if (c_strlen (cont->nick) > lennick)
-            lennick = c_strlen (cont->nick);
+        if (s_strlen (cont->nick) > lennick)
+            lennick = s_strlen (cont->nick);
         if (cont->flags & CONT_ALIAS)
             continue;
-        if (c_strlen (s_status (cont->status)) > lenstat)
-            lenstat = c_strlen (s_status (cont->status));
-        if (cont->version && c_strlen (cont->version) > lenid)
-            lenid = c_strlen (cont->version);
+        if (s_strlen (s_status (cont->status)) > lenstat)
+            lenstat = s_strlen (s_status (cont->status));
+        if (cont->version && s_strlen (cont->version) > lenid)
+            lenid = s_strlen (cont->version);
     }
 
+    if (lennick > uiG.nick_len)
+        uiG.nick_len = lennick;
     while (tuin)
         lenuin++, tuin /= 10;
     totallen = 1 + lennick + 1 + lenstat + 3 + lenid + 2;
@@ -1433,9 +1435,9 @@ static JUMP_F(CmdUserStatusDetail)
                      peer->connect & CONNECT_OK    ? '&' :
                      peer->connect & CONNECT_FAIL  ? '|' :
                      peer->connect & CONNECT_MASK  ? ':' : '.' ,
-                     lennick + c_strlen (cont->nick) - strlen (cont->nick), cont->nick,
-                     lenstat + 2 + c_strlen (stat) - strlen (stat), stat,
-                     lenid + 2 + c_strlen (ver ? ver : "") - strlen (ver ? ver : ""), ver ? ver : "",
+                     lennick + s_delta (cont->nick), cont->nick,
+                     lenstat + s_delta (stat), stat,
+                     lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
                      ver2 ? ver2 : "",
                      contr->seen_time != -1L && data & 2 ? ctime ((time_t *) &contr->seen_time) : "\n");
             free (stat);
@@ -2088,6 +2090,8 @@ static JUMP_F(CmdUserAdd)
         M_printf (i18n (2117, "%d added as %s.\n"), cont->uin, arg1);
         if (!Add_User (conn, cont->uin, arg1))
             M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
+        if (c_strlen (arg1) > uiG.nick_len)
+            uiG.nick_len = c_strlen (arg1);
         if (conn->ver > 6)
             SnacCliAddcontact (conn, cont->uin);
         else

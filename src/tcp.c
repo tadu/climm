@@ -209,7 +209,7 @@ void TCPDispatchReconn (Connection *peer)
 
     if (prG->verbose)
     {
-        M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (peer->uin), COLNONE);
+        M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (peer->uin)), ContactFindName (peer->uin), COLNONE);
         M_print  (i18n (2023, "Direct connection closed by peer.\n"));
     }
     if (peer->close)
@@ -345,7 +345,7 @@ void TCPDispatchConn (Connection *peer)
                 
                 if (prG->verbose)
                 {
-                    M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (peer->uin), COLNONE);
+                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (peer->uin)), ContactFindName (peer->uin), COLNONE);
                     M_printf (i18n (2034, "Opening TCP connection at %s:%d... "),
                              s_ip (peer->ip), peer->port);
                 }
@@ -365,7 +365,7 @@ void TCPDispatchConn (Connection *peer)
                 
                 if (prG->verbose)
                 {
-                    M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (peer->uin), COLNONE);
+                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (peer->uin)), ContactFindName (peer->uin), COLNONE);
                     M_printf (i18n (2034, "Opening TCP connection at %s:%d... "),
                              s_ip (peer->ip), peer->port);
                 }
@@ -391,7 +391,7 @@ void TCPDispatchConn (Connection *peer)
             case 4:
                 if (prG->verbose)
                 {
-                    M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (cont->uin), COLNONE);
+                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (peer->uin)), ContactFindName (cont->uin), COLNONE);
                     M_printf (i18n (2034, "Opening TCP connection at %s:%d... "),
                              s_ip (peer->ip), peer->port);
                     M_print (i18n (1785, "success.\n"));
@@ -531,7 +531,7 @@ void TCPDispatchShake (Connection *peer)
                 QueueDequeue (peer, QUEUE_TCP_TIMEOUT, peer->ip);
                 if (prG->verbose)
                 {
-                    M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (peer->uin), COLNONE);
+                    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (peer->uin)), ContactFindName (peer->uin), COLNONE);
                     M_print  (i18n (1833, "Peer to peer TCP connection established.\n"));
                 }
                 peer->connect = CONNECT_OK | CONNECT_SELECT_R;
@@ -1590,7 +1590,7 @@ BOOL TCPSendFiles (Connection *list, UDWORD uin, char *description, char **files
         }
         else
         {
-            M_printf ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
+            M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (ContactFindName (peer->uin)), cont->nick);
             M_printf (i18n (2091, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
             sum++;
             sumlen += fstat.st_size;
@@ -1677,7 +1677,7 @@ static void TCPCallBackResend (Event *event)
         if (peer->connect & CONNECT_OK)
         {
             if (event->attempts > 1)
-                M_printf ("%s " COLACK "%10s" COLNONE " %s%s\n", s_now, cont->nick, MSGTCPSENTSTR, event->info);
+                M_printf ("%s " COLACK "%*s" COLNONE " %s%s\n", s_now, uiG.nick_len + s_delta (ContactFindName (peer->uin)), cont->nick, MSGTCPSENTSTR, event->info);
 
             if ((event->attempts++) < 2)
                 PeerPacketSend (peer, pak);
@@ -1750,8 +1750,8 @@ static void TCPCallBackReceive (Event *event)
             switch (type)
             {
                 case MSG_NORM:
-                    M_printf ("%s " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
-                             s_now, cont->nick, MsgEllipsis (event->info));
+                    M_printf ("%s " COLACK "%*s" COLNONE " " MSGTCPACKSTR "%s\n",
+                             s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, MsgEllipsis (event->info));
                     if (~cont->flags & CONT_SEENAUTO && strlen (tmp))
                     {
                         IMSrvMsg (cont, event->conn, NOW, MSG_NORM, tmp, status);
@@ -1871,14 +1871,14 @@ static void TCPCallBackReceive (Event *event)
 
                     if (PeerFileRequested (event->conn, tmp3, len))
                     {
-                        M_printf ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
+                        M_printf ("%s " COLACK "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
                         M_printf (i18n (2186, "Accepting file '%s' (%d bytes).\n"),
                                  tmp3, len);
                         TCPSendMsgAck (event->conn, seq, TCP_MSG_FILE, TRUE);
                     }
                     else
                     {
-                        M_printf ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
+                        M_printf ("%s " COLACK "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
                         M_printf (i18n (2187, "Refused file request '%s' (%d bytes) (unknown: %x, %x)\n"),
                                  tmp3, len, cmd, type);
                         TCPSendMsgAck (event->conn, seq, TCP_MSG_FILE, FALSE);
@@ -1913,14 +1913,14 @@ static void TCPCallBackReceive (Event *event)
                             case 0x0029:
                                 if (PeerFileRequested (event->conn, name, flen))
                                 {
-                                    M_printf ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
+                                    M_printf ("%s " COLACK "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
                                     M_printf (i18n (2186, "Accepting file '%s' (%d bytes).\n"),
                                              name, flen);
                                     TCPSendGreetAck (event->conn, seq, cmd, TRUE);
                                 }
                                 else
                                 {
-                                    M_printf ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
+                                    M_printf ("%s " COLACK "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
                                     M_printf (i18n (2187, "Refused file request '%s' (%d bytes) (unknown: %x, %x)\n"),
                                              name, flen, cmd, type);
                                     TCPSendGreetAck (event->conn, seq, cmd, FALSE);
@@ -1929,7 +1929,7 @@ static void TCPCallBackReceive (Event *event)
                             case 0x0032:
 
                             case 0x002d:
-                                M_printf ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
+                                M_printf ("%s " COLACK "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
                                 M_printf (i18n (2064, "Refusing chat request (%s/%s/%s) from %s.\n"),
                                          text, reason, name, cont->nick);
                                 TCPSendGreetAck (event->conn, seq, cmd, FALSE);

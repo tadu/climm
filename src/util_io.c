@@ -30,6 +30,7 @@ extern int h_errno;
 #include "util_ui.h"
 #include "util_io.h"
 #include "util_str.h"
+#include "conv.h"
 #include "util.h"
 #include "contact.h"
 #include "session.h"
@@ -663,7 +664,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
     {
         if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
         {
-            M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (conn->uin), COLNONE);
+            M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (conn->uin)), ContactFindName (conn->uin), COLNONE);
             M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
         }
         conn->connect = 0;

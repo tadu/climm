@@ -657,7 +657,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
         else if (prG->sound & SFLAG_ON_BEEP)
             printf ("\a");
     }
-    M_printf ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
+    M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
     M_printf (~old ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status));
     if (cont->version && !~old)
         M_printf (" [%s]", cont->version);
@@ -699,8 +699,8 @@ void IMOffline (Contact *cont, Connection *conn)
     else if (prG->sound & SFLAG_OFF_BEEP)
         printf ("\a");
  
-    M_printf ("%s " COLCONTACT "%10s" COLNONE " %s\n",
-             s_now, cont->nick, i18n (1030, "logged off."));
+    M_printf ("%s " COLCONTACT "%*s" COLNONE " %s\n",
+             s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1030, "logged off."));
 }
 
 /*
@@ -761,7 +761,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, UWORD type, const 
 
     if (type != MSG_INT_CAP || prG->verbose)
     {
-        M_printf ("%s " COLINCOMING "%10s" COLNONE " ", s_time (&stamp), cont->nick);
+        M_printf ("%s " COLINCOMING "%*s" COLNONE " ", s_time (&stamp), uiG.nick_len + s_delta (cont->nick), cont->nick);
         
         if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
             M_printf ("(%s) ", s_status (tstatus));

@@ -44,8 +44,8 @@ void CmdPktCmdSendMessage (Connection *conn, UDWORD uin, const char *text, UDWOR
     
     UtilCheckUIN (conn, uin);
     
-    M_printf ("%s " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n",
-             s_now, ContactFindName (uin), MsgEllipsis (text));
+    M_printf ("%s " COLSENT "%*s" COLNONE " " MSGSENTSTR "%s\n",
+             s_now, uiG.nick_len + s_delta (ContactFindName (uin)), ContactFindName (uin), MsgEllipsis (text));
 
     PacketWrite4    (pak, uin);
     PacketWrite2    (pak, type);
