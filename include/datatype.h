@@ -40,7 +40,7 @@ typedef int SOK_T;
 
   #define strcasecmp(s,s1)  stricmp(s,s1)
   #define strncasecmp(s,s1,l)  strnicmp(s,s1,l)
-  #define __os_has_input _kbhit ()
+  #define __os_has_input kbhit()
   
   #define mkdir(a,b) mkdir(a)
   #define INPUT_BY_POLL 1
