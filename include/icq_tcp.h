@@ -32,7 +32,7 @@
 #define TCP_MSG_MESS            0x0002
 #define TCP_MSG_FILE            0x0003
 #define TCP_MSG_URL             0x0004
-#define TCP_MSG_REQ_AUTO        0x0006
+#define TCP_MSG_REQ_AUTH        0x0006
 #define TCP_MSG_DENY_AUTH       0x0007
 #define TCP_MSG_GIVE_AUTH       0x0008
 #define TCP_MSG_ADDED           0x000C

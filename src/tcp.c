@@ -681,7 +681,6 @@ void TCPSendPacket (Packet *pak, Session *sess)
         case PEER_INIT:
         case PEER_INITACK:
         case PEER_INIT2:
-        case PEER_MSG:
             break;
 
         default:
