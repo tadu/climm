@@ -1459,9 +1459,12 @@ str_t ReadLine (UBYTE newbyte)
                     rl_key_delete_backward_word ();
                     break;
                 case 25:             /* ^Y */
-                    rl_tab_state = 0;
-                    rl_goto (0);
-                    rl_lineexpand (rl_yank);
+                    if (rl_yank)
+                    {
+                        rl_tab_state = 0;
+                        rl_goto (0);
+                        rl_lineexpand (rl_yank);
+                    }
                     break;
                 case 27:             /* ^[ = ESC */
 #ifdef ANSI_TERM
