@@ -563,6 +563,9 @@ BOOL ContactAddAlias (Contact *cont, const char *nick DEBUGPARAM)
         return TRUE;
     }
     
+    if (!strcmp (nick, s_sprintf ("%ld", cont->uin)))
+        return TRUE;
+    
     ca = calloc (1, sizeof (ContactAlias));
     if (!ca)
         return FALSE;
