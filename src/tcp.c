@@ -1073,7 +1073,7 @@ void TCPClose (Session *sess)
 BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
 {
     Contact *cont;
-    int msgtype;
+    int status;
     Packet *pak;
     Session *peer;
 
@@ -1105,32 +1105,32 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
     switch (sess->status)
     {
         case STATUS_AWAY:
-            msgtype = TCP_MSGF_AWAY;
+            status = TCP_MSGF_AWAY;
             break;
  
         case STATUS_NA:
         case STATUS_NA_99:
-            msgtype = TCP_MSGF_NA;
+            status = TCP_MSGF_NA;
             break;
 
         case STATUS_OCCUPIED:
         case STATUS_OCCUPIED_MAC:
-            msgtype = TCP_MSGF_OCC;
+            status = TCP_MSGF_OCC;
             break;
             
         case STATUS_DND:
         case STATUS_DND_99:
-            msgtype = TCP_MSGF_DND;
+            status = TCP_MSGF_DND;
             break;
 
         case STATUS_INVISIBLE:
-            msgtype = TCP_MSGF_INV;
+            status = TCP_MSGF_INV;
             break;
 
         default:
-            msgtype = 0;    
+            status = 0;    
     }
-    msgtype ^= TCP_MSG_LIST;
+    status ^= TCP_MSGF_LIST;
 
     pak = PacketC ();
     if (peer->ver > 6)
@@ -1144,7 +1144,7 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
     PacketWrite4 (pak, 0);               /* unknown                    */
     PacketWrite2 (pak, sub_cmd);         /* message type               */
     PacketWrite2 (pak, 0);               /* status - filled in later   */
-    PacketWrite2 (pak, msgtype);         /* our status                 */
+    PacketWriteB2 (pak, status);         /* our status                 */
     PacketWriteLNTS (pak, msg);          /* the message                */
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
