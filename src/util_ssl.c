@@ -120,7 +120,7 @@ int SSLInit ()
  */
 int ssl_supported (Connection *conn)
 {
-    Contact *contact;
+    Contact *cont;
     UBYTE status_save = conn->ssl_status;
     
     if (!ssl_init_ok)
@@ -134,31 +134,28 @@ int ssl_supported (Connection *conn)
 
     conn->ssl_status = SSL_STATUS_FAILED;
     
-    /* I don't assume server supporting SSL. Would not
-     * offer much privacy anyway due to lack of end-to-end encryption.
-     */
-    if (! (conn->type & TYPEF_ANY_PEER))
+    if (!(conn->type & TYPEF_ANY_PEER))
         return 0;
         
-    contact = ContactUIN (conn, conn->uin);
+    cont = conn->cont;
     
-    /* check for peer capabilities */
-
-    /* Caveat: if we are server, contact is our own contact, not the peers!
-     *         how can we get the peers contact/CAPs? 
+    /* check for peer capabilities
      * Note: we never initialize SSL for incoming direct connections yet
      *        in order to avoid mutual SSL init trials among mICQ peers.
      */
-    if (!contact || !(HAS_CAP(contact->caps, CAP_MICQ) || (HAS_CAP(contact->caps, CAP_LICQ) && contact->dc && (contact->dc->id1 & 0xFFFF0000) == LICQ_WITHSSL)))
+    if (!cont)
+        return 0;
+
+    if (!(HAS_CAP(cont->caps, CAP_MICQ) || (HAS_CAP(cont->caps, CAP_LICQ) && cont->dc && (cont->dc->id1 & 0xFFFF0000) == LICQ_WITHSSL)))
     {
-        Debug (DEB_SSL, "%s (%ld) is no SSL candidate", contact->nick, contact->uin);
-        TCLEvent (contact, "ssl", "no_candidate");
+        Debug (DEB_SSL, "%s (%ld) is no SSL candidate", cont->nick, cont->uin);
+        TCLEvent (cont, "ssl", "no_candidate");
         return 0;
     }
 
     conn->ssl_status = status_save;
-    Debug (DEB_SSL, "%s (%ld) is an SSL candidate", contact->nick, contact->uin);
-    TCLEvent (contact, "ssl", "candidate");
+    Debug (DEB_SSL, "%s (%ld) is an SSL candidate", cont->nick, cont->uin);
+    TCLEvent (cont, "ssl", "candidate");
     return 1;
 }
 
@@ -174,13 +171,13 @@ int ssl_connect (Connection *conn, BOOL is_client)
     int ret;
     int kx_prio[2] = { GNUTLS_KX_ANON_DH, 0 };
 #ifdef ENABLE_TCL
-    Contact *contact = ContactUIN (conn, conn->uin);    
+    Contact *cont = conn->cont;
 #endif
 
     Debug (DEB_SSL, "ssl_connect");
     if (!ssl_init_ok || (conn->ssl_status != SSL_STATUS_NA && conn->ssl_status != SSL_STATUS_INIT && conn->ssl_status != SSL_STATUS_REQUEST))
     {
-        TCLEvent (contact, "ssl", "failed precondition");
+        TCLEvent (cont, "ssl", "failed precondition");
         return 0;
     }    
     conn->ssl_status = SSL_STATUS_FAILED;
@@ -188,7 +185,7 @@ int ssl_connect (Connection *conn, BOOL is_client)
 
     ret = gnutls_init (&conn->ssl, is_client ? GNUTLS_CLIENT : GNUTLS_SERVER);
     if (ret)
-        TCLEvent (contact, "ssl", "failed init");
+        TCLEvent (cont, "ssl", "failed init");
 
     SSL_CHECK_SUCCESS_0_OK (ret, 0, "init", is_client ? "[client]" : "[server]");
     
@@ -197,7 +194,7 @@ int ssl_connect (Connection *conn, BOOL is_client)
 
     ret = gnutls_credentials_set (conn->ssl, GNUTLS_CRD_ANON, is_client ? client_cred : server_cred);
     if (ret)
-        TCLEvent (contact, "ssl", "failed key");
+        TCLEvent (cont, "ssl", "failed key");
 
     SSL_CHECK_SUCCESS_0_OK (ret, 0, "credentials_set", is_client ? "[client]" : "[server]");
     if (is_client)
@@ -211,7 +208,7 @@ int ssl_connect (Connection *conn, BOOL is_client)
 
 int ssl_handshake (Connection *conn)
 {
-    Contact *cont = ContactUIN (conn, conn->uin);    
+    Contact *cont = conn->cont;
     int ret;
 
     ret = gnutls_handshake (conn->ssl);
@@ -254,7 +251,7 @@ int ssl_handshake (Connection *conn)
 int ssl_read (Connection *conn, UBYTE *data, UWORD len_p)
 {
     int len, rc;
-    Contact *cont = ContactUIN (conn, conn->uin);    
+    Contact *cont = conn->cont;
     
     if (conn->ssl_status == SSL_STATUS_HANDSHAKE)
     {
@@ -297,7 +294,7 @@ int ssl_read (Connection *conn, UBYTE *data, UWORD len_p)
 int ssl_write (Connection *conn, UBYTE *data, UWORD len_p)
 {
     int len;
-    Contact *cont = ContactUIN (conn, conn->uin);    
+    Contact *cont = conn->cont;
     
     if (conn->ssl_status == SSL_STATUS_HANDSHAKE)
     {
