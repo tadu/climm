@@ -433,7 +433,7 @@ static void UtilIOConnectCallback (Session *sess)
                 sess->connect += CONNECT_SOCKS_ADD;
                 sess->connect |= CONNECT_SELECT_R;
                 sess->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
-                sockwrite (sess->sok, prG->s5Auth ? "\x05\x02\x02\x00" : "\x05\x01\x00", 3);
+                sockwrite (sess->sok, prG->s5Auth ? "\x05\x02\x02\x00" : "\x05\x01\x00", prG->s5Auth ? 4 : 3);
                 return;
             case 2:
                 rc = sockread (sess->sok, buf, 2);
@@ -456,6 +456,7 @@ static void UtilIOConnectCallback (Session *sess)
                 CONN_CHECK (i18n (1601, "[SOCKS] General SOCKS server failure"));
                 if (rc != 2 || buf[1])
                     CONN_FAIL  (i18n (1600, "[SOCKS] Authorization failure"));
+                sess->connect += CONNECT_SOCKS_ADD;
             case 4:
                 if (sess->server)
                     snprintf (buf, sizeof (buf), "%c%c%c%c%c%s%c%c%n", 5, 1, 0, 3, (char)strlen (sess->server),
