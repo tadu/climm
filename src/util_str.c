@@ -710,7 +710,7 @@ BOOL s_parseint_s (char **input, UDWORD *parsed, char *sep)
     return TRUE;
 }
 
-#define SUPERSAFE "%*+./0123456789:=@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"
+#define SUPERSAFE "%*+-_.:=@/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 /*
  * Quote a string for use in a config file
@@ -728,7 +728,7 @@ const char *s_quote (const char *input)
     for (tmp = input; *tmp; tmp++)
         if (!strchr (SUPERSAFE, *tmp))
             break;
-    if (*tmp)
+    if (!*tmp)
         return input;
     *t = 0;
     t = s_cat (t, &size, "\"");

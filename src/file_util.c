@@ -339,6 +339,7 @@ void Read_RC_File (FILE *rcf)
                         which = 2;
                     else if (!strcasecmp (cmd, "file"))
                         which = 3;
+                    else
                         ERROR;
                     
                     PrefParse (cmd);
@@ -1234,16 +1235,16 @@ int Save_RC ()
             fprintf (rcf, "\ncolor %s", c);
             for (t = prG->colors[i]; *t; t += l)
             {
-                if      (!strncmp (BLACK,   t, l = strlen (BLACK)))   c = "black  ";
-                else if (!strncmp (RED,     t, l = strlen (RED)))     c = "red    ";
-                else if (!strncmp (GREEN,   t, l = strlen (GREEN)))   c = "green  ";
-                else if (!strncmp (YELLOW,  t, l = strlen (YELLOW)))  c = "yellow ";
-                else if (!strncmp (BLUE,    t, l = strlen (BLUE)))    c = "blue   ";
+                if      (!strncmp (BLACK,   t, l = strlen (BLACK)))   c = "black";
+                else if (!strncmp (RED,     t, l = strlen (RED)))     c = "red";
+                else if (!strncmp (GREEN,   t, l = strlen (GREEN)))   c = "green";
+                else if (!strncmp (YELLOW,  t, l = strlen (YELLOW)))  c = "yellow";
+                else if (!strncmp (BLUE,    t, l = strlen (BLUE)))    c = "blue";
                 else if (!strncmp (MAGENTA, t, l = strlen (MAGENTA))) c = "magenta";
-                else if (!strncmp (CYAN,    t, l = strlen (CYAN)))    c = "cyan   ";
-                else if (!strncmp (WHITE,   t, l = strlen (WHITE)))   c = "white  ";
-                else if (!strncmp (SGR0,    t, l = strlen (SGR0)))    c = "none   ";
-                else if (!strncmp (BOLD,    t, l = strlen (BOLD)))    c = "bold   ";
+                else if (!strncmp (CYAN,    t, l = strlen (CYAN)))    c = "cyan";
+                else if (!strncmp (WHITE,   t, l = strlen (WHITE)))   c = "white";
+                else if (!strncmp (SGR0,    t, l = strlen (SGR0)))    c = "none";
+                else if (!strncmp (BOLD,    t, l = strlen (BOLD)))    c = "bold";
                 else c = t, l = strlen (t);
                 fprintf (rcf, " %s", s_quote (c));
             }
@@ -1299,7 +1300,7 @@ int Save_RC ()
             fprintf (rcf, "server %s %ld\n", cg->serv->type == TYPE_SERVER ? "icq8" : "icq5", cg->serv->uin);
         else
             fprintf (rcf, "#server <icq5|icq8> <uin>\n");
-        fprintf (rcf, "label \"%s\"\n", s_quote (cg->name));
+        fprintf (rcf, "label %s\n", s_quote (cg->name));
         fprintf (rcf, "id %d\n", cg->id);
         while (cg)
         {
