@@ -476,10 +476,10 @@ static JUMP_SNAC_F(SnacSrvUseronline)
             Cap *cap = PacketReadCap (p);
             if (~cont->caps & (1 << cap->id) && cap->id)
             {
+                cont->caps |= 1 << cap->id;
 #ifdef WIP
                 IMSrvMsg (cont, event->sess, NOW, MSG_INT_CAP, cap->name, STATUS_OFFLINE);
 #endif
-                cont->caps |= 1 << cap->id;
             }
         }
     }
@@ -537,15 +537,15 @@ static JUMP_SNAC_F(SnacSrvReplyicbm)
 
 static JUMP_SNAC_F(SnacSrvAckmsg)
 {
-    UDWORD midtime, midrand, uin;
+    UDWORD /*midtime, midrand,*/ uin;
     UWORD msgtype;
     Contact *cont;
     Packet *pak;
     char *text;
     
     pak = event->pak;
-    midtime = PacketReadB4 (pak);
-    midrand = PacketReadB4 (pak);
+    /*midtime=*/PacketReadB4 (pak);
+    /*midrand=*/PacketReadB4 (pak);
               PacketReadB2 (pak);
     uin     = PacketReadUIN (pak);
               PacketReadB2 (pak);
@@ -579,7 +579,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     Packet *p = NULL, *pp = NULL, *pak;
     TLV *tlv;
     UDWORD midtim, midrnd, midtime, midrand, uin, unk, tmp;
-    UWORD seq1, seq2, tcpver, len, i, msgtyp, type, status, pri;
+    UWORD seq1, seq2, tcpver, len, i, msgtyp, type, /*status,*/ pri;
     char *text = NULL;
     const char *resp, *txt = NULL;
 
@@ -672,7 +672,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
             tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
             msgtyp = PacketRead2 (pp);      PacketWrite2 (p, msgtyp);
-            status = PacketRead2 (pp);
+            /*status=*/PacketRead2 (pp);
             pri    = PacketRead2 (pp);
             txt = text = 
                      PacketReadLNTS (pp);
@@ -685,19 +685,19 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             {
                 if (cap1->id && ~cont->caps & (1 << cap1->id))
                 {
-                    ContactSetVersion (cont);
 #ifdef WIP
                     IMSrvMsg (cont, event->sess, NOW, MSG_INT_CAP, cap1->name, STATUS_OFFLINE);
 #endif
                     cont->caps |= 1 << cap1->id;
+                    ContactSetVersion (cont);
                 }
                 if (cap2->id && ~cont->caps & (1 << cap2->id))
                 {
-                    ContactSetVersion (cont);
 #ifdef WIP
                     IMSrvMsg (cont, event->sess, NOW, MSG_INT_CAP, cap2->name, STATUS_OFFLINE);
 #endif
                     cont->caps |= 1 << cap2->id;
+                    ContactSetVersion (cont);
                 }
             }
             if (!strlen (text) && unk == 0x12)
@@ -798,6 +798,7 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
             break;
         case 2:
             /* msg was received by server */
+            break;
     }
 }
 
@@ -902,6 +903,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
             case 9:
             case 17:
                 /* unknown / ignored */
+                break;
         }
         free (name);
         TLVD (tlv);

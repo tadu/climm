@@ -1281,8 +1281,8 @@ static JUMP_F(CmdUserVerbose)
 
 static UDWORD __status (Contact *cont)
 {
-    if (cont->flags   & CONT_IGNORE)     return -2;
-    if (cont->flags   & CONT_TEMPORARY)  return -2;
+    if (cont->flags   & CONT_IGNORE)     return 0xfffffffe;
+    if (cont->flags   & CONT_TEMPORARY)  return 0xfffffffe;
     if (cont->status == STATUS_OFFLINE)  return STATUS_OFFLINE;
     if (cont->status  & STATUSF_BIRTH)   return STATUSF_BIRTH;
     if (cont->status  & STATUSF_DND)     return STATUS_DND;
@@ -1307,8 +1307,8 @@ static JUMP_F(CmdUserStatusDetail)
     UDWORD uin = 0, tuin = 0, i, lenuin = 0, lennick = 0, lenstat = 0, lenid = 0, totallen = 0;
     Contact *cont = NULL, *contr = NULL;
     Session *peer;
-    UDWORD stati[] = { -2, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
-                           STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
+    UDWORD stati[] = { 0xfffffffe, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
+                                   STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
     ASESSION;
 
     if (!data)
@@ -2829,7 +2829,6 @@ static JUMP_F(CmdUserSearch)
             s_repl (&wp.state, NULL);
             return 0;
     }
-    return 0;
 }
 
 /*
@@ -3140,7 +3139,7 @@ void CmdUserInput (time_t *idle_val, UBYTE *idle_flag)
 /*
  * Process one line of command, get it if necessary.
  */
-void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
+static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
 {
     char buf[1024];    /* This is hopefully enough */
     char *cmd = NULL, *args;

@@ -68,7 +68,7 @@ Packet *PacketC (void)
     return pak;
 }
 
-Packet *PacketCreate (const char *data, UDWORD len)
+Packet *PacketCreate (const void *data, UDWORD len)
 {
     Packet *newpak;
     
@@ -450,9 +450,9 @@ UDWORD PacketReadB4 (Packet *pak)
 
 Cap *PacketReadCap (Packet *pak)
 {
-    const char *cap;
-    char *p;
+    const UBYTE *cap;
     UBYTE id;
+    char *p;
     
     assert (pak);
     
@@ -470,7 +470,7 @@ Cap *PacketReadCap (Packet *pak)
                 return &caps[id];
 #else
             {
-                const char *p, *q;
+                const UBYTE *p, *q;
                 int i;
                 for (p = cap, q = caps[id].cap, i = 0; i < 16; i++)
                     if (*p++ != *q++)
@@ -518,7 +518,7 @@ char *PacketReadStrB (Packet *pak)
     len = PacketReadB2 (pak);
 
     if (pak->rpos + len >= PacketMaxData)
-        return "<invalidlen>";
+        return strdup ("<invalidlen>");
 
     str = malloc (len + 1);
     assert (str);
@@ -535,12 +535,12 @@ char *PacketReadStrB (Packet *pak)
 char *PacketReadLNTS (Packet *pak)
 {
     UWORD len;
-    UBYTE *str;
+    char *str;
     
     len = PacketRead2 (pak);
 
     if (pak->rpos + len >= PacketMaxData)
-        str = "<invalidlen>";
+        str = strdup ("<invalidlen>");
     if (!len)
         return strdup ("");
 
@@ -557,12 +557,12 @@ char *PacketReadLNTS (Packet *pak)
 char *PacketReadDLStr (Packet *pak)
 {
     UWORD len;
-    UBYTE *str;
+    char *str;
     
     len = PacketRead4 (pak);
 
     if (pak->rpos + len >= PacketMaxData)
-        return "<invalidlen>";
+        return strdup ("<invalidlen>");
 
     str = malloc (len + 1);
     assert (str);
@@ -695,12 +695,12 @@ char *PacketReadAtStrB (const Packet *pak, UWORD at)
 char *PacketReadAtLNTS (Packet *pak, UWORD at)
 {
     UWORD len;
-    UBYTE *str;
+    char *str;
     
     len = PacketReadAt2 (pak, at);
 
     if (at + 2 + len >= PacketMaxData)
-        return "<invalid>";
+        return strdup ("<invalid>");
     if (!len)
         return strdup ("");
 

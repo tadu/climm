@@ -384,7 +384,7 @@ void UDPCallBackResend (Event *event)
         {
             UWORD  type = PacketReadAt2 (pak, CMD_v5_OFF_PARAM + 4);
             UDWORD tuin = PacketReadAt4 (pak, CMD_v5_OFF_PARAM);
-            UBYTE *data = (UBYTE *) &pak->data[CMD_v5_OFF_PARAM + 8];
+            char *data = (char *) &pak->data[CMD_v5_OFF_PARAM + 8];
 
             M_print ("\n");
             M_printf (i18n (1830, "Discarding message to %s after %d send attempts.  Message content:\n"),

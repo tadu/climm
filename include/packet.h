@@ -18,7 +18,7 @@ struct Packet_s
     UBYTE    data[PacketMaxData];
 };
 
-typedef struct { UBYTE id; const char *cap; const char *name; } Cap;
+typedef struct { UBYTE id; const UBYTE *cap; const char *name; } Cap;
 
 #define CAP_NONE        0
 #define CAP_AIM_VOICE   1
@@ -49,7 +49,7 @@ typedef struct { UBYTE id; const char *cap; const char *name; } Cap;
 #define HAS_CAP(caps,cap) ((caps) & (1L << (cap)))
 
 Packet *PacketC        (void);
-Packet *PacketCreate   (const char *data, UDWORD len);
+Packet *PacketCreate   (const void *data, UDWORD len);
 Packet *PacketClone    (const Packet *pak);
 void    PacketD        (Packet *pak);
 

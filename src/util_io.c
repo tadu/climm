@@ -21,6 +21,9 @@
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
+#if !HAVE_DECL_H_ERRNO
+extern int h_errno;
+#endif
 #include <signal.h>
 #include <stdarg.h>
 #include "preferences.h"
@@ -66,7 +69,7 @@ void UtilIOConnectUDP (Session *sess)
 /* SOCKS5 stuff end */
 
     int conct;
-    unsigned length;
+    socklen_t length;
     struct sockaddr_in sin;     /* used to store inet addr stuff */
     struct hostent *host_struct;        /* used in DNS lookup */
 
@@ -276,7 +279,7 @@ void UtilIOConnectUDP (Session *sess)
 void UtilIOConnectTCP (Session *sess)
 {
     int rc;
-    unsigned flags;
+    socklen_t length;
     struct sockaddr_in sin;
     struct hostent *host;
     char *origserver = NULL;
@@ -334,8 +337,8 @@ void UtilIOConnectTCP (Session *sess)
 
         rc = connect (sess->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
 
-        flags = sizeof (struct sockaddr);
-        getsockname (sess->sok, (struct sockaddr *) &sin, &flags);
+        length = sizeof (struct sockaddr);
+        getsockname (sess->sok, (struct sockaddr *) &sin, &length);
         sess->our_local_ip = ntohl (sin.sin_addr.s_addr);
         if (sess->assoc && (sess->type == TYPE_SERVER))
             sess->assoc->our_local_ip = sess->our_local_ip;
@@ -385,8 +388,8 @@ void UtilIOConnectTCP (Session *sess)
         if (listen (sess->sok, BACKLOG) < 0)
             CONN_FAIL_RC (i18n (1954, "unable to listen on socket"));
 
-        flags = sizeof (struct sockaddr);
-        getsockname (sess->sok, (struct sockaddr *) &sin, &flags);
+        length = sizeof (struct sockaddr);
+        getsockname (sess->sok, (struct sockaddr *) &sin, &length);
         sess->port = ntohs (sin.sin_port);
         sess->server = strdup ("localhost");
         if (M_pos () > 0)
@@ -398,11 +401,11 @@ void UtilIOConnectTCP (Session *sess)
 int UtilIOError (Session *sess)
 {
     int rc;
-    unsigned flags;
+    socklen_t length;
 
-    flags = sizeof (int);
+    length = sizeof (int);
 #ifdef SO_ERROR
-    if (getsockopt (sess->sok, SOL_SOCKET, SO_ERROR, &rc, &flags) < 0)
+    if (getsockopt (sess->sok, SOL_SOCKET, SO_ERROR, &rc, &length) < 0)
 #endif
         rc = errno;
 

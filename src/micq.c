@@ -100,7 +100,7 @@ void Check_Endian (void)
 void Idle_Check (Session *sess)
 {
     int delta;
-    UDWORD new = -1;
+    UDWORD new = 0xffffffffL;
 
     if (~sess->type & TYPEF_ANY_SERVER)
         return;
@@ -146,7 +146,7 @@ void Idle_Check (Session *sess)
         uiG.idle_flag = 1;
         uiG.idle_msgs = 0;
     }
-    if (new != -1 && new != sess->status)
+    if (new != 0xffffffffL && new != sess->status)
     {
         if (sess->type == TYPE_SERVER)
             SnacCliSetstatus (sess, new, 1);

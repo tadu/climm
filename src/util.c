@@ -46,11 +46,13 @@ Changes :
 #include <io.h>
 #define S_IRUSR          _S_IREAD
 #define S_IWUSR          _S_IWRITE
-#else
+#endif
 #include <netinet/in.h>
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>
 #endif
 #if HAVE_UNISTD_H
 #include <unistd.h>
@@ -417,7 +419,7 @@ void Hex_Dump (void *buffer, size_t len)
     if (!len)
         return;
 
-    assert (len >= 0);
+    assert (len > 0);
 
     for (i = 0; i < ((len + 15) & ~15); i++)
     {

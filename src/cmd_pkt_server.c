@@ -177,7 +177,8 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
 {
     jump_srv_t *t;
     static int loginmsg = 0;
-    unsigned char ip[4], *text;
+    unsigned char ip[4];
+    char *text;
     UWORD wdata;
     Contact *cont;
     UDWORD status;

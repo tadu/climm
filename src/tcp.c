@@ -223,7 +223,8 @@ void TCPDispatchMain (Session *list)
 {
     struct sockaddr_in sin;
     Session *peer;
-    int tmp, rc;
+    socklen_t length;
+    int rc;
  
     ASSERT_ANY_LISTEN(list);
 
@@ -259,7 +260,6 @@ void TCPDispatchMain (Session *list)
         return;
     }
 
-    tmp = sizeof (sin);
     peer = SessionClone (list, list->type == TYPE_MSGLISTEN ? TYPE_MSGDIRECT : TYPE_FILEDIRECT);
     
     if (!peer)
@@ -290,7 +290,8 @@ void TCPDispatchMain (Session *list)
     }
     else
     {
-        peer->sok  = accept (list->sok, (struct sockaddr *)&sin, &tmp);
+        length = sizeof (sin);
+        peer->sok  = accept (list->sok, (struct sockaddr *)&sin, &length);
         
         if (peer->sok <= 0)
         {
@@ -611,7 +612,7 @@ static void TCPDispatchPeer (Session *peer)
                 default:
                     /* Store the event in the recv queue for handling later */            
                     QueueEnqueueData (peer, QUEUE_TCP_RECEIVE, seq_in,
-                                      0, 0, pak, (UBYTE *)cont, &TCPCallBackReceive);
+                                      0, 0, pak, (char *)cont, &TCPCallBackReceive);
 
                     peer->our_seq--;
                 break;
@@ -1261,7 +1262,7 @@ static Packet *PacketTCPC (Session *peer, UDWORD cmd, UDWORD seq, UWORD type, UW
 /*
  * Append the "geeting" part to a packet.
  */
-void TCPGreet (Packet *pak, UWORD cmd, char *reason, UWORD port, UDWORD len, char *msg)
+static void TCPGreet (Packet *pak, UWORD cmd, char *reason, UWORD port, UDWORD len, char *msg)
 {
     PacketWrite2     (pak, cmd);
     switch (cmd)
@@ -1385,6 +1386,7 @@ static int TCPSendMsgAck (Session *peer, UWORD seq, UWORD type, BOOL accept)
             break;
         case 0x1a:
             /* no idea */
+            break;
     }
     PeerPacketSend (peer, pak);
     return 1;
@@ -1909,7 +1911,7 @@ static void TCPCallBackReceive (Event *event)
                     break;
                 case TCP_MSG_GREETING:
                     {
-                        UWORD port, port2, flen, pad;
+                        UWORD /*port, port2,*/ flen /*, pad*/;
                         char *text, *reason, *name;
                         
                         cmd    = PacketRead2 (pak);
@@ -1919,11 +1921,11 @@ static void TCPCallBackReceive (Event *event)
                                  PacketReadData (pak, NULL, 15);
                                  PacketRead4 (pak);
                         reason = PacketReadDLStr (pak);
-                        port   = PacketReadB2 (pak);
-                        pad    = PacketRead2 (pak);
+                        /*port=*/PacketReadB2 (pak);
+                        /*pad=*/ PacketRead2 (pak);
                         name   = PacketReadLNTS (pak);
                         flen   = PacketRead4 (pak);
-                        port2  = PacketRead4 (pak);
+                        /*port2*/PacketRead4 (pak);
                         
                         switch (cmd)
                         {
@@ -1986,6 +1988,7 @@ static void TCPCallBackReceive (Event *event)
             break;
         default:
             /* ignore */
+            break;
     }
     PacketD (pak);
     free (tmp);

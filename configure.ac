@@ -46,7 +46,7 @@ fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([arpa/inet.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h])
+AC_CHECK_HEADERS([sys/select.h arpa/inet.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -86,7 +86,12 @@ fi
 
 # Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
+
+AC_CHECK_DECLS(h_errno,,,[$ac_includes_default
+#include <netdb.h>])
+
 AC_TYPE_SIGNAL
+AC_CHECK_TYPES(socklen_t)
 AC_FUNC_VPRINTF
 AC_FUNC_SNPRINTF
 AC_FUNC_MEMMOVE

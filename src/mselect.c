@@ -38,6 +38,10 @@ Changes :
 #include <arpa/inet.h>
 #endif
 
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>
+#endif
+
 #include <netdb.h>
 #include <sys/wait.h>
 #endif

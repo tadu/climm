@@ -57,6 +57,7 @@ void Initalize_RC_File ()
     Session *sess, *sesst;
     char *passwd, *t;
     UDWORD uin;
+    long tmpuin;
     
     prG->away_time = default_away_time;
 
@@ -66,8 +67,9 @@ void Initalize_RC_File ()
     M_printf ("%s ", i18n (1618, "UIN:"));
     fflush (stdout);
     M_fdnreadln (stdin, input, sizeof (input));
-    uin = 0;
-    sscanf (input, "%ld", &uin);
+    tmpuin = 0;
+    sscanf (input, "%ld", &tmpuin);
+    uin = tmpuin;
 
     M_print ("\n");
     if (uin)
@@ -1064,7 +1066,7 @@ void fHexDump (FILE *f, void *buffer, size_t len)
     if (!len)
         return;
 
-    assert (len >= 0);
+    assert (len > 0);
 
     for (i = 0; i < ((len + 15) & ~15); i++)
     {

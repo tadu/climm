@@ -243,12 +243,12 @@ const char *s_ind (const char *str)
 /*
  * Hex dump to a string with ASCII.
  */
-const char *s_dump (const char *data, UWORD len)
+const char *s_dump (const UBYTE *data, UWORD len)
 {
     static char *t = NULL;
     static UDWORD size = 0;
     UDWORD i, off;
-    const unsigned char *d = data;
+    const unsigned char *d = (const unsigned char *)data;
     
     t = s_catf (t, &size, "");
     if (t)
@@ -300,12 +300,12 @@ const char *s_dump (const char *data, UWORD len)
 /*
  * Hex dump to a string without ASCII.
  */
-const char *s_dumpnd (const char *data, UWORD len)
+const char *s_dumpnd (const UBYTE *data, UWORD len)
 {
     static char *t = NULL;
     static UDWORD size = 0;
     UDWORD i;
-    const unsigned char *d = data;
+    const unsigned char *d = (const unsigned char *)data;
     
     if (t)
         *t = 0;

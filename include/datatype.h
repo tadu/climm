@@ -6,6 +6,10 @@
    #include <unistd.h>
 #endif
 
+#if !HAVE_SOCKLEN_T
+typedef unsigned int socklen_t;
+#endif
+
 typedef unsigned SIZE_4_TYPE UDWORD;
 #ifndef __amigaos__
 typedef unsigned SIZE_2_TYPE UWORD;

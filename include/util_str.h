@@ -7,8 +7,8 @@ const char *s_time (time_t *stamp);
 const char *s_msgtok (char *);
 char       *s_cat  (char *str, UDWORD *size, const char *add);
 char       *s_catf (char *str, UDWORD *size, const char *fmt, ...);
-const char *s_dump (const char *data, UWORD len);
-const char *s_dumpnd (const char *data, UWORD len);
+const char *s_dump (const UBYTE *data, UWORD len);
+const char *s_dumpnd (const UBYTE *data, UWORD len);
 const char *s_ind (const char *str);
 
 BOOL s_parse (char **input, char **parsed);
