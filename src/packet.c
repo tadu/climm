@@ -418,9 +418,9 @@ const char *PacketReadLNTS (Packet *pak)
     if (!len)
         return "";
     if (pak->rpos + len >= PacketMaxData)
-        return "<invalidlen>";
-    if (str [len - 1])
-        return "<invalidstr>";
+        str = "<invalidlen>";
+    else if (str [len - 1])
+        str = "<invalidstr>";
 
     PacketWriteAt2 (pak, pak->rpos - 2, 0); /* clear string to prevent double recoding */
     PacketReadData (pak, NULL, len);
@@ -437,9 +437,9 @@ const char *PacketReadLNTSC (Packet *pak)
     str = pak->data + pak->rpos;
 
     if (pak->rpos + len >= PacketMaxData)
-        return "<invalidlen>";
-    if (len && str [len - 1])
-        return "<invalidstr>";
+        str = "<invalidlen>";
+    else if (len && str [len - 1])
+        str = "<invalidstr>";
 
     PacketReadData (pak, NULL, len ? len : strlen (str) + 1);
     return str;
