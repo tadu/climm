@@ -13,7 +13,10 @@ various people:
  : add missing v8 pieces
  : server side contact list
  : contact groups
- : history of messages
+ : history of messages:
+   + It would be nice to know just how many messages a person has sent while
+     one was away - regarding the 'last' function.
+   + last <uin> doesn't show the time.
  : alias for commands
  : tab completion (check)
  : configurable colors
@@ -21,15 +24,12 @@ various people:
  : fix memory leaks
  : fix contact list download segfault
  : finish implementing file transfer
- : fix missing online flags
+ : fix missing online flags (fixed?)
+ : Trillian bugaround
+ : use old-style auth stuff as well :-/
  : fix wrong-destination messages (fixed)
-
 
 21:47:57  m:1126630 <<< Hello,
 I have been talking with friends about mICQ and about how much we like it ..
 A couple of things have come up:
-- It would be nice to know just how many messages a person has sent while
-  one was away - regarding the 'last' function.
 - All mode changes should be in a central system log and not each user
-- Trillian compatibility would be great.
-- last <uin> doesn't show the time.

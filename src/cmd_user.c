@@ -2089,6 +2089,7 @@ static JUMP_F(CmdUserAuth)
         M_print (i18n (1061, "%s not recognized as a nick name.\n"), nick);
         return 0;
     }
+    UtilCheckUIN (sess, uin);
 
     if (!strcmp (cmd, "req"))
     {

@@ -143,7 +143,7 @@ char *ContactFindName (UDWORD uin)
 }
 
 /*
- * Returns the UIN of nick, which can be numeric, or 0.
+ * Returns the UIN of nick, which can be numeric, or -1.
  */
 UDWORD ContactFindByNick (const char *nick)
 {
