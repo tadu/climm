@@ -1040,7 +1040,6 @@ static JUMP_F (CmdUserResend)
  */
 static JUMP_F (CmdUserAnyMess)
 {
-#ifdef WIP
     Contact *cont;
     char *arg1 = NULL;
     UDWORD i, f;
@@ -1069,7 +1068,7 @@ static JUMP_F (CmdUserAnyMess)
     }
     if (!s_parsenick (&args, &cont, NULL, sess))
         return 0;
-    if (!s_parse (&args, &arg1))
+    if (!s_parserem (&args, &arg1))
         return 0;
 
     if (data & 1)
@@ -1088,7 +1087,6 @@ static JUMP_F (CmdUserAnyMess)
         else
             CmdPktCmdSendMessage (sess, cont->uin, arg1, data >> 2);
     }
-#endif
     return 0;
 }
 

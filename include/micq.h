@@ -127,6 +127,8 @@ typedef struct PreferencesSession_s PreferencesSession;
 #define MSG_GET_FFC       0xec
 #define MSG_GET_VER       0xf4
 
+#define MSG_INT_CAP       0x40
+
 #define INV_LIST_UPDATE         0x01
 #define VIS_LIST_UPDATE         0x02
 #define CONT_LIST_UPDATE        0x00

@@ -477,7 +477,7 @@ static JUMP_SNAC_F(SnacSrvUseronline)
             if (~cont->caps & (1 << cap->id) && cap->id)
             {
 #ifdef WIP
-                IMSrvMsg (cont, event->sess, NOW, 33, cap->name, STATUS_OFFLINE);
+                IMSrvMsg (cont, event->sess, NOW, MSG_INT_CAP, cap->name, STATUS_OFFLINE);
 #endif
                 cont->caps |= 1 << cap->id;
             }
@@ -687,7 +687,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 {
                     ContactSetVersion (cont);
 #ifdef WIP
-                    IMSrvMsg (cont, event->sess, NOW, 33, cap1->name, STATUS_OFFLINE);
+                    IMSrvMsg (cont, event->sess, NOW, MSG_INT_CAP, cap1->name, STATUS_OFFLINE);
 #endif
                     cont->caps |= 1 << cap1->id;
                 }
@@ -695,7 +695,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 {
                     ContactSetVersion (cont);
 #ifdef WIP
-                    IMSrvMsg (cont, event->sess, NOW, 33, cap2->name, STATUS_OFFLINE);
+                    IMSrvMsg (cont, event->sess, NOW, MSG_INT_CAP, cap2->name, STATUS_OFFLINE);
 #endif
                     cont->caps |= 1 << cap2->id;
                 }
@@ -1320,6 +1320,7 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, const char *text, UDWORD type, U
             case MSG_GET_OCC:
             case MSG_GET_FFC:
             case MSG_GET_NA:
+            case MSG_GET_VER:
                 format = 2;
                 break;
                 return;

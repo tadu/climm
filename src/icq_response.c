@@ -702,12 +702,12 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
         type == MSG_AUTH_ADDED ? LOG_ADDED : LOG_RECVD, type,
         *cdata ? "%s\n" : "%s", cdata);
     
-    TabAddUIN (cont->uin);            /* Adds <uin> to the tab-list */
-
     if (cont->flags & CONT_IGNORE)
         return;
     if ((cont->flags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT))
         return;
+
+    TabAddUIN (cont->uin);            /* Adds <uin> to the tab-list */
 
     if (uiG.idle_flag)
     {
@@ -733,7 +733,6 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
         ExecScript (prG->sound_cmd, cont->uin, 0, NULL);
     if (prG->sound & SFLAG_BEEP)
         printf ("\a");
-
     M_printf ("%s " COLINCOMING "%10s" COLNONE " ", s_time (&stamp), cont->nick);
     
     if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || cont->flags & CONT_TEMPORARY))
@@ -767,8 +766,9 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
                      carr, cdata);
             break;
 
-        case 33:
+        case MSG_INT_CAP:
 #ifdef WIP
+            if (prG->verbose)
             {
                 Cap *cap = NULL;
                 if (!strncmp ("CAP_UNK_", cdata, 8))
@@ -776,8 +776,8 @@ void IMSrvMsg (Contact *cont, Session *sess, time_t stamp, UWORD type, const cha
                 M_printf ("<cap> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT " %s",
                           cdata, cap ? s_dump (cap->cap, 16) : "\n");
             }
-            break;
 #endif
+            break;
         case MSG_AUTO:
             M_printf ("<%s> " COLMESSAGE COLMSGINDENT "%s" COLNONE COLMSGEXDENT "\n",
                      i18n (2108, "auto"), cdata);
