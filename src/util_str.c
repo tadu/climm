@@ -212,6 +212,7 @@ const char *s_sprintf (const char *fmt, ...)
         nbuf = malloc (size + 1024);
         if (!nbuf)
             break;
+        free (buf);
         buf = nbuf;
         size += 1024;
     }
