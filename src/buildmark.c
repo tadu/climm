@@ -87,6 +87,12 @@
 #define EV_P2P
 #endif
 
+#ifdef ENABLE_TCL
+#define EV_TCL "TCL "
+#else
+#define EV_TCL
+#endif
+
 #ifdef ENABLE_UTF8
 #define EV_UTF8 "UTF8 "
 #else
@@ -99,7 +105,7 @@
 #define EV_ICONV
 #endif
 
-#define EV EV_P2P EV_UTF8 EV_ICONV
+#define EV EV_P2P EV_TCL EV_UTF8 EV_ICONV
 
 const UDWORD BuildPlatformID = BUILD_PLATFORM;
 

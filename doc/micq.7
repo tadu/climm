@@ -770,6 +770,131 @@ Check whether
 .I nick
 is actually online or not. Abuses a bug in the ICQ protocol to figure this out;
 no additional information except online or offline can be found out this way.
+.SH COMMANDS CONCERNING TCL SCRIPTING
+.TP
+.BI tcl \ command
+Run TCL command
+.IR command .
+Example: tcl puts "hello world"
+.TP
+.BI tclscript \ file
+Run TCL script from file
+.IR file .
+.TP
+The following TCL commands are introduced by mICQ that let you control mICQ
+from within the TCL environment. To avoid namespace pollution with the
+original TCL commands all mICQ TCL commands are a subcommand of the TCL
+command 'micq'. This means for example 'micq receive R\(:udiger myproc' will
+install a hook for message reception from R\(:udiger. All the following
+commands must be preceded by 'micq'.
+.TP
+.BI receive \ command\ [contact]
+Install hook for text message reception. 
+.I command 
+is the TCL command to be run upon message reception. 
+.I contact
+is an optional filter. If you don't specify a filter, the hook will catch
+all incoming messages.  You can install as many reception hooks as you
+want. If a hook exists for the given contact already, the existing hook is
+updated and the procedure returns the former command.
+
+Only simple text messages are processed. Use the event hook for reception
+of other message types.
+
+Whenever a message is received by mICQ, the given command will be run with
+two arguments provided: the sender's UIN and the message text.
+
+Note: This function is provided for convenience. Event hooks (described
+below) can do the same job in a more generic way, but they have no filter
+feature.
+.TP
+.BI unreceive \ contact
+Remove installed hook with filter
+.IR contact . 
+If this hook existed it's command will be returned.
+.TP
+.BI event \ command
+Install event hook. 
+.I command
+is the TCL command to be run upon events. If an event hook existed already
+it's command will be returned.  In contrary to message hooks only a single
+event hook can exist.  Consequent calls will override the old hook.
+
+The command will be run with a variable number of arguments provided.  The
+first argument always is the type of event encountered. The next arguments
+depend on the event type. The following list explains all events. The bold
+word is the event's type and the underlined arguments describe the event's
+details.
+.RS
+.TP
+.BI status \ uin\ status
+User changed status.
+.TP
+.BI status \ uin\ status
+User changed status.
+.TP
+.BI message \ uin\ text
+Message received.
+.TP
+.BI mail \ uin\ content
+Incoming mail message.
+.TP
+.BI web \ uin\ url
+URL message.
+.TP
+.BI file_request \ uin\ filename\ size\ sequence
+Incoming file transmission request.
+.TP
+.BI contactlistadded \ uin
+Someone added you to his contact list.
+.TP
+.BI authorization \ uin\ {request,refused,granted}
+Authorization status.
+.RE
+.TP
+.BI unevent
+Uninstall event hook. Returns command of former hook.
+.TP
+.BI hooks
+Returns list of all installed hooks. Every list element is a hook and
+consists of a list of two elements: the filter and the command.
+.TP
+.BI exec \ command
+Run a mICQ command and returns its output as a single string. ANSI escape
+sequences will be removed.
+.TP
+.BI nick \ nick
+Lookup nick from given UIN. This works for UINs from your contact list
+only. Hint: use 'exec finger' for UINs not in your contact list.
+.TP
+.BI help
+Gives small summary of all available mICQ specific TCL commands.
+.PP
+These TCL variables are defined. You can overwrite them but you will lose the original values:
+.TP
+.BI micq_version
+mICQ version string
+.TP
+.BI micq_basedir 
+Base directory (same as mICQ's -b switch)
+.TP
+.BI micq_uin
+List of your own UINs
+.PP
+.nf
+.ta 4n 19n 31n
+Simple example of an event hook:
+
+# start of tcl script
+proc we_have_an_event {type args} {
+    puts "type='$type' args=[join $args {,}]"
+    # take further actions...
+}
+# install hook in main context
+micq event we_have_an_event
+# end of tcl script
+.ta
+.fi
 .SH SEE ALSO
 .BR micq (1),
 .BR micqrc (5)

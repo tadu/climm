@@ -3,6 +3,8 @@
 #ifndef MICQ_PREFERENCES_H
 #define MICQ_PREFERENCES_H
 
+#include "util_tcl.h"
+
 struct Preferences_s
 {
     char  *s5Host;      /* socks 5 settings */
@@ -42,6 +44,11 @@ struct Preferences_s
     char  *colors[CXCOUNT];
     UBYTE  scheme;
     SBYTE  chat;
+
+#ifdef ENABLE_TCL
+    tcl_pref_p tclscript;
+    tcl_callback *tclout;
+#endif /* ENABLE_TCL */
 
     /* Much more stuff to go here - %TODO% */
 };

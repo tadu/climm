@@ -1198,6 +1198,16 @@ void M_print (const char *org)
     }
 
     R_remprompt ();
+
+#ifdef ENABLE_TCL
+    if (prG->tclout)
+    {
+        prG->tclout (fstr);
+        free (fstr);
+        return;
+    }
+#endif /* ENABLE_TCL */
+
     for (; *str; str++)
     {
         for (test = save = str; *test; test++)

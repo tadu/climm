@@ -26,6 +26,7 @@
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_cmd_v5_util.h"
 #include "util_str.h"
+#include "util_tcl.h"
 #include "os.h"
 
 #include <stdio.h>
@@ -360,6 +361,10 @@ int main (int argc, char *argv[])
 #endif
 
     R_init ();
+
+#ifdef ENABLE_TCL
+    TCLInit ();
+#endif /* ENABLE_TCL */
 
     for (i = 0; (conn = ConnectionNr (i)); i++)
         if ((conn->flags & CONN_AUTOLOGIN) && conn->open)

@@ -126,7 +126,8 @@ Remote control FIFOs do not use this setting.
 The
 .B General
 section includes the options for SOCKS 5, that may be eventually
-moved to their own section, general options, and some strings to override.
+moved to their own section, general options, TCL startup script
+definitions and some strings to override.
 .TP
 .BI s5_use \ number
 Set
@@ -155,6 +156,18 @@ to socks 5 proxy.
 Authenticate with password
 .I password
 to socks 5 proxy.
+.PP
+TCL startup definitions:
+.TP
+.BI tcl \ command
+Run TCL command
+.I command
+upon startup. May be defined several times.
+.TP
+.BI tclscript \ file
+Run TCL script from file
+.I file
+upon startup. May be defined several times.
 .PP
 A few book-keeping options are usually placed at the beginning of
 the micqrc file:

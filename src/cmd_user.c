@@ -32,6 +32,7 @@
 #include "contact.h"
 #include "server.h"
 #include "util_str.h"
+#include "util_tcl.h"
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
@@ -147,6 +148,10 @@ static jump_t jump[] = {
     { &CmdUserOther,         "other",        NULL, 0,   0 },
     { &CmdUserAbout,         "about",        NULL, 0,   0 },
     { &CmdUserConn,          "conn",         NULL, 0,   0 },
+#ifdef ENABLE_TCL
+    { &CmdUserTclScript,     "tclscript",    NULL, 0,   0 },
+    { &CmdUserTclScript,     "tcl",          NULL, 0,   1 },
+#endif /* ENABLE_TCL */
 
     { NULL, NULL, NULL, 0 }
 };
@@ -406,6 +411,9 @@ static JUMP_F(CmdUserHelp)
     else if (!strcasecmp (arg1, i18n (1449, "User"))     || !strcasecmp (arg1, "User"))     what = 3;
     else if (!strcasecmp (arg1, i18n (1450, "Account"))  || !strcasecmp (arg1, "Account"))  what = 4;
     else if (!strcasecmp (arg1, i18n (2171, "Advanced")) || !strcasecmp (arg1, "Advanced")) what = 5;
+#ifdef ENABLE_TCL
+    else if (!strcasecmp (arg1, i18n (2342, "Scripting")) || !strcasecmp (arg1, "Scripting")) what = 6;
+#endif /* ENABLE_TCL */
     else what = 0;
 
     if (!what)
@@ -422,6 +430,10 @@ static JUMP_F(CmdUserHelp)
                  i18n (1445, "Commands relating to your ICQ account."));
         M_printf (fmt, COLCLIENT, i18n (2171, "Advanced"), COLNONE,
                  i18n (2172, "Commands for advanced features."));
+#ifdef ENABLE_TCL
+        M_printf (fmt, COLCLIENT, "Scripting", COLNONE,
+                  i18n (2343, "Scripting extensions."));
+#endif /* ENABLE_TCL */
     }
     else if (what == 1)
     {
@@ -645,6 +657,18 @@ static JUMP_F(CmdUserHelp)
         M_printf (COLMESSAGE "%s <contacts>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("peek"),
                   i18n (2183, "Check all <contacts> whether they are offline or invisible."));
+#ifdef ENABLE_TCL
+    }
+    else if (what == 6)
+    {
+        M_printf (i18n (2314, "These are advanced commands. Be sure to have read the manual pages for complete information.\n"));
+        M_printf (COLMESSAGE "%s <file>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                  CmdUserLookupName ("tclscript"),
+                  i18n (2344, "Execute Tcl script from <file>."));
+        M_printf (COLMESSAGE "%s <string>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                  CmdUserLookupName ("tcl"),
+                  i18n (2345, "Execute Tcl script in <string>."));
+#endif /* ENABLE_TCL */
     }
     return 0;
 }

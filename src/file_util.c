@@ -411,6 +411,18 @@ void Read_RC_File (FILE *rcf)
                     if (format != 1)
                         return;
                 }
+#ifdef ENABLE_TCL
+                else if (!strcasecmp (cmd, "tclscript"))
+                {
+                    PrefParse (tmp);
+                    TCLPrefAppend (TCL_FILE, tmp);
+                }
+                else if (!strcasecmp (cmd, "tcl"))
+                {
+                    PrefParse (tmp);
+                    TCLPrefAppend (TCL_CMD, tmp);
+                }
+#endif /* ENABLE_TCL */
                 else if (!strcasecmp (cmd, "receivescript") || !strcasecmp (cmd, "event"))
                 {
                     if (!strcasecmp (cmd, "receivescript"))
@@ -1249,6 +1261,16 @@ int Save_RC ()
     fprintf (rcf, "\nScreen_Width %d\n", prG->screen);
     fprintf (rcf, "verbose %ld\n\n", prG->verbose);
 
+#ifdef ENABLE_TCL
+    tcl_pref_p tpref = prG->tclscript;
+    while (tpref)
+    {
+        fprintf (rcf, "%s \"%s\"\n", tpref->type == TCL_FILE ? "tclscript" : "tcl",
+                        tpref->file);
+        tpref = tpref->next;
+    }
+    fprintf (rcf, "\n");
+#endif /* ENABLE_TCL */
 
     fprintf (rcf, "# Set some simple options.\n");
     fprintf (rcf, "set delbs      %s # if a DEL char is supposed to be backspace\n",

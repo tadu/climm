@@ -35,6 +35,31 @@ AC_ARG_ENABLE([iconv], AC_HELP_STRING([--disable-iconv], [do not use iconv() at 
               ac_arg_use_iconv=$enableval, ac_arg_use_iconv=auto)
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
+AC_ARG_ENABLE([tcl], AC_HELP_STRING([--enable-tcl], [enable Tcl scripting]),
+              ac_arg_use_tcl=$enableval, ac_arg_use_tcl=no)
+
+# Checks for libraries.
+AC_CHECK_FUNCS([inet_ntoa getpeername])
+if test "x$ac_cv_func_inet_ntoa" = "xno"; then
+  AC_CHECK_LIB(nsl, inet_ntoa)
+fi
+if test "x$ac_cv_func_getpeername" = "xno"; then
+  AC_CHECK_LIB(socket, getpeername)
+fi
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h])
+
+if test "x$ac_arg_use_tcl" != "xno"; then
+  AC_CHECK_HEADER([tcl.h], [ac_arg_use_tcl=header], [ac_arg_use_tcl=no])
+  if test "x$ac_arg_use_tcl" = "xheader"; then
+    AC_CHECK_LIB([tcl8.4], [Tcl_CreateInterp], [ac_arg_use_tcl=yes], [ac_arg_use_tcl=no]) 
+  fi
+fi
+if test "x$ac_arg_use_tcl" = "xyes"; then
+      LIBS="-ltcl8.4 $LIBS"
+fi
 
 if test "x$ac_arg_use_utf8" = "xno"; then
   ac_arg_use_iconv=no
@@ -226,6 +251,12 @@ AC_MSG_CHECKING([whether to enable peer to peer connections])
 AC_MSG_RESULT([$ac_arg_use_peer2peer])
 AC_MSG_CHECKING([whether to enable remote control FIFO])
 AC_MSG_RESULT([$ac_arg_use_remote])
+AC_MSG_CHECKING([whether to enable Tcl scripting])
+AC_MSG_RESULT([$ac_arg_use_tcl])
+
+if test "x$ac_arg_use_tcl" = "xyes"; then
+  AC_DEFINE(ENABLE_TCL, 1, [Whether to support Tcl scripting])
+fi
 
 if test "x$ac_arg_use_utf8" = "xyes"; then
   AC_DEFINE(ENABLE_UTF8, 1, [Whether to use UTF-8 internally])
@@ -242,19 +273,6 @@ fi
 if test "x$ac_arg_use_remote" = "xyes"; then
   AC_DEFINE(ENABLE_REMOTECONTROL, 1, [Whether to enable remote control FIFO])
 fi
-
-# Checks for libraries.
-AC_CHECK_FUNCS([inet_ntoa getpeername])
-if test "x$ac_cv_func_inet_ntoa" = "xno"; then
-  AC_CHECK_LIB(nsl, inet_ntoa)
-fi
-if test "x$ac_cv_func_getpeername" = "xno"; then
-  AC_CHECK_LIB(socket, getpeername)
-fi
-
-# Checks for header files.
-AC_HEADER_STDC
-AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -431,5 +449,5 @@ fi
 
 AC_CONFIG_FILES([src/Makefile Makefile lang/Makefile doc/Makefile])
 AC_CONFIG_FILES([doc/de/Makefile doc/ru/Makefile doc/fr/Makefile doc/es/Makefile doc/uk/Makefile])
-AC_CONFIG_FILES([doc/pt_BR/Makefile doc/sr/Makefile])
+AC_CONFIG_FILES([doc/pt_BR/Makefile doc/sr/Makefile doc/it/Makefile])
 AC_OUTPUT

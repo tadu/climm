@@ -9,6 +9,7 @@
 #include "contact.h"
 #include "server.h"
 #include "util_table.h"
+#include "util_tcl.h"
 #include "util.h"
 #include "conv.h"
 #include "packet.h"
@@ -43,6 +44,11 @@
 #endif
 
 #define s_read(s) do { char *data = PacketReadLNTS (pak); s_repl (&s, c_in_to (data, cont)); free (data); } while (0)
+
+#ifndef ENABLE_TCL
+#define TCLMessage(from, text) {}
+#define TCLEvent(type, data) {}
+#endif
 
 static BOOL Meta_Read_List (Packet *pak, Extra **list, Contact *cont)
 {
@@ -550,6 +556,8 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
             cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
             cont->dc->type);
     }
+
+    TCLEvent ("status", s_sprintf ("%lu %s", cont->uin, s_status (status)));
 }
 
 /*
@@ -579,6 +587,8 @@ void IMOffline (Contact *cont, Connection *conn)
  
     M_printf ("%s " COLCONTACT "%*s" COLNONE " %s\n",
              s_now, uiG.nick_len + s_delta (cont->nick), cont->nick, i18n (1030, "logged off."));
+
+    TCLEvent ("status", s_sprintf ("%lu %s", cont->uin, "logged_off"));
 }
 
 #ifndef ENABLE_UTF8
@@ -828,11 +838,17 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
         default:
             M_printf ("%s " COLMSGINDENT "%s\n", carr, cdata);
             HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, cdata);
+            TCLEvent ("message", s_sprintf ("%lu {%s}", cont->uin, cdata));
+            TCLMessage (cont, cdata);
             break;
 
         case MSG_FILE:
             M_printf (i18n (2259, "requests file transfer '%s' of %ld bytes (sequence %ld).\n"),
                       s_sanitize (cdata), ExtraGet (extra, EXTRA_FILETRANS), ExtraGet (extra, EXTRA_REF));
+            TCLEvent ("file_request", s_sprintf ("%lu {%s} %ld %ld",
+                     cont->uin, cdata,
+                     ExtraGet (extra, EXTRA_FILETRANS),
+                     ExtraGet (extra, EXTRA_REF)));
             break;
 
         case MSG_AUTO:
@@ -903,14 +919,17 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             if (tmp5 && strlen (tmp5))
                 M_printf ("%-15s " COLMESSAGE "%s" COLNONE "\n", "???5:", s_sanitize (tmp5));
             M_print (COLMSGEXDENT);
+            TCLEvent ("authorization", s_sprintf ("%lu request", cont->uin));
             break;
 
         case MSG_AUTH_DENY:
             M_printf (i18n (2233, "refused authorization: %s%s\n"), COLMSGINDENT, cdata);
+            TCLEvent ("authorization", s_sprintf ("%lu refused", cont->uin));
             break;
 
         case MSG_AUTH_GRANT:
             M_print (i18n (1901, "has authorized you to add them to your contact list.\n"));
+            TCLEvent ("authorization", s_sprintf ("%lu granted", cont->uin));
             break;
 
         case MSG_AUTH_ADDED:
@@ -918,6 +937,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             if (!tmp)
             {
                 M_print (i18n (1755, "has added you to their contact list.\n"));
+                TCLEvent ("contactlistadded", s_sprintf ("%lu", cont->uin));
                 break;
             }
             tmp2 = s_msgtok (NULL); if (!tmp2) continue;
@@ -929,6 +949,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             M_printf ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1564, "First name:"), s_sanitize (tmp2));
             M_printf ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1565, "Last name:"), s_sanitize (tmp3));
             M_printf ("%-15s " COLMESSAGE "%s" COLNONE "\n", i18n (1566, "Email address:"), s_sanitize (tmp4));
+            TCLEvent ("contactlistadded", s_sprintf ("%lu", cont->uin));
             break;
 
         case MSG_EMAIL:
@@ -944,9 +965,15 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Extra *extra)
             M_printf ("\n??? %s", s_sanitize (tmp3));
 
             if (e_msg_type == MSG_EMAIL)
+            {
                 M_printf (i18n (1592, "<%s> emailed you a message:\n"), s_sanitize (tmp4));
+                TCLEvent ("mail", s_sprintf ("%lu {%s}", cont->uin, tmp4));
+            }
             else
+            {
                 M_printf (i18n (1593, "<%s> send you a web message:\n"), s_sanitize (tmp4));
+                TCLEvent ("web", s_sprintf ("%lu {%s}", cont->uin, tmp4));
+            }
 
             M_printf (COLMESSAGE "%s" COLNONE "\n", s_sanitize (tmp5));
             break;
