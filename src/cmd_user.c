@@ -186,7 +186,8 @@ static Connection *currconn = NULL;
 
 /* Try to have any server connection ready. */
 #define ANYCONN Connection *conn = currconn; \
-    if (!conn) currconn = conn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL);
+    if (!conn) currconn = conn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL); \
+    if (!conn) return 0;
 
 /*
  * Returns a pointer to the jump table.
