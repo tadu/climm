@@ -1909,16 +1909,16 @@ static void TCPCallBackReceive (Event *event)
                     {
                         Time_Stamp ();
                         M_print (" " COLACK "%10s" COLNONE " ", cont->nick);
-                        M_print (i18n (2052, "Accepting file '%s' (%d bytes) from %s.\n"),
-                                 tmp3, len, cont->nick);
+                        M_print (i18n (2186, "Accepting file '%s' (%d bytes).\n"),
+                                 tmp3, len);
                         TCPSendMsgAck (event->sess, seq, TCP_MSG_FILE, TRUE);
                     }
                     else
                     {
                         Time_Stamp ();
                         M_print (" " COLACK "%10s" COLNONE " ", cont->nick);
-                        M_print (i18n (2061, "Refused file request '%s' (%d bytes) from %s (unknown: %x, %x)\n"),
-                                 tmp3, len, cont->nick, cmd, type);
+                        M_print (i18n (2187, "Refused file request '%s' (%d bytes) (unknown: %x, %x)\n"),
+                                 tmp3, len, cmd, type);
                         TCPSendMsgAck (event->sess, seq, TCP_MSG_FILE, FALSE);
                     }
                     free (tmp3);
@@ -1946,14 +1946,18 @@ static void TCPCallBackReceive (Event *event)
                             case 0x0029:
                                 if (PeerFileRequested (event->sess, name, flen))
                                 {
-                                    M_print (i18n (2052, "Accepting file '%s' (%d bytes) from %s.\n"),
-                                             name, flen, cont->nick);
+                                    Time_Stamp ();
+                                    M_print (" " COLACK "%10s" COLNONE " ", cont->nick);
+                                    M_print (i18n (2186, "Accepting file '%s' (%d bytes).\n"),
+                                             name, flen);
                                     TCPSendGreetAck (event->sess, seq, cmd, TRUE);
                                 }
                                 else
                                 {
-                                    M_print (i18n (2061, "Refused file request '%s' (%d bytes) from %s (unknown: %x, %x)\n"),
-                                             name, flen, cont->nick, cmd, type);
+                                    Time_Stamp ();
+                                    M_print (" " COLACK "%10s" COLNONE " ", cont->nick);
+                                    M_print (i18n (2187, "Refused file request '%s' (%d bytes) (unknown: %x, %x)\n"),
+                                             name, flen, cmd, type);
                                     TCPSendGreetAck (event->sess, seq, cmd, FALSE);
                                 }
                                 break;

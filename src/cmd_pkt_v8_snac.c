@@ -814,6 +814,7 @@ static JUMP_SNAC_F(SnacSrvFromoldicq)
         return;
     }
     p = TLVPak (tlv + 1);
+    p->id = pak->id; /* copy reference */
     len = PacketRead2 (p);
     uin = PacketRead4 (p);
     type= PacketRead2 (p);
@@ -848,6 +849,7 @@ static JUMP_SNAC_F(SnacSrvFromoldicq)
 
         case 66:
             SnacCliAckofflinemsgs (event->sess);
+            SnacCliSetrandom (event->sess, prG->chat);
 
             event->sess->connect = CONNECT_OK | CONNECT_SELECT_R;
             reconn = 0;
@@ -1342,13 +1344,13 @@ void SnacCliAuthorize (Session *sess, UDWORD uin, BOOL accept, const char *msg)
 /*
  * Create meta request package.
  */
-Packet *SnacMetaC (Session *sess, UWORD sub, UWORD type)
+Packet *SnacMetaC (Session *sess, UWORD sub, UWORD type, UDWORD ref)
 {
     Packet *pak;
 
     sess->our_seq3 = sess->our_seq3 ? sess->our_seq3 + 1 : 2;
     
-    pak = SnacC (sess, 21, 2, 0, rand () % 0xffffff);
+    pak = SnacC (sess, 21, 2, 0, ref ? ref : rand () % 0xffffff);
     PacketWriteTLV (pak, 1);
     PacketWriteLen     (pak);
     PacketWrite4  (pak, sess->uin);
@@ -1377,7 +1379,7 @@ void SnacCliReqofflinemsgs (Session *sess)
 {
     Packet *pak;
 
-    pak = SnacMetaC (sess, 60, 0);
+    pak = SnacMetaC (sess, 60, 0, 0);
     SnacMetaSend    (sess, pak);
 }
 
@@ -1388,7 +1390,7 @@ void SnacCliAckofflinemsgs (Session *sess)
 {
     Packet *pak;
 
-    pak = SnacMetaC (sess, 62, 0);
+    pak = SnacMetaC (sess, 62, 0, 0);
     SnacMetaSend    (sess, pak);
 }
 
@@ -1399,7 +1401,7 @@ void SnacCliMetasetgeneral (Session *sess, const MetaGeneral *user)
 {
     Packet *pak;
 
-    pak = SnacMetaC (sess, 2000, META_SET_GENERAL_INFO);
+    pak = SnacMetaC (sess, 2000, META_SET_GENERAL_INFO, 0);
     PacketWriteLNTS (pak, user->nick);
     PacketWriteLNTS (pak, user->first);
     PacketWriteLNTS (pak, user->last);
@@ -1424,7 +1426,7 @@ void SnacCliMetasetabout (Session *sess, const char *text)
 {
     Packet *pak;
 
-    pak = SnacMetaC (sess, 2000, META_SET_ABOUT_INFO);
+    pak = SnacMetaC (sess, 2000, META_SET_ABOUT_INFO, 0);
     PacketWriteLNTS (pak, text);
     SnacMetaSend    (sess, pak);
 }
@@ -1436,7 +1438,7 @@ void SnacCliMetasetmore (Session *sess, const MetaMore *user)
 {
     Packet *pak;
 
-    pak = SnacMetaC (sess, 2000, META_SET_MORE_INFO);
+    pak = SnacMetaC (sess, 2000, META_SET_MORE_INFO, 0);
     PacketWrite2    (pak, user->age);
     PacketWrite1    (pak, user->sex);
     PacketWriteLNTS (pak, user->hp);
@@ -1456,7 +1458,7 @@ void SnacCliMetasetpass (Session *sess, const char *newpass)
 {
     Packet *pak;
     
-    pak = SnacMetaC (sess, 2000, 1070);
+    pak = SnacMetaC (sess, 2000, 1070, 0);
     PacketWriteLNTS (pak, newpass);
     SnacMetaSend    (sess, pak);
 }
@@ -1468,7 +1470,7 @@ void SnacCliMetareqinfo (Session *sess, UDWORD uin)
 {
     Packet *pak;
 
-    pak = SnacMetaC (sess, 2000, META_REQ_INFO);
+    pak = SnacMetaC (sess, 2000, META_REQ_INFO, 0);
     PacketWrite4    (pak, uin);
     SnacMetaSend    (sess, pak);
 }
@@ -1480,7 +1482,7 @@ void SnacCliSearchbypersinf (Session *sess, const char *email, const char *nick,
 {
     Packet *pak;
 
-    pak = SnacMetaC  (sess, 2000, META_SEARCH_PERSINFO);
+    pak = SnacMetaC  (sess, 2000, META_SEARCH_PERSINFO, 0);
     PacketWrite2     (pak, 320); /* key: first name */
     PacketWriteLLNTS (pak, name);
     PacketWrite2     (pak, 330); /* key: last name */
@@ -1499,7 +1501,7 @@ void SnacCliSearchbymail (Session *sess, const char *email)
 {
     Packet *pak;
 
-    pak = SnacMetaC  (sess, 2000, META_SEARCH_EMAIL);
+    pak = SnacMetaC  (sess, 2000, META_SEARCH_EMAIL, 0);
     PacketWrite2     (pak, 350); /* key: email address */
     PacketWriteLLNTS (pak, email);
     SnacMetaSend     (sess, pak);
@@ -1512,7 +1514,7 @@ void SnacCliSearchrandom (Session *sess, UWORD group)
 {
     Packet *pak;
 
-    pak = SnacMetaC (sess, 2000, META_SEARCH_RANDOM);
+    pak = SnacMetaC (sess, 2000, META_SEARCH_RANDOM, 0);
     PacketWrite2    (pak, group);
     SnacMetaSend    (sess, pak);
 }
@@ -1524,7 +1526,7 @@ void SnacCliSetrandom (Session *sess, UWORD group)
 {
     Packet *pak;
 
-    pak = SnacMetaC (sess, 2000, META_SET_RANDOM);
+    pak = SnacMetaC (sess, 2000, META_SET_RANDOM, sess->connect & CONNECT_OK ? 0 : 0x42424242);
     PacketWrite2    (pak, group);
     if (group)
     {
@@ -1551,7 +1553,7 @@ void SnacCliSearchwp (Session *sess, const MetaWP *wp)
 {
     Packet *pak;
 
-    pak = SnacMetaC (sess, 2000, META_SEARCH_WP);
+    pak = SnacMetaC (sess, 2000, META_SEARCH_WP, 0);
     PacketWriteLNTS    (pak, wp->first);
     PacketWriteLNTS    (pak, wp->last);
     PacketWriteLNTS    (pak, wp->nick);
@@ -1595,7 +1597,7 @@ void SnacCliSendsms (Session *sess, const char *target, const char *text)
              "<time>%s</time></icq_sms_message>",
              target, text, sess->uin, sess->uin, "mICQ", tbuf);
 
-    pak = SnacMetaC (sess, 2000, META_SEND_SMS);
+    pak = SnacMetaC (sess, 2000, META_SEND_SMS, 0);
     PacketWriteB2      (pak, 1);
     PacketWriteB2      (pak, 22);
     PacketWriteB4      (pak, 0);

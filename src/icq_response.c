@@ -63,9 +63,10 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                      : i18n (1394, "unsuccessful"), COLNONE);
             break;
         case META_SRV_RANDOM_UPDATE:
-            M_print (i18n (2140, "Random chat group change was %s%s%s.\n"),
-                     COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
-                     : i18n (1394, "unsuccessful"), COLNONE);
+            if (p->id != 0x42424242)
+                M_print (i18n (2140, "Random chat group change was %s%s%s.\n"),
+                         COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
+                         : i18n (1394, "unsuccessful"), COLNONE);
             break;
     }
 

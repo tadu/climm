@@ -224,10 +224,8 @@ void Initalize_RC_File ()
     prG->auto_occ  = strdup (i18n (1012, "User is occupied [Auto-Message]"));
     prG->auto_inv  = strdup (i18n (1013, "User is offline"));
     prG->auto_ffc  = strdup (i18n (2055, "User is ffc and wants to chat about everything."));
-    prG->logplace = malloc (strlen (PrefUserDir ()) + 10);
-    assert (prG->logplace);
-    strcpy (prG->logplace, PrefUserDir ());
-    strcat (prG->logplace, "history/");
+    prG->logplace  = strdup ("~/.micq/history/");
+    prG->chat      = 49;
 
     if (uin)
         Save_RC ();
@@ -362,6 +360,11 @@ void Read_RC_File (FILE *rcf)
                     PrefParse (tmp);
                     if (!prG->logplace) /* don't overwrite command line arg */
                         prG->logplace = strdup (tmp);
+                }
+                else if (!strcasecmp (cmd, "chat"))
+                {
+                    PrefParseInt (i);
+                    prG->chat = i;
                 }
                 else if (!strcasecmp (cmd, "color"))
                 {
@@ -782,11 +785,10 @@ void Read_RC_File (FILE *rcf)
         prG->auto_ffc  = strdup (i18n (2055, "User is ffc and wants to chat about everything."));
 
     if (prG->flags & FLAG_LOG && !prG->logplace)
-    {
-        prG->logplace = malloc (strlen (PrefUserDir ()) + 10);
-        strcpy (prG->logplace, PrefUserDir ());
-        strcat (prG->logplace, "history/");
-    }
+        prG->logplace = strdup ("~/.micq/history/");
+    
+    if (!prG->chat)
+        prG->chat = 49;
 
     for (i = 0; (sess = SessionNr (i)); i++)
     {
@@ -982,6 +984,9 @@ int Save_RC ()
     }
     if (prG->scheme != (UBYTE)-1)
         fprintf (rcf, "\ncolor scheme   %d", prG->scheme);
+    
+    fprintf (rcf, "\n\nchat %d          # random chat group; -1 to disable, 49 for mICQ\n",
+                  prG->chat);
 
     fprintf (rcf, "\n\nlogplace %s      # the file or (dstinct files in) dir to log to\n",
                     prG->logplace ? prG->logplace : "");

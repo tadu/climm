@@ -32,6 +32,7 @@ struct Preferences_s
     
     char  *colors[CXCOUNT];
     UBYTE  scheme;
+    UBYTE  chat;
 
     BOOL   s5Use;
     char  *s5Host;
