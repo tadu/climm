@@ -57,7 +57,7 @@ void Initalize_RC_File ()
 {
     char pwd1[20], pwd2[20], input[200];
     Connection *conn, *connt, *conns;
-    const char *passwd;
+    char *passwd;
     char *t;
     UDWORD uin;
     long tmpuin;
@@ -106,9 +106,9 @@ void Initalize_RC_File ()
         }
     }
 #ifdef ENABLE_UTF8
-    passwd = c_out (pwd1);
+    passwd = strdup (c_out (pwd1));
 #else
-    passwd = pwd1;
+    passwd = strdup (pwd1);
 #endif
 
     prG->s5Use = 0;
@@ -253,6 +253,8 @@ void Initalize_RC_File ()
 
     if (uin)
         Save_RC ();
+    
+    free (passwd);
 }
 
 #define PrefParse(x)          switch (1) { case 1: if (!s_parse    (&args, &x)) { M_printf (i18n (2123, "%sSyntax error%s: Too few arguments: '%s'\n"), COLERROR, COLNONE, buf); continue; }}
