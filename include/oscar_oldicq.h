@@ -2,7 +2,7 @@
 #ifndef MICQ_OSCAR_OLDICQ_H
 #define MICQ_OSCAR_OLDICQ_H
 
-#include "cmd_pkt_cmd_v5.h"
+#include "oldicq_compat.h"
 
 jump_snac_f SnacSrvToicqerr, SnacSrvFromicqsrv;
 

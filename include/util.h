@@ -3,8 +3,6 @@
 #ifndef MICQ_UTIL_H
 #define MICQ_UTIL_H
 
-void Init_New_User (Connection *conn);
-
 int putlog (Connection *conn, time_t stamp, Contact *cont, 
             UDWORD status, enum logtype level, UWORD type, const char *str);
 

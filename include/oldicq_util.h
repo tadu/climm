@@ -8,9 +8,6 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn);
 void PacketSendv5 (const Packet *pak, Connection *conn);
 void UDPCallBackResend (Event *event);
 const char *CmdPktCmdName (UWORD cmd);
-Event *ConnectionInitServerV5 (Connection *conn);
-void CallBackServerInitV5 (Event *event);
-void Auto_Reply (Connection *conn, Contact *cont);
 
 #define CMD_v5_OFF_VER    0
 #define CMD_v5_OFF_ZERO   2
@@ -55,22 +52,5 @@ void Auto_Reply (Connection *conn, Contact *cont);
 #define CMD_INVIS_LIST          1700
 #define CMD_VIS_LIST            1710
 #define CMD_UPDATE_LIST         1720
-
-#define META_SET_GENERAL_INFO_v5 1001
-#define META_SET_GENERAL_INFO    1002
-#define META_SET_WORK_INFO       1011 /* */
-#define META_SET_MORE_INFO       1021
-#define META_SET_ABOUT_INFO      1030
-#define META_INFO_SECURE         1060 /* ?? */
-#define META_SET_PASS            1070
-#define META_REQ_INFO_v5         1200
-#define META_REQ_INFO            1232
-#define META_SEARCH_WP           1331
-#define META_SEARCH_PERSINFO     1375
-#define META_SEARCH_EMAIL        1395
-#define META_SEARCH_RANDOM       1870
-#define META_SET_RANDOM          1880
-#define META_SET_WEB_PRESENCE    2000 /* */
-#define META_SEND_SMS            5250
 
 #endif /* MICQ_ICQV5_UTIL_H */

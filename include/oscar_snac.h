@@ -1,7 +1,5 @@
 /* $Id$ */
 
-#include "cmd_pkt_cmd_v5.h"
-
 #ifndef MICQ_OSCAR_SNAC_H
 #define MICQ_OSCAR_SNAC_H
 

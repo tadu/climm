@@ -24,7 +24,6 @@
 #include "connection.h"
 #include "preferences.h"
 #include "util_ui.h"
-#include "cmd_pkt_cmd_v5_util.h"
 #include "tcp.h"
 #if HAVE_NETDB_H
 #include <netdb.h>

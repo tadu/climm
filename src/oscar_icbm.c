@@ -23,6 +23,7 @@
 
 #include "micq.h"
 #include <assert.h>
+#include "oldicq_compat.h"
 #include "oscar_tlv.h"
 #include "oscar_flap.h"
 #include "oscar_snac.h"
@@ -39,7 +40,6 @@
 #include "util_ui.h"
 #include "util_ssl.h"
 #include "preferences.h"
-#include "cmd_pkt_cmd_v5_util.h"
 
 static void SnacCallbackType2Ack (Event *event);
 static void SnacCallbackType2 (Event *event);

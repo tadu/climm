@@ -32,7 +32,6 @@
 #include "preferences.h"
 #include "conv.h"
 #include "icq_response.h"
-#include "cmd_pkt_cmd_v5_util.h"
 #include "util_ui.h"
 
 static Packet *SnacMetaC (Connection *serv, UWORD sub, UWORD type, UWORD ref);

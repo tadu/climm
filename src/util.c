@@ -2,133 +2,24 @@
 
 /*
  * This file is the general dumpster for functions
- * that better be rewritten.
+ * that better be rewritten. Or moved to a better place.
+ */
 
-********************************************
-**********************************************
-This is a file of general utility functions useful
-for programming in general and icq in specific
-
-Author : Matthew Smith April 23, 1998
-Contributors :  airog (crabbkw@rose-hulman.edu) May 13, 1998
-Copyright: This file may be distributed under version 2 of the GPL licence.
-
-
-Changes :
-  6-18-98 Added support for saving auto reply messages. Fryslan
- 
-**********************************************
-**********************************************/
 #include "micq.h"
 #include "util.h"
-#include "cmd_pkt_cmd_v5.h"
 #include "contact.h"
 #include "connection.h"
-#include "util_io.h"
-#include "util_ui.h"
 #include "preferences.h"
-#include "packet.h"
-#include "cmd_user.h"
 #include "conv.h"
-#include <stdarg.h>
 #include <assert.h>
-#include <signal.h>
-#include <ctype.h>
 #include <errno.h>
-#if HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
 #if HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#endif
-#if HAVE_SYS_TYPES_H
-#include <sys/types.h>
 #endif
 #if HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
 #endif
 #include <fcntl.h>
-#if HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-#if HAVE_ARPA_INET_H
-#include <arpa/inet.h>
-#endif
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-#if HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#if HAVE_TERMIOS_H
-#include <termios.h>
-#endif
-#if HAVE_WINSOCK2_H
-#include <winsock2.h>
-#endif
-#include "mreadline.h"
-
-/**************************************************
-Automates the process of creating a new user.
-***************************************************/
-void Init_New_User (Connection *conn)
-{
-    Packet *pak;
-    struct timeval tv;
-    fd_set readfds;
-
-#ifdef _WIN32
-    int rc;
-    WSADATA wsaData;
-
-    if ((rc = WSAStartup (0x0101, &wsaData)))
-    {
-        perror (i18n (1624, "Sorry, can't initialize Windows Sockets..."));
-        exit (1);
-    }
-#endif
-
-    conn->version = 5;
-    M_print (i18n (1756, "\nCreating Connection...\n"));
-    UtilIOConnectUDP (conn);
-    if (conn->sok == -1)
-    {
-        M_print (i18n (1757, "Couldn't establish connection.\n"));
-        exit (1);
-    }
-    M_print (i18n (1758, "Sending Request...\n"));
-    CmdPktCmdRegNewUser (conn, conn->passwd);
-    for (;;)
-    {
-#ifdef _WIN32
-        tv.tv_sec = 0;
-        tv.tv_usec = 100000;
-#else
-        tv.tv_sec = 3;
-        tv.tv_usec = 500000;
-#endif
-
-        FD_ZERO (&readfds);
-        FD_SET (conn->sok, &readfds);
-
-        /* don't care about writefds and exceptfds: */
-        select (conn->sok + 1, &readfds, NULL, NULL, &tv);
-        M_print (i18n (1759, "Waiting for response....\n"));
-        if (FD_ISSET (conn->sok, &readfds))
-        {
-            pak = UtilIOReceiveUDP (conn);
-            if (!pak)
-                continue;
-            if (PacketReadAt2 (pak, 7) == SRV_NEW_UIN)
-            {
-                conn->uin = PacketReadAt4 (pak, 13);
-                M_printf (i18n (1760, "\nYour new UIN is %s%ld%s!\n"), COLSERVER, conn->uin, COLNONE);
-                return;
-            }
-        }
-        CmdPktCmdRegNewUser (conn, conn->passwd);
-    }
-}
 
 #define LOG_MAX_PATH 255
 #define DSCSIZ 192 /* Maximum length of log file descriptor lines. */

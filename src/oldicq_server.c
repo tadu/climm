@@ -4,13 +4,14 @@
  */
 
 #include "micq.h"
-#include "cmd_pkt_cmd_v5.h"
-#include "cmd_pkt_cmd_v5_util.h"
+#include "oldicq_base.h"
+#include "oldicq_compat.h"
+#include "oldicq_client.h"
+#include "oldicq_server.h"
+#include "oldicq_util.h"
 #include "util.h"
 #include "util_ui.h"
-#include "network.h"
 #include "cmd_user.h"
-#include "cmd_pkt_server.h"
 #include "icq_response.h"
 #include "preferences.h"
 #include "server.h"
@@ -23,6 +24,8 @@
 #include <assert.h>
 
 static void CmdPktSrvCallBackKeepAlive (Event *event);
+static BOOL Is_Repeat_Packet (UWORD this_seq);
+static void Got_SEQ (UWORD this_seq);
 
 static jump_srv_f CmdPktSrvMulti, CmdPktSrvAck;
 
@@ -59,6 +62,44 @@ static jump_srv_t jump[] = {
     { SRV_META_USER,          NULL,            "SRV_META_USER"          },
     { 0, NULL, "" }
 };
+
+static UWORD recv_packs[MAX_SEQ_DEPTH];
+static UWORD start = 0, end = 0;
+
+static BOOL Is_Repeat_Packet (UWORD this_seq)
+{
+    UWORD i;
+
+    assert (end <= MAX_SEQ_DEPTH);
+    for (i = start; i != end; i++)
+    {
+        if (i > MAX_SEQ_DEPTH)
+        {
+            i = -1;
+            continue;
+        }
+        if (recv_packs[i] == this_seq)
+        {
+            if (prG->verbose & DEB_PROTOCOL)
+                M_printf (i18n (1623, "Double packet %04x.\n"), this_seq);
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+static void Got_SEQ (UWORD this_seq)
+{
+    recv_packs[end++] = this_seq;
+    if (end > MAX_SEQ_DEPTH)
+        end = 0;
+
+    if (end == start)
+        start++;
+
+    if (start > MAX_SEQ_DEPTH)
+        start = 0;
+}
 
 /*
  * Returns the name of the server packet.

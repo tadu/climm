@@ -3,12 +3,6 @@
 #ifndef MICQ_IM_SRV_H
 #define MICQ_IM_SRV_H
 
-#define IREP_HASAUTHFLAG 1
-void Meta_User (Connection *conn, Contact *cont, Packet *pak);
-void Display_Rand_User (Connection *conn, Packet *pak);
-void Recv_Message (Connection *conn, Packet *pak);
-void Display_Info_Reply (Contact *cont, Packet *pak, UBYTE flags);
-void Display_Ext_Info_Reply (Connection *conn, Packet *pak);
 void HistShow (Contact *cont);
 
 void IMIntMsg  (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, Opt *opt);

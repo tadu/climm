@@ -10,13 +10,14 @@
 #include "micq.h"
 #include "packet.h"
 #include "connection.h"
-#include "cmd_pkt_cmd_v5.h"
-#include "cmd_pkt_cmd_v5_util.h"
+#include "oldicq_compat.h"
+#include "oldicq_client.h"
+#include "oldicq_server.h"
+#include "oldicq_util.h"
 #include "util_ui.h"
 #include "util.h"
 #include "util_syntax.h"
 #include "conv.h"
-#include "cmd_pkt_server.h"
 #include "preferences.h"
 #include "contact.h"
 #include "server.h"
@@ -34,7 +35,6 @@
 static UDWORD Gen_Checksum (const Packet *pak);
 static UDWORD Scramble_cc (UDWORD cc);
 static Packet *Wrinkle (const Packet *pak);
-static void CallBackClosev5 (Connection *conn);
 
 typedef struct { UWORD cmd; const char *name; } jump_cmd_t;
 #define jump_el(x) { x, #x },
@@ -142,90 +142,6 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn)
     }
     else
         PacketD (pak);
-}
-
-Event *ConnectionInitServerV5 (Connection *conn)
-{
-    if (conn->version < 5)
-    {
-        M_print (i18n (1869, "Protocol versions less than 5 are not supported anymore.\n"));
-        return NULL;
-    }
-    
-    conn->close = &CallBackClosev5;
-    conn->cont = ContactUIN (conn, conn->uin);
-    if (!conn->server || !*conn->server)
-        s_repl (&conn->server, "icq.icq.com");
-    if (!conn->port)
-        conn->port = 4000;
-    if (!conn->passwd || !*conn->passwd)
-    {
-        strc_t pwd;
-        M_printf ("%s ", i18n (1063, "Enter password:"));
-        Echo_Off ();
-        pwd = UtilIOReadline (stdin);
-        Echo_On ();
-        conn->passwd = strdup (pwd ? pwd->txt : "");
-    }
-    QueueEnqueueData (conn, /* FIXME: */ 0, 0, time (NULL), NULL, 0, NULL, &CallBackServerInitV5);
-    return NULL;
-}
-
-static void CallBackClosev5 (Connection *conn)
-{
-    conn->connect = 0;
-    if (conn->sok == -1)
-        return;
-    CmdPktCmdSendTextCode (conn, "B_USER_DISCONNECTED");
-    sockclose (conn->sok);
-    conn->sok = -1;
-}
-
-void CallBackServerInitV5 (Event *event)
-{
-    Connection *conn = event->conn;
-    int rc;
-
-    if (!conn)
-    {
-        EventD (event);
-        return;
-    }
-    ASSERT_SERVER_OLD (conn);
-
-    if (conn->assoc && !(conn->assoc->connect & CONNECT_OK))
-    {
-        event->due = time (NULL) + 1;
-        QueueEnqueue (event);
-        return;
-    }
-    EventD (event);
-    
-    M_printf (i18n (9999, "Opening v5 connection to %s:%s%ld%s... "),
-              s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE);
-    
-    if (conn->sok < 0)
-    {
-        UtilIOConnectUDP (conn);
-
-#ifdef __BEOS__
-        if (conn->sok == -1)
-#else
-        if (conn->sok == -1 || conn->sok == 0)
-#endif
-        {
-            rc = errno;
-            M_printf (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
-            conn->connect = 0;
-            conn->sok = -1;
-            return;
-        }
-    }
-    M_print (i18n (1877, "ok.\n"));
-    conn->our_seq2    = 0;
-    conn->connect = 1 | CONNECT_SELECT_R;
-    conn->dispatch = &CmdPktSrvRead;
-    CmdPktCmdLogin (conn);
 }
 
 /**
@@ -340,29 +256,6 @@ void PacketSendv5 (const Packet *pak, Connection *conn)
     cpak = Wrinkle (pak);
     UtilIOSendUDP (conn, cpak);
     PacketD (cpak);
-}
-
-void Auto_Reply (Connection *conn, Contact *cont)
-{
-    const char *temp;
-
-    if (!(prG->flags & FLAG_AUTOREPLY) || !cont)
-        return;
-
-          if (conn->status & STATUSF_DND)
-         temp = ContactPrefStr (cont, CO_AUTODND);
-     else if (conn->status & STATUSF_OCC)
-         temp = ContactPrefStr (cont, CO_AUTOOCC);
-     else if (conn->status & STATUSF_NA)
-         temp = ContactPrefStr (cont, CO_AUTONA);
-     else if (conn->status & STATUSF_AWAY)
-         temp = ContactPrefStr (cont, CO_AUTOAWAY);
-     else if (conn->status & STATUSF_INV)
-         temp = ContactPrefStr (cont, CO_AUTOINV);
-     else
-         return;
-
-    IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, temp, 0));
 }
 
 /*

@@ -24,6 +24,7 @@
 #include <assert.h>
 #include "util_ui.h"
 #include "util_syntax.h"
+#include "oldicq_compat.h"
 #include "oscar_snac.h"
 #include "oscar_tlv.h"
 #include "oscar_flap.h"

@@ -1,18 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_ICQV5_CLI_H
-#define MICQ_ICQV5_CLI_H
-
-typedef struct
-{
-    char *nick, *first, *last, *email;
-    UWORD minage, maxage;
-    UBYTE sex, language;
-    char *city, *state;
-    UWORD country;
-    char *company, *department, *position;
-    BOOL online;
-} MetaWP;
+#ifndef MICQ_OLDICQ_CLIENT_H
+#define MICQ_OLDICQ_CLIENT_H
 
 void   CmdPktCmdAck          (Connection *conn, UDWORD seq);
 void   CmdPktCmdSendMessage  (Connection *conn, Contact *cont, const char *text, UDWORD type);
