@@ -44,11 +44,7 @@ typedef strc_t (iconv_func)(strc_t, UBYTE);
 static strc_t iconv_from_iconv (strc_t, UBYTE);
 static strc_t iconv_to_iconv (strc_t, UBYTE);
 #endif
-#if ENABLE_FALLBACK_ASCII
 static iconv_func iconv_from_usascii, iconv_to_usascii;
-#else
-static iconv_func iconv_usascii;
-#endif
 #if ENABLE_FALLBACK_UTF8
 static iconv_func iconv_from_utf8, iconv_to_utf8;
 #endif
@@ -70,16 +66,11 @@ static iconv_func iconv_from_ucs2be, iconv_to_ucs2be;
 #if ENABLE_FALLBACK_WCHART
 static iconv_func iconv_from_wchart, iconv_to_wchart;
 #endif
-
+typedef struct { const char *enca; const char *encb; const char *encc;
 #if HAVE_ICONV
-typedef struct { const char *enca; const char *encb; const char *encc;
-                 iconv_func *fof; iconv_func *fto;
-                 iconv_t     iof; iconv_t      ito; UBYTE canue; } enc_t;
-static BOOL iconv_check (UBYTE enc);
-#else
-typedef struct { const char *enca; const char *encb; const char *encc;
-                 iconv_func *fof; iconv_func *fto; } enc_t;
+                 iconv_t     iof; iconv_t      ito;
 #endif
+                 iconv_func *fof; iconv_func *fto; } enc_t;
 
 static int conv_nr = 0;
 static enc_t *conv_encs = NULL;
@@ -122,14 +113,8 @@ static BOOL iconv_check (UBYTE enc)
     {
         conv_encs[enc].fof = &iconv_from_iconv;
         conv_encs[enc].fto = &iconv_to_iconv;
-
-        conv_encs[enc].canue = 0;
-        if (!strcmp (ConvFrom (ConvTo ("\xc3\xbc", enc), enc)->txt, "\xc3\xbc"))
-            conv_encs[enc].canue = 1;
-
         return TRUE;
     }
-    conv_encs[enc].canue = 0;
     return FALSE;
 }
 #endif
@@ -189,13 +174,8 @@ void ConvInit (void)
 #endif
     if (!conv_encs[ENC_ASCII].fof)
     {
-#if ENABLE_FALLBACK_ASCII
         conv_encs[ENC_ASCII].fof  = &iconv_from_usascii;
         conv_encs[ENC_ASCII].fto  = &iconv_to_usascii;
-#else
-        conv_encs[ENC_ASCII].fof  = &iconv_usascii;
-        conv_encs[ENC_ASCII].fto  = &iconv_usascii;
-#endif
     }
     if (!conv_encs[ENC_UTF8].fof)
     {
@@ -282,12 +262,11 @@ UBYTE ConvEnc (const char *enc)
             (conv_encs[nr].encc && !strcasecmp (conv_encs[nr].encc, enc)))
         {
 #if HAVE_ICONV
-            if (conv_encs[nr].ito && conv_encs[nr].iof)
-            {
-                if (conv_encs[nr].ito != (iconv_t)(-1) && conv_encs[nr].iof != (iconv_t)(-1))
-                    return nr;
-                return ENC_FAUTO | nr;
-            }
+            if (!conv_encs[nr].ito || !conv_encs[nr].iof)
+                iconv_check (nr);
+            if (conv_encs[nr].ito != (iconv_t)(-1) && conv_encs[nr].iof != (iconv_t)(-1))
+                return nr;
+            return ENC_FAUTO | nr;
 #endif
             if (conv_encs[nr].fof && conv_encs[nr].fto)
                 return nr;
@@ -597,29 +576,6 @@ static strc_t iconv_to_iconv (strc_t text, UBYTE enc)
 }
 #endif
 
-#if !ENABLE_FALLBACK_ASCII
-strc_t iconv_usascii (strc_t in, UBYTE enc)
-{
-    static str_s str = { NULL, 0, 0 };
-    unsigned int off;
-    char c;
-
-    s_init (&str, "", in->len);
-    for (off = 0; off < in->len; off++)
-        if ((c = in->txt[off]) & 0x80)
-            str.txt[off] = CHAR_BROKEN;
-        else
-            str.txt[off] = c;
-    str.txt[off] = '\0';
-    str.len = in->len;
-    return &str;
-}
-#endif
-
-#if ENABLE_FALLBACK_ASCII || ENABLE_FALLBACK_UCS2BE || ENABLE_FALLBACK_WIN1251 || ENABLE_FALLBACK_KOI8 \
-  || ENABLE_FALLBACK_LATIN9 || ENABLE_FALLBACK_LATIN1 || ENABLE_FALLBACK_UTF8 || ENABLE_FALLBACK_WCHART
-
-#if ENABLE_FALLBACK_ASCII
 static strc_t iconv_from_usascii (strc_t in, UBYTE enc)
 {
     static str_s str = { NULL, 0, 0 };
@@ -628,10 +584,7 @@ static strc_t iconv_from_usascii (strc_t in, UBYTE enc)
 
     s_init (&str, "", in->len);
     for (off = 0; off < in->len; off++)
-        if ((c = in->txt[off]) & 0x80)
-            s_catc (&str, CHAR_BROKEN);
-        else
-            s_catc (&str, c);
+        s_catc (&str, (c = in->txt[off]) & 0x80 ? CHAR_BROKEN : c);
     return &str;
 }
 
@@ -645,11 +598,13 @@ static strc_t iconv_to_usascii (strc_t in, UBYTE enc)
     for (off = 0; off < in->len; )
     {
         ucs = ConvGetUTF8 (in, &off);
-        s_catc (&str, ucs & 0x80 ? CHAR_NOT_AVAILABLE : ucs);
+        s_catc (&str, ucs >= 0x80 ? CHAR_NOT_AVAILABLE : ucs);
     }
     return &str;
 }
-#endif
+
+#if ENABLE_FALLBACK_UCS2BE || ENABLE_FALLBACK_WIN1251 || ENABLE_FALLBACK_KOI8 \
+  || ENABLE_FALLBACK_LATIN9 || ENABLE_FALLBACK_LATIN1 || ENABLE_FALLBACK_UTF8 || ENABLE_FALLBACK_WCHART
 
 #if ENABLE_FALLBACK_UTF8
 strc_t iconv_utf8_buf (str_t out, strc_t in, UBYTE enc)
