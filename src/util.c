@@ -177,7 +177,7 @@ void Init_New_User (Session *sess)
             if (PacketReadAt2 (pak, 7) == SRV_NEW_UIN)
             {
                 sess->uin = PacketReadAt4 (pak, 13);
-                M_print (i18n (1760, "\nYour new UIN is %s%ld%s!\n"), COLSERVER, sess->uin, COLNONE);
+                M_printf (i18n (1760, "\nYour new UIN is %s%ld%s!\n"), COLSERVER, sess->uin, COLNONE);
                 return;
             }
         }
@@ -422,7 +422,7 @@ void Hex_Dump (void *buffer, size_t len)
     for (i = 0; i < ((len + 15) & ~15); i++)
     {
         if (i < len)
-            M_print ("%02x ", buf[i]);
+            M_printf ("%02x ", buf[i]);
         else
             M_print ("   ");
         if ((i & 15) == 15)
@@ -433,7 +433,7 @@ void Hex_Dump (void *buffer, size_t len)
                 if (i - j >= len)
                     break;
                 if ((buf[i - j] & 0x7f) > 31)
-                    M_print ("%c", buf[i - j]);
+                    M_printf ("%c", buf[i - j]);
                 else
                     M_print (".");
                 if (((i - j) & 3) == 3)
@@ -485,7 +485,7 @@ void ExecScript (char *script, UDWORD uin, long num, char *data)
     rc = system (cmd);
     if (rc)
     {
-        M_print (i18n (1584, "Warning! Script command '%s' failed with exit value %d\n"),
+        M_printf (i18n (1584, "Warning! Script command '%s' failed with exit value %d\n"),
                  script, rc);
     }
     free (cmd);

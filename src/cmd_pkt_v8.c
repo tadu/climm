@@ -38,7 +38,7 @@ void SessionInitServer (Session *sess)
     if (!sess->server || !*sess->server || !sess->port)
         return;
 
-    M_print (i18n (1871, "Opening v8 connection to %s:%d... "), sess->server, sess->port);
+    M_printf (i18n (1871, "Opening v8 connection to %s:%d... "), sess->server, sess->port);
 
     sess->our_seq  = rand () & 0x7fff;
     sess->connect  = 0;
@@ -57,11 +57,11 @@ static void SrvCallBackReconn (Session *sess)
 {
     Contact *cont;
 
-    M_print ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (sess->uin), COLNONE);
+    M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (sess->uin), COLNONE);
     sess->connect = 0;
     if (reconn < 5)
     {
-        M_print (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << reconn);
+        M_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << reconn);
         QueueEnqueueData (sess, 0, 0, sess->uin, time (NULL) + (10 << reconn), NULL, NULL, &SrvCallBackDoReconn);
         reconn++;
     }
@@ -162,7 +162,7 @@ void SrvCallBackReceive (Session *sess)
     
     if (prG->verbose & DEB_PACK8)
     {
-        M_print ("%s " COLINDENT COLSERVER "%s ",
+        M_printf ("%s " COLINDENT COLSERVER "%s ",
                  s_now, i18n (1033, "Incoming v8 server packet:"));
         FlapPrint (pak);
         M_print (COLEXDENT "\r");

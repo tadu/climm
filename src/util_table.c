@@ -248,7 +248,7 @@ void TablePrintLang (void)
     {
         p = i18n (-1, TableLang[i]);
 
-        M_print ("%2d. %-7s", i, p);
+        M_printf ("%2d. %-7s", i, p);
         if ((i + 1) & 3)
             M_print ("\t");
         else

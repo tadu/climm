@@ -103,9 +103,9 @@ void CmdPktSrvRead (Session *sess)
     
     if (prG->verbose & DEB_PACK5DATA)
     {
-        M_print ("%s " COLINDENT COLSERVER "", s_now);
-        M_print (i18n (1774, "Incoming packet:"));
-        M_print (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
+        M_printf ("%s " COLINDENT COLSERVER "", s_now);
+        M_print  (i18n (1774, "Incoming packet:"));
+        M_printf (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
                  pak->ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
 #if ICQ_VER == 5
         Hex_Dump (pak->data, 3);
@@ -127,7 +127,7 @@ void CmdPktSrvRead (Session *sess)
     {
         if (prG->verbose & DEB_PROTOCOL)
         {
-            M_print (i18n (1606, "Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.\n"),
+            M_printf (i18n (1606, "Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.\n"),
                      session, sess->our_session, cmd);
         }
         return;
@@ -138,7 +138,7 @@ void CmdPktSrvRead (Session *sess)
         {
             if (prG->verbose & DEB_PROTOCOL)
             {
-                M_print (i18n (1032, "debug: Doppeltes Packet #%04x vom Typ %04x (%s)\n"),
+                M_printf (i18n (1032, "debug: Doppeltes Packet #%04x vom Typ %04x (%s)\n"),
                          id, cmd, CmdPktSrvName (cmd));
             }
             CmdPktCmdAck (sess, id);       /* LAGGGGG!! */ 
@@ -197,7 +197,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             Meta_User (sess, uin, pak);
             break;
         case SRV_NEW_UIN:
-            M_print (i18n (1639, "The new UIN is %ld!\n"), uin);
+            M_printf (i18n (1639, "The new UIN is %ld!\n"), uin);
             break;
         case SRV_UPDATE_FAIL:
             M_print (i18n (1640, "Failed to update info.\n"));
@@ -206,7 +206,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             M_print (i18n (1641, "User info successfully updated.\n"));
             break;
         case SRV_LOGIN_REPLY:
-            M_print ("%s " COLCONTACT "%10lu" COLNONE " %s\n", s_now, uin, i18n (1050, "Login successful!"));
+            M_printf ("%s " COLCONTACT "%10lu" COLNONE " %s\n", s_now, uin, i18n (1050, "Login successful!"));
             CmdPktCmdLogin1 (sess);
             CmdPktCmdContactList (sess);
             CmdPktCmdInvisList (sess);
@@ -228,7 +228,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             ip[1] = PacketRead1 (pak);
             ip[2] = PacketRead1 (pak);
             ip[3] = PacketRead1 (pak);
-            M_print ("%s " COLCONTACT "%10s" COLNONE " %s: %u.%u.%u.%u\n",
+            M_printf ("%s " COLCONTACT "%10s" COLNONE " %s: %u.%u.%u.%u\n",
                 s_now, ContactFindName (uin), i18n (1642, "IP"),
                 ip[0], ip[1], ip[2], ip[3]);
             QueueEnqueueData (sess, 0, QUEUE_UDP_KEEPALIVE, 0, time (NULL) + 120,
@@ -267,16 +267,16 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             exit (1);
             break;
         case SRV_TRY_AGAIN:
-            M_print ("%s " COLMESSAGE, s_now);
+            M_printf ("%s " COLMESSAGE, s_now);
             M_print (i18n (1646, "Server is busy.\n"));
             uiG.reconnect_count++;
             if (uiG.reconnect_count >= MAX_RECONNECT_ATTEMPTS)
             {
-                M_print ("%s\n", i18n (1034, "Maximum number of tries reached. Giving up."));
+                M_printf ("%s\n", i18n (1034, "Maximum number of tries reached. Giving up."));
                 uiG.quit = TRUE;
                 break;
             }
-            M_print (i18n (1082, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
+            M_printf (i18n (1082, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
             QueueEnqueueData (sess, 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5); 
             break;
         case SRV_USER_ONLINE:
@@ -306,15 +306,15 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             break;
         case SRV_GO_AWAY:
         case SRV_NOT_CONNECTED:
-            M_print ("%s %s\n", s_now, i18n (1039, "The server claims we're not connected.\n"));
+            M_printf ("%s %s\n", s_now, i18n (1039, "The server claims we're not connected.\n"));
             uiG.reconnect_count++;
             if (uiG.reconnect_count >= MAX_RECONNECT_ATTEMPTS)
             {
-                M_print ("%s\n", i18n (1034, "Maximum number of tries reached. Giving up."));
+                M_printf ("%s\n", i18n (1034, "Maximum number of tries reached. Giving up."));
                 uiG.quit = TRUE;
                 break;
             }
-            M_print (i18n (1082, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
+            M_printf (i18n (1082, "Trying to reconnect... [try %d out of %d]\n"), uiG.reconnect_count, MAX_RECONNECT_ATTEMPTS);
             QueueEnqueueData (sess, 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5);
             break;
         case SRV_END_OF_SEARCH:
@@ -353,11 +353,11 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
         case SRV_AUTH_UPDATE:
             break;
         default:               /* commands we dont handle yet */
-            M_print ("%s " COLCLIENT, s_now);
-            M_print (i18n (1648, "The response was %04X\t"), cmd);
-            M_print (i18n (1649, "The version was %X\t"), ver);
-            M_print (i18n (1650, "\nThe SEQ was %04X\t"), seq);
-            M_print (i18n (1651, "The size was %d\n"), pak->len - pak->rpos);
+            M_printf ("%s " COLCLIENT, s_now);
+            M_printf (i18n (1648, "The response was %04X\t"), cmd);
+            M_printf (i18n (1649, "The version was %X\t"), ver);
+            M_printf (i18n (1650, "\nThe SEQ was %04X\t"), seq);
+            M_printf (i18n (1651, "The size was %d\n"), pak->len - pak->rpos);
             Hex_Dump (pak->data + pak->rpos, pak->len - pak->rpos);
             M_print (COLNONE "\n");
             break;
@@ -403,9 +403,9 @@ static JUMP_SRV_F (CmdPktSrvMulti)
 
         if (prG->verbose & DEB_PACK5DATA)
         {
-            M_print ("%s " COLINDENT COLSERVER "", s_now);
-            M_print (i18n (1823, "Incoming partial packet:"));
-            M_print (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
+            M_printf ("%s " COLINDENT COLSERVER "", s_now);
+            M_print  (i18n (1823, "Incoming partial packet:"));
+            M_printf (" %04x %08x:%04x%04x %04x (%s)" COLNONE "\n",
                      ver, session, seq2, seq, cmd, CmdPktSrvName (cmd));
 #if ICQ_VER == 5
             Hex_Dump (pak->data, 3);
@@ -435,7 +435,7 @@ static JUMP_SRV_F (CmdPktSrvAck)
 
     if (pak->rpos < pak->len && (prG->verbose & DEB_PROTOCOL))
     {
-        M_print ("%s %s %d\n", i18n (1047, "Extra Data"), i18n (1046, "Length"), pak->len - pak->rpos);
+        M_printf ("%s %s %d\n", i18n (1047, "Extra Data"), i18n (1046, "Length"), pak->len - pak->rpos);
     }
     
     ccmd = PacketReadAt2 (event->pak, CMD_v5_OFF_CMD);
@@ -446,7 +446,7 @@ static JUMP_SRV_F (CmdPktSrvAck)
     if (ccmd == CMD_SEND_MESSAGE)
     {
         char *tmp;
-        M_print ("%s " COLACK "%10s" COLNONE " %s%s\n",
+        M_printf ("%s " COLACK "%10s" COLNONE " %s%s\n",
                  s_now, ContactFindName (PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM)),
                  MSGACKSTR, MsgEllipsis (tmp = PacketReadAtLNTS (event->pak, 30)));
         free (tmp);

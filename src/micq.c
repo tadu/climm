@@ -153,7 +153,7 @@ void Idle_Check (Session *sess)
         else
             CmdPktCmdStatusChange (sess, new);
         sess->status = new;
-        M_print ("%s %s %s\n", s_now, i18n (1064, "Auto-Changed status to"), s_status (new));
+        M_printf ("%s %s %s\n", s_now, i18n (1064, "Auto-Changed status to"), s_status (new));
     }
     return;
 }
@@ -210,12 +210,12 @@ int main (int argc, char *argv[])
             {
                 i++;            /* skip the argument to f */
                 prG->rcfile = argv[i];
-                M_print (i18n (1614, "Using config file \"%s\"\n"), argv[i]);
+                M_printf (i18n (1614, "Using config file \"%s\"\n"), argv[i]);
             }
             else if ((argv[i][1] == 'l') || (argv[i][1] == 'L'))
             {
                 i++;
-                M_print (i18n (1615, "Logging to \"%s\"\n"), argv[i]);
+                M_printf (i18n (1615, "Logging to \"%s\"\n"), argv[i]);
                 prG->logplace = argv[i];
             }
             else if ((argv[i][1] == '?') || (argv[i][1] == 'h'))
@@ -239,7 +239,7 @@ int main (int argc, char *argv[])
     if (i == -1)
         M_print ("Couldn't load internationalization.\n");
     else if (i)
-        M_print (i18n (1081, "Successfully loaded en translation (%d entries).\n"), i);
+        M_printf (i18n (1081, "Successfully loaded en translation (%d entries).\n"), i);
     else
         M_print ("No internationalization requested.\n");
 

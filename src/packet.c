@@ -796,7 +796,7 @@ const char *PacketDump (Packet *pak, const char *syntax)
                 f--;
                 continue;
             default:
-                M_print ("Parse: %c in '%s'\n", *f, syntax);
+                M_printf ("Parse: %c in '%s'\n", *f, syntax);
         }
         break;
     }

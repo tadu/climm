@@ -117,12 +117,16 @@ UWORD Get_Max_Screen_Width ()
 static int CharCount = 0;       /* number of characters printed on line. */
 static int IndentCount = 0;
 
-static void M_prints (const char *str)
+/*
+ * Print a string to the output, interpreting color and indenting codes.
+ */
+void M_print (const char *str)
 {
     const char *p, *s, *t;
     int i;
     int sw = Get_Max_Screen_Width () - IndentCount;
 
+    R_remprompt ();
     for (; *str; str++)
     {
         for (p = s = str; *p; p++)
@@ -282,32 +286,28 @@ static void M_prints (const char *str)
     }
 }
 
-/**************************************************************
-M_print with colors.
-***************************************************************/
-void M_print (const char *str, ...)
+/*
+ * Print a formatted string to the output, interpreting color and indenting
+ * codes.
+ * Note: does not use the same static buffer as s_sprintf().
+ */
+void M_printf (const char *str, ...)
 {
     va_list args;
     char buf[4048];
 
-    R_remprompt ();
     va_start (args, str);
-#ifndef CURSES_UI
     vsnprintf (buf, sizeof (buf), str, args);
-    M_prints (buf);
-#else
-#error No curses support included yet. You must add it yourself.
-#endif
+    M_print (buf);
     va_end (args);
 }
 
 #else
 
-/************************************************************
-Prints the preformatted string to stdout.
-Plays sounds if appropriate.
-************************************************************/
-static void M_prints (char *str)
+/*
+ * Print a string to the output, interpreting color and indenting codes.
+ */
+void M_print (char *str)
 {
     int i, temp;
     static int chars_printed = 0;
@@ -355,16 +355,15 @@ static void M_prints (char *str)
 }
 
 /**************************************************************
-M_print with colors.
+M_printf with colors.
 ***************************************************************/
-void M_print (char *str, ...)
+void M_printf (char *str, ...)
 {
     va_list args;
     char buf[2048];
     char *str1, *str2;
 
     va_start (args, str);
-#ifndef CURSES_UI
     vsnprintf (buf, sizeof (buf), str, args);
     str2 = buf;
     while ((str1 = strchr (str2, '\x1b')) != NULL)
@@ -395,9 +394,6 @@ void M_print (char *str, ...)
         }
     }
     M_prints (str2);
-#else
-#error No curses support included yet. You must add it yourself.
-#endif
     va_end (args);
 }
 #endif
@@ -449,7 +445,7 @@ BOOL Debug (UDWORD level, const char *str, ...)
     M_print ("");
     if ((c = M_pos ()))
         M_print ("\n");
-    M_print ("%s %s%7.7s%s %s", s_now, COLDEBUG, DebugStr (level & prG->verbose), COLNONE, buf);
+    M_printf ("%s %s%7.7s%s %s", s_now, COLDEBUG, DebugStr (level & prG->verbose), COLNONE, buf);
 
     if (!c)
         M_print ("\n");

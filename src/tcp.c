@@ -81,14 +81,14 @@ void SessionInitPeer (Session *list)
     
     if (list->ver < 6 || list->ver > 8)
     {
-        M_print (i18n (2024, "Unknown protocol version %d for ICQ peer-to-peer protocol.\n"), list->ver);
+        M_printf (i18n (2024, "Unknown protocol version %d for ICQ peer-to-peer protocol.\n"), list->ver);
         return;
     }
 
     if (list->ver == 6)
         M_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
 
-    M_print (i18n (1777, "Opening peer-to-peer connection at localhost:%d... "), list->port);
+    M_printf (i18n (1777, "Opening peer-to-peer connection at localhost:%d... "), list->port);
 
     list->connect     = 0;
     list->our_seq     = -1;
@@ -207,8 +207,8 @@ void TCPDispatchReconn (Session *peer)
 
     if (prG->verbose)
     {
-        M_print ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (peer->uin), COLNONE);
-        M_print (i18n (2023, "Direct connection closed by peer.\n"));
+        M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (peer->uin), COLNONE);
+        M_print  (i18n (2023, "Direct connection closed by peer.\n"));
     }
     if (peer->close)
         peer->close (peer);
@@ -231,7 +231,7 @@ void TCPDispatchMain (Session *list)
     {
         if ((rc = UtilIOError (list)))
         {
-            M_print (i18n (2051, "Error on socket: %s (%d)\n"), strerror (rc), rc);
+            M_printf (i18n (2051, "Error on socket: %s (%d)\n"), strerror (rc), rc);
             if (list->sok > 0)
                 sockclose (list->sok);
             list->sok = -1;
@@ -272,7 +272,7 @@ void TCPDispatchMain (Session *list)
     }
 
 #ifdef WIP
-    M_print ("New incoming direct(?) (%d) %x,%x\n", list->sok, list->type, peer->type);
+    M_printf ("New incoming direct(?) (%d) %x,%x\n", list->sok, list->type, peer->type);
 #endif
 
     peer->flags = 0;
@@ -342,8 +342,8 @@ void TCPDispatchConn (Session *peer)
                 
                 if (prG->verbose)
                 {
-                    M_print ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (peer->uin), COLNONE);
-                    M_print (i18n (2034, "Opening TCP connection at %s:%d... "),
+                    M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (peer->uin), COLNONE);
+                    M_printf (i18n (2034, "Opening TCP connection at %s:%d... "),
                              s_ip (peer->ip), peer->port);
                 }
                 UtilIOConnectTCP (peer);
@@ -361,8 +361,8 @@ void TCPDispatchConn (Session *peer)
                 
                 if (prG->verbose)
                 {
-                    M_print ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (peer->uin), COLNONE);
-                    M_print (i18n (2034, "Opening TCP connection at %s:%d... "),
+                    M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (peer->uin), COLNONE);
+                    M_printf (i18n (2034, "Opening TCP connection at %s:%d... "),
                              s_ip (peer->ip), peer->port);
                 }
                 UtilIOConnectTCP (peer);
@@ -387,8 +387,8 @@ void TCPDispatchConn (Session *peer)
             case 4:
                 if (prG->verbose)
                 {
-                    M_print ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (cont->uin), COLNONE);
-                    M_print (i18n (2034, "Opening TCP connection at %s:%d... "),
+                    M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (cont->uin), COLNONE);
+                    M_printf (i18n (2034, "Opening TCP connection at %s:%d... "),
                              s_ip (peer->ip), peer->port);
                     M_print (i18n (1785, "success.\n"));
                 }
@@ -402,7 +402,7 @@ void TCPDispatchConn (Session *peer)
             case TCP_STATE_WAITING:
             case TCP_STATE_WAITING + 2:
                 if (prG->verbose)
-                    M_print (i18n (1855, "TCP connection to %s at %s:%d failed.\n"),
+                    M_printf (i18n (1855, "TCP connection to %s at %s:%d failed.\n"),
                              cont->nick, s_ip (peer->ip), peer->port);
                 peer->connect = CONNECT_FAIL;
                 peer->sok = -1;
@@ -527,8 +527,8 @@ void TCPDispatchShake (Session *peer)
                 QueueDequeue (peer->ip, QUEUE_TCP_TIMEOUT);
                 if (prG->verbose)
                 {
-                    M_print ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (peer->uin), COLNONE);
-                    M_print (i18n (1833, "Peer to peer TCP connection established.\n"), cont->nick);
+                    M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (peer->uin), COLNONE);
+                    M_print  (i18n (1833, "Peer to peer TCP connection established.\n"));
                 }
                 peer->connect = CONNECT_OK | CONNECT_SELECT_R;
                 if (peer->type == TYPE_FILEDIRECT)
@@ -600,7 +600,7 @@ static void TCPDispatchPeer (Session *peer)
                     
                     if (prG->verbose)
                     {
-                        M_print (i18n (1807, "Cancelled incoming message (seq %04x) from %s\n"),
+                        M_printf (i18n (1807, "Cancelled incoming message (seq %04x) from %s\n"),
                                  seq_in, cont->nick);
                     }
                     PacketD (event->pak);
@@ -645,7 +645,7 @@ static void TCPCallBackTimeout (Event *event)
     
     if ((peer->connect & CONNECT_MASK) && prG->verbose)
     {
-        M_print (i18n (1850, "Timeout on connection with %s at %s:%d\n"),
+        M_printf (i18n (1850, "Timeout on connection with %s at %s:%d\n"),
                  ContactFindName (peer->uin), s_ip (peer->ip), peer->port);
         TCPClose (peer);
     }
@@ -703,11 +703,11 @@ static Packet *TCPReceivePacket (Session *peer)
         {
             if (prG->verbose & DEB_TCP)
             {
-                M_print ("%s " COLINDENT COLSERVER "", s_now);
-                M_print (i18n (1789, "Received malformed packet: (%d)"), peer->sok);
-                M_print (COLNONE "\n");
+                M_printf ("%s " COLINDENT COLSERVER "", s_now);
+                M_printf (i18n (1789, "Received malformed packet: (%d)"), peer->sok);
+                M_print  (COLNONE "\n");
                 Hex_Dump (pak->data, pak->len);
-                M_print (COLEXDENT "\r");
+                M_print  (COLEXDENT "\r");
 
             }
             TCPClose (peer);
@@ -1017,7 +1017,7 @@ static Session *TCPReceiveInit (Session *peer, Packet *pak)
         return peer;
     }
     if ((prG->verbose & DEB_TCP) && err)
-        M_print ("%s %s: %d\n", s_now, i18n (2029, "Protocol error on peer-to-peer connection"), err);
+        M_printf ("%s %s: %d\n", s_now, i18n (2029, "Protocol error on peer-to-peer connection"), err);
 
     TCPClose (peer);
     return NULL;
@@ -1069,7 +1069,7 @@ static Session *TCPReceiveInit2 (Session *peer, Packet *pak)
     }
 
     if (err && (prG->verbose & (DEB_TCP | DEB_PROTOCOL)))
-        M_print ("%s %s: %d\n", s_now, i18n (2029, "Protocol error on peer-to-peer connection"), err);
+        M_printf ("%s %s: %d\n", s_now, i18n (2029, "Protocol error on peer-to-peer connection"), err);
     else
         peer->connect = 0;
     TCPClose (peer);
@@ -1099,11 +1099,11 @@ void TCPClose (Session *peer)
     {
         if (peer->connect & CONNECT_MASK && prG->verbose)
         {
-            M_print ("%s ", s_now);
+            M_printf ("%s ", s_now);
             if (peer->uin)
-                M_print (i18n (1842, "Closing socket %d to %s.\n"), peer->sok, ContactFindName (peer->uin));
+                M_printf (i18n (1842, "Closing socket %d to %s.\n"), peer->sok, ContactFindName (peer->uin));
             else
-                M_print (i18n (1843, "Closing socket %d.\n"), peer->sok);
+                M_printf (i18n (1843, "Closing socket %d.\n"), peer->sok);
         }
         sockclose (peer->sok);
     }
@@ -1164,8 +1164,8 @@ void TCPPrint (Packet *pak, Session *peer, BOOL out)
     pak->rpos = 0;
     cmd = *pak->data;
 
-    M_print ("%s " COLINDENT "%s", s_now, out ? COLCLIENT : COLSERVER);
-    M_print (out ? i18n (2078, "Outgoing TCP packet (%d - %s): %s")
+    M_printf ("%s " COLINDENT "%s", s_now, out ? COLCLIENT : COLSERVER);
+    M_printf (out ? i18n (2078, "Outgoing TCP packet (%d - %s): %s")
                  : i18n (2079, "Incoming TCP packet (%d - %s): %s"),
              peer->sok, ContactFindName (peer->uin), TCPCmdName (cmd));
     M_print (COLNONE "\n");
@@ -1187,7 +1187,7 @@ void TCPPrint (Packet *pak, Session *peer, BOOL out)
         sta = PacketRead2 (pak);
         fla = PacketRead2 (pak);
         msg = PacketReadLNTS (pak);
-        M_print (i18n (2053, "TCP %s seq %x type %x status %x flags %x: '%s'\n"),
+        M_printf (i18n (2053, "TCP %s seq %x type %x status %x flags %x: '%s'\n"),
                  TCPCmdName (cmd), seq, typ, sta, fla, msg);
         free (msg);
         if (typ == TCP_MSG_GREETING)
@@ -1216,10 +1216,10 @@ void TCPPrint (Packet *pak, Session *peer, BOOL out)
             name = PacketReadLNTS (pak);
             flen = PacketRead4 (pak);
             port2= PacketRead4 (pak);
-            M_print ("GREET %s (empty: %d) text '%s' lendiff %d reason '%s' port %d pad %x name '%s' flen %d port2 %d\n",
+            M_printf ("GREET %s (empty: %d) text '%s' lendiff %d reason '%s' port %d pad %x name '%s' flen %d port2 %d\n",
                      TCPCmdName (cmd), emp, text, len, reason, port, pad, name, flen, port2);
-            M_print ("   ID %08x %08x %08x %08x\n", id1, id2, id3, id4);
-            M_print ("  UNK %08x %08x %08x %06x\n", un1, un2, un3, un4);
+            M_printf ("   ID %08x %08x %08x %08x\n", id1, id2, id3, id4);
+            M_printf ("  UNK %08x %08x %08x %06x\n", un1, un2, un3, un4);
             free (name);
             free (text);
             free (reason);
@@ -1618,13 +1618,13 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
         if (stat (files[i], &fstat))
         {
             rc = errno;
-            M_print (i18n (2071, "Couldn't stat file %s: %s (%d)\n"),
+            M_printf (i18n (2071, "Couldn't stat file %s: %s (%d)\n"),
                      files[i], strerror (rc), rc);
         }
         else
         {
-            M_print ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
-            M_print (i18n (2091, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
+            M_printf ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
+            M_printf (i18n (2091, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
             sum++;
             sumlen += fstat.st_size;
             pak = PeerPacketC (fpeer, 2);
@@ -1688,7 +1688,7 @@ static void TCPCallBackResend (Event *event)
     
     if (!peer)
     {
-        M_print (i18n (2092, "TCP message %s discarded - lost session.\n"), event->info);
+        M_printf (i18n (2092, "TCP message %s discarded - lost session.\n"), event->info);
         PacketD (event->pak);
         free (event->info);
         free (event);
@@ -1710,7 +1710,7 @@ static void TCPCallBackResend (Event *event)
         if (peer->connect & CONNECT_OK)
         {
             if (event->attempts > 1)
-                M_print ("%s " COLACK "%10s" COLNONE " %s%s\n", s_now, cont->nick, MSGTCPSENTSTR, event->info);
+                M_printf ("%s " COLACK "%10s" COLNONE " %s%s\n", s_now, cont->nick, MSGTCPSENTSTR, event->info);
 
             if ((event->attempts++) < 2)
                 PeerPacketSend (peer, pak);
@@ -1727,7 +1727,7 @@ static void TCPCallBackResend (Event *event)
     if (PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
         icq_sendmsg (peer->parent->parent, cont->uin, event->info, PacketReadAt2 (pak, 22 + delta));
     else
-        M_print (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
+        M_printf (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
     
     PacketD (event->pak);
     free (event->info);
@@ -1781,7 +1781,7 @@ static void TCPCallBackReceive (Event *event)
             switch (type)
             {
                 case MSG_NORM:
-                    M_print ("%s " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
+                    M_printf ("%s " COLACK "%10s" COLNONE " " MSGTCPACKSTR "%s\n",
                              s_now, cont->nick, MsgEllipsis (event->info));
                     if (~cont->flags & CONT_SEENAUTO && strlen (tmp))
                     {
@@ -1803,11 +1803,11 @@ static void TCPCallBackReceive (Event *event)
                     port = PacketReadB2 (pak);
                     if (PeerFileAccept (event->sess, status, port))
                     {
-                        M_print (i18n (2070, "File transfer '%s' to port %d.\n"), event->info, port);
+                        M_printf (i18n (2070, "File transfer '%s' to port %d.\n"), event->info, port);
                     }
                     else
                     {
-                        M_print (i18n (2069, "File transfer '%s' rejected by peer (%x,%x): %s.\n"),
+                        M_printf (i18n (2069, "File transfer '%s' rejected by peer (%x,%x): %s.\n"),
                                  event->info, status, flags, tmp);
                     }
                     break;
@@ -1837,11 +1837,11 @@ static void TCPCallBackReceive (Event *event)
                         case 0x0029:
                             if (PeerFileAccept (event->sess, status, port))
                             {
-                                M_print (i18n (2070, "File transfer '%s' to port %d.\n"), event->info, port);
+                                M_printf (i18n (2070, "File transfer '%s' to port %d.\n"), event->info, port);
                             }
                             else
                             {
-                                M_print (i18n (2069, "File transfer '%s' rejected by peer (%x,%x): %s.\n"),
+                                M_printf (i18n (2069, "File transfer '%s' rejected by peer (%x,%x): %s.\n"),
                                          event->info, status, flags, tmp);
                             }
                             break;
@@ -1873,7 +1873,7 @@ static void TCPCallBackReceive (Event *event)
                 case MSGF_GETAUTO | MSG_GET_NA:
                 case MSGF_GETAUTO | MSG_GET_DND:
                 case MSGF_GETAUTO | MSG_GET_FFC:
-                    M_print (i18n (1814, "Sent auto-response message to %s%s%s.\n"),
+                    M_printf (i18n (1814, "Sent auto-response message to %s%s%s.\n"),
                              COLCONTACT, cont->nick, COLNONE);
                 case MSGF_GETAUTO | MSG_GET_VER:
                     TCPSendMsgAck (event->sess, seq, type, TRUE);
@@ -1893,15 +1893,15 @@ static void TCPCallBackReceive (Event *event)
 
                     if (PeerFileRequested (event->sess, tmp3, len))
                     {
-                        M_print ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
-                        M_print (i18n (2186, "Accepting file '%s' (%d bytes).\n"),
+                        M_printf ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
+                        M_printf (i18n (2186, "Accepting file '%s' (%d bytes).\n"),
                                  tmp3, len);
                         TCPSendMsgAck (event->sess, seq, TCP_MSG_FILE, TRUE);
                     }
                     else
                     {
-                        M_print ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
-                        M_print (i18n (2187, "Refused file request '%s' (%d bytes) (unknown: %x, %x)\n"),
+                        M_printf ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
+                        M_printf (i18n (2187, "Refused file request '%s' (%d bytes) (unknown: %x, %x)\n"),
                                  tmp3, len, cmd, type);
                         TCPSendMsgAck (event->sess, seq, TCP_MSG_FILE, FALSE);
                     }
@@ -1930,15 +1930,15 @@ static void TCPCallBackReceive (Event *event)
                             case 0x0029:
                                 if (PeerFileRequested (event->sess, name, flen))
                                 {
-                                    M_print ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
-                                    M_print (i18n (2186, "Accepting file '%s' (%d bytes).\n"),
+                                    M_printf ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
+                                    M_printf (i18n (2186, "Accepting file '%s' (%d bytes).\n"),
                                              name, flen);
                                     TCPSendGreetAck (event->sess, seq, cmd, TRUE);
                                 }
                                 else
                                 {
-                                    M_print ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
-                                    M_print (i18n (2187, "Refused file request '%s' (%d bytes) (unknown: %x, %x)\n"),
+                                    M_printf ("%s " COLACK "%10s" COLNONE " ", s_now, cont->nick);
+                                    M_printf (i18n (2187, "Refused file request '%s' (%d bytes) (unknown: %x, %x)\n"),
                                              name, flen, cmd, type);
                                     TCPSendGreetAck (event->sess, seq, cmd, FALSE);
                                 }
@@ -1946,13 +1946,13 @@ static void TCPCallBackReceive (Event *event)
                             case 0x0032:
 
                             case 0x002d:
-                                M_print (i18n (2064, "Refusing chat request (%s/%s/%s) from %s.\n"),
+                                M_printf (i18n (2064, "Refusing chat request (%s/%s/%s) from %s.\n"),
                                          text, reason, name, cont->nick);
                                 TCPSendGreetAck (event->sess, seq, cmd, FALSE);
 
                             default:
                                 if (prG->verbose & DEB_PROTOCOL)
-                                    M_print (i18n (2065, "Unknown TCP_MSG_GREET_ command %04x.\n"), type);
+                                    M_printf (i18n (2065, "Unknown TCP_MSG_GREET_ command %04x.\n"), type);
                                 TCPSendGreetAck (event->sess, seq, cmd, FALSE);
                                 break;
                             
@@ -1964,7 +1964,7 @@ static void TCPCallBackReceive (Event *event)
                     break;
                 default:
                     if (prG->verbose & DEB_PROTOCOL)
-                        M_print (i18n (2066, "Unknown TCP_MSG_ command %04x.\n"), type);
+                        M_printf (i18n (2066, "Unknown TCP_MSG_ command %04x.\n"), type);
                     break;
 
                 /* Regular messages */

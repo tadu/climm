@@ -64,7 +64,7 @@ void SrvCallBackFlap (Event *event)
             break;
         case 5: /* Ping */
         default:
-            M_print (i18n (1884, "FLAP with unknown channel %d received.\n"), event->pak->cmd);
+            M_printf (i18n (1884, "FLAP with unknown channel %d received.\n"), event->pak->cmd);
     }
     PacketD (event->pak);
     free (event);
@@ -109,7 +109,7 @@ static void FlapChannel1 (Session *sess, Packet *pak)
                 FlapCliIdent (sess);
             break;
         default:
-            M_print (i18n (1883, "FLAP channel 1 unknown command %d.\n"), i);
+            M_printf (i18n (1883, "FLAP channel 1 unknown command %d.\n"), i);
     }
 }
 
@@ -120,16 +120,16 @@ static void FlapChannel4 (Session *sess, Packet *pak)
     tlv = TLVRead (pak, PacketReadLeft (pak));
     if (!tlv[5].len)
     {
-        M_print ("%s " COLINDENT, s_now);
+        M_printf ("%s " COLINDENT, s_now);
         if (!(sess->connect & CONNECT_OK))
             M_print (i18n (1895, "Login failed:\n"));
         else
             M_print (i18n (1896, "Server closed connection:\n"));
-        M_print (i18n (1048, "Error code: %d\n"), tlv[8].nr);
+        M_printf (i18n (1048, "Error code: %d\n"), tlv[8].nr);
         if (tlv[1].len && tlv[1].nr != sess->uin)
-            M_print (i18n (1049, "UIN: %d\n"), tlv[1].nr);
+            M_printf (i18n (1049, "UIN: %d\n"), tlv[1].nr);
         if (tlv[4].len)
-            M_print (i18n (1961, "URL: %s\n"), tlv[4].str);
+            M_printf (i18n (1961, "URL: %s\n"), tlv[4].str);
         M_print (COLEXDENT "\n");
 
         if ((sess->connect & CONNECT_MASK) && sess->sok != -1)
@@ -143,7 +143,7 @@ static void FlapChannel4 (Session *sess, Packet *pak)
     {
         assert (strchr (tlv[5].str, ':'));
 
-        M_print (i18n (1898, "Redirect to server %s... "), tlv[5].str);
+        M_printf (i18n (1898, "Redirect to server %s... "), tlv[5].str);
 
         FlapCliGoodbye (sess);
 
@@ -172,14 +172,14 @@ void FlapPrint (Packet *pak)
     seq = PacketReadB2 (pak);
     len = PacketReadB2 (pak);
 
-    M_print (COLEXDENT COLNONE "\n  " COLINDENT "%s " COLDEBUG "FLAP  ch %d seq %08x length %04x" COLNONE "\n",
+    M_printf (COLEXDENT COLNONE "\n  " COLINDENT "%s " COLDEBUG "FLAP  ch %d seq %08x length %04x" COLNONE "\n",
              s_dumpnd (pak->data, 6), ch, seq, len);
 
     if (ch == 2)
         SnacPrint (pak);
     else
         if (prG->verbose & DEB_PACK8DATA || ~prG->verbose & DEB_PACK8)
-            M_print ("%s", s_dump (pak->data + 6, pak->len - 6));
+            M_printf ("%s", s_dump (pak->data + 6, pak->len - 6));
 
     pak->rpos = opos;
 }
@@ -238,7 +238,7 @@ void FlapSend (Session *sess, Packet *pak)
     
     if (prG->verbose & DEB_PACK8)
     {
-        M_print ("%s " COLINDENT COLCLIENT "%s ", s_now, i18n (1903, "Outgoing v8 server packet:"));
+        M_printf ("%s " COLINDENT COLCLIENT "%s ", s_now, i18n (1903, "Outgoing v8 server packet:"));
         FlapPrint (pak);
         M_print (COLEXDENT "\r");
     }
@@ -279,7 +279,7 @@ void FlapCliIdent (Session *sess)
 #else
         char pwd[20];
         pwd[0] = '\0';
-        M_print ("%s ", i18n (1063, "Enter password:"));
+        M_printf ("%s ", i18n (1063, "Enter password:"));
         Echo_Off ();
         M_fdnreadln (stdin, pwd, sizeof (pwd));
         Echo_On ();

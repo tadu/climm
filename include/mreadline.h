@@ -22,7 +22,7 @@ void R_goto (int pos);                       /* go to position in input line */
 #define R_undraw()          M_print ("\n")
 #define R_redraw            R_resetprompt
 #define R_setprompt         M_print
-#define R_setpromptf        M_print
+#define R_setpromptf        M_printf
 #define R_resetprompt       R_setprompt (i18n (1040, "mICQ> "))
 #define R_remprompt         {}
 #define R_prompt            R_resetprompt

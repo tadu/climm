@@ -43,7 +43,7 @@ void CmdPktCmdSendMessage (Session *sess, UDWORD uin, const char *text, UDWORD t
     
     UtilCheckUIN (sess, uin);
     
-    M_print ("%s " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n",
+    M_printf ("%s " COLSENT "%10s" COLNONE " " MSGSENTSTR "%s\n",
              s_now, ContactFindName (uin), MsgEllipsis (text));
 
     PacketWrite4    (pak, uin);

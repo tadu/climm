@@ -4,7 +4,8 @@ UWORD  Get_Max_Screen_Width ();
 SDWORD Echo_Off (void);
 SDWORD Echo_On (void);
 
-void   M_print (const char *str, ...);
+void   M_print  (const char *str);
+void   M_printf (const char *str, ...);
 int    M_pos ();
 BOOL   Debug (UDWORD level, const char *str, ...);
 

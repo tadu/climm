@@ -113,9 +113,9 @@ void PacketEnqueuev5 (Packet *pak, Session *sess)
 
     if (prG->verbose & DEB_PACK5DATA)
     {
-        M_print ("%s " COLINDENT COLCLIENT "", s_now);
-        M_print (i18n (1775, "Outgoing packet:"));
-        M_print (" %04x %08x:%08x %04x (%s) @%p" COLNONE "\n",
+        M_printf ("%s " COLINDENT COLCLIENT "", s_now);
+        M_print  (i18n (1775, "Outgoing packet:"));
+        M_printf (" %04x %08x:%08x %04x (%s) @%p" COLNONE "\n",
                  PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
                  PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
                  CmdPktCmdName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak);
@@ -155,7 +155,7 @@ void SessionInitServerV5 (Session *sess)
     {
         char pwd[20];
         pwd[0] = '\0';
-        M_print ("%s ", i18n (1063, "Enter password:"));
+        M_printf ("%s ", i18n (1063, "Enter password:"));
         Echo_Off ();
         M_fdnreadln (stdin, pwd, sizeof (pwd));
         Echo_On ();
@@ -193,7 +193,7 @@ void CallBackServerInitV5 (Event *event)
     }
     free (event);
     
-    M_print (i18n (1902, "Opening v5 connection to %s:%d... "), sess->server, sess->port);
+    M_printf (i18n (1902, "Opening v5 connection to %s:%d... "), sess->server, sess->port);
     
     if (sess->sok < 0)
     {
@@ -206,7 +206,7 @@ void CallBackServerInitV5 (Event *event)
 #endif
         {
             rc = errno;
-            M_print (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
+            M_printf (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
             sess->connect = 0;
             sess->sok = -1;
             return;
@@ -359,7 +359,7 @@ void UDPCallBackResend (Event *event)
 
     if (session != event->sess->our_session)
     {
-        M_print (i18n (1856, "Discarded a %04x (%s) packet from old session %08x (current: %08x).\n"),
+        M_printf (i18n (1856, "Discarded a %04x (%s) packet from old session %08x (current: %08x).\n"),
                  cmd, CmdPktSrvName (cmd),
                  session, event->sess->our_session);
         PacketD (pak);
@@ -370,7 +370,7 @@ void UDPCallBackResend (Event *event)
     {
         if (prG->verbose & 32)
         {
-            M_print (i18n (1826, "Resending message %04x (%s) sequence %04x (attempt #%d, len %d).\n"),
+            M_printf (i18n (1826, "Resending message %04x (%s) sequence %04x (attempt #%d, len %d).\n"),
                      cmd, CmdPktCmdName (cmd),
                      event->seq >> 16, event->attempts, pak->len);
         }
@@ -387,7 +387,7 @@ void UDPCallBackResend (Event *event)
             UBYTE *data = (UBYTE *) &pak->data[CMD_v5_OFF_PARAM + 8];
 
             M_print ("\n");
-            M_print (i18n (1830, "Discarding message to %s after %d send attempts.  Message content:\n"),
+            M_printf (i18n (1830, "Discarding message to %s after %d send attempts.  Message content:\n"),
                      ContactFindName (tuin), event->attempts - 1);
 
             if ((type & ~MSGF_MASS) == MSG_URL)
@@ -405,20 +405,20 @@ void UDPCallBackResend (Event *event)
                     ConvUnixWin (data);
                     strcpy (url_data, data);
 
-                    M_print (i18n (2128, " Description: %s%s%s\n"), COLMESSAGE, url_desc, COLNONE);
-                    M_print (i18n (2129, "         URL: %s%s%s\n"), COLMESSAGE, url_data, COLNONE);
+                    M_printf (i18n (2128, " Description: %s%s%s\n"), COLMESSAGE, url_desc, COLNONE);
+                    M_printf (i18n (2129, "         URL: %s%s%s\n"), COLMESSAGE, url_data, COLNONE);
                 }
             }
             else if ((type & ~MSGF_MASS) == MSG_NORM)
             {
                 ConvUnixWin (data);
-                M_print (COLMESSAGE "%s", data);
+                M_printf (COLMESSAGE "%s", data);
                 M_print (COLNONE " ");
             }
         }
         else
         {
-            M_print (i18n (1825, "Discarded a %04x (%s) packet"), cmd, CmdPktSrvName (cmd));
+            M_printf (i18n (1825, "Discarded a %04x (%s) packet"), cmd, CmdPktSrvName (cmd));
             if (cmd == CMD_LOGIN || cmd == CMD_KEEP_ALIVE)
             {
                 M_print (i18n (1632, "\n\aConnection unstable. Exiting...."));

@@ -105,7 +105,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
             host_struct = gethostbyname (prG->s5Host);
             if (!host_struct)
             {
-                M_print (i18n (1596, "[SOCKS] Can't find hostname %s: %s."), prG->s5Host, hstrerror (h_errno));
+                M_printf (i18n (1596, "[SOCKS] Can't find hostname %s: %s."), prG->s5Host, hstrerror (h_errno));
                 M_print ("\n");
                 return -1;
             }
@@ -197,7 +197,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
         {
             if (prG->verbose)
             {
-                M_print (i18n (1948, "Can't find hostname %s: %s."), hostname, hstrerror (h_errno));
+                M_printf (i18n (1948, "Can't find hostname %s: %s."), hostname, hstrerror (h_errno));
                 M_print ("\n");
             }
             return -1;
@@ -224,7 +224,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
     {
         if (prG->verbose)
         {
-            M_print (i18n (1966, " Conection Refused on port %d at %s\n"), port, hostname);
+            M_printf (i18n (1966, " Conection Refused on port %d at %s\n"), port, hostname);
             perror ("connect");
         }
         return -1;
@@ -237,14 +237,14 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
 
     if (prG->verbose)
     {
-        M_print (i18n (1053, "Connected to %s, waiting for response\n"), hostname);
+        M_printf (i18n (1053, "Connected to %s, waiting for response\n"), hostname);
     }
 
     return sok;
 }
 
 #define CONN_FAIL(s)  { const char *t = s;        \
-                        if (t)    M_print ("%s [%d]\n", t, __LINE__);  \
+                        if (t)    M_printf ("%s [%d]\n", t, __LINE__);  \
                         QueueDequeue (sess->ip, QUEUE_CON_TIMEOUT); \
                         if (sess->sok > 0)           \
                           sockclose (sess->sok);      \
@@ -602,8 +602,8 @@ Packet *UtilIOReceiveTCP (Session *sess)
 
     if ((rc && rc != ECONNRESET) || !sess->reconnect)
     {
-        M_print ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (sess->uin), COLNONE);
-        M_print (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+        M_printf ("%s %s%10s%s ", s_now, COLCONTACT, ContactFindName (sess->uin), COLNONE);
+        M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
         sess->connect = 0;
     }
     else
@@ -670,8 +670,8 @@ BOOL UtilIOSendTCP (Session *sess, Packet *pak)
 
     PacketD (pak);
 
-    M_print ("%s ", s_now);
-    M_print (i18n (1835, "Error while writing to socket - %s (%d)\n"),
+    M_printf ("%s ", s_now);
+    M_printf (i18n (1835, "Error while writing to socket - %s (%d)\n"),
              strerror (rc), rc);
 
     return FALSE;
@@ -733,7 +733,7 @@ Packet *UtilIOReceiveUDP (Session *sess)
 }
 
 /**************************************************************
-Same as M_print but for FD_T's
+Same as M_printf but for FD_T's
 ***************************************************************/
 void M_fdprint (FD_T fd, const char *str, ...)
 {

@@ -226,12 +226,12 @@ void SnacPrint (Packet *pak)
     ref  = PacketReadB4 (pak);
     len  = PacketReadAtB2 (pak, pak->rpos);
 
-    M_print ("%s " COLDEBUG "SNAC     (%x,%x) [%s] flags %x ref %x",
+    M_printf ("%s " COLDEBUG "SNAC     (%x,%x) [%s] flags %x ref %x",
              s_dumpnd (pak->data + 6, flag & 0x8000 ? 10 + len : 10),
              fam, cmd, SnacName (fam, cmd), flag, ref);
     if (flag & 0x8000)
     {
-        M_print (" extra (%d)", len);
+        M_printf (" extra (%d)", len);
         pak->rpos += len + 2;
     }
     M_print (COLNONE "\n");
@@ -244,7 +244,7 @@ void SnacPrint (Packet *pak)
             if (s->fam == fam && s->cmd == cmd)
                 break;
 
-        M_print ("%s", PacketDump (pak, s->fmt));
+        M_print (PacketDump (pak, s->fmt));
     }
 
     pak->rpos = opos;
@@ -257,7 +257,7 @@ static JUMP_SNAC_F(SnacSrvUnknown)
 {
     if (!(prG->verbose & DEB_PACK8))
     {
-        M_print ("%s " COLINDENT COLSERVER "%s ", s_now, i18n (1033, "Incoming v8 server packet:"));
+        M_printf ("%s " COLINDENT COLSERVER "%s ", s_now, i18n (1033, "Incoming v8 server packet:"));
         FlapPrint (event->pak);
         M_print (COLEXDENT "\n");
     }
@@ -284,7 +284,7 @@ static JUMP_SNAC_F(SnacSrvFamilies)
                 break;
         if (!s->fam)
         {
-            M_print (i18n (1899, "Unknown family requested: %d\n"), fam);
+            M_printf (i18n (1899, "Unknown family requested: %d\n"), fam);
             continue;
         }
     }
@@ -333,7 +333,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
     uin = PacketReadUIN (pak);
     
     if (uin != event->sess->uin)
-        M_print (i18n (1907, "Warning: Server thinks our UIN is %d, while it is %d.\n"),
+        M_printf (i18n (1907, "Warning: Server thinks our UIN is %d, while it is %d.\n"),
                  uin, event->sess->uin);
     PacketReadB2 (pak);
     PacketReadB2 (pak);
@@ -342,7 +342,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
     {
         event->sess->our_outside_ip = tlv[10].nr;
         if (prG->verbose)
-            M_print (i18n (1915, "Server says we're at %s.\n"), s_ip (event->sess->our_outside_ip));
+            M_printf (i18n (1915, "Server says we're at %s.\n"), s_ip (event->sess->our_outside_ip));
         if (event->sess->assoc)
             event->sess->assoc->our_outside_ip = event->sess->our_outside_ip;
     }
@@ -352,7 +352,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
         if (status != event->sess->status)
         {
             event->sess->status = status;
-            M_print ("%s %s\n", s_now, s_status (event->sess->status));
+            M_printf ("%s %s\n", s_now, s_status (event->sess->status));
         }
     }
     /* TLV 1 c f 2 3 ignored */
@@ -378,7 +378,7 @@ static JUMP_SNAC_F(SnacSrvFamilies2)
         if (!s->fam)
             continue;
         if (s->cmd > ver)
-            M_print (i18n (1904, "Server doesn't understand ver %d (only %d) for family %d!\n"), s->cmd, ver, fam);
+            M_printf (i18n (1904, "Server doesn't understand ver %d (only %d) for family %d!\n"), s->cmd, ver, fam);
     }
 }
 
@@ -502,7 +502,7 @@ static JUMP_SNAC_F(SnacSrvIcbmerr)
     else if (err == 0x9)
         M_print (i18n (2190, "The contact's client does not support type-2 messages.\n"));
     else
-        M_print (i18n (2191, "Instant message error: %d.\n"), err);
+        M_printf (i18n (2191, "Instant message error: %d.\n"), err);
 }
 
 /*
@@ -661,8 +661,8 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
         case 4:
             IMOffline (cont, event->sess);
 
-            M_print ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
-            M_print (i18n (2126, "User is offline, message (%s#%08lx:%08lx%s) queued.\n"),
+            M_printf ("%s " COLCONTACT "%10s" COLNONE " ", s_now, cont->nick);
+            M_printf (i18n (2126, "User is offline, message (%s#%08lx:%08lx%s) queued.\n"),
                      COLSERVER, mid1, mid2, COLNONE);
 
 /*          cont->status = STATUS_OFFLINE;
@@ -697,7 +697,7 @@ static JUMP_SNAC_F(SnacSrvSetinterval)
     pak = event->pak;
     interval = PacketReadB2 (pak);
     if (prG->verbose & DEB_PROTOCOL)
-        M_print (i18n (1918, "Ignored server request for a minimum report interval of %d.\n"), 
+        M_printf (i18n (1918, "Ignored server request for a minimum report interval of %d.\n"), 
             interval);
 }
 
@@ -742,7 +742,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
             case 1:
                 if (!tag && !id)
                     break;
-                M_print (i18n (2049, "Receiving group \"%s\":\n"), name);
+                M_printf (i18n (2049, "Receiving group \"%s\":\n"), name);
                 break;
             case 0:
                 if (!tag)
@@ -761,13 +761,13 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                             SnacCliAddcontact (event->sess, atoi (name));
                         ContactAdd (atoi (name), nick);
                         k++;
-                        M_print ("  %10d %s\n", atoi (name), nick);
+                        M_printf ("  %10d %s\n", atoi (name), nick);
                         break;
                     case 2:
                         if (ContactFindAlias (atoi (name), nick))
                             break;
                     case 1:
-                        M_print ("  %10d %s\n", atoi (name), nick);
+                        M_printf ("  %10d %s\n", atoi (name), nick);
                 }
                 free (nick);
                 break;
@@ -782,7 +782,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
     /* TIMESTAMP ignored */
     if (k)
     {
-        M_print (i18n (2050, "Imported %d contacts.\n"), k);
+        M_printf (i18n (2050, "Imported %d contacts.\n"), k);
         if (event->sess->flags & CONN_WIZARD)
         {
             if (Save_RC () == -1)
@@ -874,7 +874,7 @@ static JUMP_SNAC_F(SnacSrvFromicqsrv)
     {
         if (prG->verbose & DEB_PROTOCOL)
         {
-            M_print (i18n (1919, "UIN mismatch: %d vs %d.\n"), event->sess->uin, uin);
+            M_printf (i18n (1919, "UIN mismatch: %d vs %d.\n"), event->sess->uin, uin);
             SnacSrvUnknown (event);
         }
         PacketD (p);
@@ -941,7 +941,7 @@ static JUMP_SNAC_F(SnacSrvRegrefused)
 static JUMP_SNAC_F(SnacSrvNewuin)
 {
     event->sess->uin = event->sess->spref->uin = PacketReadAt4 (event->pak, 6 + 10 + 46);
-    M_print (i18n (1762, "Your new UIN is: %d.\n"), event->sess->uin);
+    M_printf (i18n (1762, "Your new UIN is: %d.\n"), event->sess->uin);
     if (event->sess->flags & CONN_WIZARD)
     {
         assert (event->sess->spref);
@@ -1167,7 +1167,7 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, const char *text, UDWORD type, U
     BOOL peek = (format == 0xff && type == MSG_GET_AWAY);
     
     if (!peek)
-        M_print ("%s " COLACK "%10s" COLNONE " " MSGSENTSTR "%s\n",
+        M_printf ("%s " COLACK "%10s" COLNONE " " MSGSENTSTR "%s\n",
                  s_now, ContactFindName (uin), MsgEllipsis (text));
     
     if (!format || format == 0xff)
