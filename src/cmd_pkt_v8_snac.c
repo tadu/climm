@@ -198,6 +198,8 @@ Packet *SnacC (Connection *conn, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref)
     
     if (!conn->our_seq2)
         conn->our_seq2 = rand () & 0x7fff;
+    if (!ref)
+        ref = rand () & 0x7fff;
     
     pak = FlapC (2);
     PacketWriteB2 (pak, fam);
@@ -500,17 +502,18 @@ static JUMP_SNAC_F(SnacSrvUseroffline)
 static JUMP_SNAC_F(SnacSrvIcbmerr)
 {
     UWORD err = PacketReadB2 (event->pak);
-    if (err == 0xe)
+
+    if ((event->pak->ref & 0xffff) == 0x1771 && (err == 0xe || err == 0x4))
     {
-        if ((event->pak->ref & 0xffff) == 0x1771)
+        if (err == 0xe)
             M_print (i18n (2017, "The user is online, but possibly invisible.\n"));
         else
-            M_print (i18n (2189, "Malformed instant message packet refused by server.\n"));
+            M_print (i18n (2022, "The user is offline.\n"));
     }
-    else if (err == 0x4)
-        M_print (i18n (2022, "The user is offline.\n"));
-    else if (err == 0x9)
-        M_print (i18n (2190, "The contact's client does not support type-2 messages.\n"));
+
+    event = QueueDequeue (event->conn, QUEUE_TYPE2_RESEND_ACK, event->pak->ref);
+    if (event && event->callback)
+        event->callback (event);
     else
         M_printf (i18n (2191, "Instant message error: %d.\n"), err);
 }
@@ -852,8 +855,8 @@ static JUMP_SNAC_F(SnacSrvSrvackmsg)
             putlog (event->conn, NOW, uin, STATUS_OFFLINE, LOG_ACK, 0xFFFF, 
                 s_sprintf ("%08lx%08lx\n", mid1, mid2)); */
             break;
-        case 2:
-            /* msg was received by server */
+        case 2: /* msg was received by server */
+            EventD (QueueDequeue (event->conn, QUEUE_TYPE2_RESEND_ACK, pak->ref));
             break;
     }
 }
@@ -1467,12 +1470,36 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
     SnacSend (conn, pak);
 }
 
-static void SnacCallbackType2 (Event *event)
+void SnacCallbackType2Ack (Event *event)
+{
+    Contact *cont = ContactByUIN (event->uin, 1);
+    Connection *serv = event->conn;
+    Event *aevent;
+
+    if (!serv)
+    {
+        EventD (event);
+        return;
+    }
+    aevent = QueueDequeue (serv, QUEUE_TYPE2_RESEND, ExtraGet (event->extra, EXTRA_REF));
+    if (!aevent)
+    {
+        EventD (event);
+        return;
+    }
+    ASSERT_SERVER (serv);
+    
+    IMCliMsg (serv, cont, aevent->extra);
+    aevent->extra = NULL;
+    EventD (aevent);
+    EventD (event);
+}
+
+void SnacCallbackType2 (Event *event)
 {
     Contact *cont = ContactByUIN (event->uin, 1);
     Connection *serv = event->conn;
     Packet *pak = event->pak;
-    UWORD e_trans;
 
     if (!serv || !cont)
     {
@@ -1485,15 +1512,20 @@ static void SnacCallbackType2 (Event *event)
     ASSERT_SERVER (serv);
     assert (pak);
 
-    if (event->attempts < MAX_RETRY_ATTEMPTS && serv->connect & CONNECT_MASK)
+    if (event->attempts < MAX_RETRY_TYPE2_ATTEMPTS && serv->connect & CONNECT_MASK)
     {
         if (serv->connect & CONNECT_OK)
         {
             if (event->attempts > 1)
-                IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGTRY_TYPE2, ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
+                IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGTRY_TYPE2,
+                          ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
             SnacSend (serv, PacketClone (pak));
             event->attempts++;
-            event->due = time (NULL) + 10;
+            event->due = time (NULL) + 15;
+            QueueEnqueueData (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref,
+                              time (NULL) + 10, NULL, cont->uin,
+                              ExtraSet (NULL, EXTRA_REF, event->seq, NULL),
+                              &SnacCallbackType2Ack);
         }
         else
             event->due = time (NULL) + 1;
@@ -1501,8 +1533,6 @@ static void SnacCallbackType2 (Event *event)
         return;
     }
     
-    e_trans = ExtraGet (event->extra, EXTRA_TRANS) & ~EXTRA_TRANS_TYPE2;
-    event->extra = ExtraSet (event->extra, EXTRA_TRANS, e_trans, NULL);
     IMCliMsg (serv, cont, event->extra);
     event->extra = NULL;
     EventD (event);
@@ -1516,7 +1546,7 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
     Packet *pak;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     BOOL peek = 0;
-    UDWORD type;
+    UDWORD type, e_trans;
     const char *text;
     
     text = ExtraGetS (extra, EXTRA_MESSAGE);
@@ -1544,6 +1574,9 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
 
     conn->our_seq_dc--;
     
+    e_trans = ExtraGet (extra, EXTRA_TRANS) & ~EXTRA_TRANS_TYPE2;
+    extra = ExtraSet (extra, EXTRA_TRANS, e_trans, NULL);
+
     pak = SnacC (conn, 4, 6, 0, peek ? 0x1771 : 0);
     PacketWriteB4 (pak, mtime);
     PacketWriteB4 (pak, mid);

@@ -21,6 +21,7 @@ void        ExtraD    (Extra *extra);
 #define EXTRA_TIME         0x31
 #define EXTRA_STATUS       0x41
 #define EXTRA_ORIGIN       0x51
+#define EXTRA_REF          0x61
 
 #define EXTRA_TRANS_DC     0x1
 #define EXTRA_TRANS_TYPE2  0x2
