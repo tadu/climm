@@ -356,33 +356,30 @@
 1400:Shows locally stored info on <uin> or <nick>, or on yourself.
 1401:Updates more user info like age and sex.
 1402:Updates your about user info.
-1403:Displays the last message received from <uin> or <nick> or from everyone who has sent you at least one message.
-1404:Toggles ignoring/unignoring <uin> or <nick>.
+1403:Displays the last message received from <contacts> or from everyone.
+1404:Toggles ignoring/unignoring the <contacts>.
 1405:Lists ignored nicks/uins.
-1406:Toggles your visibility to <uin> or <nick> when you're invisible.
+1406:Toggles your visibility to <contacts> when you're invisible.
 1407:Displays the current status of online people on your contact list.
 1408:Changes your password to <password>.
-1409:Sends a message to <uin> or <nick>.
-1410:Sends a url and message to <uin> or <nick>.
-1411:Sends a multiline message to everyone on your list.
+1409:Sends a message to <contacts>.
+1410:Sends a url and message to <contacts>.
 1412:Sends a message to the last person you sent a message to.
-1413:Authorize <uin> or <nick> to add you to their list.
 1414:Replies to the last person to send you a message.
 1415:Finds a random user in interest group <nr> or lists the groups.
 1416:Displays the current status of everyone on your contact list.
-1417:This command allows you to alter your command set on the fly.
 1418:Set the verbosity level, or display verbosity level.
 1419:Clears the screen.
-1420:Switches beeping when receiving new messages on or off, sets a command for this event or displays current state of this option.
+1420:Switches beeping when receiving new messages on or off, or using the event script.
 1422:Logs off and quits.
 1424:Set whether autoreplying when not online, or displays setting.
 1425:Sets the message to send as an auto reply for the status.
 1426:Creates a new UIN with the specified password.
 1427:Changes your status to the status number, or list the available modes.
-1428:Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>.
+1428:Adds all contacts in <contacts> to contact group <group>.
 1429:Searches for an ICQ user.
 1430:Displays general info on <uin> or <nick>.
-1431:Change status to Online.
+1431:Set status to "online".
 1432:Set status to "away".
 1433:Set status to "not available".
 1434:Set status to "occupied".
@@ -594,8 +591,8 @@
 1715:mICQ
 1716:None
 1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
-1719:Shows how long mICQ has been running.
-1720:uin can be either a number or the nickname of the user.
+1719:Shows how long mICQ has been running and some statistics.
+1720:<contacts> is a comma seperated list of UINs and nick names of users.
 1721:Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message.
 1724:Automatic replies are %s.\n
 1727:The "do not disturb" message is:
@@ -627,7 +624,7 @@
 1766:Changing status to away/not available after idling %s%ld%s seconds.\n
 1767:Toggles auto cycling to away/not available.
 1768:The command name '%s' is already being used.\n
-1770:Resend your last message to <uin> or <nick>.
+1770:Resend your last message to <contacts>.
 1771:You haven't sent a message to anyone yet!\n
 1774:Incoming packet:
 1775:Outgoing packet:
@@ -825,17 +822,14 @@
 2032:Scheduling v8 reconnect in %d seconds.\n
 2033:born today
 2034:Opening TCP connection at %s:%ld... 
-2035:Show uptime and some statistics.
 2036:Save current preferences to disc.
 2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>.
 2038:Opens connection number <nr>, or the first server connection.
-2039:Sends a message to a cell phone.
-2040:Switches beeping for incoming contacts on or off, sets a command for this event or displays current state of this option.
-2041:Switches beeping for offgoing contacts on or off, sets a command for this event or displays current state of this option.
+2039:Sends a message to a (<nick>'s) <cell> phone.
 2042:Displays a list of online people on your contact list in a screen wide format.
-2043:Remove alias <alias> or <uin>, or removes contact.
-2044:Set or clear an option.
-2045:Toggles your visibility to <uin> or <nick> when you're online.
+2043:Remove all contacts in <contacts> from contact group <group>.
+2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silence.
+2045:Toggles your visibility to <contacts> when you're online.
 2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n
 2047:Creating directory %s.\n
 2048:Saving preferences to %s.\n
@@ -942,17 +936,13 @@
 2170:Sending with speed %lx to %s.\n
 2171:Advanced
 2172:Commands for advanced features.
-2173:Deny <uin> or <nick> to add you to their list.
-2174:Request authorization from <uin> or <nick>.
-2175:Tell <uin> or <nick> that you added them to your list.
 2176:Displays verbose the current status of everyone on your contact list.
 2177:Displays verbose the current status of online people on your contact list.
-2178:Request auto reply message for <uin> or <nick>.
-2179:Send <uin> or <nick> a single file.
+2179:Send all <contacts> a single file.
 2180:Send <uin> or <nick> several files.
 2181:Closes or removes connection number <nr>.
 2182:Select server connection number <nr> as current server connection.
-2183:Check whether <uin> or <nick> is offline or invisible.
+2183:Check all <contacts> whether it is offline or invisible.
 2184:%s%-10s%s - %s\n
 2185:Closing connection %ld.\n
 2186:Accepting file '%s' (%ld bytes).\n
@@ -1067,3 +1057,14 @@
 2301:Delete an alias.
 2302:Too many levels of alias expansion; probably an infinite loop.\n
 2303:Invalid character 0x%x in alias name.\n
+2304:Get automatic reply from all <contacts> for current status, away, not available, do not disturb, occupied, or free for chat.
+2305:Handle meta data of contacts.
+2306:Request server side contact list and show all or new contacts or import.
+2307:Displays the current status of online people on your contact list, sorted by contact group.
+2308:Displays the current status of everyone on your contact list, sorted by contact group.
+2309:Displays verbose the current status of online people on your contact list, sorted by contact group.
+2310:Displays verbose the current status of everyone on your contact list, sorted by contact group.
+2311:Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>.
+2312:Remove all aliases in <contacts>, removes contact if 'all' is given.
+2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
+2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
