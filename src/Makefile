@@ -3,10 +3,10 @@
 # rewritten by  Rico Gloeckner <mc@verdinet.de>
 
 CC = gcc
-CFLAGS = -O4 -Wall -DUNIX
+CFLAGS = -O2 -Wall -DUNIX
 
 # uncomment the line below for debuging info
-#CFLAGS += -g
+CFLAGS += -g
 
 CLIBS = 
 #uncomment the line below if your using Solaris

@@ -359,8 +359,22 @@ void get_tab( void )
               break;
            }
         }
-	sprintf (s, "%s %s/", message_cmd,
-		tab_array[tab_pointer]);
+        /* aaron
+           on operating systems other than Linux, it seems that one cannot
+           print the contents of a NULL pointer. When no messages have yet
+           been sent, pressing Tab will cause Micq to segfault because it
+           looks through the tab_array for non-NULL entries, but there are
+           none. So it wraps back to the beginning and tries to print anyway.
+           This isn't the right thing to do; we have to detect the problem
+           and work around it.
+        */
+        if (tab_array[tab_pointer] == NULL) {
+               sprintf(s, "%s (null)/", message_cmd);
+        } else {
+               sprintf (s, "%s %s/", message_cmd,
+               tab_array[tab_pointer]);
+        }  /* end if */
+
 	clen = cpos = strlen (s);
 	R_undraw();
 	R_redraw();

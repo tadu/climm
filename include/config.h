@@ -21,7 +21,7 @@
 
 /* This is the maximum number of people you can have in your list.  This is 
 ** not only true contacts but aliases to your contacts also. */
-#define MAX_CONTACTS 255
+#define MAX_CONTACTS 1024
 
 /* You want this unless your terminal *REALLY* sucks */
 #define ANSI_COLOR
