@@ -1,4 +1,4 @@
-/* Id: $ */
+/* $Id$ */
 
 #ifndef MICQ_CONTACT_H
 #define MICQ_CONTACT_H

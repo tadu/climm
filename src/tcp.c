@@ -254,7 +254,7 @@ static void TCPDispatchMain (Session *sess)
         return;
     }
     
-#ifdef
+#ifdef WIP
     M_print ("New incoming\n");
 #endif
 
@@ -1588,7 +1588,7 @@ static void TCPCallBackReceive (struct Event *event)
                 case TCP_MSG_GET_NA:    tmp2 = i18n (1974, "not available");  break;
                 case TCP_MSG_GET_DND:   tmp2 = i18n (1971, "do not disturb"); break;
                 case TCP_MSG_GET_FFC:   tmp2 = i18n (1976, "free for chat");  break;
-                case TCP_MSG_GET_VER:   tmp2 = i18n (####, "version");  }
+                case TCP_MSG_GET_VER:   tmp2 = i18n (2062, "version");  }
                     Time_Stamp ();
                     M_print (" " COLACK "%10s" COLNONE " <%s> %s\n",
                              cont->nick, tmp2, tmp);
