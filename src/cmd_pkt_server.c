@@ -453,8 +453,8 @@ static JUMP_SRV_F (CmdPktSrvAck)
     
     ccmd = PacketReadAt2 (event->pak, CMD_v5_OFF_CMD);
 
-    Debug (DEB_QUEUE, i18n (1824, "Acknowledged packet type %04x (%s) sequence %04x removed from queue.\n"),
-           ccmd, CmdPktCmdName (ccmd), event->seq >> 16);
+    Debug (DEB_QUEUE, "···· ack type %04x (%s) seq %04x",
+                      ccmd, CmdPktCmdName (ccmd), event->seq >> 16);
 
     if (ccmd == CMD_SEND_MESSAGE)
     {

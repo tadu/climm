@@ -10,7 +10,7 @@ void   Time_Stamp (void);
 void   Kill_Prompt (void);
 void   M_print (const char *str, ...);
 int    M_pos ();
-void   Debug (UDWORD level, const char *str, ...);
+BOOL   Debug (UDWORD level, const char *str, ...);
 
 void   UtilUIUserOnline  (Session *sess, Contact *cont, UDWORD status);
 void   UtilUIUserOffline (Session *sess, Contact *cont);

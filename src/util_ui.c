@@ -434,11 +434,11 @@ int M_pos ()
 static const char *DebugStr (UDWORD level)
 {
     if (level & DEB_PACKET)      return "Packet ";
-    if (level & DEB_QUEUE)       return " Queue ";
-    if (level & DEB_PACK5DATA)   return "v5data ";
-    if (level & DEB_PACK8)       return "v8pack ";
-    if (level & DEB_PACK8DATA)   return "v8data ";
-    if (level & DEB_PACK8SAVE)   return "v8save ";
+    if (level & DEB_QUEUE)       return "Queue  ";
+    if (level & DEB_PACK5DATA)   return "v5 data";
+    if (level & DEB_PACK8)       return "v8 pack";
+    if (level & DEB_PACK8DATA)   return "v8 data";
+    if (level & DEB_PACK8SAVE)   return "v8 save";
     if (level & DEB_PACKTCP)     return "TCPpack";
     if (level & DEB_PACKTCPDATA) return "TCPdata";
     if (level & DEB_PACKTCPSAVE) return "TCPsave";
@@ -452,24 +452,30 @@ static const char *DebugStr (UDWORD level)
 /*
  * Output a given string iff the debug level is appropriate.
  */
-void Debug (UDWORD level, const char *str, ...)
+BOOL Debug (UDWORD level, const char *str, ...)
 {
     va_list args;
-    char buf[2048];
-    char buf2[3072];
+    char buf[2048], buf2[3072], c;
 
     if (!(prG->verbose & level) && level)
-        return;
+        return 0;
 
     va_start (args, str);
     vsnprintf (buf, sizeof (buf), str, args);
     va_end (args);
 
-    M_print ("Debug: ");
+    M_print ("");
+    if ((c = M_pos ()))
+        M_print ("\n");
+/*    M_print ("Debug: ");   */
     Time_Stamp ();
-    snprintf (buf2, sizeof (buf2), " [%s] %s\n", DebugStr (level & prG->verbose), buf);
-    
+    snprintf (buf2, sizeof (buf2), " %s%7.7s%s %s", YELLOW, DebugStr (level & prG->verbose), COLNONE, buf);
+
     M_print ("%s", buf2);
+    if (!c)
+        M_print ("\n");
+
+    return 1;
 }
 
 

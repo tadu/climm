@@ -53,7 +53,7 @@ struct Session_s
 #define CONNECT_SOCKS      0xf000
 
 Session    *SessionC     (void);
-Session    *SessionClone (Session *sess);
+Session    *SessionClone (Session *sess, UWORD type);
 void        SessionInit  (Session *sess);
 Session    *SessionNr    (int i);
 Session    *SessionFind  (UWORD type, UDWORD uin, const Session *parent);

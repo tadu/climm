@@ -314,7 +314,7 @@ void PacketSendv5 (const Packet *pak, Session *sess)
     assert (pak);
     assert (sess);
 
-    Debug (DEB_PACKET, "--- %p %s", pak, i18n (1858, "sending packet"));
+    Debug (DEB_PACKET, "---- %p sent");
 
     cpak = Wrinkle (pak);
     UtilIOSend (sess, cpak);

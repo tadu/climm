@@ -25,7 +25,7 @@ Packet *PacketC (void)
     pak = calloc (1, sizeof (Packet));
     assert (pak);
 
-    Debug (DEB_PACKET, "<-- %p %s", pak, i18n (1863, "creating new packet"));
+    Debug (DEB_PACKET, "<--- %p new", pak);
     uiG.packets++;
 
     return pak;
@@ -33,7 +33,7 @@ Packet *PacketC (void)
 
 void PacketD (Packet *pak)
 {
-    Debug (DEB_PACKET, "--> %p %s", pak, i18n (1946, "freeing packet"));
+    Debug (DEB_PACKET, "---> %p free", pak);
     uiG.packets--;
     free (pak);
 }
@@ -48,7 +48,7 @@ Packet *PacketClone (const Packet *pak)
     memcpy (newpak, pak, sizeof (Packet));
     newpak->rpos = 0;
     
-    Debug (DEB_PACKET, "<+- %p %s %p", newpak, i18n (1865, "cloning existing packet"), pak);
+    Debug (DEB_PACKET, "<-+- %p clone %p", newpak, pak);
     uiG.packets++;
 
     return newpak;

@@ -43,7 +43,7 @@ Session *SessionC (void)
     slist[i]->status = STATUS_OFFLINE;
     slist[i]->sok = -1;
 
-    Debug (DEB_SESSION, "<---- %p[%d] create\n", slist[i], i);
+    Debug (DEB_SESSION, "<=== %p[%d] create", slist[i], i);
 
     return slist[i];
 }
@@ -51,7 +51,7 @@ Session *SessionC (void)
 /*
  * Clones an existing session, while blanking out some values.
  */
-Session *SessionClone (Session *sess)
+Session *SessionClone (Session *sess, UWORD type)
 {
     Session *child;
     
@@ -59,13 +59,14 @@ Session *SessionClone (Session *sess)
     if (!child)
         return NULL;
     memcpy (child, sess, sizeof (*child));
-    child->parent = sess;
-    child->assoc = NULL;
-    child->sok = -1;
-    child->connect = 0;
+    child->parent   = sess;
+    child->assoc    = NULL;
+    child->sok      = -1;
+    child->connect  = 0;
     child->incoming = NULL;
+    child->type     = type;
     
-    Debug (DEB_SESSION, "<--+- %p clone from %p (%s)\n", child, sess, SessionType (sess));
+    Debug (DEB_SESSION, "<=*= %p (%s) clone from %p (%s)", child, SessionType (child), sess, SessionType (sess));
 
     return child;
 }
@@ -143,7 +144,7 @@ void SessionClose (Session *sess)
     assert (sess);
     assert (i < listlen);
     
-    Debug (DEB_SESSION, "----> %p[%d] (%s) closing...\n", sess, i, SessionType (sess));
+    Debug (DEB_SESSION, "===> %p[%d] (%s) closing...", sess, i, SessionType (sess));
 
     if (sess->sok != -1)
         sockclose (sess->sok);
@@ -173,7 +174,7 @@ void SessionClose (Session *sess)
     }
     slist[i] = NULL;
 
-    Debug (DEB_SESSION, "----> %p[%d] closed.\n", sess, i);
+    Debug (DEB_SESSION, "===> %p[%d] closed.", sess, i);
 
     free (sess);
 }

@@ -154,7 +154,6 @@ void SrvCallBackKeepalive (Event *event)
     if (event->sess && event->sess->connect & CONNECT_OK)
     {
         FlapCliKeepalive (event->sess);
-        /* old: SnacCliAckofflinemsgs (event->sess); */
         event->due = time (NULL) + 30;
         QueueEnqueue (event);
         return;

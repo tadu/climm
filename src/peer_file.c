@@ -49,7 +49,7 @@ Session *PeerFileCreate (Session *serv)
     if (prG->verbose)
         M_print (i18n (9999, "Opening file listener connection at localhost:%d... "), serv->assoc->spref->port);
 
-    flist = SessionClone (serv->assoc);
+    flist = SessionClone (serv->assoc, TYPE_FILELISTEN);
     if (!flist)
         return NULL;
 
@@ -61,7 +61,6 @@ Session *PeerFileCreate (Session *serv)
     flist->port        = serv->assoc->spref->port;
     flist->server      = NULL;
     flist->ip          = 0;
-    flist->type        = TYPE_FILELISTEN;
     flist->dispatch    = &TCPDispatchMain;
     flist->reconnect   = &TCPDispatchReconn;
     
@@ -94,7 +93,7 @@ BOOL PeerFileRequested (Session *peer, const char *files, UDWORD bytes)
         return 0;
     ASSERT_FILELISTEN (flist);
     
-    fpeer = SessionClone (flist);
+    fpeer = SessionClone (flist, TYPE_FILEDIRECT);
     if (!fpeer)
         return 0;
 
@@ -102,7 +101,6 @@ BOOL PeerFileRequested (Session *peer, const char *files, UDWORD bytes)
     fpeer->ip       = 0;
     fpeer->connect  = 0;
     fpeer->server   = NULL;
-    fpeer->type     = TYPE_FILEDIRECT;
     fpeer->uin      = peer->uin;
     fpeer->our_seq3 = bytes;
     
@@ -216,7 +214,7 @@ void PeerFileDispatch (Session *fpeer)
             PacketD (pak);
             
             {
-                Session *ffile = SessionClone (fpeer);
+                Session *ffile = SessionClone (fpeer, TYPE_FILE);
                 char buf[200], *p;
                 int pos = 0;
                 struct stat finfo;
@@ -361,7 +359,7 @@ void PeerFileResend (Event *event)
                 event->pak = NULL;
                 QueueEnqueue (event);
                 
-                ffile = SessionClone (fpeer);
+                ffile = SessionClone (fpeer, TYPE_FILE);
                 fpeer->assoc = ffile;
                 ffile->sok = open (event->info, O_RDONLY);
                 if (ffile->sok == -1)

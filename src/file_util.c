@@ -811,7 +811,7 @@ int Save_RC ()
     fprintf (rcf, "\n#in seconds\nauto_away %ld\n", prG->away_time);
     fprintf (rcf, "\n#For dumb terminals that don't wrap set this.");
     fprintf (rcf, "\nScreen_Width %d\n", prG->screen);
-    fprintf (rcf, "verbose %d\n\n", prG->verbose);
+    fprintf (rcf, "verbose %ld\n\n", prG->verbose);
 
 
     fprintf (rcf, "# Set some simple options.\n");

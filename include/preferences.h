@@ -8,7 +8,7 @@ struct Preferences_s
     char  *rcfile;      /* the preference file to load */
     BOOL   rcisdef;     /* whether this is the default location */
 
-    SWORD  verbose;     /* verbosity to use on startup */
+    UDWORD verbose;     /* verbosity to use on startup */
     UWORD  sound;       /* flags for sound output */
     UDWORD status;      /* status to use when logging in */
     UWORD  screen;      /* manual maximum screen width; 0 = auto */

@@ -123,14 +123,13 @@ void TCPDirectOpen (Session *list, UDWORD uin)
             return;
     }
     else
-        peer = SessionClone (list);
+        peer = SessionClone (list, TYPE_MSGDIRECT);
     
     if (!peer)
         return;
     
     peer->port   = 0;
     peer->uin    = uin;
-    peer->type   = TYPE_MSGDIRECT;
     peer->flags  = 0;
     peer->spref  = NULL;
     peer->parent = list;
@@ -246,7 +245,7 @@ void TCPDispatchMain (Session *list)
     }
 
     tmp = sizeof (sin);
-    peer = SessionClone (list);
+    peer = SessionClone (list, list->type == TYPE_MSGLISTEN ? TYPE_MSGDIRECT : TYPE_FILEDIRECT);
     
     if (!peer)
     {
@@ -256,7 +255,6 @@ void TCPDispatchMain (Session *list)
             sockclose (list->sok);
         return;
     }
-    peer->type = (list->type == TYPE_MSGLISTEN ? TYPE_MSGDIRECT : TYPE_FILEDIRECT);
 
 #ifdef WIP
     M_print ("New incoming direct(?) (%d) %x,%x\n", list->sok, list->type, peer->type);
@@ -310,8 +308,8 @@ void TCPDispatchConn (Session *peer)
             TCPClose (peer);
             return;
         }
-        if (prG->verbose & DEB_TCP)
-            M_print ("debug: TCPDispatchConn; Nick: %s state: %x\n", ContactFindName (peer->uin), peer->connect);
+        
+        Debug (DEB_TCP, "Conn: uin %d nick %s state %x\n", peer->uin, ContactFindName (peer->uin), peer->connect);
 
         switch (peer->connect & CONNECT_MASK)
         {
@@ -436,12 +434,8 @@ void TCPDispatchShake (Session *peer)
         if (!peer)
             return;
 
-        if (prG->verbose & DEB_TCP)
-        {
-            Time_Stamp ();
-            M_print (" [%d %p %p] %s State: %d\n", peer->sok, pak, peer, ContactFindName (peer->uin), peer->connect);
-        }
-        M_print ("->type %d\n", peer->type);
+        Debug (DEB_TCP, "HS %d uin %d nick %s state %d pak %p peer %d",
+                        peer->sok, peer->uin, ContactFindName (peer->uin), peer->connect, pak, peer);
 
         cont = ContactFind (peer->uin);
         if (!cont && (peer->connect & CONNECT_MASK) != 16)
@@ -776,13 +770,6 @@ void TCPSendInitv6 (Session *peer)
 
     peer->stat_real_pak_sent++;
 
-    if (prG->verbose & DEB_TCP)
-    {
-        Time_Stamp ();
-        M_print (" [%d %p] %s TCP>>CONNECT\n", peer->sok, peer, ContactFindName (peer->uin));
-/*        , i18n (1836, "Sending TCP direct connection initialization packet.\n")); */
-    }
-
     pak = PacketC ();
     PacketWrite1  (pak, PEER_INIT);                            /* command          */
     PacketWrite2  (pak, 6);                                    /* TCP version      */
@@ -796,6 +783,9 @@ void TCPSendInitv6 (Session *peer)
     PacketWrite1  (pak, TCP_OK_FLAG);                          /* connection type  */
     PacketWrite4  (pak, peer->parent->port);                   /* our (other) port */
     PacketWrite4  (pak, peer->our_session);                    /* session id       */
+
+    Debug (DEB_TCP, "HS %d uin %d nick %s CONNECT pak %p peer %d",
+                    peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer);
 
     TCPSendPacket (pak, peer);
     PacketD (pak);
@@ -834,13 +824,6 @@ static void TCPSendInit (Session *peer)
 
     peer->stat_real_pak_sent++;
 
-    if (prG->verbose & DEB_TCP)
-    {
-        Time_Stamp ();
-        M_print (" [%d %p] %s TCP>>CONNECTv8\n", peer->sok, peer, ContactFindName (peer->uin));
-/*        M_print (" %10d [%p] %s", peer->uin, peer, i18n (2025, "Sending v8 TCP direct connection initialization packet.\n"));*/
-    }
-
     pak = PacketC ();
     PacketWrite1  (pak, PEER_INIT);                    /* command          */
     PacketWrite2  (pak, peer->parent->ver);            /* TCP version      */
@@ -858,6 +841,9 @@ static void TCPSendInit (Session *peer)
     PacketWrite4  (pak, 0x00000003);
     PacketWrite4  (pak, 0);
 
+    Debug (DEB_TCP, "HS %d uin %d nick %s CONNECTv8 pak %p peer %d",
+                    peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer);
+
     TCPSendPacket (pak, peer);
     PacketD (pak);
 }
@@ -874,18 +860,15 @@ static void TCPSendInitAck (Session *peer)
     if (!(peer->connect & CONNECT_MASK))
         return;
 
-    if (prG->verbose & DEB_TCP)
-    {
-        Time_Stamp ();
-        M_print (" [%d %p] %s TCP>>ACK\n", peer->sok, peer, ContactFindName (peer->uin));
-/*        M_print (" %10d [%p] %s", peer->uin, peer, i18n (1837, "Acknowledging TCP direct connection initialization packet.\n"));*/
-    }
-
     peer->stat_real_pak_sent++;
 
     pak = PacketC ();
     PacketWrite2 (pak, PEER_INITACK);
     PacketWrite2 (pak, 0);
+
+    Debug (DEB_TCP, "HS %d uin %d nick %s INITACK pak %p peer %d",
+                    peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer);
+
     TCPSendPacket (pak, peer);
     PacketD (pak);
 }
@@ -902,13 +885,6 @@ static void TCPSendInit2 (Session *peer)
     if (!(peer->connect & CONNECT_MASK))
         return;
     
-    if (prG->verbose & DEB_TCP)
-    {
-        Time_Stamp ();
-        M_print (" [%d %p] %s <%x> TCP>>CONNECT2\n", peer->sok, peer, ContactFindName (peer->uin), peer->connect);
-/*        M_print (" %10d [%p] %s", peer->uin, peer, i18n (2027, "Sending third TCP direct connection packet.\n"));*/
-    }
-
     peer->stat_real_pak_sent++;
     
     pak = PacketC ();
@@ -921,6 +897,10 @@ static void TCPSendInit2 (Session *peer)
     PacketWrite4 (pak, (peer->connect & 16) ? 0x40001 : 0);
     PacketWrite4 (pak, 0);
     PacketWrite4 (pak, (peer->connect & 16) ? 0 : 0x40001);
+
+    Debug (DEB_TCP, "HS %d uin %d nick %s INITMSG pak %p peer %d",
+                    peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer);
+
     TCPSendPacket (pak, peer);
     PacketD (pak);
 }
@@ -996,16 +976,8 @@ static Session *TCPReceiveInit (Session *peer, Packet *pak)
         if (iip)      cont->local_ip = iip;
         if (tcpflag)  cont->connection_type = tcpflag;
 
-        if (prG->verbose & DEB_TCP)
-        {
-            Time_Stamp ();
-            M_print (" %d [%p] ", uin, peer);
-            M_print (i18n (1838, "Received direct connection initialization.\n"));
-            M_print ("    \x1b«");
-            M_print (i18n (1839, "Version %04x:%04x, Port %d, UIN %d, session %08x\n"),
-                     peer->ver, len, port, uin, sid);
-            M_print ("\x1b»\n");
-        }
+        Debug (DEB_TCP, "HS %d uin %d nick %s init pak %p peer %d: ver %04x:%04x port %d uin %d SID %08x",
+                        peer->sok, peer->uin, ContactFindName (peer->uin), pak, peer, peer->ver, len, port, uin, sid);
 
         for (i = 0; (peer2 = SessionNr (i)); i++)
             if (     peer2->type == peer->type && peer2->parent == peer->parent
@@ -1595,13 +1567,12 @@ BOOL TCPSendFiles (Session *list, UDWORD uin, char *description, char **files, c
     
     ASSERT_FILELISTEN(flist);
 
-    fpeer = SessionClone (flist);
+    fpeer = SessionClone (flist, TYPE_FILEDIRECT);
     
     assert (fpeer);
     
     fpeer->uin     = uin;
     fpeer->connect = 77;
-    fpeer->type    = TYPE_FILEDIRECT;
         
     for (i = 0; i < count; i++)
     {
@@ -1857,9 +1828,8 @@ static void TCPCallBackReceive (Event *event)
                     /* fall through */
 #endif
                 default:
-                    if (prG->verbose & DEB_TCP)
-                        M_print (i18n (1806, "Received ACK for message (seq %04x) from %s\n"),
-                                 seq, cont->nick);
+                    Debug (DEB_TCP, "ACK %d uin %d nick %s pak %p peer %d seq %04x",
+                                     event->sess->sok, event->sess->uin, ContactFindName (event->sess->uin), event->pak, event->sess, seq);
             }
             PacketD (event->pak);
             free (event);

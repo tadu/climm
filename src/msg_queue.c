@@ -81,8 +81,7 @@ Event *QueuePop ()
             queue->due = INT_MAX;
         else
             queue->due = queue->head->event->due;
-        Debug (DEB_QUEUE, i18n (2074, "popping type %s seq %08x at %p (pak %p)"),
-               QueueType (event->type), event->seq, event, event->pak);
+        Debug (DEB_QUEUE, "···> %s %p: %08x %p", QueueType (event->type), event, event->seq, event->pak);
         return event;
     }
     return NULL;
@@ -104,8 +103,7 @@ void QueueEnqueue (Event *event)
     entry->next = NULL;
     entry->event  = event;
 
-    Debug (DEB_QUEUE, i18n (2082, "enqueuing type %s seq %08x at %p (pak %p) %x"),
-           QueueType (event->type), event->seq, event, event->pak, event->flags);
+    Debug (DEB_QUEUE, "<··· %s %p: %08x %p %x", QueueType (event->type), event, event->seq, event->pak, event->flags);
 
     if (!queue->head)
     {
@@ -159,7 +157,7 @@ void QueueEnqueueData (Session *sess, UDWORD seq, UDWORD type,
 /*
  * Removes and returns a given event.
  */
-Event *QueueDequeueEvent (Event *event, struct QueueEntry *previous)
+static Event *QueueDequeueEvent (Event *event, struct QueueEntry *previous)
 {
     struct QueueEntry *iter;
     struct QueueEntry *tmp;
@@ -217,16 +215,14 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
 
     if (!queue->head)
     {
-        Debug (DEB_QUEUE, i18n (2076, "couldn't dequeue type %s seq %08x"),
-               QueueType (type), seq);
+        Debug (DEB_QUEUE, "·??· %s %08x", QueueType (type), seq);
         return NULL;
     }
 
     if (queue->head->event->seq == seq && queue->head->event->type == type)
     {
         event = QueueDequeueEvent (queue->head->event, NULL);
-        Debug (DEB_QUEUE, i18n (2077, "dequeue type %s seq %08x at %p (pak %p)"),
-               QueueType (type), seq, event, event->pak);
+        Debug (DEB_QUEUE, "··s> %s %p: %08x %p", QueueType (type), event, seq, event->pak);
         return event;
     }
     for (iter = queue->head; iter->next; iter = iter->next)
@@ -234,13 +230,11 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
         if (iter->next->event->seq == seq && iter->next->event->type == type)
         {
             event = QueueDequeueEvent (iter->next->event, iter);
-            Debug (DEB_QUEUE, i18n (2077, "dequeue type %s seq %08x at %p (pak %p)"),
-                   QueueType (type), seq, event, event->pak);
+            Debug (DEB_QUEUE, "··s> %s %p: %08x %p", QueueType (type), event, seq, event->pak);
             return event;
         }
     }
-    Debug (DEB_QUEUE, i18n (2076, "couldn't dequeue type %s seq %08x"),
-           QueueType (type), seq);
+    Debug (DEB_QUEUE, "·??· %s %08x", QueueType (type), seq);
     return NULL;
 }
 
@@ -258,8 +252,7 @@ void QueueCancel (Session *sess)
     while (queue->head && queue->head->event->sess == sess)
     {
         event = QueueDequeueEvent (queue->head->event, NULL);
-        Debug (DEB_QUEUE, i18n (2081, "dangling type %s seq %08x at %p (pak %p)"),
-               QueueType (event->type), event->seq, event, event->pak);
+        Debug (DEB_QUEUE, "··!> %s %p %p: %08x %p", QueueType (event->type), sess, event, event->seq, event->pak);
         event->sess = NULL;
         if (event->callback)
             event->callback (event);
@@ -273,8 +266,7 @@ void QueueCancel (Session *sess)
         while (iter->next && iter->next->event->sess == sess)
         {
             event = QueueDequeueEvent (iter->next->event, iter);
-            Debug (DEB_QUEUE, i18n (2081, "dangling type %s seq %08x at %p (pak %p)"),
-                   QueueType (event->type), event->seq, event, event->pak);
+            Debug (DEB_QUEUE, "··!> %s %p %p: %08x %p", QueueType (event->type), sess, event, event->seq, event->pak);
             event->sess = NULL;
             if (event->callback)
                 event->callback (event);
