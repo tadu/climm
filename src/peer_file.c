@@ -122,9 +122,9 @@ void PeerFileUser (UDWORD seq, Contact *cont, const char *reason, Connection *se
     else
     {
         if (reason)
-            event->opt = ContactOptionsSetVals (event->opt, CO_FILEACCEPT, 0, CO_REFUSE, reason, 0);
+            event->opt = OptSetVals (event->opt, CO_FILEACCEPT, 0, CO_REFUSE, reason, 0);
         else
-            event->opt = ContactOptionsSetVals (event->opt, CO_FILEACCEPT, 1, 0);
+            event->opt = OptSetVals (event->opt, CO_FILEACCEPT, 1, 0);
         QueueEnqueue (event);
         QueueRelease (event);
     }
@@ -136,14 +136,14 @@ void PeerFileUser (UDWORD seq, Contact *cont, const char *reason, Connection *se
 UBYTE PeerFileIncAccept (Connection *list, Event *event)
 {
     Connection *flist, *fpeer, *serv;
-    ContactOptions *opt;
+    Opt *opt;
     Contact *cont;
     UDWORD opt_bytes, opt_acc;
     const char *opt_files;
 
-    if (!ContactOptionsGetVal (event->opt, CO_BYTES, &opt_bytes))
+    if (!OptGetVal (event->opt, CO_BYTES, &opt_bytes))
         opt_bytes = 0;
-    if (!ContactOptionsGetStr (event->opt, CO_MSGTEXT, &opt_files))
+    if (!OptGetStr (event->opt, CO_MSGTEXT, &opt_files))
         opt_files = "";
 
     ASSERT_MSGLISTEN(list);
@@ -152,12 +152,12 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     cont  = event->cont;
     flist = PeerFileCreate (serv);
 
-    if (!ContactOptionsGetVal (event->wait->opt, CO_FILEACCEPT, &opt_acc) || !opt_acc
+    if (!OptGetVal (event->wait->opt, CO_FILEACCEPT, &opt_acc) || !opt_acc
         || !cont || !flist || !(fpeer = ConnectionClone (flist, TYPE_FILEDIRECT)))
     {
         const char *txt;
-        opt = ContactOptionsSetVals (NULL, CO_MSGTEXT, opt_files, 0);
-        if (!ContactOptionsGetStr (event->wait->opt, CO_REFUSE, &txt))
+        opt = OptSetVals (NULL, CO_MSGTEXT, opt_files, 0);
+        if (!OptGetStr (event->wait->opt, CO_REFUSE, &txt))
             txt = "";
         IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_REJING, txt, opt);
         return FALSE;
@@ -176,7 +176,7 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     fpeer->close     = &PeerFileDispatchDClose;
     fpeer->reconnect = &TCPDispatchReconn;
 
-    opt = ContactOptionsSetVals (NULL, CO_BYTES, opt_bytes, CO_MSGTEXT, opt_files, 0);
+    opt = OptSetVals (NULL, CO_BYTES, opt_bytes, CO_MSGTEXT, opt_files, 0);
     IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_ACKING, "", opt);
     
     return TRUE;
@@ -535,7 +535,7 @@ void PeerFileResend (Event *event)
     cont = event->cont;
     assert (cont);
     
-    if (!ContactOptionsGetStr (event->opt, CO_FILENAME, &opt_text))
+    if (!OptGetStr (event->opt, CO_FILENAME, &opt_text))
         opt_text = "";
 
     if (event->attempts >= MAX_RETRY_P2PFILE_ATTEMPTS || (!event->pak && !event->seq))

@@ -868,17 +868,17 @@ val_t ContactPrefVal (Contact *cont, UDWORD flag)
     
     if (cont)
     {
-        if (ContactOptionsGetVal (&cont->copts, flag, &res))
+        if (OptGetVal (&cont->copts, flag, &res))
             return res;
         if (cont->group)
         {
-            if (ContactOptionsGetVal (&cont->group->copts, flag, &res))
+            if (OptGetVal (&cont->group->copts, flag, &res))
                 return res;
-            if (cont->group->serv && ContactOptionsGetVal (&cont->group->serv->contacts->copts, flag, &res))
+            if (cont->group->serv && OptGetVal (&cont->group->serv->contacts->copts, flag, &res))
                 return res;
         }
     }
-    if (ContactOptionsGetVal (&prG->copts, flag, &res))
+    if (OptGetVal (&prG->copts, flag, &res))
         return res;
     return 0;
 }
@@ -892,33 +892,33 @@ const char *ContactPrefStr (Contact *cont, UDWORD flag)
     
     if (cont)
     {
-        if (ContactOptionsGetStr (&cont->copts, flag, &res))
+        if (OptGetStr (&cont->copts, flag, &res))
             return res;
         if (cont->group)
         {
-            if (ContactOptionsGetStr (&cont->group->copts, flag, &res))
+            if (OptGetStr (&cont->group->copts, flag, &res))
                 return res;
-            if (cont->group->serv && ContactOptionsGetStr (&cont->group->serv->contacts->copts, flag, &res))
+            if (cont->group->serv && OptGetStr (&cont->group->serv->contacts->copts, flag, &res))
                 return res;
         }
     }
-    if (ContactOptionsGetStr (&prG->copts, flag, &res))
+    if (OptGetStr (&prG->copts, flag, &res))
         return res;
     if (~flag & COF_COLOR || flag == CO_COLORNONE)
         return "";
     if (cont)
     {
-        if (ContactOptionsGetStr (&cont->copts, CO_COLORNONE, &res))
+        if (OptGetStr (&cont->copts, CO_COLORNONE, &res))
             return res;
         if (cont->group)
         {
-            if (ContactOptionsGetStr (&cont->group->copts, CO_COLORNONE, &res))
+            if (OptGetStr (&cont->group->copts, CO_COLORNONE, &res))
                 return res;
-            if (cont->group->serv && ContactOptionsGetStr (&cont->group->serv->contacts->copts, CO_COLORNONE, &res))
+            if (cont->group->serv && OptGetStr (&cont->group->serv->contacts->copts, CO_COLORNONE, &res))
                 return res;
         }
     }
-    if (ContactOptionsGetStr (&prG->copts, CO_COLORNONE, &res))
+    if (OptGetStr (&prG->copts, CO_COLORNONE, &res))
         return res;
     return "";
 }
@@ -1025,7 +1025,7 @@ void ContactSetVersion (Contact *cont)
                 new = "StrICQ";
                 break;
             case BUILD_MICQ:
-                ContactOptionsSetVal (&cont->copts, CO_TIMEMICQ, time (NULL));
+                OptSetVal (&cont->copts, CO_TIMEMICQ, time (NULL));
                 new = "mICQ";
                 if (dc->id2 & 0x80000000)
                     tail = " cvs";
@@ -1092,7 +1092,7 @@ void ContactSetVersion (Contact *cont)
     else if (HAS_CAP (cont->caps, CAP_MICQ))
     {
         new = "mICQ";
-        ContactOptionsSetVal (&cont->copts, CO_TIMEMICQ, time (NULL));
+        OptSetVal (&cont->copts, CO_TIMEMICQ, time (NULL));
     }
     else if (HAS_CAP (cont->caps, CAP_SIMNEW))
         new = "SIM";

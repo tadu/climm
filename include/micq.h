@@ -47,17 +47,17 @@ struct ConnectionPreferences_s;
 struct Cap_s;
 struct Extra_s;
 
-typedef struct Queue_s                 Queue;
-typedef struct Event_s                 Event;
-typedef struct ContactOptions_s        ContactOptions;
-typedef struct Contact_s               Contact;
-typedef struct ContactGroup_s          ContactGroup;
-typedef struct ContactAlias_s          ContactAlias;
-typedef struct Packet_s                Packet;
-typedef struct Connection_s            Connection;
-typedef struct Preferences_s           Preferences;
-typedef struct Cap_s                   Cap;
-typedef struct Extra_s                 Extra;
+typedef struct Queue_s        Queue;
+typedef struct Event_s        Event;
+typedef struct Opt_s          Opt;
+typedef struct Contact_s      Contact;
+typedef struct ContactGroup_s ContactGroup;
+typedef struct ContactAlias_s ContactAlias;
+typedef struct Packet_s       Packet;
+typedef struct Connection_s   Connection;
+typedef struct Preferences_s  Preferences;
+typedef struct Cap_s          Cap;
+typedef struct Extra_s        Extra;
 
 #include "datatype.h"
 #include <stdlib.h>

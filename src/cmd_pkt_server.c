@@ -296,8 +296,8 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             cont = ContactUIN (conn, uin);
             if (!cont || !CONTACT_DC (cont))
                 return;
-            ContactOptionsSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
-            ContactOptionsSetVal (&cont->copts, CO_TIMEONLINE, time (NULL));
+            OptSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
+            OptSetVal (&cont->copts, CO_TIMEONLINE, time (NULL));
             cont->dc->ip_rem  = PacketRead4 (pak);
             cont->dc->port    = PacketRead4 (pak);
             cont->dc->ip_loc  = PacketRead4 (pak);
@@ -391,7 +391,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
 
             if ((cont = ContactUIN (conn, uin)))
             {
-                IMSrvMsg (cont, conn, NOW, ContactOptionsSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5,
+                IMSrvMsg (cont, conn, NOW, OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5,
                           CO_MSGTYPE, wdata, CO_MSGTEXT, text, 0));
                 Auto_Reply (conn, cont);
             }

@@ -75,11 +75,11 @@ Connection *PrefNewConnection (UDWORD uin, const char *passwd)
     conn->status = STATUS_ONLINE;
 
     conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
-    ContactOptionsSetVal (&conn->contacts->copts, CO_IGNORE, 0);
+    OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
     cont = ContactFindCreate (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann");
     ContactFindCreate (conn->contacts, 0, 82274703, "Tadu");
-    ContactOptionsSetStr (&cont->copts, CO_COLORINCOMING, "red bold");
-    ContactOptionsSetStr (&cont->copts, CO_COLORMESSAGE, "red bold");
+    OptSetStr (&cont->copts, CO_COLORINCOMING, "red bold");
+    OptSetStr (&cont->copts, CO_COLORMESSAGE, "red bold");
     return conn;
 }
 
@@ -209,11 +209,11 @@ void Initialize_RC_File ()
         conn = SrvRegisterUIN (NULL, passwd);
         conn->open = &ConnectionInitServer;
         conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
-        ContactOptionsSetVal (&conn->contacts->copts, CO_IGNORE, 0);
+        OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
         cont = ContactFindCreate (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann");
         ContactFindCreate (conn->contacts, 0, 82274703, "Tadu");
-        ContactOptionsSetStr (&cont->copts, CO_COLORINCOMING, "red bold");
-        ContactOptionsSetStr (&cont->copts, CO_COLORMESSAGE, "red bold");
+        OptSetStr (&cont->copts, CO_COLORINCOMING, "red bold");
+        OptSetStr (&cont->copts, CO_COLORMESSAGE, "red bold");
     }
     else
     {
@@ -239,17 +239,17 @@ void Initialize_RC_File ()
     prG->flags |= FLAG_COLOR;
 #endif
 
-    ContactOptionsSetVal (&prG->copts, CO_LOGMESS,    1);
-    ContactOptionsSetVal (&prG->copts, CO_LOGONOFF,   1);
-    ContactOptionsSetVal (&prG->copts, CO_LOGCHANGE,  1);
-    ContactOptionsSetVal (&prG->copts, CO_SHOWONOFF,  1);
-    ContactOptionsSetVal (&prG->copts, CO_SHOWCHANGE, 1);
+    OptSetVal (&prG->copts, CO_LOGMESS,    1);
+    OptSetVal (&prG->copts, CO_LOGONOFF,   1);
+    OptSetVal (&prG->copts, CO_LOGCHANGE,  1);
+    OptSetVal (&prG->copts, CO_SHOWONOFF,  1);
+    OptSetVal (&prG->copts, CO_SHOWCHANGE, 1);
 
-    ContactOptionsSetStr (&prG->copts, CO_AUTODND,  i18n (1929, "User is dnd [Auto-Message]"));
-    ContactOptionsSetStr (&prG->copts, CO_AUTOAWAY, i18n (1010, "User is away [Auto-Message]"));
-    ContactOptionsSetStr (&prG->copts, CO_AUTONA,   i18n (1011, "User is not available [Auto-Message]"));
-    ContactOptionsSetStr (&prG->copts, CO_AUTOOCC,  i18n (1012, "User is occupied [Auto-Message]"));
-    ContactOptionsSetStr (&prG->copts, CO_AUTOFFC,  i18n (2055, "User is ffc and wants to chat about everything."));
+    OptSetStr (&prG->copts, CO_AUTODND,  i18n (1929, "User is dnd [Auto-Message]"));
+    OptSetStr (&prG->copts, CO_AUTOAWAY, i18n (1010, "User is away [Auto-Message]"));
+    OptSetStr (&prG->copts, CO_AUTONA,   i18n (1011, "User is not available [Auto-Message]"));
+    OptSetStr (&prG->copts, CO_AUTOOCC,  i18n (1012, "User is occupied [Auto-Message]"));
+    OptSetStr (&prG->copts, CO_AUTOFFC,  i18n (2055, "User is ffc and wants to chat about everything."));
 
     if (uin)
         Save_RC ();
@@ -303,7 +303,7 @@ int Read_RC_File (FILE *rcf)
             {
                 section = 4;
                 cg = ContactGroupC (NULL, 0, NULL);
-                ContactOptionsSetVal (&cg->copts, CO_IGNORE, 0);
+                OptSetVal (&cg->copts, CO_IGNORE, 0);
                 if ((conn = ConnectionFind (TYPEF_SERVER, NULL, NULL)))
                     cg->serv = conn;
             }
@@ -383,8 +383,8 @@ int Read_RC_File (FILE *rcf)
                     }
                     if (which == 1)
                     {
-                        ContactOptionsSetVal (&prG->copts, CO_ENCODING, what);
-                        ContactOptionsSetStr (&prG->copts, CO_ENCODINGSTR, ConvEncName (what));
+                        OptSetVal (&prG->copts, CO_ENCODING, what);
+                        OptSetStr (&prG->copts, CO_ENCODINGSTR, ConvEncName (what));
                         dep = 17;
                     }
                     else if (which == 2)
@@ -491,10 +491,10 @@ int Read_RC_File (FILE *rcf)
                     if (!strcasecmp (tmp, "scheme"))
                     {
                         PrefParseInt (i);
-                        ContactOptionsImport (&prG->copts, PrefSetColorScheme (1 + ((i + 3) % 4)));
+                        OptImport (&prG->copts, PrefSetColorScheme (1 + ((i + 3) % 4)));
                     }
                     else
-                        ContactOptionsImport (&prG->copts, s_sprintf ("color%s %s", tmp, s_quote (args)));
+                        OptImport (&prG->copts, s_sprintf ("color%s %s", tmp, s_quote (args)));
                 }
                 else if (!strcasecmp (cmd, "linebreaktype"))
                 {
@@ -523,25 +523,25 @@ int Read_RC_File (FILE *rcf)
                     else if (!strcasecmp (tmp, "away"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSetStr (&prG->copts, CO_AUTOAWAY, tmp);
+                        OptSetStr (&prG->copts, CO_AUTOAWAY, tmp);
                         dep = 1;
                     }
                     else if (!strcasecmp (tmp, "na"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSetStr (&prG->copts, CO_AUTONA, tmp);
+                        OptSetStr (&prG->copts, CO_AUTONA, tmp);
                         dep = 1;
                     }
                     else if (!strcasecmp (tmp, "dnd"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSetStr (&prG->copts, CO_AUTODND, tmp);
+                        OptSetStr (&prG->copts, CO_AUTODND, tmp);
                         dep = 1;
                     }
                     else if (!strcasecmp (tmp, "occ"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSetStr (&prG->copts, CO_AUTOOCC, tmp);
+                        OptSetStr (&prG->copts, CO_AUTOOCC, tmp);
                         dep = 1;
                     }
                     else if (!strcasecmp (tmp, "inv"))
@@ -552,7 +552,7 @@ int Read_RC_File (FILE *rcf)
                     else if (!strcasecmp (tmp, "ffc"))
                     {
                         PrefParse (tmp);
-                        ContactOptionsSetStr (&prG->copts, CO_AUTOFFC, tmp);
+                        OptSetStr (&prG->copts, CO_AUTOFFC, tmp);
                         dep = 1;
                     }
                     else
@@ -651,15 +651,15 @@ int Read_RC_File (FILE *rcf)
                         {
                             if (which == FLAG_DEP_CONVRUSS)
                             {
-                                ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_WIN1251);
-                                ContactOptionsSetStr (&prG->copts, CO_ENCODINGSTR, ConvEncName (ENC_WIN1251));
+                                OptSetVal (&prG->copts, CO_ENCODING, ENC_WIN1251);
+                                OptSetStr (&prG->copts, CO_ENCODINGSTR, ConvEncName (ENC_WIN1251));
                                 dep = 14;
                             }
                             else if (which == FLAG_DEP_CONVEUC)
                             {
                                 dep = 15;
-                                ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_SJIS);
-                                ContactOptionsSetStr (&prG->copts, CO_ENCODINGSTR, ConvEncName (ENC_SJIS));
+                                OptSetVal (&prG->copts, CO_ENCODING, ENC_SJIS);
+                                OptSetStr (&prG->copts, CO_ENCODINGSTR, ConvEncName (ENC_SJIS));
 #ifndef ENABLE_ICONV
                                 M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                                 M_print (i18n (2215, "This mICQ can't convert between SJIS or EUC and unicode.\n"));
@@ -668,18 +668,18 @@ int Read_RC_File (FILE *rcf)
                             else if (which == FLAG_DEP_LOG)
                             {
                                 dep = 16;
-                                ContactOptionsSetVal (&prG->copts, CO_LOGMESS, 1);
+                                OptSetVal (&prG->copts, CO_LOGMESS, 1);
                             }
                             else if (which == FLAG_DEP_LOG_ONOFF)
                             {
                                 dep = 17;
-                                ContactOptionsSetVal (&prG->copts, CO_LOGONOFF, 1);
-                                ContactOptionsSetVal (&prG->copts, CO_LOGCHANGE, 1);
+                                OptSetVal (&prG->copts, CO_LOGONOFF, 1);
+                                OptSetVal (&prG->copts, CO_LOGCHANGE, 1);
                             }
                             else if (which == FLAG_DEP_HERMIT)
                             {
                                 dep = 18;
-                                ContactOptionsSetVal (&prG->copts, CO_IGNORE, 1);
+                                OptSetVal (&prG->copts, CO_IGNORE, 1);
                             }
                             else
                                 prG->flags |= which;
@@ -695,12 +695,12 @@ int Read_RC_File (FILE *rcf)
 
                         if (i)
                         {
-                            ContactOptionsSetVal (&prG->copts, CO_LOGMESS, 1);
+                            OptSetVal (&prG->copts, CO_LOGMESS, 1);
                         }
                         if (i & 2)
                         {
-                            ContactOptionsSetVal (&prG->copts, CO_LOGONOFF, 1);
-                            ContactOptionsSetVal (&prG->copts, CO_LOGCHANGE, 1);
+                            OptSetVal (&prG->copts, CO_LOGONOFF, 1);
+                            OptSetVal (&prG->copts, CO_LOGCHANGE, 1);
                         }
                         dep = 16;
                     }
@@ -729,38 +729,38 @@ int Read_RC_File (FILE *rcf)
                         PrefParse (cmd);
                         
                         if (!strcasecmp (cmd, "on"))
-                            ContactOptionsSetVal (&prG->copts, CO_SHOWCHANGE, 0);
+                            OptSetVal (&prG->copts, CO_SHOWCHANGE, 0);
                         else if (!strcasecmp (cmd, "complete"))
                         {
-                            ContactOptionsSetVal (&prG->copts, CO_SHOWCHANGE, 0);
-                            ContactOptionsSetVal (&prG->copts, CO_SHOWONOFF, 0);
+                            OptSetVal (&prG->copts, CO_SHOWCHANGE, 0);
+                            OptSetVal (&prG->copts, CO_SHOWONOFF, 0);
                         }
                         dep = 18;
                     }
                     else if (which == -5)
                     {
-                        ContactOptionsSetVal (&prG->copts, CO_WEBAWARE, 1);
+                        OptSetVal (&prG->copts, CO_WEBAWARE, 1);
                         dep = 3247;
                     }
                     else if (which == -6)
                     {
-                        ContactOptionsSetVal (&prG->copts, CO_HIDEIP, 1);
+                        OptSetVal (&prG->copts, CO_HIDEIP, 1);
                         dep = 2345;
                     }
                     else if (which == -7)
                     {
-                        ContactOptionsSetVal (&prG->copts, CO_DCAUTH, 1);
+                        OptSetVal (&prG->copts, CO_DCAUTH, 1);
                         dep = 3274;
                     }
                     else if (which == -8)
                     {
-                        ContactOptionsSetVal (&prG->copts, CO_DCCONT, 1);
+                        OptSetVal (&prG->copts, CO_DCCONT, 1);
                         dep = 8723;
                     }
                 }
                 else if (!strcasecmp (cmd, "options"))
                 {
-                    if (ContactOptionsImport (&prG->copts, args))
+                    if (OptImport (&prG->copts, args))
                         ERROR;
                 }
                 else
@@ -828,7 +828,7 @@ int Read_RC_File (FILE *rcf)
                     {
                         j = 1;
                         ContactAddAlias (cont, cmd);
-                        ContactOptionsSetVal (&cont->copts, flags, 1); /* FIXME */
+                        OptSetVal (&cont->copts, flags, 1); /* FIXME */
                     }
                 }
                 if (!j)
@@ -846,7 +846,7 @@ int Read_RC_File (FILE *rcf)
                         section = -1;
                         break;
                     }
-                    ContactOptionsSetVal (&cont->copts, flags, 1); /* FIXME */
+                    OptSetVal (&cont->copts, flags, 1); /* FIXME */
                 }
                 break;
             case 2:
@@ -1156,7 +1156,7 @@ void PrefReadStat (FILE *stf)
             {
                 section = 4;
                 cg = ContactGroupC (NULL, 0, NULL);
-                ContactOptionsSetVal (&cg->copts, CO_IGNORE, 0);
+                OptSetVal (&cg->copts, CO_IGNORE, 0);
                 if ((conn = ConnectionFind (TYPEF_ANY_SERVER, NULL, NULL)))
                     cg->serv = conn;
             }
@@ -1254,7 +1254,7 @@ void PrefReadStat (FILE *stf)
                 }
                 else if (!strcasecmp (cmd, "options"))
                 {
-                    if (ContactOptionsImport (&cg->copts, args))
+                    if (OptImport (&cg->copts, args))
                         ERROR;
                 }
                 else
@@ -1291,7 +1291,7 @@ void PrefReadStat (FILE *stf)
                 else if (!strcasecmp (cmd, "options"))
                 {
                     for (i = 0; i < uinconts; i++)
-                        ContactOptionsImport (&uincont[i]->copts, args);
+                        OptImport (&uincont[i]->copts, args);
                 }
                 else
                 {
@@ -1310,7 +1310,7 @@ void PrefReadStat (FILE *stf)
             if (!conn->contacts)
             {
                 conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin));
-                ContactOptionsSetVal (&cg->copts, CO_IGNORE, 0);
+                OptSetVal (&cg->copts, CO_IGNORE, 0);
                 dep = 21;
             }
             if (!conn->cont)
@@ -1497,7 +1497,7 @@ int Save_RC ()
                     : prG->flags & FLAG_LIBR_BR ? "break " : "simple");
     fprintf (rcf, "\n");
     
-    fprintf (rcf, "%s\n\n", ContactOptionsString (&prG->copts));
+    fprintf (rcf, "%s\n\n", OptString (&prG->copts));
 
     fprintf (rcf, "chat %d          # random chat group; -1 to disable, 49 for mICQ\n\n",
                   prG->chat);
@@ -1535,7 +1535,7 @@ int Save_RC ()
         fprintf (stf, "label %s\n", s_quote (cg->name));
         fprintf (stf, "id %d\n", cg->id);
 
-        fprintf (stf, "%s", ContactOptionsString (&cg->copts));
+        fprintf (stf, "%s", OptString (&cg->copts));
 
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
             fprintf (stf, "entry %d %ld\n", cont->id, cont->uin);
@@ -1552,7 +1552,7 @@ int Save_RC ()
             fprintf (stf, "entry %9ld %s", cont->uin, s_quote (cont->nick));
             for (alias = cont->alias; alias; alias = alias->more)
                 fprintf (stf, " %s", s_quote (alias->alias));
-            fprintf (stf, "\n%s", ContactOptionsString (&cont->copts));
+            fprintf (stf, "\n%s", OptString (&cont->copts));
         }
     }
     fprintf (stf, "\n");

@@ -15,7 +15,7 @@ struct Event_s
     UDWORD      attempts;
     time_t      due;
     Packet     *pak;
-    ContactOptions *opt;
+    Opt *opt;
     Queuef     *callback;
     UBYTE       flags;
 };
@@ -25,9 +25,9 @@ UDWORD      QueueTime         (void);
 Event      *QueueDequeueEvent (Event *event DEBUGPARAM);
 void        QueueEnqueue      (Event *event DEBUGPARAM);
 Event      *QueueEnqueueData  (Connection *conn, UDWORD type, UDWORD seq, time_t due,
-                               Packet *pak, Contact *cont, ContactOptions *opt, Queuef *callback DEBUGPARAM);
+                               Packet *pak, Contact *cont, Opt *opt, Queuef *callback DEBUGPARAM);
 Event      *QueueEnqueueDep   (Connection *conn, UDWORD type, UDWORD seq, Event *dep,
-                               Packet *pak, Contact *cont, ContactOptions *opt, Queuef *callback DEBUGPARAM);
+                               Packet *pak, Contact *cont, Opt *opt, Queuef *callback DEBUGPARAM);
 Event      *QueueDequeue      (Connection *conn, UDWORD type, UDWORD seq DEBUGPARAM);
 Event      *QueueDequeue2     (Connection *conn, UDWORD type, UDWORD seq, Contact *cont DEBUGPARAM);
 void        QueueRetry        (Connection *conn, UDWORD type, Contact *cont DEBUGPARAM);

@@ -3,7 +3,7 @@
 #ifndef MICQ_PREFERENCES_H
 #define MICQ_PREFERENCES_H
 
-#include "contactopts.h"
+#include "util_opts.h"
 #include "util_tcl.h"
 
 struct Preferences_s
@@ -21,7 +21,7 @@ struct Preferences_s
     BOOL   locale_broken;
     UBYTE  enc_loc;     /* the local character encoding */
     
-    ContactOptions copts;  /* global (default) contact flags */
+    Opt copts;  /* global (default) contact flags */
 
     UDWORD verbose;     /* verbosity to use on startup */
     UWORD  sound;       /* how to beep */

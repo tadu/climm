@@ -453,7 +453,7 @@ void Recv_Message (Connection *conn, Packet *pak)
 
     uiG.last_rcvd = cont;
     IMSrvMsg (cont, conn, mktime (&stamp),
-              ContactOptionsSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5, CO_MSGTYPE, type, CO_MSGTEXT, text, 0));
+              OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5, CO_MSGTYPE, type, CO_MSGTEXT, text, 0));
 }
 
 /*
@@ -476,7 +476,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
         return;
     }
     
-    ContactOptionsSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
+    OptSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
 
     old = cont->status;
     cont->status = status;
@@ -534,7 +534,7 @@ void IMOffline (Contact *cont, Connection *conn)
 
     putlog (conn, NOW, cont, STATUS_OFFLINE, LOG_OFFLINE, 0xFFFF, "");
 
-    ContactOptionsSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
+    OptSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
     old = cont->status;
     cont->status = STATUS_OFFLINE;
 
@@ -562,7 +562,7 @@ void IMOffline (Contact *cont, Connection *conn)
 /*
  * Central entry point for protocol triggered output.
  */
-void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, ContactOptions *opt)
+void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, Opt *opt)
 {
     const char *line, *opt_text;
     const char *col = COLCONTACT;
@@ -571,14 +571,14 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
 
     if (!cont || ContactPrefVal (cont, CO_IGNORE))
     {
-        ContactOptionsD (opt);
+        OptD (opt);
         return;
     }
-    if (!ContactOptionsGetStr (opt, CO_MSGTEXT, &opt_text))
+    if (!OptGetStr (opt, CO_MSGTEXT, &opt_text))
         opt_text = "";
-    if (!ContactOptionsGetVal (opt, CO_PORT, &opt_port))
+    if (!OptGetVal (opt, CO_PORT, &opt_port))
         opt_port = 0;
-    if (!ContactOptionsGetVal (opt, CO_BYTES, &opt_bytes))
+    if (!OptGetVal (opt, CO_BYTES, &opt_bytes))
         opt_bytes = 0;
 
     switch (type)
@@ -652,7 +652,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     M_print ("\n");
     free (p);
 
-    ContactOptionsD (opt);
+    OptD (opt);
 }
 
 struct History_s
@@ -715,7 +715,7 @@ void HistShow (Contact *cont)
 /*
  * Central entry point for incoming messages.
  */
-void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, ContactOptions *opt)
+void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
 {
     const char *tmp, *tmp2, *tmp3, *tmp4, *tmp5, *tmp6;
     char *cdata;
@@ -725,18 +725,18 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, ContactOptions *op
     
     if (!cont)
     {
-        ContactOptionsD (opt);
+        OptD (opt);
         return;
     }
 
-    if (!ContactOptionsGetStr (opt, CO_MSGTEXT, &opt_text))
+    if (!OptGetStr (opt, CO_MSGTEXT, &opt_text))
         opt_text = "";
     cdata = strdup (opt_text);
     while (*cdata && strchr ("\n\r", cdata[strlen (cdata) - 1]))
         cdata[strlen (cdata) - 1] = '\0';
-    if (!ContactOptionsGetVal (opt, CO_MSGTYPE, &opt_type))
+    if (!OptGetVal (opt, CO_MSGTYPE, &opt_type))
         opt_type = MSG_NORM;
-    if (!ContactOptionsGetVal (opt, CO_ORIGIN, &opt_origin))
+    if (!OptGetVal (opt, CO_ORIGIN, &opt_origin))
         opt_origin = CV_ORIGIN_v5;
 
     carr = (opt_origin == CV_ORIGIN_dc) ? MSGTCPRECSTR :
@@ -746,14 +746,14 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, ContactOptions *op
            (opt_origin == CV_ORIGIN_v8) ? MSGTYPE2RECSTR : MSGICQRECSTR;
 
     putlog (conn, stamp, cont,
-        ContactOptionsGetVal (opt, CO_STATUS, &opt_status) ? opt_status : STATUS_OFFLINE, 
+        OptGetVal (opt, CO_STATUS, &opt_status) ? opt_status : STATUS_OFFLINE, 
         (opt_type == MSG_AUTH_ADDED) ? LOG_ADDED : LOG_RECVD, opt_type,
         cdata);
     
     if (ContactPrefVal (cont, CO_IGNORE))
     {
         free (cdata);
-        ContactOptionsD (opt);
+        OptD (opt);
         return;
     }
 
@@ -783,7 +783,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, ContactOptions *op
 #endif
     M_printf ("\a%s %s%*s%s ", s_time (&stamp), COLINCOMING, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
     
-    if (ContactOptionsGetVal (opt, CO_STATUS, &opt_status) && (!cont || cont->status != opt_status || !cont->group))
+    if (OptGetVal (opt, CO_STATUS, &opt_status) && (!cont || cont->status != opt_status || !cont->group))
         M_printf ("(%s) ", s_status (opt_status));
 
     if (prG->verbose > 1)
@@ -817,9 +817,9 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, ContactOptions *op
             break;
 
         case MSG_FILE:
-            if (!ContactOptionsGetVal (opt, CO_BYTES, &opt_bytes))
+            if (!OptGetVal (opt, CO_BYTES, &opt_bytes))
                 opt_bytes = 0;
-            if (!ContactOptionsGetVal (opt, CO_REF, &opt_ref))
+            if (!OptGetVal (opt, CO_REF, &opt_ref))
                 opt_ref = 0;
             M_printf (i18n (9999, "requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n"),
                       s_qquote (cdata), COLQUOTE, opt_bytes, COLNONE, COLQUOTE, opt_ref, COLNONE);
@@ -969,5 +969,5 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, ContactOptions *op
         }
     }
     free (cdata);
-    ContactOptionsD (opt);
+    OptD (opt);
 }

@@ -3,7 +3,7 @@
 #ifndef MICQ_CONTACT_H
 #define MICQ_CONTACT_H
 
-#include "contactopts.h"
+#include "util_opts.h"
 
 typedef struct ContactMetaGeneral_s  MetaGeneral;
 typedef struct ContactMetaWork_s     MetaWork;
@@ -60,7 +60,7 @@ struct ContactGroup_s
     Contact       *contacts[32];
     Connection    *serv;
     char          *name;
-    ContactOptions copts;
+    Opt            copts;
     UWORD          id;
     UBYTE          used;
 };
@@ -85,7 +85,7 @@ struct Contact_s
     UDWORD uin;
     UDWORD status;
     UDWORD oldflags;
-    ContactOptions copts;
+    Opt copts;
     UDWORD caps;
     UWORD  id;
     UBYTE  v1, v2, v3, v4;

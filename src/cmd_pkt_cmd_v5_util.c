@@ -362,7 +362,7 @@ void Auto_Reply (Connection *conn, Contact *cont)
      else
          return;
 
-    IMCliMsg (conn, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, temp, 0));
+    IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, temp, 0));
 }
 
 /*

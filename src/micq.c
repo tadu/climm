@@ -18,7 +18,6 @@
 #include "preferences.h"
 #include "server.h"
 #include "contact.h"
-#include "contactopts.h"
 #include "connection.h"
 #include "tcp.h"
 #include "tabs.h"
@@ -291,15 +290,15 @@ static void Init (int argc, char *argv[])
     if (prG->enc_loc == ENC_AUTO)
         prG->enc_loc = ENC_FAUTO | ENC_ASCII;
     
-    if (!ContactOptionsGetVal (&prG->copts, CO_ENCODING, &res))
+    if (!OptGetVal (&prG->copts, CO_ENCODING, &res))
     {
         switch (prG->enc_loc & ~ENC_FAUTO)
         {
-            case ENC_EUC:     ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_SJIS); break;
-            case ENC_SJIS:    ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_SJIS); break;
-            case ENC_KOI8:    ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_WIN1251); break;
-            case ENC_WIN1251: ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_WIN1251); break;
-            default:          ContactOptionsSetVal (&prG->copts, CO_ENCODING, ENC_LATIN1);
+            case ENC_EUC:     OptSetVal (&prG->copts, CO_ENCODING, ENC_SJIS); break;
+            case ENC_SJIS:    OptSetVal (&prG->copts, CO_ENCODING, ENC_SJIS); break;
+            case ENC_KOI8:    OptSetVal (&prG->copts, CO_ENCODING, ENC_WIN1251); break;
+            case ENC_WIN1251: OptSetVal (&prG->copts, CO_ENCODING, ENC_WIN1251); break;
+            default:          OptSetVal (&prG->copts, CO_ENCODING, ENC_LATIN1);
         }
     }
     
@@ -470,7 +469,7 @@ static void Init (int argc, char *argv[])
                      s_repl (&conn->passwd, arg_p);
                  if (uingiven && arg_u && (loginevent = conn->open (conn)))
                      QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
-                                      ContactOptionsSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
+                                      OptSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                       &CmdUserCallbackTodo);
              }
              
@@ -525,7 +524,7 @@ static void Init (int argc, char *argv[])
                 }
                 if ((loginevent = conn->open (conn)))
                      QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
-                                      ContactOptionsSetVals (NULL, CO_MICQCOMMAND, "eg", 0),
+                                      OptSetVals (NULL, CO_MICQCOMMAND, "eg", 0),
                                       &CmdUserCallbackTodo);
             }
             else

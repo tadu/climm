@@ -361,7 +361,7 @@ BOOL TCPSendSSLReq (Connection *list, Contact *cont)
     Connection *peer;
     UBYTE ret;
 
-    ret = PeerSendMsg (list, cont, ContactOptionsSetVals (NULL, CO_MSGTYPE, MSG_SSL_OPEN, CO_MSGTEXT, "", 0));
+    ret = PeerSendMsg (list, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_SSL_OPEN, CO_MSGTEXT, "", 0));
     if ((peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
         peer->ssl_status = SSL_STATUS_REQUEST;
     return ret;

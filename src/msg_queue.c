@@ -167,7 +167,7 @@ static void q_QueueEnqueue (Event *event)
 #undef QueueEnqueueData
 Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
                          time_t due, Packet *pak, Contact *cont,
-                         ContactOptions *opt, Queuef *callback DEBUGPARAM)
+                         Opt *opt, Queuef *callback DEBUGPARAM)
 {
     Event *event = calloc (sizeof (Event), 1);
     uiG.events++;
@@ -197,7 +197,7 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
 #undef QueueEnqueueDep
 Event *QueueEnqueueDep (Connection *conn, UDWORD type, UDWORD id,
                         Event *dep, Packet *pak, Contact *cont,
-                        ContactOptions *opt, Queuef *callback DEBUGPARAM)
+                        Opt *opt, Queuef *callback DEBUGPARAM)
 {
     Event *event = calloc (sizeof (Event), 1);
     uiG.events++;
@@ -397,7 +397,7 @@ void EventD (Event *event DEBUGPARAM)
            event->cont ? event->cont->uin : 0);
     if (event->pak)
         PacketD (event->pak);
-    ContactOptionsD (event->opt);
+    OptD (event->opt);
 
     while ((oevent = q_EventDep (event)))
     {

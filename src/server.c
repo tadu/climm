@@ -25,21 +25,21 @@
 
 static void CallbackMeta (Event *event);
 
-UBYTE IMCliMsg (Connection *conn, Contact *cont, ContactOptions *opt)
+UBYTE IMCliMsg (Connection *conn, Contact *cont, Opt *opt)
 {
     const char *opt_text;
     UDWORD opt_type, opt_trans;
     UBYTE ret;
 
-    if (!cont || !conn || !ContactOptionsGetStr (opt, CO_MSGTEXT, &opt_text))
+    if (!cont || !conn || !OptGetStr (opt, CO_MSGTEXT, &opt_text))
     {
-        ContactOptionsD (opt);
+        OptD (opt);
         return RET_FAIL;
     }
-    if (!ContactOptionsGetVal (opt, CO_MSGTYPE, &opt_type))
-        ContactOptionsSetVal (opt, CO_MSGTYPE, opt_type = MSG_NORM);
-    if (!ContactOptionsGetVal (opt, CO_MSGTRANS, &opt_trans))
-        ContactOptionsSetVal (opt, CO_MSGTRANS, opt_trans = CV_MSGTRANS_ANY);
+    if (!OptGetVal (opt, CO_MSGTYPE, &opt_type))
+        OptSetVal (opt, CO_MSGTYPE, opt_type = MSG_NORM);
+    if (!OptGetVal (opt, CO_MSGTRANS, &opt_trans))
+        OptSetVal (opt, CO_MSGTRANS, opt_trans = CV_MSGTRANS_ANY);
 
     putlog (conn, NOW, cont, STATUS_ONLINE, 
             opt_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, opt_type, opt_text);
@@ -49,26 +49,26 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, ContactOptions *opt)
         if (conn->assoc)
             if (RET_IS_OK (ret = PeerSendMsg (conn->assoc, cont, opt)))
                 return ret;
-    ContactOptionsSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_DC);
+    OptSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_DC);
 #endif
     if (opt_trans & CV_MSGTRANS_TYPE2)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER)
             if (RET_IS_OK (ret = SnacCliSendmsg2 (conn, cont, opt)))
                 return ret;
-    ContactOptionsSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_TYPE2);
+    OptSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_TYPE2);
     if (opt_trans & CV_MSGTRANS_ICQv8)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER)
             if (RET_IS_OK (ret = SnacCliSendmsg (conn, cont, opt_text, opt_type, 0)))
                 return ret;
-    ContactOptionsSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_ICQv8);
+    OptSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_ICQv8);
     if (opt_trans & CV_MSGTRANS_ICQv5)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER_OLD)
         {
             CmdPktCmdSendMessage (conn, cont, opt_text, opt_type);
-            ContactOptionsD (opt);
+            OptD (opt);
             return RET_OK;
         }
-    ContactOptionsD (opt);
+    OptD (opt);
     return RET_FAIL;
 }
 

@@ -1,46 +1,46 @@
 
-#ifndef MICQ_CONTACTOPTS_H
-#define MICQ_CONTACTOPTS_H 1
+#ifndef MICQ_UTIL_OPTS_H
+#define MICQ_UTIL_OPTS_H 1
 
-#define CONTACTOPTS_TABLESIZE 4
+#define OPT_TABLESIZE 4
 
-struct ContactOptions_s
+struct Opt_s
 {
-    ContactOptions *next;
-    UBYTE tags[CONTACTOPTS_TABLESIZE];
-    val_t vals[CONTACTOPTS_TABLESIZE];
+    Opt *next;
+    UBYTE tags[OPT_TABLESIZE];
+    val_t vals[OPT_TABLESIZE];
 };
 
-struct ContactOption_s
+Opt *OptC (void);
+void OptD (Opt *opt);
+
+BOOL OptGetVal   (const Opt *opt, UDWORD flag, val_t *val DEBUGPARAM);
+BOOL OptSetVal   (Opt *opt, UDWORD flag, val_t val DEBUGPARAM);
+Opt *OptSetVals  (Opt *opt, UDWORD flag, ...);
+val_t OptUndef   (Opt *opt, UDWORD flag DEBUGPARAM);
+
+BOOL OptGetStr   (const Opt *opt, UDWORD flag, const char **res DEBUGPARAM);
+BOOL OptSetStr   (Opt *opt, UDWORD flag, const char *val DEBUGPARAM);
+
+#define OptGetVal(o,f,v) OptGetVal(o,f,v DEBUGARGS)
+#define OptSetVal(o,f,v) OptSetVal(o,f,v DEBUGARGS)
+#define OptUndef(o,f)    OptUndef(o,f DEBUGARGS)
+#define OptGetStr(o,f,r) OptGetStr(o,f,r DEBUGARGS)
+#define OptSetStr(o,f,r) OptSetStr(o,f,r DEBUGARGS)
+
+const char *OptC2S (const char *color);
+const char *OptS2C (const char *str);
+
+int OptImport (Opt *opts, const char *args);
+const char *OptString (const Opt *opts);
+
+struct OptEntry_s
 {
     const char *name;
     UDWORD flag;
 };
 
-ContactOptions *ContactOptionsC (void);
-void ContactOptionsD (ContactOptions *opt);
-
-BOOL ContactOptionsGetVal   (const ContactOptions *opt, UDWORD flag, val_t *val DEBUGPARAM);
-BOOL ContactOptionsSetVal   (ContactOptions *opt, UDWORD flag, val_t val DEBUGPARAM);
-ContactOptions *ContactOptionsSetVals  (ContactOptions *opt, UDWORD flag, ...);
-val_t ContactOptionsUndef   (ContactOptions *opt, UDWORD flag DEBUGPARAM);
-
-BOOL ContactOptionsGetStr   (const ContactOptions *opt, UDWORD flag, const char **res DEBUGPARAM);
-BOOL ContactOptionsSetStr   (ContactOptions *opt, UDWORD flag, const char *val DEBUGPARAM);
-
-#define ContactOptionsGetVal(o,f,v) ContactOptionsGetVal(o,f,v DEBUGARGS)
-#define ContactOptionsSetVal(o,f,v) ContactOptionsSetVal(o,f,v DEBUGARGS)
-#define ContactOptionsUndef(o,f)    ContactOptionsUndef(o,f DEBUGARGS)
-#define ContactOptionsGetStr(o,f,r) ContactOptionsGetStr(o,f,r DEBUGARGS)
-#define ContactOptionsSetStr(o,f,r) ContactOptionsSetStr(o,f,r DEBUGARGS)
-
-const char *ContactOptionsC2S (const char *color);
-const char *ContactOptionsS2C (const char *str);
-
-int ContactOptionsImport (ContactOptions *opts, const char *args);
-const char *ContactOptionsString (const ContactOptions *opts);
-
-extern struct ContactOption_s ContactOptionsList[];
+extern struct OptEntry_s OptList[];
 
 #define COF_BOOL    0x80000000UL
 #define COF_NUMERIC 0x40000000UL

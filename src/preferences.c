@@ -57,9 +57,9 @@ Preferences *PreferencesC ()
 void PreferencesInit (Preferences *pref)
 {    
     pref->flags = FLAG_DELBS;
-    ContactOptionsImport (&pref->copts, PrefSetColorScheme (4));
-    ContactOptionsSetVal (&pref->copts, CO_SHOWCHANGE, 1);
-    ContactOptionsSetVal (&pref->copts, CO_SHOWONOFF, 1);
+    OptImport (&pref->copts, PrefSetColorScheme (4));
+    OptSetVal (&pref->copts, CO_SHOWCHANGE, 1);
+    OptSetVal (&pref->copts, CO_SHOWONOFF, 1);
 }
 
 /*

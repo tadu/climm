@@ -2,22 +2,20 @@
 #include "micq.h"
 #include <assert.h>
 #include <stdarg.h>
+#include "util_opts.h"
+#include "util_parse.h"
 #include "conv.h"
 #include "util_ui.h"
 #include "preferences.h"
-#include "contactopts.h"
-#include "util_parse.h"
 
 static char **strtable = NULL;
 static int strmax = 0;
 static int struse = 0;
 static int strmin = 0;
 
-#define TABLESIZE CONTACTOPTS_TABLESIZE
+typedef struct OptTable_s COT;
 
-typedef struct ContactOptionsTable_s COT;
-
-struct ContactOption_s ContactOptionsList[] = {
+struct OptEntry_s OptList[] = {
   { "intimate",      CO_INTIMATE      },
   { "hidefrom",      CO_HIDEFROM      },
   { "ignore",        CO_IGNORE        },
@@ -59,28 +57,28 @@ struct ContactOption_s ContactOptionsList[] = {
 /*
  * Create new contact options
  */
-ContactOptions *ContactOptionsC (void)
+Opt *OptC (void)
 {
-    return calloc (sizeof (ContactOptions), 1);
+    return calloc (sizeof (Opt), 1);
 }
 
 /*
  * Delete contact options
  */
-void ContactOptionsD (ContactOptions *opt)
+void OptD (Opt *opt)
 {
-    ContactOptions *cot;
+    Opt *cot;
     UDWORD flag;
     val_t val;
     int i;
 
     if (!opt)
         return;
-    for (i = 0; ContactOptionsList[i].name; i++)
+    for (i = 0; OptList[i].name; i++)
     {
-        if (~(flag = ContactOptionsList[i].flag) & (COF_STRING | COF_COLOR))
+        if (~(flag = OptList[i].flag) & (COF_STRING | COF_COLOR))
             continue;
-        if ((val = ContactOptionsUndef (opt, flag)))
+        if ((val = OptUndef (opt, flag)))
         {
             free (strtable[val]);
             strtable[val] = NULL;
@@ -102,7 +100,7 @@ void ContactOptionsD (ContactOptions *opt)
 /*
  * Import options from a string.
  */
-int ContactOptionsImport (ContactOptions *opts, const char *args)
+int OptImport (Opt *opts, const char *args)
 {
     strc_t par;
     char *argst;
@@ -115,14 +113,14 @@ int ContactOptionsImport (ContactOptions *opts, const char *args)
     
     while ((par = s_parse (&argstt)))
     {
-        for (i = 0; ContactOptionsList[i].name; i++)
-            if (!strcmp (par->txt, ContactOptionsList[i].name))
+        for (i = 0; OptList[i].name; i++)
+            if (!strcmp (par->txt, OptList[i].name))
             {
-                flag = ContactOptionsList[i].flag;
+                flag = OptList[i].flag;
                 break;
             }
         
-        if (!ContactOptionsList[i].name)
+        if (!OptList[i].name)
         {
             ret = 1;
             break;
@@ -137,33 +135,33 @@ int ContactOptionsImport (ContactOptions *opts, const char *args)
         if (flag & COF_COLOR)
         {
             char *color = strdup (par->txt);
-            ContactOptionsSetStr (opts, flag, ContactOptionsC2S (color));
-            ContactOptionsUndef  (opts, CO_CSCHEME);
+            OptSetStr (opts, flag, OptC2S (color));
+            OptUndef  (opts, CO_CSCHEME);
             free (color);
         }
         else if (flag == CO_ENCODINGSTR)
         {
             UWORD enc = ConvEnc (par->txt) & ~ENC_FAUTO;
-            ContactOptionsSetVal (opts, CO_ENCODING, enc);
-            ContactOptionsSetStr (opts, CO_ENCODINGSTR, ConvEncName (enc));
+            OptSetVal (opts, CO_ENCODING, enc);
+            OptSetStr (opts, CO_ENCODINGSTR, ConvEncName (enc));
         }
         else if (flag & COF_NUMERIC)
         {
             val_t val = atoll (par->txt);
             
             if (flag == CO_CSCHEME)
-                ContactOptionsImport (opts, PrefSetColorScheme (val));
+                OptImport (opts, PrefSetColorScheme (val));
             
-            ContactOptionsSetVal (opts, flag, val);
+            OptSetVal (opts, flag, val);
         }
         else if (~flag & COF_BOOL)
-            ContactOptionsSetStr (opts, flag, par->txt);
+            OptSetStr (opts, flag, par->txt);
         else if (!strcasecmp (par->txt, "on")  || !strcasecmp (par->txt, i18n (1085, "on")))
-            ContactOptionsSetVal (opts, flag, 1);
+            OptSetVal (opts, flag, 1);
         else if (!strcasecmp (par->txt, "off") || !strcasecmp (par->txt, i18n (1086, "off")))
-            ContactOptionsSetVal (opts, flag, 0);
+            OptSetVal (opts, flag, 0);
         else if (!strcasecmp (par->txt, "undef"))
-            ContactOptionsUndef (opts, flag);
+            OptUndef (opts, flag);
         else
         {
             ret = 1;
@@ -177,7 +175,7 @@ int ContactOptionsImport (ContactOptions *opts, const char *args)
 /*
  * Export options into a string.
  */
-const char *ContactOptionsString (const ContactOptions *opts)
+const char *OptString (const Opt *opts)
 {
     static str_s str;
     int i, flag;
@@ -185,25 +183,25 @@ const char *ContactOptionsString (const ContactOptions *opts)
     
     s_init (&str, "", 100);
     
-    for (i = 0; ContactOptionsList[i].name; i++)
-        if (ContactOptionsGetVal (opts, flag = ContactOptionsList[i].flag, &val))
+    for (i = 0; OptList[i].name; i++)
+        if (OptGetVal (opts, flag = OptList[i].flag, &val))
         {
             if (flag & COF_BOOL)
             {
                 if (!*str.txt)
                     s_cat (&str, "options");
-                s_catf (&str, " %s %s", ContactOptionsList[i].name, val ? "on" : "off");
+                s_catf (&str, " %s %s", OptList[i].name, val ? "on" : "off");
             }
             else
             {
                 if (*str.txt)
                     s_catc (&str, '\n');
                 if (flag & COF_NUMERIC)
-                    s_catf (&str, "options %s %lu", ContactOptionsList[i].name, val);
+                    s_catf (&str, "options %s %lu", OptList[i].name, val);
                 else if (flag & COF_COLOR)
-                    s_catf (&str, "options %s %s", ContactOptionsList[i].name, s_quote (ContactOptionsS2C (strtable[val])));
+                    s_catf (&str, "options %s %s", OptList[i].name, s_quote (OptS2C (strtable[val])));
                 else
-                    s_catf (&str, "options %s %s", ContactOptionsList[i].name, s_quote (strtable[val]));
+                    s_catf (&str, "options %s %s", OptList[i].name, s_quote (strtable[val]));
             }
         }
     if (*str.txt)
@@ -215,14 +213,14 @@ const char *ContactOptionsString (const ContactOptions *opts)
 /*
  * Get a (string) contact option.
  */
-#undef ContactOptionsGetStr
-BOOL ContactOptionsGetStr (const ContactOptions *opt, UDWORD flag, const char **res DEBUGPARAM)
+#undef OptGetStr
+BOOL OptGetStr (const Opt *opt, UDWORD flag, const char **res DEBUGPARAM)
 {
     val_t val;
 
     assert (flag & (COF_STRING | COF_COLOR));
 
-    if (!ContactOptionsGetVal (opt, flag, &val))
+    if (!OptGetVal (opt, flag, &val))
         return FALSE;
 
     if (val >= strmax)
@@ -237,7 +235,7 @@ BOOL ContactOptionsGetStr (const ContactOptions *opt, UDWORD flag, const char **
 /*
  * Set several contact options at once
  */
-ContactOptions *ContactOptionsSetVals (ContactOptions *opt, UDWORD flag, ...)
+Opt *OptSetVals (Opt *opt, UDWORD flag, ...)
 {
     const char *text;
     va_list args;
@@ -245,18 +243,18 @@ ContactOptions *ContactOptionsSetVals (ContactOptions *opt, UDWORD flag, ...)
     
     va_start (args, flag);
     if (!opt)
-        opt = ContactOptionsC ();
+        opt = OptC ();
     while (flag)
     {
         if (flag & COF_STRING)
         {
             text = va_arg (args, const char *);
-            ContactOptionsSetStr (opt, flag, text);
+            OptSetStr (opt, flag, text);
         }
         else
         {
             val = va_arg (args, val_t);
-            ContactOptionsSetVal (opt, flag, val);
+            OptSetVal (opt, flag, val);
         }
         flag = va_arg (args, UDWORD);
     }
@@ -267,14 +265,14 @@ ContactOptions *ContactOptionsSetVals (ContactOptions *opt, UDWORD flag, ...)
 /*
  * Set a (string) contact option.
  */
-#undef ContactOptionsSetStr
-BOOL ContactOptionsSetStr (ContactOptions *opt, UDWORD flag, const char *text DEBUGPARAM)
+#undef OptSetStr
+BOOL OptSetStr (Opt *opt, UDWORD flag, const char *text DEBUGPARAM)
 {
     val_t val;
 
     assert (flag & (COF_STRING | COF_COLOR));
     
-    if ((val = ContactOptionsUndef (opt, flag)))
+    if ((val = OptUndef (opt, flag)))
     {
         free (strtable[val]);
         strtable[val] = NULL;
@@ -305,25 +303,25 @@ BOOL ContactOptionsSetStr (ContactOptions *opt, UDWORD flag, const char *text DE
     
     Debug (DEB_OPTS, "(%p,%lx) := %ld / %s", opt, flag, val, s_quote (strtable [val]));
 
-    return ContactOptionsSetVal (opt, flag, val);
+    return OptSetVal (opt, flag, val);
 }
 
 /*
  * Get a contact option.
  */
-#undef ContactOptionsGetVal
-BOOL ContactOptionsGetVal (const ContactOptions *opt, UDWORD flag, val_t *res DEBUGPARAM)
+#undef OptGetVal
+BOOL OptGetVal (const Opt *opt, UDWORD flag, val_t *res DEBUGPARAM)
 {
-    const ContactOptions *cot;
+    const Opt *cot;
     UBYTE tag = flag & 0xff;
     int k;
 
     for (cot = opt; cot; cot = cot->next)
     {
-        for (k = 0; k < TABLESIZE; k++)
+        for (k = 0; k < OPT_TABLESIZE; k++)
             if (cot->tags[k] == tag)
                 break;
-        if (k != TABLESIZE)
+        if (k != OPT_TABLESIZE)
             break;
     }
     if (!cot || ((flag & COF_BOOL) && (~cot->vals[k] & (flag & CO_BOOLMASK))))
@@ -340,10 +338,10 @@ BOOL ContactOptionsGetVal (const ContactOptions *opt, UDWORD flag, val_t *res DE
 /*
  * Set a contact option.
  */
-#undef ContactOptionsSetVal
-BOOL ContactOptionsSetVal (ContactOptions *opt, UDWORD flag, val_t val DEBUGPARAM)
+#undef OptSetVal
+BOOL OptSetVal (Opt *opt, UDWORD flag, val_t val DEBUGPARAM)
 {
-    ContactOptions *cot, *cotold;
+    Opt *cot, *cotold;
     int k;
     UBYTE tag = flag & 0xff;
 
@@ -351,15 +349,15 @@ BOOL ContactOptionsSetVal (ContactOptions *opt, UDWORD flag, val_t val DEBUGPARA
     for (cot = opt; cot; cot = cot->next)
     {
         cotold = cot;
-        for (k = 0; k < TABLESIZE; k++)
+        for (k = 0; k < OPT_TABLESIZE; k++)
             if ((cot->tags[k] == tag) || !cot->tags[k])
                 break;
-        if (k != TABLESIZE)
+        if (k != OPT_TABLESIZE)
             break;
     }
     if (!cot)
     {
-        if (!(cot = calloc (sizeof (ContactOptions), 1)))
+        if (!(cot = calloc (sizeof (Opt), 1)))
         {
             Debug (DEB_OPTS, "(%p,%lx) != %lx = %lu <mem %p>", opt, flag, val, val, cot);
             return FALSE;
@@ -389,10 +387,10 @@ BOOL ContactOptionsSetVal (ContactOptions *opt, UDWORD flag, val_t val DEBUGPARA
 /*
  * Undefine a contact option.
  */
-#undef ContactOptionsUndef
-val_t ContactOptionsUndef (ContactOptions *opt, UDWORD flag DEBUGPARAM)
+#undef OptUndef
+val_t OptUndef (Opt *opt, UDWORD flag DEBUGPARAM)
 {
-    ContactOptions *cot, *cotold;
+    Opt *cot, *cotold;
     UBYTE tag = flag & 0xff;
     val_t old = 0;
     int k, m;
@@ -400,10 +398,10 @@ val_t ContactOptionsUndef (ContactOptions *opt, UDWORD flag DEBUGPARAM)
 
     for (cot = opt; cot; cot = cot->next)
     {
-        for (k = 0; k < TABLESIZE; k++)
+        for (k = 0; k < OPT_TABLESIZE; k++)
             if (cot->tags[k] == tag)
                 break;
-        if (k != TABLESIZE)
+        if (k != OPT_TABLESIZE)
             break;
     }
     if (!cot)
@@ -421,7 +419,7 @@ val_t ContactOptionsUndef (ContactOptions *opt, UDWORD flag DEBUGPARAM)
     }
     for (cotold = cot; cotold->next; )
         cotold = cotold->next;
-    for (m = TABLESIZE - 1; m >= 0; m--)
+    for (m = OPT_TABLESIZE - 1; m >= 0; m--)
         if (cotold->tags[m])
             break;
     old = cot->vals[k];
@@ -437,7 +435,7 @@ val_t ContactOptionsUndef (ContactOptions *opt, UDWORD flag DEBUGPARAM)
 /*
  * Convert a string describing a color into an escape sequence.
  */
-const char *ContactOptionsC2S (const char *color)
+const char *OptC2S (const char *color)
 {
     static str_s str;
     strc_t par;
@@ -468,7 +466,7 @@ const char *ContactOptionsC2S (const char *color)
 /*
  * Convert an escape sequence into a description of the color it selects
  */
-const char *ContactOptionsS2C (const char *text)
+const char *OptS2C (const char *text)
 {
     static str_s str;
     const char *c;

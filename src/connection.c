@@ -321,9 +321,9 @@ const char *ConnectionType (Connection *conn)
 val_t ConnectionPrefVal (Connection *conn, UDWORD flag)
 {
     val_t res = 0;
-    if (conn->contacts && ContactOptionsGetVal (&conn->contacts->copts, flag, &res))
+    if (conn->contacts && OptGetVal (&conn->contacts->copts, flag, &res))
         return res;
-    if (ContactOptionsGetVal (&prG->copts, flag, &res))
+    if (OptGetVal (&prG->copts, flag, &res))
         return res;
     return 0;
 }
