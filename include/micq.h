@@ -160,6 +160,7 @@ typedef struct
         time_t idle_val;
         UDWORD idle_msgs;
         UBYTE  idle_flag;
+        char * idle_uins;
 } user_interface_state;
 
 extern user_interface_state uiG;

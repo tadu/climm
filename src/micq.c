@@ -63,6 +63,7 @@ void init_global_defaults () {
   uiG.idle_val = 0;
   uiG.idle_flag = 0;
   uiG.idle_msgs = 0;
+  uiG.idle_uins = NULL;
 }
 
 /**********************************************

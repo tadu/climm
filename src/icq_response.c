@@ -660,9 +660,11 @@ void Display_Ext_Info_Reply (Session *sess, Packet *pak, const char *uinline)
     free (data);
 }
 
+/*
+ * Central entry point for incoming messages.
+ */
 void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, UDWORD uin, UDWORD tstatus, BOOL tcp)
 {
-    static char *uins = NULL;
     char *cdata, *tmp = NULL;
     char *url_url, *url_desc;
     char sep = ConvSep ();
@@ -687,17 +689,17 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
     {
         char buf[2048];
 
-        if ((uin != uiG.last_rcvd_uin) || !uins)
+        if ((uin != uiG.last_rcvd_uin) || !uiG.idle_uins)
         {
-            snprintf (buf, sizeof (buf), "%s %s", uins && uiG.idle_msgs ? uins : "", ContactFindName (uin));
-            if (uins)
-                free (uins);
-            uins = strdup (buf);
+            snprintf (buf, sizeof (buf), "%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", ContactFindName (uin));
+            if (uiG.idle_uins)
+                free (uiG.idle_uins);
+            uiG.idle_uins = strdup (buf);
         }
 
         uiG.idle_msgs++;
         R_setpromptf ("[" CYAN BOLD "%d%s" COLNONE "] " COLSERV "%s" COLNONE "",
-                      uiG.idle_msgs, uins, i18n (1040, "mICQ> "));
+                      uiG.idle_msgs, uiG.idle_uins, i18n (1040, "mICQ> "));
     }
 
 #ifdef MSGEXEC
