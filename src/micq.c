@@ -102,6 +102,9 @@ void Idle_Check (Session *sess)
     int delta;
     UDWORD new = -1;
 
+    if (sess->type != TYPE_SERVER && sess->type != TYPE_SERVER_OLD)
+        return;
+
     if ((sess->status & (STATUSF_DND | STATUSF_OCC | STATUSF_FFC))
         || !(sess->connect & CONNECT_OK))
     {
