@@ -17,6 +17,38 @@
 #include "util_str.h"
 #include ".cvsupdate"
 
+#ifndef EXTRAVERSION
+#ifdef __AMIGA__
+#define EXTRAVERSION "AmigaOS hand compiled"
+#elif defined (__BEOS__)
+#define EXTRAVERSION "BeOS hand compiled"
+#elif defined (_WIN32)
+#define EXTRAVERSION "Win32 hand compiled"
+#else
+#define EXTRAVERSION "hand compiled"
+#endif
+#endif
+
+#ifdef ENABLE_PEER2PEER
+#define EV_P2P "P2P "
+#else
+#define EV_P2P
+#endif
+
+#ifdef ENABLE_UTF8
+#define EV_UTF8 "UTF8 "
+#else
+#define EV_UTF8
+#endif
+
+#ifdef ENABLE_ICONV
+#define EV_ICONV "ICONV(" ENABLE_ICONV ") "
+#else
+#define EV_ICONV
+#endif
+
+#define EV EV_P2P EV_UTF8 EV_ICONV
+
 static const char *ver = 0;
 
 const char *BuildVersion (void)
@@ -33,7 +65,7 @@ const char *BuildAttribution (void)
 }                  
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
-const char  *BuildVersionText = "$VER: mICQ " VERSION " CVS " EXTRAVERSION " (" CVSUPDATE " build " BUILDDATE ")";
+const char  *BuildVersionText = "$VER: mICQ " VERSION " CVS " EV EXTRAVERSION " (" CVSUPDATE " build " BUILDDATE ")";
 
 /*
  i19n (1001, "en")               locale

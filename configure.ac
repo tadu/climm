@@ -68,7 +68,7 @@ if test "x$ac_arg_use_utf8" = "xyes"; then
 fi
 
 if test "x$ac_arg_use_iconv" != "xnone"; then
-  AC_DEFINE(ENABLE_ICONV, 1, [Whether to use iconv functions])
+  AC_DEFINE_UNQUOTED(ENABLE_ICONV, "$ac_arg_use_iconv", [Whether to use iconv functions])
 fi
 
 # Checks for libraries.
@@ -184,8 +184,6 @@ fi
 
 if test "x$MICQ_EXTRAVERSION" != "x"; then
     AC_DEFINE_UNQUOTED(EXTRAVERSION,"$MICQ_EXTRAVERSION",[Extra version information like the distribution used])
-else
-    AC_DEFINE(EXTRAVERSION,["hand compiled"])
 fi
 
 AC_CONFIG_FILES([doc/Makefile src/Makefile Makefile lang/Makefile])
