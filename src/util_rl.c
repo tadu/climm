@@ -148,7 +148,7 @@ static char *rl_yank = NULL;
 static char *rl_history[RL_HISTORY_LINES + 1];
 static int   rl_history_pos = 0;
 
-static int    rl_tab_state = 0;  /* 0 = OFF 1 = Out 2 = Inc 3 = Online 4 = Offline |8 = second try */
+static int    rl_tab_state = 0;  /* 0 = OFF 1 = Out 2 = Inc 3 = Online 4 = Offline |8 = second try -1 = disallow */
 static UDWORD rl_tab_index = 0;  /* index in list */
 static UDWORD rl_tab_len   = 0;  /* number of codepoints tabbed in */
 static UDWORD rl_tab_pos   = 0;  /* start of word tabbed in */
@@ -376,6 +376,23 @@ void ReadLineHandleSig (void)
             }
         }
 #endif
+    }
+}
+
+void ReadLineAllowTab (UBYTE onoff)
+{
+    if (!onoff == (rl_tab_state == -1))
+        return;
+
+    switch (rl_tab_state)
+    {
+        case -1:
+            rl_tab_state = 0;
+            break;
+        default:
+            rl_tab_cancel ();
+        case 0:
+            rl_tab_state = -1;
     }
 }
 
@@ -968,7 +985,7 @@ static void rl_tab_accept (void)
     int off;
     UWORD columns;
     
-    if (!rl_tab_state)
+    if (rl_tab_state <= 0)
        return;
     rl_left (rl_tab_common);
     for ( ; rl_tab_len; rl_tab_len--)
@@ -995,7 +1012,7 @@ static void rl_tab_cancel (void)
     int i, off;
     UWORD columns;
     
-    if (!rl_tab_state)
+    if (rl_tab_state <= 0)
        return;
     rl_left (rl_tab_common);
     for ( ; rl_tab_len; rl_tab_len--)
@@ -1022,6 +1039,12 @@ static void rl_key_tab (void)
     const char *display;
     int i, off;
     UWORD columns;
+
+    if (rl_tab_state == -1)
+    {
+        rl_insert (9);
+        return;
+    }
 
     if (!rl_tab_state)
     {
@@ -1102,7 +1125,7 @@ static void rl_key_shifttab (void)
     int off;
     UWORD columns;
 
-    if (!rl_tab_state)
+    if (rl_tab_state <= 0)
     {
         printf ("\a");
         return;
@@ -1143,7 +1166,7 @@ static void rl_key_shifttab (void)
  */
 static void rl_key_insert (wchar_tt ucs)
 {
-    if (rl_tab_state && rl_tab_common)
+    if (rl_tab_state > 0 && rl_tab_common)
     {
         rl_tab_cancel ();
         rl_insert (ucs);
@@ -1151,7 +1174,7 @@ static void rl_key_insert (wchar_tt ucs)
     }
     else
     {
-        if (rl_tab_state)
+        if (rl_tab_state > 0)
         {
             rl_tab_accept ();
             rl_insert (' ');
@@ -1168,7 +1191,7 @@ static void rl_key_left (void)
     if (!rl_ucspos)
         return;
 
-    if (rl_tab_state)
+    if (rl_tab_state > 0)
     {
         if (rl_tab_common)
             rl_tab_common--;
@@ -1186,7 +1209,7 @@ static void rl_key_right (void)
     if (rl_ucspos >= rl_ucscol.len)
         return;
 
-    if (rl_tab_state)
+    if (rl_tab_state > 0)
     {
         if (rl_tab_common < rl_tab_len)
             rl_tab_common++;
@@ -1201,7 +1224,7 @@ static void rl_key_right (void)
  */
 static void rl_key_delete (void)
 {
-    if (rl_tab_state)
+    if (rl_tab_state > 0)
         rl_tab_cancel ();
     rl_delete ();
     rl_recheck (TRUE);
@@ -1212,7 +1235,7 @@ static void rl_key_delete (void)
  */
 static void rl_key_backspace (void)
 {
-    if (rl_tab_state)
+    if (rl_tab_state > 0)
         rl_tab_cancel ();
     if (rl_left (1))
         rl_key_delete ();
@@ -1287,7 +1310,7 @@ static void rl_key_end (void)
 {
     int gpos;
 
-    if (rl_tab_state)
+    if (rl_tab_state > 0)
         rl_tab_accept ();
 
     if (rl_ucspos >= rl_ucscol.len)
@@ -1434,7 +1457,7 @@ str_t ReadLine (UBYTE newbyte)
 #endif
                     break;
                 case 32:             /*   = SPACE */
-                    if (rl_tab_state)
+                    if (rl_tab_state > 0)
                         rl_tab_accept ();
                     rl_insert (' ');
                     break;

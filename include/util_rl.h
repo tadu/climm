@@ -10,6 +10,7 @@ void ReadLineTtyUnset (void);
 void ReadLineTtySet (void);
 void ReadLineClrScr (void);
 void ReadLineHandleSig (void);
+void ReadLineAllowTab (UBYTE onoff);
 
 str_t ReadLine (UBYTE newbyte);
 
