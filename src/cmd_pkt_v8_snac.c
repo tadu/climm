@@ -372,7 +372,7 @@ JUMP_SNAC_F(SnacSrvUseronline)
     Contact *cont;
     Packet *p, *pak;
     TLV *tlv;
-    time_t t1, t2;
+    time_t t1, t2, t3;
     
     pak = event->pak;
     cont = ContactFind (PacketReadUIN (pak));
@@ -401,7 +401,8 @@ JUMP_SNAC_F(SnacSrvUseronline)
         PacketReadB4 (p);
         t1 = PacketReadB4 (p);
         t2 = PacketReadB4 (p);
-        UserOnlineSetVersion (cont, t1, t2);
+        t3 = PacketReadB4 (p);
+        UserOnlineSetVersion (cont, t1, t2, t3);
         /* remainder ignored */
     }
     /* TLV 1, d, f, 2, 3 ignored */
@@ -442,6 +443,8 @@ JUMP_SNAC_F(SnacSrvIcbmerr)
         UWORD err = PacketReadB2 (event->pak);
         if (err == 0xe)
             M_print (i18n (2017, "The user is actually online.\n"));
+        else if (err == 0x4)
+            M_print (i18n (2022, "The user is indeed offline.\n"));
     }
 }
 

@@ -442,7 +442,7 @@ void Recv_Message (Session *sess, UBYTE * pak)
 }
 
 
-void UserOnlineSetVersion (Contact *con, UDWORD tstamp, UDWORD tstamp2)
+void UserOnlineSetVersion (Contact *con, time_t tstamp, time_t tstamp2, time_t tstamp3)
 {
     char buf[100];
     char *new = NULL;
@@ -485,14 +485,25 @@ void UserOnlineSetVersion (Contact *con, UDWORD tstamp, UDWORD tstamp2)
         v3 = (tstamp2 &     0xff00) >> 8;
         v4 =  tstamp2 &       0xff;
     }
+    else if (tstamp == tstamp2 && tstamp2 == tstamp3)
+        new = "vICQ(?)";
+    else if ((tstamp & 0xffff0000) == 0xffff0000)
+    {
+        snprintf (buf, sizeof (buf), "%08lx", tstamp);
+        new = buf;
+    }
     
     if (new)
     {
-        strcpy (buf, new);
-        strcat (buf, " ");
-                      sprintf (buf + strlen (buf), "%d.%d", v1, v2);
-        if (v3 || v4) sprintf (buf + strlen (buf), ".%d", v3);
-        if (v4)       sprintf (buf + strlen (buf), " cvs %d", v4);
+        if (new != buf)
+            strcpy (buf, new);
+        if (v1 || v2 || v3 || v4)
+        {
+            strcat (buf, " ");
+                          sprintf (buf + strlen (buf), "%d.%d", v1, v2);
+            if (v3 || v4) sprintf (buf + strlen (buf), ".%d", v3);
+            if (v4)       sprintf (buf + strlen (buf), " cvs %d", v4);
+        }
         if (ssl) strcat (buf, "/SSL");
     }
     else if (prG->verbose)
