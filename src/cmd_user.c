@@ -65,10 +65,11 @@ static jump_t jump[] = {
     { &CmdUserIgnoreStatus,  "i",            NULL, 0,   0 },
     { &CmdUserStatusDetail,  "status",       NULL, 2,  10 },
     { &CmdUserStatusDetail,  "ww",           NULL, 2,   2 },
-    { &CmdUserStatusDetail,  "ee",           NULL, 2,  11 },
+    { &CmdUserStatusDetail,  "ee",           NULL, 2,   3 },
     { &CmdUserStatusDetail,  "w",            NULL, 2,   4 },
     { &CmdUserStatusDetail,  "e",            NULL, 2,   5 },
-    { &CmdUserStatusDetail,  "s",            NULL, 2,  28 },
+    { &CmdUserStatusDetail,  "s",            NULL, 2,  30 },
+    { &CmdUserStatusDetail,  "s-any",        NULL, 2,   0 },
     { &CmdUserStatusShort,   "w-old",        NULL, 2,   1 },
     { &CmdUserStatusShort,   "e-old",        NULL, 2,   0 },
     { &CmdUserStatusWide,    "wide",         NULL, 2,   1 },
@@ -222,17 +223,17 @@ static JUMP_F(CmdUserRandom)
     if (!UtilUIParseInt (&args, &arg1))
     {
         M_print (i18n (1704, COLCLIENT "Groups: \n"));
-        M_print (i18n (1705, "General                    1\n"));
-        M_print (i18n (1706, "Romance                    2\n"));
-        M_print (i18n (1707, "Games                      3\n"));
-        M_print (i18n (1708, "Students                   4\n"));
-        M_print (i18n (1709, "20 something               6\n"));
-        M_print (i18n (1710, "30 something               7\n"));
-        M_print (i18n (1711, "40 something               8\n"));
-        M_print (i18n (1712, "50+                        9\n"));
-        M_print (i18n (1713, "Man chat requesting women 10\n"));
-        M_print (i18n (1714, "Woman chat requesting men 11\n"));
-        M_print (i18n (1715, "mICQ                      49 (might not work but try it)"));
+        M_print ("  %2d %s\n",  1, i18n (1705, "General"));
+        M_print ("  %2d %s\n",  2, i18n (1706, "Romance"));
+        M_print ("  %2d %s\n",  3, i18n (1707, "Games"));
+        M_print ("  %2d %s\n",  4, i18n (1708, "Students"));
+        M_print ("  %2d %s\n",  6, i18n (1709, "20 something"));
+        M_print ("  %2d %s\n",  7, i18n (1710, "30 something"));
+        M_print ("  %2d %s\n",  8, i18n (1711, "40 something"));
+        M_print ("  %2d %s\n",  9, i18n (1712, "50+"));
+        M_print ("  %2d %s\n", 10, i18n (1713, "Man chat requesting women"));
+        M_print ("  %2d %s\n", 11, i18n (1714, "Woman chat requesting men"));
+        M_print ("  %2d %s\n", 49, i18n (1715, "mICQ"));
         M_print (COLNONE "\n");
     }
     else
@@ -256,21 +257,18 @@ static JUMP_F(CmdUserRandomSet)
     if (!UtilUIParseInt (&args, &arg1))
     {
         M_print (i18n (1704, COLCLIENT "Groups: \n"));
-        if (sess->ver > 6)
-            M_print (i18n (2010, "None                       0\n"));
-        else
-            M_print (i18n (1716, "None                      -1\n"));
-        M_print (i18n (1705, "General                    1\n"));
-        M_print (i18n (1706, "Romance                    2\n"));
-        M_print (i18n (1707, "Games                      3\n"));
-        M_print (i18n (1708, "Students                   4\n"));
-        M_print (i18n (1709, "20 something               6\n"));
-        M_print (i18n (1710, "30 something               7\n"));
-        M_print (i18n (1711, "40 something               8\n"));
-        M_print (i18n (1712, "50+                        9\n"));
-        M_print (i18n (1713, "Man chat requesting women 10\n"));
-        M_print (i18n (1714, "Woman chat requesting men 11\n"));
-        M_print (i18n (1715, "mICQ                      49 (might not work but try it)"));
+        M_print ("  %2d %s\n", sess->ver > 6 ? 0 : -1, i18n (1716, "None"));
+        M_print ("  %2d %s\n",  1, i18n (1705, "General"));
+        M_print ("  %2d %s\n",  2, i18n (1706, "Romance"));
+        M_print ("  %2d %s\n",  3, i18n (1707, "Games"));
+        M_print ("  %2d %s\n",  4, i18n (1708, "Students"));
+        M_print ("  %2d %s\n",  6, i18n (1709, "20 something"));
+        M_print ("  %2d %s\n",  7, i18n (1710, "30 something"));
+        M_print ("  %2d %s\n",  8, i18n (1711, "40 something"));
+        M_print ("  %2d %s\n",  9, i18n (1712, "50+"));
+        M_print ("  %2d %s\n", 10, i18n (1713, "Man chat requesting women"));
+        M_print ("  %2d %s\n", 11, i18n (1714, "Woman chat requesting men"));
+        M_print ("  %2d %s\n", 49, i18n (1715, "mICQ"));
         M_print (COLNONE "\n");
     }
     else
@@ -291,12 +289,9 @@ static JUMP_F(CmdUserRandomSet)
 
 static JUMP_F(CmdUserHelp)
 {
-    char *arg1 = NULL, *t = NULL;
+    char *arg1 = NULL;
 
-    if (UtilUIParse (&args, &t))
-        arg1 = t;
-    if (UtilUIParseRemainder (&args, &t))
-        arg1 = NULL;
+    UtilUIParse (&args, &arg1);
 
     if (arg1 && !strcasecmp (arg1, i18n (1447, "Client")))
     {
@@ -399,9 +394,6 @@ static JUMP_F(CmdUserHelp)
         M_print (COLMESSAGE "%s [<nr>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("rand"),
                  i18n (1415, "Finds a random user in the specified group or lists the groups."));
-        M_print (COLMESSAGE "%s <secret>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
-                 CmdUserLookupName ("pass"),
-                 i18n (1408, "Changes your password to secret."));
         M_print (COLMESSAGE "%s <user>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("status"),
                  i18n (1400, "Shows locally stored info on user."));
@@ -450,6 +442,9 @@ static JUMP_F(CmdUserHelp)
         M_print (COLMESSAGE "%s <status>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("change"),
                  i18n (1427, "Changes your status to the status number. Without a number it lists the available modes."));
+        M_print (COLMESSAGE "%s <secret>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
+                 CmdUserLookupName ("pass"),
+                 i18n (1408, "Changes your password to secret."));
         M_print (COLMESSAGE "%s <password>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("reg"),
                  i18n (1426, "Creates a new UIN with the specified password."));
@@ -513,7 +508,10 @@ static JUMP_F(CmdUserPass)
             SnacCliMetasetpass (sess, arg1);
         sess->passwd = strdup (arg1);
         if (sess->spref->passwd && strlen (sess->spref->passwd))
+        {
+            M_print (i18n (2122, " Note: You need to 'save' to write new password to disc.\n"));
             sess->spref->passwd = strdup (arg1);
+        }
     }
     return 0;
 }
@@ -535,10 +533,12 @@ static JUMP_F(CmdUserSMS)
         M_print (i18n (2014, "No number given.\n"));
     else
     {
+        arg1 = strdup (arg1);
         if (!UtilUIParseRemainder (&args, &arg2))
             M_print (i18n (2015, "No message given.\n"));
         else
             SnacCliSendsms (sess, arg1, arg2);
+        free (arg1);
     }
     return 0;
 }
@@ -602,27 +602,10 @@ static JUMP_F(CmdUserPeek)
  */
 static JUMP_F(CmdUserTrans)
 {
-    char *arg1 = NULL, *p = NULL;
+    char *arg1 = NULL, *t = NULL;
+    const char *p = NULL;
+    int one = 0;
 
-    if (!UtilUIParse (&args, &arg1))
-    {
-        UDWORD v1 = 0, v2 = 0, v3 = 0, v4 = 0;
-
-        arg1 = strdup (i18n (1003, "0"));
-        UtilUIParseInt (&arg1, &v1); if (*arg1 == '-') arg1++;
-        UtilUIParseInt (&arg1, &v2); if (*arg1 == '-') arg1++;
-        UtilUIParseInt (&arg1, &v3); if (*arg1 == '-') arg1++;
-        UtilUIParseInt (&arg1, &v4); if (*arg1 == '-') arg1++;
-        
-        /* i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n") */
-        M_print (i18n (-1, "1079:No translation; using compiled-in strings.¶"),
-                 i18n (1001, "<lang>"), i18n (1002, "<lang_cc>"), i18n (1004, "<translation authors>"),
-                 i18n (1006, "<last edit date>"), i18n (1005, "<last editor>"),
-                 v1, v2, v3, v4 ? p = UtilFill (".%d", v4) : "");
-        if (p)
-            free (p);
-        return 0;
-    }
     while (1)
     {
         UDWORD i, l = 0;
@@ -630,13 +613,14 @@ static JUMP_F(CmdUserTrans)
         if (UtilUIParseInt (&args, &i))
         {
             M_print ("%3d:%s\n", i, i18n (i, i18n (1078, "No translation available.")));
+            one = 1;
             continue;
         }
         if (UtilUIParse (&args, &arg1))
         {
             if (!strcmp (arg1, "all"))
             {
-                for (i = 0; i - l < 100; i++)
+                for (i = l = 1000; i - l < 100; i++)
                 {
                     p = i18n (i, NULL);
                     if (p)
@@ -650,10 +634,10 @@ static JUMP_F(CmdUserTrans)
             {
                 if (!strcmp (arg1, ".") || !strcmp (arg1, "none") || !strcmp (arg1, "unload"))
                 {
-                    p = strdup (i18n (1089, "Unloaded translation."));
+                    t = strdup (i18n (1089, "Unloaded translation."));
                     i18nClose ();
-                    M_print ("%s\n", p);
-                    free (p);
+                    M_print ("%s\n", t);
+                    free (t);
                     continue;
                 }
                 i = i18nOpen (arg1);
@@ -663,10 +647,33 @@ static JUMP_F(CmdUserTrans)
                     M_print (i18n (1081, "Successfully loaded en translation (%d entries).\n"), i);
                 else
                     M_print ("No internationalization requested.\n");
-            } 
+            }
+            one = 1;
         }
-        else
+        else if (one)
             return 0;
+        else
+        {
+            UDWORD v1 = 0, v2 = 0, v3 = 0, v4 = 0;
+
+            arg1 = strdup (i18n (1003, "0"));
+            for (t = arg1; *t; t++)
+                if (*t == '-')
+                    *t = ' ';
+            UtilUIParseInt (&arg1, &v1);
+            UtilUIParseInt (&arg1, &v2);
+            UtilUIParseInt (&arg1, &v3);
+            UtilUIParseInt (&arg1, &v4);
+            
+            /* i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n") */
+            M_print (i18n (-1, "1079:No translation; using compiled-in strings.¶"),
+                     i18n (1001, "<lang>"), i18n (1002, "<lang_cc>"), i18n (1004, "<translation authors>"),
+                     i18n (1006, "<last edit date>"), i18n (1005, "<last editor>"),
+                     v1, v2, v3, v4 ? t = (char *)UtilFill (".%d", v4) : "");
+            if (t)
+                free (t);
+            return 0;
+        }
     }
 }
 
@@ -691,10 +698,13 @@ static JUMP_F(CmdUserTCP)
 
         if (!UtilUIParse (&args, &arg1))
             break;
+        
+        arg1 = strdup (arg1);
 
         if (!UtilUIParseNick (&args, &cont))
         {
             M_print (i18n (1845, "Nick %s unknown.\n"), args);
+            free (arg1);
             return 0;
         }
 
@@ -713,14 +723,12 @@ static JUMP_F(CmdUserTCP)
             
             for (count = 0; count < 10; count++)
             {
-                des = strtok (NULL, " \t\n");
-                if (!des)
+                if (!UtilUIParse (&args, &des))
                 {
                     des = "no descriptione, sir.";
                     break;
                 }
-                as = strtok (NULL, " \t\n");
-                if (!as)
+                if (!UtilUIParse (&args, &as))
                     break;
                 if (*as == '/' && !*(as + 1))
                     as = (index (des, '/')) ? rindex (des, '/') + 1 : des;
@@ -747,6 +755,7 @@ static JUMP_F(CmdUserTCP)
             TCPGetAuto     (list, cont->uin, TCP_MSG_GET_FFC);
         else
             break;
+        free (arg1);
         return 0;
     }
     M_print (i18n (1846, "Opens and closes TCP connections:\n"));
@@ -799,10 +808,13 @@ static JUMP_F(CmdUserAuto)
         M_print (i18n (1724, "Automatic replies are %s.\n"), i18n (1086, "off"));
         return 0;
     }
+    
+    arg1 = strdup (arg1);
 
     if (!UtilUIParseRemainder (&args, &arg2))
     {
         M_print (i18n (1735, "Must give a message.\n"));
+        free (arg1);
         return 0;
     }
 
@@ -831,7 +843,8 @@ static JUMP_F(CmdUserAuto)
         if (prG->auto_ffc)  free (prG->auto_ffc);  prG->auto_ffc  = strdup (arg2);
     }
     else
-        M_print (i18n (2113, "Unknown status '%s'.\n"));
+        M_print (i18n (2113, "Unknown status '%s'.\n"), arg1);
+    free (arg1);
     return 0;
 }
 
@@ -913,7 +926,10 @@ static JUMP_F (CmdUserResend)
 
     if (!UtilUIParseNick (&args, &cont))
     {
-        M_print (i18n (1676, "Need uin/nick to send to.\n"));
+        if (*args)
+            M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);
+        else
+            M_print (i18n (1676, "Need uin/nick to send to.\n"));
         return 0;
     }
     
@@ -938,10 +954,9 @@ static JUMP_F (CmdUserMessage)
     static UDWORD multi_uin;
     static int offset = 0;
     static char msg[1024];
-    char *arg1 = NULL, *p, *temp;
-    int len;
+    char *arg1 = NULL, *temp;
     UDWORD uin = 0;
-    Contact *cont;
+    Contact *cont = NULL;
     SESSION;
 
     if (status)
@@ -1027,29 +1042,13 @@ static JUMP_F (CmdUserMessage)
         switch (data)
         {
             case 1:
-                arg1 = strtok (p = strdup (args), UIN_DELIMS);
-                if (!arg1)
+                if (!UtilUIParseNick (&args, &cont))
                 {
-                    M_print (i18n (1676, "Need uin to send to.\n"));
+                    M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);
                     return 0;
                 }
-                uin = ContactFindByNick (arg1);
-                len = 0;
-                while (uin == -1)
-                {
-                    len += strlen (arg1);
-                    free (p);
-                    p = strdup (args);
-                    arg1 = strtok (p + len + 1, UIN_DELIMS);
-                    if (!arg1)
-                    {
-                        
-                        M_print (i18n (1061, "%s not recognized as a nick name.\n"), strtok (args, UIN_DELIMS));
-                        return 0;
-                    }
-                    uin = ContactFindByNick (p);
-                }
-                arg1 = strtok (NULL, "\n");
+                uin = cont->uin;
+                UtilUIParseRemainder (&args, &arg1);
                 break;
             case 2:
                 if (!uiG.last_rcvd_uin)
@@ -1058,7 +1057,7 @@ static JUMP_F (CmdUserMessage)
                     return 0;
                 }
                 uin = uiG.last_rcvd_uin;
-                arg1 = strtok (args, "\n");
+                UtilUIParseRemainder (&args, &arg1);
                 break;
             case 4:
                 if (!uiG.last_sent_uin)
@@ -1067,11 +1066,11 @@ static JUMP_F (CmdUserMessage)
                     return 0;
                 }
                 uin = uiG.last_sent_uin;
-                arg1 = strtok (args, "\n");
+                UtilUIParseRemainder (&args, &arg1);
                 break;
             case 8:
                 uin = -1;
-                arg1 = strtok (args, "\n");
+                UtilUIParseRemainder (&args, &arg1);
                 break;
             default:
                 assert (0);
@@ -1166,12 +1165,17 @@ static JUMP_F(CmdUserStatusDetail)
                        STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
     SESSION;
 
-    if ((data & 8) && !UtilUIParseNick (&args, &cont))
+    if (!data)
+        UtilUIParseInt (&args, &data);
+
+    if ((data & 8) && !UtilUIParseNick (&args, &cont) && *args)
     {
         M_print (i18n (1700, "%s is not a valid user in your list.\n"), args);
         return 0;
     }
-    else if (cont)
+    if (cont)
+        uin = cont->uin;
+    else
     {
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
         {
@@ -1533,9 +1537,9 @@ static JUMP_F(CmdUserSound)
     if (strlen (args))
     {
         prG->sound &= ~SFLAG_BEEP & ~SFLAG_CMD;
-        if (!strcasecmp (args, i18n (1085, "on")))
+        if (!strcasecmp (args, "on") || !strcasecmp (args, i18n (1085, "on")))
            prG->sound |= SFLAG_BEEP;
-        else if (strcasecmp (args, i18n (1086, "off")))
+        else if (strcasecmp (args, "off") && strcasecmp (args, i18n (1086, "off")))
         {
            prG->sound |= SFLAG_CMD;
            prG->sound_cmd = strdup (args);
@@ -1558,9 +1562,9 @@ static JUMP_F(CmdUserSoundOnline)
     if (strlen (args))
     {
         prG->sound &= ~SFLAG_ON_BEEP & ~SFLAG_ON_CMD;
-        if (!strcasecmp (args, i18n (1085, "on")))
+        if (!strcasecmp (args, "on") || !strcasecmp (args, i18n (1085, "on")))
            prG->sound |= SFLAG_ON_BEEP;
-        else if (strcasecmp (args, i18n (1086, "off")))
+        else if (strcasecmp (args, "off") && strcasecmp (args, i18n (1086, "off")))
         {
            prG->sound |= SFLAG_ON_CMD;
            prG->sound_on_cmd = strdup (args);
@@ -1583,9 +1587,9 @@ static JUMP_F(CmdUserSoundOffline)
     if (strlen (args))
     {
         prG->sound &= ~SFLAG_OFF_BEEP & ~SFLAG_OFF_CMD;
-        if (!strcasecmp (args, i18n (1085, "on")))
+        if (!strcasecmp (args, "on") || !strcasecmp (args, i18n (1085, "on")))
            prG->sound |= SFLAG_OFF_BEEP;
-        else if (strcasecmp (args, i18n (1086, "off")))
+        else if (strcasecmp (args, "off") && strcasecmp (args, i18n (1086, "off")))
         {
            prG->sound |= SFLAG_OFF_CMD;
            prG->sound_off_cmd = strdup (args);
@@ -1639,8 +1643,6 @@ static JUMP_F(CmdUserSet)
 {
     int quiet = 0;
     char *arg1 = NULL;
-    
-    arg1 = strtok (args, " \t\n");
     
     if (!UtilUIParse (&args, &arg1) || !strcmp (arg1, "help") || !strcmp (arg1, "?"))
     {
@@ -1786,7 +1788,7 @@ static JUMP_F(CmdUserTogInvis)
 
     if (!UtilUIParseNick (&args, &cont))
     {
-        M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);
+        M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
     }
 
@@ -1828,7 +1830,7 @@ static JUMP_F(CmdUserTogVisible)
     Contact *cont = NULL;
     SESSION;
 
-    if (UtilUIParseNick (&args, &cont))
+    if (!UtilUIParseNick (&args, &cont))
     {
         M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);
         return 0;
@@ -1863,63 +1865,47 @@ static JUMP_F(CmdUserTogVisible)
  */
 static JUMP_F(CmdUserAdd)
 {
-    Contact *cont;
+    Contact *cont = NULL /*, *cont2 */;
     char *arg1;
-    const char *arg2;
-    UDWORD uin;
     SESSION;
 
-    arg1 = strtok (args, " \t\n");
-    if (!arg1)
+    if (!UtilUIParseNick (&args, &cont))
     {
-        M_print (i18n (1753, "You must specify UIN and new nick name.\n"));
-        return 0;
-    }
-    
-    uin = atoi (arg1);
-    arg2 = strtok (NULL, "\n");
-    if (!uin)
-    {
-        M_print (i18n (1748, "No UIN given.\n"));
+        M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
     }
 
-    if ((cont = ContactFind (uin)))
+    if (!UtilUIParseRemainder (&args, &arg1))
+        arg1 = strdup (cont->nick);
     {
-        if (!arg2)
-            arg2 = strdup (cont->nick);
-        if (cont->flags & CONT_TEMPORARY)
-        {
-            M_print (i18n (1669, "%s added.\n"), arg1);
+        M_print (i18n (2116, "No new nick name given.\n"));
+        return 0;
+    }
+
+    if (cont->flags & CONT_TEMPORARY)
+    {
+        M_print (i18n (2117, "%d added as %s.\n"), cont->uin, arg1);
+        if (!Add_User (sess, cont->uin, arg1))
             M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
-            if (sess->ver > 6)
-                SnacCliAddcontact (sess, uin);
-            else
-                CmdPktCmdContactList (sess);
-        }
+        if (sess->ver > 6)
+            SnacCliAddcontact (sess, cont->uin);
         else
-        {
-            M_print (i18n (1749, "UIN %d renamed to %s.\n"), uin, arg2);
-            M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
-        }
+            CmdPktCmdContactList (sess);
         cont->flags &= ~CONT_TEMPORARY;
-        strncpy (cont->nick, arg2, 18);
-        cont->nick[19] = '\0';
     }
     else
     {
-        if (!arg2)
-            arg2 = ContactFindName (uin);
-        if (Add_User (sess, uin, arg2))
-            M_print (i18n (1669, "%s added.\n"), arg2);
-        else
-            M_print (i18n (1773, "%s could not be added.\n"), arg2);
-        ContactAdd (uin, arg2);
-        if (sess->ver > 6)
-            SnacCliAddcontact (sess, uin);
-        else
-            CmdPktCmdContactList (sess);
+/*        if (!(cont2 = ContactAdd (cont->uin, arg1)))
+        {
+            M_print (i18n (2118, "Out of memory.\n"));
+            return 0;
+        }*/
+        M_print (i18n (1749, "UIN %d renamed to %s.\n"), cont->uin, arg1);
+        M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
     }
+    strncpy (cont->nick, arg1, 18);
+    cont->nick[19] = '\0';
+
     return 0;
 }
 
@@ -1928,29 +1914,23 @@ static JUMP_F(CmdUserAdd)
  */
 static JUMP_F(CmdUserRem)
 {
-    char *arg1;
-    UDWORD uin;
+    Contact *cont = NULL;
     SESSION;
 
-    arg1 = strtok (args, "\n");
-    if (arg1)
+    if (!UtilUIParseNick (&args, &cont))
     {
-        uin = ContactFindByNick (arg1);
-        if (uin == -1)
-            M_print (i18n (1750, "Nick %s not in contact list.\n"), arg1);
-        else
-        {
-            ContactRem (uin);
-            if (sess->ver > 6)
-                SnacCliRemcontact (sess, uin);
-            else
-                CmdPktCmdContactList (sess);
-            M_print (i18n (1751, "Nick %s removed."), arg1);
-            M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"), arg1);
-        }
+        M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
+        return 0;
     }
+
+    if (sess->ver > 6)
+        SnacCliRemcontact (sess, cont->uin);
     else
-        M_print (i18n (1752, "No nick given.\n"));
+        CmdPktCmdContactList (sess);
+    M_print (i18n (1751, "Nick %s removed."), cont->nick);
+    M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
+    ContactRem (cont->uin);
+    
     return 0;
 }
 
@@ -1972,7 +1952,6 @@ static JUMP_F(CmdUserRInfo)
         SnacCliMetareqinfo (sess, uiG.last_rcvd_uin);
     else
         CmdPktCmdMetaReqInfo (sess, uiG.last_rcvd_uin);
-/*  send_ext_info_req( sok, uiG.last_rcvd_uin );*/
     return 0;
 }
 
@@ -1981,66 +1960,64 @@ static JUMP_F(CmdUserRInfo)
  */
 static JUMP_F(CmdUserAuth)
 {
-    const char *cmd, *nick, *msg;
-    UDWORD uin;
+    char *cmd = NULL, *argsb, *msg = NULL;
+    Contact *cont = NULL;
     SESSION;
 
-    cmd = strtok (args, " \t\n");
-    if (!cmd)
+    argsb = args;
+    if (!UtilUIParse (&args, &cmd))
     {
-        M_print (i18n (1676, "Need uin to send to.\n"));
+        M_print (i18n (2119, "auth [grant] <nick>    - grant authorization.\n"));
+        M_print (i18n (2120, "auth deny <nick> <msg> - refuse authorization.\n"));
+        M_print (i18n (2121, "auth req  <nick> <msg> - request authorization.\n"));
         return 0;
     }
+    cmd = strdup (cmd);
 
-    nick = strtok (NULL, " \t\n");
-    if (nick)
-        msg = strtok (NULL, "\n");
+    if (UtilUIParseNick (&args, &cont))
+    {
+        UtilUIParse (&args, &msg);
+        if (!strcmp (cmd, "req"))
+        {
+            if (!msg)         /* FIXME: let it untranslated? */
+                msg = "Please authorize my request and add me to your Contact List\n";
+            if (sess->type == TYPE_SERVER && sess->ver >= 8)
+                SnacCliReqauth (sess, cont->uin, msg);
+            else if (sess->type == TYPE_SERVER)
+                SnacCliSendmsg (sess, cont->uin, msg, AUTH_REQ_MESS);
+            else
+                CmdPktCmdSendMessage (sess, cont->uin, msg, AUTH_REQ_MESS);
+            free (cmd);
+            return 0;
+        }
+        else if (!strcmp (cmd, "deny"))
+        {
+            if (!msg)         /* FIXME: let it untranslated? */
+                msg = "Authorization refused\n";
+            if (sess->type == TYPE_SERVER && sess->ver >= 8)
+                SnacCliAuthorize (sess, cont->uin, 0, msg);
+            else if (sess->type == TYPE_SERVER)
+                SnacCliSendmsg (sess, cont->uin, "\x03", AUTH_REF_MESS);
+            else
+                CmdPktCmdSendMessage (sess, cont->uin, "\x03", AUTH_REF_MESS);
+            free (cmd);
+            return 0;
+        }
+    }
+    if ((strcmp (cmd, "grant") && !UtilUIParseNick (&argsb, &cont)) || !cont)
+    {
+        M_print (i18n (1061, "'%s' not recognized as a nick name.\n"),
+                 strcmp (cmd, "grant") && strcmp (cmd, "req") && strcmp (cmd, "deny") ? argsb : args);
+        free (cmd);
+        return 0;
+    }
+        
+    if (sess->type == TYPE_SERVER && sess->ver >= 8)
+        SnacCliAuthorize (sess, cont->uin, 1, NULL);
+    else if (sess->type == TYPE_SERVER)
+        SnacCliSendmsg (sess, cont->uin, "\x03", AUTH_OK_MESS);
     else
-    {
-        nick = cmd;
-        cmd = "grant";
-        msg = NULL;
-    }
-    
-    uin = ContactFindByNick (nick);
-    if (uin == -1)
-    {
-        M_print (i18n (1061, "%s not recognized as a nick name.\n"), nick);
-        return 0;
-    }
-    UtilCheckUIN (sess, uin);
-
-    if (!strcmp (cmd, "req"))
-    {
-        if (!msg)         /* FIXME: let it untranslated? */
-            msg = "Please authorize my request and add me to your Contact List\n";
-        if (sess->type == TYPE_SERVER && sess->ver >= 8)
-            SnacCliReqauth (sess, uin, msg);
-        else if (sess->type == TYPE_SERVER)
-            SnacCliSendmsg (sess, uin, msg, AUTH_REQ_MESS);
-        else
-            CmdPktCmdSendMessage (sess, uin, msg, AUTH_REQ_MESS);
-    }
-    else if (!strcmp (cmd, "deny"))
-    {
-        if (!msg)         /* FIXME: let it untranslated? */
-            msg = "Authorization refused\n";
-        if (sess->type == TYPE_SERVER && sess->ver >= 8)
-            SnacCliAuthorize (sess, uin, 0, msg);
-        else if (sess->type == TYPE_SERVER)
-            SnacCliSendmsg (sess, uin, "\x03", AUTH_REF_MESS);
-        else
-            CmdPktCmdSendMessage (sess, uin, "\x03", AUTH_REF_MESS);
-    }
-    else if (!strcmp (cmd, "grant"))
-    {
-        if (sess->type == TYPE_SERVER && sess->ver >= 8)
-            SnacCliAuthorize (sess, uin, 1, NULL);
-        else if (sess->type == TYPE_SERVER)
-            SnacCliSendmsg (sess, uin, "\x03", AUTH_OK_MESS);
-        else
-            CmdPktCmdSendMessage (sess, uin, "\x03", AUTH_OK_MESS);
-    }
+        CmdPktCmdSendMessage (sess, cont->uin, "\x03", AUTH_OK_MESS);
     return 0;
 }
 
@@ -2062,39 +2039,31 @@ static JUMP_F(CmdUserSave)
  */
 static JUMP_F(CmdUserURL)
 {
-    char *arg1, *arg2;
-    UDWORD uin;
+    char *url, *msg;
+    Contact *cont = NULL;
     SESSION;
 
-    arg1 = strtok (args, " \t\n");
-    if (!arg1)
+    if (!UtilUIParseNick (&args, &cont))
     {
-        M_print (i18n (1676, "Need uin to send to.\n"));
+        M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
+        return 0;
     }
-    else
+
+    if (!UtilUIParse (&args, &url))
     {
-        uin = ContactFindByNick (arg1);
-        if (uin == -1)
-        {
-            M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
-        }
-        else
-        {
-            arg1 = strtok (NULL, " \t\n");
-            uiG.last_sent_uin = uin;
-            if (arg1)
-            {
-                arg2 = strtok (NULL, "\n");
-                if (!arg2)
-                    arg2 = "";
-                icq_sendurl (sess, uin, arg1, arg2);
-            }
-            else
-            {
-                M_print (i18n (1678, "Need URL please.\n"));
-            }
-        }
+        M_print (i18n (1678, "Need URL please.\n"));
+        return 0;
     }
+
+    url = strdup (url);
+
+    if (!UtilUIParseRemainder (&args, &msg))
+        msg = "";
+
+    uiG.last_sent_uin = cont->uin;
+    icq_sendurl (sess, cont->uin, url, msg);
+    free (url);
+
     return 0;
 }
 
@@ -2116,7 +2085,7 @@ static JUMP_F(CmdUserTabs)
         cont = ContactFind (uin);
         if (cont)
         {
-            M_print (COLMESSAGE " (now ");
+            M_print (COLMESSAGE " (");
             Print_Status (cont->status);
             M_print (")" COLNONE);
         }
@@ -2130,12 +2099,9 @@ static JUMP_F(CmdUserTabs)
  */
 static JUMP_F(CmdUserLast)
 {
-    char *arg1;
-    UDWORD uin;
-    Contact *cont;
+    Contact *cont = NULL;
 
-    arg1 = strtok (args, "\n");
-    if (!arg1)
+    if (!UtilUIParseNick (&args, &cont))
     {
         M_print (i18n (1682, "You have received messages from:\n"));
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
@@ -2145,26 +2111,16 @@ static JUMP_F(CmdUserLast)
     }
     else
     {
-        if ((uin = ContactFindByNick (arg1)) == -1)
-            M_print (i18n (1933, "%s is neither a nick nor a UIN.\n"), arg1);
+        if (cont->last_message)
+        {
+            M_print (i18n (2106, "Last message from %s%s%s at %s:\n"),
+                     COLCONTACT, cont->nick, COLNONE, UtilUITime (&cont->last_time));
+            M_print (COLMESSAGE "%s" COLNONE "\n", cont->last_message);
+        }
         else
         {
-            if (!(cont = ContactFind (uin)))
-                M_print (i18n (1684, "%s is not on your contact list.\n"), arg1);
-            else
-            {
-                if (cont->last_message)
-                {
-                    M_print (i18n (2106, "Last message from %s%s%s at %s:\n"),
-                             COLCONTACT, ContactFind (uin)->nick, COLNONE, UtilUITime (&cont->last_time));
-                    M_print (COLMESSAGE "%s" COLNONE "\n", ContactFind (uin)->last_message);
-                }
-                else
-                {
-                    M_print (i18n (2107, "No messages received from %s%s%s.\n"),
-                             COLCONTACT, ContactFind (uin)->nick, COLNONE);
-                }
-            }
+            M_print (i18n (2107, "No messages received from %s%s%s.\n"),
+                     COLCONTACT, cont->nick, COLNONE);
         }
     }
     return 0;
@@ -2221,12 +2177,11 @@ static JUMP_F(CmdUserUptime)
  */
 static JUMP_F(CmdUserConn)
 {
-    char *arg1;
+    char *arg1 = NULL;
     int i;
     Session *sess;
 
-    arg1 = strtok (args, " \t\n");
-    if (!arg1)
+    if (!UtilUIParse (&args, &arg1))
     {
         M_print (i18n (1887, "Connections:"));
         M_print ("\n  " COLINDENT);
@@ -2252,13 +2207,10 @@ static JUMP_F(CmdUserConn)
     }
     else if (!strcmp (arg1, "login") || !strcmp (arg1, "open"))
     {
-        int i, j;
+        UDWORD i = 0, j;
 
-        arg1 = strtok (NULL, "\n");
-        if (arg1)
-            i = atoi (arg1);
-        else
-            for (i = j = 0; (sess = SessionNr (j)); j++)
+        if (!UtilUIParseInt (&args, &i))
+            for (j = 0; (sess = SessionNr (j)); j++)
                 if (sess->type & TYPEF_SERVER)
                 {
                     i = j + 1;
@@ -2281,10 +2233,10 @@ static JUMP_F(CmdUserConn)
     }
     else if (!strcmp (arg1, "select"))
     {
-        int i;
+        UDWORD i = 0;
 
-        arg1 = strtok (NULL, "\n");
-        i = arg1 ? atoi (arg1) : SessionFindNr (currsess) + 1;
+        if (!UtilUIParseInt (&args, &i))
+            i = SessionFindNr (currsess) + 1;
 
         sess = SessionNr (i - 1);
         if (!sess && !(sess = SessionFind (TYPEF_SERVER, i, NULL)))
@@ -2308,10 +2260,9 @@ static JUMP_F(CmdUserConn)
     }
     else if (!strcmp (arg1, "remove") || !strcmp (arg1, "delete"))
     {
-        int i;
+        UDWORD i = 0;
 
-        arg1 = strtok (NULL, "\n");
-        i = arg1 ? atoi (arg1) : 0;
+        UtilUIParseInt (&args, &i);
 
         sess = SessionNr (i - 1);
         if (!sess)
@@ -2344,7 +2295,7 @@ static JUMP_F(CmdUserConn)
  */
 static JUMP_F(CmdUserContact)
 {
-    char *tmp;
+    char *tmp = NULL;
     SESSION;
 
     if (sess->type != TYPE_SERVER)
@@ -2352,8 +2303,7 @@ static JUMP_F(CmdUserContact)
 
     if (!data)
     {
-        tmp = strtok (args, "\n");
-        if      (!tmp)                        data = 0;
+        if (!UtilUIParse (&args, &tmp))       data = 0;
         else if (!strcasecmp (tmp, "show"))   data = 1;
         else if (!strcasecmp (tmp, "diff"))   data = 2;
         else if (!strcasecmp (tmp, "add"))    data = 3;
@@ -2454,39 +2404,38 @@ static JUMP_F(CmdUserSearch)
     switch (status)
     {
         case 0:
-            if (args)
-                arg1 = strtok (args, " \t\n");
-            if (arg1)
-                arg2 = strtok (NULL, "\n");
-            if (arg2)
+            if (!UtilUIParse (&args, &arg1))
+            {
+                M_print (i18n (1960, "Enter data to search user for. Enter '.' to start the search.\n"));
+                R_setpromptf ("%s ", i18n (1656, "Enter the user's nick name:"));
+                return 200;
+            }
+            arg1 = strdup (arg1);
+            if (UtilUIParse (&args, &arg2))
             {
                 if (sess->ver > 6)
                     SnacCliSearchbypersinf (sess, NULL, NULL, arg1, arg2);
                 else
                     CmdPktCmdSearchUser (sess, NULL, NULL, arg1, arg2);
+                free (arg1);
                 return 0;
             }
-            else if (arg1)
+            if (strchr (arg1, '@'))
             {
-                if (strchr (arg1, '@'))
-                {
-                    if (sess->type == TYPE_SERVER_OLD)
-                        CmdPktCmdSearchUser (sess, arg1, "", "", "");
-                    else
-                        SnacCliSearchbymail (sess, arg1);
-                }
+                if (sess->type == TYPE_SERVER_OLD)
+                    CmdPktCmdSearchUser (sess, arg1, "", "", "");
                 else
-                {
-                    if (sess->type == TYPE_SERVER_OLD)
-                        CmdPktCmdSearchUser (sess, NULL, arg1, NULL, NULL);
-                    else
-                        SnacCliSearchbypersinf (sess, NULL, arg1, NULL, NULL);
-                }
-                return 0;
+                    SnacCliSearchbymail (sess, arg1);
             }
-            M_print (i18n (1960, "Enter data to search user for. Enter '.' to start the search.\n"));
-            R_setpromptf ("%s ", i18n (1656, "Enter the user's nick name:"));
-            return 200;
+            else
+            {
+                if (sess->type == TYPE_SERVER_OLD)
+                    CmdPktCmdSearchUser (sess, NULL, arg1, NULL, NULL);
+                else
+                    SnacCliSearchbypersinf (sess, NULL, arg1, NULL, NULL);
+            }
+            free (arg1);
+            return 0;
         case 200:
             wp.nick = strdup (args);
             R_setpromptf ("%s ", i18n (1657, "Enter the user's first name:"));
@@ -2915,7 +2864,7 @@ void CmdUserInput (time_t *idle_val, UBYTE *idle_flag)
 void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
 {
     char buf[1024];    /* This is hopefully enough */
-    char *cmd;
+    char *cmd = NULL, *args;
 
     static jump_f *sticky = (jump_f *)NULL;
     static int status = 0;
@@ -2960,9 +2909,8 @@ void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
                     R_resetprompt ();
                 return;
             }
-            cmd = strtok (buf, " \t\n");
-
-            if (!cmd)
+            args = buf;
+            if (!UtilUIParse (&args, &cmd))
             {
                 if (!command)
                     R_resetprompt ();
@@ -2973,7 +2921,7 @@ void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
              * to accept IRC like commands starting with a /
              * or talker like commands starting with a .
              * or whatever */
-            if (!isalnum ((int)cmd[0]))
+            if (!isalnum (*cmd))
                 cmd++;
 
             if (!*cmd)
@@ -2989,13 +2937,13 @@ void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
             }
             else
             {
-                char *args, *argsd;
+                char *argsd;
                 jump_t *j = (jump_t *)NULL;
                 
-                args = strtok (NULL, "\n");
-                if (!args)
-                    args = "";
-                argsd = strdup (args);
+                cmd = strdup (cmd);
+                if (!UtilUIParseRemainder (&args, &argsd))
+                    argsd = "";
+                argsd = strdup (argsd);
 
                 if (*cmd != '¶')
                     j = CmdUserLookup (cmd, CU_USER);
@@ -3016,6 +2964,7 @@ void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
                     M_print (i18n (1036, "Unknown command %s, type /help for help."), cmd);
                     M_print ("\n");
                 }
+                free (cmd);
                 free (argsd);
             }
         }

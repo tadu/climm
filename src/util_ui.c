@@ -505,14 +505,21 @@ char *UtilUITime (time_t *t)
 }
 
 /*
+ * Parse* - find a parameter of given type in string.
+ * input is avdanced to point after the parsed argument,
+ *   or to the next non-whitespace or end of string if not found.
+ * parsed is cleared (0, NULL) if no suitable argument found.
+ * parsed must not be free()ed.
+ */
+
+/*
  * Try to find a parameter in the string.
- * String pointer is advanced to point after the parsed argument.
  * Result must NOT be free()d.
  */
 BOOL UtilUIParse (char **input, char **parsed)
 {
     static char *t = NULL;
-    char *p = *input;
+    char *p = *input, *q;
     int s = 0;
     
     while (*p && strchr (" \t\r\n", *p))
@@ -526,7 +533,11 @@ BOOL UtilUIParse (char **input, char **parsed)
     }
     if (t)
         free (t);
-    *parsed = t = malloc (strlen (p));
+    *parsed = q = t = strdup (p);
+    if (!t)
+    {
+        return FALSE;
+    }
     
     if (*p == '"')
     {
@@ -538,31 +549,32 @@ BOOL UtilUIParse (char **input, char **parsed)
         if (*p == '\\' && *(p + 1))
         {
             p++;
-            *(t++) = *(p++);
+            *(q++) = *(p++);
             continue;
         }
         if (*p == '"' && s)
         {
-            *t = '\0';
-            *input = p;
+            *q = '\0';
+            *input = p + 1;
             return TRUE;
         }
-        *(t++) = *(p++);
+        if (strchr (" \r\t\n", *p))
+            break;
+        *(q++) = *(p++);
     }
-    *t = '\0';
+    *q = '\0';
     *input = p;
     return TRUE;
 }
 
 /*
  * Try to find a nick name or uin in the string.
- * String pointer is advanced to point after the parsed argument.
  */
 BOOL UtilUIParseNick (char **input, Contact **parsed)
 {
     Contact *r;
     char *p = *input, *t;
-    int max, l, ll;
+    UDWORD max, l, ll;
     
     while (*p && strchr (" \t\r\n", *p))
         p++;
@@ -580,6 +592,16 @@ BOOL UtilUIParseNick (char **input, Contact **parsed)
         if (UtilUIParse (&p, &t))
         {
             *parsed = ContactFindContact (t);
+            *input = p;
+            return TRUE;
+        }
+    }
+    if (strchr ("0123456789", *p))
+    {
+        l = 0;
+        if (UtilUIParseInt (&p, &max) && (r = ContactFind (max)))
+        {
+            *parsed = r;
             *input = p;
             return TRUE;
         }
@@ -606,12 +628,11 @@ BOOL UtilUIParseNick (char **input, Contact **parsed)
 
 /*
  * Finds the remaining non-whitespace line.
- * String pointer is advanced to point after the parsed argument.
  */
 BOOL UtilUIParseRemainder (char **input, char **parsed)
 {
     static char *t = NULL;
-    char *p = *input;
+    char *p = *input, *q;
     
     while (*p && strchr (" \t\r\n", *p))
         p++;
@@ -625,26 +646,39 @@ BOOL UtilUIParseRemainder (char **input, char **parsed)
     
     if (t)
         free (t);
-    *parsed = t = strdup (p);
-    t = t + strlen (t) - 1;
-    while (strchr (" \t\r\n", *t))
-        *(t--) = '\0';
+    *parsed = q = t = strdup (p);
+    q = q + strlen (q) - 1;
+    while (strchr (" \t\r\n", *q))
+        *(q--) = '\0';
     return TRUE;
 }
 
 /*
  * Try to find a number.
- * String pointer is advanced to point after the parsed argument.
  */
 BOOL UtilUIParseInt (char **input, UDWORD *parsed)
 {
     char *p = *input;
-    UDWORD nr;
+    UDWORD nr, sig;
     
     while (*p && strchr (" \t\r\n", *p))
         p++;
     
     nr = 0;
+    if (!*p || !strchr ("0123456789+-", *p))
+    {
+        *parsed = 0;
+        return FALSE;
+    }
+    if (*p == '+')
+        p++;
+    if (*p == '-')
+    {
+        sig = -1;
+        p++;
+    }
+    else
+        sig = 1;
     while (*p && *p >= '0' && *p <= '9')
     {
         nr = nr * 10 + (*p - '0');
@@ -656,7 +690,7 @@ BOOL UtilUIParseInt (char **input, UDWORD *parsed)
         return FALSE;
     }
     *input = p;
-    *parsed = nr;
+    *parsed = nr * sig;
     return TRUE;
 }
 
