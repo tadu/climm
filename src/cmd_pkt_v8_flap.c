@@ -149,6 +149,9 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
         if (tlv[4].len)
             M_printf (i18n (1961, "URL: %s\n"), tlv[4].str);
         M_print (COLEXDENT "\n");
+        
+        if (tlv[8].nr == 24)
+            M_printf ("FIXME: now will you please stop logging in every 5 seconds? Don't try again until half an hour has passed.\n");
 
         if ((conn->connect & CONNECT_MASK) && conn->sok != -1)
             sockclose (conn->sok);
