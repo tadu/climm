@@ -268,6 +268,7 @@ int ssl_supported (Connection *conn DEBUGPARAM)
         return 0;
 
     if (!(HAS_CAP(cont->caps, CAP_SIMNEW) || HAS_CAP(cont->caps, CAP_MICQ)
+          || HAS_CAP (cont->caps, CAP_LICQNEW)
           || (cont->dc && (cont->dc->id1 & 0xFFFF0000) == LICQ_WITHSSL)))
     {
         Debug (DEB_SSL, "%s (%ld) is no SSL candidate", cont->nick, cont->uin);
