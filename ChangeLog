@@ -1,5 +1,65 @@
 -*- coding: utf-8 -*-
 
+2003-10-06 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* more SSL/Tcl compile fixes
+	* add zh_TW.i18n from stable
+	* show online since time for online contacts, last seen time for
+	  offline contacts; save timestamps via contact opts
+	* POSIXify usage of tail
+	* fix typo resulting in lost CFLAGS
+	* fix/improve s_catf(), s_sprintf() memory strategy
+	* add s_split() to split and recode a string, with given maximum string length in
+	  bytes in target encoding
+	* expose ConvGetUTF8() again
+	* move replacement #defined for iswalnum to datatype.h, add check for iswspace
+	* display SSL flag correctly by using correct variable, add SSL status in verbose mode
+	* allow licq SSL request messages for PeerMsg() (*outch*)
+	* print newline seperatly to cope with overlong lines
+	* ConvTranslit(): manual transliteration; absoletes HaveUe()
+	* implement webaware, hideip, dccont, dcauth as contact options
+	* rewrite contact option handling to reduce complexity,
+	  but allow arbitrarely many flags
+	* remove extra* struff in favour of (contact)options
+	* fix peek command
+	* check for #defined CODESET
+	* change s_parse() functions to return result directly for pointer types
+	* add s_parselist() to parse for a list of contacts, use everywhere
+	* fix cursor moving at end of line at last column
+	* implement command line option for status
+	* nuke search request event if the search failed and try some
+	  usefull error messages
+	* implement event dependencies
+	* fix dc message mem leak
+	* fix file transfer
+	* move unknown-nick-messages to s_parselist*() to simplify code
+	* add 'x' command to exit without saving
+	* add debugging to queue by counting events
+	* new command '_queue' when #ifdef ENABLE_DEBUG to list message queue
+	* fix: assume UTF-8 as file encoding for contact meta data files, fix fast comment test
+	* fix printing milliseconds in Debug() output
+	* various optimizations and boundary check fixes in util_str.c
+	* change connection open functions to return Event to depend on when connecting is finished
+	* reorganize command line parsing into new Init() function
+	* improve -v option parsing
+	* allow -s off[line] to not open the connection
+	* generalize eg logon command into new command line parameter -C to
+	  execute arbitrary mICQ commands upon logon completion
+	* fix auto-reconnect
+	* fix: guarantee different buffers for ConvTo() and ConvFrom()
+	* expose new PrefNewConnection() to constrcut a new default server connection
+	* when opening v8 server connection, print contact
+	* fix contact group handling in 0.4.10.x compatibility code
+	* add -s status and -p password switches, and allow more than one UIN to be given
+	* discard unassociated p2p conections
+	* up build number
+	* cache C.i18n versions in i18n-template
+	* fix contact list downloading
+
+2003-09-23 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+        * fix Tcl (broken call backs)
+        * fix SSL (man page, no more connection failed on unanswered SSL request)
+        * fix alias expansion when no argument is given
+
 2003-09-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* backport file transfer fixes from stable
 	* handle ^W (delete-word-backward)
