@@ -47,6 +47,6 @@ void   SnacCliSearchwp        (Connection *conn, const MetaWP *wp);
 UDWORD SnacCliSearchrandom    (Connection *conn, UWORD group);
 void   SnacCliSetrandom       (Connection *conn, UWORD group);
 
-UBYTE  SnacCliSendmsg2     (Connection *conn, Contact *cont, MetaList *extra);
+UBYTE  SnacCliSendmsg2     (Connection *conn, Contact *cont, Extra *extra);
 
 #endif /* MICQ_ICQV8_SNAC_H */

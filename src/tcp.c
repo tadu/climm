@@ -11,6 +11,7 @@
 #include "micq.h"
 #include "util_ui.h"
 #include "util_io.h"
+#include "util_extra.h"
 #include "file_util.h"
 #include "util.h"
 #include "buildmark.h"
@@ -1519,10 +1520,12 @@ BOOL TCPSendMsg (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd)
  * Sends a message via TCP.
  * Adds it to the resend queue until acked.
  */
-UBYTE PeerSendMsg (Connection *list, Contact *cont, const char *msg, UWORD sub_cmd, MetaList *extra)
+UBYTE PeerSendMsg (Connection *list, Contact *cont, Extra *extra)
 {
     Packet *pak;
     Connection *peer;
+    const char *e_msg_text = NULL;
+    UDWORD e_msg_type = 0;
 
     if (!list || !list->parent || !cont || !cont->dc || !cont->dc->port)
         return RET_DEFER;
@@ -1548,9 +1551,12 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, const char *msg, UWORD sub_c
     }
 
     ASSERT_MSGDIRECT(peer);
+    
+    e_msg_text = ExtraGetS (extra, EXTRA_MESSAGE);
+    e_msg_type = ExtraGet  (extra, EXTRA_MESSAGE);
 
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-    SrvMsgAdvanced   (pak, peer->our_seq, sub_cmd, 0, list->parent->status, c_out_for (msg, cont));
+    SrvMsgAdvanced   (pak, peer->our_seq, e_msg_type, 0, list->parent->status, c_out_for (e_msg_text, cont));
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 #ifdef ENABLE_UTF8
@@ -1562,7 +1568,7 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, const char *msg, UWORD sub_c
 
     QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--,
                       cont->uin, time (NULL),
-                      pak, strdup (msg), &TCPCallBackResend);
+                      pak, strdup (e_msg_text), &TCPCallBackResend);
     return RET_INPR;
 }
 

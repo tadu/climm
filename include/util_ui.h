@@ -10,7 +10,9 @@ BOOL   Debug (UDWORD level, const char *str, ...);
 #define DEB_PACKET        0x00000010L
 #define DEB_QUEUE         0x00000020L
 #define DEB_CONNECT       0x00000040L
-#define DEB_PACK5DATA     0x00000100L
+#define DEB_EVENT         0x00000080L
+#define DEB_EXTRA         0x00000100L
+#define DEB_PACK5DATA     0x00000800L
 #define DEB_PACK8         0x00001000L
 #define DEB_PACK8DATA     0x00002000L
 #define DEB_PACK8SAVE     0x00004000L

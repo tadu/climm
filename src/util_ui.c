@@ -6,6 +6,7 @@
 #include "util_ui.h"
 #include "util_str.h"
 #include "util_table.h"
+#include "util_extra.h"
 #include "contact.h"
 #include "preferences.h"
 
@@ -67,7 +68,7 @@ void UtilUIDisplayMeta (Contact *cont)
     MetaMore *mm;
     MetaEmail *me;
     MetaWork *mw;
-    MetaList *ml;
+    Extra *ml;
     MetaObsolete *mo;
     const char *tabd;
 
@@ -219,12 +220,12 @@ void UtilUIDisplayMeta (Contact *cont)
         M_printf (COLSERVER "%-15s" COLNONE "\n", i18n (1875, "Personal interests:"));
         for ( ; ml; ml = ml->more)
         {
-            if (!ml->description)
+            if (!ml->text)
                 continue;
             if ((tabd = TableGetInterest (ml->data)))
-                M_printf ("  %s: %s\n", tabd, ml->description);
+                M_printf ("  %s: %s\n", tabd, ml->text);
             else
-                M_printf ("  %d: %s\n", ml->data, ml->description);
+                M_printf ("  %d: %s\n", ml->data, ml->text);
         }
     }
     if ((ml = cont->meta_background))
@@ -232,12 +233,12 @@ void UtilUIDisplayMeta (Contact *cont)
         M_printf (COLSERVER "%-15s" COLNONE "\n", i18n (1876, "Personal past background:"));
         for ( ; ml; ml = ml->more)
         {
-            if (!ml->description)
+            if (!ml->text)
                 continue;
             if ((tabd = TableGetPast (ml->data)))
-                M_printf ("  %s: %s\n", tabd, ml->description);
+                M_printf ("  %s: %s\n", tabd, ml->text);
             else
-                M_printf ("  %d: %s\n", ml->data, ml->description);
+                M_printf ("  %d: %s\n", ml->data, ml->text);
         }
     }
     if ((ml = cont->meta_affiliation))
@@ -245,12 +246,12 @@ void UtilUIDisplayMeta (Contact *cont)
         M_printf (COLSERVER "%-15s" COLNONE "\n", i18n (1879, "Affiliations:"));
         for ( ; ml; ml = ml->more)
         {
-            if (!ml->description)
+            if (!ml->text)
                 continue;
             if ((tabd = TableGetAffiliation (ml->data)))
-                M_printf ("  %s: %s\n", tabd, ml->description);
+                M_printf ("  %s: %s\n", tabd, ml->text);
             else
-                M_printf ("  %d: %s\n", ml->data, ml->description);
+                M_printf ("  %d: %s\n", ml->data, ml->text);
         }
     }
     if ((mo = CONTACT_OBSOLETE (cont)))

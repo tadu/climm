@@ -45,14 +45,6 @@ struct ContactMetaEmail_s
     UBYTE      auth;
 };
 
-struct ContactMetaList_s
-{
-    MetaList *more;
-    UWORD     tag;
-    char     *description;
-    UDWORD    data;
-};
-
 struct ContactMetaObsolete_s
 {
     char  *description;
@@ -98,7 +90,7 @@ struct Contact_s
     char            *meta_about;
     MetaEmail       *meta_email;
     MetaObsolete    *meta_obsolete;
-    MetaList        *meta_interest, *meta_background, *meta_affiliation;
+    Extra           *meta_interest, *meta_background, *meta_affiliation;
 };
 
 Contact    *ContactAdd (UDWORD uin, const char *nick);
@@ -121,7 +113,7 @@ void        ContactSetVersion (Contact *cont);
 #define CONTACT_WORK(cont)        ((cont)->meta_work        ? (cont)->meta_work        : ((cont)->meta_work        = calloc (1, sizeof (MetaWork))))
 #define CONTACT_MORE(cont)        ((cont)->meta_more        ? (cont)->meta_more        : ((cont)->meta_more        = calloc (1, sizeof (MetaMore))))
 #define CONTACT_EMAIL(cont)       ((cont)->meta_email       ? (cont)->meta_email       : ((cont)->meta_email       = calloc (1, sizeof (MetaEmail))))
-#define CONTACT_LIST(listpp)      (*(listpp)                ? *(listpp)                : (*(listpp)                = calloc (1, sizeof (MetaList))))
+#define CONTACT_LIST(listpp)      (*(listpp)                ? *(listpp)                : (*(listpp)                = calloc (1, sizeof (Extra))))
 #define CONTACT_OBSOLETE(cont)    ((cont)->meta_obsolete    ? (cont)->meta_obsolete    : ((cont)->meta_obsolete    = calloc (1, sizeof (MetaObsolete))))
 #define CONTACT_DC(cont)          ((cont)->dc               ? (cont)->dc               : ((cont)->dc               = calloc (1, sizeof (ContactDC))))
 

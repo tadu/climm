@@ -12,6 +12,7 @@
 #include "util_ui.h"
 #include "util_io.h"
 #include "util_str.h"
+#include "util_extra.h"
 #include "util_syntax.h"
 #include "contact.h"
 #include "server.h"
@@ -1440,6 +1441,7 @@ static void SnacCallbackType2 (Event *event)
     Contact *cont = ContactByUIN (event->uin, 1);
     Connection *serv = event->conn;
     Packet *pak = event->pak;
+    UWORD e_trans;
 
     if (!serv || !cont)
     {
@@ -1459,7 +1461,7 @@ static void SnacCallbackType2 (Event *event)
         if (serv->connect & CONNECT_OK)
         {
             if (event->attempts > 1)
-                IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGTRY_TYPE2, event->info, NULL);
+                IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGTRY_TYPE2, ExtraGetS (event->extra, EXTRA_MESSAGE), NULL);
             SnacSend (serv, PacketClone (pak));
             event->attempts++;
             event->due = time (NULL) + 10;
@@ -1479,9 +1481,9 @@ static void SnacCallbackType2 (Event *event)
 /*
  * CLI_SENDMSG - SNAC(4,6) - type2
  */
-UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, MetaList *extra)
+UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
 {
-    MetaList *extra_message;
+    Extra *extra_message;
     Packet *pak;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     BOOL peek = 0;
@@ -1495,7 +1497,7 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, MetaList *extra)
         if (extra_message->tag == EXTRA_MESSAGE)
         {
             type = extra_message->data;
-            text = extra_message->description;
+            text = extra_message->text;
             break;
         }
     if (!extra_message)

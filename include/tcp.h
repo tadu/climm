@@ -16,7 +16,7 @@ void TCPDirectOff      (Connection *list, UDWORD uin);
 
 /* Do the given peer2peer request */
 BOOL TCPSendMsg        (Connection *list, UDWORD uin, const char *msg, UWORD sub_cmd);
-UBYTE PeerSendMsg      (Connection *list, Contact *cont, const char *msg, UWORD msg_type, MetaList *extra);
+UBYTE PeerSendMsg      (Connection *list, Contact *cont, Extra *extra);
 BOOL TCPSendFiles      (Connection *list, UDWORD uin, const char *description, const char **file, const char **as, int count);
 BOOL TCPGetAuto        (Connection *list, UDWORD uin, UWORD which);
 int  TCPSendMsgAck     (Connection *peer, UWORD seq, UWORD sub_cmd, BOOL accept);

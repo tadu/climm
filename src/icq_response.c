@@ -18,6 +18,7 @@
 #include "preferences.h"
 #include "session.h"
 #include "util_str.h"
+#include "util_extra.h"
 #include "peer_file.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -36,52 +37,7 @@
 
 #define s_read(s) do { char *data = PacketReadLNTS (pak); s_repl (&s, c_in (data)); free (data); } while (0)
 
-void ExtraFree (MetaList *extra)
-{
-    MetaList *tmp;
-    while (extra)
-    {
-        tmp = extra->more;
-        s_free (extra->description);
-        free (extra);
-        extra = tmp;
-    }
-}
-
-UDWORD ExtraGet (MetaList *extra, UWORD type)
-{
-    while (extra && extra->tag != type)
-        extra = extra->more;
-    if (extra)
-        return extra->data;
-    return 0;
-}
-
-MetaList *ExtraSet (MetaList *extra, UWORD type, UDWORD value, const char *text)
-{
-    MetaList *tmp;
-
-    for (tmp = extra; tmp; tmp = tmp->more)
-        if (tmp->tag == type)
-        {
-            tmp->data = value;
-            s_repl (&tmp->description, text);
-            return extra;
-        }
-
-    tmp = calloc (1, sizeof (MetaList));
-    if (!tmp)
-        return extra;
-    tmp->more = extra;
-    tmp->tag = type;
-    tmp->data = value;
-    tmp->description = text ? strdup (text) : NULL;
-    return tmp;
-}
-
-
-
-static BOOL Meta_Read_List (Packet *pak, MetaList **list)
+static BOOL Meta_Read_List (Packet *pak, Extra **list)
 {
     UBYTE i, j;
     
@@ -91,11 +47,11 @@ static BOOL Meta_Read_List (Packet *pak, MetaList **list)
         if (!CONTACT_LIST (list))
             return FALSE;
         (*list)->data = PacketRead2 (pak);
-        s_read ((*list)->description);
-        if ((*list)->data || *(*list)->description)
+        s_read ((*list)->text);
+        if ((*list)->data || *(*list)->text)
             list = &(*list)->more;
     }
-    ExtraFree (*list);
+    ExtraD (*list);
     *list = NULL;
     return TRUE;
 }
@@ -635,7 +591,7 @@ void IMOffline (Contact *cont, Connection *conn)
 /*
  * Central entry point for protocol triggered output.
  */
-void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, MetaList *extra)
+void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UWORD type, const char *text, Extra *extra)
 {
     const char *line;
     const char *col = COLCONTACT; 
@@ -644,7 +600,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     {
         if (cont->flags & CONT_IGNORE || ((cont->flags & CONT_TEMPORARY) && (prG->flags & FLAG_HERMIT)))
         {
-            ExtraFree (extra);
+            ExtraD (extra);
             return;
         }
     }
@@ -652,19 +608,19 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
     switch (type)
     {
         case INT_FILE_ACKED:
-            line = s_sprintf (i18n (2070, "File transfer '%s' to port %d.\n"), extra->description, extra->data);
+            line = s_sprintf (i18n (2070, "File transfer '%s' to port %d.\n"), extra->text, extra->data);
             break;
         case INT_FILE_REJED:
-            line = s_sprintf (i18n (2231, "File transfer '%s' rejected by peer: %s.\n"), extra->description, text);
+            line = s_sprintf (i18n (2231, "File transfer '%s' rejected by peer: %s.\n"), extra->text, text);
             break;
         case INT_FILE_ACKING:
-            line = s_sprintf (i18n (2186, "Accepting file '%s' (%d bytes).\n"), extra->description, extra->data);
+            line = s_sprintf (i18n (2186, "Accepting file '%s' (%d bytes).\n"), extra->text, extra->data);
             break;
         case INT_FILE_REJING:
-            line = s_sprintf (i18n (2229, "Refusing file request '%s' (%d bytes): %s.\n"), extra->description, extra->data, text);
+            line = s_sprintf (i18n (2229, "Refusing file request '%s' (%d bytes): %s.\n"), extra->text, extra->data, text);
             break;
         case INT_CHAR_REJING:
-            line = s_sprintf (i18n (2230, "Refusing chat request (%s/%s) from %s.\n"), extra->description, text, cont->nick);
+            line = s_sprintf (i18n (2230, "Refusing chat request (%s/%s) from %s.\n"), extra->text, text, cont->nick);
             break;
         case INT_MSGTRY_TYPE2:
             line = s_sprintf ("%s%s\n", "--= " COLSINGLE, text);
@@ -700,7 +656,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, UW
         M_printf ("<%d> ", type);
     M_print (line);
 
-    ExtraFree (extra);
+    ExtraD (extra);
 }    
 
 

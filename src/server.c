@@ -8,6 +8,7 @@
 #include "server.h"
 #include "util.h"
 #include "util_str.h"
+#include "util_extra.h"
 #include "icq_response.h"
 #include "cmd_pkt_v8_snac.h"
 #include "cmd_pkt_cmd_v5.h"
@@ -52,72 +53,67 @@ void icq_sendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD msg_typ
         free (old);
 }
 
-UBYTE IMCliMsg (Connection *conn, Contact *cont, MetaList *extra)
+UBYTE IMCliMsg (Connection *conn, Contact *cont, Extra *extra)
 {
-    MetaList *extra_message;
+    Extra *e_msg, *e_trans;
     char *old;
     UBYTE ret;
 
     if (!cont)
     {
-        ExtraFree (extra);
+        ExtraD (extra);
         return RET_FAIL;
     }
     
-    if (!extra || extra->tag != EXTRA_TRANS)
+    if (!(e_trans = ExtraFind (extra, EXTRA_TRANS)))
     {
-        MetaList *tmp = calloc (1, sizeof (MetaList));
-        tmp->tag  = EXTRA_TRANS;
-        tmp->data = EXTRA_TRANS_ANY;
-        tmp->more = extra;
-        extra = tmp;
+        extra = ExtraSet (extra, EXTRA_TRANS, EXTRA_TRANS_ANY, NULL);
+        e_trans = ExtraFind (extra, EXTRA_TRANS);
     }
-    for (extra_message = extra; extra_message; extra_message = extra_message->more)
-        if (extra_message->tag == EXTRA_MESSAGE)
-            break;
-    if (!extra_message)
+    if (!(e_msg = ExtraFind (extra, EXTRA_MESSAGE)))
     {
-        ExtraFree (extra);
+        ExtraD (extra);
         return RET_FAIL;
     }
 
     old = uiG.last_message_sent;
-    uiG.last_message_sent      = strdup (extra_message->description);
-    uiG.last_message_sent_type = extra_message->data;
-    extra_message->description = uiG.last_message_sent;
+    uiG.last_message_sent      = strdup (e_msg->text);
+    uiG.last_message_sent_type = e_msg->data;
+    uiG.last_sent_uin          = cont->uin;
+    e_msg->text = strdup (e_msg->text);
     if (old)
         free (old);
 
     putlog (conn, NOW, cont->uin, STATUS_ONLINE, 
-            extra_message->data == MSG_AUTO ? LOG_AUTO : LOG_SENT, extra_message->data, "%s\n", extra_message->description);
+            e_msg->data == MSG_AUTO ? LOG_AUTO : LOG_SENT, e_msg->data, "%s\n", e_msg->text);
 
 #ifdef ENABLE_PEER2PEER
-    if (extra->data & EXTRA_TRANS_DC)
+    if (e_trans->data & EXTRA_TRANS_DC)
         if (conn->assoc)
-            if (RET_IS_OK (ret = PeerSendMsg (conn->assoc, cont, extra_message->description, extra_message->data, extra)))
+            if (RET_IS_OK (ret = PeerSendMsg (conn->assoc, cont, extra)))
                 return ret;
-    extra->data &= ~EXTRA_TRANS_DC;
+    e_trans->data &= ~EXTRA_TRANS_DC;
 #endif
-    if (extra->data & EXTRA_TRANS_TYPE2)
+    if (e_trans->data & EXTRA_TRANS_TYPE2)
         if (conn->type == TYPE_SERVER && HAS_CAP (cont->caps, CAP_ISICQ) && HAS_CAP (cont->caps, CAP_SRVRELAY))
             if (RET_IS_OK (ret = SnacCliSendmsg2 (conn, cont, extra)))
                 return ret;
-    extra->data &= ~EXTRA_TRANS_TYPE2;
-    if (extra->data & EXTRA_TRANS_ICQv8)
+    e_trans->data &= ~EXTRA_TRANS_TYPE2;
+    if (e_trans->data & EXTRA_TRANS_ICQv8)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER)
         {
-            SnacCliSendmsg (conn, cont->uin, extra_message->description, extra_message->data, 0);
-            ExtraFree (extra);
+            SnacCliSendmsg (conn, cont->uin, e_msg->text, e_msg->data, 0);
+            ExtraD (extra);
             return RET_OK;
         }
-    extra->data &= ~EXTRA_TRANS_ICQv8;
-    if (extra->data & EXTRA_TRANS_ICQv5)
+    e_trans->data &= ~EXTRA_TRANS_ICQv8;
+    if (e_trans->data & EXTRA_TRANS_ICQv5)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER_OLD)
         {
-            CmdPktCmdSendMessage (conn, cont->uin, extra_message->description, extra_message->data);
-            ExtraFree (extra);
+            CmdPktCmdSendMessage (conn, cont->uin, e_msg->text, e_msg->data);
+            ExtraD (extra);
             return RET_OK;
         }
-    ExtraFree (extra);
+    ExtraD (extra);
     return RET_FAIL;
 }

@@ -17,6 +17,8 @@
 #include "msg_queue.h"
 #include "util_ui.h"
 #include "util_str.h"
+#include "util_extra.h"
+#include "packet.h" /* yuck */
 
 #ifdef ENABLE_UTF8
 #define STR_DOT "·"
@@ -249,6 +251,17 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
     }
     Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08x", QueueType (type), seq);
     return NULL;
+}
+
+void EventD (Event *event)
+{
+    if (!event)
+        return;
+    Debug (DEB_EVENT, STR_DOT STR_DOT ">> %s %p: %08x %p", QueueType (event->type), event, event->seq, event->pak);
+    if (event->pak)
+        PacketD (event->pak);
+    ExtraD (event->extra);
+    free (event);
 }
 
 /*

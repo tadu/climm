@@ -15,7 +15,7 @@ struct Event_s
     time_t      due;
     Packet     *pak;
     char       *info;
-    MetaList   *extra;
+    Extra      *extra;
     Queuef     *callback;
     UBYTE       flags;
 };
@@ -32,6 +32,8 @@ void        QueueCancel      (Connection *conn);
 
 Event      *QueuePeek        ();
 Event      *QueuePop         ();
+
+void EventD (Event *event);
 
 const char *QueueType   (UDWORD type);
 
