@@ -57,7 +57,7 @@ if test "x$ac_arg_use_ssl" != "xno"; then
   AM_PATH_LIBGNUTLS(0.8.8, ac_arg_use_ssl=yes, ac_arg_use_ssl=no)
   if test "x$ac_arg_use_ssl" = "xyes"; then
     LIBS="$LIBGNUTLS_LIBS $LIBS"
-    CFLAGS="$LIBGNUTLS_CFLAGS $CLFAGS"
+    CFLAGS="$LIBGNUTLS_CFLAGS $CFLAGS"
     AC_CHECK_FUNC(gnutls_dh_params_generate2, [AC_DEFINE(HAVE_DH_GENPARAM2, 1, [Whether new DH prime generator is available])],)
   fi
 fi
