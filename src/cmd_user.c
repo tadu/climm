@@ -2756,18 +2756,10 @@ static JUMP_F(CmdUserTabs)
     const Contact *cont;
     ANYCONN;
 
-    for (i = 0; TabGetOut (i); i++)
+    for (i = 0; TabGet (i); i++)
         ;
-    rl_printf (i18n (1681, "Last %d people you talked to:\n"), i);
-    for (i = 0; (cont = TabGetOut (i)); i++)
-    {
-        rl_printf ("    %s", cont->nick);
-        rl_printf (" %s(%s)%s\n", COLQUOTE, s_status (cont->status), COLNONE);
-    }
-    for (i = 0; TabGetIn (i); i++)
-        ;
-    rl_printf (i18n (9999, "Last %d people that talked to you:\n"), i);
-    for (i = 0; (cont = TabGetIn (i)); i++)
+    rl_printf (i18n (9999, "Last %d people you talked with:\n"), i);
+    for (i = 0; (cont = TabGet (i)); i++)
     {
         rl_printf ("    %s", cont->nick);
         rl_printf (" %s(%s)%s\n", COLQUOTE, s_status (cont->status), COLNONE);

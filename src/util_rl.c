@@ -1,7 +1,8 @@
+
 /*
  * Line editing code.
  *
- * mICQ Copyright (C) © 2001,2002,2003 Rüdiger Kuhlmann
+ * mICQ Copyright (C) © 2001,2002,2003,2004 Rüdiger Kuhlmann
  *
  * mICQ is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -854,18 +855,12 @@ static const Contact *rl_tab_getnext (strc_t common)
         switch (rl_tab_state & 7)
         {
             case 1:
-                while ((cont = TabGetOut (rl_tab_index++)))
+                while ((cont = TabGet (rl_tab_index++)))
                     if (!strncasecmp (cont->nick, common->txt, common->len))
                         return cont;
                 rl_tab_index = 0;
                 rl_tab_state++;
             case 2:
-                while ((cont = TabGetIn (rl_tab_index++)))
-                    if (!strncasecmp (cont->nick, common->txt, common->len))
-                        return cont;
-                rl_tab_index = 0;
-                rl_tab_state++;
-            case 3:
                 while ((cont = ContactIndex (NULL, rl_tab_index++)))
                     if (cont->status != STATUS_OFFLINE && !TabHas (cont))
                     {
@@ -878,7 +873,7 @@ static const Contact *rl_tab_getnext (strc_t common)
                 
                 rl_tab_index = 0;
                 rl_tab_state++;
-            case 4:
+            case 3:
                 while ((cont = ContactIndex (NULL, rl_tab_index++)))
                     if (cont->status == STATUS_OFFLINE && !TabHas (cont))
                     {
@@ -912,29 +907,23 @@ static const Contact *rl_tab_getprev (strc_t common)
     {
         switch (rl_tab_state & 7)
         {
-            case 1:
-                while (rl_tab_index && (cont = TabGetOut (--rl_tab_index)))
-                    if (!strncasecmp (cont->nick, common->txt, common->len))
-                    {
-                        rl_tab_index++;
-                        return cont;
-                    }
-                rl_tab_index = 0;
-                rl_tab_state++;
-                while (TabGetOut (rl_tab_index))
-                    rl_tab_index++;
-            case 2:
-                while (rl_tab_index && (cont = TabGetIn (--rl_tab_index)))
-                    if (!strncasecmp (cont->nick, common->txt, common->len))
-                    {
-                        rl_tab_index++;
-                        return cont;
-                    }
-                rl_tab_index = 0;
-                rl_tab_state++;
-                while (TabGetIn (rl_tab_index))
-                    rl_tab_index++;
             case 3:
+                while (rl_tab_index && (cont = ContactIndex (NULL, --rl_tab_index)))
+                    if (cont->status == STATUS_OFFLINE && !TabHas (cont))
+                    {
+                        rl_tab_index++;
+                        if (!strncasecmp (cont->nick, common->txt, common->len))
+                            return cont;
+                        for (rl_tab_alias = cont->alias; rl_tab_alias; rl_tab_alias = rl_tab_alias->more)
+                            if (!strncasecmp (rl_tab_alias->alias, common->txt, common->len))
+                                return cont;
+                        rl_tab_index--;
+                    }
+                rl_tab_index = 0;
+                while (ContactIndex (NULL, rl_tab_index))
+                    rl_tab_index++;
+                rl_tab_state--;
+            case 2:
                 while (rl_tab_index && (cont = ContactIndex (NULL, --rl_tab_index)))
                     if (cont->status != STATUS_OFFLINE && !TabHas (cont))
                     {
@@ -947,27 +936,22 @@ static const Contact *rl_tab_getprev (strc_t common)
                         rl_tab_index--;
                     }
                 rl_tab_index = 0;
-                rl_tab_state++;
-                while (ContactIndex (NULL, rl_tab_index))
+                while (TabGet (rl_tab_index))
                     rl_tab_index++;
-            case 4:
-                while (rl_tab_index && (cont = ContactIndex (NULL, --rl_tab_index)))
-                    if (cont->status == STATUS_OFFLINE && !TabHas (cont))
+                rl_tab_state--;
+            case 1:
+                while (rl_tab_index && (cont = TabGet (--rl_tab_index)))
+                    if (!strncasecmp (cont->nick, common->txt, common->len))
                     {
                         rl_tab_index++;
-                        if (!strncasecmp (cont->nick, common->txt, common->len))
-                            return cont;
-                        for (rl_tab_alias = cont->alias; rl_tab_alias; rl_tab_alias = rl_tab_alias->more)
-                            if (!strncasecmp (rl_tab_alias->alias, common->txt, common->len))
-                                return cont;
-                        rl_tab_index--;
+                        return cont;
                     }
                 if (rl_tab_state & 8)
                     return NULL;
+                rl_tab_index = 0;
                 while (ContactIndex (NULL, rl_tab_index))
                     rl_tab_index++;
-                rl_tab_index = 0;
-                rl_tab_state = 9;
+                rl_tab_state = 8 + 3;
                 continue;
         }
         assert (0);
