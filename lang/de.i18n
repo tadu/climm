@@ -159,7 +159,6 @@
 1182:Rentner
 1183:Wissenschaft & Forschung
 1184:Sport
-## 185:Handwerker (?)
 1185:Techniker
 1186:Student (Uni)
 1187:Webdesigner
@@ -202,7 +201,7 @@
 1231:Britische Jungferninseln
 1232:Brunei
 1233:Bulgarien
-#1234:Burkina Faso
+1234:Burkina Faso
 1235:Burundi
 1236:Kambodscha
 1237:Kamerun
@@ -225,9 +224,9 @@
 1254:Zypern
 1255:Tschechische Republik
 1256:Dänemark
-#1257:Diego Garcia
+1257:Diego Garcia
 1258:Djibouti
-#1259:Dominica
+1259:Dominica
 1260:Dominikanische Republik
 1261:Äquador
 1262:Ägypten
@@ -288,7 +287,7 @@
 1317:Libyen
 1318:Liechtenstein
 1319:Luxemburg
-#1320:Malawi
+1320:Malawi
 1321:Malaysien
 1322:Mali
 1323:Malta
@@ -317,7 +316,7 @@
 1346:Katar
 1347:Rumänien
 1348:Russland
-#1349:Saipan
+1349:Saipan
 1350:San Marino
 1351:Saudi-Arabien
 1352:Senegal
@@ -350,7 +349,7 @@
 1379:USA
 1380:Uruguay
 1381:Uzbekistan
-#1382:Vanuatu
+1382:Vanuatu
 1383:Vatikan (Stadt)
 1384:Venezuela
 1385:Vietnam
@@ -446,7 +445,6 @@
 1483:Astronomie
 1484:Weltraum
 1485:Kleidung
-1486:Feiern
 1486:Parties
 1487:Frauen
 1488:Sozialwissenschaft
@@ -1036,14 +1034,14 @@
 2266:Having the last nick in the prompt is %s%s%s.\n
 2267:Automatisches Speichern ist %s%s%s.\n
 2268:Automatisches fingern neuer Benutzernummern ist %s%s%s.\n
-#2269:break
-#2270:simple
-#2271:indent
-#2272:smart
-#2273:cycle
-#2274:cycleall
+2269:break
+2270:simple
+2271:indent
+2272:smart
+2273:cycle
+2274:cycleall
 2275:Tab-Stil ist %s%s%s.\n
-#2276:complete
+2276:complete
 2277:    hermit:     ignoriere alle nicht-Kontakte.\n
 2278:    delbs:      interpretiere das Lösch-Zeichen als Rückschritt.\n
 2279:    log:        logge.\n
@@ -1064,13 +1062,13 @@
 2294:===
 2295:>>>
 2296:<<<
-#2297:Alias to what?\n
-#2298:Remove which alias?\n
-#2299:Alias doesn't exist.\n
-#2300:Set an alias or list current aliases.
-#2301:Delete an alias.
-#2302:Too many levels of alias expansion; probably an infinite loop.\n
-#2303:Invalid character 0x%x in alias name.\n
+2297:Alias für was?\n
+2298:Entferne welchen Alias?\n
+2299:Dieser Alias existiert nicht.\n
+2300:Setzt einen Alias oder listet aktuelle Aliase.
+2301:Löscht einen Alias.
+2302:Zu tief verschachtelte Alias-Auflösung; vermutlich eine endlose Schleife.\n
+2303:Ungültiges Zeichen 0x%x im Alias-Namen.\n
 2304:Hole automatische Antworten für alle <contacts> für den aktuellen Status, abwesend, nicht verfügbar, nicht stören, beschäftigt oder frei für Plaudereien.
 2305:Bearbeite Meta-Daten eines Kontaktes.
 2306:Fordere die Server-seitige Kontaktliste an und zeige alle oder neue Kontakte oder importiere diese.
