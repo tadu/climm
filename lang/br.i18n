@@ -1,5 +1,4 @@
 # brazil
-#000:Successfully loaded translations (%d entries).¶
 001:Conectado
 002:Não perturbe
 003:Ausente
@@ -33,6 +32,7 @@
 031: entrou no ICQ.
 032: enviou uma Mensagem
 033: enviou uma Mensagem " SERVCOL "para um grupo
+#034:Maximum number of tries reached. Giving up.
 035: mudou o estado para 
 036:Comando %s desconhecido, digite /help para obter auxílio.
 037:Mensagem enviada antes que o espaço se esgotasse¶
@@ -76,6 +76,18 @@
 #075:version
 #076:compiled on
 #077:in dedication to Matthew D. Smith.
+#078:No translation available.
+#079:No translation; using compiled-in strings.¶
+#080:Couldn't load "%s" internationalization.¶
+#081:Successfully loaded en translation (%d entries).¶
+#082:Trying to reconnect... [try %d out of %d]
+#083:Sound cmd
+#084:Sound
+#085:on
+#086:off
+#087:Ignoring garbage after number.
+#088:default
+#089:Unloaded translation.
 #099:Unknown language.
 100:Não especificado
 101:Árabe

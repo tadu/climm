@@ -783,6 +783,9 @@ int Save_RC ()
 
     M_fdprint (rcf, "LogType %d\n\n", LogType);
 
+    M_fdprint (rcf, "# Define to a program which is executed to play sound when a message is received.\n");
+    M_fdprint (rcf, "sound %s%s\n\n", Sound_Str, Sound == SOUND_OFF ? "" : "\nNo_Sound");
+
     if (Color)
         M_fdprint (rcf, "#No_Color\n");
     else
@@ -851,6 +854,7 @@ int Save_RC ()
     M_fdprint (rcf, "alter_cmd %s\n", alter_cmd);
     M_fdprint (rcf, "msga_cmd %s\n", msga_cmd);
     M_fdprint (rcf, "url_cmd %s\n", url_cmd);
+    M_fdprint (rcf, "sound_cmd %s\n", sound_cmd);
     M_fdprint (rcf, "update_cmd %s\n", update_cmd);
     M_fdprint (rcf, "about_cmd %s\n", about_cmd);
 

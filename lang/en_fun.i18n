@@ -36,7 +36,7 @@
 036:Unknown command %s, type /help for help.
 037:Message sent before last line buffer is full¶
 038:Message canceled¶
-039:Server has forced us to disconnect.  This may be because of network lag.
+039:Server sent "Go away!!" command. Lag sucks! :(
 040:Micq> 
 041:msg> 
 042:msg all> 
@@ -78,15 +78,15 @@
 078:No translation available.
 079:No translation; using compiled-in strings.¶
 080:Couldn't load "%s" internationalization.¶
-081:Successfully loaded en translation (%d entries).¶
-082:Trying to reconnect... [try %d out of %d]
+081:Successfully loaded %s translation (%d entries).¶
+082:But hey, let's just poke the server again... [try %d out of %d]
 083:Sound cmd
 084:Sound
 085:on
 086:off
 087:Ignoring garbage after number.
 088:default
-089:Unloaded translation.
+089:Unloaded translations.¶
 099:Unknown language.
 100:None
 101:Arabic

@@ -1,0 +1,109 @@
+#!/usr/bin/perl
+
+my %defstr, $k, $uname, $name, $new, $pref;
+
+if (stat "lang/en.i18n")
+{
+    chomp ($pref = `pwd`); 
+    chdir "lang";
+}
+if (stat "../lang/en.i18n")
+{
+    chomp ($pref = `pwd`);
+    chdir "../lang";
+}
+
+open NRS, "<en.i18n" || die;
+
+{ my ($last, $neu) = (0, 0);
+sub NewNumber ()
+{
+    $last++;
+
+    if ($neu)
+    {
+        if ($last < $neu)
+        {
+            return $last;
+        }
+        $last++;
+    }
+
+    while (<NRS>)
+    {
+        chomp;
+        if (m/^([0-9]{3}):/)
+        {
+            $neu = $1;
+            if ($last < $neu)
+            {
+                return $last;
+            }
+            $last = $neu + 1;
+        }
+    }
+    return $last;
+}}
+
+%defstr = {};
+
+print "Numbering new translation entries.\n";
+
+if ($#ARGV == -1)
+{
+    chdir "../src";
+    @ARGV = glob "*.c";
+    chdir "../lang";
+    $pref = "../src";
+}
+
+while ($uname = shift)
+{
+    $name = "$pref/$uname";
+    stat "$name~" && next;
+    stat "$name" || next;
+
+    open IN, "<$name" || die;
+    $match = 0;
+    while (<IN>)
+    {
+        $match = 1 if (m/i18n \(###, "(([^"]*(\")*)*)"\)/);
+    }
+    next if not $match;
+
+    print "$uname ";
+    rename ($name, "$name~");
+    open IN, "<$name~" || die;
+    open OUT, ">$name" || die;
+   
+    while (<IN>)
+    {
+        $k = $_;
+        while ($k =~ m/i18n \(###, "(([^"]*(\")*)*)"\)/)
+        {
+            $new = $1;
+            $new =~ s/\\/\\\\/g;
+            $new =~ s/\(/\\(/g;
+            $new =~ s/\)/\\)/g;
+            $new =~ s/\./\\./g;
+            $new =~ s/\[/\\[/g;
+            $new =~ s/\]/\\]/g;
+            $new =~ s/\|/\\|/g;
+            $new =~ s/\"/"/g;
+            print "\n";
+            if (not defined $defstr{$new})
+            {
+                $i = NewNumber ();
+                $defstr{$new} = $i;
+                print ("New translation: $i:$new\n");
+            }
+            foreach $i (keys %defstr)
+            {
+                $k =~ s/i18n \(###, "($i)"\)/i18n ($defstr{$i}, "$1")/g;
+            }
+            print "Line is: $k";
+        }
+        print OUT $k;
+    }
+}
+print "\nFinished.\n";

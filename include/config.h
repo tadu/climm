@@ -9,6 +9,10 @@
 **  The real icq uses a value of 6  */
 #define MAX_RETRY_ATTEMPTS 8
 
+/* This is the number of times micq will try to reconnect to the server
+ * ** when the server sends a 'Go Away!' command. */
+#define MAX_RECONNECT_ATTEMPTS 10
+
 /* The maximum number of contacts to put in a single packet. */
 /* This is for some people who use modems and have problems with large packets*/
 #define MAX_CONTS_PACKET 100

@@ -25,6 +25,9 @@ int i18nOpen (const char *loc)
     int i, j = 0;
     FD_T i18nf;
 
+    if (!strcmp (loc, "!") || !strcmp (loc, "auto") || !strcmp (loc, "default"))
+        loc = NULL;
+
     if (!loc)
         loc = getenv ("LANG");
     if (!loc)
@@ -48,8 +51,7 @@ int i18nOpen (const char *loc)
     if (i18nf == -1)
         return -1;
 
-    if (i18nStrings[0])
-        i18nClose ();
+    i18nClose ();
 
     for (i = 0; i < i18nSLOTS; i++)
         i18nStrings[i] = NULL;
@@ -78,12 +80,14 @@ int i18nOpen (const char *loc)
  */
 void i18nClose (void)
 {
-    int i;
+    char **p, **q;
     
-    for (i = 0; i < i18nSLOTS; i++)
+    q = i18nStrings + i18nSLOTS;
+    for (p = i18nStrings; p < q; p++)
     {
-        free (i18nStrings[i]);
-        i18nStrings[i] = NULL;
+        if (*p)
+            free (*p);
+        *p = NULL;
     }
 }
 

@@ -1,12 +1,23 @@
 
 2001-04-26 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
-	* Makefile, src/Makefile, src/i18n.c, src/server.c:
+	* Makefile, src/Makefile, src/i18n.c, src/server.c,
+	  include/config.h:
 	  Adapt from Debian changes (by maintainer Sander Smeenk
 	  <ssmeenk@debian.org>): Reconnect patch, and use $(DESTDIR) and
 	  $(prefix).
 	* src/icq_response.c:
 	  Stop translating month's name twice. You'd see text #0.
-
+	* lang/i18n-extract, lang/i18n-number, lang/i18n-template:
+	  New scripts to number, extract and copy string to be translated.
+	* src/file_util.c, src/ui.c:
+	  Patch to modify sound command from Shane Wegner <shane@cm.nu>,
+	  modified for i18n.
+	* src/micq.c:
+	  Timestamp for auto status change.
+	* src/ui.c:
+	  New "trans" function. Info about translation, loads new
+	  translation, print given or all translation texts.
+	  
 2001-04-23 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* include/*.h, src/*.c:
 	  Finish moving prototypes to individual files. Make functions

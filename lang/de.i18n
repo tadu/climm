@@ -1,5 +1,4 @@
 # Deutsch (German)
-000:Übersetzung erfolgreich geladen (%d Einträge). Version 0.1.¶
 001:Verbunden
 002:Nicht stören
 003:Nicht da
@@ -33,10 +32,12 @@
 031:hat sich eingeloggt
 032:Nachricht:
 033:MassenNachricht:
+034:Maximale Anzahl an Versuchen erreicht - gabe auf.
 035:hat Status gewechselt nach:
 036:Unbekanntes Kommando %s, tippe "help" für Hilfe.
 037:Nachricht gesendet, bevor der letzte Puffer voll war¶
 038:Nachricht abgebrochen¶
+039:Der Server hat uns gezwungen, die Verbindung abzubrechen, möglicherweise wegen einer schlechten Verbindung.
 040:mICQ> 
 041:msg> 
 042:msgAll> 
@@ -62,7 +63,7 @@
 061:%s ist kein Spitzname.
 062:ignorierte User: 
 063:Bitte Passwort eingeben: 
-064:Auto-Status-Wechsel: 
+064:Auto-Status-Wechsel nach:
 065:Bytereihenfolge: Intel.
 066:Bytereihenfolge: Motorola.
 067:\nIgnoriere Msg-Kmd: %04x\n
@@ -76,10 +77,22 @@
 075:Version
 076:kompiliert am
 077:gewidmet Matthew D. Smith.
+078:Keine Übersetzung verfügbar.
+079:Übersetzung von Rüdiger Kuhlmann und anderen, zuletzt geändert am 24.4.2001.¶
+080:Konnte Übersetzung "%s" nicht laden.¶
+081:Deutsche Übersetzung erfolgreich geladen (%d Einträge).¶
+082:Versuche, neu zu verbinden... [Versuch %d von %d]
+083:Klang-Befehl:
+084:Klang ist
+085:an
+086:aus
+087:Ignoriere Müll nach der Zahl.
+088:automatisch
+089:Entferne Übersetzung aus dem Speicher.
+099:Unbekannte Sprache
 ##
 ## Sprachen
 ##
-099:Unbekannte Sprache
 100:Keine
 101:Arabisch
 102:Bhojpuri
@@ -244,7 +257,7 @@
 266:Estland
 267:Äthiopien
 268:Ehemaliges Jugoslavien
-#269:Faeroe
+#269:Faeroe Islands
 270:Falkland-Inseln
 271:Vereinigte Staaten von Mikronesien
 272:Fidschi

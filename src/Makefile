@@ -57,3 +57,9 @@ indent:
 	@for i in *.c; do \
 	    indent $$i;\
 	done
+
+lang:
+	rm -f *.c~ ../lang/*.i18n~
+	@../lang/i18n-number
+	@../lang/i18n-extract
+	@../lang/i18n-template

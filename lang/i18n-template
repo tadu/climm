@@ -1,0 +1,93 @@
+#!/usr/bin/perl
+
+my %nrval, $nr, $val, $ignored, $preserved, $added, $ignerr, $found, $uname, $name, $pref;
+
+if (stat "lang/en.i18n")
+{
+    chdir "lang";
+    $pref = "../";
+}
+if (stat "../lang/en.i18n")
+{
+    chdir "../lang";
+    $pref = "../src/";
+}
+
+open TMPL, "<en.i18n" || die;
+
+$found = 0;
+while (<TMPL>)
+{
+   if (m/^([0-9]{3}):(.*)/)
+   {
+       $nr = $1;
+       $val = $2;
+       $nrval{$nr}=$val;
+       $found++;
+   }
+   elsif (m/^#/)
+   {
+   }
+   else
+   {
+       print "Can't understand: $_\n";
+   }
+}
+print "Updating translation to $found strings.\n";
+
+if ($#ARGV == -1)
+{
+    @ARGV = glob "*.i18n";
+    $pref = "";
+}
+
+while ($uname = shift)
+{
+   $name = $pref . $uname;
+   stat "$name~" && next;
+   rename ($name, "$name~");
+   open IN, "<$name~" || die;
+   open OUT, ">$name" || die;
+   
+   $ignored = 0;
+   $preserved = 0;
+   $added = 0;
+   $ignerr = 0;
+   $last = -1;
+   while (<IN>)
+   {
+      chomp;
+      if (m/^#[0-9]{3}:/)
+      {
+      }
+      elsif (m/^#/)
+      {
+         print OUT "$_\n";
+         $ignored++;
+      }
+      elsif (m/^([0-9]{3}):/)
+      {
+          $neu = $1;
+          for ($last++ ; $last < $neu; $last++)
+          {
+              $last = "0$last" if $last < 100;
+              $last = "0$last" if $last < 10;
+              next unless defined $nrval{$last};
+              print OUT "#$last:$nrval{$last}\n";
+              $added++;
+          }
+          print OUT "$_\n";
+          $preserved++;
+          $last = $neu;
+      }
+      else
+      {
+          print OUT "#$_\n";
+          $ignerr++;
+      }
+   }
+   print "Ignored $ignored comments, commented out $ignerr lines of junk,\n";
+   print "preserved $preserved strings, added $added strings to translate for $name.\n";
+}
+print "Finished.\n";
+

@@ -1,5 +1,4 @@
 # indonesian
-#000:Successfully loaded translations (%d entries).¶
 001:Online
 002:Jangan diganggu
 003:Jauh
@@ -33,6 +32,7 @@
 031: masuk.
 032: - Pesan Masuk
 033: - Instant " SERVCOL "Mass" NOCOL " Message
+#034:Maximum number of tries reached. Giving up.
 035: berubah status menjadi 
 036:%s perintah tidak dikenal, ketik /help untuk pertolongan.
 037:Pesan dikirimkan sebelum baris terakhir dalam penampung penuh¶
@@ -76,6 +76,18 @@
 #075:version
 #076:compiled on
 #077:in dedication to Matthew D. Smith.
+#078:No translation available.
+#079:No translation; using compiled-in strings.¶
+#080:Couldn't load "%s" internationalization.¶
+#081:Successfully loaded en translation (%d entries).¶
+#082:Trying to reconnect... [try %d out of %d]
+#083:Sound cmd
+#084:Sound
+#085:on
+#086:off
+#087:Ignoring garbage after number.
+#088:default
+#089:Unloaded translation.
 #099:Unknown language.
 100:Tidak Ada
 101:Arabic

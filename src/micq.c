@@ -549,10 +549,9 @@ void Idle_Check (SOK_T sok)
     {
         icq_change_status (sok, STATUS_ONLINE);
         R_undraw ();
-        M_print (i18n (64, "Auto-Changed status to "));
-        Print_Status (Current_Status);
-        M_print (" ");
         Time_Stamp ();
+        M_print (" %s ", i18n (64, "Auto-Changed status to"));
+        Print_Status (Current_Status);
         M_print ("\n");
         R_redraw ();
         idle_flag = 0;
@@ -562,10 +561,9 @@ void Idle_Check (SOK_T sok)
     {
         icq_change_status (sok, STATUS_NA);
         R_undraw ();
-        M_print (i18n (64, "Auto-Changed status to "));
-        Print_Status (Current_Status);
-        M_print (" ");
         Time_Stamp ();
+        M_print (" %s ", i18n (64, "Auto-Changed status to"));
+        Print_Status (Current_Status);
         M_print ("\n");
         R_redraw ();
         return;
@@ -578,10 +576,9 @@ void Idle_Check (SOK_T sok)
     {
         icq_change_status (sok, STATUS_AWAY);
         R_undraw ();
-        M_print (i18n (64, "Auto-Changed status to "));
-        Print_Status (Current_Status);
-        M_print (" ");
         Time_Stamp ();
+        M_print (" %s ", i18n (64, "Auto-Changed status to"));
+        Print_Status (Current_Status);
         M_print ("\n");
         R_redraw ();
         idle_flag = 1;
@@ -614,7 +611,7 @@ int main (int argc, char *argv[])
     WSADATA wsaData;
 #endif
 
-    i = i18nOpen (NULL);
+    i = i18nOpen ("!");
 
     setbuf (stdout, NULL);      /* Don't buffer stdout */
     M_print (BuildVersion ());
@@ -629,7 +626,7 @@ int main (int argc, char *argv[])
     if (i == -1)
         M_print ("Couldn't load internationalization.\n");
     else if (i)
-        M_print (i18n (0, "Successfully loaded translations (%d entries).\n"), i);
+        M_print (i18n (81, "Successfully loaded en translation (%d entries).\n"), i);
     else
         M_print ("No internationalization requested.\n");
 

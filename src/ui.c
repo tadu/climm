@@ -68,6 +68,7 @@ static UDWORD uin;
 static void Change_Function (SOK_T sok);
 static void Help_Function (void);
 static void Info_Function (SOK_T sok);
+static void Trans_Function (SOK_T sok);
 static void Auto_Function (SOK_T sok);
 static void Alter_Function (void);
 static void Message_Function (SOK_T sok);
@@ -720,16 +721,22 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
             else if (strcasecmp (cmd, sound_cmd) == 0)
             {
                 /* GRYN */ *idle_val = idle_save;
-                if (SOUND_ON == Sound)
+                if ((arg1 = strtok (NULL, "")))
                 {
-                    Sound = SOUND_OFF;
-                    M_print ("Sound" SERVCOL " OFF" NOCOL ".\n");
+                    *Sound_Str = 0;
+                    if (!strcasecmp(arg1, "on"))
+                       Sound = SOUND_ON;
+                    else if (!strcasecmp(arg1, "off"))
+                       Sound = SOUND_OFF;
+                    else /* treat it as a command */
+                       strcpy(Sound_Str, arg1);
                 }
+                if (*Sound_Str)
+                    M_print ("%s " SERVCOL "%s" NOCOL ".\n", i18n (83, "Sound cmd"), Sound_Str);
+                else if ( SOUND_ON == Sound )
+                    M_print ("%s " SERVCOL "%s" NOCOL ".\n", i18n (84, "Sound"), i18n (85, "on"));
                 else if (SOUND_OFF == Sound)
-                {
-                    Sound = SOUND_ON;
-                    M_print ("Sound" SERVCOL " ON" NOCOL ".\n");
-                }
+                    M_print ("%s " SERVCOL "%s" NOCOL ".\n", i18n (84, "Sound"), i18n (86, "off"));
             }
             else if (strcasecmp (cmd, change_cmd) == 0)
             {
@@ -852,6 +859,10 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
                 arg1 = strtok (NULL, "");
                 if (arg1 != NULL)
                     reg_new_user (sok, arg1);
+            }
+            else if (!strcasecmp (cmd, "trans"))
+            {
+                Trans_Function (sok);
             }
             else if (!strcasecmp (cmd, "pass"))
             {
@@ -1767,6 +1778,69 @@ static void Info_Function (SOK_T sok)
 /*   send_ext_info_req( sok, uin );*/
 }
 
+/*
+ * Gives information about internationalization and translates
+ * strings by number.
+ */
+static void Trans_Function (SOK_T sok)
+{
+    const char *arg1;
+
+    arg1 = strtok (NULL, " \t");
+    if (!arg1)
+    {
+        M_print (i18n (79, "No translation; using compiled-in strings.\n"));
+        return;
+    }
+    for (;arg1; arg1 = strtok (NULL, " \t"))
+    {
+        char *p;
+        int i;
+        i = strtol (arg1, &p, 10);
+        if (i || !*p)
+        {
+            if (*p)
+                M_print ("%s\n", i18n (87, "Ignoring garbage after number."));
+            M_print ("%3d:%s\n", i, i18n (i, i18n (78, "No translation available.")));
+        }
+        else
+        {
+            if (!strcmp (arg1, "all"))
+            {
+                const char *p;
+                int l = 0;
+                for (i = 0; i - l < 100; i++)
+                {
+                    p = i18n (i, NULL);
+                    if (p)
+                    {
+                        l = i;
+                        M_print ("%3d:%s\n", i, p);
+                    }
+                }
+            }
+            else
+            {
+                if (!strcmp (arg1, ".") || !strcmp (arg1, "none") || !strcmp (arg1, "unload"))
+                {
+                    p = strdup (i18n (89, "Unloaded translation."));
+                    i18nClose ();
+                    M_print ("%s\n", p);
+                    free (p);
+                    continue;
+                }
+                i = i18nOpen (arg1);
+                if (i == -1)
+                    M_print (i18n (80, "Couldn't load \"%s\" internationalization.\n"), arg1);
+                else if (i)
+                    M_print (i18n (81, "Successfully loaded en translation (%d entries).\n"), i);
+                else
+                    M_print ("No internationalization requested.\n");
+            } 
+    	}
+    }
+}
+
 /**********************************************************
 Handles automatic reply messages
 ***********************************************************/
@@ -1781,7 +1855,7 @@ static void Auto_Function (SOK_T sok)
         M_print ("Automatic replies are %s\n", auto_resp ? "On" : "Off");
         M_print ("The Do not disturb message is: %s\n", auto_rep_str_dnd);
         M_print ("The Away message is          : %s\n", auto_rep_str_away);
-        M_print ("The Not available message is  : %s\n", auto_rep_str_na);
+        M_print ("The Not available message is : %s\n", auto_rep_str_na);
         M_print ("The Occupied message is      : %s\n", auto_rep_str_occ);
         M_print ("The Invisible message is     : %s\n", auto_rep_str_inv);
         return;
