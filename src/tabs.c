@@ -4,8 +4,8 @@
  * Handles a list of recently used UINs that are to be recalled by pressing
  * tab.
  *
- * This file is © Rüdiger Kuhlmann; it may be distributed under the BSD
- * licence (without the advertising clause) or version 2 of the GPL.
+ * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * version 2 of the GPL licence.
  */
 
 #include "micq.h"

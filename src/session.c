@@ -1,3 +1,11 @@
+/*
+ * Manages the available connections (note the file is misnamed)
+ *
+ * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * version 2 of the GPL licence.
+ *
+ * $Id$
+ */
 
 #include "micq.h"
 #include "session.h"

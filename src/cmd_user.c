@@ -1,4 +1,12 @@
 
+/*
+ * Handles commands the user sends.
+ *
+ * Copyright ?
+ *
+ * $Id$
+ */
+
 #include "micq.h"
 #include "cmd_user.h"
 #include "util.h"
@@ -7,6 +15,7 @@
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_cmd_v5_util.h"
 #include "cmd_pkt_v8.h"
+#include "cmd_pkt_v8_snac.h"
 #include "preferences.h"
 #include "tabs.h"
 #include "file_util.h"
@@ -30,7 +39,7 @@ static jump_f
     CmdUserUptime, CmdUserSearch, CmdUserWpSearch, CmdUserUpdate,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserTCP, CmdUserConn;
 
-static void CmdUserProcess (Session *sess, const char *command, int *idle_val, int *idle_flag);
+static void CmdUserProcess (const char *command, int *idle_val, int *idle_flag);
 
 static jump_t jump[] = {
     { &CmdUserRandom,        "rand",         NULL, 0,   0 },
@@ -90,6 +99,9 @@ static jump_t jump[] = {
     { NULL, NULL, NULL, 0 }
 };
 
+#define SESSION(type) Session *sess; sess = SessionFind (type, 0); \
+    if (!sess) { M_print (i18n (906, "This command operates only on connections of type %s.\n"), #type); return 0; }
+
 /*
  * Returns a pointer to the jump table.
  */
@@ -134,6 +146,7 @@ const char *CmdUserLookupName (const char *cmd)
 JUMP_F(CmdUserChange)
 {
     char *arg1;
+    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
 
     arg1 = strtok (args, " \n\r");
     if (data == -1)
@@ -153,11 +166,16 @@ JUMP_F(CmdUserChange)
         }
         data = atoi (arg1);
     }
-    CmdPktCmdStatusChange (sess, data);
-    Time_Stamp ();
-    M_print (" ");
-    Print_Status (sess->status);
-    M_print ("\n");
+    if (sess->ver > 6)
+        SnacCliSetstatus (sess, data);
+    else
+    {
+        CmdPktCmdStatusChange (sess, data);
+        Time_Stamp ();
+        M_print (" ");
+        Print_Status (sess->status);
+        M_print ("\n");
+    }
     return 0;
 }
 
@@ -167,6 +185,8 @@ JUMP_F(CmdUserChange)
 JUMP_F(CmdUserRandom)
 {
     char *arg1;
+    SESSION(TYPE_SERVER_OLD);
+    
     arg1 = strtok (args, " \n\r");
     if (arg1 == NULL)
     {
@@ -197,6 +217,8 @@ JUMP_F(CmdUserRandom)
 JUMP_F(CmdUserRandomSet)
 {
     char *arg1;
+    SESSION(TYPE_SERVER_OLD);
+    
     arg1 = strtok (args, " \n\r");
     if (arg1 == NULL)
     {
@@ -402,6 +424,7 @@ JUMP_F(CmdUserInfo)
 {
     char *arg1;
     UDWORD uin;
+    SESSION(TYPE_SERVER_OLD);
 
     arg1 = strtok (args, "");
     if (arg1 == NULL)
@@ -505,6 +528,7 @@ JUMP_F(CmdUserTCP)
 #ifdef TCP_COMM
     char *cmd, *nick;
     Contact *cont = NULL;
+    SESSION(TYPE_PEER);
 
     cmd = strtok (args, " \t\n");
 
@@ -514,7 +538,7 @@ JUMP_F(CmdUserTCP)
         if (nick)
             cont = ContactFind (ContactFindByNick (nick));
         if (cont)
-            TCPDirectOpen (sess, cont);
+            TCPDirectOpen (sess->assoc, cont);
         else
             M_print (i18n (845, "Nick %s unknown.\n"), nick ? nick : "");
     }
@@ -719,6 +743,7 @@ JUMP_F (CmdUserResend)
 {
     UDWORD uin;
     char *arg1;
+    SESSION(TYPE_SERVER_OLD);
 
     arg1 = strtok (args, UIN_DELIMS);
     if (!uiG.last_message_sent) 
@@ -754,6 +779,7 @@ JUMP_F (CmdUserMessage)
     static char msg[1024];
     char *arg1;
     Contact *cont;
+    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
 
     if (status)
     {
@@ -927,6 +953,7 @@ JUMP_F(CmdUserStatusDetail)
     UDWORD num;
     Contact *cont;
     char *name = strtok (args, "");
+    SESSION(TYPE_SERVER_OLD);
 
     if (name)
     {
@@ -982,8 +1009,7 @@ JUMP_F(CmdUserStatusDetail)
                 M_print ("\n");
             }
         }
-        M_print ("%-15s %d.%d.%d.%d : %d\n", i18n (441, "IP:"), cont->current_ip[0], cont->current_ip[1],
-                 cont->current_ip[2], cont->current_ip[3], cont->port);
+        M_print ("%-15s %s:%d\n", i18n (441, "IP:"), UtilIP (cont->outside_ip), cont->port);
         M_print ("%-15s %d\n", i18n (453, "TCP version:"), cont->TCP_version);
         M_print ("%-15s %s\n", i18n (454, "Connection:"),
                  cont->connection_type == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
@@ -1250,6 +1276,8 @@ JUMP_F(CmdUserStatusWide)
  */
 JUMP_F(CmdUserStatusSelf)
 {
+    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
+    
     M_print (W_SEPERATOR);
     Time_Stamp ();
     M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", sess->uin);
@@ -1266,6 +1294,7 @@ JUMP_F(CmdUserStatusSelf)
 JUMP_F(CmdUserStatusShort)
 {
     Contact *cont;
+    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
 
     M_print (W_SEPERATOR);
     Time_Stamp ();
@@ -1545,6 +1574,7 @@ JUMP_F(CmdUserTogIgnore)
 {
     char *arg1;
     UDWORD uin;
+    SESSION(TYPE_SERVER_OLD);
 
     arg1 = strtok (args, "\n");
     if (arg1)
@@ -1602,6 +1632,7 @@ JUMP_F(CmdUserTogVisible)
 {
     char *arg1;
     UDWORD uin;
+    SESSION(TYPE_SERVER_OLD);
 
     arg1 = strtok (args, " \t");
     if (arg1)
@@ -1650,6 +1681,7 @@ JUMP_F(CmdUserAdd)
 {
     char *arg1;
     UDWORD uin;
+    SESSION(TYPE_SERVER_OLD);
 
     arg1 = strtok (args, " \t");
     if (arg1)
@@ -1674,6 +1706,8 @@ JUMP_F(CmdUserAdd)
  */
 JUMP_F(CmdUserRInfo)
 {
+    SESSION(TYPE_SERVER_OLD);
+
     M_print (i18n (672, "%s's IP address is "), ContactFindName (uiG.last_rcvd_uin));
     Print_IP (uiG.last_rcvd_uin);
     if ((UWORD) Get_Port (uiG.last_rcvd_uin) != (UWORD) 0xffff)
@@ -1692,6 +1726,7 @@ JUMP_F(CmdUserAuth)
 {
     char *arg1;
     UDWORD uin;
+    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
 
     arg1 = strtok (args, "");
     if (!arg1)
@@ -1702,11 +1737,12 @@ JUMP_F(CmdUserAuth)
     {
         uin = ContactFindByNick (arg1);
         if (-1 == uin)
-        {
             M_print (i18n (665, "%s not recognized as a nick name."), arg1);
-        }
         else
-            CmdPktCmdSendMessage (sess, uin, "\x03", AUTH_MESSAGE);
+            if (sess->spref->type & TYPE_SERVER)
+                SnacCliSendmsg (sess, uin, "\x03", AUTH_OK_MESS);
+            else
+                CmdPktCmdSendMessage (sess, uin, "\x03", AUTH_OK_MESS);
     }
     return 0;
 }
@@ -1716,7 +1752,7 @@ JUMP_F(CmdUserAuth)
  */
 JUMP_F(CmdUserSave)
 {
-    int i = Save_RC (sess);
+    int i = Save_RC (NULL);
     if (i == -1)
         M_print (i18n (679, "Sorry saving your personal reply messages went wrong!\n"));
     else
@@ -1731,6 +1767,7 @@ JUMP_F(CmdUserURL)
 {
     char *arg1, *arg2;
     UDWORD uin;
+    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
 
     arg1 = strtok (args, " ");
     if (!arg1)
@@ -1845,6 +1882,7 @@ JUMP_F(CmdUserUptime)
 {
     double TimeDiff = difftime (time (NULL), uiG.start_time);
     int Days, Hours, Minutes, Seconds;
+    SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
 
     Seconds = (int) TimeDiff % 60;
     TimeDiff = TimeDiff / 60.0;
@@ -1893,7 +1931,7 @@ JUMP_F(CmdUserConn)
         for (i = 0; (sess = SessionNr (i)); i++)
         {
             M_print (i18n (888, "%s version %d for %d at %s:%d\n"),
-                     sess->spref->type & TYPE_SERVER ? i18n (889, "server") : i18n (890, "peer-to-peer"),
+                     sess->spref->type & (TYPE_SERVER | TYPE_SERVER_OLD) ? i18n (889, "server") : i18n (890, "peer-to-peer"),
                      sess->ver, sess->uin, sess->server, sess->server_port);
         } 
         M_print (ESC "»\n");
@@ -1914,12 +1952,9 @@ JUMP_F(CmdUserConn)
         }
 
         if (sess->spref->type & TYPE_SERVER)
-        {
-            if (sess->spref->version <= 5)
-                SessionInitServerV5 (sess);
-            else
-                SessionInitServer (sess);
-        }
+            SessionInitServer (sess);
+        else if (sess->spref->type & TYPE_SERVER_OLD)
+            SessionInitServerV5 (sess);
         else
             SessionInitPeer (sess);
     }
@@ -1953,6 +1988,7 @@ JUMP_F(CmdUserQuit)
 JUMP_F(CmdUserSearch)
 {
     static char *email, *nick, *first, *last;
+    SESSION(TYPE_SERVER_OLD);
 
     switch (status)
     {
@@ -1995,6 +2031,7 @@ JUMP_F(CmdUserWpSearch)
 {
     int temp;
     static MetaWP wp;
+    SESSION(TYPE_SERVER_OLD);
 
     switch (status)
     {
@@ -2111,6 +2148,7 @@ JUMP_F(CmdUserWpSearch)
 JUMP_F(CmdUserUpdate)
 {
     static MetaGeneral user;
+    SESSION(TYPE_SERVER_OLD);
 
     switch (status)
     {
@@ -2235,6 +2273,7 @@ JUMP_F(CmdUserOther)
 {
     static MetaMore other;
     int temp;
+    SESSION(TYPE_SERVER_OLD);
 
     switch (status)
     {
@@ -2325,6 +2364,7 @@ JUMP_F(CmdUserAbout)
 {
     static int offset = 0;
     static char msg[1024];
+    SESSION(TYPE_SERVER_OLD);
 
     if (status > 100)
     {
@@ -2369,24 +2409,24 @@ JUMP_F(CmdUserAbout)
 /*
  * Process one command, but ignore idle times.
  */
-void CmdUser (Session *sess, const char *command)
+void CmdUser (const char *command)
 {
     int a, b;
-    CmdUserProcess (sess, command, &a, &b);
+    CmdUserProcess (command, &a, &b);
 }
 
 /*
  * Get one line of input and process it.
  */
-void CmdUserInput (Session *sess, int *idle_val, int *idle_flag)
+void CmdUserInput (int *idle_val, int *idle_flag)
 {
-    CmdUserProcess (sess, NULL, idle_val, idle_flag);
+    CmdUserProcess (NULL, idle_val, idle_flag);
 }
 
 /*
  * Process one line of command, get it if necessary.
  */
-void CmdUserProcess (Session *sess, const char *command, int *idle_val, int *idle_flag)
+void CmdUserProcess (const char *command, int *idle_val, int *idle_flag)
 {
     unsigned char buf[1024];    /* This is hopefully enough */
     char *cmd;
@@ -2419,7 +2459,7 @@ void CmdUserProcess (Session *sess, const char *command, int *idle_val, int *idl
 
     if (status)
     {
-        status = (*sticky)(sess, buf, 0, status);
+        status = (*sticky)(buf, 0, status);
     }
     else
     {
@@ -2469,13 +2509,13 @@ void CmdUserProcess (Session *sess, const char *command, int *idle_val, int *idl
             {
                 arg1 = strtok (NULL, "");
                 if (arg1)
-                    CmdPktCmdRegNewUser (sess, arg1);
+                    CmdPktCmdRegNewUser (NULL, arg1);     /* TODO */
             }
             else if (!strcasecmp (cmd, "pass"))
             {
                 arg1 = strtok (NULL, "");
                 if (arg1)
-                    CmdPktCmdMetaPass (sess, arg1);
+                    CmdPktCmdMetaPass (NULL, arg1);      /* TODO */
             }
             else if (!strcasecmp (cmd, "ver"))
             {
@@ -2502,7 +2542,7 @@ void CmdUserProcess (Session *sess, const char *command, int *idle_val, int *idl
                         *idle_val = idle_save;
                     else if (j->unidle == 1)
                         *idle_flag = 0;
-                    status = j->f (sess, argsd, j->data, 0);
+                    status = j->f (argsd, j->data, 0);
                     sticky = j->f;
                 }
                 else

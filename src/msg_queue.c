@@ -1,13 +1,13 @@
-/* $Id$ */
-
 /*
  * Provides a time sorted queue, with callback for due events.
  *
- * This file is © Rüdiger Kuhlmann; it may be distributed under the BSD
- * licence (without the advertising clause) or version 2 of the GPL.
+ * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * version 2 of the GPL licence.
  *
  * This file replaces a simple FIFO implementation for a similar,
  * but more limited, purpose by Lawrence Gold.
+ *
+ * $Id$
  */
 
 #include <stdlib.h>

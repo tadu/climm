@@ -2,8 +2,10 @@
 /*
  * Send ICQ commands, using protocol version 5.
  *
- * This file is © Rüdiger Kuhlmann; it may be distributed under the BSD
- * licence (without the advertising clause) or version 2 of the GPL.
+ * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * version 2 of the GPL licence.
+ *
+ * $Id$
  */
 
 #include "micq.h"
@@ -89,7 +91,7 @@ void CmdPktCmdLogin (Session *sess)
     PacketWrite4 (pak, sess->our_port);
     PacketWriteStrN (pak, sess->passwd);
     PacketWrite4 (pak, 0x000000d5);
-    PacketWrite4 (pak, htonl (sess->our_local_ip));
+    PacketWrite4 (pak, sess->our_local_ip);
     PacketWrite1 (pak, 0x04);         /* 1=firewall | 2=proxy | 4=tcp */
     PacketWrite4 (pak, prG->status);
     PacketWrite2 (pak, TCP_VER);      /* 6 */

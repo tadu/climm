@@ -1,3 +1,11 @@
+/*
+ * Decodes and creates FLAPs.
+ *
+ * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * version 2 of the GPL licence.
+ *
+ * $Id$
+ */
 
 #include "micq.h"
 #include "cmd_pkt_v8_flap.h"
@@ -31,10 +39,8 @@ void SrvCallBackFlap (struct Event *event)
             FlapChannel1 (event->sess, event->pak);
             break;
         case 2: /* SNAC packets */
-            event->callback = &SrvCallBackSnac;
-            QueueEnqueue (queue, event);
+            SrvCallBackSnac (event);
             return;
-            break;
         case 3: /* Errors */
             break;
         case 4: /* Logoff */
@@ -43,7 +49,7 @@ void SrvCallBackFlap (struct Event *event)
         default:
             M_print (i18n (884, "FLAP with unknown channel %d received.\n"), event->pak->cmd);
     }
-    free (event->pak);
+    PacketD (event->pak);
     free (event);
 }
 
@@ -73,8 +79,8 @@ void FlapChannel1 (Session *sess, Packet *pak)
                 FlapCliIdent (sess);
             else
             {
-                FlapCliCookie (sess, tlv->cookie, tlv->cookielen);
-                free (tlv);
+                FlapCliCookie (sess, tlv[6].str, tlv[6].len);
+                TLVD (tlv);
                 tlv = NULL;
             }
             break;
@@ -90,7 +96,7 @@ void FlapChannel4 (Session *sess, Packet *pak)
     struct hostent *host;
     
     tlv = TLVRead (pak);
-    if (tlv->error)
+    if (tlv[8].len)
     {
         Time_Stamp ();
         M_print (" " ESC "«");
@@ -98,31 +104,34 @@ void FlapChannel4 (Session *sess, Packet *pak)
             M_print (i18n (895, "Login failed:\n"));
         else
             M_print (i18n (896, "Server closed connection:\n"));
-        M_print (i18n (859, "Error code: %d\n"), tlv->error);
-        if (tlv->uin && tlv->uin != sess->uin)
-            M_print (i18n (861, "UIN: %d\n"), tlv->uin);
-        if (tlv->URL)
-            M_print (i18n (862, "URL: %s\n"), tlv->URL);
+        M_print (i18n (859, "Error code: %d\n"), tlv[8].nr);
+        if (tlv[1].len && tlv[1].nr != sess->uin)
+            M_print (i18n (861, "UIN: %d\n"), tlv[1].nr);
+        if (tlv[4].len)
+            M_print (i18n (862, "URL: %s\n"), tlv[4].str);
         M_print (ESC "»\n");
 
         if ((sess->connect & CONNECT_MASK) && sess->sok != -1)
             sockclose (sess->sok);
         sess->connect = 0;
         sess->sok = -1;
+        TLVD (tlv);
+        tlv = NULL;
     }
     else
     {
         assert ((sess->connect & CONNECT_MASK) == 2);
-        assert (strchr (tlv->server, ':'));
+        assert (tlv[5].len);
+        assert (strchr (tlv[5].str, ':'));
 
         FlapCliGoodbye (sess);
 
         if (prG->verbose)
-            M_print (i18n (898, "Redirect to server %s...\n"), tlv->server);
+            M_print (i18n (898, "Redirect to server %s...\n"), tlv[5].str);
 
-        sess->server_port = atoi (strchr (tlv->server, ':') + 1);
-        sess->server = strdup (tlv->server);
-        *strchr (sess->server, ':') = '\0';
+        sess->server_port = atoi (strchr (tlv[5].str, ':') + 1);
+        *strchr (tlv[5].str, ':') = '\0';
+        sess->server = strdup (tlv[5].str);
 
         sess->sok = socket (AF_INET, SOCK_STREAM, 0);
         if (sess->sok <= 0)
@@ -227,13 +236,7 @@ void FlapSend (Session *sess, Packet *pak)
         if (pak->len > 6)
         {
             if (pak->cmd == 2 && pak->len >= 16)
-            {
-                M_print (i18n (905, "SNAC (%x,%x) [%s] flags %x ref %x\n"),
-                         PacketReadBAt2 (pak, 6), PacketReadBAt2 (pak, 8),
-                         SnacName (PacketReadBAt2 (pak, 6), PacketReadBAt2 (pak, 8)),
-                         PacketReadBAt2 (pak, 10), PacketReadBAt4 (pak, 12));
-                Hex_Dump (pak->data + 16, pak->len - 16);
-            }
+                SnacPrint (pak);
             else
                 Hex_Dump (pak->data + 6, pak->len - 6);
         }
@@ -257,8 +260,7 @@ void FlapCliIdent (Session *sess)
                          "\x71\xa3\xb9\xe6\x53\x7a\x95\x7c";
         int i = 0;
         for (p = cpw; *p; p++, i++)
-        {  /* printf ("old %x or %x = %x (i=%d)\n",*p,tb[i % 16],
-                *p^tb[i % 16],i); */ *p ^= tb[i % 16]; }
+            *p ^= tb[i % 16];
         return cpw;
     }
              
@@ -273,8 +275,8 @@ void FlapCliIdent (Session *sess)
     PacketWriteTLV2   (pak, 25, FLAP_VER_LESSER);
     PacketWriteTLV2   (pak, 26, FLAP_VER_BUILD);
     PacketWriteTLV4   (pak, 20, FLAP_VER_SUBBUILD);
-    PacketWriteTLVStr (pak, 15, "en");
-    PacketWriteTLVStr (pak, 14, "us");
+    PacketWriteTLVStr (pak, 15, "de");  /* en */
+    PacketWriteTLVStr (pak, 14, "de");  /* en */
     FlapSend (sess, pak);
 }
 

@@ -1,6 +1,10 @@
 
 /*
  * Helper functions of various sources for cmd_pkt_cmd_v5.c.
+ *
+ * Copyright: various
+ *
+ * $ Id: cmd_pkt_cmd_v5_util.c,v $
  */
 
 #include "micq.h"
@@ -173,7 +177,7 @@ void CallBackServerInitV5 (struct Event *event)
     
     if (sess->sok < 0)
     {
-        sess->sok = UtilIOConnectUDP (sess->server, sess->server_port, STDERR);
+        sess->sok = UtilIOConnectUDP (sess->server, sess->server_port);
 
 #ifdef __BEOS__
         if (sess->sok == -1)

@@ -19,22 +19,23 @@ typedef unsigned long  UINT32;
 typedef unsigned short UINT16;
 typedef unsigned char  UIN8;
 
-#ifdef _WIN32
-#define 	snprintf 	_snprintf
-#define 	vsnprintf 	_vsnprintf
+typedef int FD_T;
+typedef int SOK_T;
 
-  typedef int FD_T;
-  typedef int SOK_T;
+#ifdef _WIN32
+  #define snprintf _snprintf
+  #define vsnprintf _vsnprintf
+
   typedef unsigned int ssize_t;
   typedef int BOOL;
   #define sockread(s,p,l) recv(s,(char *) p,l,0)
-
-/* use SOCKWRITE !!!!! */
   #define sockwrite(s,p,l) send(s,(char *) p,l,0)
   #define sockclose(s) closesocket(s)
+
   #define strcasecmp(s,s1)  stricmp(s,s1)
   #define strncasecmp(s,s1,l)  strnicmp(s,s1,l)
   #define Get_Config_Info(x) Get_Unix_Config_Info(x)
+  #define __os_has_input _kbhit ()
 #else
   #ifndef __amigaos__
     typedef unsigned char BOOL;
@@ -42,24 +43,17 @@ typedef unsigned char  UIN8;
 
   #ifdef __BEOS__
     #define sockread(s,p,l) recv(s,p,l,0)
+    #define sockwrite(s,p,l) send(s,p,l,0)
+    #define sockclose(s) closesocket(s)
+    #define __os_has_input Be_TextReady ()
   #else
     #define sockread(s,p,l) read(s,p,l)
-  #endif
-  /* use SOCKWRITE !!!!! */
-  #ifdef __BEOS__
-    #define sockwrite(s,p,l) send(s,p,l,0)
-  #else
     #define sockwrite(s,p,l) write(s,p,l)
+    #define sockclose(s) close(s)
+    #define __os_has_input M_Is_Set (STDIN)
   #endif
 
-  #ifdef __BEOS__
-    #define sockclose(s) closesocket(s)
-  #else
-    #define sockclose(s) close(s)
-  #endif
   #define Get_Config_Info(x) Get_Unix_Config_Info(x)
-  typedef int FD_T;
-  typedef int SOK_T;
 #endif
 
 #ifndef TRUE

@@ -17,7 +17,7 @@ struct Session_s
         UWORD   connect;        /* connection setup status                         */
         Packet *incoming;       /* packet we're receiving                          */
 
-        UDWORD  our_local_ip;   /* what we consider our IP; LAN-internal           */
+        UDWORD  our_local_ip;   /* LAN-internal IP (host byte order)               */
         UDWORD  our_outside_ip; /* the IP address the server sees from us          */
         UDWORD  our_port;       /* the port to make TCP connections on             */
 

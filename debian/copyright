@@ -1,0 +1,17 @@
+This package was debianized by Jordi Mallach <jordi@sindominio.net> on
+Mon, 22 Nov 1999 15:38:08 +0100.
+
+It was downloaded from http://micq.ukeer.de/download.shtml and from CVS
+
+Upstream Author(s): Matthew Smith <meadhros@yahoo.com> (dead)
+                    Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+
+This software is copyright (c) 1998-99 by Matthew Smith,
+                               2002 Rüdiger Kuhlmann.
+
+You are free to distribute this software under the terms of version 2 of
+the GNU public licence (GPL).
+On Debian systems, the complete text of the GPL can be found in the
+/usr/share/common-licenses/GPL-2 file.
+
+There's more info available in the README that ships with this package.

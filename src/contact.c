@@ -1,7 +1,11 @@
 
 /*
  * This file implements the contact list and basic operations on it.
- * @ Rüdiger Kuhlmann.
+ *
+ * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * version 2 of the GPL licence.
+ *
+ * $Id$
  */
 
 #include <stdio.h>
@@ -33,10 +37,8 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
     cont->vis_list = FALSE;
     cont->status = STATUS_OFFLINE;
     cont->last_time = -1L;
-    cont->current_ip[0] = 0xff;
-    cont->current_ip[1] = 0xff;
-    cont->current_ip[2] = 0xff;
-    cont->current_ip[3] = 0xff;
+    cont->local_ip = 0xffffffff;
+    cont->outside_ip = 0xffffffff;
     cont->port = 0;
 #ifdef TCP_COMM
     cont->sok.sok   = 0;

@@ -6,15 +6,15 @@ struct Contact_t;
 
 #include "tcp.h"
 
-struct Contact_t
+struct Contact_s
 {
    UDWORD uin;
    UDWORD status;
    BOOL   invis_list;
    BOOL   vis_list;
    BOOL   not_in_list;
-   UBYTE  current_ip[4];
-   UBYTE  other_ip[4];
+   UDWORD local_ip;   /* host byte order */
+   UDWORD outside_ip;
    UDWORD port;
 #ifdef TCP_COMM
    tcpsock_t sok, sok_chat, sok_file;
@@ -26,8 +26,6 @@ struct Contact_t
    char *LastMessage;
    char nick[20];
 };
-
-typedef struct Contact_t Contact;
 
 Contact *ContactAdd (UDWORD uin, const char *nick);
 Contact *ContactFind (UDWORD uin);

@@ -1,4 +1,13 @@
 
+/*
+ * Initialization and basic support for v8 of the ICQ protocl.
+ *
+ * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * version 2 of the GPL licence.
+ *
+ * $Id$
+ */
+
 #include "micq.h"
 #include "util.h"
 #include "util_ui.h"
@@ -119,6 +128,7 @@ void SrvCallBackTimeout (struct Event *event)
         else
         {
             event->due = time (NULL) + 10;
+            event->type = sess->connect;
             QueueEnqueue (queue, event);
             return;
         }
@@ -180,13 +190,7 @@ void SrvCallBackReceive (Session *sess)
         if (pak->len > 6)
         {
             if (pak->cmd == 2 && pak->len >= 16)
-            {
-                M_print (i18n (905, "SNAC (%x,%x) [%s] flags %x ref %x\n"),
-                         PacketReadBAt2 (pak, 6), PacketReadBAt2 (pak, 8),
-                         SnacName (PacketReadBAt2 (pak, 6), PacketReadBAt2 (pak, 8)),
-                         PacketReadBAt2 (pak, 10), PacketReadBAt4 (pak, 12));
-                Hex_Dump (pak->data + 16, pak->len - 16);
-            }
+                SnacPrint (pak);
             else
                 Hex_Dump (pak->data + 6, pak->len - 6);
         }

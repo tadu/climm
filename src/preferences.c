@@ -1,3 +1,13 @@
+/*
+ * Reads and writes preferences.
+ *
+ * Note: Most stuff is still in file_util.c
+ *
+ * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * version 2 of the GPL licence.
+ *
+ * $Id$
+ */
 
 #include <stdlib.h>
 #include <assert.h>
@@ -10,7 +20,7 @@
 #include "preferences.h"
 #include "util_ui.h"
 
-static FD_T PrefOpenRC (Preferences *pref);
+static FILE *PrefOpenRC (Preferences *pref);
 
 
 Preferences *PreferencesC ()
@@ -37,7 +47,7 @@ PreferencesSession *PreferencesSessionC ()
 #define _OS_PATHSEPSTR  "\\"
 #else
 #ifdef __amigaos__
-#define _OS_PREFPATH "PROGDIR:"
+#define _OS_PREFPATH "/PROGDIR/"
 #define _OS_PATHSEP  '/'
 #define _OS_PATHSEPSTR  "/"
 #else
@@ -49,69 +59,61 @@ PreferencesSession *PreferencesSessionC ()
 
 static const char *userbasedir = NULL;
 
-FD_T PrefOpenRC (Preferences *pref)
+FILE *PrefOpenRC (Preferences *pref)
 {
-    char *home, *path, def[200], olddef[200];
-    FD_T rcf;
-    
-    path = _OS_PREFPATH;
-    home = getenv ("HOME");
-    if (home || !path)
-    {
-        if (!home)
-            home = "";
-        assert (strlen (home) < 180);
-        strcpy (def, home);
-        if (strlen (def) > 0 && def[strlen (def) - 1] != _OS_PATHSEP)
-            strcat (def, _OS_PATHSEPSTR);
-        strcpy (olddef, def);
-        strcat (def, ".micq/");
-    }
-    else
-    {
-        strcpy (def, path);
-        strcpy (olddef, path);
-    }
-    userbasedir = strdup (def);
-
-    strcat (def, "micqrc");
-    strcat (olddef, ".micqrc");
+    char def[200];
+    FILE *rcf;
     
     if (pref->rcfile)
     {
-        rcf = open (pref->rcfile, O_RDONLY);
-        if (rcf > 0)
+        rcf = fopen (pref->rcfile, "r");
+        if (rcf)
             return rcf;
         M_print (i18n (864, "Can't open rcfile %s."), pref->rcfile);
         exit (20);
     }
     
+    strcpy (def, PrefUserDir ());
+    strcat (def, "micqrc");
     pref->rcfile = strdup (def);
 
-    rcf = open (pref->rcfile, O_RDONLY);
-    if (rcf > 0)
+    rcf = fopen (pref->rcfile, "r");
+    if (rcf)
     {
         pref->rcisdef = 1;
         return rcf;
     }
-    
-    rcf = open (olddef, O_RDONLY);
-    if (rcf > 0)
-    {
-        M_print (i18n (819, "Can't find rc file %s - using old location %s\n"), def, olddef);
-        return rcf;
-    }
-    return 0;
+    return NULL;
 }
 
 const char *PrefUserDir ()
 {
+    if (!userbasedir)
+    {
+        char *home, *path, def[200];
+        
+        path = _OS_PREFPATH;
+        home = getenv ("HOME");
+        if (home || !path)
+        {
+            if (!home)
+                home = "";
+            assert (strlen (home) < 180);
+            strcpy (def, home);
+            if (strlen (def) > 0 && def[strlen (def) - 1] != _OS_PATHSEP)
+                strcat (def, _OS_PATHSEPSTR);
+            strcat (def, ".micq" _OS_PATHSEPSTR);
+            userbasedir = strdup (def);
+        }
+        else
+            userbasedir = strdup (path);
+    }
     return userbasedir;
 }
 
 void PrefLoad (Preferences *pref)
 {
-    FD_T rcf;
+    FILE *rcf;
     
     rcf = PrefOpenRC (pref);
     if (rcf)
@@ -119,6 +121,3 @@ void PrefLoad (Preferences *pref)
     else
         Initalize_RC_File (NULL);
 }
-
-
-/* bla */

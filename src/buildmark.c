@@ -1,4 +1,11 @@
-/* $Id$ */
+/*
+ * Provides a build mark with the current version and current time of compilation.
+ *
+ * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * version 2 of the GPL licence.
+ *
+ * $Id$
+ */
 
 #include <string.h>
 #include <stdio.h>

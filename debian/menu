@@ -1,0 +1,2 @@
+?package(micq):needs=text section=Apps/Net \
+  title="mICQ" command="/usr/bin/micq"

@@ -1,4 +1,5 @@
 /* $Id$ */
+/* Copyright? */
 
 #include "micq.h"
 #include "util_ui.h"
@@ -140,10 +141,15 @@ void icq_sendurl (Session *sess, UDWORD uin, char *description, char *url)
 }
 
 void icq_sendmsg (Session *sess, UDWORD uin, char *text, UDWORD msg_type)
-{	
+{
 #ifdef TCP_COMM
-    if (!TCPSendMsg (sess, uin, text, msg_type))
+    if (!sess->assoc || !TCPSendMsg (sess, uin, text, msg_type))
 #endif
-    CmdPktCmdSendMessage (sess, uin, text, msg_type);
+    {
+        if (sess->spref->type & TYPE_SERVER)
+            SnacCliSendmsg (sess, uin, text, msg_type);
+        else
+            CmdPktCmdSendMessage (sess, uin, text, msg_type);
+    }
 }
 

@@ -16,7 +16,7 @@ Usual Windows ICQ users do use Windows 1251 encoding but
 unix users do use koi8 encoding, so we need to convert it.
 This function will convert string from windows 1251 to koi8
 or from koi8 to windows 1251.
-Andrew Frolov dron@ilm.net
+Copyright Andrew Frolov dron@ilm.net
 *********************************************************
 Fixed for win1251<->koi8-u convertion. Now all Ukrainian letters
                 are transcoded!

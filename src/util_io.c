@@ -1,3 +1,10 @@
+/*
+ * Assorted helper functions for doing I/O.
+ *
+ * Copyright: various.
+ *
+ * $Id$
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -8,6 +15,7 @@
 #include <assert.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <stdarg.h>
 #include "micq.h"
 #include "preferences.h"
 #include "util_ui.h"
@@ -20,7 +28,7 @@
  * hostname can be FQDN or IP
  * write out messages to the FD aux
  */
-SOK_T UtilIOConnectUDP (char *hostname, int port, FD_T aux)
+SOK_T UtilIOConnectUDP (char *hostname, int port)
 {
 /* SOCKS5 stuff begin */
     int res;
@@ -45,7 +53,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port, FD_T aux)
     }
     if (prG->verbose)
     {
-        M_fdprint (aux, i18n (56, "Socket created attempting to connect\n"));
+        M_print (i18n (56, "Socket created attempting to connect\n"));
     }
 
     if (prG->s5Use)
@@ -56,7 +64,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port, FD_T aux)
 
         if (bind (sok, (struct sockaddr *) &sin, sizeof (struct sockaddr)) < 0)
         {
-            M_fdprint (aux, "Can't bind socket to free port\n");
+            M_print (i18n (819, "Can't bind socket to free port\n"));
             return -1;
         }
 
@@ -192,7 +200,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port, FD_T aux)
     {
         if (prG->verbose)
         {
-            M_fdprint (aux, i18n (54, " Conection Refused on port %d at %s\n"), port, hostname);
+            M_print (i18n (54, " Conection Refused on port %d at %s\n"), port, hostname);
             perror ("connect");
         }
         return -1;
@@ -205,7 +213,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port, FD_T aux)
 
     if (prG->verbose)
     {
-        M_fdprint (aux, i18n (53, "Connected to %s, waiting for response\n"), hostname);
+        M_print (i18n (53, "Connected to %s, waiting for response\n"), hostname);
     }
 
     return sok;
@@ -283,3 +291,41 @@ Packet *UtilIORecvUDP (Session *sess)
     
     return pak;
 }
+
+/**************************************************************
+Same as M_print but for FD_T's
+***************************************************************/
+void M_fdprint (FD_T fd, const char *str, ...)
+{
+    va_list args;
+    int k;
+    char buf[2048];
+
+    va_start (args, str);
+    vsnprintf (buf, sizeof (buf), str, args);
+    k = write (fd, buf, strlen (buf));
+    if (k != strlen (buf))
+    {
+        perror (str);
+        exit (10);
+    }
+    va_end (args);
+}
+
+/***********************************************************
+Reads a line of input from the file descriptor fd into buf
+an entire line is read but no more than len bytes are 
+actually stored
+************************************************************/
+int M_fdnreadln (FILE *fd, char *buf, size_t len)
+{
+    if (!fgets (buf, len, fd))
+        return -1;
+    
+    if (buf[strlen(buf) - 1] == '\n')
+        buf[strlen(buf) - 1] = '\0';
+    if (buf[strlen(buf) - 1] == '\r')
+        buf[strlen(buf) - 1] = '\0';
+    return 0;
+}
+

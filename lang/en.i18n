@@ -817,7 +817,7 @@ i18n (67, )
 816:Unknown option %s to set command.¶
 817:Warning: ReceiveScript feature not enabled!¶
 818:Warning: Deprecated syntax found in rc file!¶    Please update or "save" the rc file and check for changes.¶
-819:Can't find rc file %s - using old location %s¶
+819:Can't bind socket to free port¶
 820:%s <option> [on|off] - control simple options.¶
 821:Funny messages are ©3%s©0.¶
 822:    color: use colored text output.¶
@@ -877,14 +877,15 @@ i18n (67, )
 876:failed: %s (%d)¶
 877:ok.¶
 878:Error while reading from socket: %s (%d)¶
-879:©1Incoming v8 server packet (FLAP): channel %d seq %08x length %d¶©0
+879:©1Incoming v8 server packet (FLAP): channel %d seq %08x length %d©0¶
+879:©1Incoming v8 server packet (SNAC): channel 2 seq %08x length %d©0¶
 880:Incoming packet is not a FLAP: id is %d.¶
 881:FLAP channel 1 out of data.¶
 882:FLAP channel 1 cmd 1 extra data:¶
 883:FLAP channel 1 unknown command %d.¶
 884:FLAP with unknown channel %d received.¶
 885:Connection v8 timed out.¶
-886:Outgoing v8 server packet (FLAP): channel %d seq %08x length %d
+886:Outgoing v8 server packet (FLAP): channel %d seq %08x length %d©0¶
 887:Connections:
 888:%s version %d for %d at %s:%d¶
 889:server
@@ -898,9 +899,8 @@ i18n (67, )
 897:Incomplete TLV %d, len %d of %d - ignoring.¶
 898:Redirect to server %s...¶
 899:Unknown family requested: %d¶
-900:Unknown TLV %d, value %d %4x¶
-901:Unknown TLV %d, value %d %8x¶
-902:Unknown TLV %d, value %s¶
-903:Unknown SNAC (%x,%x).¶
+900:Warning: Server thinks our UIN is %d, while it is %d.¶
+901:Can't send this yet.¶
 904:Server doesn't understand ver %d (only %d) for family %d!¶
-905:%s flags %x ref %x¶
+905:SNAC (%x,%x) [%s] flags %x ref %x¶
+906:This command operates only on connections of type %s.¶

@@ -1,0 +1,49 @@
+micq (0.4.8+cvs20020304-1) unstable; urgency=HIGH
+
+  * Re-debianized; changelogs got lost due to mismaintainership
+  * New upstream; does a tiny bit of v8 now.
+
+ -- Ruediger Kuhlmann <Ruediger.Kuhlmann@stud.uni-karlsruhe.de>  Mon,  4 Mar 2002 12:00:00 +0100
+
+micq (0.4.3-4) stable; urgency=HIGH
+
+  * Applied patch from Guillaume Morin <gemorin@debian.org> to fix
+    a possible remote exploit reported in BugTraq. Thanks!
+
+ -- Jordi Mallach <jordi@debian.org>  Sun, 21 Jan 2001 21:15:31 +0100
+
+micq (0.4.3-3) frozen unstable; urgency=low
+
+  * debian/copyright: updated the copyright statement after consulting
+    with the upstream maintainer. Now it points to the BSD license as he
+    requested.
+
+ -- Jordi Mallach <jordi@sindominio.net>  Fri, 28 Jan 2000 15:01:34 +0100
+
+micq (0.4.3-2) frozen unstable; urgency=low
+
+  * Added a manpage for Micq.
+  * debian/control: 
+    + fixed an error in Micq's description.
+    + updated to Standards-Version: 3.1.1.1
+
+ -- Jordi Mallach <jordi@sindominio.net>  Thu,  6 Jan 2000 20:35:37 +0100
+
+micq (0.4.3-1) unstable; urgency=low
+
+  * New upstream release
+  * Fixes serious bugfixes mainstream (unluckily, they seem to be
+    unreflected in the changelog).
+  * Removed my second surname from the maintainer's name.
+
+ -- Jordi Mallach <jordi@sindominio.net>  Fri, 26 Nov 1999 03:04:38 +0100
+
+micq (0.4.2-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Jordi Mallach Pérez <jordi@sindominio.net>  Mon, 22 Nov 1999 15:38:08 +0100
+
+Local variables:
+mode: debian-changelog
+End:

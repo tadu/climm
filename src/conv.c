@@ -1,4 +1,5 @@
 /* $Id$ */
+/* Copyright */
 
 #include "micq.h"
 #include "conv.h"

@@ -15,13 +15,13 @@ typedef struct
     int     state;
     int     ip;
     UDWORD  sid;
-    struct Contact_t *cont;
+    Contact *cont;
 } tcpsock_t;
 
 void TCPInit           (Session *sess, int port);
 
-void TCPDirectOpen     (Session *sess, struct Contact_t *cont);
-void TCPDirectClose    (               struct Contact_t *cont);
+void TCPDirectOpen     (Session *sess, Contact *cont);
+void TCPDirectClose    (               Contact *cont);
 
 void TCPAddSockets     (Session *sess);
 void TCPDispatch       (Session *sess);
@@ -31,7 +31,7 @@ void TCPDispatch       (Session *sess);
 void TCPDirectReceive  (Session *sess);
 int  TCPConnect        (Session *sess, tcpsock_t *sok, int mode);
 
-void TCPHandleComm     (Session *sess, struct Contact_t *cont, int mode);
+void TCPHandleComm     (Session *sess, Contact *cont, int mode);
 BOOL TCPSendMsg        (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd);
 
 void CallBackLoginTCP  (struct Event *event);

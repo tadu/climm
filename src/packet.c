@@ -2,8 +2,10 @@
 /*
  * Assemble outgoing and dissect incoming packets.
  *
- * This file is © Rüdiger Kuhlmann; it may be distributed under the BSD
- * licence (without the advertising clause) or version 2 of the GPL.
+ * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * version 2 of the GPL licence.
+ *
+ * $Id$
  */
 
 #include "micq.h"
@@ -11,6 +13,7 @@
 #include "conv.h"
 #include "util_ui.h"
 #include <assert.h>
+#include <stdio.h>
 
 Packet *PacketC (void)
 {
@@ -139,6 +142,15 @@ void PacketWriteStrCUW (Packet *pak, const char *data)
     ConvUnixWin (tmp);
     PacketWriteStrN (pak, tmp);
     free (tmp);
+}
+
+void PacketWriteUIN (Packet *pak, UDWORD uin)
+{
+    char str[15];
+    
+    snprintf (str, sizeof (str), "%ld", uin);
+    PacketWrite1 (pak, strlen (str));
+    PacketWriteData (pak, str, strlen (str));
 }
 
 UWORD PacketWritePos (const Packet *pak)
@@ -311,6 +323,24 @@ const char *PacketReadStrN (Packet *pak)
     pak->rpos += len;
 
     return &pak->data[pak->rpos - len];
+}
+
+UDWORD PacketReadUIN (Packet *pak)
+{
+    UBYTE len = PacketRead1 (pak);
+    char *str = malloc (len + 1);
+    UDWORD uin;
+
+    PacketReadData (pak, str, len);
+    str[len] = '\0';
+    uin = atoi (str);
+    free (str);
+    return uin;
+}
+
+UWORD PacketReadPos (const Packet *pak)
+{
+    return pak->rpos;
 }
 
 UBYTE PacketReadAt1 (const Packet *pak, UWORD at)

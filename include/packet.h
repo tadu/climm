@@ -29,6 +29,7 @@ void        PacketWriteData   (      Packet *pak,           const char *data, UW
 void        PacketWriteStrB   (      Packet *pak,           const char *data);
 void        PacketWriteStrN   (      Packet *pak,           const char *data);
 void        PacketWriteStrCUW (      Packet *pak,           const char *data);
+void        PacketWriteUIN    (      Packet *pak, UDWORD uin);
 UWORD       PacketWritePos    (const Packet *pak);
 void        PacketWriteAt1    (      Packet *pak, UWORD at, UBYTE  data);
 void        PacketWriteAt2    (      Packet *pak, UWORD at, UWORD  data);
@@ -43,6 +44,7 @@ UDWORD      PacketReadB4      (      Packet *pak);
 void        PacketReadData    (      Packet *pak,           char *data, UWORD len);
 const char *PacketReadStrB    (      Packet *pak);
 const char *PacketReadStrN    (      Packet *pak);
+UDWORD      PacketReadUIN     (      Packet *pak);
 UWORD       PacketReadPos     (const Packet *pak);
 UBYTE       PacketReadAt1     (const Packet *pak, UWORD at);
 UWORD       PacketReadAt2     (const Packet *pak, UWORD at);
@@ -58,5 +60,6 @@ int         PacketReadLeft    (const Packet *pak);
 #define PacketWriteTLV4(pak,tlv,data)        do { PacketWriteB2 (pak,tlv); PacketWriteB2 (pak, 4); PacketWriteB4 (pak, data); } while (0)
 #define PacketWriteTLVData(pak,tlv,data,len) do { PacketWriteB2 (pak,tlv); PacketWriteB2 (pak, len); PacketWriteData (pak, data, len); } while (0)
 #define PacketWriteTLVStr(pak,tlv,data)      do { PacketWriteB2 (pak,tlv); PacketWriteStrB (pak, data); } while (0)
+#define PacketWriteTLVUIN(pak,tlv,data)      do { PacketWriteB2 (pak,tlv); PacketWriteUIN (pak, data); } while (0)
 
 #endif MICQ_PACKET_H

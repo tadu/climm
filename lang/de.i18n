@@ -37,7 +37,7 @@
 036:Unbekanntes Kommando %s, tippe "help" für Hilfe.
 037:Nachricht gesendet, bevor der letzte Puffer voll war¶
 038:Nachricht abgebrochen¶
-039:Der Server hat uns gezwungen, die Verbindung abzubrechen, möglicherweise wegen einer schlechten Verbindung.
+039:Der Server behauptet, wir wären nicht verbunden.¶
 040:mICQ> 
 041:msg> 
 042:msgAll> 
@@ -50,7 +50,8 @@
 049: 
 050:Login erfolgreich!
 051: 
-052: Konnte Verbindung nicht herstellen¶
+#-#052: Konnte Verbindung nicht herstellen¶
+#052:Opening v5 connection to %s:%d... 
 053: Auf %s verbunden, warte auf Antwort.¶
 054: Verbindung verweigert auf Port: %d, Server: %s¶
 055: Konnte keinen Socket erstellen!"
@@ -66,13 +67,15 @@
 064:Auto-Status-Wechsel nach:
 065:Bytereihenfolge: Intel.
 066:Bytereihenfolge: Motorola.
+#067:debug: Doppeltes Packet #%04x vom Typ %04x (%s)¶
 068: Online seit %s
 069: Zuletzt am %s online gewesen
 070: Es ist nicht bekannt, wann der User das letzte mal online war.
 071:Dein status ist: 
 072:User abgeklemmt:
 073:User verbunden:
-074:Micq (Matts ICQ-Klon)
+#-#074:Micq (Matts ICQ-Klon)
+#074:mICQ (Matt's ICQ clone)
 075:Version
 076:kompiliert am
 077:gewidmet Matthew D. Smith.
@@ -80,7 +83,8 @@
 079:Übersetzung von Rico -mc- Glöckner und Rüdiger Kuhlmann, zuletzt geändert am 1.11.2001.¶
 080:Konnte Übersetzung "%s" nicht laden.¶
 081:Deutsche Übersetzung erfolgreich geladen (%d Einträge).¶
-082:Versuche, neu zu verbinden... [Versuch %d von %d]
+#-#082:Versuche, neu zu verbinden... [Versuch %d von %d]
+#082:Trying to reconnect... [try %d out of %d]¶
 083:Klang-Befehl:
 084:Klang ist
 085:an
@@ -198,7 +202,8 @@
 192:Rechner = %s¶
 193:Status  = %ld¶
 194:Anzahl der Einträge in der Kontaktliste: %d.¶
-195:Benutzernummer von contact[0]: %ld¶
+#-#195:Benutzernummer von contact[0]: %ld¶
+#195: 
 #196:Message_cmd = %s¶
 197:Änderung des Paßwortes war ©2%s©0.¶
 198:Andere Dienste
@@ -619,10 +624,11 @@
 603: 
 604: 
 605: 
-#606:Falsche Sitzungskennung %08X bei Kommando CMD %04X ignoriert.¶
+#606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.¶
 607:Benutzung: micq [-v|-V] [-f|-F <KonfDatei>] [-l|-L <ProtDatei>] [-?|-h]¶
 608:        -v   ausführlicher Modus (nur zur Fehlersuche nützlich)¶
-609:        -f   alternative Konfigurationsdatei verwenden (normalerweise ~/.micqrc)¶
+#-#609:        -f   alternative Konfigurationsdatei verwenden (normalerweise ~/.micqrc)¶
+#609:        -f   specifies an alternate Config File (default: ~/.micq/micqrc)¶
 610:        -l   alternative Protokoll-Datei oder -Verzeichnis verwenden¶
 611:        -?   diese Hilfe¶¶
 612:Dieses Programm wurde ohne Hilfe oder Zustimmung von Mirabilis erstellt.¶
@@ -631,8 +637,10 @@
 615:Protokolliere nach "%s".¶
 616:BeOS "InputThread" gestartet.¶
 617: 
-618:
-619:
+#-#618:
+#618: 
+#-#619:
+#619: 
 620: 
 621: 
 622:Möchten Sie die Änderungen anwenden? (JA/NEIN)
@@ -646,7 +654,8 @@
 630: 
 631: 
 632:¶Verbindung instabil. Beende...
-633:Bestätigung! %d¶
+#-#633:Bestätigung! %d¶
+#633:Do you want your status to be available on the web? (YES/NO)
 634: 
 635:Du bist auf einen Fehler in meinem Programmcode gestoßen :(. Jetzt schulde ich Dir ein Bier! Grüße, Fryslan!¶
 636: 
@@ -659,7 +668,8 @@
 643:Bestätigt SRV_X1 0x021C Fertig mit Kontaktliste (?)¶
 644:Bestätigt SRV_X2 0x00E6 Fertig mit alten Nachrichten (?)¶
 645:©3Sie haben ein ungültiges Paßwort eingegeben.©0¶
-646:©3Der Server ist beschäftigt, bitte versuchen Sie es erneut.¶Versuche es erneut...¶
+#-#646:©3Der Server ist beschäftigt, bitte versuchen Sie es erneut.¶Versuche es erneut...¶
+#646:©3Server is busy.¶
 647: Typ: %04x	
 648: ©2Die Antwort war %04X	
 649:Die Version war %X	
@@ -700,18 +710,21 @@
 684:%s ist kein bekannter Kontakt.¶
 685:Letzte Nachricht von ©4%s©0:¶
 686:No messages received from ©4%s©0¶
-687:mICQ läuft seit
+#-#687:mICQ läuft seit
+#687:mICQ has been running for
 688:Tagen
 689:Stunden
 690:Minuten
 691:Sekunden
 692:Kontakte:
 693:Pakete gesendet:
-694:Pakete empfangen:
+#-#694:Pakete empfangen:
+#694:Packets received:
 695:Pakete verzögert:
 696:Geschlecht:
 697:Unterschiedliche Pakete gesendet:
-698:Unterschiedliche Pakete empfangen:
+#-#698:Unterschiedliche Pakete empfangen:
+#698:Distinct packets received:
 699:Benötige gültige Benutzernummer oder Spitzname.¶
 700:%s ist kein gültiger Benutzer in Ihrer Kontaktliste.¶
 701:%d Benutzer nicht zurückgegeben.
@@ -728,11 +741,13 @@
 712:über 50                    9¶
 713:Männlein sucht Weiblein   10¶
 714:Weiblein sucht Männlein   11¶
-715:mICQ                      49 (wird möglicherweise nicht funktionieren, aber ein Versuch ist's wert)
+#-#715:mICQ                      49 (wird möglicherweise nicht funktionieren, aber ein Versuch ist's wert)
+#715:mICQ                      49 (might not work but try it)
 716:Keine                     -1¶
 717:! als erstes Zeichen, um ein Shell-Kommando auszuführen (z.B. "!ls"  "!dir" "!mkdir temp").
 718:Kann den Socket unter Windows nicht initialisieren.
-719:Zeigt, wie lange mICQ schon läuft.
+#-#719:Zeigt, wie lange mICQ schon läuft.
+#719:Shows how long mICQ has been running.
 720:<uin> kann die Benutzernummer oder der Spitzname eines Benutzers sein.
 721:Bei einer leeren Nachricht können mehrere Zeilen eingegeben werden.¶Dabei bedeutet eine Zeile nur mit . das Ende der Nachricht.¶Ebenso verwirft eine Zeile nur mit # die Nachricht.
 722:Unbekanntes Kommando zum Umbenennen, gebe "help" für Hilfe ein.
@@ -770,7 +785,8 @@
 754: 
 755: 
 756:¶Erstelle Verbindung...¶
-757:Konnte keine Verbindung herstellen.¶
+#-#757:Konnte keine Verbindung herstellen.¶
+#757:Couldn't establish connection.¶
 758:Sende Anfrage...¶
 759:Warte auf Antwort....¶
 760:¶Ihre neue Benutzernummer ist %s%ld%s!¶
@@ -793,24 +809,32 @@
 777:Eingehende TCP-Verbindungen (teilweise implementiert) werden auf Port %d empfangen.¶
 778:Eingehendes TCP-Paket:
 779:Öffne TCP-Verbindung zu %s auf %s:%d... 
-780:fehlgeschlagen - konnte Verbindungsendpunkt nicht erzeugen: %s (%d).¶
+#-#780:fehlgeschlagen - konnte Verbindungsendpunkt nicht erzeugen: %s (%d).¶
+#780:Couldn't create socket: %s (%d).¶
 781: 
 782: 
 783: 
 784: 
 785:erfolgreich.¶
 786:
-787:Fehler beim Senden eines TCP-Paketes. (%d)¶
-788:Fehler beim Empfangen eines TCP-Paketes.
+#-#787:Fehler beim Senden eines TCP-Paketes. (%d)¶
+#787: 
+#-#788:Fehler beim Empfangen eines TCP-Paketes.
+#788: 
 789:Fehlerhaftes Paket empfangen.
-790:Sende Initialisierungsbestätigung...¶
-791:
-792:Erstelle eine direkte TCP-Verbindung...¶
-#793:Port: %lu¶
-#794:Uin : %lu¶
-#795:SID : 0x%08X¶
-796:Fehler beim initiieren einer TCP-Verbindung.¶
-797:Benutzer %s%s%s hat die Verbindung beendet.¶
+#-#790:Sende Initialisierungsbestätigung...¶
+#790: 
+#-#791:
+#791: 
+#-#792:Erstelle eine direkte TCP-Verbindung...¶
+#792: 
+#793: 
+#794: 
+#795: 
+#-#796:Fehler beim initiieren einer TCP-Verbindung.¶
+#796: 
+#-#797:Benutzer %s%s%s hat die Verbindung beendet.¶
+#797: 
 798: 
 799: 
 800:Wählt die Sprache <lang> aus.
@@ -821,16 +845,16 @@
 805:Klang, wenn sich jemand abmeldet:
 806:Nachricht %04x von %s bestätigt.¶
 807:Eingehende Nachricht %04x von %s abgebrochen.¶
-#808: Typ    = %04x	
+#808: 
 #809:Unable to retrieve auto-response message for %s.
-#810:Resending TCP message with SEQ num %04X to %s.
-#811: (Attempt #%d.)¶
+#810: 
+#811: 
 812: 
 813: 
 #814:Sent auto-response message to %s%s%s.¶
 815:    funny: Lustige Meldungen verwenden.¶
 816:Unbekannte Option %s des set-Kommandos.¶
-#817:Warning: ReceiveScript Feature not enabled!¶
+#817:Warning: ReceiveScript feature not enabled!¶
 818:Warnung: Veraltete Syntax in der Konfigurationsdatei gefunden!¶Bitte neu erstellen oder mit "save" überschreiben und auf Änderungen prüfen.¶
 819:Kann Konfiguratiosdatei %s nicht finden - verwende veraltete Datei %s.¶
 820:%s <option> [an|aus] - einfach Optionen ändern.¶
@@ -841,6 +865,82 @@
 825:Werfe ein Paket vom Typ %04x (%s) weg.
 826:Sende Paket vom Typ %04x (%s), Sequenz-Nummer %04x, erneut (Versuch #%d, Länge %d).¶
 827:Unbekanntes Programm
-828:fehlgeschlagen - konnte Verbindungsendpunkt nicht nicht-blockierend setzen.¶
-829:fehlgeschlagen - %d (%s) (%d)¶
+#-#828:fehlgeschlagen - konnte Verbindungsendpunkt nicht nicht-blockierend setzen.¶
+#828:Warning: couldn't set socket nonblocking: %s (%d).¶
+#-#829:fehlgeschlagen - %d (%s) (%d)¶
+#829:Opening TCP connection to %s%s%s at %s:%d failed: %d (%s) (%d)¶
 #830:Discarding message to %s after %d send attempts.  Message content:¶
+#831: 
+#832:failure - couldn't set socket blocking.¶
+#833:Client-to-client TCP connection to %s established.¶
+#834:Error while reading from socket - %s (%d)¶
+#835:Error while writing to socket - %s (%d)¶
+#836:Sending TCP direct connection initialization packet.¶
+#837:Acknowledging TCP direct connection initialization packet.¶
+#838:Received direct connection initialization.¶
+#839:Version %04x:%04x, Port %d, UIN %d, session %08x¶
+#840:Received malformed direct connection initialization.¶
+#841:Received malformed initialization acknowledgement packet.¶
+#842:Closing socket %d to %s.¶
+#843:Closing socket %d.¶
+#844:TCP message %04x discarded after timeout.¶
+#845:Nick %s unknown.¶
+#846:Opens and closes TCP connections:¶
+#847:    open <nick>  - Opens TCP connection.¶
+#848:    close <nick> - Closes/resets TCP connection(s).¶
+#849:Error on select: %s (%d)¶
+#850:Timeout on connection with %s at %s:%d¶
+#851:popping type %d seq %08x at %p (pak %p)
+#852:enqueuing type %d seq %08x at %p (pak %p)
+#853:couldn't dequeue type %d seq %08x
+#854:dequeue type %d seq %08x at %p (pak %p)
+#855:TCP connection to %s at %s:%d failed.¶
+#856:Discarded a %04x (%s) packet from old session %08x (current: %08x).¶
+#857:Do you want to hide your IP from other contacts? (YES/NO)
+#858:sending packet
+#859:Error code: %d¶
+#860:freeing packet
+#861:UIN: %d¶
+#862:URL: %s¶
+#863:creating new packet
+#864:Can't open rcfile %s.
+#865:cloning existing packet
+#866:This version of micq is compiled without TCP support.¶
+#867:Got a malformed (too short) packet - ignored.¶
+#868:Got a malformed (to long subpacket) multi-packet - remainder ignored.¶
+#869:Protocoll versions less than 5 are not supported anymore.¶
+#870:    off <nick>   - Closes TCP connection(s) and don't try TCP again.¶
+#871:Opening v8 connection to %s:%d... 
+#872:failed: %s (%d)¶
+#873:ok.¶
+#874:failed: can't find hostname %s: %s.
+#875:failed: can't find hostname %s.
+#876:failed: %s (%d)¶
+#877:ok.¶
+#878:Error while reading from socket: %s (%d)¶
+#879:©1Incoming v8 server packet (SNAC): channel 2 seq %08x length %d©0¶
+#880:Incoming packet is not a FLAP: id is %d.¶
+#881:FLAP channel 1 out of data.¶
+#882:FLAP channel 1 cmd 1 extra data:¶
+#883:FLAP channel 1 unknown command %d.¶
+#884:FLAP with unknown channel %d received.¶
+#885:Connection v8 timed out.¶
+#886:Outgoing v8 server packet (FLAP): channel %d seq %08x length %d©0¶
+#887:Connections:
+#888:%s version %d for %d at %s:%d¶
+#889:server
+#890:peer-to-peer
+#891:Connection %d is already open.¶
+#892:conn             List available connections.¶
+#893:conn login <nr>  Open connection <nr>.¶
+#894:There is no connection number %d.¶
+#895:Login failed:¶
+#896:Server closed connection:¶
+#897:Incomplete TLV %d, len %d of %d - ignoring.¶
+#898:Redirect to server %s...¶
+#899:Unknown family requested: %d¶
+#900:Warning: Server thinks our UIN is %d, while it is %d.¶
+#901:Can't send this yet.¶
+#904:Server doesn't understand ver %d (only %d) for family %d!¶
+#905:SNAC (%x,%x) [%s] flags %x ref %x¶
+#906:This command operates only on connections of type %s.¶

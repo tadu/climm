@@ -1,4 +1,5 @@
 /* $Id$ */
+/* Copyright ? */
 
 #include "micq.h"
 #include "icq_response.h"
@@ -451,17 +452,19 @@ void User_Offline (Session *sess, UBYTE * pak)
     }
 }
 
-static void UserOnlineSetVersion (Contact *con, UDWORD tstamp)
+void UserOnlineSetVersion (Contact *con, UDWORD tstamp)
 {
     char buf[100];
     char *new = NULL;
     unsigned int ver = tstamp & 0xffff, ssl = 0;
 
-    if      ((tstamp & 0xffff0000) == 0x7d000000) { ssl = 0; new = "licq"; ver *= 10; }
-    else if ((tstamp & 0xffff0000) == 0x7d800000) { ssl = 1; new = "licq"; ver *= 10; }
-    else if ((tstamp & 0xffff0000) == 0x7a000000) { ssl = 0; new = "mICQ"; }
-    else if ((tstamp & 0xffff0000) == 0x7a800000) { ssl = 1; new = "mICQ"; }
-    else if (tstamp == 0x3b292cf3) { new = "2000b Beta"; ver = 46300; }
+    if      ((tstamp & 0xff7f0000) == BUILD_LICQ)
+    {
+        if (ver > 1000) {new = "licq"; ver *= 10; }
+        else new = "mICQ";
+    }
+    else if ((tstamp & 0xff7f0000) == BUILD_MICQ)   new = "mICQ";
+    if       (tstamp &                BUILD_SSL)    ssl = 1;
     
     if (new)
     {
@@ -482,76 +485,58 @@ static void UserOnlineSetVersion (Contact *con, UDWORD tstamp)
     con->version = strlen (buf) ? strdup (buf) : NULL;
 }
 
-void User_Online (Session *sess, UBYTE * pak)
+void User_Online (Session *sess, Packet *pak)
 {
     Contact *con;
-    int remote_uin, new_status;
+    int uin;
 
-    remote_uin = Chars_2_DW (&pak[0]);
+    uin = PacketRead4 (pak);
+    con = ContactFind (uin);
+    log_event (uin, LOG_ONLINE, "User logged on %s\n", ContactFindName (uin));
+    
+    if (!con)
+        return;
 
-    new_status = Chars_2_DW (&pak[17]);
+    con->last_time = time (NULL);
+    con->outside_ip      = PacketRead4 (pak);
+    con->port            = PacketRead4 (pak);
+    con->local_ip        = PacketRead4 (pak);
+    con->connection_type = PacketRead1 (pak);
+    con->status          = PacketRead4 (pak);
+    con->TCP_version     = PacketRead4 (pak);
+                           PacketRead4 (pak);
+                           PacketRead4 (pak);
+                           PacketRead4 (pak);
+    UserOnlineSetVersion (con, PacketRead4 (pak));
 
     if (sess->connect & CONNECT_OK)
     {
 
         if (prG->sound & SFLAG_ON_CMD)
-            ExecScript (prG->sound_on_cmd, remote_uin, 0, NULL);
+            ExecScript (prG->sound_on_cmd, uin, 0, NULL);
         else if (prG->sound & SFLAG_ON_BEEP)
-            printf ("\n");
-
-        if ((con = ContactFind (remote_uin)))
-        {
-            UserOnlineSetVersion (con, Chars_2_DW (&pak[37]));
-            con->status = new_status;
-            con->current_ip[0] = pak[4];
-            con->current_ip[1] = pak[5];
-            con->current_ip[2] = pak[6];
-            con->current_ip[3] = pak[7];
-            con->other_ip[0] = pak[12];
-            con->other_ip[1] = pak[13];
-            con->other_ip[2] = pak[14];
-            con->other_ip[3] = pak[15];
-            con->port = Chars_2_DW (&pak[8]);
-            con->last_time = time (NULL);
-            con->TCP_version = Chars_2_Word (&pak[21]);
-            con->connection_type = pak[16];
-            
-        }
-        log_event (remote_uin, LOG_ONLINE, "User logged on %s\n", ContactFindName (remote_uin));
+            printf ("\a");
 
         Time_Stamp ();
         M_print (" " COLCONTACT "%10s" COLNONE " %s (",
-                 ContactFindName (remote_uin), i18n (31, "logged on"));
-        Print_Status (new_status);
+                 ContactFindName (uin), i18n (31, "logged on"));
+        Print_Status (con->status);
         M_print (")");
         if (con && con->version)
             M_print ("[%s]", con->version);
         M_print (".\n");
         if (prG->verbose)
         {
-            M_print ("%-15s %d.%d.%d.%d\n", i18n (441, "IP:"), pak[4], pak[5], pak[6], pak[7]);
-            M_print ("%-15s %d.%d.%d.%d\n", i18n (451, "IP2:"), pak[12], pak[13], pak[14], pak[15]);
-            M_print ("%-15s %d\n", i18n (453, "TCP version:"), Chars_2_Word (&pak[21]));
-            M_print ("%-15s %s\n", i18n (454, "Connection:"),
-                     pak[16] == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
+            M_print ("%-15s %s\n", i18n (441, "IP:"), UtilIP (con->outside_ip));
+            M_print ("%-15s %s\n", i18n (451, "IP2:"), UtilIP (con->local_ip));
+            M_print ("%-15s %d\n", i18n (453, "TCP version:"), con->TCP_version);
+            M_print ("%-15s %s\n", i18n (454, "Connection:"), con->connection_type == 4 
+                                 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
         }
     }
     else
     {
         Kill_Prompt ();
-        if ((con = ContactFind (remote_uin)))
-        {
-            con->status = new_status;
-            con->current_ip[0] = pak[4];
-            con->current_ip[1] = pak[5];
-            con->current_ip[2] = pak[6];
-            con->current_ip[3] = pak[7];
-            con->port = Chars_2_DW (&pak[8]);
-            con->last_time = time (NULL);
-            con->TCP_version = Chars_2_Word (&pak[21]);
-            con->connection_type = pak[16];
-            UserOnlineSetVersion (con, Chars_2_DW (&pak[37]));
-        }
     }
 }
 

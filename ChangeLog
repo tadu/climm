@@ -1,5 +1,25 @@
 
+2002-03-05 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* All files now have a Copyright mark; change files by me to GPL.
+	* Rewrote TLV handling.
+	* CmdUser* functions now find their connection * theirselves;
+	  a function that doesn't support v8 will complain.
+	* understand SNAC(1,15) SNAC(3,B) SNAC(3,C) - status, online, offline
+	* send SNAC(1,1e) SNAC(3,4) SNAC(4,6) SNAC(13,5) - status change,
+	  contact list, msg
+	* implement client autodetection (micq,licq)
+	* again a few more packet read/write functions: UIN
+	* fix wrong order that let PrefUserDir() be NULL
+	* get rid of more compatibility cruft
+
 2002-03-04 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Fix packet position pointer size. Oooops!
+	* Implement more packet reading/writing: big endian, v8-style
+	  strings, TLVs. Have destructor for packets.
+	* Handle keep alive through global msg queue.
+	* New command "conn" to list and open connections.
+	* Remove compatibility cruft for file_utils.c. Please use
+	  0.4.8 to convert config files; you may need to create ~/.micq/.
 	* Implement v8. Can log in, nothing more.
 
 2002-03-02 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>

@@ -1,4 +1,4 @@
-/* BeOS port (c) catlettc@canvaslink.com */
+/* BeOS port Copyright (c) catlettc@canvaslink.com */
 
 #include <KernelKit.h>
 #include <stdio.h>

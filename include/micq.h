@@ -35,12 +35,15 @@
     #include <sys/time.h>
   #endif
 #endif
+#include <stdio.h>
 
+struct Contact_s;
 struct Packet_s;
 struct Session_s;
 struct Preferences_s;
 struct SessionPreferences_s;
 
+typedef struct Contact_s            Contact;
 typedef struct Packet_s             Packet;
 typedef struct Session_s            Session;
 typedef struct Preferences_s        Preferences;
@@ -85,10 +88,10 @@ typedef struct PreferencesSession_s PreferencesSession;
 #define STATUS_DND    		0x13
 #define STATUS_DND_99    	0x02
 
-#define AUTH_MESSAGE  		0x0008
-
-#define USER_ADDED_MESS 	0x000C
 #define AUTH_REQ_MESS 		0x0006
+#define AUTH_REF_MESS           0x0007
+#define AUTH_OK_MESS  		0x0008
+#define USER_ADDED_MESS 	0x000C
 #define URL_MESS		0x0004
 #define WEB_MESS		0x000d
 #define EMAIL_MESS		0x000e
@@ -98,6 +101,7 @@ typedef struct PreferencesSession_s PreferencesSession;
 #define MRNORM_MESS		0x8001
 #define CONTACT_MESS		0x0013
 #define MRCONTACT_MESS		0x8013
+
 /*** TCP: tcp mess  ***/
 #define CHAT_MESS               0x0002
 #define FILE_MESS               0x0003

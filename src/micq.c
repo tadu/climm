@@ -1,4 +1,5 @@
 /* $Id$ */
+/* Copyright? */
 
 #include "micq.h"
 #include "util_ui.h"
@@ -266,12 +267,9 @@ int main (int argc, char *argv[])
     for (i = 0; (sess = SessionNr (i)); i++)
     {
         if (sess->spref->type & TYPE_SERVER)
-        {
-            if (sess->spref->version <= 5)
-                SessionInitServerV5 (sess);
-            else
-                SessionInitServer (sess);
-        }
+            SessionInitServer (sess);
+        else if (sess->spref->type & TYPE_SERVER_OLD)
+            SessionInitServerV5 (sess);
         else
             SessionInitPeer (sess);
     }
@@ -313,17 +311,9 @@ int main (int argc, char *argv[])
         rc = M_select ();
         assert (rc >= 0);
 
-#if _WIN32
-        if (_kbhit ())          /* sorry, this is a bit ugly...   [UH] */
-#else
-#ifdef __BEOS__
-        if (Be_TextReady ())
-#else
-        if (M_Is_Set (STDIN))
-#endif
-#endif
+        if (__os_has_input)
             if (R_process_input ())
-                CmdUserInput (ssG, &idle_val, &idle_flag);
+                CmdUserInput (&idle_val, &idle_flag);
 
         R_undraw ();
 
@@ -346,6 +336,7 @@ int main (int argc, char *argv[])
     Be_Stop ();
 #endif
 
-    CmdPktCmdSendTextCode (ssG, "B_USER_DISCONNECTED");
+    if (ssG->ver < 6)
+        CmdPktCmdSendTextCode (ssG, "B_USER_DISCONNECTED");
     return 0;
 }

@@ -1,4 +1,11 @@
-/* $Id$ */
+/*
+ * Looks up (internationalized) strings from a table.
+ *
+ * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * version 2 of the GPL licence.
+ *
+ * $Id$
+ */
 
 #include "micq.h"
 #include "util_table.h"

@@ -1,24 +1,29 @@
-/* $Id$ */
-
 /*
  * Poor man's gettext; handles internationalization of texts.
  *
- * This file is © Rüdiger Kuhlmann; it may be distributed under the BSD
- * licence (without the advertising clause) or version 2 of the GPL.
+ * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
+ * version 2 of the GPL licence.
+ *
+ * $Id$
  */
 
 #include "micq.h"
 #include "i18n.h"
 #include "util.h"
 #include "util_ui.h"
+#include "util_io.h"
 #include "preferences.h"
 #include <string.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #define i18nSLOTS  900
 
 char *i18nStrings[i18nSLOTS] = { 0 };
 
-static int i18nAdd (int i18nf, int debug, int *res);
+static int i18nAdd (FILE *i18nf, int debug, int *res);
 
 /*
  * Opens and reads the localization file defined by parameter or the
@@ -27,7 +32,7 @@ static int i18nAdd (int i18nf, int debug, int *res);
 int i18nOpen (const char *loc)
 {
     int j = 0, debug = 0, res = 1;
-    FD_T i18nf;
+    FILE *i18nf;
 
     if (*loc == '+')
     {
@@ -54,7 +59,12 @@ int i18nOpen (const char *loc)
         return 0;
     }
 
-#define i18nTry(x,y,z,a) if ((i18nf = M_fdopen (x,y,z,a)) != -1) j += i18nAdd (i18nf, debug, &res);
+#define i18nTry(x,y,z,a) do { \
+    const char *str = UtilFill (x,y,z,a); \
+    if ((i18nf = fopen (str, "r"))) \
+        j += i18nAdd (i18nf, debug, &res); \
+    free ((char *)str); \
+} while (0)
 
     if (*loc == '/')
     {
@@ -94,7 +104,7 @@ int i18nOpen (const char *loc)
 /*
  * Adds i18n strings from given file descriptor.
  */
-int i18nAdd (int i18nf, int debug, int *res)
+int i18nAdd (FILE *i18nf, int debug, int *res)
 {
     char buf[2048];
     int j = 0;
@@ -123,7 +133,7 @@ int i18nAdd (int i18nf, int debug, int *res)
             if (*p == '¶')
                 *p = '\n';
     }
-    close (i18nf);
+    fclose (i18nf);
     return j;
 }
 

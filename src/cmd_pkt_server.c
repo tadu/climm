@@ -1,4 +1,6 @@
 
+/* Copyright ? */
+
 #include "micq.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_cmd_v5_util.h"
@@ -226,7 +228,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             {
                 M_print (i18n (643, "Acknowleged SRV_X1 0x021C Done Contact list?\n"));
             }
-            CmdUser (sess, "¶e");
+            CmdUser ("¶e");
             sess->connect |= CONNECT_OK;
             break;
         case SRV_X2:
@@ -264,7 +266,7 @@ void CmdPktSrvProcess (Session *sess, Packet *pak, UWORD cmd,
             QueueEnqueueData (queue, sess, 0, 0, 0, time (NULL) + 5, NULL, NULL, &CallBackServerInitV5); 
             break;
         case SRV_USER_ONLINE:
-            User_Online (sess, data);
+            User_Online (sess, pak);
             break;
         case SRV_STATUS_UPDATE:
             Status_Update (sess, data);

@@ -6,7 +6,7 @@ This is for extensions to the select() function/
 
 This software is provided AS IS to be used in
 whatever way you see fit and is placed in the
-public domain.
+Copyright: public domain.
 
 Author : Matthew Smith March 5, 1999
 Contributors : 

@@ -3,6 +3,8 @@
  */
 
 #define BUILD_MICQ 0x7a000000
+#define BUILD_LICQ 0x7d000000
+#define BUILD_SSL  0x00800000
 
 #define SRV_GO_AWAY        	0x0028
 #define SRV_BAD_PASS       	0x0064

@@ -1,0 +1,15 @@
+Source: micq
+Section: net
+Priority: optional
+Maintainer: Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+Standards-Version: 3.1.1.1
+
+Package: micq
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: text based ICQ client with many features
+ mICQ is a small, yet powerful console based ICQ client. It supports
+ password changing, auto-away, creation of new accounts, and other features 
+ that makes it a very complete yet simple client.
+ .
+ It now supports the new v8 protocol.

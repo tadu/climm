@@ -7,7 +7,7 @@ for programming in general and icq in specific
 
 This software is provided AS IS to be used in
 whatever way you see fit and is placed in the
-public domain.
+Copyright: public domain.
 
 Author : Matthew Smith April 23, 1998
 Contributors :  airog (crabbkw@rose-hulman.edu) May 13, 1998
@@ -210,7 +210,7 @@ void Init_New_User (Session *sess)
     }
 #endif
     M_print (i18n (756, "\nCreating Connection...\n"));
-    sess->sok = UtilIOConnectUDP (sess->server, sess->server_port, STDERR);
+    sess->sok = UtilIOConnectUDP (sess->server, sess->server_port);
     if ((sess->sok == -1) || (sess->sok == 0))
     {
         M_print (i18n (757, "Couldn't establish connection.\n"));
@@ -255,14 +255,13 @@ void Print_IP (UDWORD uin)
 {
     Contact *cont;
 
-    if (!(cont = ContactFind (uin)) || (*(UDWORD *)(&cont->current_ip) == -1L))
+    if (!(cont = ContactFind (uin)) || (cont->outside_ip == -1L))
     {
         M_print (i18n (761, "unknown"));
         return;
     }
     
-    M_print ("%d.%d.%d.%d", cont->current_ip[0], cont->current_ip[1],
-                            cont->current_ip[2], cont->current_ip[3]);
+    M_print (UtilIP (cont->outside_ip));
 }
 
 /*
@@ -500,5 +499,13 @@ const char *UtilFill (const char *fmt, ...)
     vsnprintf (buf, sizeof (buf), fmt, args);
     va_end (args);
 
+    return strdup (buf);
+}
+
+const char *UtilIP (UDWORD ip)
+{
+    char buf[20];
+    snprintf (buf, sizeof (buf), "%2d.%2d.%2d.%2d",
+              ip >> 24, (ip >> 16) & 0xff, (ip >> 8) & 0xff, ip & 0xff);
     return strdup (buf);
 }

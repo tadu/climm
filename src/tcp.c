@@ -1,7 +1,7 @@
 /*
  * This file handles TCP client-to-client communications.
  *
- *  Author: James Schofield (jschofield@ottawa.com) 22 Feb 2001
+ *  Author/Copyright: James Schofield (jschofield@ottawa.com) 22 Feb 2001
  *  Lots of changes from Rüdiger Kuhlmann.
  */
 
@@ -236,7 +236,7 @@ int TCPConnect (Session *sess, tcpsock_t *sok, int mode)
 
                 sin.sin_family = AF_INET;
                 sin.sin_port = htons (sok->cont->port);
-                sin.sin_addr.s_addr = sok->ip = Chars_2_DW (sok->cont->current_ip);
+                sin.sin_addr.s_addr = sok->ip = htonl (sok->cont->outside_ip);
 
                 rc = connect (sok->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
                 if (rc >= 0)
@@ -280,7 +280,7 @@ int TCPConnect (Session *sess, tcpsock_t *sok, int mode)
 
                 sin.sin_family = AF_INET;
                 sin.sin_port = htons (sok->cont->port);
-                sin.sin_addr.s_addr = sok->ip = Chars_2_DW (sok->cont->other_ip);
+                sin.sin_addr.s_addr = sok->ip = htonl (sok->cont->local_ip);
 
                 rc = connect (sok->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
                 if (rc >= 0)
@@ -313,10 +313,13 @@ int TCPConnect (Session *sess, tcpsock_t *sok, int mode)
                 QueueDequeue (queue, sok->ip, QUEUE_TYPE_TCP_TIMEOUT);
             case 4:
             {
-                CmdPktCmdTCPRequest (sess, sok->cont->uin, sok->cont->port);
-                QueueEnqueueData (queue, sess, sok->ip, QUEUE_TYPE_TCP_TIMEOUT,
-                                  sok->cont->uin, time (NULL) + 30,
-                                  (Packet *)sok, NULL, &TCPCallBackTimeout);
+                if (sess->ver < 7 && sess->assoc && sess->assoc->ver < 7)
+                {
+                    CmdPktCmdTCPRequest (sess, sok->cont->uin, sok->cont->port);
+                    QueueEnqueueData (queue, sess, sok->ip, QUEUE_TYPE_TCP_TIMEOUT,
+                                      sok->cont->uin, time (NULL) + 30,
+                                      (Packet *)sok, NULL, &TCPCallBackTimeout);
+                }
                 close (sok->sok);
                 sok->sok = 0;
                 sok->state = TCP_STATE_WAITING;
@@ -571,8 +574,8 @@ void TCPSendInit (Session *sess, tcpsock_t *sok)
     PacketWrite2 (pak, 0);                            /* unknown - zero   */
     PacketWrite4 (pak, sess->our_port);               /* our port         */
     PacketWrite4 (pak, sess->uin);                    /* our UIN          */
-    PacketWrite4 (pak, htonl (sess->our_outside_ip)); /* our (remote) IP  */
-    PacketWrite4 (pak, htonl (sess->our_local_ip));   /* our (local)  IP  */
+    PacketWrite4 (pak, sess->our_outside_ip);         /* our (remote) IP  */
+    PacketWrite4 (pak, sess->our_local_ip);           /* our (local)  IP  */
     PacketWrite1 (pak, TCP_OK_FLAG);                  /* connection type  */
     PacketWrite4 (pak, sess->our_port);               /* our (other) port */
     PacketWrite4 (pak, sok->sid);                     /* session id       */
@@ -862,8 +865,10 @@ void TCPCallBackResend (struct Event *event)
     }
 
     if (event->attempts < MAX_RETRY_ATTEMPTS && PacketReadAt2 (pak, 4) == TCP_CMD_MESSAGE)
-        CmdPktCmdSendMessage (event->sess, cont->uin, PacketReadAtStrN (event->pak, 28),
-                              PacketReadAt2 (pak, 26));
+    {
+        sok->state = TCP_STATE_FAILED;
+        icq_sendmsg (event->sess, cont->uin, PacketReadAtStrN (event->pak, 28), PacketReadAt2 (pak, 26));
+    }
     else
         M_print (i18n (844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4));
     

@@ -1,4 +1,5 @@
 /* $Id$ */
+/* Copyright ?*/
 
 #include "micq.h"
 #include "mreadline.h"
@@ -88,41 +89,6 @@ SDWORD Echo_On (void)
         return (-1);
 #endif
     return 0;
-}
-
-/**************************************************************
-Same as M_print but for FD_T's
-***************************************************************/
-void M_fdprint (FD_T fd, const char *str, ...)
-{
-    va_list args;
-    int k;
-    char buf[2048];
-
-    va_start (args, str);
-    vsnprintf (buf, sizeof (buf), str, args);
-    k = write (fd, buf, strlen (buf));
-    if (k != strlen (buf))
-    {
-        perror (str);
-        exit (10);
-    }
-    va_end (args);
-}
-
-/*
- * Open a file for reading.
- */
-FD_T M_fdopen (const char *fmt, ...)
-{
-    va_list args;
-    char buf[2048];
-
-    va_start (args, fmt);
-    vsnprintf (buf, sizeof (buf), fmt, args);
-    va_end (args);
-
-    return open (buf, O_RDONLY);
 }
 
 static volatile UDWORD scrwd = 0;
@@ -474,61 +440,6 @@ void Debug (UDWORD level, const char *str, ...)
     M_prints (buf2);
 }
 
-
-
-/***********************************************************
-Reads a line of input from the file descriptor fd into buf
-an entire line is read but no more than len bytes are 
-actually stored
-************************************************************/
-int M_fdnreadln (FD_T fd, char *buf, size_t len)
-{
-    int i, j;
-    char tmp;
-/*    static char buff[20] = "\0";  */
-
-
-    assert (buf != NULL);
-    assert (len > 0);
-    
-    tmp = 0;
-    len--;
-    for (i = -1; (tmp != '\n');)
-    {
-        if ((i < len) || (i == -1))
-        {
-            i++;
-            j = read (fd, &buf[i], 1);
-            tmp = buf[i];
-        }
-        else
-        {
-            j = read (fd, &tmp, 1);
-        }
-        assert (j != -1);
-        if (j == 0)
-        {
-            buf[i] = 0;
-            return -1;
-        }
-    }
-    if (i < 1)
-    {
-        buf[i] = 0;
-    }
-    else
-    {
-        if (buf[i - 1] == '\r')
-        {
-            buf[i - 1] = 0;
-        }
-        else
-        {
-            buf[i] = 0;
-        }
-    }
-    return 0;
-}
 
 /*****************************************************
 Disables the printing of the next prompt.
