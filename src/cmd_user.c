@@ -725,19 +725,25 @@ static JUMP_F(CmdUserTCP)
             {
                 if (!UtilUIParse (&args, &des))
                 {
-                    des = "no descriptione, sir.";
+                    des = strdup ("no descriptione, sir.");
                     break;
                 }
+                files[count] = des = strdup (des);
                 if (!UtilUIParse (&args, &as))
                     break;
                 if (*as == '/' && !*(as + 1))
                     as = (strchr (des, '/')) ? strrchr (des, '/') + 1 : des;
                 if (*as == '.' && !*(as + 1))
                     as = des;
-                files[count] = des;
-                ass[count] = as;
+                ass[count] = as = strdup (as);
             }
             TCPSendFiles (list, cont->uin, des, files, ass, count);
+            while (count--)
+            {
+               free (ass[count]);
+               free (files[count]);
+            }
+            free (des);
         }
 #ifdef WIP
         else if (!strcmp (arg1, "ver"))
