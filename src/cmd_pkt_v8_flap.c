@@ -259,6 +259,9 @@ void FlapCliIdent (Session *sess)
     prG->flags &= ~FLAG_CONVRUSS & ~FLAG_CONVEUC;
     if (!sess->passwd || !strlen (sess->passwd))
     {
+#ifdef __BEOS__
+        M_print (i18n (2063, "You need to save your password in your ~/.micq/micqrc file.\n"));
+#else
         char pwd[20];
         pwd[0] = '\0';
         M_print ("%s ", i18n (1063, "Enter password:"));
@@ -266,6 +269,7 @@ void FlapCliIdent (Session *sess)
         M_fdnreadln (stdin, pwd, sizeof (pwd));
         Echo_On ();
         sess->passwd = strdup (pwd);
+#endif
     }
     
     pak = FlapC (1);

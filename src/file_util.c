@@ -196,6 +196,9 @@ void Initalize_RC_File ()
         sess->spref->status = STATUS_ONLINE;
         sess->spref->version = 8;
         sess->spref->uin = uin;
+#ifdef __BEOS__
+        sess->spref->passwd = strdup (passwd);
+#endif
         
         sess->server  = strdup ("login.icq.com");
         sess->port    = 5190;
