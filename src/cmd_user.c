@@ -3561,15 +3561,15 @@ static JUMP_F(CmdUserFind)
 
             if (!msg)
             {
-                msg = (char*) malloc (size = MEMALIGN (strlen (linep) + 1));
+                msg = (char*) malloc (size = MEMALIGN (strlen (linep) + 2));
                 *msg = '\0';
                 if (!data)
                     msgLower = (char*) malloc (size);
             }
             len = strlen (msg);
-            if (size < len + strlen (linep))
+            if (size < len + strlen (linep) + 2)
             {
-                msg = realloc (msg, size += MEMALIGN (strlen (linep) + 1));
+                msg = realloc (msg, size = MEMALIGN (len + strlen (linep) + 2));
                 if (!data)
                     msgLower = realloc (msgLower, size);
             }
