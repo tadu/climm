@@ -260,9 +260,9 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         if (!roster->ICQTIC)
             SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, 9, 205, "3608,0,0,0,60,null", 18);
         event2->callback (event2);
-        if (ContactGroupPrefVal (serv->contacts, CO_WANTSBL))
+        if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
         {
-            rl_printf ("#Server side contact list activated, authorization restrictions apply.\n");
+            rl_printf ("#\n# Server side contact list activated, authorization restrictions apply.\n#\n");
             SnacCliRosterack (serv);
         }
     }

@@ -25,6 +25,7 @@ struct OptEntry_s OptList[] = {
   { "showonoff",     CO_SHOWONOFF     },
   { "showchange",    CO_SHOWCHANGE    },
   { "wantsbl",       CO_WANTSBL       },
+  { "obeysbl",       CO_OBEYSBL       },
   { "shadow",        CO_SHADOW        },
   { "local",         CO_LOCAL         },
   { "webaware",      CO_WEBAWARE      },
