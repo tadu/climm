@@ -126,13 +126,12 @@ if possible otherwise as a hex number
 *********************************************/
 void Print_Status (UDWORD status)
 {
-    if (status != STATUS_OFFLINE && (status & STATUSF_INV))
-        M_print ("%s-", i18n (1975, "invisible"));
-    M_print (Convert_Status_2_Str (status & ~STATUSF_INV));
-    if (prG->verbose)
-        M_print (" %08x", status);
-}
+   char *stat;
 
+   stat = UtilStatus (status);
+   M_print (stat);
+   free (stat);
+}
 /**********************************************
  * Returns at most MSGID_LENGTH characters of a
  * message, possibly using ellipsis.
