@@ -3772,6 +3772,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
             else if (!strcasecmp (cmd, "ver"))
             {
                 M_print (BuildVersion ());
+                M_print (BuildVersionText);
             }
             else
             {
