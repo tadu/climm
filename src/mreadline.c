@@ -457,7 +457,10 @@ void R_process_input_tab (void)
             while (*tabwstart != ' ' && tabwstart >= s) tabwstart --;
             tabwstart ++;
             if (!(tabwend = strchr (tabwstart, ' ')))
-                tabwend = s + curlen;
+            {
+                tabwend = s + bytelen;
+                *tabwend = '\0';
+            }
             tabwlen = sizeof (tabword) < tabwend - tabwstart ? sizeof (tabword) : tabwend - tabwstart;
             snprintf (tabword, sizeof (tabword), "%.*s", tabwend - tabwstart, tabwstart);
         }
@@ -492,6 +495,7 @@ void R_process_input_tab (void)
             }
         }
         *tabwstart = '\0';
+        nicklen = strlen (ConvFromUTF8 (tabcont->nick, prG->enc_loc));
         memmove (s, s_sprintf ("%s%s%s", s, ConvFromUTF8 (tabcont->nick, prG->enc_loc), tabwend), HISTORY_LINE_LEN);
         tabwend = tabwstart + nicklen;
         R_remprompt ();
