@@ -1015,7 +1015,7 @@
 2371:SSL init failed.\n
 2372:Could not send SSL request to %s\n
 2374:SSL error: %s [%d]\n
-2375:SSL handshake ok\n
+2375:SSL handshake ok.\n
 2376:SSL read from %s [ERR=%d]: %s
 2377:SSL write to %s [ERR=%d]: %s
 2378:peer ssl <nick>   - initiate SSL handshake.
@@ -1082,7 +1082,7 @@
 2445:Clearing option %s%s globally.\n
 2446:Invalid value %s for boolean option %s.\n
 2447:No new password given.\n
-2448:Contact group '%s' already exists\n
+2448:Contact group '%s' already exists.\n
 2449:Primary contact group for contact '%s' is now '%s'.\n
 2450:Last %d people you talked with:\n
 2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
@@ -1137,7 +1137,7 @@
 2500:Manual locale setting %s ignored - use a real locale instead.\n
 2501:Your locale is unset. Please use the %s--i18n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n
 2502:Locale setting %s is no real locale and probably not what you want.\n
-2503:Your system doesn't know the %s locale - try %siconv --list%s.\n
+2503:Your system doesn't know the %s locale - try %slocale -a%s.\n
 2504:Could not open configuration file %s%s%s.
 2505:Deprecated option -f used. Please use the similar -b instead.\n
 2506:This console uses encoding %s.\n
@@ -1167,7 +1167,7 @@
 2530:OpenSSL write error: %s\n
 2531:OpenSSL write error %d (unknown)\n
 2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
-2533:SSL handshake failed
+2533:SSL handshake failed.\n
 2534:IP:
 2535:Groups:\n
 2536:Group:
@@ -1180,7 +1180,7 @@
 2543:Contacts
 2544:Commands to modify your contact list.
 2545:     %s\n
-2546:No help available for '%s'\n
+2546:No help available for '%s'.\n
 2547:Displays saved meta data about <contacts>.
 2548:Displays the current status of online people on your contact list, including otherwise hidden contacts.
 2549:Displays verbosely the current status of online people on your contact list, including otherwise hidden contacts.
@@ -1202,3 +1202,4 @@
 2565:Contact upload for %s%s%s failed, authorization required.\n
 2566:Contact upload for %s%s%s failed, already on server.\n
 2567:Contact upload for %s%s%s succeeded.\n
+2568:Ignored request for auto-response from %s%s%s.\n
