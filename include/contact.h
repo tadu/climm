@@ -34,7 +34,7 @@ struct Contact_s
 };
 
 Contact    *ContactAdd (UDWORD uin, const char *nick);
-void        ContactRem (UDWORD uin);
+void        ContactRem (Contact *cont);
 Contact    *ContactFind (UDWORD uin);
 const char *ContactFindNick (UDWORD uin);
 const char *ContactFindName (UDWORD uin);

@@ -252,14 +252,16 @@ as their last name. If no argument is given, ask for
 nick name, first name, last name, email address and a whole bunch of other data
 to search for.
 .TP
+.BI add \ nickname\ alias
+.TP
 .BI add \ uin\ [nickname]
 Add
 .I uin
 to your contact list as
 .IR nickname ,
-or renames
-.I uin
-to
+or add alias
+.IR alias
+for
 .IR nickname .
 If
 .I nickname
@@ -271,10 +273,12 @@ Note: you need to
 .B save
 to make this persistent.
 .TP
-.BI rem \ nick
-Remove
-.I nick
-from your contact list.
+.BI rem \ alias
+Remove the alias
+.IR alias .
+If
+.IR alias
+is the last alias for this contact, remove the contact completely.
 .br
 Note: you need to
 .B save

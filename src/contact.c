@@ -27,13 +27,14 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
     int i;
     int flags = 0;
     
-    for (i = 0; i < cnt_number; i++)
-        if (cnt_contacts[i].uin == uin)
-        {
-            if (!strcmp (cnt_contacts[i].nick, nick))
-                return &cnt_contacts[i];
-            flags = CONT_ALIAS;
-        }
+    if (nick)
+        for (i = 0; i < cnt_number; i++)
+            if (cnt_contacts[i].uin == uin)
+            {
+                if (!strcmp (cnt_contacts[i].nick, nick))
+                    return &cnt_contacts[i];
+                flags = CONT_ALIAS;
+            }
     
     cont = &cnt_contacts[cnt_number++];
 
@@ -68,32 +69,24 @@ Contact *ContactAdd (UDWORD uin, const char *nick)
 /*
  * Removes a contact list entry.
  */
-void ContactRem (UDWORD uin)
+void ContactRem (Contact *cont)
 {
-    int i, first = 1;
+    UDWORD uin;
+    int i;
     
     for (i = 0; i < cnt_number; i++)
-        if (cnt_contacts[i].uin == uin)
+        if (&cnt_contacts[i] == cont)
             break;
     if (i == cnt_number)
         return;
-    cnt_number--;
-    while (i < cnt_number)
-    {
+
+    uin = cont->uin;
+    for (cnt_number--; i < cnt_number; i++)
         cnt_contacts[i] = cnt_contacts[i + 1];
-        if (cnt_contacts[i].uin == uin)
-        {
-            if (first)
-            {
-                cnt_contacts[i].flags &= ~CONT_ALIAS;
-                first = 0;
-            }
-            else
-                cnt_contacts[i].flags |= CONT_ALIAS;
-        }
-        i++;
-    }
+
     cnt_contacts[cnt_number].uin = 0;
+    
+    ContactFind (uin);
 }
 
 /*
@@ -188,7 +181,10 @@ Contact *ContactFindContact (const char *nick)
             return NULL;
         }
     }
-    cont = ContactAdd (atoi (mynick), mynick);
+    if ((cont = ContactFind (atoi (mynick))))
+        return cont;
+
+    cont = ContactAdd (atoi (mynick), NULL);
     free (mynick);
     return cont ? cont : NULL;
 }

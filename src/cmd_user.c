@@ -1920,19 +1920,35 @@ static JUMP_F(CmdUserAdd)
         else
             CmdPktCmdContactList (sess);
         cont->flags &= ~CONT_TEMPORARY;
+        strncpy (cont->nick, arg1, 18);
+        cont->nick[19] = '\0';
     }
     else
     {
-/*        if (!(cont2 = ContactAdd (cont->uin, arg1)))
+        if ((cont2 = ContactFindAlias (cont->uin, arg1)))
         {
-            M_print (i18n (2118, "Out of memory.\n"));
-            return 0;
-        }*/
-        M_print (i18n (1749, "UIN %d renamed to %s.\n"), cont->uin, arg1);
-        M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
+            M_print (i18n (2146, "'%s' is already an alias for '%s' (%d).\n"),
+                     cont2->nick, cont->nick, cont->uin);
+        }
+        else if ((cont2 = ContactFindContact (arg1)))
+        {
+            M_print (i18n (2147, "'%s' (%d) is already used as a nick.\n"),
+                     cont2->nick, cont2->uin);
+        }
+        else
+        {
+            if (!(cont2 = ContactAdd (cont->uin, arg1)))
+            {
+                M_print (i18n (2118, "Out of memory.\n"));
+            }
+            else
+            {
+                M_print (i18n (2148, "Added '%s' as an alias for '%s' (%d).\n"),
+                         cont2->nick, cont->nick, cont->uin);
+                M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
+            }
+        }
     }
-    strncpy (cont->nick, arg1, 18);
-    cont->nick[19] = '\0';
 
     return 0;
 }
@@ -1943,6 +1959,8 @@ static JUMP_F(CmdUserAdd)
 static JUMP_F(CmdUserRem)
 {
     Contact *cont = NULL;
+    UDWORD uin;
+    char *alias;
     SESSION;
 
     if (!UtilUIParseNick (&args, &cont, NULL, sess))
@@ -1950,15 +1968,28 @@ static JUMP_F(CmdUserRem)
         M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
     }
-
-    if (sess->ver > 6)
-        SnacCliRemcontact (sess, cont->uin);
-    else
-        CmdPktCmdContactList (sess);
-    M_print (i18n (1751, "Nick %s removed."), cont->nick);
-    M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
-    ContactRem (cont->uin);
     
+    alias = strdup (cont->nick);
+    uin = cont->uin;
+    
+    ContactRem (cont);
+    
+    if ((cont = ContactFind (uin)))
+    {
+        M_print (i18n (2149, "Removed alias '%s' for '%s' (%d).\n"),
+                 alias, cont->nick, uin);
+    }
+    else
+    {
+        if (sess->ver > 6)
+            SnacCliRemcontact (sess, cont->uin);
+        else
+            CmdPktCmdContactList (sess);
+        M_print (i18n (2150, "Removed contact '%s' (%d)."),
+                 alias, uin);
+    }
+
+    M_print (i18n (1754, " Note: You need to 'save' to write new contact list to disc.\n"));
     return 0;
 }
 

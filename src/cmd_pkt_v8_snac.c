@@ -692,6 +692,8 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                     case 3:
                         if (ContactFindAlias (atoi (name), nick))
                             break;
+                        if (!ContactFind (atoi (name)))
+                            SnacCliAddcontact (event->sess, atoi (name));
                         ContactAdd (atoi (name), nick);
                         k++;
                         M_print ("  %10d %s\n", atoi (name), nick);
