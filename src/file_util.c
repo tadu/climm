@@ -781,14 +781,14 @@ int Read_RC_File (FILE *rcf)
                     {
                         case '*':
                             flags |= CO_INTIMATE;
-                            flags &= ~(CO_HIDEFROM & ~COF_DIRECT);
+                            flags &= ~(CO_HIDEFROM & CO_BOOLMASK);
                             continue;
                         case '^':
                             flags |= CO_IGNORE;
                             continue;
                         case '~':
                             flags |= CO_HIDEFROM;
-                            flags &= ~(CO_INTIMATE & ~COF_DIRECT);
+                            flags &= ~(CO_INTIMATE & CO_BOOLMASK);
                             continue;
                         case ' ':
                         case '-':

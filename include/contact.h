@@ -135,8 +135,8 @@ void          ContactSetVersion   (Contact *cont);
 BOOL          ContactMetaSave     (Contact *cont);
 BOOL          ContactMetaLoad     (Contact *cont);
 
-const char   *ContactPrefStr      (Contact *cont, UWORD flag);
-val_t         ContactPrefVal      (Contact *cont, UWORD flag);
+const char   *ContactPrefStr      (Contact *cont, UDWORD flag);
+val_t         ContactPrefVal      (Contact *cont, UDWORD flag);
 
 #define CONTACT_GENERAL(cont)  ((cont)->meta_general  ? (cont)->meta_general  : ((cont)->meta_general  = calloc (1, sizeof (MetaGeneral))))
 #define CONTACT_WORK(cont)     ((cont)->meta_work     ? (cont)->meta_work     : ((cont)->meta_work     = calloc (1, sizeof (MetaWork))))

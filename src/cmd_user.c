@@ -2049,7 +2049,7 @@ static JUMP_F(CmdUserOpt)
     ContactOptions *copts = NULL;
     Connection *connl = NULL;
     int i;
-    UWORD flag = 0;
+    UDWORD flag = 0;
     val_t val;
     strc_t par;
     ANYCONN;

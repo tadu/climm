@@ -827,7 +827,7 @@ BOOL ContactMetaLoad (Contact *cont)
 /*
  * Query an option for a contact.
  */
-val_t ContactPrefVal (Contact *cont, UWORD flag)
+val_t ContactPrefVal (Contact *cont, UDWORD flag)
 {
     val_t res = 0;
     
@@ -851,7 +851,7 @@ val_t ContactPrefVal (Contact *cont, UWORD flag)
 /*
  * Query a string option for a contact.
  */
-const char *ContactPrefStr (Contact *cont, UWORD flag)
+const char *ContactPrefStr (Contact *cont, UDWORD flag)
 {
     const char *res = NULL;
     

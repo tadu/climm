@@ -46,7 +46,7 @@ BOOL DebugReal (UDWORD level, const char *str, ...)
 {
     va_list args;
     char buf[2048], c;
-    const char *name = DebugStr (level & prG->verbose);
+    const char *name;
 
     if (!(prG->verbose & level) && level)
         return 0;
@@ -55,6 +55,7 @@ BOOL DebugReal (UDWORD level, const char *str, ...)
     vsnprintf (buf, sizeof (buf), str, args);
     va_end (args);
 
+    name = DebugStr (level & prG->verbose);
     level = prG->verbose;
     prG->verbose = 0;
 

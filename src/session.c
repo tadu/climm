@@ -316,7 +316,7 @@ const char *ConnectionType (Connection *conn)
 /*
  * Query an option for a contact group
  */
-val_t ConnectionPrefVal (Connection *conn, UWORD flag)
+val_t ConnectionPrefVal (Connection *conn, UDWORD flag)
 {
     val_t res = 0;
     if (conn->contacts && ContactOptionsGetVal (&conn->contacts->copts, flag, &res))
