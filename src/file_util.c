@@ -89,7 +89,7 @@ void Initalize_RC_File (Session *sess)
 
     prG->away_time = default_away_time;
 
-    M_print ("%s ", i18n (88, "Enter UIN or 0 for new UIN:"));
+    M_print ("%s ", i18n (618, "Enter UIN or 0 for new UIN:"));
     fflush (stdout);
     M_fdnreadln (stdin, input, sizeof (input));
     sscanf (input, "%ld", &sess->spref->uin);
@@ -232,7 +232,7 @@ void Read_RC_File (FILE *rcf)
             }
             else
             {
-                M_print (COLERR "%s" COLNONE " ", i18n (733, "Warning:"));
+                M_print (COLERR "%s" COLNONE " ", i18n (619, "Warning:"));
                 M_print (i18n (659, "Unknown section %s in configuration file."), buf);
                 M_print ("\n");
                 section = -1;
@@ -242,7 +242,7 @@ void Read_RC_File (FILE *rcf)
         switch (section)
         {
             case -1:
-                M_print (COLERR "%s" COLNONE " ", i18n (733, "Warning:"));
+                M_print (COLERR "%s" COLNONE " ", i18n (619, "Warning:"));
                 M_print (i18n (675, "Ignored line:"));
                 M_print (" %s\n", buf);
                 break;
@@ -453,7 +453,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    M_print (COLERR "%s" COLNONE " ", i18n (733, "Warning:"));
+                    M_print (COLERR "%s" COLNONE " ", i18n (619, "Warning:"));
                     M_print (i18n (188, "Unrecognized command in rc file '%s', ignored."), tmp);
                     M_print ("\n");
                 }
@@ -495,8 +495,8 @@ void Read_RC_File (FILE *rcf)
                 
                 if (!(cont = ContactAdd (uin, tmp)))
                 {
-                    M_print (COLERR "%s" COLNONE " %s\n", i18n (733, "Warning:"),
-                             i18n (732, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
+                    M_print (COLERR "%s" COLNONE " %s\n", i18n (619, "Warning:"),
+                             i18n (620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
                     section = -1;
                     break;
                 }
@@ -525,7 +525,7 @@ void Read_RC_File (FILE *rcf)
                 }
                 else
                 {
-                    M_print (COLERR "%s" COLNONE " ", i18n (733, "Warning:"));
+                    M_print (COLERR "%s" COLNONE " ", i18n (619, "Warning:"));
                     M_print (i18n (188, "Unrecognized command in rc file '%s', ignored."), tmp);
                     M_print ("\n");
                 }
@@ -599,7 +599,7 @@ void Read_RC_File (FILE *rcf)
     }
 
     if (!prG->auto_dnd)
-        prG->auto_dnd  = strdup (i18n (9, "User is DND [Auto-Message]"));
+        prG->auto_dnd  = strdup (i18n (929, "User is DND [Auto-Message]"));
     if (!prG->auto_away)
         prG->auto_away = strdup (i18n (10, "User is Away [Auto-Message]"));
     if (!prG->auto_na)

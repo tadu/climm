@@ -78,7 +78,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
 
         if (bind (sok, (struct sockaddr *) &sin, sizeof (struct sockaddr)) < 0)
         {
-            M_print (i18n (819, "Can't bind socket to free port\n"));
+            M_print (i18n (637, "Can't bind socket to free port\n"));
             return -1;
         }
 
@@ -95,7 +95,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
 #ifdef HAVE_HSTRERROR
                 M_print (i18n (596, "[SOCKS] Can't find hostname %s: %s."), prG->s5Host, hstrerror (h_errno));
 #else
-                M_print (i18n (57, "[SOCKS] Can't find hostname %s."), prG->s5Host);
+                M_print (i18n (638, "[SOCKS] Can't find hostname %s."), prG->s5Host);
 #endif
                 M_print ("\n");
                 return -1;
@@ -185,7 +185,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
             if (prG->verbose)
             {
 #ifdef HAVE_HSTRERROR
-                M_print (i18n (58, "Can't find hostname %s: %s."), hostname, hstrerror (h_errno));
+                M_print (i18n (662, "Can't find hostname %s: %s."), hostname, hstrerror (h_errno));
 #else
                 M_print (i18n (772, "Can't find hostname %s."), hostname);
 #endif
@@ -249,8 +249,8 @@ void UtilIOConnectTCP (Session *sess)
         sess->sok = -1;
         sess->connect = 0;
         rc = errno;
-        M_print (i18n (902, "failed:\n"));
-        M_print (i18n (903, "Couldn't create socket: %s (%d).\n"), strerror (rc), rc);
+        M_print (i18n (633, "failed:\n"));
+        M_print (i18n (663, "Couldn't create socket: %s (%d).\n"), strerror (rc), rc);
         return;
     }
 
@@ -260,8 +260,8 @@ void UtilIOConnectTCP (Session *sess)
     if (flags == -1 && prG->verbose)
     {
         rc = errno;
-        M_print (i18n (902, "failed:\n"));
-        M_print (i18n (874, "Couldn't set socket nonblocking: %s (%d).\n"), strerror (rc), rc);
+        M_print (i18n (633, "failed:\n"));
+        M_print (i18n (701, "Couldn't set socket nonblocking: %s (%d).\n"), strerror (rc), rc);
         sockclose (sess->sok);
         sess->sok = -1;
         sess->connect = 0;
@@ -281,11 +281,11 @@ void UtilIOConnectTCP (Session *sess)
             if (!host)
             {
                 rc = h_errno;
-                M_print (i18n (902, "failed:\n"));
+                M_print (i18n (633, "failed:\n"));
 #ifdef HAVE_HSTRERROR
-                M_print (i18n (875, "Can't find hostname %s: %s (%d)."), sess->server, hstrerror (rc), rc);
+                M_print (i18n (702, "Can't find hostname %s: %s (%d)."), sess->server, hstrerror (rc), rc);
 #else
-                M_print (i18n (876, "Can't find hostname %s: %d."), sess->server, rc);
+                M_print (i18n (718, "Can't find hostname %s: %d."), sess->server, rc);
 #endif
                 M_print ("\n");
                 sockclose (sess->sok);
@@ -321,7 +321,7 @@ void UtilIOConnectTCP (Session *sess)
             M_print ("\n");
             return;
         }
-        M_print (i18n (902, "failed:\n"));
+        M_print (i18n (633, "failed:\n"));
         M_print (i18n (909, "Couldn't open connection: %s (%d)\n"), strerror (rc), rc);
         sess->connect = 0;
         sockclose (sess->sok);
@@ -334,7 +334,7 @@ void UtilIOConnectTCP (Session *sess)
         if (bind (sess->sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
         {
             rc = errno;
-            M_print (i18n (902, "failed:\n"));
+            M_print (i18n (633, "failed:\n"));
             M_print (i18n (907, "couldn't bind socket to free port: %s (%d).\n"), strerror (rc), rc);
             sockclose (sess->sok);
             sess->sok = -1;
@@ -344,7 +344,7 @@ void UtilIOConnectTCP (Session *sess)
         if (listen (sess->sok, BACKLOG) < 0)
         {
             rc = errno;
-            M_print (i18n (902, "failed:\n"));
+            M_print (i18n (633, "failed:\n"));
             M_print (i18n (908, "unable to listen on socket: %s (%d).\n"), strerror (rc), rc);
             sockclose (sess->sok);
             sess->sok = -1;

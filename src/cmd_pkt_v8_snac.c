@@ -137,7 +137,7 @@ void SnacPrint (Packet *pak)
 {
     assert (pak->len >= 16);
 
-    M_print (i18n (905, "SNAC (%x,%x) [%s] flags %x ref %x\n"),
+    M_print (i18n (58, "SNAC (%x,%x) [%s] flags %x ref %x\n"),
              PacketReadBAt2 (pak, 6), PacketReadBAt2 (pak, 8),
              SnacName (PacketReadBAt2 (pak, 6), PacketReadBAt2 (pak, 8)),
              PacketReadBAt2 (pak, 10), PacketReadBAt4 (pak, 12));
@@ -172,7 +172,7 @@ JUMP_SNAC_F(SnacSrvUnknown)
     {
         Time_Stamp ();
         M_print (" " ESC "«");
-        M_print (" " ESC "«" COLSERV "%s ", i18n (879, COLSERV "Incoming v8 server packet:"));
+        M_print (" " ESC "«" COLSERV "%s ", i18n (59, COLSERV "Incoming v8 server packet:"));
         SnacPrint (event->pak);
         M_print (ESC "»\n");
     }
@@ -252,7 +252,7 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     uin = PacketReadUIN (pak);
     
     if (uin != event->sess->uin)
-        M_print (i18n (900, "Warning: Server thinks our UIN is %d, while it is %d.\n"),
+        M_print (i18n (67, "Warning: Server thinks our UIN is %d, while it is %d.\n"),
                  uin, event->sess->uin);
     PacketReadB2 (pak);
     PacketReadB2 (pak);
@@ -618,7 +618,7 @@ void SnacCliSendmsg (Session *sess, UDWORD uin, char *text, UDWORD type)
             format = 1;
             break;
         default:
-            M_print (i18n (901, "Can't send this (%x) yet.\n"), type);
+            M_print (i18n (88, "Can't send this (%x) yet.\n"), type);
             return;
     }
     

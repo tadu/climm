@@ -318,11 +318,11 @@ void Meta_User (Session *sess, UBYTE * data, UDWORD len, UDWORD uin)
             tmp+=1;
             if (*tmp == 1)
             {
-                M_print (" %s\n", i18n (1, "Online"));
+                M_print (" %s\n", i18n (921, "Online"));
             }
             else
             {
-                M_print (" %s\n", i18n (8, "Offline"));
+                M_print (" %s\n", i18n (928, "Offline"));
             }
             break;
         case META_SRV_WP_LAST_USER:
@@ -362,14 +362,14 @@ void Meta_User (Session *sess, UBYTE * data, UDWORD len, UDWORD uin)
             tmp+=1;
             if (*tmp == 1)
             {
-                M_print (" %s\n", i18n (1, "Online"));
+                M_print (" %s\n", i18n (921, "Online"));
             }
             else
             {
-                M_print (" %s\n", i18n (8, "Offline"));
+                M_print (" %s\n", i18n (928, "Offline"));
             }
 
-            M_print (i18n (701, "%d users not returned."), *tmp);
+            M_print (i18n (621, "%d users not returned."), *tmp);
             M_print ("\n");
             break;
         case 0x010E:

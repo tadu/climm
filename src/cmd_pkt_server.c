@@ -134,10 +134,10 @@ void CmdPktSrvRead (Session *sess)
         {
             if (prG->verbose)
             {
-                M_print (i18n (67, "debug: Doppeltes Packet #%04x vom Typ %04x (%s)\n"),
+                M_print (i18n (32, "debug: Doppeltes Packet #%04x vom Typ %04x (%s)\n"),
                          id, cmd, CmdPktSrvName (cmd));
             }
-            CmdPktCmdAck (sess, id);       /* LAGGGGG!! i18n (67, "") i18n */ 
+            CmdPktCmdAck (sess, id);       /* LAGGGGG!! */ 
             return;
         }
     }

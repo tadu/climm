@@ -224,7 +224,7 @@ void TCPDispatchConn (Session *sess)
                 sess->port    = cont->port;
                 sess->connect = 0;
                 
-                M_print (i18n (780, "Opening TCP connection to %s%s%s at %s:%d... "),
+                M_print (i18n (631, "Opening TCP connection to %s%s%s at %s:%d... "),
                              COLCONTACT, cont->nick, COLNONE, UtilIOIP (sess->ip), sess->port);
                 UtilIOConnectTCP (sess);
                 switch (sess->connect & CONNECT_MASK)
@@ -256,8 +256,8 @@ void TCPDispatchConn (Session *sess)
                 if (!rc)
                     rc = ETIMEDOUT;
                 sockclose (sess->sok);
-                M_print (i18n (828, "failed:\n"));
-                M_print (i18n (829, "Connection failed: %s (%d)\n"), strerror (rc), rc);
+                M_print (i18n (633, "failed:\n"));
+                M_print (i18n (634, "Connection failed: %s (%d)\n"), strerror (rc), rc);
             case 3:
                 if (!cont->local_ip || !cont->port)
                 {
@@ -269,7 +269,7 @@ void TCPDispatchConn (Session *sess)
                 sess->port    = cont->port;
                 sess->connect = 3;
                 
-                M_print (i18n (780, "Opening TCP connection to %s%s%s at %s:%d... "),
+                M_print (i18n (631, "Opening TCP connection to %s%s%s at %s:%d... "),
                              COLCONTACT, cont->nick, COLNONE, UtilIOIP (sess->ip), sess->port);
 
                 UtilIOConnectTCP (sess);
@@ -304,8 +304,8 @@ void TCPDispatchConn (Session *sess)
                 if (!rc)
                     rc = ETIMEDOUT;
                 sockclose (sess->sok);
-                M_print (i18n (828, "failed:\n"));
-                M_print (i18n (829, "Connection failed: %s (%d)\n"), strerror (rc), rc);
+                M_print (i18n (633, "failed:\n"));
+                M_print (i18n (634, "Connection failed: %s (%d)\n"), strerror (rc), rc);
             case 6:
             {
                 if (sess->assoc && sess->assoc->assoc && sess->assoc->assoc->ver < 7)
@@ -483,7 +483,7 @@ void TCPDispatchPeer (Session *sess)
                     }
                     else if (PacketReadAt2 (pak, 26) & TCP_AUTO_RESPONSE_MASK)
                     {
-                        M_print (i18n (194, "Auto-response message for %s:\n"), cont->nick);
+                        M_print (i18n (636, "Auto-response message for %s:\n"), cont->nick);
                         M_print (MESSCOL "%s\n" NOCOL, PacketReadAtStrN (pak, 28));
                     }
                     if (prG->verbose && PacketReadAt2 (pak, 26) != NORM_MESS)
@@ -1237,24 +1237,3 @@ int Decrypt_Pak (UBYTE *pak, UDWORD size)
     return (1);
 }
 #endif
-
-/* i18n (798, " ") i18n (783, " ") i18n (786, " ") i18n 
- * i18n (784, " ") i18n (497, " ") i18n (617, " ") i18n
- * i18n (799, " ") i18n (781, " ") i18n (782, " ") i18n
- * i18n (812, " ") i18n (813, " ") i18n
- * i18n (602, " ") i18n (603, " ") i18n (604, " ") i18n (605, " ") i18n
- * i18n (620, " ") i18n (621, " ") i18n (624, " ") i18n (625, " ") i18n (630, " ") i18n
- * i18n (631, " ") i18n (636, " ") i18n (637, " ") i18n (638, " ") i18n
- * i18n (743, " ") i18n (744, " ") i18n (745, " ") i18n (746, " ") i18n (747, " ") i18n
- * i18n (748, " ") i18n (749, " ") i18n (750, " ") i18n (751, " ") i18n (752, " ") i18n
- * i18n (753, " ") i18n (754, " ") i18n (755, " ") i18n
- * i18n (32, " ") i18n (33, " ") i18n (48, " ") i18n (49, " ") i18n (51, " ") i18n
- * i18n (98, " ") i18n (195, " ") i18n
- * i18n (59, " ") i18n (797, " ") i18n
- * i18n (626, " ") i18n (627, " ") i18n
- * i18n (634, " ") i18n (808, " ") i18n (810, " ") i18n (811, " ") i18n
- * i18n (762, " ") i18n (787, " ")
- * i18n (618, " ") i18n (788, " ") i18n (790, " ") i18n (792, " ") i18n (793, " ") i18n
- * i18n (794, " ") i18n (795, " ") i18n (796, " ") i18n
- * i18n (831, " ") i18n (619, " ") i18n (791, " ") i18n
- */

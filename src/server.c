@@ -151,3 +151,7 @@ void icq_sendmsg (Session *sess, UDWORD uin, char *text, UDWORD msg_type)
     }
 }
 
+/*
+i18n (1, " ") i18n (2, " ") i18n (3, " ") i18n (4, " ") i18n (5, " ")
+i18n (6, " ") i18n (7, " ") i18n (8, " ") i18n (9, " ")
+*/

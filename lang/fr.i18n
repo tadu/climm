@@ -1,13 +1,13 @@
 # french
-001:En ligne
-002:Ne pas déranger
-003:Absent
-004:Non disponible
-005:Occupé
-006:Invisible
-007:Libre pour chatter
-008:Hors ligne
-009:L'utilisateur est DND [Msg automatique]
+#001: 
+#002: 
+#003: 
+#004: 
+#005: 
+#006: 
+#007: 
+#008: 
+#009: 
 010:L'utilisateur est Parti [Msg automatique]
 011:L'utilisateur n'est pas disponible [Msg automatique]
 012:L'utilisateur est Occupé [Msg automatique]
@@ -37,8 +37,10 @@
 036:Commande inconnue %s, taper "help" pour l'aide.
 037:Message envoyé avant que la dernière ligne du buffer ne soit remplie¶
 038:Message annulé¶
-039:Le serveur nous force de terminer la connexion.
-040:Micq> 
+#-#039:Le serveur nous force de terminer la connexion.
+#039:Server claims we're not connected.¶
+#-#040:Micq> 
+#040:mICQ> 
 041:msg> 
 042:msg à tous> 
 043:Tous les utilisateurs trouvés.
@@ -50,13 +52,14 @@
 049:Ver
 050:Login réussi !
 051:Le serveur a acquitté la commande %04x !
-052:N'arrive pas à établir la connexion¶
+#-#052:N'arrive pas à établir la connexion¶
+#052:Opening v5 connection to %s:%d... 
 053:Connecté à %s, attente de réponse¶
 054: Connection refusé sur le port %d à %s¶
 055:Échec de la création du socket
 056:Socket crée, tentative de connexion¶
-057:[SOCKS] Le nom de domaine %s n'a pas été trouvé.
-058:Le nom de domaine %s n'a pas été trouvé: %s.
+#057:Outgoing v8 server packet:
+#058:SNAC (%x,%x) [%s] flags %x ref %x¶
 059:Le port qui sera utilisé pour tcp (non implimenté pour l'instant) est %d¶
 060:Le niveau d'info est %d.¶
 061:%s n'est pas reconnu comme surnom
@@ -65,14 +68,15 @@
 064:Changement automatique du status à
 065:Utilisant l'ordre des processeurs intel pour stocker les octets.
 066:Utilisant l'ordre des processeurs motorola pour stocker les octets.
-067:¶Commande du msg ignoré  %04x¶
+#067:Warning: Server thinks our UIN is %d, while it is %d.¶
 068: En ligne depuis %s
 069: Etait à %s la dernière fois en ligne
 070: La dernière fois que l'utilisateur était en ligne est inconnue
 071:Votre status est 
 072:Utilisateurs hors-ligne:
 073:Utilisateurs en ligne:
-074:Micq (Matt's ICQ clone)
+#-#074:Micq (Matt's ICQ clone)
+#074:mICQ (Matt's ICQ clone)
 075:version
 076:compilé le
 077:dedié à Matthew D. Smith.
@@ -80,13 +84,14 @@
 079:Aucune traduction ; les phrases compilés dans le logiciel seront utilisés.¶
 080:N'a pu pas ouvrir le fichier de langue "%s".¶
 081:Chargement de la traduction française réussi (%d données).¶
-082:Tentatice de reconnexion.. [essai %d de %d]
+#-#082:Tentatice de reconnexion.. [essai %d de %d]
+#082:Trying to reconnect... [try %d out of %d]¶
 083:cmd de bip 
 084:Bip
 085:activé
 086:désactivé
 087:Ignorant les données supplémentaires suivant le numéro
-088:Entrez votre UIN (0 pour créer un nouveau):
+#088:Can't send this (%x) yet.¶
 089:Traduction déchargée.
 #090:%s is a UIN, not a nick name.
 091:If faut entrer un mot de passe !
@@ -192,8 +197,9 @@
 191:mot de passe = %s¶
 192:serveur = %s¶
 193:status = %ld¶
-194:Nombre de contacts = %d¶
-195:UIN du contact[0] = %ld¶
+#194:Need uin to ask for.¶
+#-#195:UIN du contact[0] = %ld¶
+#195:Color is ©3%s©0.¶
 196:cmd de message = %s¶
 # what does it mean ? when is it used ?
 # found it in file_util.c
@@ -558,10 +564,10 @@
 555:Votre nom de famille:
 556:Votre adresse email:
 557:Souhaitez-vous que les utilisateurs de Mirabilis nécessitent votre autorisation?
-#558:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
-#559:Enter max age (22,29,39,49,59,120):
-#560:Enter a city:
-#561:Enter a state:
+#558:connected
+#559:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
+#560:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
+#561:Enter max age (22,29,39,49,59,120):
 562:©1Info pour %ld¶
 563:Surnom:
 564:Prénom:
@@ -588,15 +594,16 @@
 585:Ack ! Packet mutilé
 586:©4¶%s©0 vous a ajouté à sa liste de contacts.¶
 #587:Enter department: 
-#588:Enter position: 
-#589:Should the users be online?
+#588:Enter sex:
+#589:Enter a city:
 590:©4¶%s©0 demande votre autorisation.
 591:Raison:
 592:<%s> vous a envoyé un email:¶
 593:<%s> vous a envoyé un message par le web:¶
 594:        URL: %s©3%s©0¶
 595:¶Liste de contacts.¶©3============================================¶©0%d contacts¶
-596:[SOCKS] Le nom de domaine %s n'a pas été trouvé: %s.
+#-#596:[SOCKS] Le nom de domaine %s n'a pas été trouvé: %s.
+#596:[SOCKS] Can't find hostname %s: %s.
 597:[SOCKS] La création du socket a échouée¶
 598:[SOCKS] Connexion refusée¶
 599:[SOCKS] Méthode d'autorisation incorrecte¶
@@ -606,14 +613,16 @@
 #-#603:Ver: %04X	
 #-#604:Séq: %08X	
 #-#605:Ses: %08X¶
-#602: 
-#603: 
-#604: 
-#605: 
-606:Mauvais ID du session %08X avec commande %04X. Ignoré.¶
+#602:Enter a state:
+#603:Enter position: 
+#604:Should the users be online?
+#605:Do you want your status to be available on the web? (YES/NO)
+#-#606:Mauvais ID du session %08X avec commande %04X. Ignoré.¶
+#606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.¶
 607:Usage: micq [-v|-V] [-f|-F <fichier-rc>] [-l|-L <fichier-journal>] [-?|-h]¶
 608:        -v   mode verbeuse¶
-609:        -f   fichier de configuration alternatif (défaut: ~/.micqrc)¶
+#-#609:        -f   fichier de configuration alternatif (défaut: ~/.micqrc)¶
+#609:        -f   specifies an alternate Config File (default: ~/.micq/micqrc)¶
 610:        -l   fichier du journal alternatif¶
 611:        -?   cet écran-ci¶¶
 612:Ce logiciel a été réalisé sans aide ni consentement de Mirabilis.¶
@@ -622,8 +631,10 @@
 615:Le repertoire du journal est "%s"¶
 616:InputThread de BeOS lancé¶\r
 617:Il n'y a plus de mémoire !¶
-618:¶Données total: %d¶
-619:SEQ = %04x	CMD = %04x	essais = %d	longeur = %d¶
+#-#618:¶Données total: %d¶
+#618:Enter UIN or 0 for new UIN:
+#-#619:SEQ = %04x	CMD = %04x	essais = %d	longeur = %d¶
+#619:Warning:
 620:Le serveur a acquitté le message avec SEQ %04X CMD 
 621:.¶
 622:Mettre ces changements en vigueur (OUI ou NON) ?
@@ -637,7 +648,7 @@
 630:Abandonnant un packet 
 631:.
 632:¶Connexion instable. Quittant....
-633:ACK!!! %d¶
+#633:failed:¶
 634:¶Packet "keep-alive" envoyé au serveur¶
 635:Vous avez découvert un erreur dans mon code:( Je vous doit une bière !¶
 636:[ Message automatique envoyé à %d(%d)]¶
@@ -650,7 +661,8 @@
 643:Le serveur acquitte SRV_X1 0x021C - Liste de contacts finie ?¶
 644:Le serveur acquitte SRV_X2 0x00E6 - Fin des vieux messages ?¶
 645:©3Votre mot de passe est incorrect.©0¶
-646:©3Le serveur est chargé.¶Re-essayant...¶
+#-#646:©3Le serveur est chargé.¶Re-essayant...¶
+#646:©3Server is busy.¶
 647: Type = %04x	
 648: ©2La réponse était %04X	
 649:La version était %X	
@@ -666,8 +678,8 @@
 #659:Unknown section %s in configuration file.
 660:Commande inconnue: %s¶
 661:Les commandes shell sont interdites.¶
-662:Le couleur est ©3%s©0.¶
-#663:Enter sex:
+#662:Can't find hostname %s: %s.
+#663:Couldn't create socket: %s (%d).¶
 664:Composant un message pour ©4tous©0:¶
 665:%s n'est pas reconnu comme surnom
 666:N'ignorant pas %s !¶
@@ -676,7 +688,8 @@
 669:%s a été ajouté.¶
 670:Invisible pour %s.¶
 671:Visible pour %s.¶
-672: - IP 
+#-#672: - IP 
+#672:%s's IP address is 
 673:	Port: %d¶
 674:	Port: inconnu¶
 #675:Ignored line:
@@ -691,22 +704,30 @@
 684:%s n'est pas reconnu¶
 685:Dernière message de ©4%s©0:¶
 686:Vous n'avez pas reçu un message de ©4%s©0¶
-687:Micq a été lancé il y a
-688:jours
-689:heures
-690:minutes
-691:secondes
-692:Contacts:
+#-#687:Micq a été lancé il y a
+#687:mICQ has been running for
+#-#688:jours
+#688:days
+#-#689:heures
+#689:hours
+#-#690:minutes
+#690:minutes
+#-#691:secondes
+#691:seconds
+#-#692:Contacts:
+#692:Contacts:
 693:Packets envoyés:
-694:Packets reçus:
+#-#694:Packets reçus:
+#694:Packets received:
 695:Retard:
 696:Sexe:
 697:Packets distincts envoyés:
-698:Packets distincts reçus:
+#-#698:Packets distincts reçus:
+#698:Distinct packets received:
 699:Il faut donner un UIN/surnom valide¶
 700:%s ne se retrouve pas dans votre liste de contacts.¶
-#701:%d users not returned.
-#702:Display a list of nicknames that you can tab through.
+#701:Couldn't set socket nonblocking: %s (%d).¶
+#702:Can't find hostname %s: %s (%d).
 703:©2Modes de status:¶
 704:©2Groupes:¶
 705:Général                    1¶
@@ -719,26 +740,24 @@
 712:Cinquante et plus          9¶
 713:Homme desirant une femme  10¶
 714:Femme desirant un homme   11¶
-715:Micq                      49 (peut-être en panne, mais essayez-le !)
+#-#715:Micq                      49 (peut-être en panne, mais essayez-le !)
+#715:mICQ                      49 (might not work but try it)
 716:Aucun                     -1¶
 717:©2	! comme première caractère d'une commande exécutera¶
-718:©2	une commande shell (e.g. "!ls"  "!dir" "!mkdir temp")©0¶
-719:©3uptime		Montre depuis combien de temps micq est lancé.¶©0
+#718:Can't find hostname %s: %d.
+#-#719:©3uptime		Montre depuis combien de temps micq est lancé.¶©0
+#719:Shows how long mICQ has been running.
 720:©2	L'UIN peut être soit un numéro ou le surnom de l'utilisateur.¶
 721:©2	En laissant le message vide, la mode multi-ligne sera activé.¶	Faites . sur un nouveau ligne pour envoyer le message.¶
 #-#722:	Faites # sur un nouveau ligne pour la terminer.©0¶
 #722:Type help to see your current command, because this one you typed wasn't one!
 723:%s - IP 
 724:Les réponses automatiques sont %s.¶
-#725:<all>
-#726:Need uin to ask for.¶
 727:Le message Ne pas déranger est:
 728:Le message Absent est:
 729:Le message Non disponible est:
 730:Le message Occupé est:
 731:Le message Invisible est:
-#732:maximal number of contacts reached. Ask a wizard to enlarge me!
-#733:Warning:
 734:Je ne comprends pas !\r¶
 735:Il faut entrer un message.¶
 736:Je ne comprends pas ! Lisez donc l'aide !¶ 
@@ -763,7 +782,8 @@
 754:Demande de l'information
 755:Demande de l'information supplémentaire
 756:¶Établissement de la connexion...¶
-757:N'a pas pu établir la connexion¶
+#-#757:N'a pas pu établir la connexion¶
+#757:Couldn't establish connection.¶
 758:Envoyant la demande...¶
 759:Attendant une réponse....¶
 760:¶Votre nouveau UIN est %s%ld%s !¶
@@ -782,9 +802,107 @@
 #773:%s could not be added.
 #774:Incoming packet:
 #775:Outgoing packet:
+#776:Outgoing TCP packet:
+#777:Opening peer-to-peer connection at localhost:%d... 
+#778:Incoming TCP packet:
+#779:Opening TCP connection to %s at %s:%d... 
+#785:success.¶
+#789:Received malformed packet.
 #800:Change the working language to <lang>.
 #801:Displays a list of people on your contact list in a screen wide format.
 #802:SoundOnline cmd
 #803:SoundOffline cmd
 #804:SoundOnline
 #805:SoundOffline
+#806:Received ACK for message (seq %04X) from %s¶
+#807:Cancelled incoming message (seq %04X) from %s¶
+#809:Unable to retrieve auto-response message for %s.
+#814:Sent auto-response message to %s%s%s.¶
+#815:    funny: use funny messages for output.¶
+#816:Unknown option %s to set command.¶
+#817:Warning: ReceiveScript feature not enabled!¶
+#818:Warning: Deprecated syntax found in rc file!¶    Please update or "save" the rc file and check for changes.¶
+#820:%s <option> [on|off] - control simple options.¶
+#821:Funny messages are ©3%s©0.¶
+#822:    color: use colored text output.¶
+#823:Incoming partial packet:
+#824:Acknowledged packet type %04x (%s) sequence %04x removed from queue.¶
+#825:Discarded a %04x (%s) packet
+#826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).¶
+#827:Unknown client
+#830:Discarding message to %s after %d send attempts.  Message content:¶
+#833:Client-to-client TCP connection to %s established.¶
+#835:Error while writing to socket - %s (%d)¶
+#836:Sending TCP direct connection initialization packet.¶
+#837:Acknowledging TCP direct connection initialization packet.¶
+#838:Received direct connection initialization.¶
+#839:Version %04x:%04x, Port %d, UIN %d, session %08x¶
+#840:Received malformed direct connection initialization.¶
+#841:Received malformed initialization acknowledgement packet.¶
+#842:Closing socket %d to %s.¶
+#843:Closing socket %d.¶
+#844:TCP message %04x discarded after timeout.¶
+#845:Nick %s unknown.¶
+#846:Opens and closes TCP connections:¶
+#847:    open  <nick> - Opens TCP connection.¶
+#848:    close <nick> - Closes/resets TCP connection(s).¶
+#849:Error on select: %s (%d)¶
+#850:Timeout on connection with %s at %s:%d¶
+#855:TCP connection to %s at %s:%d failed.¶
+#856:Discarded a %04x (%s) packet from old session %08x (current: %08x).¶
+#857:Do you want to hide your IP from other contacts? (YES/NO)
+#858:sending packet
+#860:freeing packet
+#863:creating new packet
+#864:Can't open rcfile %s.
+#865:cloning existing packet
+#866:This version of micq is compiled without TCP support.¶
+#867:Got a malformed (too short) packet - ignored.¶
+#868:Got a malformed (to long subpacket) multi-packet - remainder ignored.¶
+#869:Protocoll versions less than 5 are not supported anymore.¶
+#870:    off   <nick> - Closes TCP connection(s) and don't try TCP again.¶
+#871:Opening v8 connection to %s:%d... 
+#872:failed: %s (%d)¶
+#873:ok.¶
+#877:ok.¶
+#878:Error while reading from socket: %s (%d)¶
+#880:Incoming packet is not a FLAP: id is %d.¶
+#881:FLAP channel 1 out of data.¶
+#882:FLAP channel 1 cmd 1 extra data:¶
+#883:FLAP channel 1 unknown command %d.¶
+#884:FLAP with unknown channel %d received.¶
+#885:Connection v8 timed out.¶
+#887:Connections:
+#889:server
+#890:peer-to-peer
+#891:Connection %d is already open.¶
+#892:conn             List available connections.¶
+#893:conn login <nr>  Open connection <nr>.¶
+#894:There is no connection number %d.¶
+#895:Login failed:¶
+#896:Server closed connection:¶
+#897:Incomplete TLV %d, len %d of %d - ignoring.¶
+#898:Redirect to server %s... 
+#899:Unknown family requested: %d¶
+#904:Server doesn't understand ver %d (only %d) for family %d!¶
+#906:This command operates only on connections of type %s.¶
+#907:couldn't bind socket to free port: %s (%d).¶
+#908:unable to listen on socket: %s (%d).¶
+#909:Couldn't open connection: %s (%d)¶
+#910:FLAP seq %08x length %04x channel %d©0¶
+#911:connecting
+#912:closed
+#913:Wrote new config file %s. Exiting.¶
+#914:Can't allocate connection structure.¶
+#915:Server says we're at %s.¶
+#916:Need a nick or uin.¶
+#917:%-12s version %d for %s (%x), at %s:%d %s¶
+921:En ligne
+922:Ne pas déranger
+923:Absent
+924:Non disponible
+925:Occupé
+926:Invisible
+927:Libre pour chatter
+928:Hors ligne
+929:L'utilisateur est DND [Msg automatique]

@@ -157,13 +157,13 @@ JUMP_F(CmdUserChange)
         if (arg1 == NULL)
         {
             M_print (i18n (703, COLCLIENT "Status modes: \n"));
-            M_print ("  %-20s %d\n", i18n (1, "Online"),         STATUS_ONLINE);
-            M_print ("  %-20s %d\n", i18n (3, "Away"),           STATUS_AWAY);
-            M_print ("  %-20s %d\n", i18n (2, "Do not disturb"), STATUS_DND);
-            M_print ("  %-20s %d\n", i18n (4, "Not Available"),  STATUS_NA);
-            M_print ("  %-20s %d\n", i18n (7, "Free for chat"),  STATUS_FREE_CHAT);
-            M_print ("  %-20s %d\n", i18n (5, "Occupied"),       STATUS_OCCUPIED);
-            M_print ("  %-20s %d",   i18n (6, "Invisible"),      STATUS_INVISIBLE);
+            M_print ("  %-20s %d\n", i18n (921, "Online"),         STATUS_ONLINE);
+            M_print ("  %-20s %d\n", i18n (923, "Away"),           STATUS_AWAY);
+            M_print ("  %-20s %d\n", i18n (922, "Do not disturb"), STATUS_DND);
+            M_print ("  %-20s %d\n", i18n (924, "Not Available"),  STATUS_NA);
+            M_print ("  %-20s %d\n", i18n (927, "Free for chat"),  STATUS_FREE_CHAT);
+            M_print ("  %-20s %d\n", i18n (925, "Occupied"),       STATUS_OCCUPIED);
+            M_print ("  %-20s %d",   i18n (926, "Invisible"),      STATUS_INVISIBLE);
             M_print (COLNONE "\n");
             return 0;
         }
@@ -327,7 +327,7 @@ JUMP_F(CmdUserHelp)
         M_print (COLMESS "%s <nick>" COLNONE "\n\t\x1b«%s\x1b»\n", "last",
                  i18n (403, "Displays the last message received from <nick>, or a list of who has send you at least one message."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n", "tabs", 
-                 i18n (702, "Display a list of nicknames that you can tab through.")); 
+                 i18n (98, "Display a list of nicknames that you can tab through.")); 
         M_print (COLMESS "%s <uin>" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("resend"),
                  i18n (770, "Resend your last message to a new uin."));
@@ -432,7 +432,7 @@ JUMP_F(CmdUserInfo)
     arg1 = strtok (args, "");
     if (arg1 == NULL)
     {
-        M_print (i18n (726, "Need uin to ask for.\n"));
+        M_print (i18n (194, "Need uin to ask for.\n"));
         return 0;
     }
     uin = ContactFindByNick (arg1);
@@ -482,7 +482,7 @@ JUMP_F(CmdUserTrans)
         {
             if (*p)
                 M_print ("%s\n", i18n (87, "Ignoring garbage after number."));
-            M_print ("%3d:%s\n", i, i18n (i, i18n (78, "No translation available.")));
+            M_print ("%3d:%s\n", i, i18n (78, "No translation available."));
         }
         else
         {
@@ -1520,9 +1520,9 @@ JUMP_F(CmdUserSet)
         if (!quiet)
         {
             if (prG->flags & FLAG_COLOR)
-                M_print (i18n (662, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (85, "on"));
+                M_print (i18n (195, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (85, "on"));
             else
-                M_print (i18n (662, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (86, "off"));
+                M_print (i18n (195, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (86, "off"));
         }
     }
     else if (!strcmp (arg1, "funny"))
@@ -1929,11 +1929,11 @@ JUMP_F(CmdUserConn)
                      sess->type & (TYPE_SERVER | TYPE_SERVER_OLD) ? i18n (889, "server") : i18n (890, "peer-to-peer"),
                      sess->ver, ContactFindName (sess->uin), sess->status,
                      sess->server ? sess->server : UtilIOIP (sess->ip), sess->port,
-                     sess->connect & CONNECT_FAIL ? i18n (832, "failed") :
-                     sess->connect & CONNECT_OK   ? i18n (834, "connected") :
+                     sess->connect & CONNECT_FAIL ? i18n (497, "failed") :
+                     sess->connect & CONNECT_OK   ? i18n (558, "connected") :
                      sess->connect & CONNECT_MASK ? i18n (911, "connecting") : i18n (912, "closed"));
             if (prG->verbose)
-            M_print (i18n (888, "    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n"),
+            M_print (i18n (559, "    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x\n"),
                      sess->type, sess->sok, UtilIOIP (sess->ip),
                      sess->connect, UtilIOIP (sess->our_local_ip), UtilIOIP (sess->our_outside_ip),
                      sess->our_session, sess->our_seq, sess->our_seq2);
@@ -2051,15 +2051,15 @@ JUMP_F(CmdUserWpSearch)
             return ++status;
         case 203:
             wp.email = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (558, "Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):"));
+            R_dopromptf ("%s ", i18n (560, "Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):"));
             return ++status;
         case 204:
             wp.minage = atoi (args);
-            R_dopromptf ("%s ", i18n (559, "Enter max age (22,29,39,49,59,120):"));
+            R_dopromptf ("%s ", i18n (561, "Enter max age (22,29,39,49,59,120):"));
             return ++status;
         case 205:
             wp.maxage = atoi (args);
-            R_doprompt (i18n (663, "Enter sex:"));
+            R_doprompt (i18n (588, "Enter sex:"));
             return ++status;
         case 206:
             if (!strncasecmp (args, i18n (528, "female"), 1))
@@ -2087,12 +2087,12 @@ JUMP_F(CmdUserWpSearch)
             {
                 wp.language = temp;
                 status++;
-                R_dopromptf ("%s ", i18n (560, "Enter a city:"));
+                R_dopromptf ("%s ", i18n (589, "Enter a city:"));
             }
             return status;
         case 208:
             wp.city = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (561, "Enter a state:"));
+            R_dopromptf ("%s ", i18n (602, "Enter a state:"));
             return ++status;
         case 209:
             wp.state = strdup ((char *) args);
@@ -2108,11 +2108,11 @@ JUMP_F(CmdUserWpSearch)
             return ++status;
         case 212:
             wp.department = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (588, "Enter position: "));
+            R_dopromptf ("%s ", i18n (603, "Enter position: "));
             return ++status;
         case 213:
             wp.position = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (589, "Should the users be online?"));
+            R_dopromptf ("%s ", i18n (604, "Should the users be online?"));
             return ++status;
 /* A few more could be added here, but we're gonna make this
  the last one -KK */
@@ -2120,7 +2120,7 @@ JUMP_F(CmdUserWpSearch)
             if (strcasecmp (args, i18n (28, "NO")) && strcasecmp (args, i18n (27, "YES")))
             {
                 M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
-                R_dopromptf ("%s ", i18n (589, "Should the users be online?"));
+                R_dopromptf ("%s ", i18n (604, "Should the users be online?"));
                 return status;
             }
             wp.online = strcasecmp (args, i18n (27, "YES")) ? FALSE : TRUE;
@@ -2223,13 +2223,13 @@ JUMP_F(CmdUserUpdate)
                 return status;
             }
             user.auth = strcasecmp (args, i18n (27, "YES")) ? FALSE : TRUE;
-            R_dopromptf ("%s ", i18n (633, "Do you want your status to be available on the web? (YES/NO)"));
+            R_dopromptf ("%s ", i18n (605, "Do you want your status to be available on the web? (YES/NO)"));
             return ++status;
         case 316:
             if (strcasecmp (args, i18n (28, "NO")) && strcasecmp (args, i18n (27, "YES")))
             {
                 M_print ("%s\n", i18n (29, "Please enter YES or NO!"));
-                R_dopromptf ("%s ", i18n (633, "Do you want your status to be available on the web? (YES/NO)"));
+                R_dopromptf ("%s ", i18n (605, "Do you want your status to be available on the web? (YES/NO)"));
                 return status;
             }
             user.webaware = strcasecmp (args, i18n (27, "YES")) ? FALSE : TRUE;

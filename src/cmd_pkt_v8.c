@@ -94,7 +94,7 @@ void SrvCallBackReceive (Session *sess)
     if (prG->verbose & 128)
     {
         Time_Stamp ();
-        M_print (" " ESC "«" COLSERV "%s ", i18n (879, COLSERV "Incoming v8 server packet:"));
+        M_print (" " ESC "«" COLSERV "%s ", i18n (33, "Incoming v8 server packet:"));
         FlapPrint (pak);
         M_print (ESC "»\r");
     }

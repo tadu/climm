@@ -80,7 +80,7 @@ const char *ContactFindNick (UDWORD uin)
     Contact *cont;
 
     if (uin == -1)
-        return strdup (i18n (725, "<all>"));
+        return strdup (i18n (617, "<all>"));
     if ((cont = ContactFind (uin)))
         return cont->nick;
     return NULL;
@@ -96,7 +96,7 @@ char *ContactFindName (UDWORD uin)
     char buff[20];
 
     if (uin == -1)
-        return strdup (i18n (725, "<all>"));
+        return strdup (i18n (617, "<all>"));
     if ((cont = ContactFind (uin)))
         return strdup (cont->nick);
     snprintf (buff, 19, "%lu", uin);

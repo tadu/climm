@@ -1,13 +1,13 @@
 # ukrainian
-001:B eфipi
-002:Не туpбувaти
-003:Biдiйшoв
-004:Недocяжний
-005:Зайнятий
-006:Невидимий
-007:Xoчу попатякати!
-008:Вiдключений
-009:User is DND [Auto-Message]
+#001: 
+#002: 
+#003: 
+#004: 
+#005: 
+#006: 
+#007: 
+#008: 
+#009: 
 010:User is Away [Auto-Message]
 011:User is not available [Auto-Message]
 012:User is Occupied [Auto-Message]
@@ -37,8 +37,10 @@
 036:Нев╕дома команда %s, набер╕ть help для п╕дказки.
 037:Пов╕домлення було в╕д╕слано, коли зак╕нчивcя буфер╤
 038:Пов╕домлення не в╕д╕слане!:(╤
-039:Сервер над╕слав команду "Гди геть!!". Ну ╕ зв'язок! :(
-040:Micq> 
+#-#039:Сервер над╕слав команду "Гди геть!!". Ну ╕ зв'язок! :(
+#039:Server claims we're not connected.╤
+#-#040:Micq> 
+#040:mICQ> 
 041:пишу> 
 042:пишу вc╕м> 
 043:Вс╕ користувач╕ знайден╕.
@@ -50,14 +52,15 @@
 049:Ver
 050:Лог╕н на сервер пройшов нормально!
 051:Сервер над╕cлав вам команду %04x.
-052:Не можу законектитись:(╤
+#-#052:Не можу законектитись:(╤
+#052:Opening v5 connection to %s:%d... 
 053:Законектились до  %s, чека╓мо на в╕дпов╕дь╤
 054:В╕дмовлено в п╕д`╓днанн╕ до %s ╤
 055:Не вдалось створити Socket
 056:Для з`╓днання cтворено Socket╤
-057:[SOCKS] Хоcт %s Не знайдено.
-058:Хоcт %s Не знайдено: %s.
-#059:The port that will be used for tcp (not yet implemented) is %d╤
+#057:Outgoing v8 server packet:
+#058:SNAC (%x,%x) [%s] flags %x ref %x╤
+#059:╘1Incoming v8 server packet:
 060:Режим виведення на екран %d.╤
 061:%s не в╕домий у контакт-лист╕
 062:Кориcтувач╕, що ╕гноруються: 
@@ -65,14 +68,15 @@
 064:Авто зм╕на статусу:	
 065:Intel з нами!;)
 066:Motorola з нами!;)
-067:╤З'╕гноровано команду %04x╤
+#067:Warning: Server thinks our UIN is %d, while it is %d.╤
 068:B eфipi з %s
 069:Оcтаннього разу був у eфipi %s
 070:Бо-зна коли був! Я не знаю...
 071:Ваш статус: 
 072:В╕дcутн╕: 
 073:Хто в eфipi: 
-074:Micq (Matt'овий клон ICQ)
+#-#074:Micq (Matt'овий клон ICQ)
+#074:mICQ (Matt's ICQ clone)
 075:верс╕я
 076:з╕брана 
 077:На честь Matthew D. Smith.
@@ -80,13 +84,14 @@
 079:Без перекладу; використову╓мо вкомп╕льован╕ пов╕домлення.╤
 080:Не можу знайти переклад "%s".╤
 081:Завантажено переклад (%d пов╕домлень).╤
-082:Спроба перелог╕нення... [ %d з %d]
+#-#082:Спроба перелог╕нення... [ %d з %d]
+#082:Trying to reconnect... [try %d out of %d]╤
 083:Звукова команда
 084:Звук
 085:ув╕мкнено
 086:вимкнено
 087:╤гнорую см╕ття п╕сля числа
-088:Введ╕ть UIN чи 0 для нового UIN:
+#088:Can't send this (%x) yet.╤
 089:Переклад вивантажено.
 090:%s - це UIN, а не кличка.
 091:Сл╕д ввести пароль!
@@ -97,7 +102,7 @@
 ##096:SOCKS5 username (type 0 if you don't need authentification):
 #096:SOCKS5 username (type 0 if you don't need authentification):
 097:SOCKS5 пароль:
-#098:╘4"No_Log" is deprecated.╤Use "LogType 0" Instead.╤╘0
+#098:Display a list of nicknames that you can tab through.
 099:нев╕дома мова.
 100:бо-зна
 101:Арабська
@@ -194,8 +199,8 @@
 191:пароль = %s╤
 192:сервер = %s╤
 193:статус = %ld╤
-194:розм╕р контакт-л╕ста = %d╤
-#195:UIN of contact[0] = %ld╤
+#194:Need uin to ask for.╤
+#195:Color is ╘3%s╘0.╤
 #196:Message_cmd = %s╤
 197:╘2%s╘0 зм╕на пароля.╤
 198:Iнш╕ служби
@@ -497,7 +502,7 @@
 494:Лише через сервер
 #495:No Random User Found
 #496:%02d/%02d/%04d
-#497:Type: %d	 Len: %d╤
+#497:failed
 498:Iнформац╕я про:
 #499:Other
 500:Кличка: 
@@ -558,10 +563,10 @@
 555:Ваше пр╕звище : 
 556:E-mail : 
 557:Вимагати авторизац╕╖ у ╕нших кориcтувач╕в? : 
-#558:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
-#559:Enter max age (22,29,39,49,59,120):
-#560:Enter a city:
-#561:Enter a state:
+#558:connected
+#559:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x╤
+#560:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
+#561:Enter max age (22,29,39,49,59,120):
 562:╘1╤нформац╕я про %ld╤
 #563:Nick name:
 #564:First name:
@@ -588,8 +593,8 @@
 585:Ой!!!!!!!  Поганий пакет
 586:╘4╤%s╘0 додав вас у св╕й контакт-л╕ст.╤
 #587:Enter department: 
-#588:Enter position: 
-#589:Should the users be online?
+#588:Enter sex:
+#589:Enter a city:
 590:╘4╤%s╘0 просить авторизац╕╖ щоби додати вас у св╕й контакт-л╕ст.╤
 591:Аргументац╕я:
 592:<%s> намилив вам листа:╤
@@ -602,43 +607,43 @@
 #599:[SOCKS] Authentication method incorrect╤
 #600:[SOCKS] Authorization failure╤
 #601:[SOCKS] General SOCKS server failure╤
-#602: 
-#603: 
-#604: 
-#605: 
-#606:Got a bad session ID %08X with CMD %04X ignored.╤
+#602:Enter a state:
+#603:Enter position: 
+#604:Should the users be online?
+#605:Do you want your status to be available on the web? (YES/NO)
+#606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.╤
 607:Використання: micq [-v|-V] [-f|-F <конф╕г>] [-l|-L <лог>] [-?|-h]╤
 #608:        -v   Turn on verbose Mode (useful for Debugging only)╤
-#609:        -f   specifies an alternate Config File (default: ~/.micqrc)╤
-#610:        -l   specifies an alternate LogFile╤
+#609:        -f   specifies an alternate Config File (default: ~/.micq/micqrc)╤
+#610:        -l   specifies an alternate logfile resp. logdir╤
 611:        -?   вида╓ оцю дов╕дку╤╤
 #612:This program was made without any help from Mirabilis or their consent.╤
 #613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.╤
 614:Файл конф╕гурац╕╖ ц╕╓╖ сес╕╖ - "%s"╤
-#615:The logging directory for this session is "%s"╤
+#615:Logging to "%s"╤
 616:Запуска╓мо п╕д BeOS InputThread╤\r
 617:Вичерпано пам'ять!!!╤
-#618:╤Total entries %d╤
-#619:SEQ = %04x	CMD = %04x	attempts = %d	len = %d╤
-#620:Removed message with SEQ %04X CMD 
-#621: from resend queue because of ack.╤
+#618:Enter UIN or 0 for new UIN:
+#619:Warning:
+#620:maximal number of contacts reached. Ask a wizard to enlarge me!
+#621:%d users not returned.
 622:Застосувати ц╕ зм╕ни? (YES/NO)
-#623:╤Doubled packet %04X╤
-#624:Resending message with SEQ num %04X CMD 
+#623:Doubled packet %04X╤
+#624:Sorry, can't initialize Windows Sockets...
 625:(спроба N%d.)
-#626:Discarding message to 
-#627: after %d send attempts.  Message content:╤
+#626:enqueuing type %d seq %08x at %p (pak %p)
+#627:couldn't dequeue type %d seq %08x
 628: Опис:    ╘3%s╘0╤
 629: URL:     ╘3%s╘0
 630:В╕дкинуто 
 631: пакет.
 632:╤Нестаб╕льне з'╓днання. Виходим...
-633:ОЙ!!! %d╤
-#634:╤Send Keep_Alive packet to the server╤
+#633:failed:╤
+#634:Connection failed: %s (%d)╤
 #635:You have encounterd a bug in my code :( I now own you a beer!╤Greetings Fryslan!╤
-#636:[ Sent auto-reply message to %d(%d)]╤
-#637:╤Packet Number %d╤
-#638:╤The SEQ was %04X╤
+#636:Auto-response message for %s:╤
+#637:Can't bind socket to free port╤
+#638:[SOCKS] Can't find hostname %s.
 639:Отримано новий UIN: %ld!╤
 #640:Failed to update info.╤
 #641:User info successfully updated.╤
@@ -646,7 +651,7 @@
 #643:Acknowleged SRV_X1 0x021C Done Contact list?╤
 #644:Acknowleged SRV_X2 0x00E6 Done old messages?╤
 #645:╘3You entered an incorrect password.╘0╤
-#646:╘3Server is busy please try again.╤Trying again...╤
+#646:╘3Server is busy.╤
 #647: Type = %04x	
 #648: ╘2The response was %04X	
 #649:The version was %X	
@@ -662,8 +667,8 @@
 #659:Unknown section %s in configuration file.
 660:Неправильна команда: %s╤
 #661:Shell commands have been disabled.╤
-#662:Color is ╘3%s╘0.╤
-663:Яко╖ стат╕: 
+#662:Can't find hostname %s: %s.
+#663:Couldn't create socket: %s (%d).╤
 664:Пишу пов╕домлення ╘4вс╕м╘0:╤
 #665:%s not recognized as a nick name.
 #666:Unignored %s.
@@ -672,7 +677,8 @@
 669:Додано: %s.
 #670:Invisible to %s now.
 #671:Visible to %s now.
-672: - IP адреса 
+#-#672: - IP адреса 
+#672:%s's IP address is 
 673:	порт %d╤
 674:	порт нев╕домий╤
 #675:Ignored line:
@@ -687,22 +693,22 @@
 #684:%s is not a known Contact╤
 685:Останн╓ пов╕домлення в╕д ╘4%s╘0:╤
 686:В╕д ╘4%s╘0 пов╕домлень не було╤
-#687:Micq has been running for
+#687:mICQ has been running for
 #688:days
 #689:hours
 #690:minutes
 #691:seconds
 #692:Contacts:
 #693:Packets sent:
-#694:Packets recieved:
+#694:Packets received:
 #695:Lag:
 696:Стать:
 #697:Distinct packets sent:
-#698:Distinct packets recieved:
+#698:Distinct packets received:
 #699:Must give a valid uin/nickname╤
 #700:%s is not a valid user in your list.╤
-#701:%d users not returned.
-702:Показу╓ список кличок, як╕ можна п╕дставляти <tab>'ом.
+#701:Couldn't set socket nonblocking: %s (%d).╤
+#702:Can't find hostname %s: %s (%d).
 #703:╘2Status modes: ╤
 704:╘Групи: ╤
 705:Загальна                   1╤
@@ -715,25 +721,23 @@
 712:50+                        9╤
 #713:Man chat requesting women 10╤
 #714:Woman chat requesting men 11╤
-715:Micq                      49 (може не працювати, але спробуйте:)
+#-#715:Micq                      49 (може не працювати, але спробуйте:)
+#715:mICQ                      49 (might not work but try it)
 716:Нема                      -1╤
 717:! як перший символ команди винона╓ команду оболонки (типу "!ls" "!mkdir temp")
-#718:Sorry, can't initialize Windows Sockets...
-719:Показу╓ як довго працю╓ Micq + деяка статистику.
+#718:Can't find hostname %s: %d.
+#-#719:Показу╓ як довго працю╓ Micq + деяка статистику.
+#719:Shows how long mICQ has been running.
 #720:uin can be either a number or the nickname of the user.
 #721:Sending a blank message will put the client into multiline mode.╤Use . on a line by itself to end message.╤Use # on a line by itself to cancel the message.
 #722:Type help to see your current command, because this one you typed wasn't one!
 723:%s: IP адреса 
 724:Статус автов╕дпов╕дача: %s.╤
-#725:<all>
-#726:Need uin to ask for.╤
 #727:The Do not disturb message is:
 #728:The Away message is:
 #729:The Not available message is:
 #730:The Occupied message is:
 #731:The Invisible message is:
-#732:maximal number of contacts reached. Ask a wizard to enlarge me!
-#733:Warning:
 #734:Sorry wrong syntax, can't find a status somewhere.\r╤
 #735:Must give a message.╤
 #736:Sorry wrong syntax. Read tha help man!╤
@@ -744,20 +748,10 @@
 #741:Must receive a message first╤
 #742:Must write one message first╤
 743:Живучий пакет
-#744:Secondary Keep Alive
 745:Контакт-л╕ст
-#746:Invisible List
-#747:Visible List
 748:Пошук випадкового користувача
-#749:Set Random
-#750:Delete Server Messages
-#751:Finish Login
-#752:Login
-#753:Send Message
-#754:Info Request
-#755:Extended Info Request
 756:╤Створення з'╓днання...╤
-#757:Couldn't establish connection╤
+#757:Couldn't establish connection.╤
 #758:Sending Request...╤
 #759:Waiting for response....╤
 #760:╤Your new UIN is %s%ld%s!╤
@@ -776,9 +770,107 @@
 #773:%s could not be added.
 #774:Incoming packet:
 #775:Outgoing packet:
+#776:Outgoing TCP packet:
+#777:Opening peer-to-peer connection at localhost:%d... 
+#778:Incoming TCP packet:
+#779:Opening TCP connection to %s at %s:%d... 
+#785:success.╤
+#789:Received malformed packet.
 800:Зм╕нити переклад ╕нтерфейсу на <lang>.
 801:Виводить контакт-лист у широкоформатному режим╕.
 #802:SoundOnline cmd
 #803:SoundOffline cmd
 #804:SoundOnline
 #805:SoundOffline
+#806:Received ACK for message (seq %04X) from %s╤
+#807:Cancelled incoming message (seq %04X) from %s╤
+#809:Unable to retrieve auto-response message for %s.
+#814:Sent auto-response message to %s%s%s.╤
+#815:    funny: use funny messages for output.╤
+#816:Unknown option %s to set command.╤
+#817:Warning: ReceiveScript feature not enabled!╤
+#818:Warning: Deprecated syntax found in rc file!╤    Please update or "save" the rc file and check for changes.╤
+#820:%s <option> [on|off] - control simple options.╤
+#821:Funny messages are ╘3%s╘0.╤
+#822:    color: use colored text output.╤
+#823:Incoming partial packet:
+#824:Acknowledged packet type %04x (%s) sequence %04x removed from queue.╤
+#825:Discarded a %04x (%s) packet
+#826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).╤
+#827:Unknown client
+#830:Discarding message to %s after %d send attempts.  Message content:╤
+#833:Client-to-client TCP connection to %s established.╤
+#835:Error while writing to socket - %s (%d)╤
+#836:Sending TCP direct connection initialization packet.╤
+#837:Acknowledging TCP direct connection initialization packet.╤
+#838:Received direct connection initialization.╤
+#839:Version %04x:%04x, Port %d, UIN %d, session %08x╤
+#840:Received malformed direct connection initialization.╤
+#841:Received malformed initialization acknowledgement packet.╤
+#842:Closing socket %d to %s.╤
+#843:Closing socket %d.╤
+#844:TCP message %04x discarded after timeout.╤
+#845:Nick %s unknown.╤
+#846:Opens and closes TCP connections:╤
+#847:    open  <nick> - Opens TCP connection.╤
+#848:    close <nick> - Closes/resets TCP connection(s).╤
+#849:Error on select: %s (%d)╤
+#850:Timeout on connection with %s at %s:%d╤
+#855:TCP connection to %s at %s:%d failed.╤
+#856:Discarded a %04x (%s) packet from old session %08x (current: %08x).╤
+#857:Do you want to hide your IP from other contacts? (YES/NO)
+#858:sending packet
+#860:freeing packet
+#863:creating new packet
+#864:Can't open rcfile %s.
+#865:cloning existing packet
+#866:This version of micq is compiled without TCP support.╤
+#867:Got a malformed (too short) packet - ignored.╤
+#868:Got a malformed (to long subpacket) multi-packet - remainder ignored.╤
+#869:Protocoll versions less than 5 are not supported anymore.╤
+#870:    off   <nick> - Closes TCP connection(s) and don't try TCP again.╤
+#871:Opening v8 connection to %s:%d... 
+#872:failed: %s (%d)╤
+#873:ok.╤
+#877:ok.╤
+#878:Error while reading from socket: %s (%d)╤
+#880:Incoming packet is not a FLAP: id is %d.╤
+#881:FLAP channel 1 out of data.╤
+#882:FLAP channel 1 cmd 1 extra data:╤
+#883:FLAP channel 1 unknown command %d.╤
+#884:FLAP with unknown channel %d received.╤
+#885:Connection v8 timed out.╤
+#887:Connections:
+#889:server
+#890:peer-to-peer
+#891:Connection %d is already open.╤
+#892:conn             List available connections.╤
+#893:conn login <nr>  Open connection <nr>.╤
+#894:There is no connection number %d.╤
+#895:Login failed:╤
+#896:Server closed connection:╤
+#897:Incomplete TLV %d, len %d of %d - ignoring.╤
+#898:Redirect to server %s... 
+#899:Unknown family requested: %d╤
+#904:Server doesn't understand ver %d (only %d) for family %d!╤
+#906:This command operates only on connections of type %s.╤
+#907:couldn't bind socket to free port: %s (%d).╤
+#908:unable to listen on socket: %s (%d).╤
+#909:Couldn't open connection: %s (%d)╤
+#910:FLAP seq %08x length %04x channel %d╘0╤
+#911:connecting
+#912:closed
+#913:Wrote new config file %s. Exiting.╤
+#914:Can't allocate connection structure.╤
+#915:Server says we're at %s.╤
+#916:Need a nick or uin.╤
+#917:%-12s version %d for %s (%x), at %s:%d %s╤
+921:B eфipi
+922:Не туpбувaти
+923:Biдiйшoв
+924:Недocяжний
+925:Зайнятий
+926:Невидимий
+927:Xoчу попатякати!
+928:Вiдключений
+929:User is DND [Auto-Message]

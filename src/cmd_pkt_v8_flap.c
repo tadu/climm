@@ -100,11 +100,11 @@ void FlapChannel4 (Session *sess, Packet *pak)
             M_print (i18n (895, "Login failed:\n"));
         else
             M_print (i18n (896, "Server closed connection:\n"));
-        M_print (i18n (859, "Error code: %d\n"), tlv[8].nr);
+        M_print (i18n (48, "Error code: %d\n"), tlv[8].nr);
         if (tlv[1].len && tlv[1].nr != sess->uin)
-            M_print (i18n (861, "UIN: %d\n"), tlv[1].nr);
+            M_print (i18n (49, "UIN: %d\n"), tlv[1].nr);
         if (tlv[4].len)
-            M_print (i18n (862, "URL: %s\n"), tlv[4].str);
+            M_print (i18n (51, "URL: %s\n"), tlv[4].str);
         M_print (ESC "»\n");
 
         if ((sess->connect & CONNECT_MASK) && sess->sok != -1)
@@ -179,7 +179,7 @@ void FlapSend (Session *sess, Packet *pak)
     if (prG->verbose & 128)
     {
         Time_Stamp ();
-        M_print (" " ESC "«" COLCLIENT "%s ", i18n (886, "Outgoing v8 server packet:"));
+        M_print (" " ESC "«" COLCLIENT "%s ", i18n (57, "Outgoing v8 server packet:"));
         FlapPrint (pak);
         M_print (ESC "»\r");
     }

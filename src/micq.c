@@ -248,7 +248,7 @@ int main (int argc, char *argv[])
     if (i != 0)
     {
 /* FUNNY: "Windows Sockets broken blame Bill -" */
-        perror (i18n (718, "Sorry, can't initialize Windows Sockets..."));
+        perror (i18n (624, "Sorry, can't initialize Windows Sockets..."));
         exit (1);
     }
 #endif
