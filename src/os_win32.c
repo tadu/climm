@@ -5,6 +5,7 @@
 
 #include <windows.h>
 #include <winuser.h>
+#include "micq.h"
 #include "os.h"
 
 #define TRACE 1 ? ((void)0) : printf
