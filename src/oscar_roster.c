@@ -130,20 +130,16 @@ UDWORD SnacCliCheckroster (Connection *serv)
 JUMP_SNAC_F(SnacSrvReplyroster)
 {
     Connection *serv;
-    Packet *pak, *p;
-    TLV *tlv;
+    Packet *pak;
     Event *event2;
-    ContactGroup *cg = NULL;
     Roster *roster;
     RosterEntry **rref;
     RosterEntry *re;
-    Contact *cont;
     int i, k, l;
     int cnt_sbl_add, cnt_sbl_chn, cnt_sbl_del;
     int cnt_loc_add, cnt_loc_chn, cnt_loc_del;
     strc_t cname;
-    char *name, *nick;
-    UWORD count, type, tag, id, TLVlen, j, data;
+    UWORD count, j, TLVlen;
     time_t stmp;
 
     if (!event)
@@ -220,6 +216,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
             case 4:
             case 9:
             case 17:
+                rref = NULL;
                 break;
             default:
                 rref = NULL;
