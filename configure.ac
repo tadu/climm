@@ -506,5 +506,5 @@ fi
 
 AC_CONFIG_FILES([src/Makefile Makefile lang/Makefile doc/Makefile])
 AC_CONFIG_FILES([doc/de/Makefile doc/ru/Makefile doc/fr/Makefile doc/es/Makefile doc/uk/Makefile])
-AC_CONFIG_FILES([doc/pt_BR/Makefile doc/sr/Makefile doc/it/Makefile])
+AC_CONFIG_FILES([doc/pt_BR/Makefile doc/sr/Makefile doc/it/Makefile doc/sk/Makefile])
 AC_OUTPUT

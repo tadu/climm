@@ -1,0 +1,139 @@
+.\"     $Id$ -*- nroff -*-
+.\" EN: $Id$
+.TH MICQ 1 mICQ
+.SH N\['A]ZOV
+.B mICQ
+\- a mal\['y], kompaktn\['y] textov\['y] ICQ klient
+.SH SYNOPSA
+.B micq
+.I [\-h]
+.I [\-c]
+.I [\-i <locale>]
+.I [\-b <basedir>]
+.I [\-f <configfile>]
+.I [\-v[level]]
+.I [\-l <logplace>]
+.SH POPIS
+.B mICQ
+je textov\['y] ICQ klient podporuj\['u]ci mnoho funkci\['i] a moznosti
+povodn\['e]ho klientu od Mirabilis. mICQ umoznuje menit heslo uz\['i]vatela,
+zakladat nov\['e] \['u]cty, aktualizovat inform\['a]cie, vyhlad\['a]vat,
+posielat SMS, nadv\(:azovat priame spojenia, posielat potvrdzuj\['u]ce spr\['a]vy
+, pren\['a]sat s\['u]bory, identifikovat klientov in\['y]ch uz\['i]vatelov, posielat
+spr\['a]vy v UTF-8 k\['o]dovan\['i], vykon\['a]vat a sp\['u]stat pr\['i]kazy udalostami
+atd.
+.SH OPTIONS
+.TP
+.BI \-h|\-\-help
+Zobraz\['i] kr\['a]tky pomocn\['y] text a skonc\['i].
+.TP
+.BI \-c|\-\-nocolor
+Zak\['a]ze pouz\['i]vanie farieb.
+.TP
+.BI \-i|\-\-i18n \ <locale>
+Pouzije lokalizaciu
+.I locale
+namiesto tej, ktor\['a] bola zvolen\['a] podla syst\['e]mov\['y]ch premenn\['y]ch.
+.TP
+.BI \-b|\-\-basedir \ <basedir>
+Urc\['i]
+.I basedir
+ako hlavn\['y] adres\['a]r, vyhraden\['y] pre s\['u]bory mICQ, napr\['i]klad s\['u]bor micqrc.
+.TP
+.BI \-f|\-\-config \ <configfile>
+Urc\['i]
+.I configfile
+ako konfiguran\['y] s\['u]bor, ktor\['y] sa pouzije.
+.TP
+.BI \-v|\-\-verbose [level]
+Zapne hl\['a]senia alebo nastav\['i] \['u]roven hl\['a]sen\['i] na
+.IR level .
+.TP
+.BI \-l|\-\-logplace \ file|dir
+Pouzije
+.I file
+ako s\['u]bor pre logovanie, alebo pouzije
+.I dir
+ako adres\['a]r pre logovacie s\['u]bory podla uz\['i]vatelov.
+.SH DETAILY
+.B mICQ
+je v\['y]borne portovateln\['y] a bez\['i] v OS Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD a
+akomkolvek inom modernom unixovom syst\['e]me.  
+.B mICQ version 0.4.10
+zarucene pracuje v OS Linux, AIX, HPUX, Tru64, AmigaOS, ciastocne v BeOS a dals\['i]ch unixoch.
+Takze niektor\['e] porty su alebo mozu byt st\['a]le vo v\['y]voji a kazd\['y]
+kto chce pomoct s testovan\['i]m je v\['i]tan\['y].
+.SH HIST\['O]RIA
+.TP
+16 Aug 1998
+Matthew D. Smith uvolnuje micq do sveta. 
+Nasleduje dals\['i]ch 12 releases do 25 Sept 1998.
+.TP
+05 Jan 2001
+Matthew D. Smith zomiera pri autmobilovej nehode.
+Uz\['i]vatelia pokracuju tam, kde Matthew micq zanechal, formuluj\['u] mICQ pod BSD 
+licenciou a obnovuj\['u] v\['y]voj
+.BR mICQ .
+.TP
+10 June 2002
+Verzia 0.4.9 je uvolnen\['a] pod GPL licenciou, je ukoncen\['a]
+implement\['a]cia novej verzie 8 protokolu ICQ R\(:udigerom Kuhlmannom.
+.SH MAILING-LIST
+mICQ mailing list je
+.IR micq\-list@micq.org .
+Inform\['a]cie t\['y]kaj\['u]ce sa posielania a archivovania s\['u] na 
+.IR http://www.micq.org/pipermail/micq\-list/ .
+.SH DOWNLOAD
+Cez HTTP z
+.IR http://www.micq.org/download .
+.br
+Pre z\['i]skanie najnovsej verzie z CVS pouzite:
+.br
+cvs \-d:pserver:anonymous@micq.org:/var/lib/cvs co micq
+.br
+.SH POZRITE ESTE
+.BR micqrc (5),
+.BR micq (7)
+.SH S\['U]BORY
+.TP
+.I ~/.micqrc
+Povodn\['y] konfiguracn\['y] s\['u]bore mICQ \- zastaral\['y].
+.TP
+.I ~/.micq/
+Defaultn\['y] adres\['a] pre s\['u]bory mICQ.
+.TP
+.I BASE/micqrc
+Konfiguracn\['y] s\['u]bor mICQ.
+.TP
+.I BASE/i18n/*.i18n
+Lok\['a]lne preklady mICQ.
+.TP
+.I BASE/contacts/
+Adres\['a]r pre meta data o kontaktoch.
+.TP
+.I BASE/history/
+Default adres\['a]r pre logovacie s\['u]bory .
+.TP
+.I BASE/files/
+Adres\['a]r pre prich\['a]dzaj\['u]ce s\['u]bory.
+.TP
+.I BASE/remote-control
+Default umiestnenie FIFO pouz\['i]van\['e]ho pre dialkov\['e] ovl\['a]danie.
+.TP
+.I PREFIX/share/micq/*.i18n
+Lokalizacn\['e] s\['u]bory obsahuj\['u]ce preklady vsetk\['y]ch textov\['y]ch v\['y]stupov mICQ.
+.SH CHYBY
+Posielajte chybov\['e] hl\['a]senia alebo pripomienky R\(:udigerovi Kuhlmannovi
+.I <micq@ruediger\-kuhlmann.de>
+(v nemcine alebo anglictine). Chyby a pripomienky k slovenskej lokaliz\['a]cii posielajte
+J\['a]novi Stan\['i]kovi
+.I <morb@genesys.sk>
+v slovencine alebo anglictine.
+.SH AUTORI
+Tento manu\['a]l bol prelozen\['y] J\['a]nom Stan\['i]kom
+.I <morb@genesys.sk>
+z manu\['a]lu p\['i]san\['e]ho Jamessom Morrisonnom
+.I <ja2morrison@student.math.uwaterloo.ca>
+z mini-manu\['a]lu nap\['i]san\['e]ho Jordim Mallachom
+.I <jordi@sindominio.net>
+pre syst\['e]m Debian GNU/Linux.
