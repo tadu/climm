@@ -8,16 +8,18 @@ mv C.i18n C.i18n~
 bla="\$I"
 
 (echo "# ${bla}d: $ strings extracted from mICQ sources"; cat ../src/*.c \
-    | sed "s¹i18n¹¶i18n¹g" | tr ¶ "\n" | grep "^i18n ([0-9#]" \
-    | sed 's¹" "¹¹g;s¹i18n *(\([0-9#]*\), *"\(\([^\"]\|\\.\)*\)").*¹\1:\2¹;s¹^\([0-9]\):¹00\1:¹;s¹^\([0-9][0-9]\):¹0\1:¹' \
-    | sed 's¹\\a¹¹g;s¹\\t¹	¹g;s¹\\"¹"¹g' | sort -n | uniq ) > C.i18n
+    | sed 's/i18n/\
+i18n/g' | grep "^i18n ([0-9#]" \
+    | sed 's/" "//g;s/i18n *(\([0-9#]*\), *"\(\([^\"]\|\\.\)*\)").*/\1:\2/;s/^\([0-9]\):/00\1:/;s/^\([0-9][0-9]\):/0\1:/' \
+    | sed 's/\\a//g;s/\\t/	/g;s/\\"/"/g' | sort -n | uniq ) > C.i18n
 
 cat ../src/*.c \
-    | sed "s¹i18n¹¶i18n¹g" | tr ¶ "\n" | grep "^i18n ([0-9#]" \
-    | sed 's¹i18n *(\([0-9#]*\),.*¹\1:¹;s¹^\([0-9]\):¹00\1:¹;s¹^\([0-9][0-9]\):¹0\1:¹' \
+    | sed 's/i18n/\
+i18n/g' | grep "^i18n ([0-9#]" \
+    | sed 's/i18n *(\([0-9#]*\),.*/\1:/;s/^\([0-9]\):/00\1:/;s/^\([0-9][0-9]\):/0\1:/' \
     | sort -n | uniq > C.i18n.num
 
-cat C.i18n | grep "^[0-9#]*:" | sed 's¹\([0-9#]*:\).*¹\1¹' | sort -n > C.i18n.exnum
+cat C.i18n | grep "^[0-9#]*:" | sed 's/\([0-9#]*:\).*/\1/' | sort -n > C.i18n.exnum
 
 echo -n "Strings used in files:"
 cat C.i18n.num | wc -l
