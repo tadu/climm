@@ -423,10 +423,10 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 ExtraSet (extra, EXTRA_FILETRANS, flen, name);
                 ExtraSet (extra, EXTRA_REF, ack_event->seq, NULL);
                 IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
-                e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 60,
+                e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 120,
                                        NULL, inc_event->uin, NULL, NULL);
                 e2 = QueueEnqueueData (inc_event->conn, inc_event->type, ack_event->seq,
-                                       time (NULL) + 62, inc_event->pak, inc_event->uin, extra, inc_event->callback);
+                                       time (NULL) + 122, inc_event->pak, inc_event->uin, extra, inc_event->callback);
                 e1->rel = e2;
                 e2->rel = e1;
                 inc_event->pak->rpos = inc_event->pak->tpos;
@@ -457,7 +457,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             }
             else
             {
-                txt = ExtraGetS (extra, EXTRA_REF);
+                txt = ExtraGetS (extra, EXTRA_FILEACCEPT);
                 PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                 PacketWrite2    (ack_pak, ack_flags);
                 PacketWriteLNTS (ack_pak, c_out (ack_msg));
@@ -505,10 +505,10 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                             ExtraSet (extra, EXTRA_REF, ack_event->seq, NULL);
                             ExtraSet (extra, EXTRA_MESSAGE, MSG_FILE, name);
                             IMSrvMsg (cont, serv, NOW, ExtraClone (extra));
-                            e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 60,
+                            e1 = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, ack_event->seq, time (NULL) + 120,
                                                    NULL, inc_event->uin, NULL, NULL);
                             e2 = QueueEnqueueData (inc_event->conn, inc_event->type, ack_event->seq,
-                                                   time (NULL) + 62, inc_event->pak, inc_event->uin, extra, inc_event->callback);
+                                                   time (NULL) + 122, inc_event->pak, inc_event->uin, extra, inc_event->callback);
                             e1->rel = e2;
                             e2->rel = e1;
                             inc_event->pak->rpos = inc_event->pak->tpos;
@@ -534,9 +534,10 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                         }
                         else
                         {
+                            txt = ExtraGetS (extra, EXTRA_FILEACCEPT);
                             PacketWrite2    (ack_pak, TCP_ACK_REFUSE);
                             PacketWrite2    (ack_pak, ack_flags);
-                            PacketWriteLNTS (ack_pak, "");
+                            PacketWriteLNTS (ack_pak, txt ? txt : "");
                             SrvMsgGreet     (ack_pak, cmd, "", 0, 0, "");
                         }
                         break;

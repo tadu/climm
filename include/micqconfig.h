@@ -19,6 +19,7 @@
 **  The real icq uses a value of 6  */
 #define MAX_RETRY_ATTEMPTS 8
 #define MAX_RETRY_P2P_ATTEMPTS 2
+#define MAX_RETRY_P2PFILE_ATTEMPTS 6
 #define MAX_RETRY_TYPE2_ATTEMPTS 3
 
 /* This is the time in seconds mICQ waits before retrying resp. before
