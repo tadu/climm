@@ -13,7 +13,6 @@
 #include "server.h"
 #include "util.h"
 #include "icq_response.h"
-#include "oscar.h"
 #include "oscar_snac.h"
 #include "oscar_icbm.h"
 #include "oscar_oldicq.h"

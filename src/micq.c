@@ -22,7 +22,6 @@
 #include "tabs.h"
 #include "msg_queue.h"
 #include "util_io.h"
-#include "oscar.h"
 #include "oscar_snac.h"
 #include "oscar_service.h"
 #include "cmd_pkt_cmd_v5.h"

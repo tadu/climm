@@ -40,7 +40,7 @@
 #include "preferences.h"
 #include "util_io.h"
 #include "remote.h"
-#include "oscar.h"
+#include "oscar_flap.h"
 #include "connection.h"
 #include "util_parse.h"
 

@@ -22,7 +22,6 @@
  */
 
 #include "micq.h"
-#include "oscar.h"
 #include "oscar_tlv.h"
 #include "oscar_snac.h"
 #include "oscar_flap.h"

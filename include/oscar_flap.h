@@ -11,17 +11,20 @@
 #define FLAP_VER_BUILD    3828
 #define FLAP_VER_SUBBUILD   85
 
-void FlapCliHello (Connection *conn);
-void FlapCliIdent (Connection *conn);
-void FlapCliCookie (Connection *conn, const char *cookie, UWORD len);
-void FlapCliGoodbye (Connection *conn);
-void FlapCliKeepalive (Connection *conn);
+void FlapCliHello (Connection *serv);
+void FlapCliIdent (Connection *serv);
+void FlapCliCookie (Connection *serv, const char *cookie, UWORD len);
+void FlapCliGoodbye (Connection *serv);
+void FlapCliKeepalive (Connection *serv);
 
 void SrvCallBackFlap (Event *event);
 
 Packet *FlapC (UBYTE channel);
-void    FlapSend (Connection *conn, Packet *pak);
+void    FlapSend (Connection *serv, Packet *pak);
 void    FlapPrint (Packet *pak);
 void    FlapSave (Packet *pak, BOOL in);
+
+Event *ConnectionInitServer (Connection *serv);
+Connection *SrvRegisterUIN (Connection *serv, const char *pass);
 
 #endif /* MICQ_ICQV8_FLAP_H */

@@ -16,7 +16,6 @@
 #include "packet.h"
 #include "peer_file.h"
 #include "cmd_pkt_cmd_v5.h"
-#include "oscar.h"
 #include "oscar_snac.h"
 #include "oscar_oldicq.h"
 #include "preferences.h"

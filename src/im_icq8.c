@@ -10,7 +10,6 @@
 #include "micq.h"
 #include "contact.h"
 #include "connection.h"
-#include "oscar.h"
 #include "oscar_snac.h"
 #include "oscar_roster.h"
 #include "im_icq8.h"

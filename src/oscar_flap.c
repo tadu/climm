@@ -40,6 +40,7 @@
 #include "packet.h"
 #include "contact.h"
 #include "conv.h"
+#include "tcp.h"
 
 static void FlapChannel1 (Connection *conn, Packet *pak);
 static void FlapChannel4 (Connection *conn, Packet *pak);
@@ -362,3 +363,251 @@ void FlapCliKeepalive (Connection *conn)
 {
     FlapSend (conn, FlapC (5));
 }
+
+jump_conn_f SrvCallBackReceive;
+static jump_conn_f SrvCallBackReconn;
+static void SrvCallBackTimeout (Event *event);
+static void SrvCallBackDoReconn (Event *event);
+
+
+Event *ConnectionInitServer (Connection *conn)
+{
+    Contact *cont;
+    Event *event;
+    
+    if (!conn->server || !*conn->server || !conn->port)
+        return NULL;
+
+    if (conn->sok != -1)
+        sockclose (conn->sok);
+    conn->sok = -1;
+    conn->cont = cont = ContactUIN (conn, conn->uin);
+    conn->our_seq  = rand () & 0x7fff;
+    conn->connect  = 0;
+    conn->dispatch = &SrvCallBackReceive;
+    conn->reconnect= &SrvCallBackReconn;
+    conn->close    = &FlapCliGoodbye;
+    s_repl (&conn->server, conn->pref_server);
+    if (conn->status == STATUS_OFFLINE)
+        conn->status = conn->pref_status;
+    
+    if ((event = QueueDequeue2 (conn, QUEUE_DEP_OSCARLOGIN, 0, NULL)))
+    {
+        event->attempts++;
+        event->due = time (NULL) + 10 * event->attempts + 10;
+        event->callback = &SrvCallBackTimeout;
+        QueueEnqueue (event);
+    }
+    else
+        event = QueueEnqueueData (conn, QUEUE_DEP_OSCARLOGIN, 0, time (NULL) + 12,
+                                  NULL, conn->cont, NULL, &SrvCallBackTimeout);
+
+    M_printf (i18n (9999, "Opening v8 connection to %s:%s%ld%s for %s%s%s... "),
+              s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE,
+              COLCONTACT, cont->nick ? cont->nick : s_sprintf ("%ld", cont->uin), COLNONE);
+
+    UtilIOConnectTCP (conn);
+    return event;
+}
+
+static void SrvCallBackReconn (Connection *conn)
+{
+    ContactGroup *cg = conn->contacts;
+    Event *event;
+    Contact *cont;
+    int i;
+
+    if (!(cont = conn->cont))
+        return;
+    
+    if (!(event = QueueDequeue2 (conn, QUEUE_DEP_OSCARLOGIN, 0, NULL)))
+    {
+        ConnectionInitServer (conn);
+        return;
+    }
+    
+    conn->connect = 0;
+    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+    if (event->attempts < 5)
+    {
+        M_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << event->attempts);
+        event->due = time (NULL) + (10 << event->attempts);
+        event->callback = &SrvCallBackDoReconn;
+        QueueEnqueue (event);
+    }
+    else
+    {
+        M_print (i18n (2031, "Connecting failed too often, giving up.\n"));
+        EventD (event);
+    }
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+        cont->status = STATUS_OFFLINE;
+}
+
+static void SrvCallBackDoReconn (Event *event)
+{
+    if (event->conn && event->conn->type == TYPE_SERVER)
+    {
+        QueueEnqueue (event);
+        ConnectionInitServer (event->conn);
+    }
+    else
+        EventD (event);
+}
+
+static void SrvCallBackTimeout (Event *event)
+{
+    Connection *conn = event->conn;
+    
+    if (!conn)
+    {
+        EventD (event);
+        return;
+    }
+    ASSERT_SERVER (conn);
+    
+    if (conn->connect & CONNECT_MASK && ~conn->connect & CONNECT_OK)
+    {
+        if (conn->connect == event->seq)
+        {
+            M_print (i18n (1885, "Connection v8 timed out.\n"));
+            conn->connect = 0;
+            sockclose (conn->sok);
+            conn->sok = -1;
+            QueueEnqueue (event);
+            SrvCallBackReconn (conn);
+        }
+        else
+        {
+            event->due = time (NULL) + 10 + 10 * event->attempts;
+            conn->connect |= CONNECT_SELECT_R;
+            event->seq = conn->connect;
+            QueueEnqueue (event);
+        }
+    }
+    else
+        EventD (event);
+}
+
+void SrvCallBackReceive (Connection *conn)
+{
+    Packet *pak;
+
+    if (~conn->connect & CONNECT_OK)
+    {
+        switch (conn->connect & 7)
+        {
+            case 0:
+                if (conn->assoc && (~conn->assoc->connect & CONNECT_OK) && (conn->assoc->flags & CONN_AUTOLOGIN))
+                {
+                    M_printf ("FIXME: avoiding deadlock\n");
+                    conn->connect &= ~CONNECT_SELECT_R;
+                }
+                else
+            case 1:
+            case 5:
+                /* fall-through */
+                    conn->connect |= 4 | CONNECT_SELECT_R;
+                conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~3;
+                return;
+            case 2:
+            case 6:
+                conn->connect = 0;
+                SrvCallBackReconn (conn);
+                return;
+            case 4:
+                break;
+            default:
+                assert (0);
+        }
+    }
+
+    pak = UtilIOReceiveTCP (conn);
+    
+    if (!pak)
+        return;
+
+    if (PacketRead1 (pak) != 0x2a)
+    {
+        DebugH (DEB_PROTOCOL, "Incoming packet is not a FLAP: id is %d.\n", PacketRead1 (pak));
+        return;
+    }
+    
+    if (prG->verbose & DEB_PACK8)
+    {
+        M_printf ("%s " COLINDENT "%s%s ",
+                 s_now, COLSERVER, i18n (1033, "Incoming v8 server packet:"));
+        FlapPrint (pak);
+        M_print (COLEXDENT "\r");
+    }
+    if (prG->verbose & DEB_PACK8SAVE)
+        FlapSave (pak, TRUE);
+    
+    QueueEnqueueData (conn, QUEUE_FLAP, pak->id, time (NULL),
+                      pak, 0, NULL, &SrvCallBackFlap);
+    pak = NULL;
+}
+
+Connection *SrvRegisterUIN (Connection *conn, const char *pass)
+{
+    Connection *new;
+#ifdef ENABLE_PEER2PEER
+    Connection *newl;
+#endif
+    
+    if (!(new = ConnectionC (TYPE_SERVER)))
+        return NULL;
+
+#ifdef ENABLE_PEER2PEER
+    if (!(newl = ConnectionClone (new, TYPE_MSGLISTEN)))
+    {
+        ConnectionD (new);
+        return NULL;
+    }
+    new->assoc = newl;
+    newl->open = &ConnectionInitPeer;
+    if (conn && conn->assoc)
+    {
+        newl->version = conn->assoc->version;
+        newl->status = newl->pref_status = conn->assoc->pref_status;
+        newl->flags = conn->assoc->flags & ~CONN_CONFIGURED;
+    }
+    else
+    {
+        newl->version = 8;
+        newl->status = newl->pref_status = prG->s5Use ? 2 : TCP_OK_FLAG;
+        newl->flags |= CONN_AUTOLOGIN;
+    }
+#endif
+
+    if (conn)
+    {
+        assert (conn->type == TYPE_SERVER);
+        
+        new->flags   = conn->flags & ~CONN_CONFIGURED;
+        new->version = conn->version;
+        new->uin     = 0;
+        new->pref_status  = STATUS_ONLINE;
+        new->pref_server  = strdup (conn->pref_server);
+        new->pref_port    = conn->pref_port;
+        new->pref_passwd  = strdup (pass);
+    }
+    else
+    {
+        new->version = 8;
+        new->uin     = 0;
+        new->pref_status  = STATUS_ONLINE;
+        new->pref_server  = strdup ("login.icq.com");
+        new->pref_port    = 5190;
+        new->pref_passwd  = strdup (pass);
+        new->flags |= CONN_AUTOLOGIN;
+    }
+    new->server = strdup (new->pref_server);
+    new->port = new->pref_port;
+    new->passwd = strdup (pass);
+    new->open = &ConnectionInitServer;
+
+    ConnectionInitServer (new);
+    return new;
+}
+
