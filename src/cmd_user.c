@@ -1132,7 +1132,7 @@ static JUMP_F (CmdUserAnyMess)
     Contact *cont;
     strc_t par;
     UDWORD i, f = 0;
-    static str_s t;
+    static str_s t = { NULL, 0, 0 };
     ANYCONN;
 
     if (!(data & 3))
@@ -1156,7 +1156,6 @@ static JUMP_F (CmdUserAnyMess)
             return 0;
         data |= i << 2;
     }
-    s_init (&t, "", 100);
 
     if (!s_parsenick (&args, &cont, conn))
         return 0;
@@ -1164,6 +1163,7 @@ static JUMP_F (CmdUserAnyMess)
     if (!s_parse (&args, &par))
         return 0;
     
+    s_init (&t, "", 0);
     s_catf (&t, "%s", par->txt);
 
     while (s_parse (&args, &par))
@@ -2977,7 +2977,7 @@ static JUMP_F(CmdUserConn)
                 M_printf (i18n (9999, "%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n"),
                           i + 1, ConnectionType (connl), connl->version,
 #ifdef ENABLE_SSL
-                          conn->ssl_status == SSL_STATUS_OK ? " SSL" : "",
+                          connl->ssl_status == SSL_STATUS_OK ? " SSL" : "",
 #else
                           "",
 #endif
@@ -2994,7 +2994,11 @@ static JUMP_F(CmdUserConn)
                          connl->connect, t2 = strdup (s_ip (connl->our_local_ip)),
                          t3 = strdup (s_ip (connl->our_outside_ip)),
                          connl->our_session, connl->our_seq, connl->our_seq2);
+#ifdef ENABLE_SSL
+                    M_printf (i18n (9999, "    at %p parent %p assoc %p ssl %d\n"), connl, connl->parent, connl->assoc, connl->ssl_status);
+#else
                     M_printf (i18n (2081, "    at %p parent %p assoc %p\n"), connl, connl->parent, connl->assoc);
+#endif
                     free (t1);
                     free (t2);
                     free (t3);
