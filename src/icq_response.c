@@ -475,6 +475,8 @@ void Recv_Message (Connection *conn, Packet *pak)
     
     if (len == ctext->len + 1 && ConvIsUTF8 (ctext->txt))
         text = ConvFrom (ctext, ENC_UTF8)->txt;
+    else if (len == ctext->len + 10)
+        text = c_in_to_split (ctext, cont);
     else if (len != ctext->len + 1 && type == MSG_NORM && len & 1)
         text = ConvFrom (ctext, ENC_UCS2BE)->txt;
     else
