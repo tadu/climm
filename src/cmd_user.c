@@ -177,7 +177,8 @@ static Connection *conn = NULL;
     { M_print (i18n (1931, "Current session is closed. Try another or open this one.\n")); return 0; } \
 
 /* Try to have any server connection ready. */
-#define ANYCONN if (!conn) conn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL);
+#define ANYCONN if (!conn) conn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL); \
+    if (!conn) { M_print (i18n (9999, "No server session found.\n")); return 0; }
 
 /*
  * Returns a pointer to the jump table.
@@ -1478,7 +1479,7 @@ static JUMP_F(CmdUserStatusDetail)
     if (~data & 16 && !(cg = s_parsecg (&args, conn)))
         tcg = cg = NULL;
 
-    if ((data & 8) && !cg && !conn)
+    if ((data & 8) && !cg)
     {
         if ((cg = s_parselistrem (&args, conn)))
             tcg = cg;
@@ -1516,7 +1517,7 @@ static JUMP_F(CmdUserStatusDetail)
                 free (t1);
                 free (t2);
             }
-            for (i = id = 0; id < CAP_MAX; id++)
+            for (j = id = 0; id < CAP_MAX; id++)
                 if (cont->caps & (1 << id))
                 {
                     Cap *cap = PacketCap (id);
@@ -1531,7 +1532,7 @@ static JUMP_F(CmdUserStatusDetail)
                         M_print (s_dump ((const UBYTE *)cap->cap, 16));
                     }
                 }
-            if (i)
+            if (j)
                 M_print ("\n");
         }
         ContactGroupD (tcg);
