@@ -1,0 +1,514 @@
+.\"     $Id$ -*- nroff -*-
+.\" EN: $Id$
+.TH MICQ 7 mICQ
+.SH NOME
+mICQ - comandos interativos
+.SH DESCRICAO
+Esta pagina de manual descreve os camandos que podem ser usados no mICQ. Esta pagina contem a mesma informacao da ajuda online.
+.SH NOTE - THIS FILE HAS NOT YET BEEN UPDATED FOR mICQ 0.4.10.
+.SH COMANDOS
+.TP
+.BI trans \ [lang|nr]\ ...
+Muda a traducao para a linguagem 
+.IR lang ,
+denominada por codigo ISO, ou fornece o numero e a "string" da traducao atual
+.IR nr .
+Para selecionar o idioma padrao determinado pelas variaveis de ambiente, 
+.BR LANG ,
+.B LC_ALL
+e
+.BR LC_MESSAGES ,
+use
+.BR ! ,
+.B auto
+ou
+.BR default .
+Para desativar a traducao, use
+.BR . ,
+.B none
+ou
+.BR unload .
+Para conseguir informacao de debug, use o prefixo 
+.BR debug .
+Para obter mensagens engracadas, use o sufixo 
+.BR _fun .
+.sp
+Os arquivos no diretorio ~/.micq/i18n/*.i18n tem precedencia sobre os arquivos globais, ao passo que os "engracados" tem precedencia sobre os padroes.
+.sp
+Voce pode especificar quantos argumentos quiser, por exemplo, para imprimir a mensagem numero 117 em alemao e voltar para o idioma padrao, 
+use "trans de 117 default".
+.TP
+.B tabs 
+Mostra uma lista de usuarios que se pode selecionar apertando a tecla "tab".
+.TP
+.B save
+Salva as configuracoes atuais no arquivo de configuracao, 
+.IR ~/.micq/micqrc ,
+a menos que seja especificado outro.
+Cuidado, esta opcao vai apagar quaisquer comentarios no arquivo de configuracao.
+.TP
+.BI r \ [message]
+Responde a ultima mensagem recebida. Sem o parametro
+.I message
+voce podera comper mensagens com multiplas linhas. Para enviar a mensagem com multiplas linhas, basta digitar um ponto final
+.RB ( . )
+numa linha. Para cancelar o envio, coloque o sinal "escopo" 
+.RB ( # )
+numa linha.
+.TP
+.BI a \ [message]
+Envia uma mensagem para a ultima pessoa pra quem voce enviou uma mensagem. Veja
+.B r
+para saber mais sobre o comportamento do comando sem o parametro
+.IR message .
+.TP
+.BI msg \ uin|nickname\ [message]
+Envia uma mensagem para 
+.IR uin|nickname .
+Veja
+.B r 
+para saber mais sobre o comportamento do comando sem o parametro
+.IR message .
+.TP
+.BI url \ uin|nickname\ url\ message
+Envia uma mensagem 
+.I message
+com uma 
+.I url
+para o 
+.IR uin|nickname .
+.TP
+.BI sms \ cell\ message
+Envia uma mensagem SMS
+.I message
+para o telefone celular
+.IR cell ,
+que devera estar no formato +<codigo do pais><numero>.
+.TP
+.B msga
+Envia uma mensagem com multiplas linhas para TODOS na sua lista de contatos.  Use um ponto final
+.RI ( . )
+numa linha para enviar, e um sinal de "escopo" 
+.RI ( # )
+numa linha para cancelar a mensagem.
+.TP
+.BI resend \ uin|nickname \fR...
+reenvia a ultima mensagem para o 
+.I uin
+ou
+.IR nickname .
+O argumento pode ser repetido tantas vezes quanto quiser.
+.TP
+.B uptime
+Mostra por quanto tempo o mICQ esteve rodando, alem de algumas estatisticas.
+.TP
+.BI last \ [contact]
+Mostra a ultima mensagem recebida de
+.IR contact ,
+o qual pode ser um 
+.I uin
+ou um
+.IR nickname ,
+or pra todos que ja lhe mandaram mensagens.
+.TP
+.BI verbose \ [verb]
+Ajusta o nivel de "verbosidade" ou explicacao verbal do mICQ para
+.IR verb ,
+ou mostra o nivel atual de informacao verbal. O nivel de verbosidade e um conjunto de flags:
+.RS
+.TP
+.B 8
+Mostra os erros do protocolo.
+.TP
+.B 16
+Mostra a criacao e delecao de pacotes.
+.TP
+.B 32
+Mostra eventos adicionados ou removidos da fila.
+.TP
+.B 64
+Mostra coneccoes criadas ou removidas.
+.TP
+.B 256
+Mostra os pacotes v6 e seus dados.
+.TP
+.B 4096
+Mostra pacotes v7/v8.
+.TP
+.B 8192
+Mostra o valor em hexa dos pacotes v7/v8.
+.TP
+.B 16284
+Salva os pacotes recebidos no disco.
+.TP
+.B 65536
+Mostra pacotes do tipo peer-to-peer.
+.TP
+.B 131072
+Mostra o valor em hexa dos pacotes peer-to-peer.
+.TP
+.B 262144
+Salva os pacotes recebidos no disco.
+.TP
+.B 2097152
+Mostra a negociacao peer-to-peer.
+.TP
+.B 4194304
+Mostra a configuracao de I/O.
+.RE
+
+.RS
+No entanto, qualquer valor diferente de zero vai fazer com que mais informacao seja impressa na tela,
+e qualquer nivel maior que 1 faz com que mais informacao ainda seja impressa.
+.RE
+.TP
+.B clear
+Limpa a tela.
+.TP
+.BI sound \ [command]
+Liga ou desliga os sons, ou executa o 
+.IR command 
+ao inves de tocar o som.
+.TP
+.BI soundonline \ [command]
+Liga/Desliga o efeito sonoro para usuarios online, ou executa o comando
+.IR command 
+ao inves do som.
+.TP
+.BI soundoffline \ [command]
+Liga/Desliga o efeito sonoro para usuarios offline, ou executa o comando
+.IR command
+ao inves do som
+.TP
+.B q
+Sai do mICQ.
+.TP
+.BI auto \ [on|off]
+Liga/Desliga as mensagens automaticas. Se nao for fornecido nem "on" ou "off", as mensagens automaticas sao exibidas na tela.
+.TP
+.BI auto \ status\ message
+Muda a mensagem automatica do status
+.I status
+para
+.IR message .
+.TP
+.BI autoaway \ [timeout|on|off]
+Ajusta o tempo de auto-away para
+.IR timeout ,
+ou liga/desliga o auto-away.
+Se nao forem fornecidos nenhum argumento, a condicao atual do auto-away sera exibida.
+.TP
+.BI alter \ command\ new
+Faz com que o comando conhecido como 
+.I command
+seja agora apelidado de
+.IR new .
+.TP
+.BI auth \ [req|grant|deny|add]\ uin|nickname
+Grant (permite) ou deny (nega) a requisicao do 
+.I uin|nickname
+de adiciona-lo a lista dele, solicita ao 
+.I uin|nickname
+para permitir que voce o adicione a sua lista (req), ou diz ao 
+.I uin|nickname
+que voce o adicionou a sua lista (add).
+.TP
+.BI rand \ number
+Procura um usuario randomico com os mesmos interesses no grupo.
+.IR number .
+.TP
+.BI pass \ password
+Muda seu password para 
+.IR password . 
+.br
+Nota: Voce precisa fazer o 
+.B save
+para que seu novo password seja escrito no arquivo de configuracao
+.I ~/.micq/micqrc
+(veja)
+.BR micqrc (7)),
+ou seu login automatico nao funcionara no proximo login
+.
+.TP
+.B search
+.TP
+.BI search \ email
+.TP
+.BI search \ nick
+.TP
+.BI search \ first\ last
+Procura por um usuario com o 
+.I email
+como endereco de e-mail, com  
+.I nick
+como seu nickname, ou com
+.I first
+como o primeiro nome e
+.I last
+como sobrenome. Se nenhum argumento for fornecido, o search perguntara os atributos.
+.TP
+.BI add \ nickname\ alias
+.TP
+.BI add \ uin\ [nickname]
+Adiciona o 
+.I uin
+a sua lista de contatos com o
+.IR nickname ,
+ou adicion um "alias" ou apelido
+.IR alias
+ao
+.IR nickname .
+Se o 
+.I nickname
+nao for fornecido, use o 
+.I uin
+como nickname.
+.br
+Nota: voce precisa fazer o 
+.B save
+para salvar as configuracoes.
+.TP
+.BI rem \ alias
+Remove o "alias" ou apelido 
+.IR alias .
+Se
+.IR alias
+eh o ultimo alias para o contato, remove o contato tambem.
+.br
+Nota: voce precisa fazer o 
+.B save
+para salvar as configuracoes.
+.TP
+.BI togvis \ nickname
+Habilita o 
+.I nickname
+a ve-lo mesmo quando voce esta invisivel.
+.TP
+.BI toginvis \ nickname
+Faz com que o 
+.IR nickname 
+nao veja sua presenca online (sempre invisivel).
+.TP
+.BI togig \ nickname
+Indica quando as mudancas de estado e mensagens do 
+.I nickname's
+devem ser ignoradas.
+.TP
+.BI f[inger] \ uin|nickname
+.TP
+.BI info \ uin|nickname
+Mostra a "white page" para o 
+.IR uin|nickname .
+.TP
+.B e
+Mostra todas as pessoas online em sua lista de contatos.
+.TP
+.B w
+Mostra todas as pessoas na sua lista de contatos.
+.TP
+.B ee
+Mostra todas as pessoas online na sua lista de contatos com alguns detalhes a mais.
+.TP
+.B ww
+Mostra todas as pessoas na sua lista de contatos com alguns detalhes a mais, alem de exibir os alias.
+.TP
+.B wide
+Mostra todas as pessoas da lista de contatos em formato amplo.
+.TP
+.B ewide
+Mostra todas as pessoas online da lista de contatos em formato amplo.
+.TP
+.B s \ [nickname]
+Mostra o seu status atual, ou o do nickname.
+.TP
+.B i
+Mostra todas as pessoas na Ignore List.
+.TP
+.BI status \ [nickname]
+Mostra o status do
+.IR nickname .
+Inclui endereco IP address, versao do protocolo ICQ e tipo de coneccao,
+ou lista brevemente o UIN, nickname, statis e a ultima data em que o uin esteve online para todos os contatos.
+.sp
+Nota: Este comando e obsoleto. Use
+.B s
+ou
+.B ww
+ao inves de status.
+.TP
+.BI reg \ password
+Cria uma nova conta no ICQ com o password 
+.IR password .
+.TP
+.BI change \ [number\ [message]]
+Muda seu status atual para 
+.IR number .
+Se o numero nao for fornecido, o comando listara os modos de status disponiveis.. Opicionalmente, ajusta a auto-respota para este status para
+.IR message .
+.TP
+.B online
+Muda para "online".
+.TP
+.BI away \ [message]
+Muda o status pra "away". Opicionalmete, ajusta a auto-reposta pra 
+.IR message .
+.TP
+.BI na \ [message]
+Muda para "not available" ou nao-disponivel. Opicionalmente ajusta a auto-respota pra 
+.IR message .
+.TP
+.BI occ \ [message]
+Muda o status pra "occupied" ou ocupado. Opicionalmente ajusta a auto-resposta pra 
+.IR message .
+.TP
+.BI dnd \ [message]
+Muda o status pra "do not disturb" ou nao perturbe. Opicionalmente ajusta a auto-reposta para 
+.IR message .
+.TP
+.BI ffc \ [message]
+Muda o status para "free for chat" ou livre pra conversa. Opicionalmente ajusta a auto-resposta para 
+.IR message .
+.TP
+.B inv
+Muda o status pra "invisible" ou invisivel.
+.TP
+.B update
+Atualiza as informacoes basicas do usuario (email, nickname, etc.).
+.TP
+.B other
+Atualiza outras informacoes do usuario, como idade e sexo.
+.TP
+.B about
+Atualiza o campo "sobre".
+.TP
+.BI set \ option\ value
+Muda a opcoa 
+.I option
+para 
+.I on
+ou
+.IR off .
+.I option
+pode ser
+.BR color ,
+.B funny
+ou
+.BR quiet .
+.TP
+.BI peek \ nick
+Checa se o 
+.I nick
+esta online ou nao. Utilizase de um bug no protocolo ICQ para descobrir isso;
+nenhuma outra informacao, exceto se esta online ou nao pode ser obtida dessa maneira.
+.TP
+.BI setr\ [number]
+Ajusta o numero do seu grupo na pesquisa randomica por usuarios para o valor 
+.IR number .
+Se nenhum argumento for passado, listas os codigos disponiveis.
+.TP
+.BI peer \ command\ uin|nick
+Roda o comando 
+.I command
+no usuario com o UIN
+.I uin
+ou com o nickname 
+.IR nick .
+.RS
+.TP
+.B open
+Abre uma conexao "peer-to-peer" com um usuario.
+.TP
+.B close
+Fecha e re-inicia uma conexao "peer-to-peer" com o usuario.
+.TP
+.B off
+Desabilita a auto-abertura de conexao direta para envio de mensagens a menso que seja explicitamente solicitado ou re-iniciado.
+.TP
+.B auto
+Mostra a auto resposta atual.
+.TP
+.B away
+Mostra a auto-reposta pra "away" (Distante).
+.TP
+.B na
+Motra a auto-reposta pra "Not Available" (Nao Disponivel).
+.TP
+.B dnd
+Mostra a auto-resposta pra "Do Not Disturb" (Nao Perturbe).
+.TP
+.B occ
+Mostra a auto-resposta pra "Occupied" (Ocupadp).
+.TP
+.B ffc
+Mostra a auto-resposta pra "Free for Chat" (Livre para conversar).
+.TP
+.BI file \ arq\ descricao
+Envia o arquivo
+.I arq
+com a descricao 
+.IR descricao .
+.TP
+.BI files \ [arq\ como]...\ descricao
+Envia arquivos para o usuario. Podem haver diversos pares de nomes de um arquivo 
+.I arq
+que serao enviados para ou outro usuario com o nome especificado,
+.IR como .
+Se
+.IR como
+eh
+.RB ' / ',
+o arquivo eh enviado sem o caminho/diretorio original (path), e se for
+.RB ' . '
+o arquivo sera enviado com o mesmo nome.
+.RE
+.TP
+.BI conn \ [comando\ nr]
+Mostra todas as conexoes, ou executa o
+.I comando
+na conexao
+.IR nr .
+.RS
+.TP
+.B open
+Abre a conexao especificada, ou abre a primeira conexao de login.
+.TP
+.B login
+Abre a conexao especificada, ou a primeira conexao para servidor.
+.TP
+.B close
+Fecha a conexao. Conexoes temporarias serao interrompidas por este comando.
+.TP
+.B remove
+Fecha e remove a conexao (temporaria) especificada.
+.TP
+.B select
+Usa a conexao ao servidor especificado como a conexao padrao.
+.I nr
+pode ser o numero da conexao ou o UIN com que se fez a conexao.
+.RE
+.TP
+.BI contact \ [comando]
+Gerencia a lista de contatos no servidor com os seguintes comandos:
+.RS
+.TP
+.B show
+Apenas exibe a lista de contatos no servidor.
+.TP
+.B diff
+Mostra apenas os contatos (UIN/Nick) que estao no servidor e nao estao na lista local.
+.TP
+.B import
+Importa toda a lista de contatos armazenada no servidor.
+.RE
+
+.SH VEJA TAMBEM
+.BR micq (1),
+.BR micqrc (5)
+.SH AUTOR
+Esta pagina de manual foi criada por James Morrison
+.I <ja2morrison@student.math.uwaterloo.ca>
+como referencia para todos os comandos interativos do 
+.BR mICQ .
+.BR
+Traduzida por Deives Michellis
+.I <dmichellis@yahoo.com>
