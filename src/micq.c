@@ -438,7 +438,7 @@ static void Init (int argc, char *argv[])
     TCLInit ();
 #endif
 
-    if (uingiven)
+    if (!uingiven)
     {
         for (i = 0; (conn = ConnectionNr (i)); i++)
             if (conn->flags & CONN_AUTOLOGIN)
