@@ -502,7 +502,9 @@ extern UDWORD our_ip;
 extern UDWORD our_port; /* the port to make tcp connections on */
 extern BOOL Quit;
 extern BOOL Verbose;
-extern UBYTE Sound;
+extern UBYTE Sound; /* sound setting for normal beeps etc */
+extern UBYTE SoundOnline; /* sound setting for users comming online */
+extern UBYTE SoundOffline; /* sound settng for users going offline */
 extern UDWORD Current_Status;
 extern UDWORD last_recv_uin;
 extern char passwd[100];
@@ -528,7 +530,9 @@ extern char auto_rep_str_away[450];
 extern char auto_rep_str_occ[450];
 extern char auto_rep_str_inv[450];
 extern char auto_rep_str_dnd[450];
-extern UBYTE Sound_Str[150];
+extern UBYTE Sound_Str[150];           /* shellcmd to exec on normal beeps */
+extern UBYTE Sound_Str_Online[150];    /* shellcmd to exec on usr online */
+extern UBYTE Sound_Str_Offline[150];   /* shellcmd to exec on usr offline */
 extern BOOL Done_Login;
 
 extern BOOL del_is_bs;

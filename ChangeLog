@@ -1,3 +1,5 @@
+2001-08-02 Sander Smeenk <ssmeenk@debian.org>
+	* Added support for SoundOnline & SoundOffline events
 
 2001-06-27 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Tiny fix for double prompts printed when replying.
