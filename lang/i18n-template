@@ -2,6 +2,8 @@
 
 my %nrval, %tain, $max, $tainted, $ignored, $preserved, $added, $ignerr, $uname, $name, $pref;
 
+$cvs = ":pserver:anonymous@www.micq.org:/usr/local/cvsroot";
+
 sub ReadTrans($)
 {
     my $nr, $val, $found, $name;
@@ -122,11 +124,19 @@ while ($uname = shift)
 {
     next unless $uname cmp "build.i18n";
 
-    $ver = `grep ^1003 $uname`;
-    $ver =~ s/^1003://;
+    $ver = `grep "# *EN" $uname | sed "s/.*,v //;s/ .*//"`;
     chomp $ver;
+    if (!length ($ver))
+    {
+        $ver = `grep ^1003 $uname`;
+        $ver =~ s/^1003://;
+        chomp $ver;
+        $ver = "i18n-$ver";
+    }
+    print "Old version tag: $ver.\n";
     
-    system "cvs diff -u0 -r i18n-$ver build.i18n | grep \"^-[0-9]\" | sed \"s,^-,,\" | sort -n -t : -k 1,1 -u -o $uname.tainted";
+    system "cvs -d $cvs diff -u0 -r $ver build.i18n"
+         . " | grep \"^-[0-9]\" | sed \"s,^-,,\" | sort -n -t : -k 1,1 -u -o $uname.tainted";
     ReadTainted ("$uname");
 
     $name = $pref . $uname;
