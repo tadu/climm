@@ -41,7 +41,7 @@ if test "x$ac_arg_use_utf8" = "xno"; then
 fi
 
 if test "x$ac_arg_use_iconv" != "xno"; then
-  AC_CHECK_FUNC([iconv], [ac_arg_use_iconv=glibc], [ac_arg_use_iconv=builtin])
+  AC_CHECK_FUNC([iconv], [ac_arg_use_iconv=system], [ac_arg_use_iconv=builtin])
   if test "x$ac_arg_use_iconv" = "xbuiltin"; then
     AC_CHECK_LIB([iconv], [iconv], [ac_arg_use_iconv=iconv])
     if test "x$ac_arg_use_iconv" = "xbuiltin"; then

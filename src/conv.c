@@ -47,8 +47,9 @@ UBYTE ConvEnc (const char *enc)
         conv_encs[3].enc = strdup (ICONV_LATIN9_NAME);
         conv_encs[4].enc = strdup ("KOI8-U");
         conv_encs[5].enc = strdup ("CP1251");      /* NOT cp-1251, NOT windows* */
-        conv_encs[6].enc = strdup ("EUC-JP");
-        conv_encs[7].enc = strdup ("SHIFT-JIS");
+        conv_encs[6].enc = strdup ("UCS-2BE");
+        conv_encs[7].enc = strdup ("EUC-JP");
+        conv_encs[8].enc = strdup ("SHIFT-JIS");
     }
     if (!strcasecmp (enc, "WINDOWS-1251") || !strcmp (enc, "CP-1251"))
         enc = "CP1251";
@@ -189,11 +190,11 @@ const char *ConvCrush0xFE (const char *inn)
 
 #ifdef ENABLE_ICONV
 
-const char *ConvToUTF8 (const char *inn, UBYTE enc, UBYTE keep0xfe)
+const char *ConvToUTF8 (const char *inn, UBYTE enc, size_t totalin, UBYTE keep0xfe)
 {
     static char *t = NULL;
     static UDWORD size = 0;
-    size_t inleft, outleft;
+    size_t inleft, outleft, totalleft;
     char *out, *tmp;
     ICONV_CONST char *in;
 
@@ -222,7 +223,9 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc, UBYTE keep0xfe)
     iconv (conv_encs[enc].to, NULL, NULL, NULL, NULL);
     in = (ICONV_CONST char *)inn;
     out = t;
-    inleft = (keep0xfe && strchr (in, 0xfe)) ? strchr (in, 0xfe) - in : strlen (in);
+    totalin = (totalin == -1 ? strlen (in) : totalin);
+    totalleft = totalin;
+    inleft = (keep0xfe && memchr (in, 0xfe, totalin)) ? (const char *)memchr (in, 0xfe, totalin) - in : totalin;
     outleft = size - 1;
     while (iconv (conv_encs[enc].to, &in, &inleft, &out, &outleft) == (size_t)(-1) || *in == (char)0xfe)
     {
@@ -243,7 +246,8 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc, UBYTE keep0xfe)
             *out++ = 0xfe;
             outleft--;
             in++;
-            inleft = (keep0xfe && strchr (in, 0xfe)) ? strchr (in, 0xfe) - in : strlen (in);
+            totalin = totalleft - (in - inn);
+            inleft = (keep0xfe && memchr (in, 0xfe, totalin)) ? (const char *)memchr (in, 0xfe, totalin) - in : totalin;
         }
         else /* EILSEQ */
         {
@@ -257,7 +261,7 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc, UBYTE keep0xfe)
     return t;
 }
 
-const char *ConvFromUTF8 (const char *inn, UBYTE enc)
+const char *ConvFromUTF8 (const char *inn, UBYTE enc, size_t *resultlen)
 {
     static char *t = NULL;
     static UDWORD size = 0;
@@ -323,6 +327,8 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
         }
     }
     *out = '\0';
+    if (resultlen)
+        *resultlen = out - t;
     return t;
 }
 
@@ -378,12 +384,12 @@ const UDWORD win1251_utf8[] = { /* 7bit are us-ascii */
     0x0
 };
 
-const char *ConvToUTF8 (const char *inn, UBYTE enc, UBYTE keep0xfe)
+const char *ConvToUTF8 (const char *inn, UBYTE enc, size_t totalin, UBYTE keep0xfe)
 {
     static char *t = NULL;
     static UDWORD size = 0;
     const unsigned char *in = (const unsigned char *)inn;
-    UDWORD i;
+    UDWORD ucs, i;
 #if 0
     unsigned char x, y;
 #endif
@@ -391,12 +397,15 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc, UBYTE keep0xfe)
     if (!inn)
         return "";
     
-    t = s_catf (t, &size, "%*s", (int)strlen ((const char *)in) * 3, "");
+    totalin = (enc == ENC_UCS2BE ? (totalin == -1 ? strlen (in) : totalin) : 0);
+    /* obey totalin _only_ for UCS-2BE */
+
+    t = s_catf (t, &size, "%*s", totalin * 3, "");
     *t = '\0';
     
-    for (*t = '\0'; *in; in++)
+    for (*t = '\0'; *in || totalin; in++)
     {
-        if (~*in & 0x80)
+        if ((~*in & 0x80) && (enc & ~ENC_AUTO) != ENC_UCS2BE)
         {
             t = s_catf (t, &size, "%c", *in);
             continue;
@@ -419,23 +428,49 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc, UBYTE keep0xfe)
             case ENC_LATIN9:
                 switch (*in)
                 {
-                    case 0xa4: PUT_UTF8 (0x20ac); continue; /* EURO */
-                    case 0xa6: PUT_UTF8 (0x0160); continue; /* SCARON */
-                    case 0xa8: PUT_UTF8 (0x0161); continue; /* SMALL SCARON */
-                    case 0xb4: PUT_UTF8 (0x017d); continue; /* ZCARON */
-                    case 0xb8: PUT_UTF8 (0x017e); continue; /* SMALL ZCARON */
-                    case 0xbc: PUT_UTF8 (0x0152); continue; /* OE */
-                    case 0xbd: PUT_UTF8 (0x0153); continue; /* SMALL OE */
-                    case 0xbe: PUT_UTF8 (0x0178); continue; /* Y DIAERESIS */
-                    default:
-                        PUT_UTF8 (*in);
+                    case 0xa4: ucs = 0x20ac; /* EURO */
+                    case 0xa6: ucs = 0x0160; /* SCARON */
+                    case 0xa8: ucs = 0x0161; /* SMALL SCARON */
+                    case 0xb4: ucs = 0x017d; /* ZCARON */
+                    case 0xb8: ucs = 0x017e; /* SMALL ZCARON */
+                    case 0xbc: ucs = 0x0152; /* OE */
+                    case 0xbd: ucs = 0x0153; /* SMALL OE */
+                    case 0xbe: ucs = 0x0178; /* Y DIAERESIS */
+                    default:   ucs = *in;
                 }
+                PUT_UTF8 (ucs);
                 continue;
             case ENC_KOI8:
                 PUT_UTF8 (koi8u_utf8[*in & 0x7f]);
                 continue;
             case ENC_WIN1251:
                 PUT_UTF8 (win1251_utf8[*in & 0x7f]);
+                continue;
+            case ENC_UCS2BE:
+                ucs = *(in++) << 8;
+                ucs |= *in;
+                if ((*in & 0xfc) == 0xd8)
+                {
+                    in++;
+                    totalin -= 2;
+                    ucs &= 0x4ff;
+                    ucs <<= 2;
+                    if ((*in & 0xfc) != 0xc)
+                    {
+                        PUT_UTF8 ('?');
+                        in--;
+                        if (totalin < 2)
+                            return t;
+                        continue;
+                    }
+                    ucs |= (0x3 & *(in++));
+                    ucs <<= 8;
+                    ucs = *in;
+                }
+                totalin -= 2;
+                PUT_UTF8 (ucs);
+                if (totalin < 2)
+                    return t;
                 continue;
 #if 0
             case ENC_EUC:
@@ -470,7 +505,7 @@ const char *ConvToUTF8 (const char *inn, UBYTE enc, UBYTE keep0xfe)
     return t;
 }
 
-const char *ConvFromUTF8 (const char *inn, UBYTE enc)
+const char *ConvFromUTF8 (const char *inn, UBYTE enc, size_t *resultlen)
 {
     static char *t = NULL;
     static UDWORD size = 0;
@@ -483,9 +518,41 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
     if (!inn)
         return "";
 
-    t = s_catf (t, &size, "%*s", (int)strlen ((const char *)in) * 3, "");
-    *t = '\0';
-    
+    t = s_catf (t, &size, "%*s", (int)strlen ((const char *)in), "");
+    if ((enc & ~ENC_AUTO) == ENC_UCS2BE)
+    {
+        char *p = NULL;
+        
+        t = s_catf (t, &size, "%*s", (int)strlen ((const char *)in), "");
+        for (p = t; *in; )
+        {
+            if (~*in & 0x80)
+                val = *(in++);
+            else
+            {
+                val = '?';
+                GET_UTF8 (in,val);
+            }
+            if (val > 0xffff || (val & 0xf800) == 0xd800)
+            {
+                *(p++) = 0xd8 | ((val >> 18) & 0x3);
+                *(p++) = (val >> 10) & 0xff;
+                *(p++) = 0xdc | ((val >> 8) & 0x3);
+                *(p++) = val & 0xff;
+            }
+            else
+            {
+                *(p++) = (val >> 8) & 0xff;
+                *(p++) = val & 0xff;
+            }
+        }
+        if (resultlen)
+            *resultlen = p - t;
+        *(p++) = 0;
+        *(p++) = 0;
+        return t;
+    }
+
     for (*t = '\0'; *in; in++)
     {
         if (~*in & 0x80)
@@ -559,6 +626,7 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
                         t = s_catf (t, &size, "?");
                 }
                 continue;
+/*          case ENC_UCS2BE:  handled above */
 #if 0
             case ENC_EUC:
                 if ((val & 0xffff0000) != 0xf0000)
@@ -592,6 +660,8 @@ const char *ConvFromUTF8 (const char *inn, UBYTE enc)
                 t = s_cat (t, &size, "?");
         }
     }
+    if (resultlen)
+        *resultlen = strlen (t);
     return t;
 }
 

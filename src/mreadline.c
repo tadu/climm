@@ -435,7 +435,7 @@ void R_process_input_tab (void)
         {
             cont = ContactFind (NULL, 0, uin, NULL, 1);
             snprintf (s, sizeof (s), "%s %s ", msgcmd,
-                      cont ? ConvFromUTF8 (cont->nick, prG->enc_loc)
+                      cont ? ConvFromUTF8 (cont->nick, prG->enc_loc, NULL)
                            : s_sprintf ("%ld", uin));
         }
         else
@@ -477,7 +477,7 @@ void R_process_input_tab (void)
             {
                 nicklen = strlen (tabcont->nick);
                 if (((prG->tabs == TABS_CYCLE && tabcont->status != STATUS_OFFLINE) || prG->tabs == TABS_CYCLEALL)
-                    && nicklen >= tabwlen && !strncasecmp (tabword, ConvFromUTF8 (tabcont->nick, prG->enc_loc), tabwlen)
+                    && nicklen >= tabwlen && !strncasecmp (tabword, ConvFromUTF8 (tabcont->nick, prG->enc_loc, NULL), tabwlen)
                     && (tabwlen > 0 || ~tabcont->flags & CONT_ALIAS) && ~tabcont->flags & CONT_TEMPORARY)
                     gotmatch = 1;
                 else
@@ -495,8 +495,8 @@ void R_process_input_tab (void)
             }
         }
         *tabwstart = '\0';
-        nicklen = strlen (ConvFromUTF8 (tabcont->nick, prG->enc_loc));
-        memmove (s, s_sprintf ("%s%s%s", s, ConvFromUTF8 (tabcont->nick, prG->enc_loc), tabwend), HISTORY_LINE_LEN);
+        nicklen = strlen (ConvFromUTF8 (tabcont->nick, prG->enc_loc, NULL));
+        memmove (s, s_sprintf ("%s%s%s", s, ConvFromUTF8 (tabcont->nick, prG->enc_loc, NULL), tabwend), HISTORY_LINE_LEN);
         tabwend = tabwstart + nicklen;
         R_remprompt ();
         bytelen = strlen (s);
@@ -874,7 +874,7 @@ int R_process_input (void)
 void R_getline (char *buf, int len)
 {
 #ifdef ENABLE_UTF8
-    strncpy (buf, ConvToUTF8 (s, prG->enc_loc, 0), len);
+    strncpy (buf, ConvToUTF8 (s, prG->enc_loc, -1, 0), len);
 #else
     strncpy (buf, s, len);
 #endif
@@ -1142,7 +1142,7 @@ static const char *M_getlogo ()
     logoc--;
     for (i = 0; i < logoc; i++)
         logos[i] = logos[i + 1];
-    return ConvFromUTF8 (logo, prG->enc_loc);
+    return ConvFromUTF8 (logo, prG->enc_loc, NULL);
 }
 
 void M_logo_clear ()
@@ -1175,7 +1175,7 @@ void M_print (const char *org)
     int sw = Get_Max_Screen_Width () - IndentCount;
     
 #ifdef ENABLE_UTF8
-    fstr = strdup (ConvFromUTF8 (org, prG->enc_loc));
+    fstr = strdup (ConvFromUTF8 (org, prG->enc_loc, NULL));
 #else
     fstr = strdup (org);
 #endif

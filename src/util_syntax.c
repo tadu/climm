@@ -12,7 +12,7 @@
 #include "preferences.h"
 
 #ifdef ENABLE_UTF8
-#define c_pin(x) ConvToUTF8 (x, ENC_LATIN1, 0)
+#define c_pin(x) ConvToUTF8 (x, ENC_LATIN1, -1, 0)
 #else
 #define c_pin(x) x
 #endif
@@ -44,8 +44,8 @@ static const char *syntable[] = {
     "s4x2s",   "W-",
     "s4x4s",   "",
     "s4x5s",   "W-",
-    "s4x6s",   "DDW[1uWWt[2t[257D]-]-][2ut[5WDDCt[10001(wCwdbw)wwdddwwwLDDS]-]-][4uWWt[5DWL]-]",
-    "s4x7s",   "DDW[1uWWt[2t[257D]-]-][2uWWt[5WDDCt[10001(wCwdbw)wwdddwwwLDDS]-]-][4uWWt[5DWL]-]",
+    "s4x6s",   "DDW[1ut[2t[257WW]-]-][2ut[5WDDCt[10001(wCwdbw)wwdddwwwLDDS]-]-][4ut[5DWL]-]",
+    "s4x7s",   "DDW[1uWWt[2t[257WW]-]-][2uWWt[5WDDCt[10001(wCwdbw)wwdddwwwLDDS]-]-][4uWWt[5DWL]-]",
     "s4x11s",  "DDwuW(wCwdbw)wwdddwwwLDD",
     "s4x12s",  "DDwu",
     "s9x2s",   "",
