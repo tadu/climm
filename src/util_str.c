@@ -34,6 +34,9 @@
 #if HAVE_WINSOCK2_H
 #include <winsock2.h>
 #endif
+#if HAVE_WCTYPE_H
+#include <wctype.h>
+#endif
 #include <string.h>
 #include <ctype.h>
 #include "preferences.h"
@@ -161,6 +164,7 @@ str_t s_catf (str_t str, const char *fmt, ...)
 {
     va_list args;
     size_t add = 64;
+    int rc;
     
     s_blow (str, add);
 
@@ -170,14 +174,14 @@ str_t s_catf (str_t str, const char *fmt, ...)
             return NULL;
         str->txt[str->max - 2] = '\0';
         va_start (args, fmt);
-        vsnprintf (str->txt + str->len, str->max - str->len - 1, fmt, args);
+        rc = vsnprintf (str->txt + str->len, str->max - str->len - 1, fmt, args);
         va_end (args);
-        if (!str->txt[str->max - 2])
+        if (rc >= 0 && rc < str->max - str->len - 1 && !str->txt[str->max - 2])
         {
             str->len += strlen (str->txt + str->len);
             return str;
         }
-        add <<= 2;
+        add = (rc > 0 ? rc - str->max - str->len + 5 : str->max);
         if (!s_blow (str, add))
         {
             str->txt[str->max - 2] = '\0';
@@ -267,7 +271,7 @@ const char *s_sprintf (const char *fmt, ...)
     static int size = 0;
     va_list args;
     char *nbuf;
-    int rc;
+    int rc, nsize;
 
     if (!buf)
         buf = calloc (1, size = 1024);
@@ -279,15 +283,16 @@ const char *s_sprintf (const char *fmt, ...)
         rc = vsnprintf (buf, size, fmt, args);
         va_end (args);
         
-        if (rc != -1 && rc < size && !buf[size - 2])
+        if (rc >= 0 && rc < size && !buf[size - 2])
             break;
 
-        nbuf = malloc (size + 1024);
+        nsize = (rc > 0 ? rc + 5 : size * 2);
+        nbuf = malloc (nsize);
         if (!nbuf)
             break;
         free (buf);
         buf = nbuf;
-        size += 1024;
+        size = nsize;
     }
     return buf;
 }
@@ -486,6 +491,59 @@ UDWORD s_offset  (const char *str, UDWORD offset)
     }
     return off;
 }
+
+/*
+ * Split off a certain amount of recoded bytes
+ */
+strc_t s_split (const char **input, UBYTE enc, int len)
+{
+    static str_s str = { NULL, 0, 0 };
+    str_s in = { NULL, 0, 0 };
+    int off, offold, offnl, offin, offmax;
+    UDWORD ucs;
+    
+    in.txt = (char *) *input;
+    in.len = strlen (*input);
+    off = offnl = offin = offmax = 0;
+    
+    fprintf (stderr, "s_split: %d, %d, (%d)%s\n", enc, len, in.len, in.txt);
+    while (in.txt[off])
+    {
+        offold = off;
+        ucs = ConvGetUTF8 (&in, &off);
+        fprintf (stderr, "off %u old %u max %d nl %d in %d\n", off, offold, offmax, offnl, offin);
+        if (ucs == '\r')
+            offnl = offold;
+        if (isspace (ucs & 0xff))
+            offin = offold;
+        if ((off - offold) > len)
+        {
+            off = offold;
+            break;
+        }
+        if (ucs == '\n')
+            offnl = off;
+        if (!iswalnum (ucs))
+            offin = off;
+        len -= (off - offold);
+        if (!in.txt[off])
+            offmax = off;
+    }
+    fprintf (stderr, "off %u old %u max %d nl %d in %d\n", off, offold, offmax, offnl, offin);
+    if (offmax)
+        off = offmax;
+    else if (offnl)
+        off = offnl;
+    else if (offin)
+        off = offin;
+    s_init (&str, "", off + 2);
+    memcpy (str.txt, in.txt, off);
+    str.len = off;
+    str.txt[off] = 0;
+    *input += off;
+    return ConvTo (str.txt, enc);
+}
+
 
 #define noctl(x) ((((x & 0x60) && x != 0x7f)) ? ConvUTF8 (x) : ".")
 
