@@ -60,6 +60,11 @@ void SrvCallBackFlap (Event *event)
         return;
     }
     
+    event->pak->tpos = event->pak->rpos;
+    event->pak->cmd = PacketRead1 (event->pak);
+    event->pak->id  = PacketReadB2 (event->pak);
+                      PacketReadB2 (event->pak);
+    
     event->conn->stat_pak_rcvd++;
     event->conn->stat_real_pak_rcvd++;
     switch (event->pak->cmd)

@@ -175,10 +175,6 @@ void SrvCallBackReceive (Connection *conn)
         return;
     }
     
-    pak->cmd = PacketRead1 (pak);
-    pak->id =  PacketReadB2 (pak);
-               PacketReadB2 (pak);
-    
     if (prG->verbose & DEB_PACK8)
     {
         M_printf ("%s " COLINDENT COLSERVER "%s ",

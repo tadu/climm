@@ -145,8 +145,6 @@ void SnacCallback (Event *event)
     SNAC *s;
     UWORD family;
     
-    pak->tpos = pak->rpos;
-    
     family     = PacketReadB2 (pak);
     pak->cmd   = PacketReadB2 (pak);
     pak->flags = PacketReadB2 (pak);
