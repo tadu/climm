@@ -45,7 +45,7 @@ static jump_snac_f SnacSrvFamilies, SnacSrvFamilies2, SnacSrvMotd,
     SnacSrvRegrefused, SnacSrvUseroffline, SnacSrvRecvmsg, SnacSrvUnknown,
     SnacSrvFromicqsrv, SnacSrvAddedyou, SnacSrvToicqerr, SnacSrvNewuin,
     SnacSrvSetinterval, SnacSrvSrvackmsg, SnacSrvAckmsg, SnacSrvAuthreq,
-    SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster,
+    SnacSrvAuthreply, SnacSrvIcbmerr, SnacSrvReplyroster, SnacSrvContrefused,
     SnacSrvRateexceeded;
 
 static SNAC SNACv[] = {
@@ -75,7 +75,7 @@ static SNAC SNACS[] = {
     {  3,  1, "SRV_CONTACTERR",      NULL},
     {  3,  3, "SRV_REPLYBUDDY",      SnacSrvReplybuddy},
     {  3, 11, "SRV_USERONLINE",      SnacSrvUseronline},
-    {  3, 10, "SRV_REFUSE",          NULL}, /* FIXME: */
+    {  3, 10, "SRV_REFUSE",          SnacSrvContrefused},
     {  3, 12, "SRV_USEROFFLINE",     SnacSrvUseroffline},
     {  4,  1, "SRV_ICBMERR",         SnacSrvIcbmerr},
     {  4,  5, "SRV_REPLYICBM",       SnacSrvReplyicbm},
@@ -416,6 +416,21 @@ static JUMP_SNAC_F(SnacSrvReplylocation)
 static JUMP_SNAC_F(SnacSrvReplybuddy)
 {
     /* ignore all data, do nothing */
+}
+
+/*
+ * SRV_REFUSE - SNAC(3,A)
+ */
+static JUMP_SNAC_F(SnacSrvContrefused)
+{
+    UDWORD uin;
+    Contact *cont;
+    
+    uin = PacketReadUIN (event->pak);
+    cont = ContactUIN (event->conn, uin);
+    
+    if (cont)
+        M_printf (i18n (2315, "Cannot watch status of %s - too many watchers.\n"), cont->nick);
 }
 
 /*
