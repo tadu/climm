@@ -387,7 +387,7 @@
 1424:Aktiviert bzw. deaktiviert automatische Antworten.
 1425:Ändert die automatische Antwort im Status <status> auf <message>.
 1426:Erzeugt eine neue Benutzernummer mit dem Paßwort <password>.
-1427:Wechselt in den Status <nr> oder listet die Bedeutung einiger Status-Nummern.
+1427:Wechselt in den Status <status> oder listet die Bedeutung einiger Status-Nummern.
 1428:Fügt alle <contacts>  zur Kontakt-Gruppe <group> hinzu.
 1429:Sucht nach einem ICQ-Benutzer.
 1430:Zeigt grundlegende Informationen über <uin> bzw. <nick> an.
@@ -409,8 +409,8 @@
 1446:Kommandos, um anderen Benutzern Nachrichten zu schicken.
 1447:Konfig
 1448:Nachricht
-1449:Konto
-1450:Status
+1449:Benutzer
+1450:Konto
 1451:lokale IP:
 1452:Status:
 1453:TCP-Version:
@@ -723,7 +723,7 @@
 1894:Es gibt keine Verbindung Nummer %ld.\n
 1895:Login fehlgeschlagen:\n
 1896:Der Server hat die Verbindung geschlossen:\n
-1897:Unvollständiges TLV %d, Länge %ld von %d - wird ignoriert.\n
+1897:Unvollständiges TLV %d, Länge %ld von %ld - wird ignoriert.\n
 1898.Weiterleitung zu Server %s... 
 1899:Unbekannte Befehlsfamilie angefordert: %d.\n
 1900:Nur lesbar.
@@ -1148,22 +1148,22 @@
 2380.«%«
 2381:Ich füge den Autor von mICQ zur Kontaktliste hinzu. Diese Gelegenheit sollte man nicht mißbrauchen - bitte erst den "help"-Befehl benutzen und einen ernsthaften Versuch machen, die Hilfeseiten und die FAQ (häufig gestellte Fragen) zu lesen, und erst danach fragen.\n
 2382.Verbindungsannahme gehört zu keiner Server-Verbindung, wird ignoriert.\n
-2383:Zeigt die letzten Nachrichten von <Kontakt>. Kann zu "h" abgekürzt werden.
-2384:Suche nach <Text> in der Log-Datei von <Kontakt> (ignoriere Großschreibung).
+2383:Zeigt die letzten Nachrichten von <contact> an. Kann zu "h" abgekürzt werden.
+2384:Suche nach <pattern> in der Log-Datei von <contact> (ignoriere Großschreibung).
 2385:Konnte %s nicht zum Lesen öffnen: %s (%d).\n
 2386:Insgesamt %s%d%s Treffer gefunden.\n
 2387.%s <Kontakt> [<last> [<count>]] -- Show history of <contact>.\n
 2388:find <Kontakt> <Text> -- Suche <Text> in den Nachrichten von <Kontakt> (ignoriere Großschreibung).\n
 2389:finds <Kontakt> <Text> -- Suche <Text> in den Nachrichten von <Kontakt> (beachte Großschreibung).\n
 2390:Kein oder ein leerer Text angegeben.\n
-2391:Suche nach <Text> in der Log-Datei von <Kontakt> (beachte Großschreibung).
+2391:Suche nach <pattern> in der Log-Datei von <contact> (beachte Großschreibung).
 2392.Dein Status ist %s (%s).\n
 2393:%d.%m.%Y
 2394: %H:%M
-2395:Zeigt die Nachrichten von <Kontakt> ab dem Datum <date> an.
+2395:Zeigt die Nachrichten von <contact> ab dem Datum <date> an.
 2396:Parameter '%s' ist nicht im ISO 8601 Format (Bsp.: '2004-01-31' oder '2004-01-31T23:12:05').\n
 2397:Keine Server-Verbindung gefunden.\n
-2398:Setze oder zeige Option für Kontaktgruppe, Kontakt oder global an.\n
+2398:Setze oder zeige Option für Kontaktgruppe, Kontakt oder global an.
 2399:Fordere eine SSL-Verbindung an.
 2400:Deutsche Übersetzung (%s) geladen (%d Einträge).\n
 2401:Automatische Antworten sind jetzt Kontaktoptionen, siehe das %s-Kommando.\n
@@ -1269,66 +1269,66 @@
 2502:Die locale-Einstellung %s ist keiner richtige locale und vermutlich nicht das gewünschte.\n
 2503:Das System kennt die locale %s locale - try %slocale -a%s.\n
 2504:Konnte die Konfigurationsdatei %s%s%s nicht öffnen.
-#2505:Deprecated option -f used. Please use the similar -b instead.\n
-#2506:This console uses encoding %s.\n
+2505:Veraltete Option -f benutzt. Verwende die ähnliche Option -b stattdessen.\n
+2506:Dieses Textfenster verwendet die Zeichenkodierung %s.\n
 #2507:Translation %s%s%s not found. Would you like to translate mICQ into your language?\n
-#2508:English (%s) translation loaded (%s%d%s entries).\n
-#2509:WSAStartup() for WinSocks 1.1 failed
-#2510:Opening v5 connection to %s:%s%ld%s... 
-#2511:Redirect to server %s:%s%ld%s... 
-#2512:Opening v8 connection to %s:%s%ld%s for %s%s%s... 
-#2513:new UIN
-#2514:refused (ignored)
-#2515:You queried already too many users today - come back tomorrow.\n
-#2516:The query got stuck. Or somesuch. Try again later.\n
-#2517:I'm out of wisdom about the server's problem. It just didn't work out.\n
-#2518:You need to 'save' to write your new UIN to disc.\n
-#2519:Opening file listener connection at %slocalhost%s:%s%ld%s... 
-#2520:Opening file transfer connection to %s:%s%ld%s... \n
-#2521:Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... 
-#2522:Opening TCP connection at %s:%s%ld%s... 
-#2523:%s not recognized as a nick name.\n
-#2524:Can't restore terminal modes.\n
-#2525:Can't read terminal modes.\n
-#2526:Can't modify terminal modes.\n
-#2527:OpenSSL internal error: %s:%i\n
-#2528:OpenSSL read error: %s\n
-#2529:OpenSSL read error %d (unknown)\n
-#2530:OpenSSL write error: %s\n
-#2531:OpenSSL write error %d (unknown)\n
-#2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
-#2533:SSL handshake failed
-#2534:IP:
-#2535:Groups:\n
-#2536:Group:
-#2537:Contact upload failed, authorization required.\n
-#2538:Contact upload failed, already on server.\n
-#2539:Contact upload succeeded.\n
+2508:Deutsche Übersetzung (%s) geladen (%s%d%s Einträge).\n
+2509:WSAStartup() für WinSocks 1.1 fehlgeschlagen.
+2510:Öffne Verbindung zu v5-Server bei %s:%s%ld%s...
+2511:Weiterleitung zu Server %s:%s%ld%s... 
+2512:Öffne Verbindung zu v8-Server bei %s:%s%ld%s für %s%s%s... 
+2513:neue UIN
+2514:abgelehnt (ignoriert)
+2515:Zuviele Benutzer für heute abgefragt - bitte morgen neu probieren.\n
+2516:Die Abfrage ist steckengeblieben. Oder sowas. Bitte später nochmal versuchen.\n
+2517:Keine Ahnung, was der Server für ein Problem hat. Es hat halt nicht funktioniert.\n
+2518:Die neue UIN wird erst mit dem nächsten "save"-Befehl gespeichert.\n
+2519:Öffne Kommunikationsendpunkt für Dateiübertragungen auf %slocalhost%s:%s%ld%s... 
+2520:Öffne Dateiübertragungsverbindung zu %s:%s%ld%s... \n
+2521:Öffne Direkt-Verbindung auf %slocalhost%s:%s%ld%s... 
+2522:Öffne Direktverbindung auf %s:%s%ld%s... 
+2523:%s ist kein Spitzname.\n
+2524:Kann Textfenster-Einstellungen nicht zurücksetzen.\n
+2525:Kann Textfenster-Einstellungen nicht lesen.\n
+2526:Kann Textfenster-Einstellungen nicht verändern.\n
+2527:OpenSSL-interner Fehler: %s:%i\n
+2528:OpenSSL-Lesefehler: %s\n
+2529:OpenSSL-Lesefehler %d (unbekannt)\n
+2530:OpenSSL-Schreibfehler: %s\n
+2531:OpenSSL-Schreibfehler %d (unbekannt)\n
+2532:OpenSSL-Fehler: SSL_RET=%d, SSL_ERR=%d\n
+2533:SSL-Handschlag fehlgeschlagen.\n
+2534:IP-Adresse:
+2535:Gruppen:\n
+2536:Gruppe:
+2537:Hochladen von Kontakten fehlgeschlagen, Autorisierung erforderlich.\n
+2538:Hochladen von Kontakten fehlgeschlagen, Kontakt bereits auf dem Server.\n
+2539:Hochladen von Kontakten erfolgreich.\n
 #2540:    sound:      how to beep: off, on = beep, event.\n
-#2541:Status
-#2542:Commands to change your status.
-#2543:Contacts
-#2544:Commands to modify your contact list.
-#2545:     %s\n
-#2546:No help available for '%s'\n
-#2547:Displays saved meta data about <contacts>.
-#2548:Displays the current status of online people on your contact list, including otherwise hidden contacts.
-#2549:Displays verbosely the current status of online people on your contact list, including otherwise hidden contacts.
-#2550:Displays the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
-#2551:Displays verbosely the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
-#2552:Displays the current status of everyone on your contact list, including otherwise hidden contacts.
-#2553:Displays verbosely the current status of everyone on your contact list, including otherwise hidden contacts.
-#2554:Displays the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
-#2555:Displays verbosely the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
-#2556:Add contact, alias, or contact to group.
-#2557:Remove alias, or contact from group or contact list.
-#2558:Set or display options for a contact.\n
-#2559:Set or display options for a contact group.\n
-#2560:Set or display global options.\n
-#2561:Logs off and quits without saving.
-#2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
-#2563:Set or display connection options.\n
-#2564:The user couldn't be detected to be online.\n
-#2565:Contact upload for %s%s%s failed, authorization required.\n
-#2566:Contact upload for %s%s%s failed, already on server.\n
-#2567:Contact upload for %s%s%s succeeded.\n
+2541:Status
+2542:Kommandos, um den Status zu wechseln.
+2543:Kontakte
+2544:Kommandos, um die Kontaktliste zu verändern.
+2545:     %s\n
+2546:Keine Hilfe für "%s" verfügbar.\n
+2547:Zeigt gespeicherte Meta-Daten über <contacts> an.
+2548:Zeigt den aktuellen Status aller anwesenden Kontakte an, mit den ansonsten versteckten Kontakten.
+2549:Zeigt ausführlich den aktuellen Status aller anwesenden Kontakte an, mit den ansonsten versteckten Kontakten.
+2550:Zeigt den aktuellen Status aller anwesenden Kontakte sortiert nach Gruppen an, mit den ansonsten versteckten Kontakten.
+2551:Zeigt ausführlich den aktuellen Status aller anwesenden Kontakte sortiert nach Gruppen an, mit den ansonsten versteckten Kontakten.
+2552:Zeigt den aktuellen Status aller Kontakte an, mit den ansonsten versteckten Kontakten.
+2553:Zeigt ausführlich den aktuellen Status aller Kontakte an, mit den ansonsten versteckten Kontakten.
+2554:Zeigt den aktuellen Status aller Kontakte sortiert nach Gruppen an, mit den ansonsten versteckten Kontakten.
+2555:Zeigt ausführlich den aktuellen Status aller Kontakte sortiert nach Gruppen an, mit den ansonsten versteckten Kontakten.
+2556:Füge Kontakt oder Zweitname zur Kontaktliste hinzu, oder füge Kontakt zu Kontaktgruppe hinzu.
+2557:Entferne Zweitname, oder entferne Kontakt von Gruppe oder der Kontaktliste.
+2558:Setze oder zeige Option für einen Kontakt an.
+2559:Setze oder zeige Option für eine Kontaktgruppe an.
+2560:Setze oder zeige globale Option an.
+2561:Loggt aus und beendet mICQ, ohne zu speichern.
+2562:Führe mICQ-Kommando <cmd> für Verbindung <nr> oder Verbindung für UIN <uin> als Server-Verbindung aus.
+2563:Setze oder zeige Option für Verbindung an.
+2564:Der Kontakt konnte nicht als verbunden erkannt werden.\n
+2565:Hochladen von Kontakt %s%s%s fehlgeschlagen, Autorisierung erforderlich.\n
+2566:Hochladen von Kontakt %s%s%s fehlgeschlagen, Kontakt bereits auf dem Server.\n
+2567:Hochladen von Kontakt %s%s%s erfolgreich.\n
