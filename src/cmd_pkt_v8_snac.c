@@ -613,7 +613,6 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 IMSrvMsg (cont, event->sess, NOW, 33, cap2->name,
                           tlv[6].len ? tlv[6].nr : STATUS_OFFLINE);
 #endif
-                PacketD (pp);
                 s_free (text);
                 return;
             }
