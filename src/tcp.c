@@ -293,8 +293,10 @@ void TCPDispatchConn (Session *sess)
                 sess->port    = cont->port;
                 sess->connect = 1;
                 
-                M_print (i18n (1631, "Opening TCP connection to %s%s%s at %s:%d... "),
-                             COLCONTACT, cont->nick, COLNONE, UtilIOIP (sess->ip), sess->port);
+                Time_Stamp ();
+                M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+                M_print (i18n (2034, "Opening TCP connection at %s:%d... "),
+                         UtilIOIP (sess->ip), sess->port);
                 UtilIOConnectTCP (sess);
                 return;
             case 3:
@@ -308,8 +310,10 @@ void TCPDispatchConn (Session *sess)
                 sess->port    = cont->port;
                 sess->connect = 3;
                 
-                M_print (i18n (1631, "Opening TCP connection to %s%s%s at %s:%d... "),
-                             COLCONTACT, cont->nick, COLNONE, UtilIOIP (sess->ip), sess->port);
+                Time_Stamp ();
+                M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+                M_print (i18n (2034, "Opening TCP connection at %s:%d... "),
+                         UtilIOIP (sess->ip), sess->port);
                 UtilIOConnectTCP (sess);
                 return;
             case 5:
@@ -332,8 +336,10 @@ void TCPDispatchConn (Session *sess)
             case 4:
                 if (prG->verbose)
                 {
-                    M_print (i18n (1631, "Opening TCP connection to %s%s%s at %s:%d... "),
-                             COLCONTACT, cont->nick, COLNONE, UtilIOIP (sess->ip), sess->port);
+                    Time_Stamp ();
+                    M_print (" %s%10s%s ", COLCONTACT, ContactFindName (cont->uin), COLNONE);
+                    M_print (i18n (2034, "Opening TCP connection at %s:%d... "),
+                             UtilIOIP (sess->ip), sess->port);
                     M_print (i18n (1785, "success.\n"));
                 }
                 QueueEnqueueData (queue, sess, sess->ip, QUEUE_TYPE_TCP_TIMEOUT,
@@ -466,8 +472,8 @@ void TCPDispatchShake (Session *sess)
             case 48:
                 QueueDequeue (queue, sess->ip, QUEUE_TYPE_TCP_TIMEOUT);
                 Time_Stamp ();
-                M_print (" ");
-                M_print (i18n (1833, "Client-to-client TCP connection to %s established.\n"), cont->nick);
+                M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+                M_print (i18n (1833, "Peer to peer TCP connection established.\n"), cont->nick);
                 sess->connect = CONNECT_OK | CONNECT_SELECT_R;
                 sess->dispatch = &TCPDispatchPeer;
                 return;
@@ -1165,12 +1171,6 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
     QueueEnqueueData (queue, peer, peer->our_seq--, QUEUE_TYPE_TCP_RESEND,
                       uin, time (NULL),
                       pak, strdup (msg), &TCPCallBackResend);
-
-    if (!(peer->connect & CONNECT_OK))
-    {
-        Time_Stamp ();
-        M_print (" " COLSENT "%10s" COLNONE " ... %s\n", cont->nick, MsgEllipsis (msg));
-    }
     return 1;
 }
 
@@ -1190,7 +1190,10 @@ void TCPCallBackResend (struct Event *event)
     cont = ContactFind (event->uin);
 
     if (event->attempts >= MAX_RETRY_ATTEMPTS)
+    {
         TCPClose (peer);
+        peer->connect = CONNECT_FAIL;
+    }
 
     if (peer->connect & CONNECT_MASK)
     {
@@ -1212,11 +1215,8 @@ void TCPCallBackResend (struct Event *event)
         return;
     }
 
-    if (event->attempts < MAX_RETRY_ATTEMPTS && PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
-    {
-        peer->connect = CONNECT_FAIL;
+    if (PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
         icq_sendmsg (peer->assoc->assoc, cont->uin, event->info, PacketReadAt2 (pak, 22 + delta));
-    }
     else
         M_print (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
     

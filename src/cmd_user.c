@@ -582,7 +582,7 @@ JUMP_F(CmdUserTrans)
         {
             if (*p)
                 M_print ("%s\n", i18n (1087, "Ignoring garbage after number."));
-            M_print ("%3d:%s\n", i, i18n (1078, "No translation available."));
+            M_print ("%3d:%s\n", i, i18n (i, i18n (1078, "No translation available.")));
         }
         else
         {

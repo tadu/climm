@@ -295,7 +295,7 @@ UWORD Chars_2_Word (UBYTE * buf)
  *************************************************************************/
 int log_event (UDWORD uin, int type, char *str, ...)
 {
-    char symbuf[256];           /* holds the path for a sym link */
+    char symbuf[256], symbuf2[256];           /* holds the path for a sym link */
     FILE *msgfd;
     va_list args;
     int k;
@@ -319,7 +319,7 @@ int log_event (UDWORD uin, int type, char *str, ...)
 
     timeval = time (0);
     va_start (args, str);
-    sprintf (buf, "\n%-24.24s ", ctime (&timeval));
+    snprintf (buf, sizeof (buf), "\n%-24.24s ", ctime (&timeval));
     vsprintf (&buf[strlen (buf)], str, args);
     va_end (args);
 
@@ -332,15 +332,16 @@ int log_event (UDWORD uin, int type, char *str, ...)
             else
                 return -1;
         }
-        sprintf (buffer, "%suin%ld.log", prG->logplace, uin);
+        snprintf (buffer, sizeof (buffer), "%s%ld.log", prG->logplace, uin);
 
 #if HAVE_SYMLINK
         if (ContactFindNick (uin))
         {
-            sprintf (symbuf, "%s%s.log", prG->logplace, ContactFindNick (uin));
+            snprintf (symbuf, sizeof (symbuf), "%snick-%s.log", prG->logplace, ContactFindNick (uin));
+            snprintf (symbuf2, sizeof (symbuf2), "%ld.log", uin);
             for (b = symbuf + strlen (prG->logplace); (b = strchr (b, '/')); )
                 *b = '_';
-            symlink (buffer, symbuf);
+            symlink  (symbuf2, symbuf);
         }
 #endif
     }

@@ -628,7 +628,7 @@
 1628: Description: ©3%s©0¶
 1629: URL:         ©3%s©0
 1630:dequeue type %d seq %08x at %p (pak %p)
-1631:Opening TCP connection to %s%s%s at %s:%d... 
+1631: 
 1632:¶Connection unstable. Exiting....
 1633: 
 1634:ok¶
@@ -830,7 +830,7 @@
 1830:Discarding message to %s after %d send attempts.  Message content:¶
 1831: 
 1832: 
-1833:Client-to-client TCP connection to %s established.¶
+1833:Peer to peer TCP connection established.¶
 1834: 
 1835:Error while writing to socket - %s (%d)¶
 1836:Sending TCP direct connection initialization packet.¶
@@ -1031,3 +1031,4 @@
 2031:Connecting failed too often, giving up.¶
 2032:Scheduling v8 reconnect in %d seconds.¶
 2033:born today
+2034:Opening TCP connection at %s:%d... 
