@@ -736,6 +736,15 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             midrnd = PacketReadB4 (p);
             cap1   = PacketReadCap (p);
             TLVD (tlv);
+            
+            ContactSetCap (cont, cap1);
+            if (midtim != midtime || midrnd != midrand)
+            {
+                SnacSrvUnknown (event);
+                PacketD (p);
+                return;
+            }
+
             tlv = TLVRead (p, PacketReadLeft (p));
             PacketD (p);
             
@@ -754,71 +763,88 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                 return;
             }
             
-            if (midtim != midtime || midrnd != midrand ||
-                (tlv[i].str[0] != 0x1b && tlv[i].len != 0x1b))
+            switch (cap1->id)
             {
-                SnacSrvUnknown (event);
-                TLVD (tlv);
-                return;
-            }
-
-            pp = PacketCreate (tlv[i].str, tlv[i].len);
-
-            if (tlv[i].str[0] != 0x1b)
-            {
-                UDWORD suin = PacketRead4  (pp);
-                UDWORD sip  = PacketReadB4 (pp);
-                UDWORD sp1  = PacketRead4  (pp);
-                UBYTE  scon = PacketRead1  (pp);
-                UDWORD sop  = PacketRead4  (pp);
-                UDWORD sp2  = PacketRead4  (pp);
-                UWORD  sver = PacketRead2  (pp);
-                if (suin != uin || !CONTACT_DC (cont) || sip != cont->dc->ip_rem || sp1 != cont->dc->port
-                    || scon != cont->dc->type || sver != cont->dc->version
-                    || sp1 != sp2 || (event->conn->assoc && sop != event->conn->assoc->port))
-                {
-                    SnacSrvUnknown (event);
-                }
-                else
-                {
+                case CAP_ISICQ:
+                    if (tlv[i].len != 0x1b)
+                    {
+                        SnacSrvUnknown (event);
+                        TLVD (tlv);
+                        return;
+                    }
+                    pp = PacketCreate (tlv[i].str, tlv[i].len);
+                    {
+                        UDWORD suin = PacketRead4  (pp);
+                        UDWORD sip  = PacketReadB4 (pp);
+                        UDWORD sp1  = PacketRead4  (pp);
+                        UBYTE  scon = PacketRead1  (pp);
+                        UDWORD sop  = PacketRead4  (pp);
+                        UDWORD sp2  = PacketRead4  (pp);
+                        UWORD  sver = PacketRead2  (pp);
+                        UDWORD sunk = PacketRead4  (pp);
+                        
+                        if (suin != uin)
+                        {
+                            SnacSrvUnknown (event);
+                            TLVD (tlv);
+                            return;
+                        }
+                        
 #ifdef WIP
-                    UDWORD sunk = PacketRead4  (pp);
-                    M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
-                    M_printf ("FIXME: 'empty' message with sequence 0x%08lx = %ld.\n", sunk, sunk);
+                        M_printf ("%s %*s FIXME: updates dc to %s:%ld|%ld|%ld v%d %d seq %ld\n",
+                                  s_now, uiG.nick_len + s_delta (cont->nick), cont->nick,
+                                  s_ip (sip), sp1, sp2, sop, sver, scon, sunk);
 #endif
-                    /* yeah, we're on his contact list */
-                }
-                PacketD (pp);
-                TLVD (tlv);
-                return;
+                        CONTACT_DC (cont)->ip_rem = sip;
+                        cont->dc->port = sp1;
+                        cont->dc->type = scon;
+                        cont->dc->version = sver;
+                    }
+                    PacketD (pp);
+                    TLVD (tlv);
+                    return;
+
+                case CAP_SRVRELAY:
+                    if (tlv[i].str[0] != 0x1b)
+                    {
+                        SnacSrvUnknown (event);
+                        TLVD (tlv);
+                        return;
+                    }
+                    pp = PacketCreate (tlv[i].str, tlv[i].len);
+
+                    p = SnacC (event->conn, 4, 11, 0, 0);
+                    PacketWriteB4 (p, midtim);
+                    PacketWriteB4 (p, midrnd);
+                    PacketWriteB2 (p, 2);
+                    PacketWriteUIN (p, cont->uin);
+                    PacketWriteB2 (p, 3);
+
+                    len    = PacketRead2 (pp);      PacketWrite2 (p, len);
+                    tcpver = PacketRead2 (pp);      PacketWrite2 (p, tcpver);
+                    cap2   = PacketReadCap (pp);    PacketWriteCap (p, cap2);
+                    tmp    = PacketRead2 (pp);      PacketWrite2 (p, tmp);
+                    tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
+                    tmp    = PacketRead1 (pp);      PacketWrite1 (p, tmp);
+                    seq1   = PacketRead2 (pp);      PacketWrite2 (p, seq1);
+
+                    ContactSetCap (cont, cap2);
+                    ContactSetVersion (cont);
+                    
+                    event->extra = ExtraSet (extra, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL);
+                    event->uin = cont->uin;
+                    newevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, seq1,
+                                 (time_t)-1, p, cont->uin, NULL, &SnacSrvCallbackSendack);
+                    SrvReceiveAdvanced (event->conn, event, pp, newevent);
+                    PacketD (pp);
+                    TLVD (tlv);
+                    return;
+
+                default:
+                    SnacSrvUnknown (event);
+                    TLVD (tlv);
+                    return;
             }
-
-            p = SnacC (event->conn, 4, 11, 0, 0);
-            PacketWriteB4 (p, midtim);
-            PacketWriteB4 (p, midrnd);
-            PacketWriteB2 (p, 2);
-            PacketWriteUIN (p, cont->uin);
-            PacketWriteB2 (p, 3);
-
-            len    = PacketRead2 (pp);      PacketWrite2 (p, len);
-            tcpver = PacketRead2 (pp);      PacketWrite2 (p, tcpver);
-            cap2   = PacketReadCap (pp);    PacketWriteCap (p, cap2);
-            tmp    = PacketRead2 (pp);      PacketWrite2 (p, tmp);
-            tmp    = PacketRead4 (pp);      PacketWrite4 (p, tmp);
-            tmp    = PacketRead1 (pp);      PacketWrite1 (p, tmp);
-            seq1   = PacketRead2 (pp);      PacketWrite2 (p, seq1);
-
-            ContactSetCap (cont, cap1);
-            ContactSetCap (cont, cap2);
-            ContactSetVersion (cont);
-            
-            event->extra = ExtraSet (extra, EXTRA_ORIGIN, EXTRA_ORIGIN_v8, NULL);
-            event->uin = cont->uin;
-            newevent = QueueEnqueueData (event->conn, QUEUE_ACKNOWLEDGE, seq1,
-                         (time_t)-1, p, cont->uin, NULL, &SnacSrvCallbackSendack);
-            SrvReceiveAdvanced (event->conn, event, pp, newevent);
-            PacketD (pp);
-
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
         case 4:
