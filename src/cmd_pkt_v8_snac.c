@@ -72,6 +72,7 @@ static SNAC SNACv[] = {
     { 12,  1, NULL, NULL},
     { 19,  4, NULL, NULL},
     { 21,  1, NULL, NULL},
+    { 34,  0, NULL, NULL},
     {  0,  0, NULL, NULL}
 };
 
