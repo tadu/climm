@@ -55,7 +55,7 @@ static int i18nAdd (FILE *i18nf, int debug, int *res);
  */
 void i18nInit (const char *arg)
 {
-    const char *encnli = NULL;
+    const char *encnli = NULL, *earg = arg;
     char *new;
 
     if (!arg || !*arg || !strcasecmp (arg, "C") || !strcasecmp (arg, "POSIX"))
@@ -84,55 +84,59 @@ void i18nInit (const char *arg)
             prG->locale_broken = TRUE;
     }
 #endif
-    if (!arg)
+    if (!earg)
     {
-        arg = getenv ("LC_ALL");
-        if (arg)
+        earg = getenv ("LC_ALL");
+        if (earg)
         {
             if (!prG->locale_orig)
-                s_repl (&prG->locale_orig, arg);
-            if (!*arg || !strcasecmp (arg, "C") || !strcasecmp (arg, "POSIX"))
-                arg = NULL;
+                s_repl (&prG->locale_orig, earg);
+            if (!*earg || !strcasecmp (earg, "C") || !strcasecmp (earg, "POSIX"))
+                earg = NULL;
         }
-        if (!arg)
+        if (!earg)
         {
-            arg = getenv ("LC_MESSAGES");
-            if (arg)
+            earg = getenv ("LC_MESSAGES");
+            if (earg)
             {
                 if (!prG->locale_orig)
-                    s_repl (&prG->locale_orig, arg);
-                if (!*arg || !strcasecmp (arg, "C") || !strcasecmp (arg, "POSIX"))
-                    arg = NULL;
+                    s_repl (&prG->locale_orig, earg);
+                if (!*earg || !strcasecmp (earg, "C") || !strcasecmp (earg, "POSIX"))
+                    earg = NULL;
             }
-            if (!arg)
+            if (!earg)
             {
-                arg = getenv ("LANG");
-                if (arg)
+                earg = getenv ("LANG");
+                if (earg)
                 {
                     if (!prG->locale_orig)
-                        s_repl (&prG->locale_orig, arg);
-                    if (!*arg || !strcasecmp (arg, "C") || !strcasecmp (arg, "POSIX"))
-                        arg = NULL;
+                        s_repl (&prG->locale_orig, earg);
+                    if (!*earg || !strcasecmp (earg, "C") || !strcasecmp (earg, "POSIX"))
+                        earg = NULL;
                 }
             }
         }
-        if (arg && !prG->locale_full)
-            s_repl (&prG->locale_full, arg);
-        if (!arg)
-            arg = "en_US.US-ASCII";
+        if (earg && !prG->locale_full)
+            s_repl (&prG->locale_full, earg);
+        if (!earg)
+            earg = "en_US.US-ASCII";
+        if (strchr (earg, '.') && !strchr (arg, '.'))
+        {
+            arg = earg;
+            prG->locale_broken = TRUE;
+        }
     }
 
-    new = strdup (arg);
+    new = strdup (arg ? arg : earg);
     s_free (prG->locale);
     prG->locale = new;
 
 #if HAVE_NL_LANGINFO
-    if (!prG->locale_broken)
+    if (prG->enc_loc == ENC_AUTO && !prG->locale_broken)
     {
         encnli = nl_langinfo (CODESET);
         if (encnli)
-            if (prG->enc_loc == ENC_AUTO)
-                prG->enc_loc = ConvEnc (encnli) | ENC_FAUTO;
+            prG->enc_loc = ConvEnc (encnli) | ENC_FAUTO;
     }
 #endif
 }
