@@ -95,7 +95,8 @@ static SNAC SNACS[] = {
     { 21,  1, "Wt-",      "SRV_TOICQERR",        NULL},
     { 21,  3, "t[1wDw[2010ww[270bbwLb]]]-",
                           "SRV_FROMICQSRV",      SnacSrvFromicqsrv},
-    { 23,  1, "Wt-",      "SRV_REGREFUSED",      SnacSrvRegrefused},
+    { 23,  1, "Wt[33DdWDDDD]-",
+                          "SRV_REGREFUSED",      SnacSrvRegrefused},
     { 23,  5, "t-",       "SRV_NEWUIN",          SnacSrvNewuin},
     {  1,  2, "W-",       "CLI_READY",           NULL},
     {  1,  6, "",         "CLI_RATESREQUEST",    NULL},
@@ -133,7 +134,8 @@ static SNAC SNACS[] = {
     { 19, 24, "uBW",      "CLI_REQAUTH",         NULL},
     { 19, 26, "ubBW",     "CLI_AUTHORIZE",       NULL},
     { 21,  2, "t-",       "CLI_TOICQSRV",        NULL},
-    { 23,  4, "t-",       "CLI_REGISTERUSER",    NULL},
+    { 23,  4, "t[1DDDDDDDDDDLDDW]-",
+                          "CLI_REGISTERUSER",    NULL},
     {  0,  0, "",         "unknown",             NULL}
 };
 
@@ -1256,7 +1258,8 @@ void SnacCliSetuserinfo (Connection *conn)
     PacketWriteCap     (pak, CAP_SRVRELAY);
     PacketWriteCap     (pak, CAP_ISICQ);
 #if defined(ENABLE_UTF8)
-    PacketWriteCap     (pak, CAP_UTF8);
+    if (ENC(enc_loc) != ENC_EUC && ENC(enc_loc) != ENC_SJIS)
+        PacketWriteCap     (pak, CAP_UTF8);
 #endif
 #ifdef WIP
     PacketWriteCap     (pak, CAP_MICQ);
@@ -1421,14 +1424,14 @@ void SnacCliSendmsg (Connection *conn, UDWORD uin, const char *text, UDWORD type
               PacketWrite2       (pak, 0);
               PacketWrite2       (pak, 1);
 #ifdef ENABLE_UTF8
-              PacketWriteLNTS    (pak, cont->caps & CAP_UTF8 ? text : c_out (text));
+              PacketWriteLNTS    (pak, CONT_UTF8 (cont) ? text : c_out (text));
 #else
               PacketWriteLNTS    (pak, text);
 #endif
               PacketWriteB4      (pak, 0);
               PacketWriteB4      (pak, 0xffffff00);
 #ifdef ENABLE_UTF8
-              if (cont->caps & CAP_UTF8)
+              if (CONT_UTF8 (cont))
                   PacketWriteDLStr     (pak, CAP_GID_UTF8);
 #endif
              PacketWriteTLVDone (pak);

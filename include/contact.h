@@ -3,14 +3,6 @@
 #ifndef MICQ_CONTACT_H
 #define MICQ_CONTACT_H
 
-#define CONT_IGNORE     1UL /* ignore contact. */
-#define CONT_HIDEFROM   2UL /* always pretend to be offline. */
-#define CONT_INTIMATE   4UL /* can see even if invisible. */
-
-#define CONT_TEMPORARY  8UL /* no status display for this contact. */
-#define CONT_ALIAS     16UL /* is an alias entry. */
-#define CONT_SEENAUTO  32UL /* has seen auto response. */
-
 struct Contact_s
 {
    /* basic data*/
@@ -53,5 +45,15 @@ Contact    *ContactStart ();
 Contact    *ContactNext (Contact *cont);
 BOOL        ContactHasNext (Contact *cont);
 void        ContactSetVersion (Contact *cont);
+
+#define CONT_UTF8(cont) ((cont->caps & CAP_UTF8) && (prG->enc_loc != ENC_EUC))
+
+#define CONT_IGNORE     1UL /* ignore contact. */
+#define CONT_HIDEFROM   2UL /* always pretend to be offline. */
+#define CONT_INTIMATE   4UL /* can see even if invisible. */
+
+#define CONT_TEMPORARY  8UL /* no status display for this contact. */
+#define CONT_ALIAS     16UL /* is an alias entry. */
+#define CONT_SEENAUTO  32UL /* has seen auto response. */
 
 #endif /* MICQ_CONTACT_H */

@@ -98,6 +98,7 @@ void R_init (void)
     signal (SIGCONT, &micq_cont_handler);
     tty_prepare ();
     atexit (tty_restore);
+    R_resetprompt ();
 }
 
 static RETSIGTYPE micq_ttystop_handler (int a)
@@ -180,7 +181,7 @@ void R_goto (int pos)
     if (curpos < pos)
     {
 #ifdef ENABLE_UTF8
-        if ((prG->enc_loc & ~ENC_AUTO) == ENC_UTF8)
+        if (ENC(enc_loc) == ENC_UTF8)
         {
             mypos = s_offset (s, curpos);
             mylen = s_offset (s, pos) - mypos;
@@ -208,7 +209,7 @@ void R_rlap (const char *s, const char *add, BOOL clear)
     int len;
     
 #ifdef ENABLE_UTF8
-    len = (prG->enc_loc & ~ENC_AUTO) == ENC_UTF8 ? s_strlen (s) : strlen (s);
+    len = (ENC(enc_loc) == ENC_UTF8) ? s_strlen (s) : strlen (s);
 #else
     len = strlen (s);
 #endif
@@ -235,7 +236,7 @@ static void R_process_input_backspace (void)
         return;
     
 #ifdef ENABLE_UTF8
-    if ((prG->enc_loc & ~ENC_AUTO) == ENC_UTF8 && s[bytepos - 1] & 0x80)
+    if (ENC(enc_loc) == ENC_UTF8 && s[bytepos - 1] & 0x80)
     {
         charbytes = 0;
         do {
@@ -263,7 +264,7 @@ static void R_process_input_delete (void)
         return;
 
 #ifdef ENABLE_UTF8
-    if ((prG->enc_loc & ~ENC_AUTO) == ENC_UTF8 && s[bytepos] & 0x80)
+    if (ENC(enc_loc) == ENC_UTF8 && s[bytepos] & 0x80)
     {
         charbytes = 0;
         do {
@@ -409,7 +410,7 @@ void R_process_input_tab (void)
         bytepos = tabwstart - s + nicklen;
 #ifdef ENABLE_UTF8
         curlen = c_strlen (s);
-        curpos = (prG->enc_loc == ENC_UTF8) ? s_strnlen (s, bytepos) : bytepos;
+        curpos = ENC(enc_loc) ? s_strnlen (s, bytepos) : bytepos;
 #endif
         tabstate = 1;
     }
@@ -486,7 +487,7 @@ int R_process_input (void)
                     strcpy (s, y);
                     bytelen = bytepos = strlen (s);
 #ifdef ENABLE_UTF8
-                    curlen = curpos = ((prG->enc_loc & ~ENC_AUTO) == ENC_UTF8) ? s_strlen (s) : bytelen;
+                    curlen = curpos = (ENC(enc_loc) == ENC_UTF8) ? s_strlen (s) : bytelen;
 #endif
                     break;
 #ifdef ANSI_TERM
@@ -540,7 +541,7 @@ int R_process_input (void)
 #ifdef ENABLE_UTF8
             int charbytes;
             
-            if ((prG->enc_loc & ~ENC_AUTO) == ENC_UTF8 && ch & 0x80)
+            if (ENC(enc_loc) == ENC_UTF8 && ch & 0x80)
             {
                 if (ch & 0x40)
                 {
@@ -617,7 +618,7 @@ int R_process_input (void)
                         strcpy (s, history[history_cur]);
                         bytepos = bytelen = strlen (s);
 #ifdef ENABLE_UTF8
-                        curpos = curlen = (prG->enc_loc & ~ENC_AUTO) == ENC_UTF8 ? s_strlen (s) : bytepos;
+                        curpos = curlen = ENC(enc_loc) == ENC_UTF8 ? s_strlen (s) : bytepos;
 #endif
                     }
                     else
@@ -654,7 +655,7 @@ int R_process_input (void)
 #ifdef ENABLE_UTF8
         case 10:
             istat++;
-            if (prG->enc_loc != ENC_UTF8)
+            if (ENC(enc_loc) != ENC_UTF8)
                 istat = 0;
             else if (ch >= '0' && ch <= '9')
                 inp = ch - '0';

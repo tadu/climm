@@ -120,8 +120,8 @@ static int CharCount = 0;       /* number of characters printed on line. */
 static int IndentCount = 0;
 
 #ifdef ENABLE_UTF8
-#define chardiff(aa,bb)  (prG->enc_loc == ENC_UTF8 ? s_strnlen ((bb), (aa) - (bb)) : (aa) - (bb))
-#define charoff(str,off) (prG->enc_loc == ENC_UTF8 ? s_offset ((str), (off))      : (off))
+#define chardiff(aa,bb)  (ENC(enc_loc) == ENC_UTF8 ? s_strnlen ((bb), (aa) - (bb)) : (aa) - (bb))
+#define charoff(str,off) (ENC(enc_loc) == ENC_UTF8 ? s_offset ((str), (off))      : (off))
 #else
 #define chardiff(aa,bb)  ((aa) - (bb))
 #define charoff(str,off) (off)

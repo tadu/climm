@@ -111,5 +111,7 @@ void        PrefSetColorScheme (Preferences *pref, UBYTE scheme);
 #define ENC_KOI8    0x06
 #define ENC_WIN1251 0x07  /* Windows code page 1251 */
 
+#define ENC(enc_x) (prG->enc_x & ENC_AUTO)
+
 #endif /* MICQ_PREFERENCES_H */
 

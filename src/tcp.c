@@ -1547,14 +1547,14 @@ BOOL TCPSendMsg (Connection *list, UDWORD uin, char *msg, UWORD sub_cmd)
 
 #ifdef ENABLE_UTF8
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, 0, list->parent->status,
-                      (cont->caps & CAP_UTF8) ? msg : c_out (msg));
+                      CONT_UTF8 (cont) ? msg : c_out (msg));
 #else
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE, peer->our_seq, sub_cmd, 0, list->parent->status, msg);
 #endif
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
 #ifdef ENABLE_UTF8
-    if (cont->caps & CAP_UTF8)
+    if (CONT_UTF8 (cont))
         PacketWriteDLStr (pak, CAP_GID_UTF8);
 #endif
 

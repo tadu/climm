@@ -20,6 +20,7 @@
 #include "contact.h"
 #include "tcp.h"
 #include "util.h"
+#include "conv.h"
 #include "cmd_user.h"
 #include "cmd_pkt_cmd_v5.h"
 #include "cmd_pkt_cmd_v5_util.h"
@@ -56,7 +57,8 @@ void Initalize_RC_File ()
 {
     char pwd1[20], pwd2[20], input[200];
     Connection *conn, *connt;
-    char *passwd, *t;
+    const char *passwd;
+    char *t;
     UDWORD uin;
     long tmpuin;
     
@@ -103,7 +105,11 @@ void Initalize_RC_File ()
             pwd1[0] = '\0';
         }
     }
+#ifdef ENABLE_UTF8
+    passwd = c_out (pwd1);
+#else
     passwd = pwd1;
+#endif
 
     prG->s5Use = 0;
     prG->s5Port = 0;
@@ -160,7 +166,7 @@ void Initalize_RC_File ()
     if (!uin)
     {
         M_print (i18n (1796, "Setup wizard finished. Please wait until registration has finished.\n"));
-        conn = SrvRegisterUIN (NULL, pwd1);
+        conn = SrvRegisterUIN (NULL, passwd);
         conn->flags = CONN_WIZARD;
     }
     else

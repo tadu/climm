@@ -19,6 +19,7 @@
 #include "file_util.h"
 #include "cmd_pkt_v8_tlv.h"
 #include "util_str.h"
+#include "conv.h"
 #include <assert.h>
 #include <string.h>
 #include <fcntl.h>
@@ -281,23 +282,27 @@ void FlapCliIdent (Connection *conn)
         Echo_Off ();
         M_fdnreadln (stdin, pwd, sizeof (pwd));
         Echo_On ();
+#ifdef ENABLE_UTF8
+        conn->passwd = strdup (ConvToUTF8 (pwd, prG->enc_loc));
+#else
         conn->passwd = strdup (pwd);
+#endif
 #endif
     }
     
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
-    PacketWriteTLVStr (pak, 1, s_sprintf ("%d", conn->uin));
-    PacketWriteTLVStr (pak, 2, _encryptpw (conn->passwd));
-    PacketWriteTLVStr (pak, 3, "ICQ Inc. - Product of ICQ (TM).2002a.5.37.1.3728.85");
-    PacketWriteTLV2   (pak, 22, 266);
-    PacketWriteTLV2   (pak, 23, FLAP_VER_MAJOR);
-    PacketWriteTLV2   (pak, 24, FLAP_VER_MINOR);
-    PacketWriteTLV2   (pak, 25, FLAP_VER_LESSER);
-    PacketWriteTLV2   (pak, 26, FLAP_VER_BUILD);
-    PacketWriteTLV4   (pak, 20, FLAP_VER_SUBBUILD);
-    PacketWriteTLVStr (pak, 15, "de");  /* en */
-    PacketWriteTLVStr (pak, 14, "de");  /* en */
+    PacketWriteTLVStr  (pak, 1, s_sprintf ("%d", conn->uin));
+    PacketWriteTLVData (pak, 2, _encryptpw (conn->passwd), strlen (conn->passwd));
+    PacketWriteTLVStr  (pak, 3, "ICQ Inc. - Product of ICQ (TM).2002a.5.37.1.3728.85");
+    PacketWriteTLV2    (pak, 22, 266);
+    PacketWriteTLV2    (pak, 23, FLAP_VER_MAJOR);
+    PacketWriteTLV2    (pak, 24, FLAP_VER_MINOR);
+    PacketWriteTLV2    (pak, 25, FLAP_VER_LESSER);
+    PacketWriteTLV2    (pak, 26, FLAP_VER_BUILD);
+    PacketWriteTLV4    (pak, 20, FLAP_VER_SUBBUILD);
+    PacketWriteTLVStr  (pak, 15, "de");  /* en */
+    PacketWriteTLVStr  (pak, 14, "de");  /* en */
     FlapSend (conn, pak);
 }
 
