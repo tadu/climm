@@ -124,6 +124,7 @@ void i18nInit (const char *arg)
         {
             arg = earg;
             prG->locale_broken = TRUE;
+            s_repl (&prG->locale_full, earg);
         }
     }
 
