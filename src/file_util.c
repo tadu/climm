@@ -1342,7 +1342,8 @@ int Save_RC ()
         while (cg)
         {
             for (i = 0; i < cg->used; i++)
-                fprintf (rcf, "entry 0 %ld\n", cg->contacts[i]->uin);
+                if (!((cont = cg->contacts[i])->flags & (CONT_TEMPORARY | CONT_ALIAS)))
+                    fprintf (rcf, "entry 0 %ld\n", cont->uin);
             cg = cg->more;
         }
     }
