@@ -289,7 +289,8 @@ void PeerFileDispatch (Connection *fpeer)
                 struct stat finfo;
 
                 assert (ffile);
-                snprintf (buf, sizeof (buf), "%s/files/%ld/%n%s", PrefUserDir (prG), fpeer->uin, &pos, c_in (name));
+                pos = snprintf (buf, sizeof (buf), "%s/files/%ld/", PrefUserDir (prG), fpeer->uin);
+                snprintf (buf + pos, sizeof (buf) - pos, "%s", c_in (name));
                 for (p = buf + pos; *p; p++)
                     if (*p == '/')
                         *p = '_';
