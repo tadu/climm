@@ -137,6 +137,7 @@ void Idle_Check (Session *sess)
             SnacCliSetstatus (sess, new, 1);
         else
             CmdPktCmdStatusChange (sess, new);
+        sess->status = new;
         Time_Stamp ();
         M_print (" %s ", i18n (1064, "Auto-Changed status to"));
         Print_Status (new);
