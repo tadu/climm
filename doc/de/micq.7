@@ -1,5 +1,5 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: micq.7,v 1.42
+.\"  EN: micq.7,v 1.43
 .TH MICQ 7 mICQ DE
 .SH NAME
 .B mICQ
@@ -919,16 +919,32 @@ welches
 ist, wenn nicht anders angegeben. Vorsicht, dies wird alle hinzugef\(:ugten
 Kommentare in dieser Datei \(:uberschreiben.
 .TP
-.B q
+.BI q \ [<msg>]
 .TP
-.B quit
+.BI quit \ [<msg>]
 .TP
-.B exit
-Beendet mICQ.
+.BI exit \ [<msg>]
+Beendet mICQ. Falls angegeben, sende die Nachricht
+.I msg
+an alle, die schon Nachrichten bekommen haben, noch
+verbunden sind und noch auf der Kontaktliste sind.
+.br
+Hinweis: mICQ wartet nicht auf Best\(:atigungen der Nachrichten,
+d.h. falls diese Nachricht aus irgendeinem Grunde nicht beim
+anderen Kontakt ankommt, wird sie nicht erneut gesendet.
+.br
 quit und exit sind neu seit 0.4.10.
 .TP
-.B x
-Beendet mICQ, ohne zu speichern.
+.BI x \ [<msg>]
+Beendet mICQ, ohne zu speichern. Falls angegeben, sende die Nachricht
+.I msg
+an alle, die schon Nachrichten bekommen haben, noch
+verbunden sind und noch auf der Kontaktliste sind.
+.br
+Hinweis: mICQ wartet nicht auf Best\(:atigungen der Nachrichten,
+d.h. falls diese Nachricht aus irgendeinem Grunde nicht beim
+anderen Kontakt ankommt, wird sie nicht erneut gesendet.
+.br
 Neu seit mICQ 0.5.
 .SH BEFEHLE F\(:UR WEITERGEHENDE F\(:AHIGKEITEN
 .TP

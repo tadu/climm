@@ -860,16 +860,31 @@ Saves current settings in the configuration file, which is
 unless specified otherwise.
 Beware, it will clobber any comments in this file.
 .TP
-.B q
+.BI q \ [<msg>]
 .TP
-.B quit
+.BI quit \ [<msg>]
 .TP
-.B exit
-Quit mICQ.
+.BI exit \ [<msg>]
+Quit mICQ. If given, send the message
+.I msg
+to all contacts previously messaged that are still online
+and on the contact list.
+.br
+Note: mICQ will not wait for any acknowledges - if the message is not
+received by the contact for whatever reason, it will not be resent.
+.br
 Aliases quit and exit new for 0.4.10.
 .TP
-.B x
-Quit mICQ without saving.
+.BI x \ [<msg>]
+Quit mICQ without saving. If given, send the message
+.I msg
+to all contacts previously messaged that are still online
+and on the contact list.
+.br
+Note: mICQ will not wait for any acknowledges - if the message is not
+received by the contact for whatever reason, it will not be resent.
+.br
+Aliases quit and exit new for 0.4.10.
 New for 0.5.
 .SH COMMANDS CONCERNING ADVANCED FEATURES
 .TP

@@ -3933,6 +3933,20 @@ static JUMP_F(CmdUserContact)
  */
 static JUMP_F(CmdUserQuit)
 {
+    Contact *cont;
+    char *arg1 = NULL;
+    int i;
+    
+    if (!(arg1 = s_parserem (&args)))
+        arg1 = NULL;
+                
+    if (arg1)
+    {
+        for (i = 0; (cont = ContactIndex (NULL, i)); i++)
+            if (cont->group && cont->group->serv && cont->status != STATUS_OFFLINE && ContactPrefVal (cont, CO_TALKEDTO))
+                IMCliMsg (cont->group->serv, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, arg1, 0));
+    }
+
     uiG.quit = data;
     return 0;
 }
