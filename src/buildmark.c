@@ -14,6 +14,7 @@
 
 #include "micq.h"
 #include "buildmark.h"
+#include "util_str.h"
 #include ".cvsupdate"
 
 static const char *ver = 0;
@@ -21,22 +22,17 @@ static const char *ver = 0;
 const char *BuildVersion (void)
 {
     if (!ver)
-    {
-        char buf[2048];
-        
-        snprintf (buf, sizeof (buf), COLSERVER "%s" COLNONE " %s " COLSERVER MICQ_VERSION COLNONE " (%s " \
-                                     __DATE__ " " __TIME__ ")\n%s\n",
-                  i18n (1074, "mICQ (Matt's ICQ clone)"),
+        ver = strdup (s_sprintf ("%s%s%s %s %s%s%s (%s %s)\n%s\n",
+                  COLSERVER, i18n (1074, "mICQ (Matt's ICQ clone)"), COLNONE,
                   i18n (1075, "version"),
-                  i18n (1076, "compiled on"),
-                  i18n (1077, "in dedication to Matthew D. Smith."));
-        ver = strdup (buf);
-    }
+                  COLSERVER, MICQ_VERSION " cvs " CVSUPDATE, COLNONE,
+                  i18n (1076, "compiled on"), BUILDDATE,
+                  i18n (1077, "in dedication to Matthew D. Smith.")));
     return ver;
 }
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
-const char  *BuildVersionText = "$VER: mICQ " VERSION " " EXTRAVERSION " cvs " CVSUPDATE " (" BUILDDATE ")";
+const char  *BuildVersionText = "$VER: mICQ " VERSION " CVS " EXTRAVERSION " (" CVSUPDATE " build " BUILDDATE ")";
 
 /*
  i19n (1001, "en")               locale
