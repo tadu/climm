@@ -457,12 +457,12 @@ static JUMP_F(CmdUserHelp)
                  CmdUserLookupName ("ffc"),
                  CmdUserLookupName ("inv"),
                  i18n (1431, "Change status to Online."),
-                 i18n (1432, "Mark as Away."),
-                 i18n (1433, "Mark as Not Available."),
-                 i18n (1434, "Mark as Occupied."),
-                 i18n (1435, "Mark as Do not Disturb."),
-                 i18n (1436, "Mark as Free for Chat."),
-                 i18n (1437, "Mark as Invisible."));
+                 i18n (1432, "Mark as \"away\"."),
+                 i18n (1433, "Mark as \"not available\"."),
+                 i18n (1434, "Mark as \"occupied\"."),
+                 i18n (1435, "Mark as \"do not disturb\"."),
+                 i18n (1436, "Mark as \"free for chat\"."),
+                 i18n (1437, "Mark as \"invisible\"."));
         M_print (COLMESS "%s" COLNONE "\n\t\x1b«%s\x1b»\n",
                  CmdUserLookupName ("update"),
                  i18n (1438, "Updates your basic info (email, nickname, etc.)."));
@@ -773,12 +773,12 @@ static JUMP_F(CmdUserAuto)
     {
         M_print (i18n (1724, "Automatic replies are %s.\n"),
                  prG->flags & FLAG_AUTOREPLY ? i18n (1085, "on") : i18n (1086, "off"));
-        M_print ("%30s %s\n", i18n (1727, "The do not disturb message is:"), prG->auto_dnd);
-        M_print ("%30s %s\n", i18n (1728, "The away message is:"),           prG->auto_away);
-        M_print ("%30s %s\n", i18n (1729, "The not available message is:"),  prG->auto_na);
-        M_print ("%30s %s\n", i18n (1730, "The occupied message is:"),       prG->auto_occ);
-        M_print ("%30s %s\n", i18n (1731, "The invisible message is:"),      prG->auto_inv);
-        M_print ("%30s %s\n", i18n (2054, "The free for chat message is:"),  prG->auto_ffc);
+        M_print ("%30s %s\n", i18n (1727, "The \"do not disturb\" message is:"), prG->auto_dnd);
+        M_print ("%30s %s\n", i18n (1728, "The \"away\" message is:"),           prG->auto_away);
+        M_print ("%30s %s\n", i18n (1729, "The \"not available\" message is:"),  prG->auto_na);
+        M_print ("%30s %s\n", i18n (1730, "The \"occupied\" message is:"),       prG->auto_occ);
+        M_print ("%30s %s\n", i18n (1731, "The \"invisible\" message is:"),      prG->auto_inv);
+        M_print ("%30s %s\n", i18n (2054, "The \"free for chat\" message is:"),  prG->auto_ffc);
         return 0;
     }
     else if (strcasecmp (cmd, "on") == 0)
@@ -2481,7 +2481,7 @@ static JUMP_F(CmdUserSearch)
                 }
                 return 0;
             }
-            M_print (i18n (1960, "Enter data to search user for. Enter \'.\' to start the search.\n"));
+            M_print (i18n (1960, "Enter data to search user for. Enter '.' to start the search.\n"));
             R_setpromptf ("%s ", i18n (1656, "Enter the user's nick name:"));
             return 200;
         case 200:

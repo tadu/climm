@@ -715,7 +715,7 @@ static JUMP_SNAC_F(SnacSrvAuthreq)
     uin = PacketReadUIN (pak);
     text = PacketReadStrB (pak);
     Time_Stamp ();
-    M_print (i18n (1590, COLCONTACT "%10s " COLNONE " has requested your authorization to be added to their contact list.\n"),
+    M_print (i18n (1590, COLCONTACT "%10s" COLNONE " has requested your authorization to be added to their contact list.\n"),
              ContactFindName (uin));
     M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1591, "Reason:"), text);
     free (text);

@@ -1,3 +1,15 @@
+2002-08-24 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* unify packet.c code: read strings now always need free()
+	* forget about mc.ukeer.de or micq.ukeeer.de and use www.micq.org
+	* many more assertions, better debug display, debug sessions
+	* remove gone session pointers (should fix wrong-send tcp mesgs)
+	* make file transfer official
+	* Spanish micqrc.5
+	* Typos, typos, typos fixed.
+	* add CVS id to *.i18n files, change script to remove old strings
+	* rework prompt stuff: eliminate dead code, more sensibel names
+	* note in prompt number and nicks of messages received during auto-away
+
 2002-08-17 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* auto-extend TLV array
 	* add French man pages

@@ -769,7 +769,7 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
         case AUTH_REQ_MESS:
             tmp = strchr (cdata, sep);
             *tmp = 0;
-            M_print (i18n (1590, COLCONTACT "%10s " COLNONE " has requested your authorization to be added to their contact list.\n"), cdata);
+            M_print (i18n (1590, COLCONTACT "%10s" COLNONE " has requested your authorization to be added to their contact list.\n"), cdata);
             tmp++;
             cdata = tmp;
             tmp = strchr (tmp, sep);
