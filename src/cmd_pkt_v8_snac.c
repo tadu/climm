@@ -729,6 +729,10 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                         return;
                 }
             }
+            PacketWrite2 (p, 0);
+            PacketWrite2 (p, pri);
+            PacketWriteLNTS (p, "");
+            SnacSend (event->sess, p);
             PacketD (p);
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
