@@ -1,4 +1,4 @@
-/* $ Id: $
+/* $Id$
  *
  * mICQ version functions and ICQ client identifiers.
  */

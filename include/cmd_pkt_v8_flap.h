@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 #define CLI_HELLO 1
 

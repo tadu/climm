@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 void M_select_init (void);
 void M_set_timeout (UDWORD sec, UDWORD usec);

@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 typedef void (jump_srv_f)(Session *sess, Packet *pak, UWORD cmd, UWORD ver, UDWORD seq, UDWORD uin);
 #define JUMP_SRV_F(f) void f (Session *sess, Packet *pak, UWORD cmd, UWORD ver, UDWORD seq, UDWORD uin)

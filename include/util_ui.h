@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 UWORD  Get_Max_Screen_Width();
 SDWORD Echo_Off (void);

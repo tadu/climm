@@ -1,4 +1,4 @@
-/* $ Id: $
+/* $Id$
  *
  * mreadline - small line editing and history code
  * Copyright (C) 1998 Sergey Shkonda (serg@bcs.zp.ua)

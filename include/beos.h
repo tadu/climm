@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 /* old BeOS port (c) catlettc@canvaslink.com */
 

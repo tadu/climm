@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 #ifndef MSG_QUEUE_H
 #define MSG_QUEUE_H

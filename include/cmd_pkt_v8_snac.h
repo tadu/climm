@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 #include "cmd_pkt_cmd_v5.h"
 

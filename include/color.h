@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 #ifndef MICQ_COLOR_H
 #define MICQ_COLOR_H

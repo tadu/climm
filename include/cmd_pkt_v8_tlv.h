@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 typedef struct { UWORD tlv; UWORD len; UDWORD nr; const char *str; } TLV;
 

@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 const char *Convert_Status_2_Str (UDWORD status);
 

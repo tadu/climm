@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 #ifndef MICQ_CMD_PKT_CMD_H
 #define MICQ_CMD_PKT_CMD_H

@@ -1,4 +1,4 @@
-/* $ Id: $
+/* $Id$
  *
  *  Defines for version 5 of the ICQ protocol.
  */

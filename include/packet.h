@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 #ifndef MICQ_PACKET_H
 #define MICQ_PACKET_H

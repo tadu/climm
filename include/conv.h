@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 char ConvSep ();
 void ConvWinUnix (char *text);

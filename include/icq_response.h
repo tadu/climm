@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 #define IREP_HASAUTHFLAG 1
 

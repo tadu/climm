@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 #ifndef MICQ_PREFERENCES_H
 #define MICQ_PREFERENCES_H

@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 void Auto_Reply (Session *sess, UDWORD uin);
 void icq_sendmsg (Session *sess, UDWORD uin, char *text, UDWORD msg_type);

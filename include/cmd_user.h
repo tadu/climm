@@ -1,4 +1,4 @@
-/* $ Id: $ */
+/* $Id$ */
 
 #define UIN_DELIMS " :|/"
 #define END_MSG_STR "."
