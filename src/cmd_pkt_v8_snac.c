@@ -1579,7 +1579,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
 
             PacketWriteTLV     (pak, 2);
             PacketWriteTLV     (pak, 1281);
-            if (icqenc)
+            if (icqenc == 0x20000)
                 PacketWriteB2  (pak, 0x0106);
             else
                 PacketWrite1   (pak, 0x01);
