@@ -545,7 +545,6 @@ static JUMP_SNAC_F(SnacSrvUseronline)
     {
         if (prG->verbose & DEB_PROTOCOL)
             M_print (i18n (1908, "Received USERONLINE packet for non-contact.\n"));
-        PacketD (pak);
         return;
     }
 
