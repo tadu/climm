@@ -420,11 +420,15 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
     {
         SnacCliSetrandom (serv, prG->chat);
         serv->connect = CONNECT_OK | CONNECT_SELECT_R;
-        reconn = 0;
         QueueEnqueueData (serv, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
                           NULL, event->cont, NULL, &SrvCallBackKeepalive);
         QueueEnqueueData (serv, QUEUE_TODO_EG, 0, time (NULL) + 3,
                           NULL, NULL, NULL, &SrvCallbackTodoEg);
+        if ((event = QueueDequeue2 (serv, QUEUE_DEP_OSCARLOGIN, 0, NULL)))
+        {
+            event->due = time (NULL) + 5;
+            QueueEnqueue (event);
+        }
     }
 }
 

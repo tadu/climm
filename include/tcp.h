@@ -7,7 +7,7 @@
 
 #define TCP_STATE_WAITING      32
 
-void ConnectionInitPeer   (Connection *list);
+Event *ConnectionInitPeer   (Connection *list);
 
 /* Open, close, disallow connection of UIN with this listener */
 BOOL TCPDirectOpen     (Connection *list, Contact *cont);

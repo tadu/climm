@@ -1,3 +1,3 @@
 
-void RemoteOpen (Connection *remo);
+Event *RemoteOpen (Connection *remo);
 

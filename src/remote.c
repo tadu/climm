@@ -48,7 +48,7 @@ static void RemoteClose (Connection *remo);
 /*
  * "Logs in" TCP connection by opening listening socket.
  */
-void RemoteOpen (Connection *remo)
+Event *RemoteOpen (Connection *remo)
 {
     s_repl (&remo->server, s_realpath (remo->pref_server));
 
@@ -68,6 +68,7 @@ void RemoteOpen (Connection *remo)
     
     if (remo->connect)
         remo->connect = CONNECT_OK | CONNECT_SELECT_R;
+    return NULL;
 }
 
 static void RemoteDispatch (Connection *remo)

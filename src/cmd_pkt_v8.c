@@ -54,13 +54,17 @@ static jump_conn_f SrvCallBackReconn;
 static void SrvCallBackTimeout (Event *event);
 static void SrvCallBackDoReconn (Event *event);
 
-int reconn = 0;
 
-void ConnectionInitServer (Connection *conn)
+Event *ConnectionInitServer (Connection *conn)
 {
+    Event *event;
+    
     if (!conn->server || !*conn->server || !conn->port)
-        return;
+        return NULL;
 
+    if (conn->sok != -1)
+        sockclose (conn->sok);
+    conn->sok = -1;
     conn->cont = ContactUIN (conn, conn->uin);
     conn->our_seq  = rand () & 0x7fff;
     conn->connect  = 0;
@@ -70,37 +74,54 @@ void ConnectionInitServer (Connection *conn)
     s_repl (&conn->server, conn->pref_server);
     if (conn->status == STATUS_OFFLINE)
         conn->status = conn->pref_status;
-    QueueEnqueueData (conn, conn->connect, conn->our_seq,
-                      time (NULL) + 10,
-                      NULL, conn->cont, NULL, &SrvCallBackTimeout);
+    
+    if ((event = QueueDequeue2 (conn, QUEUE_DEP_OSCARLOGIN, 0, NULL)))
+    {
+        event->attempts++;
+        event->due = time (NULL) + 10 * event->attempts + 10;
+        event->callback = &SrvCallBackTimeout;
+        QueueEnqueue (event);
+    }
+    else
+        event = QueueEnqueueData (conn, QUEUE_DEP_OSCARLOGIN, 0, time (NULL) + 12,
+                                  NULL, conn->cont, NULL, &SrvCallBackTimeout);
 
     M_printf (i18n (9999, "Opening v8 connection to %s:%s%ld%s... "),
               s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE);
 
     UtilIOConnectTCP (conn);
+    return event;
 }
 
 static void SrvCallBackReconn (Connection *conn)
 {
     ContactGroup *cg = conn->contacts;
+    Event *event;
     Contact *cont;
     int i;
 
     if (!(cont = conn->cont))
         return;
-
-    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-    conn->connect = 0;
-    if (reconn < 5)
+    
+    if (!(event = QueueDequeue2 (conn, QUEUE_DEP_OSCARLOGIN, 0, NULL)))
     {
-        M_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << reconn);
-        QueueEnqueueData (conn, /* FIXME: */ 0, 0, time (NULL) + (10 << reconn), NULL, cont, NULL, &SrvCallBackDoReconn);
-        reconn++;
+        ConnectionInitServer (conn);
+        return;
+    }
+    
+    conn->connect = 0;
+    M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+    if (event->attempts < 5)
+    {
+        M_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << event->attempts);
+        event->due = time (NULL) + (10 << event->attempts);
+        event->callback = &SrvCallBackDoReconn;
+        QueueEnqueue (event);
     }
     else
     {
         M_print (i18n (2031, "Connecting failed too often, giving up.\n"));
-        reconn = 0;
+        EventD (event);
     }
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
         cont->status = STATUS_OFFLINE;
@@ -109,8 +130,12 @@ static void SrvCallBackReconn (Connection *conn)
 static void SrvCallBackDoReconn (Event *event)
 {
     if (event->conn && event->conn->type == TYPE_SERVER)
+    {
+        QueueEnqueue (event);
         ConnectionInitServer (event->conn);
-    EventD (event);
+    }
+    else
+        EventD (event);
 }
 
 static void SrvCallBackTimeout (Event *event)
@@ -124,38 +149,39 @@ static void SrvCallBackTimeout (Event *event)
     }
     ASSERT_SERVER (conn);
     
-    if ((conn->connect & CONNECT_MASK) && !(conn->connect & CONNECT_OK))
+    if (conn->connect & CONNECT_MASK && ~conn->connect & CONNECT_OK)
     {
-        if (conn->connect == event->type)
+        if (conn->connect == event->seq)
         {
             M_print (i18n (1885, "Connection v8 timed out.\n"));
             conn->connect = 0;
             sockclose (conn->sok);
             conn->sok = -1;
+            QueueEnqueue (event);
             SrvCallBackReconn (conn);
         }
         else
         {
-            event->due = time (NULL) + 10;
+            event->due = time (NULL) + 10 + 10 * event->attempts;
             conn->connect |= CONNECT_SELECT_R;
-            event->type = conn->connect;
+            event->seq = conn->connect;
             QueueEnqueue (event);
-            return;
         }
     }
-    EventD (event);
+    else
+        EventD (event);
 }
 
 void SrvCallBackReceive (Connection *conn)
 {
     Packet *pak;
 
-    if (!(conn->connect & CONNECT_OK))
+    if (~conn->connect & CONNECT_OK)
     {
         switch (conn->connect & 7)
         {
             case 0:
-                if (conn->assoc && !(conn->assoc->connect & CONNECT_OK) && (conn->assoc->flags & CONN_AUTOLOGIN))
+                if (conn->assoc && (~conn->assoc->connect & CONNECT_OK) && (conn->assoc->flags & CONN_AUTOLOGIN))
                 {
                     M_printf ("FIXME: avoiding deadlock\n");
                     conn->connect &= ~CONNECT_SELECT_R;

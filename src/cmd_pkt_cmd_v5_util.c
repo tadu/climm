@@ -146,12 +146,12 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn)
         PacketD (pak);
 }
 
-void ConnectionInitServerV5 (Connection *conn)
+Event *ConnectionInitServerV5 (Connection *conn)
 {
     if (conn->version < 5)
     {
         M_print (i18n (1869, "Protocol versions less than 5 are not supported anymore.\n"));
-        return;
+        return NULL;
     }
     
     conn->close = &CallBackClosev5;
@@ -170,6 +170,7 @@ void ConnectionInitServerV5 (Connection *conn)
         conn->passwd = strdup (pwd ? pwd->txt : "");
     }
     QueueEnqueueData (conn, /* FIXME: */ 0, 0, time (NULL), NULL, 0, NULL, &CallBackServerInitV5);
+    return NULL;
 }
 
 static void CallBackClosev5 (Connection *conn)

@@ -8,6 +8,7 @@
 #endif
 
 typedef void (jump_conn_f)(Connection *conn);
+typedef Event * (jump_conn_open_f)(Connection *conn);
 typedef BOOL (jump_conn_err_f)(Connection *conn, UDWORD rc, UDWORD flags);
 
 struct Connection_s
@@ -61,7 +62,7 @@ struct Connection_s
     UDWORD    stat_pak_sent;
     UDWORD    stat_pak_rcvd;
 
-    jump_conn_f *open;         /* function to call to open        */
+    jump_conn_open_f *open;    /* function to call to open        */
     jump_conn_f *dispatch;     /* function to call on select()    */
     jump_conn_f *reconnect;    /* function to call for reconnect  */
     jump_conn_err_f *error;    /* function to call for i/o errors */

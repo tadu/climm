@@ -8,7 +8,7 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn);
 void PacketSendv5 (const Packet *pak, Connection *conn);
 void UDPCallBackResend (Event *event);
 const char *CmdPktCmdName (UWORD cmd);
-void ConnectionInitServerV5 (Connection *conn);
+Event *ConnectionInitServerV5 (Connection *conn);
 void CallBackServerInitV5 (Event *event);
 void Auto_Reply (Connection *conn, Contact *cont);
 

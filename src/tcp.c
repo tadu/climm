@@ -92,14 +92,14 @@ static void TCPSendInitv6 (Connection *peer);
 /*
  * "Logs in" peer2peer connection by opening listening socket.
  */
-void ConnectionInitPeer (Connection *list)
+Event *ConnectionInitPeer (Connection *list)
 {
     ASSERT_MSGLISTEN (list);
     
     if (list->version < 6 || list->version > 8)
     {
         M_printf (i18n (2024, "Unknown protocol version %d for ICQ peer-to-peer protocol.\n"), list->version);
-        return;
+        return NULL;
     }
 
     if (list->version == 6)
@@ -118,6 +118,7 @@ void ConnectionInitPeer (Connection *list)
     list->cont        = list->parent->cont ? list->parent->cont : ContactUIN (list->parent, list->parent->uin);
 
     UtilIOConnectTCP (list);
+    return NULL;
 }
 
 /*
