@@ -221,7 +221,7 @@
 1228:Bosnien-Herzegovina
 1229:Botswana
 1230:Brasilien
-#1231:British Virgin Islands
+1231:Britische Jungferninseln
 1232:Brunei
 1233:Bulgarien
 #1234:Burkina Faso
@@ -229,7 +229,7 @@
 1236:Kambodscha
 1237:Kamerun
 1238:Kanada
-#1239:Cape Verde Islands
+1239:Kapverdische Inseln
 1240:Kaiman-Inseln
 1241:Zentral-Afrikanische Republik
 1242:Tschad
@@ -336,7 +336,7 @@
 1343:Polen
 1344:Portugal
 1345:Puerto Rico
-#1346:Qatar
+1346:Katar
 1347:Rumänien
 1348:Russland
 #1349:Saipan
@@ -348,7 +348,7 @@
 1355:Süd-Afrika
 1356:Spanien
 1357:Sri Lanka
-#1358:Suriname
+1358:Surinam
 1359:Schweden
 1360:Schweitz
 1361:Taiwan
@@ -459,7 +459,6 @@
 1466:Lebensstil
 1467:Filme/Fernsehen
 1468:Musik
-##469:??
 1469:Geländeaktivitäten
 1470:Erziehung
 1471:Tiere
@@ -578,7 +577,7 @@
 1603:Bitte Position eingeben: 
 1604:Soll der Benutzer online sein?
 1605:Soll Ihr Status im Web einsehbar sein? (Ja/Nein)
-#1606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.¶
+1606:Paket mit falscher Sitzungskennung ID %08x (richtig: %08x) mit Kommando %04x ignoriert.¶
 1607:Benutzung: micq [-v|-V] [-f|-F <KonfDatei>] [-l|-L <ProtDatei>] [-?|-h]¶
 1608:        -v   ausführlicher Modus (nur zur Fehlersuche nützlich)¶
 1609:        -f   alternative Konfigurationsdatei verwenden (normalerweise ~/.micq/micqrc)¶
@@ -589,9 +588,9 @@
 1614:Benutze Konfigurationsdatei "%s".¶
 1615:Protokolliere nach "%s".¶
 1617:<alle>
-#1618:UIN:
-#1619:Warning:
-#1620:maximal number of contacts reached. Ask a wizard to enlarge me!
+1618:Benutzernummer:
+1619:Warnung:
+1620:Maximale Anzahl an Kontakten erreicht.
 1621:Suchergebnisse nicht zurückgegeben.
 1622:Möchten Sie die Änderungen anwenden? (JA/NEIN)
 1623:Doppeltes Paket %04X.¶
@@ -600,7 +599,7 @@
 1629: URL:          ©3%s©0 
 1632:¶Verbindung instabil. Beende...
 #1634:ok¶
-#1637:Can't bind socket to free port¶
+1637:Kann Kommunikationsendpunkt nicht mit einem freien Anschluß verknüpfen.¶
 1638:Konnte Verbindungsendpunkt nicht erzeugen
 1639:Die neue Benutzernummer ist %ld!¶
 1640:Aktualisieren der Informationen fehlgeschlagen.¶
@@ -685,10 +684,10 @@
 1740:Erstelle Nachricht an ©2%d©0:¶
 1741:Man muß erst eine Nachricht empfangen.¶
 1742:Man muß erst eine Nachricht schreiben.¶
-#1743:Size mismatch in packet lengths.¶
+1743:Längendifferenz in Paketlängenangaben.¶
 1744:Server (v5)
 1745:Unbekannt
-#1746: nr type         sent/received packets/unique packets¶
+1746: Nr Type                aus/eingehend Pakete/identische Pakete¶
 1747:Gesamt
 1748:Keine Benutzernummer angegeben.¶
 1749:Benutzernummer %d in %s umbenannt.¶
@@ -734,9 +733,9 @@
 1794:Wenn Sie bereits eine Benutzernummer besitzen, geben Sie diese bitte ein. Andernfalls drücken Sie die Eingabetaste, und ich werde eine für Sie beantragen.¶
 1795:Paßwort:
 1796:Einrichtungs-Assistent beendet. Bitte warten Sie, bis die Registrierung beendet ist.¶
-#1797:Finance and corporate
+1797:Finanzen und Firmen
 1798:Grundschule
-#1799:High School
+1799:weiterführende Schule
 1800:Wählt die Sprache <lang> aus.
 1801:Zeigt die Kontaktliste im ausführlichen Format an.
 1802:Klang-Befehl, wenn jemand verbindet:
@@ -744,14 +743,14 @@
 1804:Klang, wenn jemand verbindet:
 1805:Klang, wenn sich jemand abmeldet:
 1807:Eingehende Nachricht %04x von %s abgebrochen.¶
-#1808:College
+1808:Gymnasium
 1810:Universität
-#1812:Past Work Place
-#1813:Past Organization
-#1814:Sent auto-response message to %s%s%s.¶
+1812:vergangener Arbeitsplatz
+1813:vergangene Organisation
+1814:Versende automatische Antwort an %s%s%s.¶
 1815:    funny: Lustige Meldungen verwenden.¶
 1816:Unbekannte Option %s des set-Kommandos.¶
-#1817:Warning: ReceiveScript feature not enabled!¶
+1817:Warnung: "ReceiveScript"-Eigenschaft wurde entfernt.¶
 1818:Warnung: Veraltete Syntax in der Konfigurationsdatei gefunden!¶Bitte neu erstellen oder mit "save" überschreiben und auf Änderungen prüfen.¶
 1820:%s <option> [an|aus] - einfach Optionen ändern.¶
 1821:Lustige Meldungen sind ©3%s©0.¶
@@ -759,42 +758,42 @@
 1823:Eingehendes Unter-Paket:
 1825:Werfe ein Paket vom Typ %04x (%s) weg.
 1826:Sende Paket vom Typ %04x (%s), Sequenz-Nummer %04x, erneut (Versuch #%d, Länge %d).¶
-#1830:Discarding message to %s after %d send attempts.  Message content:¶
+1830:Werfe Nachricht an %s nach %d Versuchen weg. Inhalt der Nachricht:¶
 1833:Direkte Verbindung aufgebaut.¶
 1835:Fehler beim Schreiben in den Kommunikationsendpunkt: %s (%d)¶
-#1841:Received malformed initialization acknowledgement packet.¶
+1841:Empfange fehlerhaftes Initialisierungsbestätigungspaket.¶
 1842:Schließe Verbindung (Verbindungsendpunkt Nr. %d) zu %s.¶
 1843:Schließe Verbindungsendpunkt Nr. %d.¶
-#1844:TCP message %04x discarded after timeout.¶
-#1845:Nick %s unknown.¶
+1844:Direktverbindungs-Nachricht vm Typ %04x wegen Zeitüberschreitung weggeworfen.¶
+1845:Spitzname %s unbekannt.¶
 1846:Öffnet und schließt Direkt-Verbindungen:¶
 1847:    open  <nick> - Öffnet eine Direkt-Verbindung.¶
 1848:    close <nick> - Schließt Direkt-Verbindung.¶
 #1849:Error on select: %s (%d)¶
-#1850:Timeout on connection with %s at %s:%d¶
+1850:Zeitüberschreibtung bei Verbindung mit %s zu %s:%d.¶
 1855:Direkt-Verbindung zu %s bei %s:%d ist fehlgeschlagen.¶
-#1856:Discarded a %04x (%s) packet from old session %08x (current: %08x).¶
+1856:Werfe ein Paket vom Typ %04x (%s) von alter Sitzung %08x (aktuell: %08x) weg.¶
 1857:Möchten Sie Ihre IP-Adresse vor anderen Benutzern verbergen? (Ja/Nein)
 1864:Kann Konfigurationsdatei "%s" nicht öffnen.
 1866:Diese Version von mICQ ist ohne Unterstützung von Direkt-Verbindungen übersetzt worden.¶
-#1867:Got a malformed (too short) packet - ignored.¶
-#1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.¶
+1867:Empfange fehlerhaftes (zu kurzes) packet - ignored.¶
+1868:Empfange fehlerhaftes (zu kurzes Unterpaket) Mehrfach-Paket - Rest ignoriert.¶
 1869:Versionen kleiner als 5 werden nicht mehr unterstützt.¶
 1870:    off   <nick> - Schaltet die Benutzung von Direkt-Verbindungen ab.¶
 1871:Öffne Verbindung zu v8-Server bei %s:%d... 
 1872:fehlgeschlagen: %s (%d).¶
-#1873:Work City:
-#1874:Work State:
-#1875:Personal interests:
-#1876:Personal past background:
-#1877:ok.¶
+1873:Arbeits-Stadt:
+1874:Arbeits-Staat:
+1875:Persönliche Interessen:
+1876:Persönlicher vergangener Hintergrund:
+1877:ok.¶
 1878:Fehler beim Lesen vom Kommunikationsendpunkt: %s (%d)¶
-#1879:Affiliations:
-#1880:Incoming packet is not a FLAP: id is %d.¶
-#1881:FLAP channel 1 out of data.¶
-#1882:FLAP channel 1 cmd 1 extra data:¶
-#1883:FLAP channel 1 unknown command %d.¶
-#1884:FLAP with unknown channel %d received.¶
+1879:Mitgliedschaften:
+1880:Eingehendes Paket ist kein FLAP: Kennung ist %d.¶
+1881:FLAP auf Kanal 1 hat zu wenig Daten.¶
+1882:FLAP auf Kanal 1 Kommando 1 mit weiteren Daten:¶
+1883:FLAP auf Kanal 1 mit unbekanntem Kommando %d.¶
+1884:FLAP auf unbekannten Kanal %d empfangen.¶
 1885:Zeitüberschreitung bei v8-Server-Verbindung.¶
 1887:Verbindungen:
 #1888:Not webaware
@@ -805,28 +804,28 @@
 1893:conn login <nr>  Öffnet Verbindung <nr>.¶
 1894:Es gibt keine Verbindung Nummer %d.¶
 1895:Login fehlgeschlagen:¶
-1896:Der Server hat die VErbindung geschlossen:¶
-#1897:Incomplete TLV %d, len %d of %d - ignoring.¶
+1896:Der Server hat die Verbindung geschlossen:¶
+1897:Unvollständiges TLV %d, Länge %d von %d - wird ignoriert.¶
 1898:Weiterleitung zu Server %s... 
-#1899:Unknown family requested: %d¶
-#1900:It's readonly.
+1899:Unbekannte Befehlsfamilie angefordert: %d.¶
+1900:Nur lesbar.
 1901:hat Dich authorisiert, ihn zu Deiner Kontaktliste hinzuzufügen.
 1902:Öffne Verbindung zu v5-Server bei %s:%d... 
 1903:Ausgehendes v8-Server-Paket:
-#1904:Server doesn't understand ver %d (only %d) for family %d!¶
+1904:Der Server versteht Version %d (nur Version %d) für Familie %d!¶
 #1905:SNAC (%x,%x) [%s] flags %x ref %x¶
-#1907:Warning: Server thinks our UIN is %d, while it is %d.¶
+1907:Warnung: Der Server hält unsere Benutzernummer für %d, obwohl sie %d ist.¶
 1908:Eingehendes USERONLINE-Paket für nicht-Kontakt.¶
 1909:Eingehendes USEROFFLINE-Paket für nicht-Kontakt.¶
 #1910:FLAP seq %08x length %04x channel %d©0¶
 1911:verbinde
 1912:geschlossen
-#1913:Received server acknowledge for %s#%08lx:%08lx%s sent to %s%s%s.¶
-#1914:Can't allocate connection structure.¶
+1913:Empfange Bestätigung für Nachricht %s#%08lx:%08lx%s, die an %s%s%s geschickt wurde.¶
+1914:Kann Verbindungs-Datenstruktur nicht allokieren.¶
 1915:Der Server hat %s als IP-Adresse ermittelt.¶
-#1916:Need a nick or uin.¶
-#1918:Ignored server request for a minimum report interval of %d.¶
-#1919:UIN mismatch: %d vs %d.¶
+1916:Benötige einen Spitznamen oder eine Benutzernummer.¶
+1918:Ignoriere Anfrage des Servers für eine Mindestwartezeit von %d.¶
+1919:Benutzernummern stimmen nicht überein: %d gegenüber %d.¶
 1920:Beantragung einer neuen Benutzernummer abgelehnt.¶
 1921:Verbunden
 1922:Nicht stören
@@ -838,7 +837,7 @@
 1929:[Automatische Nachricht] Bitte nicht stören (Do Not Disturb)
 #1930:Can't send this (%x) yet.¶
 1931:Keine Verbindung zum Server.¶
-#1932:Need uin to ask for.¶
+1932:Benötige Benutzernummer.¶
 1933:%s ist weder ein Spitzname oder eine Benutzernummer.¶
 1934:verbunden
 #1935:    type %d socket %d ip %s (%d) on [%s,%s] id %x/%x/%x¶
@@ -846,12 +845,12 @@
 1937:Bitte Maximalalter eingeben (22,29,39,49,59,120):
 1938:Bitte Geschlecht eingeben:
 1939:Bitte Stadt eingeben:
-#1940:Unknown Meta User result %x.¶
-#1941:Publish Email:
+1940:Unbekanntes Benutzerinformations-Ergebnis %x.¶
+1941:eMail-adresse publizieren:
 1942:Weitere eMail-Adressen:
-#1943:(no authorization needed)
-#1944:(must request authorization)
-#1945:Unknown Meta User response
+1943:(keine Autorisierung erforderlich)
+1944:(Autorisierung erforderlich)
+1945:Unbekanntes Benutzerinformations-Ergebnis
 1947:Verbindungsannahme
 1948:Kann den Rechnernamen %s nicht auflösen: %s.
 1949:fehlgeschlagen:¶
@@ -864,8 +863,8 @@
 1958:[SOCKS] Verbindung verweigert (%d)
 1960:Bitte Suchdaten eingeben. Zum Starten "." eingeben.¶
 1961:URL: %s¶
-#1966: Conection Refused on port %d at %s¶
-#1967:More Info for
+1966: Verbindung verweigert zu Anschluß %d zu %s.¶
+1967:Mehr Information für
 1968:Benutzer gefunden
 1969:nicht verbunden
 1970:verbunden
@@ -875,43 +874,43 @@
 1974:nicht verfügbar
 1975:unsichtbar
 1976:frei für Plaudereien
-#1977:Audio and visual
-#1978:Sporting and athletic
-#1979:Publishing
-#1980:Home automation
-#1981:Alumni Org.
-#1982:Charity Org.
-#1983:Club/Social Org.
-#1984:Community Org.
-#1985:Cultural Org.
-#1986:Fan Clubs
-#1987:Fraternity/Sorority
-#1988:Hobbyists Org.
-#1989:International Org.
-#1990:Nature and Environment Org.
-#1991:Professional Org.
-#1992:Scientific/Technical Org.
-#1993:Self Improvement Group
-#1994:Spiritual/Religious Org.
-#1995:Sports Org.
-#1996:Support Org.
-#1997:Trade and Business Org.
-#1998:Union
-#1999:Volunteer Org.
-#2000:Entertainment
-#2001:Consumer electronics
-#2002:Retail stores
-#2003:Health and beauty
-#2004:Media
-#2005:Household products
-#2006:Mail order catalog
-#2007:Business services
-#2008:Random chat group change was ©2%s©0.¶
-#2009:Found random chat partner UIN %d in chat group %d.¶
-#2010:None                       0¶
+1977:Audio und Video
+1978:Sport und Leichtathletik
+1979:Veröffentlichungen
+1980:Haustechnik
+1981:Absolventen-Organisation
+1982:Wohltätigkeits-Organisation
+1983:Klub/Soziale Organisation
+1984:Gemeinschafts-Organisation
+1985:Kultur-Organisation
+1986:Fan-Organisation
+1987:Bruderschaft/Schwesterschaft
+1988:Bastler-Organisation
+1989:Internationale Organisation
+1990:Natur- und Umwelt-Organisation
+1991:Berufsverband
+1992:Wissenschaftliche/technische Organisation
+1993:Selbsthilfegruppe
+1994:Spirituelle/religiöse Organisation
+1995:Sport-Organisation
+1996:Betreuungs-Organisation
+1997:Handel- und Geschäfts-Organisation
+1998:Gewerkschaft
+1999:Freiwilligen-Organisation
+2000:Unterhaltung
+2001:Unterhaltungselektronik
+2002:Fachhandel
+2003:Gesundheit und Schönheit
+2004:Medien
+2005:Haushaltsprodukte
+2006:Versandhauskatalog
+2007:Geschäftsdienste
+2008:Interessengruppenänderung war ©2%s©0.¶
+2009:Zufälligen Plauderpartner mit Benutzernummer %d in Interessengruppe %d gefunden.¶
+2010:Keine                      0¶
 2011:Keine Verbindungsannahme-Verbindung gefunden.¶
 2012:Kein Paßwort angegeben.¶
-#2013:This command is v8 only.¶
+2013:Dieses Kommando ist nur für Version 7 oder neuer gültig.¶
 2014:Keine Zahl angegeben.¶
 2015:Keine Nachricht angegeben.¶
 2017:Der Benutzer ist in Wirklichkeit verbunden.¶
@@ -922,8 +921,8 @@
 2022:Der Benutzer ist in Wirklichkeit nicht verbunden.¶
 2023:Direkte Verbindung von Verbindungspartner geschlossen.¶
 2024:Unbekannte Protokoll-Version %d für ICQ-Direktverbindungen.¶
-#2026:TCP cookie:
-#2028:Wrong argument count.¶
+2026:Direktverbindungs-Kennung:
+2028:Falsche Anzahl an Argumenten.¶
 2029:Protokoll-Fehler einer Direktverbindung
 2030:%04d-%02d-%02d %02d:%02d UTC
 2031:Verbindung zu oft fehlgeschlagen, gebe auf.¶
