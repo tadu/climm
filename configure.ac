@@ -296,7 +296,7 @@ else
 fi
 
 if test "x$MICQ_EXTRAVERSION" != "x"; then
-    AC_DEFINE_UNQUOTED(EXTRAVERSION,$MICQ_EXTRAVERSION,[Extra version information like the distribution used])
+    AC_DEFINE_UNQUOTED(EXTRAVERSION,"$MICQ_EXTRAVERSION",[Extra version information like the distribution used])
 fi
 
 AC_CONFIG_FILES([doc/Makefile src/Makefile Makefile lang/Makefile])

@@ -20,7 +20,7 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 endif
 
 ifeq (,$(MICQ_EXTRAVERSION))
-	MICQ_EXTRAVERSION = "Debian hand compiled"
+	MICQ_EXTRAVERSION = Debian hand compiled
 endif
 export MICQ_EXTRAVERSION
 
