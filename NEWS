@@ -17,4 +17,4 @@
 2003-10-06: 0.4.10.5: fixes a bunch of annoying yet easy to fix bugs
 2004-01-17: 0.4.11:   history seach/dump, avoid deleted new registered UINs by initializing ICQ meta data,
                       bug fixes
-2004-11-14: 0.4.12:   more history (by Sebastian Felis), GnuTLS support (by Roman Hoog Antink)
+2004-11-14: 0.4.12:   more history (by Sebastian Felis), OpenSSL support (by Roman Hoog Antink)
