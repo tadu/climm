@@ -22,7 +22,7 @@ BOOL Is_Repeat_Packet (UWORD this_seq)
         }
         if (recv_packs[i] == this_seq)
         {
-            if (Verbose)
+            if (uiG.Verbose)
             {
                 R_undraw ();
                 M_print (i18n (623, "\nDoubled packet %04X\n"), this_seq);

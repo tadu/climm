@@ -22,9 +22,9 @@ void TabAddUIN (UDWORD uin)
 {
     int i, found = 0;
 
-    for (i = 0; i < Num_Contacts; i++)
+    for (i = 0; i < uiG.Num_Contacts; i++)
     {
-        if (Contacts[i].uin == uin)
+        if (uiG.Contacts[i].uin == uin)
         {
             found = 1;
             break;

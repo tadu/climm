@@ -24,11 +24,7 @@ Author : zed@mentasm.com
 #include "util.h"
 #include "conv.h"
 
-/*unsigned int next_resend;*/
-UDWORD Packets_Sent = 0;
-UDWORD Packets_Recv = 0;
-
-UDWORD our_session;
+/*unsigned int ssG.next_resend;*/
 
 static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len);
 static void Fill_Header (net_icq_pak * pak, UWORD cmd);
@@ -63,7 +59,7 @@ void Do_Resend (SOK_T sok)
         queued_msg->attempts++;
         if (queued_msg->attempts <= MAX_RETRY_ATTEMPTS)
         {
-            if (Verbose)
+            if (uiG.Verbose)
             {
                 R_undraw ();
                 M_print ("\n");
@@ -135,7 +131,7 @@ void Do_Resend (SOK_T sok)
                     || (CMD_KEEP_ALIVE == Chars_2_Word (pak.head.cmd)))
                 {
                     M_print (i18n (632, "\n\aConnection unstable. Exiting...."));
-                    Quit = TRUE;
+                    ssG.Quit = TRUE;
                 }
             }
             M_print ("\n");
@@ -147,16 +143,16 @@ void Do_Resend (SOK_T sok)
 
         if ((queued_msg = msg_queue_peek ()) != NULL)
         {
-            next_resend = queued_msg->exp_time;
+            ssG.next_resend = queued_msg->exp_time;
         }
         else
         {
-            next_resend = INT_MAX;
+            ssG.next_resend = INT_MAX;
         }
     }
     else
     {
-        next_resend = INT_MAX;
+        ssG.next_resend = INT_MAX;
     }
 }
 
@@ -167,8 +163,8 @@ void Fill_Header (net_icq_pak * pak, UWORD cmd)
 {
     Word_2_Chars (pak->head.ver, ICQ_VER);
     Word_2_Chars (pak->head.cmd, cmd);
-    Word_2_Chars (pak->head.seq, seq_num++);
-    DW_2_Chars (pak->head.UIN, UIN);
+    Word_2_Chars (pak->head.seq, ssG.seq_num++);
+    DW_2_Chars (pak->head.UIN, ssG.UIN);
     DW_2_Chars (pak->data, rand ());
 }
 
@@ -196,7 +192,7 @@ void Update_Other (SOK_T sok, OTHER_INFO_PTR info)
     Word_2_Chars (buf++, info->lang2);
     Word_2_Chars (buf++, info->lang3);
 
-    last_cmd[(seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[(ssG.seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), sizeof (pak.head) - 2 + (buf - pak.data));
 }
 
@@ -210,11 +206,11 @@ void snd_got_messages (SOK_T sok)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_ACK_MESSAGES);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
     DW_2_Chars (pak.data, rand ());
 
-    last_cmd[(seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[(ssG.seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), sizeof (pak.head) - 2 + 4);
 }
 
@@ -227,14 +223,14 @@ void Update_About (SOK_T sok, const char *about)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_META_USER);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
     Word_2_Chars (pak.data, META_INFO_ABOUT);
     Word_2_Chars (&pak.data[2], strlen (about) + 1);
     strcpy (&pak.data[4], about);
     ConvUnixWin (&pak.data[4]);
     pak.data[strlen (about) + 4] = 0;
-    last_cmd[(seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[(ssG.seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), sizeof (pak.head) - 2 + 5 + strlen (about));
 }
 
@@ -248,14 +244,14 @@ void update_list (int sok, UDWORD uin, int which, BOOL add)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_UPDATE_LIST);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
     DW_2_Chars (pak.data, uin);
     pak.data[4] = which;
     pak.data[5] = add;
 
-    last_cmd[(seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[(ssG.seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), sizeof (pak.head) - 2 + 6);
 }
 
@@ -270,20 +266,20 @@ void snd_contact_list (int sok)
     int j;
     char *tmp;
 
-    for (i = 0; i < Num_Contacts;)
+    for (i = 0; i < uiG.Num_Contacts;)
     {
         Word_2_Chars (pak.head.ver, ICQ_VER);
         Word_2_Chars (pak.head.cmd, CMD_CONT_LIST);
-        Word_2_Chars (pak.head.seq, seq_num++);
-        DW_2_Chars (pak.head.UIN, UIN);
+        Word_2_Chars (pak.head.seq, ssG.seq_num++);
+        DW_2_Chars (pak.head.UIN, ssG.UIN);
 
         tmp = pak.data;
         tmp++;
-        for (j = 0, num_used = 0; (j < MAX_CONTS_PACKET) && (i < Num_Contacts); i++)
+        for (j = 0, num_used = 0; (j < MAX_CONTS_PACKET) && (i < uiG.Num_Contacts); i++)
         {
-            if ((SDWORD) Contacts[i].uin > 0)
+            if ((SDWORD) uiG.Contacts[i].uin > 0)
             {
-                DW_2_Chars (tmp, Contacts[i].uin);
+                DW_2_Chars (tmp, uiG.Contacts[i].uin);
                 tmp += 4;
                 num_used++;
                 j++;
@@ -292,7 +288,7 @@ void snd_contact_list (int sok)
         pak.data[0] = num_used;
         size = sizeof (UDWORD) * num_used + 1;
         size += sizeof (pak.head) - 2;
-        last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+        ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
         SOCKWRITE (sok, &(pak.head.ver), size);
 /*      M_print( "Sent %d Contacts.\n", num_used );*/
     }
@@ -312,18 +308,18 @@ void snd_invis_list (int sok)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_INVIS_LIST);
-    Word_2_Chars (pak.head.seq, seq_num);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
     tmp = pak.data;
     tmp++;
-    for (i = 0, num_used = 0; i < Num_Contacts; i++)
+    for (i = 0, num_used = 0; i < uiG.Num_Contacts; i++)
     {
-        if ((SDWORD) Contacts[i].uin > 0)
+        if ((SDWORD) uiG.Contacts[i].uin > 0)
         {
-            if (Contacts[i].invis_list)
+            if (uiG.Contacts[i].invis_list)
             {
-                DW_2_Chars (tmp, Contacts[i].uin);
+                DW_2_Chars (tmp, uiG.Contacts[i].uin);
                 tmp += 4;
                 num_used++;
             }
@@ -332,12 +328,12 @@ void snd_invis_list (int sok)
     if (num_used != 0)
     {
         pak.data[0] = num_used;
-        size = 1 + num_used * 4;        /* UIN's are 4 bytes this is unlikely to ever change */
+        size = 1 + num_used * 4;        /* ssG.UIN's are 4 bytes this is unlikely to ever change */
         /*size = ( ( int ) tmp - ( int ) pak.data ); */
         size += sizeof (pak.head) - 2;
-        last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+        ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
         SOCKWRITE (sok, &(pak.head.ver), size);
-        seq_num++;
+        ssG.seq_num++;
     }
 }
 
@@ -355,23 +351,23 @@ void snd_vis_list (int sok)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_VIS_LIST);
-    Word_2_Chars (pak.head.seq, seq_num);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
     tmp = pak.data;
     tmp++;
-    for (i = 0, num_used = 0; i < Num_Contacts; i++)
+    for (i = 0, num_used = 0; i < uiG.Num_Contacts; i++)
     {
-        if ((SDWORD) Contacts[i].uin > 0)
+        if ((SDWORD) uiG.Contacts[i].uin > 0)
         {
-            if (Contacts[i].vis_list)
+            if (uiG.Contacts[i].vis_list)
             {
-                DW_2_Chars (tmp, Contacts[i].uin);
+                DW_2_Chars (tmp, uiG.Contacts[i].uin);
                 tmp += 4;
                 num_used++;
-                if (Contacts[i].invis_list)
+                if (uiG.Contacts[i].invis_list)
                 {
-                    M_print (i18n (633, "ACK!!! %d\n"), Contacts[i].uin);
+                    M_print (i18n (633, "ACK!!! %d\n"), uiG.Contacts[i].uin);
                 }
             }
         }
@@ -379,12 +375,12 @@ void snd_vis_list (int sok)
     if (num_used != 0)
     {
         pak.data[0] = num_used;
-        size = 1 + num_used * 4;        /* UIN's are 4 bytes (32 bits) */
+        size = 1 + num_used * 4;        /* ssG.UIN's are 4 bytes (32 bits) */
         /*size = ( ( int ) tmp - ( int ) pak.data ); */
         size += sizeof (pak.head) - 2;
-        last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+        ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
         SOCKWRITE (sok, &(pak.head.ver), size);
-        seq_num++;
+        ssG.seq_num++;
     }
 }
 
@@ -398,11 +394,11 @@ void snd_login_1 (int sok)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_LOGIN_1);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
     DW_2_Chars (pak.data, rand ());
 
-    last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), sizeof (pak.head) - 2 + 4);
 }
 
@@ -418,24 +414,24 @@ void Keep_Alive (int sok)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_KEEP_ALIVE);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
     DW_2_Chars (pak.data, rand ());
 
-    last_cmd[(seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[(ssG.seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), sizeof (pak.head) - 2 + 4);
 #if 1
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_KEEP_ALIVE2);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
     DW_2_Chars (pak.data, rand ());
 
-    last_cmd[(seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[(ssG.seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), sizeof (pak.head) - 2 + 4);
 #endif
 
-    if (Verbose)
+    if (uiG.Verbose)
     {
         R_undraw ();
         M_print (i18n (634, "\nSend Keep_Alive packet to the server\n"));
@@ -485,8 +481,8 @@ void icq_sendmsg (SOK_T sok, UDWORD uin, char *text, UDWORD msg_type)
     len = strlen (text);
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_SENDM);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
     DW_2_Chars (msg.uin, uin);
     Word_2_Chars (msg.type, msg_type);
@@ -497,7 +493,7 @@ void icq_sendmsg (SOK_T sok, UDWORD uin, char *text, UDWORD msg_type)
 
     size = sizeof (msg) + len + 1;
 
-    last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 }
 
@@ -513,8 +509,8 @@ void icq_sendauthmsg (SOK_T sok, UDWORD uin)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_SENDM);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
     DW_2_Chars (msg.uin, uin);
     DW_2_Chars (msg.type, AUTH_MESSAGE);        /* A type authorization msg */
@@ -527,7 +523,7 @@ void icq_sendauthmsg (SOK_T sok, UDWORD uin)
 
     size = sizeof (msg) + 2;
 
-    last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 }
 
@@ -542,14 +538,14 @@ void icq_rand_user_req (SOK_T sok, UDWORD group)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_RAND_SEARCH);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
     DW_2_Chars (pak.data, group);
 
     size = 4;
 
-    last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 }
 
@@ -564,14 +560,14 @@ void icq_rand_set (SOK_T sok, UDWORD group)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_RAND_SET);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
     DW_2_Chars (pak.data, group);
 
     size = 4;
 
-    last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 }
 
@@ -587,15 +583,15 @@ void icq_change_status (SOK_T sok, UDWORD status)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_STATUS_CHANGE);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
     DW_2_Chars (pak.data, status);
-    Current_Status = status;
+    uiG.Current_Status = status;
 
     size = 4;
 
-    last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 }
 
@@ -609,8 +605,8 @@ void Quit_ICQ (int sok)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_SEND_TEXT_CODE);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
     len = strlen ("B_USER_DISCONNECTED") + 1;
     *(short *) pak.data = len;
@@ -620,7 +616,7 @@ void Quit_ICQ (int sok)
     pak.data[2 + len] = 05;
     pak.data[3 + len] = 00;
 
-    last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 
     SOCKCLOSE (sok);
@@ -634,10 +630,10 @@ void info_req_99 (SOK_T sok, UDWORD uin)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_META_USER);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 #if ICQ_VER == 0x0002
-    Word_2_Chars (pak.data, seq_num);
+    Word_2_Chars (pak.data, ssG.seq_num);
     DW_2_Chars (pak.data + 2, uin);
 
     size = 6;
@@ -648,7 +644,7 @@ void info_req_99 (SOK_T sok, UDWORD uin)
     size = 6;
 #endif
 
-    last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 
 }
@@ -661,10 +657,10 @@ void info_req_old (SOK_T sok, UDWORD uin)
 #if 1
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_INFO_REQ);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 #if ICQ_VER == 0x0002
-    Word_2_Chars (pak.data, seq_num);
+    Word_2_Chars (pak.data, ssG.seq_num);
     DW_2_Chars (pak.data + 2, uin);
 
     size = 6;
@@ -674,7 +670,7 @@ void info_req_old (SOK_T sok, UDWORD uin)
     size = 4;
 #endif
 
-    last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 #endif
 }
@@ -702,11 +698,11 @@ void send_ext_info_req (SOK_T sok, UDWORD uin)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_EXT_INFO_REQ);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
 #if ICQ_VER == 0x0002
-    Word_2_Chars (pak.data, seq_num);
+    Word_2_Chars (pak.data, ssG.seq_num);
     DW_2_Chars (pak.data + 2, uin);
     size = 6;
 #else
@@ -715,13 +711,13 @@ void send_ext_info_req (SOK_T sok, UDWORD uin)
 #endif
 
 
-    last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 }
 
-/***************************************************************
-Initializes a server search for the information specified
-****************************************************************/
+/*
+ * Initializes a server search for the information specified
+ */
 void start_search (SOK_T sok, char *email, char *nick, char *first, char *last)
 {
     net_icq_pak pak;
@@ -729,10 +725,10 @@ void start_search (SOK_T sok, char *email, char *nick, char *first, char *last)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_SEARCH_USER);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 /*
-   Word_2_Chars( pak.data , seq_num++ );
+   Word_2_Chars( pak.data , ssG.seq_num++ );
    size = 2;
 */
     size = 0;
@@ -752,7 +748,7 @@ void start_search (SOK_T sok, char *email, char *nick, char *first, char *last)
     size += 2;
     strcpy (pak.data + size, email);
     size += strlen (email) + 1;
-    last_cmd[seq_num - 2] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 2] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 }
 
@@ -772,9 +768,9 @@ void reg_new_user (SOK_T sok, char *pass)
     len = strlen (pass);
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_REG_NEW_USER);
-    Word_2_Chars (pak.head.seq, seq_num++);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
 #if ICQ_VER != 0x0002
-    Word_2_Chars (pak.head.seq2, seq_num - 1);
+    Word_2_Chars (pak.head.seq2, ssG.seq_num - 1);
 #endif
     Word_2_Chars (len_buf, len);
 #if ICQ_VER == 0x0002
@@ -795,21 +791,21 @@ void reg_new_user (SOK_T sok, char *pass)
     size = len + 18;
 #endif
 #if ICQ_VER == 0x0005
-    if (our_session == 0)
+    if (ssG.our_session == 0)
     {
-        our_session = rand ();
-        DW_2_Chars (pak.head.session, our_session);
-        our_session = 0;
+        ssG.our_session = rand ();
+        DW_2_Chars (pak.head.session, ssG.our_session);
+        ssG.our_session = 0;
     }
     else
     {
-        DW_2_Chars (pak.head.session, our_session);
+        DW_2_Chars (pak.head.session, ssG.our_session);
     }
     DW_2_Chars (pak.head.zero, 0L);
     DW_2_Chars (pak.head.UIN, 0L);
 #endif
 
-    last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE_LOW (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 }
 
@@ -832,10 +828,10 @@ void Change_Password (SOK_T sok, char *pass)
         len = 9;
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_META_USER);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 #if ICQ_VER != 0x0002
-    Word_2_Chars (pak.head.seq2, seq_num - 1);
+    Word_2_Chars (pak.head.seq2, ssG.seq_num - 1);
 #endif
     Word_2_Chars (len_buf, len);
     Word_2_Chars (pak.data, META_INFO_PASS);
@@ -843,7 +839,7 @@ void Change_Password (SOK_T sok, char *pass)
     memcpy (&pak.data[4], pass, len);
     size = len + 4;
 
-    last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 }
 
@@ -854,11 +850,11 @@ void Update_User_Info (SOK_T sok, USER_INFO_PTR user)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_UPDATE_INFO);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
 #if ICQ_VER == 0x0002
-    Word_2_Chars (pak.data, seq_num++);
+    Word_2_Chars (pak.data, ssG.seq_num++);
     size = 2;
 #else
     size = 0;
@@ -881,16 +877,16 @@ void Update_User_Info (SOK_T sok, USER_INFO_PTR user)
     size += strlen (user->email) + 1;
     pak.data[size] = user->auth;
     size++;
-    last_cmd[(seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[(ssG.seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_AUTH_UPDATE);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
     DW_2_Chars (pak.data, !user->auth);
-    last_cmd[(seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[(ssG.seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), 4 + sizeof (pak.head) - 2);
 }
 
@@ -901,8 +897,8 @@ void Update_More_User_Info (SOK_T sok, MORE_INFO_PTR user)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_META_USER);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
     Word_2_Chars (pak.data, META_INFO_SET);
     size = 2;
@@ -973,16 +969,16 @@ void Update_More_User_Info (SOK_T sok, MORE_INFO_PTR user)
     pak.data[size++] = user->c_status;
     pak.data[size] = user->hide_email;
     size++;
-    last_cmd[(seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[(ssG.seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_AUTH_UPDATE);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
     DW_2_Chars (pak.data, !user->auth);
-    last_cmd[(seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[(ssG.seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), 4 + sizeof (pak.head) - 2);
 }
 
@@ -992,8 +988,8 @@ void Search_WP (SOK_T sok, WP_PTR user)
     int size;
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_META_USER);
-    Word_2_Chars (pak.head.seq, seq_num++);
-    DW_2_Chars (pak.head.UIN, UIN);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
 
     Word_2_Chars (pak.data, META_CMD_WP);
     size = 2;
@@ -1079,7 +1075,7 @@ void Search_WP (SOK_T sok, WP_PTR user)
     size += 2;
     pak.data[size] = user->online;
     size+=1;
-    last_cmd[(seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[(ssG.seq_num - 1) & 0x3ff] = Chars_2_Word (pak.head.cmd);
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 }
 
@@ -1183,16 +1179,16 @@ size_t SOCKWRITE (SOK_T sok, void *ptr, size_t len)
     ((UBYTE *) ptr)[0x0B] = ((UBYTE *) ptr)[9];
 #elif ICQ_VER == 0x0005
     DW_2_Chars (&((UBYTE *) ptr)[2], 0L);
-    if (0 == our_session)
+    if (0 == ssG.our_session)
     {
-        our_session = rand () & 0x3fffffff;
+        ssG.our_session = rand () & 0x3fffffff;
     }
-    DW_2_Chars (&((UBYTE *) ptr)[0x0A], our_session);
+    DW_2_Chars (&((UBYTE *) ptr)[0x0A], ssG.our_session);
 #endif
     cmd = Chars_2_Word ((((ICQ_PAK_PTR) ((UBYTE *) ptr - 2))->cmd));
     if (cmd != CMD_ACK)
     {
-        real_packs_sent++;
+        ssG.real_packs_sent++;
         msg_to_queue = (struct msg *) malloc (sizeof (struct msg));
 #if ICQ_VER == 0x0004
         msg_to_queue->seq = Chars_2_Word (&((UBYTE *) ptr)[SEQ_OFFSET]);
@@ -1208,7 +1204,7 @@ size_t SOCKWRITE (SOK_T sok, void *ptr, size_t len)
         {
             Word_2_Chars (&((UBYTE *) ptr)[SEQ2_OFFSET], 0);
 /*       seq2++;*/
-            seq_num--;
+            ssG.seq_num--;
         }
         msg_to_queue->seq = Chars_2_DW (&((UBYTE *) ptr)[SEQ_OFFSET]);
 #else
@@ -1223,7 +1219,7 @@ size_t SOCKWRITE (SOK_T sok, void *ptr, size_t len)
 
         if (msg_queue_peek () == msg_to_queue)
         {
-            next_resend = msg_to_queue->exp_time;
+            ssG.next_resend = msg_to_queue->exp_time;
         }
     }
     return SOCKWRITE_LOW (sok, ptr, len);
@@ -1240,13 +1236,11 @@ static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len)
 
     /* these 3 lines used for socks5 */
     char tmpbuf[4096];
-    extern unsigned long s5DestIP;
-    extern unsigned short s5DestPort;
 
     assert (len > 0x18);
 
 #if 1
-    if (Verbose > 1)
+    if (uiG.Verbose > 1)
     {
         M_print ("\n");
         Hex_Dump (ptr, len);
@@ -1257,20 +1251,20 @@ static size_t SOCKWRITE_LOW (SOK_T sok, void *ptr, size_t len)
     Wrinkle (ptr, len);
 
 #if 0
-    if (Verbose > 1)
+    if (uiG.Verbose > 1)
         Hex_Dump (ptr, len);
 #endif
 /*   Dump_Queue()*/
-    Packets_Sent++;
+    ssG.Packets_Sent++;
 /* SOCKS5 stuff begin */
-    if (s5Use)
+    if (s5G.s5Use)
     {
         tmpbuf[0] = 0;          /* reserved */
         tmpbuf[1] = 0;          /* reserved */
         tmpbuf[2] = 0;          /* standalone packet */
         tmpbuf[3] = 1;          /* address type IP v4 */
-        *(unsigned long *) &tmpbuf[4] = htonl (s5DestIP);
-        *(unsigned short *) &tmpbuf[8] = htons (s5DestPort);
+        *(unsigned long *) &tmpbuf[4] = htonl (s5G.s5DestIP);
+        *(unsigned short *) &tmpbuf[8] = htons (s5G.s5DestPort);
         memcpy (&tmpbuf[10], ptr, len);
         return sockwrite (sok, tmpbuf, len + 10) - 10;
     }
@@ -1284,16 +1278,16 @@ size_t SOCKREAD (SOK_T sok, void *ptr, size_t len)
     size_t sz;
 
     sz = sockread (sok, ptr, len);
-    Packets_Recv++;
+    ssG.Packets_Recv++;
 /* SOCKS5 stuff begin */
-    if (s5Use)
+    if (s5G.s5Use)
     {
         sz -= 10;
         memcpy (ptr, ptr + 10, sz);
     }
 /* SOCKS5 stuff end */
 
-    if ((Verbose > 2) && (sz > 0))
+    if ((uiG.Verbose > 2) && (sz > 0))
     {
         M_print ("\n");
         Hex_Dump (ptr, sz);

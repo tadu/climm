@@ -110,7 +110,7 @@ void Dump_Queue (void)
         M_print (i18n (619, "SEQ = %04x\tCMD = %04x\tattempts = %d\tlen = %d\n"),
                  (queued_msg->seq >> 16), Chars_2_Word (&queued_msg->body[CMD_OFFSET]),
                  queued_msg->attempts, queued_msg->len);
-        if (Verbose)
+        if (uiG.Verbose)
         {
             Hex_Dump (queued_msg->body, queued_msg->len);
         }
@@ -134,7 +134,7 @@ void Check_Queue (UDWORD seq)
         }
         else
         {
-            if (Verbose)
+            if (uiG.Verbose)
             {
                 R_undraw ();
                 M_print ("\n");
@@ -157,11 +157,11 @@ void Check_Queue (UDWORD seq)
 
             if ((queued_msg = msg_queue_peek ()) != NULL)
             {
-                next_resend = queued_msg->exp_time;
+                ssG.next_resend = queued_msg->exp_time;
             }
             else
             {
-                next_resend = INT_MAX;
+                ssG.next_resend = INT_MAX;
             }
             break;
         }

@@ -188,7 +188,7 @@ int R_process_input (void)
     {
         if (ch == t_attr.c_cc[VERASE] && t_attr.c_cc[VERASE] != _POSIX_VDISABLE)
         {
-            if (del_is_bs)
+            if (uiG.del_is_bs)
                 R_process_input_backspace ();
             else
                 R_process_input_delete ();

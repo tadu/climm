@@ -367,11 +367,11 @@ void Meta_User (SOK_T sok, UBYTE * data, UDWORD len, UDWORD uin)
             M_print ("\n");
             break;
         case 0x010E:
-            if (!Verbose)
+            if (!uiG.Verbose)
                 break;
         default:
             M_print (i18n (399, "Unknown Meta User response " COLSERV "%04X" COLNONE "\n"), subcmd);
-            if (Verbose)
+            if (uiG.Verbose)
             {
                 Hex_Dump (data, len);
                 M_print ("\n");
@@ -393,7 +393,7 @@ void Display_Rand_User (SOK_T sok, UBYTE * data, UDWORD len)
         M_print ("%-15s %d\n", i18n (453, "TCP version:"), Chars_2_Word (&data[21]));
         M_print ("%-15s %s\n", i18n (454, "Connection:"),
                  data[16] == 4 ? i18n (493, "Peer-to-Peer") : i18n (494, "Server Only"));
-        if (Verbose > 1)
+        if (uiG.Verbose > 1)
         {
             M_print ("\n");
             Hex_Dump (data, len);
@@ -413,13 +413,13 @@ void Recv_Message (int sok, UBYTE * pak)
 
 /*    M_print( "\n" );*/
     r_mesg = (RECV_MESSAGE_PTR) pak;
-    last_recv_uin = Chars_2_DW (r_mesg->uin);
+    uiG.last_recv_uin = Chars_2_DW (r_mesg->uin);
     M_print (i18n (496, "%02d/%02d/%04d"), r_mesg->month, r_mesg->day, Chars_2_Word (r_mesg->year));
     M_print (" %02d:%02d UTC \a" CYAN BOLD "%10s" COLNONE " ",
              r_mesg->hour, r_mesg->minute, UIN2Name (Chars_2_DW (r_mesg->uin)));
 /*    M_print (i18n (497, "Type: %d\t Len: %d\n"), Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len));*/
     Do_Msg (sok, Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len),
-            (r_mesg->len + 2), last_recv_uin);
+            (r_mesg->len + 2), uiG.last_recv_uin);
 
 /*    M_print( COLMESS "%s\n" COLNONE, ((char *) &r_mesg->len) + 2 );*/
 /*    ack_srv( sok, Chars_2_Word( pak.head.seq ) ); */
@@ -442,8 +442,8 @@ void User_Offline (int sok, UBYTE * pak)
     M_print (" %s\n", i18n (30, "logged off."));
     log_event (remote_uin, LOG_ONLINE, "User logged off %s\n", UIN2Name (remote_uin));
 
-    if (SoundOnline == SOUND_CMD)
-        system (Sound_Str_Online);
+    if (uiG.SoundOnline == SOUND_CMD)
+        system (uiG.Sound_Str_Online);
 
     if ((con = UIN2Contact (remote_uin)) != NULL)
     {
@@ -462,7 +462,7 @@ void User_Online (int sok, UBYTE * pak)
 
     new_status = Chars_2_DW (&pak[17]);
 
-    if (Done_Login)
+    if (ssG.Done_Login)
     {
         R_undraw ();
         Time_Stamp ();
@@ -472,8 +472,8 @@ void User_Online (int sok, UBYTE * pak)
         Print_Status (new_status);
         M_print (").");
 
-        if (SoundOffline == SOUND_CMD)
-            system (Sound_Str_Offline);
+        if (uiG.SoundOffline == SOUND_CMD)
+            system (uiG.Sound_Str_Offline);
 
         if ((con = UIN2Contact (remote_uin)))
         {
@@ -493,7 +493,7 @@ void User_Online (int sok, UBYTE * pak)
         }
         log_event (remote_uin, LOG_ONLINE, "User logged on %s\n", UIN2Name (remote_uin));
 
-        if (Verbose)
+        if (uiG.Verbose)
         {
             M_print ("\n");
             M_print ("%-15s %d.%d.%d.%d\n", i18n (441, "IP:"), pak[4], pak[5], pak[6], pak[7]);
@@ -509,19 +509,19 @@ void User_Online (int sok, UBYTE * pak)
     else
     {
         Kill_Prompt ();
-        for (index = 0; index < Num_Contacts; index++)
+        for (index = 0; index < uiG.Num_Contacts; index++)
         {
-            if (Contacts[index].uin == remote_uin)
+            if (uiG.Contacts[index].uin == remote_uin)
             {
-                Contacts[index].status = new_status;
-                Contacts[index].current_ip[0] = pak[4];
-                Contacts[index].current_ip[1] = pak[5];
-                Contacts[index].current_ip[2] = pak[6];
-                Contacts[index].current_ip[3] = pak[7];
-                Contacts[index].port = Chars_2_DW (&pak[8]);
-                Contacts[index].last_time = time (NULL);
-                Contacts[index].TCP_version = Chars_2_Word (&pak[21]);
-                Contacts[index].connection_type = pak[16];
+                uiG.Contacts[index].status = new_status;
+                uiG.Contacts[index].current_ip[0] = pak[4];
+                uiG.Contacts[index].current_ip[1] = pak[5];
+                uiG.Contacts[index].current_ip[2] = pak[6];
+                uiG.Contacts[index].current_ip[3] = pak[7];
+                uiG.Contacts[index].port = Chars_2_DW (&pak[8]);
+                uiG.Contacts[index].last_time = time (NULL);
+                uiG.Contacts[index].TCP_version = Chars_2_Word (&pak[21]);
+                uiG.Contacts[index].connection_type = pak[16];
                 break;
             }
         }
@@ -553,7 +553,7 @@ void Status_Update (int sok, UBYTE * pak)
     index = Print_UIN_Name_10 (remote_uin);
     if (index != -1)
     {
-        Contacts[index].status = new_status;
+        uiG.Contacts[index].status = new_status;
     }
     M_print (" %s ", i18n (35, "changed status to"));
     Print_Status (new_status);
@@ -574,7 +574,7 @@ void Login (int sok, int UIN, char *pass, int ip, int port, UDWORD status)
 
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_LOGIN);
-    Word_2_Chars (pak.head.seq, seq_num++);
+    Word_2_Chars (pak.head.seq, ssG.seq_num++);
     DW_2_Chars (pak.head.UIN, UIN);
 
     DW_2_Chars (s1.port, ntohs (port) + 0x1000);
@@ -591,7 +591,7 @@ void Login (int sok, int UIN, char *pass, int ip, int port, UDWORD status)
     DW_2_Chars (s2.ip, ip);
     sin.sin_addr.s_addr = Chars_2_DW (s2.ip);
     DW_2_Chars (s2.status, status);
-/*    Word_2_Chars( s2.seq, seq_num++ );*/
+/*    Word_2_Chars( s2.seq, ssG.seq_num++ );*/
 
     DW_2_Chars (s2.X1, LOGIN_X1_DEF);
     s2.X2[0] = LOGIN_X2_DEF;
@@ -629,18 +629,20 @@ void Login (int sok, int UIN, char *pass, int ip, int port, UDWORD status)
     memcpy (&pak.data[size], &s2.X8, sizeof (s2.X8));
     size += sizeof (s2.X8);
 #if ICQ_VER == 0x0004
-    last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
 #elif ICQ_VER == 0x0005
-    last_cmd[seq_num - 1] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 1] = Chars_2_Word (pak.head.cmd);
 #else
-    last_cmd[seq_num - 2] = Chars_2_Word (pak.head.cmd);
+    ssG.last_cmd[ssG.seq_num - 2] = Chars_2_Word (pak.head.cmd);
 #endif
     SOCKWRITE (sok, &(pak.head.ver), size + sizeof (pak.head) - 2);
 }
 
-/* This routine sends the aknowlegement cmd to the
-    server it appears that this must be done after
-    everything the server sends us                      */
+/*
+ * This routine sends the aknowlegement cmd to the
+ * server it appears that this must be done after
+ * everything the server sends us
+ */
 void ack_srv (SOK_T sok, UDWORD seq)
 {
     net_icq_pak pak;
@@ -648,7 +650,7 @@ void ack_srv (SOK_T sok, UDWORD seq)
     Word_2_Chars (pak.head.ver, ICQ_VER);
     Word_2_Chars (pak.head.cmd, CMD_ACK);
     DW_2_Chars (pak.head.seq2, seq);
-    DW_2_Chars (pak.head.UIN, UIN);
+    DW_2_Chars (pak.head.UIN, ssG.UIN);
     DW_2_Chars (pak.data, rand ());
 
     SOCKWRITE (sok, &(pak.head.ver), sizeof (pak.head) - 2 + 4);
@@ -780,7 +782,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
      * run our script if we have one, but only
      * if we have one (submitted by Benjamin Simon)
      */
-    if (receive_script[0] != '\0')
+    if (uiG.receive_script[0] != '\0')
     {
         if (UIN2nick (uin) != NULL)
         {
@@ -792,14 +794,14 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
             snprintf (who, sizeof (who), "%ld", uin);
         }
 
-        cmd = (char *) malloc (strlen (receive_script) + strlen (data) + strlen (who) + 20);
+        cmd = (char *) malloc (strlen (uiG.receive_script) + strlen (data) + strlen (who) + 20);
 
-        snprintf (cmd, sizeof (cmd), "%s %s %ld '%s'", receive_script, who, type, data);
+        snprintf (cmd, sizeof (cmd), "%s %s %ld '%s'", uiG.receive_script, who, type, data);
         script_exit_status = system (cmd);
         if (script_exit_status != 0)
         {
             M_print (i18n (584, "Warning! Script command '%s' failed with exit value %d\n"),
-                     receive_script, script_exit_status);
+                     uiG.receive_script, script_exit_status);
         }
     }
 #endif
@@ -928,7 +930,7 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
         data = tmp;
         tmp = strchr (data, '\xFE');
         *tmp = 0;
-        if (Verbose)
+        if (uiG.Verbose)
         {
             M_print ("??? '%s'\n", data);
         }
@@ -997,17 +999,17 @@ void Do_Msg (SOK_T sok, UDWORD type, UWORD len, char *data, UDWORD uin)
        If we just received a message from someone on the contact list,
        save it with the person's contact information. If they are not in
        the list, don't do anything special with it.                              */
-    if (UIN2Contact (last_recv_uin) != NULL)
+    if (UIN2Contact (uiG.last_recv_uin) != NULL)
     {
-        UIN2Contact (last_recv_uin)->LastMessage =
-           realloc (UIN2Contact (last_recv_uin)->LastMessage, len + 5);
+        UIN2Contact (uiG.last_recv_uin)->LastMessage =
+           realloc (UIN2Contact (uiG.last_recv_uin)->LastMessage, len + 5);
         /* I add on so many characters because I always have segfaults in
            my own program when I try to allocate strings like this. Somehow
            it tries to write too much to the string even though I think I
            allocate the right amount. Oh well. It shouldn't be too much
            wasted space, I hope.                                                          */
         ConvWinUnix (data);
-        strcpy (UIN2Contact (last_recv_uin)->LastMessage, data);
+        strcpy (UIN2Contact (uiG.last_recv_uin)->LastMessage, data);
     }
     /* end of aaron */
 }

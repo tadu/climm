@@ -40,7 +40,6 @@
 static void Auto_Reply (SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg);
 static void Multi_Packet (SOK_T sok, UBYTE * data);
 
-/*extern unsigned int next_resend;*/
 /*extern BOOL serv_mess[ 1024 ];  used so that we don't get duplicate messages with the same SEQ */
 static int Reconnect_Count = 0;
 
@@ -51,42 +50,42 @@ static void Auto_Reply (SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg)
         /*** !!!!???? What does this if do?  Why is it here ????!!!!! ****/
     if (0xfe != *(((unsigned char *) s_mesg) + sizeof (s_mesg)))
     {
-        if (auto_resp && (Current_Status != STATUS_ONLINE) && (Current_Status != STATUS_FREE_CHAT))
+        if (uiG.auto_resp && (uiG.Current_Status != STATUS_ONLINE) && (uiG.Current_Status != STATUS_FREE_CHAT))
         {
-            switch (Current_Status & 0x1ff)
+            switch (uiG.Current_Status & 0x1ff)
             {
                 case STATUS_OCCUPIED:
                     /* Dup the string so the russian translation only happens once */
-                    temp = strdup (auto_rep_str_occ);
+                    temp = strdup (uiG.auto_rep_str_occ);
                     break;
                 case STATUS_AWAY:
-                    temp = strdup (auto_rep_str_away);
+                    temp = strdup (uiG.auto_rep_str_away);
                     break;
                 case STATUS_DND:
-                    temp = strdup (auto_rep_str_dnd);
+                    temp = strdup (uiG.auto_rep_str_dnd);
                     break;
                 case STATUS_INVISIBLE:
-                    temp = strdup (auto_rep_str_inv);
+                    temp = strdup (uiG.auto_rep_str_inv);
                     break;
                 case STATUS_NA:
-                    temp = strdup (auto_rep_str_na);
+                    temp = strdup (uiG.auto_rep_str_na);
                     break;
                 default:
-                    temp = strdup (auto_rep_str_occ);
+                    temp = strdup (uiG.auto_rep_str_occ);
                     M_print (i18n (635, "You have encounterd a bug in my code :( I now own you a beer!\nGreetings Fryslan!\n"));
             }
 
             icq_sendmsg (sok, Chars_2_DW (s_mesg->uin), temp, NORM_MESS);
             free (temp);
             M_print (i18n (636, "[ Sent auto-reply message to %d(%d)]\n"), Chars_2_DW (s_mesg->uin),
-                     last_recv_uin);
+                     uiG.last_recv_uin);
 
-            if (UIN2nick (last_recv_uin) != NULL)
-                log_event (last_recv_uin, LOG_AUTO_MESS,
-                           "Sending an auto-reply message to %s\n", UIN2nick (last_recv_uin));
+            if (UIN2nick (uiG.last_recv_uin) != NULL)
+                log_event (uiG.last_recv_uin, LOG_AUTO_MESS,
+                           "Sending an auto-reply message to %s\n", UIN2nick (uiG.last_recv_uin));
             else
-                log_event (last_recv_uin, LOG_AUTO_MESS,
-                           "Sending an auto-reply message to %d\n", last_recv_uin);
+                log_event (uiG.last_recv_uin, LOG_AUTO_MESS,
+                           "Sending an auto-reply message to %d\n", uiG.last_recv_uin);
         }
     }
 }
@@ -131,19 +130,19 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
     switch (cmd)
     {
         case SRV_ACK:
-            if (Verbose)
+            if (uiG.Verbose)
             {
                 Kill_Prompt ();
                 R_undraw ();
             }
-            if (Verbose > 1)
+            if (uiG.Verbose > 1)
             {
                 M_print (i18n (51, "The server acknowledged the %04x command."),
-                         last_cmd[seq >> 16]);
+                         ssG.last_cmd[seq >> 16]);
                 M_print (i18n (638, "\nThe SEQ was %04X\n"), seq);
             }
             Check_Queue (seq);
-            if (Verbose)
+            if (uiG.Verbose)
             {
                 if (len != 0)
                 {
@@ -180,16 +179,16 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             R_redraw ();
             break;
         case SRV_LOGIN_REPLY:
-/*      UIN = Chars_2_DW( &pak.data[0] ); */
+/*      ssG.UIN = Chars_2_DW( &pak.data[0] ); */
             R_undraw ();
-            our_ip = Chars_2_DW (&data[0]);
+            ssG.our_ip = Chars_2_DW (&data[0]);
             Time_Stamp ();
             M_print (" " MAGENTA BOLD "%10lu" COLNONE " %s\n", uin, i18n (50, "Login successful!"));
             snd_login_1 (sok);
             snd_contact_list (sok);
             snd_invis_list (sok);
             snd_vis_list (sok);
-            Current_Status = set_status;
+            uiG.Current_Status = ssG.set_status;
             if (loginmsg++)
             {
                 R_redraw ();
@@ -205,7 +204,7 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
                      data[12], data[13], data[14], data[15]);
 #endif
             R_redraw ();
-/*      icq_change_status( sok, set_status );*/
+/*      icq_change_status( sok, ssG.set_status );*/
 /*      Prompt();*/
             break;
         case SRV_RECV_MESSAGE:
@@ -215,17 +214,17 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             break;
         case SRV_X1:
             R_undraw ();
-            if (Verbose)
+            if (uiG.Verbose)
             {
                 M_print (i18n (643, "Acknowleged SRV_X1 0x021C Done Contact list?\n"));
             }
             CmdUser (sok, "¶e");
             R_redraw ();
-            Done_Login = TRUE;
+            ssG.Done_Login = TRUE;
             break;
         case SRV_X2:
 /*      Kill_Prompt();*/
-            if (Verbose)
+            if (uiG.Verbose)
             {
                 R_undraw ();
                 M_print (i18n (644, "Acknowleged SRV_X2 0x00E6 Done old messages?\n"));
@@ -266,12 +265,12 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             if (i < 0)
             {
                 sleep (2);
-                Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
+                Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
             }
             else if (!i)
             {
                 sleep (5);
-                Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
+                Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
                 _exit (0);
             }
             R_redraw ();
@@ -294,7 +293,7 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             if (Reconnect_Count >= MAX_RECONNECT_ATTEMPTS)
             {
                 M_print ("%s\n", i18n (34, "Maximum number of tries reached. Giving up."));
-                Quit = TRUE;
+                ssG.Quit = TRUE;
                 R_redraw ();
                 break;
             }
@@ -308,12 +307,12 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             if (i < 0)
             {
                 sleep (2);
-                Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
+                Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
             }
             else if (!i)
             {
                 sleep (5);
-                Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
+                Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
                 _exit (0);
             }
             M_print ("\n");
@@ -355,9 +354,9 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
         /*** doing msg does not cause cancer that is all thank you */
             R_undraw ();
             s_mesg = (SIMPLE_MESSAGE_PTR) data;
-            if (!((NULL == UIN2Contact (Chars_2_DW (s_mesg->uin))) && (Hermit)))
+            if (!((NULL == UIN2Contact (Chars_2_DW (s_mesg->uin))) && (uiG.Hermit)))
             {
-                last_recv_uin = Chars_2_DW (s_mesg->uin);
+                uiG.last_recv_uin = Chars_2_DW (s_mesg->uin);
                 Time_Stamp ();
                 M_print ("\a " CYAN BOLD "%10s" COLNONE " ", UIN2Name (Chars_2_DW (s_mesg->uin)));
                 /*
@@ -367,10 +366,10 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
                    M_print (i18n (33, " - Instant Mass Message"));
                    M_print ("\a ");
                  */
-                if (Verbose)
+                if (uiG.Verbose)
                     M_print (i18n (647, " Type = %04x\t"), Chars_2_Word (s_mesg->type));
                 Do_Msg (sok, Chars_2_Word (s_mesg->type), Chars_2_Word (s_mesg->len),
-                        s_mesg->len + 2, last_recv_uin);
+                        s_mesg->len + 2, uiG.last_recv_uin);
                 Auto_Reply (sok, s_mesg);
             }
             R_redraw ();
@@ -384,7 +383,7 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
             M_print (i18n (649, "The version was %X\t"), ver);
             M_print (i18n (650, "\nThe SEQ was %04X\t"), seq);
             M_print (i18n (651, "The size was %d\n"), len);
-            if (Verbose)
+            if (uiG.Verbose)
             {
                 if (len > 0)
                     Hex_Dump (data, len);

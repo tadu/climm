@@ -39,7 +39,7 @@
 #endif
 
 static BOOL No_Prompt = FALSE;
-UWORD Max_Screen_Width = 0;
+/* Max_Screen_Width set to zero in micq.c */
 
 
 /***************************************************************
@@ -149,8 +149,8 @@ UWORD Get_Max_Screen_Width ()
             scrwd = 0;
         return scrwdtmp;
     }
-    if (Max_Screen_Width)
-        return Max_Screen_Width;
+    if (uiG.Max_Screen_Width)
+        return uiG.Max_Screen_Width;
     return 80;                  /* a reasonable screen width default. */
 }
 
@@ -234,16 +234,16 @@ static void M_prints (const char *str)
                 }
                 break;
             case '\a':
-                if (Sound == SOUND_ON)
+                if (uiG.Sound == SOUND_ON)
                     printf ("\a");
                 else
-                    system (Sound_Str);
+                    system (uiG.Sound_Str);
                 break;
             case '\x1b':
                 switch (*++p)
                 {
                     case '<':
-                        switch (line_break_type)
+                        switch (uiG.line_break_type)
                         {
                             case 0:
                                 printf ("\n");
@@ -279,7 +279,7 @@ static void M_prints (const char *str)
                         str++;
                         break;
                     case '>':
-                        switch (line_break_type)
+                        switch (uiG.line_break_type)
                         {
                             case 2:
                                 CharCount += IndentCount;
@@ -290,7 +290,7 @@ static void M_prints (const char *str)
                         str++;
                         break;
                     case COLCHR:
-                        if (!Color)
+                        if (!uiG.Color)
                         {
                             str += 2;
                             break;
@@ -330,7 +330,7 @@ static void M_prints (const char *str)
                         s = strchr (p, 'm');
                         if (s)
                         {
-                            if (Color)
+                            if (uiG.Color)
                                 printf ("%.*s", s - str + 1, str);
                             str = s;
                         }
@@ -408,10 +408,10 @@ static void M_prints (char *str)
                 }
             }
         }
-        else if (SOUND_ON == Sound)
+        else if (SOUND_ON == uiG.Sound)
             printf ("\a");
-        else if (SOUND_CMD == Sound)
-            system (Sound_Str);
+        else if (SOUND_CMD == uiG.Sound)
+            system (uiG.Sound_Str);
     }
 }
 
@@ -437,7 +437,7 @@ void M_print (char *str, ...)
         if (str2)
         {
             str2[0] = 0;
-            if (Color)
+            if (uiG.Color)
                 printf ("%sm", str1);
             str2++;
         }
@@ -521,7 +521,7 @@ extern UDWORD last_uin;
 void Prompt (void)
 {
     static char buff[200];
-    if (last_uin_prompt && last_uin)
+    if (uiG.last_uin_prompt && last_uin)
     {
         snprintf (buff, sizeof (buff), COLSERV "[%s]" COLNONE " ", UIN2Name (last_uin));
         R_doprompt (buff);

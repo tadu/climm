@@ -172,7 +172,7 @@ JUMP_F(CmdUserChange)
     icq_change_status (sok, data);
     Time_Stamp ();
     M_print (" ");
-    Print_Status (Current_Status);
+    Print_Status (uiG.Current_Status);
     M_print ("\n");
     return 0;
 }
@@ -513,22 +513,22 @@ JUMP_F(CmdUserAuto)
     cmd = strtok (args, "");
     if (cmd == NULL)
     {
-        M_print (i18n (724, "Automatic replies are %s.\n"), auto_resp ? i18n (85, "on") : i18n (86, "off"));
-        M_print ("%30s %s\n", i18n (727, "The Do not disturb message is:"), auto_rep_str_dnd);
-        M_print ("%30s %s\n", i18n (728, "The Away message is:"),           auto_rep_str_away);
-        M_print ("%30s %s\n", i18n (729, "The Not available message is:"),  auto_rep_str_na);
-        M_print ("%30s %s\n", i18n (730, "The Occupied message is:"),       auto_rep_str_occ);
-        M_print ("%30s %s\n", i18n (731, "The Invisible message is:"),      auto_rep_str_inv);
+        M_print (i18n (724, "Automatic replies are %s.\n"), uiG.auto_resp ? i18n (85, "on") : i18n (86, "off"));
+        M_print ("%30s %s\n", i18n (727, "The Do not disturb message is:"), uiG.auto_rep_str_dnd);
+        M_print ("%30s %s\n", i18n (728, "The Away message is:"),           uiG.auto_rep_str_away);
+        M_print ("%30s %s\n", i18n (729, "The Not available message is:"),  uiG.auto_rep_str_na);
+        M_print ("%30s %s\n", i18n (730, "The Occupied message is:"),       uiG.auto_rep_str_occ);
+        M_print ("%30s %s\n", i18n (731, "The Invisible message is:"),      uiG.auto_rep_str_inv);
         return 0;
     }
     else if (strcasecmp (cmd, "on") == 0)
     {
-        auto_resp = TRUE;
+        uiG.auto_resp = TRUE;
         M_print (i18n (724, "Automatic replies are %s.\n"), i18n (85, "on"));
     }
     else if (strcasecmp (cmd, "off") == 0)
     {
-        auto_resp = FALSE;
+        uiG.auto_resp = FALSE;
         M_print (i18n (724, "Automatic replies are %s.\n"), i18n (86, "off"));
     }
     else
@@ -547,7 +547,7 @@ JUMP_F(CmdUserAuto)
                 M_print (i18n (735, "Must give a message.\n"));
                 return 0;
             }
-            strcpy (auto_rep_str_dnd, cmd);
+            strcpy (uiG.auto_rep_str_dnd, cmd);
         }
         else if (!strcasecmp (arg1, CmdUserLookupName ("away")))
         {
@@ -557,7 +557,7 @@ JUMP_F(CmdUserAuto)
                 M_print (i18n (735, "Must give a message.\n"));
                 return 0;
             }
-            strcpy (auto_rep_str_away, cmd);
+            strcpy (uiG.auto_rep_str_away, cmd);
         }
         else if (!strcasecmp (arg1, CmdUserLookupName ("na")))
         {
@@ -567,7 +567,7 @@ JUMP_F(CmdUserAuto)
                 M_print (i18n (735, "Must give a message.\n"));
                 return 0;
             }
-            strcpy (auto_rep_str_na, cmd);
+            strcpy (uiG.auto_rep_str_na, cmd);
         }
         else if (!strcasecmp (arg1, CmdUserLookupName ("occ")))
         {
@@ -577,7 +577,7 @@ JUMP_F(CmdUserAuto)
                 M_print (i18n (735, "Must give a message.\n"));
                 return 0;
             }
-            strcpy (auto_rep_str_occ, cmd);
+            strcpy (uiG.auto_rep_str_occ, cmd);
         }
         else if (!strcasecmp (arg1, CmdUserLookupName ("inv")))
         {
@@ -587,7 +587,7 @@ JUMP_F(CmdUserAuto)
                 M_print (i18n (735, "Must give a message.\n"));
                 return 0;
             }
-            strcpy (auto_rep_str_inv, cmd);
+            strcpy (uiG.auto_rep_str_inv, cmd);
         }
         else
             M_print (i18n (736, "Sorry wrong syntax. Read tha help man!\n"));
@@ -676,10 +676,10 @@ JUMP_F (CmdUserMessage)
                 int i;
                 char *temp;
                 
-                for (i = 0; i < Num_Contacts; i++)
+                for (i = 0; i < uiG.Num_Contacts; i++)
                 {
                     temp = strdup (msg);
-                    icq_sendmsg (sok, Contacts[i].uin, temp, MRNORM_MESS);
+                    icq_sendmsg (sok, uiG.Contacts[i].uin, temp, MRNORM_MESS);
                     free (temp);
                 }
             }
@@ -713,10 +713,10 @@ JUMP_F (CmdUserMessage)
                     int i;
                     char *temp;
                     
-                    for (i = 0; i < Num_Contacts; i++)
+                    for (i = 0; i < uiG.Num_Contacts; i++)
                     {
                         temp = strdup (msg);
-                        icq_sendmsg (sok, Contacts[i].uin, temp, MRNORM_MESS);
+                        icq_sendmsg (sok, uiG.Contacts[i].uin, temp, MRNORM_MESS);
                         free (temp);
                     }
                 }
@@ -750,12 +750,12 @@ JUMP_F (CmdUserMessage)
                 arg1 = strtok (NULL, "");
                 break;
             case 2:
-                if (!last_recv_uin)
+                if (!uiG.last_recv_uin)
                 {
                     M_print (i18n (741, "Must receive a message first\n"));
                     return 0;
                 }
-                uin = last_recv_uin;
+                uin = uiG.last_recv_uin;
                 arg1 = strtok (args, "");
                 break;
             case 4:
@@ -786,10 +786,10 @@ JUMP_F (CmdUserMessage)
                 int i;
                 char *temp;
                 
-                for (i = 0; i < Num_Contacts; i++)
+                for (i = 0; i < uiG.Num_Contacts; i++)
                 {
                     temp = strdup (arg1);
-                    icq_sendmsg (sok, Contacts[i].uin, temp, MRNORM_MESS);
+                    icq_sendmsg (sok, uiG.Contacts[i].uin, temp, MRNORM_MESS);
                     free (temp);
                 }
             }
@@ -829,9 +829,9 @@ JUMP_F(CmdUserVerbose)
     arg1 = strtok (args, "");
     if (arg1 != NULL)
     {
-        Verbose = atoi (arg1);
+        uiG.Verbose = atoi (arg1);
     }
-    M_print (i18n (60, "Verbosity level is %d.\n"), Verbose);
+    M_print (i18n (60, "Verbosity level is %d.\n"), uiG.Verbose);
     return 0;
 }
 
@@ -910,19 +910,19 @@ JUMP_F(CmdUserStatus)
     Time_Stamp ();
     M_print (" ");
     M_print (i18n (71, "Your status is "));
-    Print_Status (Current_Status);
+    Print_Status (uiG.Current_Status);
     M_print ("\n");
     /*  First loop sorts thru all offline users */
     M_print ("%s%s\n", W_SEPERATOR, i18n (72, "Users offline:"));
-    for (i = 0; i < Num_Contacts; i++)
+    for (i = 0; i < uiG.Num_Contacts; i++)
     {
-        if ((SDWORD) Contacts[i].uin > 0)
+        if ((SDWORD) uiG.Contacts[i].uin > 0)
         {
-            if (FALSE == Contacts[i].invis_list)
+            if (FALSE == uiG.Contacts[i].invis_list)
             {
-                if (Contacts[i].status == STATUS_OFFLINE)
+                if (uiG.Contacts[i].status == STATUS_OFFLINE)
                 {
-                    if (Contacts[i].vis_list)
+                    if (uiG.Contacts[i].vis_list)
                     {
                         M_print ("%s*%s", COLSERV, COLNONE);
                     }
@@ -930,14 +930,14 @@ JUMP_F(CmdUserStatus)
                     {
                         M_print (" ");
                     }
-                    M_print ("%8ld=", Contacts[i].uin);
-                    M_print (COLCONTACT "%-20s\t%s(", Contacts[i].nick, COLMESS);
-                    Print_Status (Contacts[i].status);
+                    M_print ("%8ld=", uiG.Contacts[i].uin);
+                    M_print (COLCONTACT "%-20s\t%s(", uiG.Contacts[i].nick, COLMESS);
+                    Print_Status (uiG.Contacts[i].status);
                     M_print (")" COLNONE);
-                    if (-1L != Contacts[i].last_time)
+                    if (-1L != uiG.Contacts[i].last_time)
                     {
                         M_print (i18n (69, " Last online at %s"),
-                                 ctime ((time_t *) & Contacts[i].last_time));
+                                 ctime ((time_t *) & uiG.Contacts[i].last_time));
                     }
                     else
                     {
@@ -952,15 +952,15 @@ JUMP_F(CmdUserStatus)
     }
     /* The second loop displays all the online users */
     M_print ("%s%s\n", W_SEPERATOR, i18n (73, "Users online:"));
-    for (i = 0; i < Num_Contacts; i++)
+    for (i = 0; i < uiG.Num_Contacts; i++)
     {
-        if ((SDWORD) Contacts[i].uin > 0)
+        if ((SDWORD) uiG.Contacts[i].uin > 0)
         {
-            if (FALSE == Contacts[i].invis_list)
+            if (FALSE == uiG.Contacts[i].invis_list)
             {
-                if (Contacts[i].status != STATUS_OFFLINE)
+                if (uiG.Contacts[i].status != STATUS_OFFLINE)
                 {
-                    if (Contacts[i].vis_list)
+                    if (uiG.Contacts[i].vis_list)
                     {
                         M_print ("%s*%s", COLSERV, COLNONE);
                     }
@@ -968,18 +968,18 @@ JUMP_F(CmdUserStatus)
                     {
                         M_print (" ");
                     }
-                    M_print ("%8ld=", Contacts[i].uin);
-                    M_print (COLCONTACT "%-20s\t%s(", Contacts[i].nick, COLMESS);
-                    Print_Status (Contacts[i].status);
+                    M_print ("%8ld=", uiG.Contacts[i].uin);
+                    M_print (COLCONTACT "%-20s\t%s(", uiG.Contacts[i].nick, COLMESS);
+                    Print_Status (uiG.Contacts[i].status);
                     M_print (")" COLNONE);
-                    if (-1L != Contacts[i].last_time)
+                    if (-1L != uiG.Contacts[i].last_time)
                     {
-                        if (Contacts[i].status == STATUS_OFFLINE)
+                        if (uiG.Contacts[i].status == STATUS_OFFLINE)
                             M_print (i18n (69, " Last online at %s"),
-                                     ctime ((time_t *) & Contacts[i].last_time));
+                                     ctime ((time_t *) & uiG.Contacts[i].last_time));
                         else
                             M_print (i18n (68, " Online since %s"),
-                                     ctime ((time_t *) & Contacts[i].last_time));
+                                     ctime ((time_t *) & uiG.Contacts[i].last_time));
                     }
                     else
                     {
@@ -1005,13 +1005,13 @@ JUMP_F(CmdUserIgnoreStatus)
 
     M_print ("%s%s\n", W_SEPERATOR, i18n (62, "Users ignored:"));
     /*  Sorts thru all ignored users */
-    for (i = 0; i < Num_Contacts; i++)
+    for (i = 0; i < uiG.Num_Contacts; i++)
     {
-        if ((SDWORD) Contacts[i].uin > 0)
+        if ((SDWORD) uiG.Contacts[i].uin > 0)
         {
-            if (TRUE == Contacts[i].invis_list)
+            if (TRUE == uiG.Contacts[i].invis_list)
             {
-                if (Contacts[i].vis_list)
+                if (uiG.Contacts[i].vis_list)
                 {
                     M_print (COLSERV "*" COLNONE);
                 }
@@ -1019,8 +1019,8 @@ JUMP_F(CmdUserIgnoreStatus)
                 {
                     M_print (" ");
                 }
-                M_print (COLCONTACT "%-20s\t" COLMESS "(", Contacts[i].nick);
-                Print_Status (Contacts[i].status);
+                M_print (COLCONTACT "%-20s\t" COLMESS "(", uiG.Contacts[i].nick);
+                Print_Status (uiG.Contacts[i].status);
                 M_print (")" COLNONE "\n");
             }
         }
@@ -1044,13 +1044,13 @@ JUMP_F(CmdUserStatusWide)
     int NumCols;                /* number of columns to display on screen        */
     int Col;                    /* the current column during output.            */
 
-    if ((Online = (int *) malloc (Num_Contacts * sizeof (int))) == NULL)
+    if ((Online = (int *) malloc (uiG.Num_Contacts * sizeof (int))) == NULL)
     {
         M_print (i18n (652, "Insuffificient memory to display a wide Contact List.\n"));
         return 0;
     }
 
-    if ((Offline = (int *) malloc (Num_Contacts * sizeof (int))) == NULL)
+    if ((Offline = (int *) malloc (uiG.Num_Contacts * sizeof (int))) == NULL)
     {
         M_print (i18n (652, "Insuffificient memory to display a wide Contact List.\n"));
         return 0;
@@ -1058,7 +1058,7 @@ JUMP_F(CmdUserStatusWide)
 
     /* We probably don't need to zero out the array, but just to be on the
        safe side...
-       The arrays really should be only Num_Contacts in size... future
+       The arrays really should be only uiG.Num_Contacts in size... future
        improvement, I guess. Hopefully no one is running that tight on
        memory.                                                                */
     memset (Online, 0, sizeof (Online));
@@ -1067,17 +1067,17 @@ JUMP_F(CmdUserStatusWide)
     /* Filter the contact list into two lists -- online and offline. Also
        find the longest name in the list -- this is used to determine how
        many columns will fit on the screen.                                */
-    for (i = 0; i < Num_Contacts; i++)
+    for (i = 0; i < uiG.Num_Contacts; i++)
     {
-        if ((SDWORD) Contacts[i].uin > 0)
+        if ((SDWORD) uiG.Contacts[i].uin > 0)
         {                       /* Aliases */
-            if (Contacts[i].status == STATUS_OFFLINE)
+            if (uiG.Contacts[i].status == STATUS_OFFLINE)
                 Offline[OffIdx++] = i;
             else
                 Online[OnIdx++] = i;
 
-            if (strlen (Contacts[i].nick) > MaxLen)
-                MaxLen = strlen (Contacts[i].nick);
+            if (strlen (uiG.Contacts[i].nick) > MaxLen)
+                MaxLen = strlen (uiG.Contacts[i].nick);
         }
     }                           /* end for */
 
@@ -1103,12 +1103,12 @@ JUMP_F(CmdUserStatusWide)
     for (Col = 1, i = 0; i < OffIdx; i++)
         if (Col % NumCols == 0)
         {
-            M_print (COLCONTACT "  %-*s\n" COLNONE, MaxLen + 2, Contacts[Offline[i]].nick);
+            M_print (COLCONTACT "  %-*s\n" COLNONE, MaxLen + 2, uiG.Contacts[Offline[i]].nick);
             Col = 1;
         }
         else
         {
-            M_print (COLCONTACT "  %-*s" COLNONE, MaxLen + 2, Contacts[Offline[i]].nick);
+            M_print (COLCONTACT "  %-*s" COLNONE, MaxLen + 2, uiG.Contacts[Offline[i]].nick);
             Col++;
         }                       /* end if */
 
@@ -1136,24 +1136,24 @@ JUMP_F(CmdUserStatusWide)
         const char *status;
         char weird = 'W';       /* for weird statuses that are reported as hex */
 
-        status = Convert_Status_2_Str (Contacts[Online[i]].status);
+        status = Convert_Status_2_Str (uiG.Contacts[Online[i]].status);
         status = status ? status : &weird;
-        if ((Contacts[Online[i]].status & 0xfff) == STATUS_ONLINE)
+        if ((uiG.Contacts[Online[i]].status & 0xfff) == STATUS_ONLINE)
         {
             status = " ";
         }
         if (Col % NumCols == 0)
         {
             M_print (COLNONE "%c " COLCONTACT "%-*s\n" COLNONE,
-                     /*        *Convert_Status_2_Str(Contacts[Online[i]].status), */
-                     *status, MaxLen + 2, Contacts[Online[i]].nick);
+                     /*        *Convert_Status_2_Str(uiG.Contacts[Online[i]].status), */
+                     *status, MaxLen + 2, uiG.Contacts[Online[i]].nick);
             Col = 1;
         }
         else
         {
             M_print (COLNONE "%c " COLCONTACT "%-*s" COLNONE,
-/*                    *Convert_Status_2_Str(Contacts[Online[i]].status), */
-                     *status, MaxLen + 2, Contacts[Online[i]].nick);
+/*                    *Convert_Status_2_Str(uiG.Contacts[Online[i]].status), */
+                     *status, MaxLen + 2, uiG.Contacts[Online[i]].nick);
             Col++;
         }                       /* end if */
     }
@@ -1181,21 +1181,21 @@ JUMP_F(CmdUserStatusW)
 
     M_print (W_SEPERATOR);
     Time_Stamp ();
-    M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", UIN);
+    M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", ssG.UIN);
     M_print (i18n (71, "Your status is "));
-    Print_Status (Current_Status);
+    Print_Status (uiG.Current_Status);
     M_print ("\n");
     M_print ("%s%s\n", W_SEPERATOR, i18n (72, "Users offline:"));
 
-    for (i = 0; i < Num_Contacts; i++)
+    for (i = 0; i < uiG.Num_Contacts; i++)
     {
-        if ((SDWORD) Contacts[i].uin > 0)
+        if ((SDWORD) uiG.Contacts[i].uin > 0)
         {
-            if (FALSE == Contacts[i].invis_list)
+            if (FALSE == uiG.Contacts[i].invis_list)
             {
-                if (Contacts[i].status == STATUS_OFFLINE)
+                if (uiG.Contacts[i].status == STATUS_OFFLINE)
                 {
-                    if (Contacts[i].vis_list)
+                    if (uiG.Contacts[i].vis_list)
                     {
                         M_print (COLSERV "*" COLNONE);
                     }
@@ -1203,8 +1203,8 @@ JUMP_F(CmdUserStatusW)
                     {
                         M_print (" ");
                     }
-                    M_print (COLCONTACT "%-20s\t" COLMESS "(", Contacts[i].nick);
-                    Print_Status (Contacts[i].status);
+                    M_print (COLCONTACT "%-20s\t" COLMESS "(", uiG.Contacts[i].nick);
+                    Print_Status (uiG.Contacts[i].status);
                     M_print (")" COLNONE "\n");
                 }
             }
@@ -1212,15 +1212,15 @@ JUMP_F(CmdUserStatusW)
     }
 
     M_print ("%s%s\n", W_SEPERATOR, i18n (73, "Users online:"));
-    for (i = 0; i < Num_Contacts; i++)
+    for (i = 0; i < uiG.Num_Contacts; i++)
     {
-        if ((SDWORD) Contacts[i].uin > 0)
+        if ((SDWORD) uiG.Contacts[i].uin > 0)
         {
-            if (FALSE == Contacts[i].invis_list)
+            if (FALSE == uiG.Contacts[i].invis_list)
             {
-                if (Contacts[i].status != STATUS_OFFLINE)
+                if (uiG.Contacts[i].status != STATUS_OFFLINE)
                 {
-                    if (Contacts[i].vis_list)
+                    if (uiG.Contacts[i].vis_list)
                     {
                         M_print (COLSERV "*" COLNONE);
                     }
@@ -1228,8 +1228,8 @@ JUMP_F(CmdUserStatusW)
                     {
                         M_print (" ");
                     }
-                    M_print (COLCONTACT "%-20s\t" COLMESS "(", Contacts[i].nick);
-                    Print_Status (Contacts[i].status);
+                    M_print (COLCONTACT "%-20s\t" COLMESS "(", uiG.Contacts[i].nick);
+                    Print_Status (uiG.Contacts[i].status);
                     M_print (")" COLNONE "\n");
                 }
             }
@@ -1248,22 +1248,22 @@ JUMP_F(CmdUserStatusE)
 
     M_print (W_SEPERATOR);
     Time_Stamp ();
-    M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", UIN);
+    M_print (" " MAGENTA BOLD "%10lu" COLNONE " ", ssG.UIN);
     M_print (i18n (71, "Your status is "));
-    Print_Status (Current_Status);
+    Print_Status (uiG.Current_Status);
     M_print ("\n");
 
     /* Loop displays all the online users */
     M_print ("%s%s\n", W_SEPERATOR, i18n (73, "Users online:"));
-    for (i = 0; i < Num_Contacts; i++)
+    for (i = 0; i < uiG.Num_Contacts; i++)
     {
-        if ((SDWORD) Contacts[i].uin > 0)
+        if ((SDWORD) uiG.Contacts[i].uin > 0)
         {
-            if (FALSE == Contacts[i].invis_list)
+            if (FALSE == uiG.Contacts[i].invis_list)
             {
-                if (Contacts[i].status != STATUS_OFFLINE)
+                if (uiG.Contacts[i].status != STATUS_OFFLINE)
                 {
-                    if (Contacts[i].vis_list)
+                    if (uiG.Contacts[i].vis_list)
                     {
                         M_print (COLSERV "*" COLNONE);
                     }
@@ -1271,8 +1271,8 @@ JUMP_F(CmdUserStatusE)
                     {
                         M_print (" ");
                     }
-                    M_print (COLCONTACT "%-20s\t" COLMESS "(", Contacts[i].nick);
-                    Print_Status (Contacts[i].status);
+                    M_print (COLCONTACT "%-20s\t" COLMESS "(", uiG.Contacts[i].nick);
+                    Print_Status (uiG.Contacts[i].status);
                     M_print (")" COLNONE "\n");
                 }
             }
@@ -1291,20 +1291,20 @@ JUMP_F(CmdUserSound)
     
     if ((arg1 = strtok (args, "")))
     {
-        *Sound_Str = 0;
-        Sound = SOUND_ON;
+        *uiG.Sound_Str = 0;
+        uiG.Sound = SOUND_ON;
         if (!strcasecmp (arg1, i18n (85, "on")))
-           Sound = SOUND_ON;
+           uiG.Sound = SOUND_ON;
         else if (!strcasecmp (arg1, i18n (86, "off")))
-           Sound = SOUND_OFF;
+           uiG.Sound = SOUND_OFF;
         else /* treat it as a command */
-           strcpy (Sound_Str, arg1);
+           strcpy (uiG.Sound_Str, arg1);
     }
-    if (*Sound_Str)
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (83, "Sound cmd"), Sound_Str);
-    else if (SOUND_ON == Sound)
+    if (*uiG.Sound_Str)
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (83, "Sound cmd"), uiG.Sound_Str);
+    else if (SOUND_ON == uiG.Sound)
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (84, "Sound"), i18n (85, "on"));
-    else if (SOUND_OFF == Sound)
+    else if (SOUND_OFF == uiG.Sound)
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (84, "Sound"), i18n (86, "off"));
     return 0;
 }
@@ -1318,20 +1318,20 @@ JUMP_F(CmdUserSoundOnline)
     
     if ((arg1 = strtok (args, "")))
     {
-        *Sound_Str = 0;
-        SoundOnline = SOUND_ON;
+        *uiG.Sound_Str = 0;
+        uiG.SoundOnline = SOUND_ON;
         if (!strcasecmp (arg1, i18n (85, "on")))
-           SoundOnline = SOUND_ON;
+           uiG.SoundOnline = SOUND_ON;
         else if (!strcasecmp (arg1, i18n (86, "off")))
-           SoundOnline = SOUND_OFF;
+           uiG.SoundOnline = SOUND_OFF;
         else /* treat it as a command */
-           strcpy (Sound_Str_Online, arg1);
+           strcpy (uiG.Sound_Str_Online, arg1);
     }
-    if (*Sound_Str_Online)
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (802, "SoundOnline cmd"), Sound_Str_Online);
-    else if (SOUND_ON == SoundOnline)
+    if (*uiG.Sound_Str_Online)
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (802, "SoundOnline cmd"), uiG.Sound_Str_Online);
+    else if (SOUND_ON == uiG.SoundOnline)
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (804, "SoundOnline"), i18n (85, "on"));
-    else if (SOUND_OFF == SoundOnline)
+    else if (SOUND_OFF == uiG.SoundOnline)
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (804, "SoundOnline"), i18n (86, "off"));
     return 0;
 }
@@ -1345,20 +1345,20 @@ JUMP_F(CmdUserSoundOffline)
     
     if ((arg1 = strtok (args, "")))
     {
-        *Sound_Str_Offline = 0;
-        SoundOffline = SOUND_ON;
+        *uiG.Sound_Str_Offline = 0;
+        uiG.SoundOffline = SOUND_ON;
         if (!strcasecmp (arg1, i18n (85, "on")))
-           SoundOffline = SOUND_ON;
+           uiG.SoundOffline = SOUND_ON;
         else if (!strcasecmp (arg1, i18n (86, "off")))
-           SoundOffline = SOUND_OFF;
+           uiG.SoundOffline = SOUND_OFF;
         else /* treat it as a command */
-           strcpy (Sound_Str_Offline, arg1);
+           strcpy (uiG.Sound_Str_Offline, arg1);
     }
-    if (*Sound_Str_Offline)
-        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (803, "SoundOffline cmd"), Sound_Str_Offline);
-    else if (SOUND_ON == SoundOffline)
+    if (*uiG.Sound_Str_Offline)
+        M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (803, "SoundOffline cmd"), uiG.Sound_Str_Offline);
+    else if (SOUND_ON == uiG.SoundOffline)
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (805, "SoundOffline"), i18n (85, "on"));
-    else if (SOUND_OFF == SoundOffline)
+    else if (SOUND_OFF == uiG.SoundOffline)
         M_print ("%s " COLSERV "%s" COLNONE ".\n", i18n (805, "SoundOffline"), i18n (86, "off"));
     return 0;
 }
@@ -1369,8 +1369,8 @@ JUMP_F(CmdUserSoundOffline)
  */
 JUMP_F(CmdUserColor)
 {
-    Color = !Color;
-    if (Color)
+    uiG.Color = !uiG.Color;
+    if (uiG.Color)
     {
         M_print (i18n (662, "Color is " COLMESS "%s" COLNONE ".\n"), i18n (85, "on"));
     }
@@ -1431,10 +1431,10 @@ JUMP_F(CmdUserTogIgnore)
                 snd_contact_list (sok);
                 snd_invis_list (sok);
                 snd_vis_list (sok);
-                icq_change_status (sok, Current_Status);
+                icq_change_status (sok, uiG.Current_Status);
                 Time_Stamp ();
                 M_print (" ");
-                Print_Status (Current_Status);
+                Print_Status (uiG.Current_Status);
                 M_print ("\n");
             }
         }
@@ -1528,15 +1528,15 @@ JUMP_F(CmdUserAdd)
  */
 JUMP_F(CmdUserRInfo)
 {
-    Print_UIN_Name (last_recv_uin);
+    Print_UIN_Name (uiG.last_recv_uin);
     M_print (i18n (672, "'s IP address is "));
-    Print_IP (last_recv_uin);
-    if ((UWORD) Get_Port (last_recv_uin) != (UWORD) 0xffff)
-        M_print (i18n (673, "\tThe port is %d\n"), (UWORD) Get_Port (last_recv_uin));
+    Print_IP (uiG.last_recv_uin);
+    if ((UWORD) Get_Port (uiG.last_recv_uin) != (UWORD) 0xffff)
+        M_print (i18n (673, "\tThe port is %d\n"), (UWORD) Get_Port (uiG.last_recv_uin));
     else
         M_print (i18n (674, "\tThe port is unknown\n"));
-    send_info_req (sok, last_recv_uin);
-/*  send_ext_info_req( sok, last_recv_uin );*/
+    send_info_req (sok, uiG.last_recv_uin);
+/*  send_ext_info_req( sok, uiG.last_recv_uin );*/
     return 0;
 }
 
@@ -1664,9 +1664,9 @@ JUMP_F(CmdUserLast)
     {
         int i;
         M_print (i18n (682, "You have received messages from:\n"));
-        for (i = 0; i < Num_Contacts; i++)
-            if (Contacts[i].LastMessage != NULL)
-                M_print (COLCONTACT "  %s" COLNONE "\n", Contacts[i].nick);
+        for (i = 0; i < uiG.Num_Contacts; i++)
+            if (uiG.Contacts[i].LastMessage != NULL)
+                M_print (COLCONTACT "  %s" COLNONE "\n", uiG.Contacts[i].nick);
     }
     else
     {
@@ -1700,7 +1700,7 @@ JUMP_F(CmdUserLast)
  */
 JUMP_F(CmdUserUptime)
 {
-    double TimeDiff = difftime (time (NULL), MicqStartTime);
+    double TimeDiff = difftime (time (NULL), uiG.MicqStartTime);
     int Days, Hours, Minutes, Seconds;
 
     Seconds = (int) TimeDiff % 60;
@@ -1719,16 +1719,16 @@ JUMP_F(CmdUserUptime)
     if (Minutes != 0)
         M_print (COLMESS "%02d" COLNONE "%s, ", Minutes, i18n (690, "minutes"));
     M_print (COLMESS "%02d" COLNONE "%s.\n", Seconds, i18n (691, "seconds"));
-    M_print ("%s " COLMESS "%d" COLNONE " / %d\n", i18n (692, "Contacts:"), Num_Contacts, MAX_CONTACTS);
-    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (693, "Packets sent:"), Packets_Sent);
-    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (694, "Packets recieved:"), Packets_Recv);
-    if (Packets_Sent || Packets_Recv)
+    M_print ("%s " COLMESS "%d" COLNONE " / %d\n", i18n (692, "Contacts:"), uiG.Num_Contacts, MAX_CONTACTS);
+    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (693, "Packets sent:"), ssG.Packets_Sent);
+    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (694, "Packets recieved:"), ssG.Packets_Recv);
+    if (ssG.Packets_Sent || ssG.Packets_Recv)
     {
         M_print ("%s " COLMESS "%2.2f" COLNONE "%%\n", i18n (695, "Lag:"),
-                 abs (Packets_Sent - Packets_Recv) * (200.0 / (Packets_Sent + Packets_Recv)));
+                 abs (ssG.Packets_Sent - ssG.Packets_Recv) * (200.0 / (ssG.Packets_Sent + ssG.Packets_Recv)));
     }
-    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (697, "Distinct packets sent:"), real_packs_sent);
-    M_print ("%s " COLMESS "%d" COLNONE "\n", i18n (698, "Distinct packets recieved:"), real_packs_recv);
+    M_print ("%s " COLMESS "%d" COLNONE "\t", i18n (697, "Distinct packets sent:"), ssG.real_packs_sent);
+    M_print ("%s " COLMESS "%d" COLNONE "\n", i18n (698, "Distinct packets recieved:"), ssG.real_packs_recv);
     return 0;
 }
 
@@ -1737,7 +1737,7 @@ JUMP_F(CmdUserUptime)
  */
 JUMP_F(CmdUserQuit)
 {
-    Quit = TRUE;
+    ssG.Quit = TRUE;
     return 0;
 }
 
@@ -2324,6 +2324,6 @@ void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_fl
             }
         }
     }
-    if (!status && !Quit && !command)
+    if (!status && !ssG.Quit && !command)
         Prompt ();
 }

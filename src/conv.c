@@ -5,10 +5,10 @@
 
 void ConvWinUnix (char *text)
 {
-    if (!Russian && !JapaneseEUC)
+    if (!uiG.Russian && !uiG.JapaneseEUC)
         return;
 
-    if (Russian)
+    if (uiG.Russian)
         ConvWinKoi (text);
     else
         ConvSjisEuc (text);    
@@ -16,10 +16,10 @@ void ConvWinUnix (char *text)
 
 void ConvUnixWin (char *text)
 {
-    if (!Russian && !JapaneseEUC)
+    if (!uiG.Russian && !uiG.JapaneseEUC)
         return;
 
-    if (Russian)
+    if (uiG.Russian)
         ConvKoiWin (text);
     else
         ConvEucSjis (text);

@@ -41,89 +41,66 @@
 #include "beos.h"
 #endif
 
-
-
-UDWORD real_packs_sent = 0;
-UDWORD real_packs_recv = 0;
-
-UBYTE Sound = SOUND_ON;          /* Beeps on by default */
-UBYTE Sound_Str[150];            /* the command to run from the shell to play sound files */
-UBYTE SoundOnline = SOUND_OFF;   /* Sound for ppl coming online default off */
-UBYTE Sound_Str_Online[150];     /* Command to run from shell when someone comes online */
-UBYTE SoundOffline = SOUND_OFF;  /* Sound for ppl going offline default off */
-UBYTE Sound_Str_Offline[150];    /* Command to run from shell when someone goes offline */
-BOOL Hermit = FALSE;
-BOOL Russian = FALSE;           /* Do we do kio8-r <->Cp1251 codeset translation? */
-BOOL JapaneseEUC = FALSE;       /* Do we do Shift-JIS <->EUC codeset translation? */
-UBYTE LogType = 2;               /* Currently 0 = no logging
-                                   1 = old style ~/micq_log
-                                   2 = new style ~/micq.log/uin.log
-                                   ******************************************** */
-BOOL Logging = TRUE;            /* Do we log messages to ~/micq_log?  This should probably have different levels */
-BOOL Color = TRUE;              /* Do we use ANSI color? */
-BOOL del_is_bs = TRUE;          /* del char is backspace */
-BOOL last_uin_prompt = FALSE;   /* use last UIN's nick as prompt */
-int line_break_type = 0;        /* See .rc file for modes */
-BOOL Quit = FALSE;              /* set when it's time to exit the program */
-BOOL Verbose = FALSE;           /* this is displays extra debuging info */
-BOOL serv_mess[1024];           /* used so that we don't get duplicate messages with the same SEQ */
-UWORD last_cmd[1024];            /* command issued for the first 1024 SEQ #'s */
-/******************** if we have more than 1024 SEQ this will need some hacking */
-UWORD seq_num = 1;               /* current sequence number */
-UDWORD our_ip = 0x0100007f;      /* localhost for some reason */
-UDWORD our_port;                 /* the port to make tcp connections on */
-/************ We don't make tcp connections yet though :( */
-UDWORD UIN;                      /* current User Id Number */
-BOOL Contact_List = FALSE;      /* I think we always have a contact list now */
-Contact_Member Contacts[MAX_CONTACTS];  /* no more than this many contacts max */
-int Num_Contacts = 0;
-UDWORD Current_Status = STATUS_OFFLINE;
-UDWORD last_recv_uin = 0;
-char passwd[100];
-char server[100];
-UDWORD set_status;
-UDWORD remote_port;
-BOOL Done_Login = FALSE;
-
-/* SOCKS5 stuff begin */
-int s5Use;
-char s5Host[100];
-UWORD s5Port;
-int s5Auth;
-char s5Name[64];
-char s5Pass[64];
-UDWORD s5DestIP;
-UWORD s5DestPort;
-/* SOCKS5 stuff end */
-
-BOOL auto_resp = FALSE;
-char auto_rep_str_dnd[450] = { 0 };
-char auto_rep_str_away[450] = { 0 };
-char auto_rep_str_na[450] = { 0 };
-char auto_rep_str_occ[450] = { 0 };
-char auto_rep_str_inv[450] = { 0 };
+user_interface_state uiG;
+session_state        ssG;
+socks5_state         s5G;
 
 /*** auto away values ***/
 static int idle_val = 0;
 static int idle_flag = 0;
-unsigned int away_time;
 
-unsigned int next_resend;
+void init_global_defaults () {
+  /* Initialize User Interface global state */
+  uiG.Num_Contacts = 0;
+  uiG.Contact_List = FALSE;
+  uiG.Verbose      = FALSE;
+  uiG.Sound = SOUND_ON;         /* Beeps on by default */
+  uiG.SoundOnline = SOUND_OFF;  /* sound for ppl coming online */
+  uiG.SoundOffline= SOUND_OFF;  /* sound for ppl going offline */
+  uiG.Sound_Str[0]         = 0;
+  uiG.Sound_Str_Online[0]  = 0;
+  uiG.Sound_Str_Offline[0] = 0;
+  uiG.Current_Status = STATUS_OFFLINE;
+  uiG.last_recv_uin  = 0;
+  uiG.Logging  = TRUE;
+  uiG.LogType = 2;
+  uiG.auto_resp = FALSE;
+  uiG.auto_rep_str_na[0] = 0;
+  uiG.auto_rep_str_away[0] = 0;
+  uiG.auto_rep_str_occ[0] = 0;
+  uiG.auto_rep_str_inv[0] = 0;
+  uiG.auto_rep_str_dnd[0] = 0;
+  uiG.last_uin_prompt = FALSE;
+  uiG.line_break_type = 0;
+  uiG.del_is_bs = TRUE;
+  uiG.Max_Screen_Width  = 0;
 
-/* aaron
-   Actual definition of the variable holding Micq's start time.                */
-time_t MicqStartTime;
-/* end of aaron */
-
+  uiG.Russian     = FALSE;
+  uiG.JapaneseEUC = FALSE;
+  uiG.Color       = TRUE;
+  uiG.Hermit      = FALSE;
+  uiG.MicqStartTime = time (NULL);
 #ifdef MSGEXEC
- /*
-  *Ben Simon:
-  * receive_script -- a script that gets called anytime we receive
-  * a message
-  */
-char receive_script[255];
-
+  uiG.receive_script[0] = 0;
 #endif
+
+  /* Initialize ICQ session global state    */
+  ssG.seq_num = 1;  /* current sequence number */
+  ssG.our_ip = 0x0100007f; /* Intel-ism??? why little-endian? */
+  ssG.Quit = FALSE;
+  ssG.passwd[0] = 0;
+  ssG.server[0] = 0;
+  ssG.Done_Login = FALSE;
+  ssG.real_packs_sent = 0;
+  ssG.real_packs_recv = 0;
+  ssG.Packets_Sent = 0;
+  ssG.Packets_Recv = 0;
+
+  /* Initialize SOCKS5 global state         */
+  s5G.s5Host[0] = 0;
+  s5G.s5Name[0] = 0;
+  s5G.s5Pass[0] = 0;
+}
 
 /*/////////////////////////////////////////////
 // Connects to hostname on port port
@@ -152,12 +129,12 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
         perror (i18n (55, "Socket creation failed"));
         exit (1);
     }
-    if (Verbose)
+    if (uiG.Verbose)
     {
         M_fdprint (aux, i18n (56, "Socket created attempting to connect\n"));
     }
 
-    if (s5Use)
+    if (s5G.s5Use)
     {
         sin.sin_addr.s_addr = INADDR_ANY;
         sin.sin_family = AF_INET;
@@ -173,20 +150,20 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
         getsockname (sok, (struct sockaddr *) &sin, &length);
         s5OurPort = ntohs (sin.sin_port);
 
-        s5sin.sin_addr.s_addr = inet_addr (s5Host);
+        s5sin.sin_addr.s_addr = inet_addr (s5G.s5Host);
         if (s5sin.sin_addr.s_addr == (unsigned long) -1)        /* name isn't n.n.n.n so must be DNS */
         {
-            host_struct = gethostbyname (s5Host);
+            host_struct = gethostbyname (s5G.s5Host);
             if (host_struct == 0L)
             {
-                M_print (i18n (596, "[SOCKS] Can't find hostname: %s\n"), s5Host);
+                M_print (i18n (596, "[SOCKS] Can't find hostname: %s\n"), s5G.s5Host);
                 return -1;
             }
             s5sin.sin_addr = *((struct in_addr *) host_struct->h_addr);
         }
         s5IP = ntohl (s5sin.sin_addr.s_addr);
         s5sin.sin_family = AF_INET;     /* we're using the inet not appletalk */
-        s5sin.sin_port = htons (s5Port);        /* port */
+        s5sin.sin_port = htons (s5G.s5Port);        /* port */
         s5Sok = socket (AF_INET, SOCK_STREAM, 0);       /* create the unconnected socket */
         if (s5Sok == -1)
         {
@@ -201,13 +178,13 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
         }
         buf[0] = 5;             /* protocol version */
         buf[1] = 1;             /* number of methods */
-        if (!strlen (s5Name) || !strlen (s5Pass) || !s5Auth)
+        if (!strlen (s5G.s5Name) || !strlen (s5G.s5Pass) || !s5G.s5Auth)
             buf[2] = 0;         /* no authorization required */
         else
             buf[2] = 2;         /* method username/password */
         send (s5Sok, buf, 3, 0);
         res = recv (s5Sok, buf, 2, 0);
-        if (strlen (s5Name) && strlen (s5Pass) && s5Auth)
+        if (strlen (s5G.s5Name) && strlen (s5G.s5Pass) && s5G.s5Auth)
         {
             if (res != 2 || buf[0] != 5 || buf[1] != 2) /* username/password authentication */
             {
@@ -216,10 +193,10 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
                 return -1;
             }
             buf[0] = 1;         /* version of subnegotiation */
-            buf[1] = strlen (s5Name);
-            memcpy (&buf[2], s5Name, buf[1]);
-            buf[2 + buf[1]] = strlen (s5Pass);
-            memcpy (&buf[3 + buf[1]], s5Pass, buf[2 + buf[1]]);
+            buf[1] = strlen (s5G.s5Name);
+            memcpy (&buf[2], s5G.s5Name, buf[1]);
+            buf[2 + buf[1]] = strlen (s5G.s5Pass);
+            memcpy (&buf[3 + buf[1]], s5G.s5Pass, buf[2 + buf[1]]);
             send (s5Sok, buf, buf[1] + buf[2 + buf[1]] + 3, 0);
             res = recv (s5Sok, buf, 2, 0);
             if (res != 2 || buf[0] != 1 || buf[1] != 0)
@@ -264,7 +241,7 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
         host_struct = gethostbyname (hostname);
         if (host_struct == NULL)
         {
-            if (Verbose)
+            if (uiG.Verbose)
             {
                 M_fdprint (aux, i18n (57, "The hostname "));
                 M_fdprint (aux, i18n (58, "%s was not found.\n"), hostname);
@@ -277,13 +254,13 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
     sin.sin_family = AF_INET;   /* we're using the inet not appletalk */
     sin.sin_port = ntohs (port);
 
-    if (s5Use)
+    if (s5G.s5Use)
     {
-        s5DestIP = ntohl (sin.sin_addr.s_addr);
+        s5G.s5DestIP = ntohl (sin.sin_addr.s_addr);
         memcpy (&sin.sin_addr.s_addr, &buf[4], 4);
 
         sin.sin_family = AF_INET;       /* we're using the inet not appletalk */
-        s5DestPort = port;
+        s5G.s5DestPort = port;
         memcpy (&sin.sin_port, &buf[8], 2);
     }
 
@@ -291,7 +268,7 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
 
     if (conct == -1)            /* did we connect ? */
     {
-        if (Verbose)
+        if (uiG.Verbose)
         {
             M_fdprint (aux, i18n (54, " Conection Refused on port %d at %s\n"), port, hostname);
             perror ("connect");
@@ -301,10 +278,10 @@ SOK_T Connect_Remote (char *hostname, int port, FD_T aux)
 
     length = sizeof (sin);
     getsockname (sok, (struct sockaddr *) &sin, &length);
-    our_ip = ntohl (sin.sin_addr.s_addr);
-    our_port = ntohs (sin.sin_port);
+    ssG.our_ip = ntohl (sin.sin_addr.s_addr);
+    ssG.our_port = ntohs (sin.sin_port);
 
-    if (Verbose)
+    if (uiG.Verbose)
     {
         M_fdprint (aux, i18n (59, "The port that will be used for tcp (not yet implemented) is %d\n"),
                    ntohs (sin.sin_port));
@@ -337,7 +314,7 @@ int Connect_Remote_Old (char *hostname, int port, FD_T aux)
         host_struct = gethostbyname (hostname); /* name isn't n.n.n.n so must be DNS */
         if (host_struct == NULL)
         {
-            if (Verbose)
+            if (uiG.Verbose)
             {
                 M_fdprint (aux, i18n (57, "The hostname "));
                 M_fdprint (aux, i18n (58, "%s was not found.\n"), hostname);
@@ -355,14 +332,14 @@ int Connect_Remote_Old (char *hostname, int port, FD_T aux)
         perror (i18n (55, "Socket creation failed"));
         exit (1);
     }
-    if (Verbose)
+    if (uiG.Verbose)
     {
         M_fdprint (aux, i18n (56, "Socket created attempting to connect\n"));
     }
     conct = connect (sok, (struct sockaddr *) &sin, sizeof (sin));
     if (conct == -1)            /* did we connect ? */
     {
-        if (Verbose)
+        if (uiG.Verbose)
         {
             M_fdprint (aux, i18n (54, " Conection Refused on port %d at %s\n"), port, hostname);
             perror ("connect");
@@ -371,9 +348,9 @@ int Connect_Remote_Old (char *hostname, int port, FD_T aux)
     }
     length = sizeof (sin);
     getsockname (sok, (struct sockaddr *) &sin, &length);
-    our_ip = sin.sin_addr.s_addr;
-    our_port = sin.sin_port;
-    if (Verbose)
+    ssG.our_ip = sin.sin_addr.s_addr;
+    ssG.our_port = sin.sin_port;
+    if (uiG.Verbose)
     {
         M_fdprint (aux, i18n (59, "The port that will be used for tcp (not yet implemented) is %d\n"),
                    ntohs (sin.sin_port));
@@ -397,7 +374,7 @@ void Handle_Server_Response (SOK_T sok)
         return;
 
 //#if 0      
-    if (Verbose)
+    if (uiG.Verbose)
     {
         M_print (i18n (602, "Cmd: %04X\t"), Chars_2_Word (pak.head.cmd));
         M_print (i18n (603, "Ver: %04X\t"), Chars_2_Word (pak.head.ver));
@@ -409,16 +386,16 @@ void Handle_Server_Response (SOK_T sok)
 //      if ( Chars_2_Word( pak.head.ver ) != ICQ_VER ) {
 //              R_undraw();
 //              M_print( "Invalid server response:\tVersion: %d\n", Chars_2_Word( pak.head.ver ) );
-//          if ( Verbose ) {
+//          if ( uiG.Verbose ) {
 //              Hex_Dump( pak.head.ver, s );
 //          }
 //      R_redraw();
 //      return;
 //        }
 //    }
-    if (Chars_2_DW (pak.head.session) != our_session)
+    if (Chars_2_DW (pak.head.session) != ssG.our_session)
     {
-        if (Verbose)
+        if (uiG.Verbose)
         {
             R_undraw ();
             M_print (i18n (606, "Got a bad session ID %08X with CMD %04X ignored.\n"),
@@ -428,7 +405,7 @@ void Handle_Server_Response (SOK_T sok)
         return;
     }
     /* !!! TODO make a check checksum routine to verify the packet further */
-/*   if ( ( serv_mess[ Chars_2_Word( pak.head.seq2 ) ] ) && 
+/*   if ( ( ssG.serv_mess[ Chars_2_Word( pak.head.seq2 ) ] ) && 
       ( Chars_2_Word( pak.head.cmd ) != SRV_NEW_UIN ) )*/
 /*   if ( ( last_seq == Chars_2_DW( pak.head.seq ) ) && 
       ( Chars_2_Word( pak.head.cmd ) != SRV_NEW_UIN ) ) */
@@ -442,7 +419,7 @@ void Handle_Server_Response (SOK_T sok)
         {                       /*yes ugly */
             if (Chars_2_Word (pak.head.cmd) != SRV_ACK) /* ACKs don't matter */
             {
-                if (Verbose)
+                if (uiG.Verbose)
                 {
                     R_undraw ();
                     M_print (i18n (67, "\nIgnored a message cmd  %04x\n"),
@@ -456,11 +433,11 @@ void Handle_Server_Response (SOK_T sok)
     }
     if (Chars_2_Word (pak.head.cmd) != SRV_ACK)
     {
-        serv_mess[Chars_2_Word (pak.head.seq2)] = TRUE;
+        ssG.serv_mess[Chars_2_Word (pak.head.seq2)] = TRUE;
         last_seq = Chars_2_DW (pak.head.seq);
         Got_SEQ (Chars_2_DW (pak.head.seq));
         ack_srv (sok, Chars_2_DW (pak.head.seq));
-        real_packs_recv++;
+        ssG.real_packs_recv++;
     }
     Server_Response (sok, pak.head.check + DATA_OFFSET, s - (sizeof (pak.head) - 2),
                      Chars_2_Word (pak.head.cmd), Chars_2_Word (pak.head.ver),
@@ -504,44 +481,44 @@ void Idle_Check (SOK_T sok)
 {
     int tm;
 
-    if (away_time == 0)
+    if (ssG.away_time == 0)
         return;
     tm = (time (NULL) - idle_val);
-    if ((Current_Status == STATUS_AWAY || Current_Status == STATUS_NA)
-        && tm < away_time && idle_flag == 1)
+    if ((uiG.Current_Status == STATUS_AWAY || uiG.Current_Status == STATUS_NA)
+        && tm < ssG.away_time && idle_flag == 1)
     {
         icq_change_status (sok, STATUS_ONLINE);
         R_undraw ();
         Time_Stamp ();
         M_print (" %s ", i18n (64, "Auto-Changed status to"));
-        Print_Status (Current_Status);
+        Print_Status (uiG.Current_Status);
         M_print ("\n");
         R_redraw ();
         idle_flag = 0;
         return;
     }
-    if ((Current_Status == STATUS_AWAY) && (tm >= (away_time * 2)) && (idle_flag == 1))
+    if ((uiG.Current_Status == STATUS_AWAY) && (tm >= (ssG.away_time * 2)) && (idle_flag == 1))
     {
         icq_change_status (sok, STATUS_NA);
         R_undraw ();
         Time_Stamp ();
         M_print (" %s ", i18n (64, "Auto-Changed status to"));
-        Print_Status (Current_Status);
+        Print_Status (uiG.Current_Status);
         M_print ("\n");
         R_redraw ();
         return;
     }
-    if (Current_Status != STATUS_ONLINE && Current_Status != STATUS_FREE_CHAT)
+    if (uiG.Current_Status != STATUS_ONLINE && uiG.Current_Status != STATUS_FREE_CHAT)
     {
         return;
     }
-    if (tm >= away_time)
+    if (tm >= ssG.away_time)
     {
         icq_change_status (sok, STATUS_AWAY);
         R_undraw ();
         Time_Stamp ();
         M_print (" %s ", i18n (64, "Auto-Changed status to"));
-        Print_Status (Current_Status);
+        Print_Status (uiG.Current_Status);
         M_print ("\n");
         R_redraw ();
         idle_flag = 1;
@@ -574,6 +551,8 @@ int main (int argc, char *argv[])
     WSADATA wsaData;
 #endif
 
+    init_global_defaults ();
+
     i = i18nOpen ("!");
 
     setbuf (stdout, NULL);      /* Don't buffer stdout */
@@ -591,7 +570,7 @@ int main (int argc, char *argv[])
 
     /* and now we save the time that Micq was started, so that uptime will be
        able to appear semi intelligent.                                                                          */
-    MicqStartTime = time (NULL);
+    uiG.MicqStartTime = time (NULL);
     /* end of aaron */
 
     Set_rcfile (NULL);
@@ -605,7 +584,7 @@ int main (int argc, char *argv[])
             }
             else if ((argv[i][1] == 'v') || (argv[i][1] == 'V'))
             {
-                Verbose++;
+                uiG.Verbose++;
             }
             else if ((argv[i][1] == 'f') || (argv[i][1] == 'F'))
             {
@@ -629,14 +608,14 @@ int main (int argc, char *argv[])
 
     Get_Config_Info ();
     srand (time (NULL));
-    if (!strcmp (passwd, ""))
+    if (!strcmp (ssG.passwd, ""))
     {
         M_print ("%s ", i18n (63, "Enter password:"));
         Echo_Off ();
-        M_fdnreadln (STDIN, passwd, sizeof (passwd));
+        M_fdnreadln (STDIN, ssG.passwd, sizeof (ssG.passwd));
         Echo_On ();
     }
-    memset (serv_mess, FALSE, 1024);
+    memset (ssG.serv_mess, FALSE, 1024);
 
 #ifdef __BEOS__
     Be_Start ();
@@ -658,7 +637,7 @@ int main (int argc, char *argv[])
 #endif
 
 
-    sok = Connect_Remote (server, remote_port, STDERR);
+    sok = Connect_Remote (ssG.server, ssG.remote_port, STDERR);
 
 #ifdef __BEOS__
     if (sok == -1)
@@ -669,15 +648,15 @@ int main (int argc, char *argv[])
         M_print (i18n (52, "Couldn't establish connection\n"));
         exit (1);
     }
-    Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
+    Login (sok, ssG.UIN, &ssG.passwd[0], ssG.our_ip, ssG.our_port, ssG.set_status);
     next = time (NULL);
     idle_val = time (NULL);
     next += 120;
-    next_resend = 10;
+    ssG.next_resend = 10;
     R_init ();
     M_print ("\n");
     Prompt ();
-    for (; !Quit;)
+    for (; !ssG.Quit;)
     {
         Idle_Check (sok);
 #if _WIN32 || defined(__BEOS__)
@@ -717,7 +696,7 @@ int main (int argc, char *argv[])
             Keep_Alive (sok);
         }
 
-        if (time (NULL) > next_resend)
+        if (time (NULL) > ssG.next_resend)
         {
             Do_Resend (sok);
         }

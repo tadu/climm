@@ -25,6 +25,7 @@ int i18nOpen (const char *loc)
     char buf[2048];
     int i, j = 0, debug = 0;
     FD_T i18nf;
+    char *home;
 
     if (!strncmp (loc, "debug", 5))
     {
@@ -44,24 +45,29 @@ int i18nOpen (const char *loc)
     if (!loc)
         return 0;
 
+    if (!strcmp (loc, "C"))
+    {
+        i18nClose ();
+        return 0;
+    }
+
+    home = getenv ("HOME") ? getenv ("HOME") : "";
+
         i18nf = M_fdopen (PREFIX "/share/micq/%s.i18n", loc);
+    if (i18nf == -1)
+        i18nf = M_fdopen ("%s/.micq/%s.i18n", home, loc);
     if (i18nf == -1 && strchr (loc, '_'))
         i18nf = M_fdopen (PREFIX "/share/micq/%.*s.i18n", strrchr (loc, '_') - loc, loc);
     if (i18nf == -1 && strchr (loc, '_'))
+        i18nf = M_fdopen ("%s/.micq/%.*s.i18n", home, strrchr (loc, '_') - loc, loc);
+    if (i18nf == -1 && strchr (loc, '_'))
         i18nf = M_fdopen (PREFIX "/share/micq/%.*s.i18n", strchr (loc, '_') - loc, loc);
-    if (i18nf == -1)
-        i18nf = M_fdopen ("%s/.micq/%s.i18n", getenv ("HOME") ? getenv ("HOME") : "", loc);
     if (i18nf == -1 && strchr (loc, '_'))
-        i18nf = M_fdopen ("%s/.micq/%.*s.i18n", getenv ("HOME") ? getenv ("HOME") : "", strrchr (loc, '_') - loc, loc);
-    if (i18nf == -1 && strchr (loc, '_'))
-        i18nf = M_fdopen ("%s/.micq/%.*s.i18n", getenv ("HOME") ? getenv ("HOME") : "", strchr (loc, '_') - loc, loc);
+        i18nf = M_fdopen ("%s/.micq/%.*s.i18n", home, strchr (loc, '_') - loc, loc);
     if (i18nf == -1)
         return -1;
 
     i18nClose ();
-
-    for (i = 0; i < i18nSLOTS; i++)
-        i18nStrings[i] = NULL;
 
     while (M_fdnreadln (i18nf, buf, sizeof (buf)) != -1)
     {
