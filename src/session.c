@@ -206,6 +206,8 @@ const char *ConnectionType (Connection *conn)
             return i18n (2090, "file peer-to-peer");
         case TYPE_FILE:
             return i18n (2067, "file io");
+        case TYPE_REMOTE:
+            return i18n (2225, "remote control");
         default:
             return i18n (1745, "unknown");
     }

@@ -207,7 +207,7 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
     int fd;
     va_list args;
     size_t l, lcnt;
-    char buf[2048], *home;                   /* Buffer to compute log entry */
+    char buf[2048];                   /* Buffer to compute log entry */
     char *pos, *indic;
     time_t now;
     struct tm *utctime;
@@ -310,11 +310,7 @@ int putlog (Connection *conn, time_t stamp, UDWORD uin,
     /* Check for '/' below doesn't work for empty strings. */
     assert (*prG->logplace != '\0');
 
-    if (prG->logplace[0] == '~' && prG->logplace[1] == '/' && (home = getenv ("HOME")))
-        snprintf (buffer, sizeof (buffer), "%s%s", home, prG->logplace + 1);
-    else
-        snprintf (buffer, sizeof (buffer), "%s", prG->logplace);
-
+    snprintf (buffer, sizeof (buffer), s_realpath (prG->logplace));
     target += strlen (buffer);
     
     if (target[-1] == '/')
@@ -468,17 +464,13 @@ void ExecScript (char *script, UDWORD uin, long num, char *data)
 void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, const char *text)
 {
     static int rc;
-    char *mytext, *mynick, *myuin, *mymsgtype, *mytype, *myscript, *tmp;
-    const char *cmd;
-    int fds[2];
-    pid_t pid;
+    char *mytext, *mynick, *myscript, *tmp;
+    const char *mytype, *cmd;
 
     mytext = strdup (text ? text : "");
-    mynick = strdup (cont->nick);
-    myuin  = strdup (s_sprintf ("icq-%ld", cont->uin));
-    mymsgtype = strdup (s_sprintf ("%ld", msgtype));
-    mytype = strdup (type == 1 ? "msg" : type == 2 ? "on" : type == 3 ? "off" : "other");
-    myscript = strdup (*script == '~' && getenv ("HOME") ? s_sprintf ("%s%s", getenv ("HOME"), script + 1) : script);
+    mynick = strdup (cont ? cont->nick : "");
+    mytype = (type == 1 ? "msg" : type == 2 ? "on" : type == 3 ? "off" : "other");
+    myscript = strdup (s_realpath (script));
 
     for (tmp = mytext; *tmp; tmp++)
         if (*tmp == '\'' || *tmp == '\\')
@@ -487,79 +479,15 @@ void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, c
         if (*tmp == '\'' || *tmp == '\\')
             *tmp = '"';
 
-    M_print ("");
+    cmd = s_sprintf ("%s icq %ld '%s' %s %ld '%s'",
+                     myscript, cont ? cont->uin : 0, mynick, mytype, msgtype, mytext);
 
-    cmd = s_sprintf ("%s %s '%s' %s %ld '%s'",
-                     myscript, myuin, mynick, mytype, msgtype, mytext);
-
-    rc = 0;
-    signal (SIGCHLD, SIG_IGN);
-    if (pipe (fds) < 0)
-    {
-        rc = system (cmd);
-    }
-    else if ((pid = fork ()) == -1)
-    {
-        close (fds[0]);
-        close (fds[1]);
-        rc = system (cmd);
-    }
-    else if (pid == 0)
-    {
-        close (fds[0]);
-        dup2 (fds[1], STDOUT_FILENO);
-        close (fds[1]);
-        execlp (myscript, myscript, myuin, mynick, mytype, mymsgtype, mytext, NULL);
-        rc = errno;
-        _exit(1);
-    }
-    else
-    {
-        char buf[1024];
-        int pos = 0, len, try;
-
-        close (fds[1]);
-        while (1)
-        {
-            fd_set readfds;
-            struct timeval tv;
-            
-            FD_ZERO (&readfds);
-            FD_SET (fds[0], &readfds);
-            tv.tv_sec = 0;
-            tv.tv_usec = 1000;
-            
-            if (select (fds[0] + 1, &readfds, NULL, NULL, &tv) < 0)
-                break;
-            if (FD_ISSET (fds[0], &readfds))
-            {
-                len = read (fds[0], buf + pos, sizeof (buf) - pos - 1);
-                if (len <= 0)
-                    break;
-                pos += len;
-            }
-        }
-        buf[pos] = '\0';
-        waitpid (pid, NULL, 0);
-        for (len = try = 0; len < pos; len++)
-        {
-            if (buf[len] == '\n' || buf[len] == '\r')
-            {
-                buf[len] = '\0';
-                if (buf[try])
-                    CmdUser (buf + try);
-                try = len + 1;
-            }
-        }
-    }
+    rc = system (cmd);
     if (rc)
         M_printf (i18n (2222, "Script command '%s' failed: %s (%d).\n"),
                  myscript, strerror (rc), rc);
     free (mynick);
     free (mytext);
-    free (myuin);
-    free (mymsgtype);
-    free (mytype);
 }
 
 UDWORD UtilCheckUIN (Connection *conn, UDWORD uin)

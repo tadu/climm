@@ -13,6 +13,8 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/un.h>
 #include <netdb.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -442,11 +444,47 @@ void UtilIOConnectTCP (Connection *conn)
         getsockname (conn->sok, (struct sockaddr *) &sin, &length);
         conn->port = ntohs (sin.sin_port);
         conn->server = strdup ("localhost");
-        if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+        if (prG->verbose || conn->type == TYPE_MSGLISTEN)
             if (M_pos () > 0)
                 M_print (i18n (1634, "ok.\n"));
         CONN_OK
     }
+}
+
+#define CONNS_FAIL_RC(s) { int rc = errno;            \
+                           const char *t = s_sprintf ("%s: %s (%d).", s, strerror (rc), rc); \
+                           M_print (i18n (1949, "failed:\n"));  \
+                           M_printf ("%s [%d]\n", t, __LINE__);  \
+                           if (conn->sok > 0)             \
+                               sockclose (conn->sok);      \
+                           conn->sok = -1;                  \
+                           conn->connect = 0;                \
+                           return; }
+
+void UtilIOConnectF (Connection *conn)
+{
+    int rc;
+    
+    if (!conn->server)
+        return;
+
+    unlink (conn->server);
+    if (mkfifo (conn->server, 0600) < 0)
+        CONNS_FAIL_RC (i18n (2226, "Couldn't create FIFO"));
+
+    if ((conn->sok = open (conn->server, O_RDWR /*ONLY*/ | O_NONBLOCK)) < 0)
+        CONNS_FAIL_RC (i18n (2227, "Couldn't open FIFO"));
+
+    rc = fcntl (conn->sok, F_GETFL, 0);
+    if (rc != -1)
+        rc = fcntl (conn->sok, F_SETFL, rc | O_NONBLOCK);
+    if (rc == -1)
+        CONNS_FAIL_RC (i18n (2228, "Couldn't set FIFO nonblocking"));
+
+    if (M_pos () > 0)
+        M_print (i18n (1634, "ok.\n"));
+
+    conn->connect = CONNECT_OK;
 }
 
 int UtilIOError (Connection *conn)
@@ -663,6 +701,75 @@ Packet *UtilIOReceiveTCP (Connection *conn)
     if ((rc && rc != ECONNRESET) || !conn->reconnect)
     {
         if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+        {
+            M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (conn->uin)), ContactFindName (conn->uin), COLNONE);
+            M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+        }
+        conn->connect = 0;
+    }
+    else
+        conn->reconnect (conn);
+    return NULL;
+}
+
+/*
+ * Receives a line from a FIFO socket.
+ */
+Packet *UtilIOReceiveF (Connection *conn)
+{
+    int rc;
+    Packet *pak;
+    UBYTE *end, *beg;
+    
+    if (!(conn->connect & CONNECT_MASK))
+        return NULL;
+    
+    if (!(pak = conn->incoming))
+        conn->incoming = pak = PacketC ();
+    
+    while (1)
+    {
+        errno = 0;
+        signal (SIGPIPE, SIG_IGN);
+        rc = sockread (conn->sok, pak->data + pak->len, sizeof (pak->data) - pak->len);
+        if (rc <= 0)
+        {
+            rc = errno;
+            if (rc == EAGAIN)
+                rc = 0;
+            if (rc)
+                break;
+        }
+        pak->len += rc;
+        pak->data[pak->len] = '\0';
+        if (!(beg = end = strpbrk (pak->data, "\r\n")))
+            return NULL;
+        while (*end && strchr ("\r\n\t ", *end))
+            end++;
+        *beg = '\0';
+        if (*end)
+        {
+            conn->incoming = PacketC ();
+            conn->incoming->len = pak->len - (end - pak->data);
+            memcpy (conn->incoming->data, end, conn->incoming->len);
+        }
+        else
+            conn->incoming = NULL;
+        pak->len = beg - pak->data;
+        return pak;
+    }
+
+    if (conn->error && conn->error (conn, rc, CONNERR_READ))
+        return NULL;
+
+    PacketD (pak);
+    sockclose (conn->sok);
+    conn->sok = -1;
+    conn->incoming = NULL;
+
+    if (!conn->reconnect)
+    {
+        if (prG->verbose)
         {
             M_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (ContactFindName (conn->uin)), ContactFindName (conn->uin), COLNONE);
             M_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);

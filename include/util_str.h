@@ -16,6 +16,7 @@ const char *s_ind     (const char *str);
 UDWORD      s_strlen  (const char *str);
 UDWORD      s_strnlen (const char *str, UDWORD len);
 UDWORD      s_offset  (const char *str, UDWORD offset);
+const char *s_realpath(const char *path);
 
 BOOL s_parse_s     (char **input, char    **parsed, char *sep);
 BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr, Connection *serv);

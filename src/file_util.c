@@ -26,6 +26,7 @@
 #include "cmd_pkt_cmd_v5_util.h"
 #include "preferences.h"
 #include "util_io.h"
+#include "remote.h"
 #include "cmd_pkt_v8.h"
 #include "session.h"
 #include "util_str.h"
@@ -56,7 +57,7 @@
 void Initalize_RC_File ()
 {
     char pwd1[20], pwd2[20], input[200];
-    Connection *conn, *connt;
+    Connection *conn, *connt, *conns;
     const char *passwd;
     char *t;
     UDWORD uin;
@@ -173,10 +174,8 @@ void Initalize_RC_File ()
     {
         M_print (i18n (1791, "Setup wizard finished. Congratulations!\n"));
         conn = ConnectionC ();
-        assert (conn);
         conn->open = &ConnectionInitServer;
         conn->spref = PreferencesConnectionC ();
-        assert (conn->spref);
         
         conn->spref->type = TYPE_SERVER;
         conn->spref->flags = CONN_AUTOLOGIN | CONN_WIZARD;
@@ -200,21 +199,31 @@ void Initalize_RC_File ()
     
 #ifdef ENABLE_PEER2PEER
     connt = ConnectionC ();
-    assert (connt);
     connt->open = &ConnectionInitPeer;
     connt->spref = PreferencesConnectionC ();
-    assert (connt->spref);
 
     connt->parent = conn;
     conn->assoc = connt;
     connt->spref->type = TYPE_MSGLISTEN;
     connt->spref->flags = CONN_AUTOLOGIN;
-    connt->type = connt->spref->type;
+    connt->type  = connt->spref->type;
     connt->flags = connt->spref->flags;
     connt->spref->version = 8;
     connt->ver = 8;
     connt->status = prG->s5Use ? 2 : TCP_OK_FLAG;
 #endif
+
+    conns = ConnectionC ();
+    conns->open = &RemoteOpen;
+    conns->spref = PreferencesConnectionC ();
+    
+    conns->parent = NULL;
+    conns->spref->type = TYPE_REMOTE;
+    conns->spref->flags = CONN_AUTOLOGIN;
+    conns->spref->server = strdup ("remote-control");
+    conns->type  = conns->spref->type;
+    conns->flags = conns->spref->flags;
+    conn->server = strdup (conns->spref->server);
 
     prG->status = STATUS_ONLINE;
     prG->tabs = TABS_SIMPLE;
@@ -229,7 +238,7 @@ void Initalize_RC_File ()
     prG->auto_occ  = strdup (i18n (1012, "User is occupied [Auto-Message]"));
     prG->auto_inv  = strdup (i18n (1013, "User is offline"));
     prG->auto_ffc  = strdup (i18n (2055, "User is ffc and wants to chat about everything."));
-    prG->logplace  = strdup ("~/.micq/history/");
+    prG->logplace  = strdup ("history/");
     prG->chat      = 49;
 
     ContactAdd (82274703, "Rüdiger Kuhlmann");
@@ -258,7 +267,7 @@ void Read_RC_File (FILE *rcf)
     char *tmp = NULL, *cmd = NULL;
     char *p, *args;
     Contact *cont = NULL, *lastcont = NULL;
-    Connection *oldconn = NULL, *conn = NULL;
+    Connection *oldconn = NULL, *conn = NULL, *conns = NULL;
     int section, dep = 0;
     UDWORD uin, i;
     UWORD flags;
@@ -796,7 +805,12 @@ void Read_RC_File (FILE *rcf)
                         }
                         conn->spref->status = TCP_OK_FLAG;
                     }
-                    else 
+                    else if (!strcasecmp (cmd, "remote"))
+                    {
+                        conn->spref->type = TYPE_REMOTE;
+                        conn->spref->flags = 0;
+                    }
+                    else
                         ERROR;
                     if (s_parse (&args, &cmd))
                     {
@@ -872,7 +886,7 @@ void Read_RC_File (FILE *rcf)
         prG->auto_ffc  = strdup (i18n (2055, "User is ffc and wants to chat about everything."));
 
     if (prG->flags & FLAG_LOG && !prG->logplace)
-        prG->logplace = strdup ("~/.micq/history/");
+        prG->logplace = strdup ("history/");
     
     if (!prG->chat)
         prG->chat = 49;
@@ -906,12 +920,28 @@ void Read_RC_File (FILE *rcf)
                 conn->open = &ConnectionInitPeer;
                 break;
 #endif
+            case TYPE_REMOTE:
+                conn->open = &RemoteOpen;
+                conns = conn;
+                break;
             default:
                 conn->open = NULL;
                 break;
         }
     }
 
+    if (!conns)
+    {
+        conns = ConnectionC ();
+        conns->open = &RemoteOpen;
+        conns->spref = PreferencesConnectionC ();
+        conns->spref->server = strdup ("remote-control");
+        conns->parent = NULL;
+        conns->spref->type = TYPE_REMOTE;
+        conns->type  = conns->spref->type;
+        conns->server = strdup (conns->spref->server);
+    }
+                            
     if (prG->verbose && oldconn)
     {
         M_printf (i18n (1189, "UIN = %ld\n"),    oldconn->spref->uin);
@@ -969,14 +999,17 @@ int Save_RC ()
     
     for (k = 0; (ss = ConnectionNr (k)); k++)
     {
-        if (!ss->spref || (ss->spref->type != TYPE_SERVER && ss->spref->type != TYPE_SERVER_OLD && ss->spref->type != TYPE_MSGLISTEN)
-            || (!ss->spref->uin && ss->spref->type == TYPE_SERVER)
+        if (!ss->spref || (!ss->spref->uin && ss->spref->type == TYPE_SERVER)
+            || (ss->spref->type != TYPE_SERVER && ss->spref->type != TYPE_SERVER_OLD
+                && ss->spref->type != TYPE_MSGLISTEN && ss->spref->type != TYPE_REMOTE)
             || (ss->spref->type == TYPE_MSGLISTEN && ss->parent && !ss->parent->spref->uin))
             continue;
 
         fprintf (rcf, "[Connection]\n");
-        fprintf (rcf, "type %s%s\n",  ss->spref->type == TYPE_SERVER ? "icq8" : ss->spref->type == TYPE_SERVER_OLD ? "icq5" : "peer",
-                                        ss->spref->flags & CONN_AUTOLOGIN ? " auto" : "");
+        fprintf (rcf, "type %s%s\n",  ss->spref->type == TYPE_SERVER     ? "icq8" :
+                                      ss->spref->type == TYPE_SERVER_OLD ? "icq5" :
+                                      ss->spref->type == TYPE_MSGLISTEN  ? "peer" : "remote",
+                                      ss->spref->flags & CONN_AUTOLOGIN ? " auto" : "");
         fprintf (rcf, "version %d\n", ss->spref->version);
         if (ss->spref->server)
             fprintf (rcf, "server %s\n",  ss->spref->server);

@@ -98,6 +98,7 @@ const char    *ConnectionType   (Connection *conn);
 #define TYPEF_ANY_FILE    128  /* " && for file transfer */
 #define TYPEF_ANY_CHAT    256  /* " && for chat          */
 #define TYPEF_FILE        512  /* any file io            */
+#define TYPEF_REMOTE     1024  /* remote control (socket)*/
 
 /* any conn->type may be only any of those values:
  * do not use the flags above unless you _really_ REALLY know what you're doing
@@ -111,6 +112,7 @@ const char    *ConnectionType   (Connection *conn);
 #define TYPE_CHATLISTEN   (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_LISTEN)
 #define TYPE_CHATDIRECT   (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_DIRECT)
 #define TYPE_FILE         TYPEF_FILE
+#define TYPE_REMOTE       TYPEF_REMOTE
 
 #define ASSERT_ANY_SERVER(s)  (assert (s), assert ((s)->type & TYPEF_ANY_SERVER))
 #define ASSERT_SERVER(s)      (assert (s), assert ((s)->type == TYPE_SERVER))

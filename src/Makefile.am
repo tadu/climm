@@ -11,7 +11,7 @@ micq_SOURCES = conv.c file_util.c icq_response.c micq.c \
        cmd_pkt_cmd_v5.c cmd_pkt_cmd_v5_util.c cmd_pkt_server.c cmd_user.c \
        preferences.c util_io.c util_str.c util_syntax.c session.c peer_file.c \
        cmd_pkt_v8.c cmd_pkt_v8_flap.c cmd_pkt_v8_tlv.c cmd_pkt_v8_snac.c \
-       buildmark.c
+       remote.c buildmark.c
 
 micq_LDADD = @LIBOBJS@
 $(micq_SOURCES): @LIBOBJS@

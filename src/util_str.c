@@ -407,6 +407,30 @@ const char *s_dumpnd (const UBYTE *data, UWORD len)
 }
 
 /*
+ * Expand ~ and make absolute path.
+ */
+const char *s_realpath (const char *path)
+{
+    char *f = NULL;
+
+    if (*path == '~' && path[1] == '/' && getenv ("HOME"))
+        return s_sprintf ("%s%s", getenv ("HOME"), path + 1);
+    if (*path == '/')
+        return path;
+#ifdef AMIGA
+    if (strchr (path, ':') && (!strchr (path, '/') || strchr (path, '/') > strchr (path, ':')))
+        return path;
+#endif
+    path = strdup (s_sprintf ("%s%s", PrefUserDir (prG), path));
+    if (*path != '~' || path[1] != '/' || !getenv ("HOME"))
+        return path;
+    f = strdup (path);
+    path = s_sprintf ("%s%s", getenv ("HOME"), f + 1);
+    free (f);
+    return path;
+}
+
+/*
  * s_parse* - find a parameter of given type in string.
  * input is avdanced to point after the parsed argument,
  *   or to the next non-whitespace or end of string if not found.
