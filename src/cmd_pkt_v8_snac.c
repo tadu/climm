@@ -957,7 +957,7 @@ static JUMP_SNAC_F(SnacSrvReplyroster)
                         break;
                 j = TLVGet (tlv, 305);
                 assert (j < 200 || j == (UWORD)-1);
-                nick = strdup (j != (UWORD)-1 ? c_in (tlv[j].str) : name);
+                nick = strdup (j != (UWORD)-1 && tlv[j].len ? c_in (tlv[j].str) : name);
 
                 switch (data)
                 {
