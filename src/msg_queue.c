@@ -79,7 +79,7 @@ Event *QueuePop ()
             queue->due = INT_MAX;
         else
             queue->due = queue->head->event->due;
-        Debug (DEB_QUEUE, i18n (####, "popping type %s seq %08x at %p (pak %p)"),
+        Debug (DEB_QUEUE, i18n (2074, "popping type %s seq %08x at %p (pak %p)"),
                QueueType (event->type), event->seq, event, event->pak);
         return event;
     }
@@ -102,7 +102,7 @@ void QueueEnqueue (Event *event)
     entry->next = NULL;
     entry->event  = event;
 
-    Debug (DEB_QUEUE, i18n (####, "enqueuing type %s seq %08x at %p (pak %p)"),
+    Debug (DEB_QUEUE, i18n (2075, "enqueuing type %s seq %08x at %p (pak %p)"),
            QueueType (event->type), event->seq, event, event->pak);
 
     if (!queue->head)
@@ -163,7 +163,7 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
 
     if (!queue->head)
     {
-        Debug (DEB_QUEUE, i18n (####, "couldn't dequeue type %s seq %08x"),
+        Debug (DEB_QUEUE, i18n (2076, "couldn't dequeue type %s seq %08x"),
                QueueType (type), seq);
         return NULL;
     }
@@ -180,7 +180,7 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
         else
             queue->due = queue->head->event->due;
 
-        Debug (DEB_QUEUE, i18n (####, "dequeue type %s seq %08x at %p (pak %p)"),
+        Debug (DEB_QUEUE, i18n (2077, "dequeue type %s seq %08x at %p (pak %p)"),
                QueueType (type), seq, event, event->pak);
         return event;
     }
@@ -192,7 +192,7 @@ Event *QueueDequeue (UDWORD seq, UDWORD type)
             event = tmp->event;
             iter->next=iter->next->next;
             free (tmp);
-            Debug (DEB_QUEUE, i18n (####, "dequeue type %s seq %08x at %p (pak %p)"),
+            Debug (DEB_QUEUE, i18n (2077, "dequeue type %s seq %08x at %p (pak %p)"),
                    QueueType (type), seq, event, event->pak);
             return event;
         }
