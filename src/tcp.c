@@ -1532,14 +1532,13 @@ BOOL TCPSendMsg (Session *list, UDWORD uin, char *msg, UWORD sub_cmd)
     {
         if (peer->connect & CONNECT_FAIL)
             return FALSE;
+        if (~peer->connect & CONNECT_OK)
+            peer = NULL;
     }
-    else
+    if (!peer)
     {
-        if (!TCPDirectOpen (list, uin))
-            return FALSE;
-        peer = SessionFind (TYPE_MSGDIRECT, uin, list);
-        if (!peer)
-            return FALSE;
+       TCPDirectOpen (list, uin);
+       return FALSE;
     }
 
     ASSERT_MSGDIRECT(peer);
