@@ -55,8 +55,8 @@ struct ContactMetaObsolete_s
 struct ContactDC_s
 {
     time_t id1, id2, id3;
-    UDWORD ip_loc, ip_rem, port;
-    UWORD  version, cookie;
+    UDWORD ip_loc, ip_rem, port, cookie;
+    UWORD  version;
     UBYTE  type;
 };
 
