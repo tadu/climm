@@ -1523,6 +1523,10 @@ static JUMP_SNAC_F(SnacSrvRegrefused)
         M_print (i18n (1792, "I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.\n"));
         exit (0);
     }
+#ifdef ENABLE_PEER2PEER
+    ConnectionClose (serv->assoc);
+#endif
+    ConnectionClose (serv);
 }
 
 /*
@@ -1532,27 +1536,35 @@ static JUMP_SNAC_F(SnacSrvNewuin)
 {
     Connection *serv = event->conn;
     Contact *cont;
+    UDWORD uin;
 
-    cont = ContactUIN (serv, PacketReadAt4 (event->pak, 6 + 10 + 46));
+    uin = PacketReadAt4 (event->pak, 6 + 10 + 46);
+    cont = ContactUIN (serv, uin);
     serv->uin = cont->uin;
     M_printf (i18n (1762, "Your new UIN is: %ld.\n"), cont->uin);
+    serv->flags |= CONN_CONFIGURED;
     if (serv->flags & CONN_WIZARD)
     {
-        assert (serv->assoc);
         assert (serv->open);
+#ifdef ENABLE_PEER2PEER
+        assert (serv->assoc);
         assert (serv->assoc->open);
-
-        serv->flags |= CONN_AUTOLOGIN;
         serv->assoc->flags |= CONN_AUTOLOGIN;
+#endif
+        serv->flags |= CONN_AUTOLOGIN;
 
         s_repl (&serv->contacts->name, s_sprintf ("contacts-icq8-%ld", cont->uin));
         M_print (i18n (1790, "Setup wizard finished. Congratulations to your new UIN!\n"));
 
         if (Save_RC () == -1)
             M_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
+#ifdef ENABLE_PEER2PEER
         serv->assoc->open (serv->assoc);
+#endif
         serv->open (serv);
     }
+    else
+        M_print (i18n (9999, "You need to 'save' to write your new UIN to disc.\n"));
 }
 
 /*************************************/

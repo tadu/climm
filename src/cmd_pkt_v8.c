@@ -207,19 +207,45 @@ void SrvCallBackReceive (Connection *conn)
 Connection *SrvRegisterUIN (Connection *conn, const char *pass)
 {
     Connection *new;
+#ifdef ENABLE_PEER2PEER
+    Connection *newl;
+#endif
     
     if (!(new = ConnectionC (TYPE_SERVER)))
         return NULL;
+
+#ifdef ENABLE_PEER2PEER
+    if (!(newl = ConnectionClone (new, TYPE_MSGLISTEN)))
+    {
+        ConnectionClose (new);
+        return NULL;
+    }
+    new->assoc = newl;
+    newl->open = &ConnectionInitPeer;
+    if (conn && conn->assoc)
+    {
+        newl->version = conn->assoc->version;
+        newl->status = newl->pref_status = conn->assoc->pref_status;
+        newl->flags = conn->assoc->flags & ~CONN_CONFIGURED;
+    }
+    else
+    {
+        newl->version = 8;
+        newl->status = newl->pref_status = prG->s5Use ? 2 : TCP_OK_FLAG;
+        newl->flags |= CONN_AUTOLOGIN;
+    }
+#endif
+
     if (conn)
     {
         assert (conn->type == TYPE_SERVER);
         
-        new->flags   = conn->flags;
+        new->flags   = conn->flags & ~CONN_CONFIGURED;
         new->version = conn->version;
         new->uin     = 0;
         new->pref_status  = STATUS_ONLINE;
-        new->pref_server  = strdup (new->pref_server);
-        new->pref_port    = new->pref_port;
+        new->pref_server  = strdup (conn->pref_server);
+        new->pref_port    = conn->pref_port;
         new->pref_passwd  = strdup (pass);
     }
     else
@@ -230,11 +256,13 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
         new->pref_server  = strdup ("login.icq.com");
         new->pref_port    = 5190;
         new->pref_passwd  = strdup (pass);
+        new->flags |= CONN_AUTOLOGIN;
     }
     new->server = strdup (new->pref_server);
     new->port = new->pref_port;
     new->passwd = strdup (pass);
-    
+    new->open = &ConnectionInitServer;
+
     ConnectionInitServer (new);
     return new;
 }

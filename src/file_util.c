@@ -59,9 +59,6 @@ void Initialize_RC_File ()
     strc_t line;
     char *pwd;
     Connection *conn;
-#ifdef ENABLE_PEER2PEER
-    Connection *connt;
-#endif
 #ifdef ENABLE_REMOTECONTROL
     Connection *conns;
 #endif
@@ -207,18 +204,6 @@ void Initialize_RC_File ()
         conn->passwd  = strdup (passwd);
     }
     
-#ifdef ENABLE_PEER2PEER
-    connt = ConnectionC (TYPE_MSGLISTEN);
-    connt->open = &ConnectionInitPeer;
-
-    connt->parent = conn;
-    conn->assoc = connt;
-    connt->flags |= CONN_AUTOLOGIN;
-    connt->pref_status = prG->s5Use ? 2 : TCP_OK_FLAG;
-    connt->status = connt->pref_status;
-    connt->version = 8;
-#endif
-
 #ifdef ENABLE_REMOTECONTROL
     conns = ConnectionC (TYPE_REMOTE);
     conns->open = &RemoteOpen;

@@ -2266,17 +2266,19 @@ static JUMP_F(CmdUserClear)
  */
 static JUMP_F(CmdUserRegister)
 {
-    if (strlen (args))
+    strc_t par;
+
+    if (s_parse (&args, &par))
     {
         ANYCONN;
 
-        if (!conn)
-            SrvRegisterUIN (NULL, args);
-        else if (conn->type == TYPE_SERVER)
-            SrvRegisterUIN (conn, args);
+        if (!conn || conn->type == TYPE_SERVER)
+            SrvRegisterUIN (conn, par->txt);
         else
-            CmdPktCmdRegNewUser (conn, args);     /* TODO */
+            CmdPktCmdRegNewUser (conn, par->txt);     /* TODO */
     }
+    else
+        M_print (i18n (9999, "No new password given.\n"));
     return 0;
 }
 
@@ -3734,6 +3736,9 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
     snprintf (buf, sizeof (buf), "%s", command);
     M_print ("\r");
     buf[1023] = 0;
+
+    if (!conn || !(ConnectionFindNr (conn) + 1))
+        conn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL);
 
     if (isinterrupted)
     {
