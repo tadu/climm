@@ -32,4 +32,4 @@ const char *BuildVersion (void)
     return ver;
 }
 
-const int BuildVersionNum = MICQ_VERSION_NUM;
+const int BuildVersionNum = 486;
