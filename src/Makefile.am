@@ -40,11 +40,14 @@ clean-local:
 
 buildmark.o: .cvsupdate
 
+POSIX=`echo \ -n | tail -n -1`
+
 .cvsupdate: force
-	grep Id: $(top_srcdir)/src/*.c $(top_srcdir)/include/*.h \
+	@grep Id: $(top_srcdir)/src/*.c $(top_srcdir)/include/*.h \
 	    | sed "s,.*\(20../../.. ..:..:..\).*,#define CVSUPDATE \"\1 UTC\"," \
-	    | sort | tail -n 1 | tr / - > .cvsupdate
-	date "+#define BUILDDATE \"%Y-%m-%d %T %Z\"" >> .cvsupdate
+	    | sort | tail $(POSIX) 1 | tr / - > .cvsupdate
+	@(date -u "+#define BUILDDATE \"%Y-%m-%d %T %Z\"" || \
+	 date    "+#define BUILDDATE \"%Y-%m-%d %T %Z\"") >> .cvsupdate
 
 force:
 
