@@ -407,8 +407,6 @@ int Read_RC_File (FILE *rcf)
                         return 0;
                     if (format == 2)
                         enc = ENC_UTF8;
-                    else
-                        dep = 32;
                 }
                 else if (!strcasecmp (cmd, "receivescript") || !strcasecmp (cmd, "event"))
                 {
@@ -1189,6 +1187,7 @@ int Read_RC_File (FILE *rcf)
     if (dep || !format)
     {
         M_printf (i18n (1818, "Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or \"save\" the configuration file and check for changes.\n"), prG->rcfile);
+        M_printf ("FIXME: dep %d\n", dep);
     }
     fclose (rcf);
     return format;
@@ -1475,15 +1474,10 @@ void PrefReadStat (FILE *stf)
     if (dep || !format)
     {
         M_printf (i18n (1818, "Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or \"save\" the configuration file and check for changes.\n"), prG->statfile);
+        M_printf ("FIXME: dep %d\n", dep);
     }
     fclose (stf);
 }
-
-
-
-
-
-
 
 /************************************************
  *   This function should save your auto reply messages in the rc file.
@@ -1499,6 +1493,8 @@ int Save_RC ()
     Connection *ss;
     ContactGroup *cg;
 
+    if (!prG->rcfile)
+        pref->rcfile = strdup (s_sprintf ("%smicqrc", PrefUserDir (pref)));
     M_printf (i18n (2048, "Saving preferences to %s.\n"), prG->rcfile);
     rcf = fopen (prG->rcfile, "w");
     if (!rcf)
@@ -1522,6 +1518,9 @@ int Save_RC ()
     }
     if (!rcf)
         return -1;
+
+    if (!prG->statfile)
+        pref->statfile = strdup (s_sprintf ("%sstatus", PrefUserDir (pref)));
 
     stf = fopen (prG->statfile, "w");
     if (!stf)
