@@ -1073,8 +1073,8 @@
 2315:Incapaz de observar estado de %s - muitos observadores.\n
 2317:Tradução %s não encontrada. Você gostaria de traduzir o mICQ para o seu idiome?\n
 2318:Tradução portuguesa (%s) carregada (%ld entradas).\n
-2319:Aceita um arquivo vindo de <uin> ou <nick>.
-2320:peer accept <nick> [<id>]\n                  - aceita uma transferência de arquivo chegando.\n
+2319:Aceita um arquivo vindo de <uin> ou <apelido>.
+2320:peer accept <apelido> [<id>]\n                  - aceita uma transferência de arquivo chegando.\n
 2327:%smICQ (clone ICQ do Matt)%s versão %s%s%s\n
 2328:Você logou muito freqüentemente, por favor espere 30 minutos antes de tentar novamente\n
 2329:erro de sintaxe
@@ -1116,17 +1116,17 @@
 2365:comando desconhecido: %s
 2366:erro TCL no arquivo %s: %s\n
 2367:erro TCL: %s\n
-#2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
-#2369:Refuse an incoming file transfer from <uin> or <nick>.
+2368:peer deny <apelido> [<id>] [<razão>]\n               - rejeita pedido para transferir arquivo.\n
+2369:Rejeita pedido para transferir arquivo de <uin> ou <apelido>.
 2370:%02d %-13s versão %d%s para %s (%lx), a %s:%ld %s\n
-#2371:SSL init failed.\n
-#2372:Could not send SSL request to %s\n
-#2373:Error while reading from socket (SSL): %s (%d)\n
-#2374:SSL error: %s [%d]\n
-#2375:SSL handshake ok\n
-#2376:SSL read from %s [ERR=%d]: %s
-#2377:SSL write to %s [ERR=%d]: %s
-#2378:peer ssl <nick>   - initiate SSL handshake.
+2371:inicialização SSL falhou.\n
+2372:Impossível enviar pedido SSL para %s\n
+2373:Erro durante leitura do socket (SSL): %s (%d)\n
+2374:erro SSL: %s [%d]\n
+2375:negociação SSL ok\n
+2376:leitura SSL de %s [ERR=%d]: %s
+2377:escrita SSL para %s [ERR=%d]: %s
+2378:peer ssl <apelido>   - inicia negociação SSL.
 2379:»%»
 2380:«%«
 #2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
