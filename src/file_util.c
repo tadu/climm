@@ -915,12 +915,19 @@ void Read_RC_File (FILE *rcf)
                     {
                         conn->spref->type = TYPE_MSGLISTEN;
                         conn->spref->flags = 0;
+                        conn->spref->status = TCP_OK_FLAG;
                         if (oldconn->spref->type == TYPE_SERVER || oldconn->spref->type == TYPE_SERVER_OLD)
                         {
                             oldconn->assoc = conn;
                             conn->parent = oldconn;
                         }
-                        conn->spref->status = TCP_OK_FLAG;
+                        else
+                        {
+                            M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
+                            M_printf (i18n (9999, "Peer-to-peer connection not associated to server connection, discarding.\n"));
+                            conn->spref->type = 0;
+                            section = -1;
+                        }
                     }
                     else if (!strcasecmp (cmd, "remote"))
                     {
