@@ -2,8 +2,8 @@ Source: micq
 Section: net
 Priority: optional
 Maintainer: Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
-Build-Depends: debhelper (>> 3.0.0)
-Standards-Version: 3.5.8.0
+Build-Depends: debhelper (>> 4.0.0)
+Standards-Version: 3.5.8
 
 Package: micq
 Architecture: any
