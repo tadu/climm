@@ -664,6 +664,18 @@ static JUMP_SNAC_F(SnacSrvAckmsg)
         return;
     
     text = strdup (c_in_to (ctext, cont));
+    if (msgtype == MSG_NORM)
+    {
+        char *cctmp;
+        PacketRead4 (pak);
+        PacketRead4 (pak);
+        cctmp = PacketReadDLStr (pak);
+        if (!strcmp (cctmp, CAP_GID_UTF8))
+        {
+            free (text);
+            text = strdup (ctext);
+        }
+    }
     free (ctext);
 
     event = QueueDequeue (event->conn, QUEUE_TYPE2_RESEND, seq_dc);
