@@ -29,10 +29,11 @@ Authors: Matthew D. Smith (dead)
          Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 
 %changelog
+* Tue Aug 08 2002 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream release
+
 * Tue Jun 11 2002 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - first RPM
-* Tue Aug 05 2002 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
-- new upstream release
 
 %prep
 %setup
