@@ -128,7 +128,7 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
     if (!*p)
         return NULL;
     
-    if ((t = s_parse_s (&p, sep)))
+    if ((t = s_parse_s (&p, sep)) && strncmp (t->txt, *input, t->len))
     {
         if ((parsed = ContactFind (serv->contacts, 0, 0, t->txt)))
         {
