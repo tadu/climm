@@ -443,32 +443,32 @@ BOOL ContactMetaSave (Contact *cont)
 #ifdef ENABLE_UTF8
     fprintf (f, "encoding utf-8\n"); 
 #else
-    fprintf (f, "encoding %s\n", ConvName (prG->enc_local));
+    fprintf (f, "encoding %s\n", s_quote (ConvName (prG->enc_local)));
 #endif
     fprintf (f, "format 1\n\n");
     fprintf (f, "b_uin   %ld\n", cont->uin);
     fprintf (f, "b_id    %d\n", cont->id);
-    fprintf (f, "b_nick  %s\n", cont->nick);
+    fprintf (f, "b_nick  %s\n", s_quote (cont->nick));
     for (alias = cont->alias; alias; alias = alias->alias)
-        fprintf (f, "b_alias %s\n", alias->nick);
+        fprintf (f, "b_alias %s\n", s_quote (alias->nick));
     fprintf (f, "b_seen  %ld\n", cont->seen_time);
     fprintf (f, "b_micq  %ld\n", cont->seen_micq_time);
     if (cont->meta_about)
-        fprintf (f, "b_about %s\n", cont->meta_about);
+        fprintf (f, "b_about %s\n", s_quote (cont->meta_about));
     if (cont->meta_general)
     {
         MetaGeneral *mg = cont->meta_general;
-        fprintf (f, "g_nick    %s\n", mg->nick     ? mg->nick     : "");
-        fprintf (f, "g_first   %s\n", mg->first    ? mg->first    : "");
-        fprintf (f, "g_last    %s\n", mg->last     ? mg->last     : "");
-        fprintf (f, "g_email   %s\n", mg->email    ? mg->email    : "");
-        fprintf (f, "g_city    %s\n", mg->city     ? mg->city     : "");
-        fprintf (f, "g_state   %s\n", mg->state    ? mg->state    : "");
-        fprintf (f, "g_phone   %s\n", mg->phone    ? mg->phone    : "");
-        fprintf (f, "g_fax     %s\n", mg->fax      ? mg->fax      : "");
-        fprintf (f, "g_zip     %s\n", mg->zip      ? mg->zip      : "");
-        fprintf (f, "g_street  %s\n", mg->street   ? mg->street   : "");
-        fprintf (f, "g_cell    %s\n", mg->cellular ? mg->cellular : "");
+        fprintf (f, "g_nick    %s\n", s_quote (mg->nick));
+        fprintf (f, "g_first   %s\n", s_quote (mg->first));
+        fprintf (f, "g_last    %s\n", s_quote (mg->last));
+        fprintf (f, "g_email   %s\n", s_quote (mg->email));
+        fprintf (f, "g_city    %s\n", s_quote (mg->city));
+        fprintf (f, "g_state   %s\n", s_quote (mg->state));
+        fprintf (f, "g_phone   %s\n", s_quote (mg->phone));
+        fprintf (f, "g_fax     %s\n", s_quote (mg->fax));
+        fprintf (f, "g_zip     %s\n", s_quote (mg->zip));
+        fprintf (f, "g_street  %s\n", s_quote (mg->street));
+        fprintf (f, "g_cell    %s\n", s_quote (mg->cellular));
         fprintf (f, "g_country %u\n", mg->country);
         fprintf (f, "g_tz      %d\n", mg->tz);
         fprintf (f, "g_flags   %u\n", (mg->auth ? 1 : 0)
@@ -478,23 +478,23 @@ BOOL ContactMetaSave (Contact *cont)
     if (cont->meta_work)
     {
         MetaWork *mw = cont->meta_work;
-        fprintf (f, "w_city     %s\n", mw->wcity     ? mw->wcity     : "");
-        fprintf (f, "w_state    %s\n", mw->wstate    ? mw->wstate    : "");
-        fprintf (f, "w_phone    %s\n", mw->wphone    ? mw->wphone    : "");
-        fprintf (f, "w_fax      %s\n", mw->wfax      ? mw->wfax      : "");
-        fprintf (f, "w_address  %s\n", mw->waddress  ? mw->waddress  : "");
-        fprintf (f, "w_zip      %s\n", mw->wzip      ? mw->wzip      : "");
-        fprintf (f, "w_company  %s\n", mw->wcompany  ? mw->wcompany  : "");
-        fprintf (f, "w_depart   %s\n", mw->wdepart   ? mw->wdepart   : "");
-        fprintf (f, "w_position %s\n", mw->wposition ? mw->wposition : "");
-        fprintf (f, "w_homepage %s\n", mw->whomepage ? mw->whomepage : "");
+        fprintf (f, "w_city     %s\n", s_quote (mw->wcity));
+        fprintf (f, "w_state    %s\n", s_quote (mw->wstate));
+        fprintf (f, "w_phone    %s\n", s_quote (mw->wphone));
+        fprintf (f, "w_fax      %s\n", s_quote (mw->wfax));
+        fprintf (f, "w_address  %s\n", s_quote (mw->waddress));
+        fprintf (f, "w_zip      %s\n", s_quote (mw->wzip));
+        fprintf (f, "w_company  %s\n", s_quote (mw->wcompany));
+        fprintf (f, "w_depart   %s\n", s_quote (mw->wdepart));
+        fprintf (f, "w_position %s\n", s_quote (mw->wposition));
+        fprintf (f, "w_homepage %s\n", s_quote (mw->whomepage));
         fprintf (f, "w_country  %u\n", mw->wcountry);
         fprintf (f, "w_occup    %u\n", mw->woccupation);
     }
     if (cont->meta_more)
     {
         MetaMore *mm = cont->meta_more;
-        fprintf (f, "m_homepage %s\n", mm->homepage ? mm->homepage : "");
+        fprintf (f, "m_homepage %s\n", s_quote (mm->homepage));
         fprintf (f, "m_age      %u\n", mm->age);
         fprintf (f, "m_year     %u\n", mm->year);
         fprintf (f, "m_unknown  %u\n", mm->unknown);
@@ -507,20 +507,20 @@ BOOL ContactMetaSave (Contact *cont)
     }
     for (email = cont->meta_email; email; email = email->meta_email)
         if (email->email)
-            fprintf (f, "email %u %s\n", email->auth, email->email);
+            fprintf (f, "email %u %s\n", email->auth, s_quote (email->email));
     if (cont->meta_obsolete)
         fprintf (f, "obsolete %u %u %u %s\n", cont->meta_obsolete->given,
                  cont->meta_obsolete->empty, cont->meta_obsolete->unknown,
-                 cont->meta_obsolete->description ? cont->meta_obsolete->description : "");
+                 s_quote (cont->meta_obsolete->description));
     for (extra = cont->meta_interest; extra; extra = extra->more)
         if (extra->text)
-            fprintf (f, "interest %lu %s\n", extra->data, extra->text);
+            fprintf (f, "interest %lu %s\n", extra->data, s_quote (extra->text));
     for (extra = cont->meta_background; extra; extra = extra->more)
         if (extra->text)
-            fprintf (f, "background %lu %s\n", extra->data, extra->text);
+            fprintf (f, "background %lu %s\n", extra->data, s_quote (extra->text));
     for (extra = cont->meta_affiliation; extra; extra = extra->more)
         if (extra->text)
-            fprintf (f, "affiliation %lu %s\n", extra->data, extra->text);
+            fprintf (f, "affiliation %lu %s\n", extra->data, s_quote (extra->text));
     if (fclose (f))
         return FALSE;
     cont->updated |= UPF_DISC;
@@ -583,24 +583,24 @@ BOOL ContactMetaLoad (Contact *cont)
             else if (!strcmp (cmd, "b_id"))    { if (s_parseint (&args, &i))   cont->id = i; }
             else if (!strcmp (cmd, "b_nick"))  { /* ignore for now */ }
             else if (!strcmp (cmd, "b_alias")) { /* ignore for now */ }
-            else if (!strcmp (cmd, "b_about")) { if (s_parserem (&args, &cmd)) s_repl (&cont->meta_about, ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "b_about")) { if (s_parse (&args, &cmd)) s_repl (&cont->meta_about, ConvToUTF8 (cmd, enc)); }
             else if (!strcmp (cmd, "b_seen"))  { if (s_parseint (&args, &i))   cont->seen_time = i; }
             else if (!strcmp (cmd, "b_micq"))  { if (s_parseint (&args, &i))   cont->seen_micq_time = i; }
         }
         else if (!strncmp (cmd, "g_", 2))
         {
             MetaGeneral *mg = CONTACT_GENERAL (cont);
-            if      (!strcmp (cmd, "g_nick"))    { if (s_parserem (&args, &cmd)) s_repl (&mg->first,    ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "g_first"))   { if (s_parserem (&args, &cmd)) s_repl (&mg->first,    ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "g_last"))    { if (s_parserem (&args, &cmd)) s_repl (&mg->last,     ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "g_email"))   { if (s_parserem (&args, &cmd)) s_repl (&mg->email,    ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "g_city"))    { if (s_parserem (&args, &cmd)) s_repl (&mg->city,     ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "g_state"))   { if (s_parserem (&args, &cmd)) s_repl (&mg->state,    ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "g_phone"))   { if (s_parserem (&args, &cmd)) s_repl (&mg->phone,    ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "g_fax"))     { if (s_parserem (&args, &cmd)) s_repl (&mg->fax,      ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "g_zip"))     { if (s_parserem (&args, &cmd)) s_repl (&mg->zip,      ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "g_street"))  { if (s_parserem (&args, &cmd)) s_repl (&mg->street,   ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "g_cell"))    { if (s_parserem (&args, &cmd)) s_repl (&mg->cellular, ConvToUTF8 (cmd, enc)); }
+            if      (!strcmp (cmd, "g_nick"))    { if (s_parse (&args, &cmd)) s_repl (&mg->first,    ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "g_first"))   { if (s_parse (&args, &cmd)) s_repl (&mg->first,    ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "g_last"))    { if (s_parse (&args, &cmd)) s_repl (&mg->last,     ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "g_email"))   { if (s_parse (&args, &cmd)) s_repl (&mg->email,    ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "g_city"))    { if (s_parse (&args, &cmd)) s_repl (&mg->city,     ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "g_state"))   { if (s_parse (&args, &cmd)) s_repl (&mg->state,    ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "g_phone"))   { if (s_parse (&args, &cmd)) s_repl (&mg->phone,    ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "g_fax"))     { if (s_parse (&args, &cmd)) s_repl (&mg->fax,      ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "g_zip"))     { if (s_parse (&args, &cmd)) s_repl (&mg->zip,      ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "g_street"))  { if (s_parse (&args, &cmd)) s_repl (&mg->street,   ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "g_cell"))    { if (s_parse (&args, &cmd)) s_repl (&mg->cellular, ConvToUTF8 (cmd, enc)); }
             else if (!strcmp (cmd, "g_country")) { if (s_parseint (&args, &i))   mg->country = i; }
             else if (!strcmp (cmd, "g_tz"))      { if (s_parseint (&args, &i))   mg->tz = i; }
             else if (!strcmp (cmd, "g_flags"))   { if (s_parseint (&args, &i))
@@ -613,23 +613,23 @@ BOOL ContactMetaLoad (Contact *cont)
         else if (!strncmp (cmd, "w_", 2))
         {
             MetaWork *mw = CONTACT_WORK (cont);
-            if      (!strcmp (cmd, "w_city"))     { if (s_parserem (&args, &cmd)) s_repl (&mw->wcity,     ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "w_state"))    { if (s_parserem (&args, &cmd)) s_repl (&mw->wstate,    ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "w_phone"))    { if (s_parserem (&args, &cmd)) s_repl (&mw->wphone,    ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "w_fax"))      { if (s_parserem (&args, &cmd)) s_repl (&mw->wfax,      ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "w_address"))  { if (s_parserem (&args, &cmd)) s_repl (&mw->waddress,  ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "w_zip"))      { if (s_parserem (&args, &cmd)) s_repl (&mw->wzip,      ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "w_company"))  { if (s_parserem (&args, &cmd)) s_repl (&mw->wcompany,  ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "w_depart"))   { if (s_parserem (&args, &cmd)) s_repl (&mw->wdepart,   ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "w_position")) { if (s_parserem (&args, &cmd)) s_repl (&mw->wposition, ConvToUTF8 (cmd, enc)); }
-            else if (!strcmp (cmd, "w_homepage")) { if (s_parserem (&args, &cmd)) s_repl (&mw->whomepage, ConvToUTF8 (cmd, enc)); }
+            if      (!strcmp (cmd, "w_city"))     { if (s_parse (&args, &cmd)) s_repl (&mw->wcity,     ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "w_state"))    { if (s_parse (&args, &cmd)) s_repl (&mw->wstate,    ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "w_phone"))    { if (s_parse (&args, &cmd)) s_repl (&mw->wphone,    ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "w_fax"))      { if (s_parse (&args, &cmd)) s_repl (&mw->wfax,      ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "w_address"))  { if (s_parse (&args, &cmd)) s_repl (&mw->waddress,  ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "w_zip"))      { if (s_parse (&args, &cmd)) s_repl (&mw->wzip,      ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "w_company"))  { if (s_parse (&args, &cmd)) s_repl (&mw->wcompany,  ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "w_depart"))   { if (s_parse (&args, &cmd)) s_repl (&mw->wdepart,   ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "w_position")) { if (s_parse (&args, &cmd)) s_repl (&mw->wposition, ConvToUTF8 (cmd, enc)); }
+            else if (!strcmp (cmd, "w_homepage")) { if (s_parse (&args, &cmd)) s_repl (&mw->whomepage, ConvToUTF8 (cmd, enc)); }
             else if (!strcmp (cmd, "w_country"))  { if (s_parseint (&args, &i))   mw->wcountry = i; }
             else if (!strcmp (cmd, "w_occup"))    { if (s_parseint (&args, &i))   mw->woccupation = i; }
         }
         else if (!strncmp (cmd, "m_", 2))
         {
             MetaMore *mm = CONTACT_MORE (cont);
-            if      (!strcmp (cmd, "m_homepage")) { if (s_parserem (&args, &cmd)) s_repl (&mm->homepage, ConvToUTF8 (cmd, enc)); }
+            if      (!strcmp (cmd, "m_homepage")) { if (s_parse (&args, &cmd)) s_repl (&mm->homepage, ConvToUTF8 (cmd, enc)); }
             else if (!strcmp (cmd, "m_age"))      { if (s_parseint (&args, &i))   mm->age = i; }
             else if (!strcmp (cmd, "m_year"))     { if (s_parseint (&args, &i))   mm->year = i; }
             else if (!strcmp (cmd, "m_unknown"))  { if (s_parseint (&args, &i))   mm->unknown = i; }
@@ -642,7 +642,7 @@ BOOL ContactMetaLoad (Contact *cont)
         }
         else if (!strcmp (cmd, "email"))
         {
-            if (s_parseint (&args, &i) && s_parserem (&args, &cmd))
+            if (s_parseint (&args, &i) && s_parse (&args, &cmd))
             {
                 email = cont->meta_email;
                 cont->meta_email = calloc (1, sizeof (MetaEmail));
@@ -657,11 +657,11 @@ BOOL ContactMetaLoad (Contact *cont)
             if (s_parseint (&args, &i)) mo->given = i;
             if (s_parseint (&args, &i)) mo->empty = i;
             if (s_parseint (&args, &i)) mo->unknown = i;
-            if (s_parserem (&args, &cmd)) s_repl (&mo->description, ConvToUTF8 (cmd, enc));
+            if (s_parse (&args, &cmd)) s_repl (&mo->description, ConvToUTF8 (cmd, enc));
         }
         else if (strcmp (cmd, "interest"))
         {
-            if (s_parseint (&args, &i) && s_parserem (&args, &cmd))
+            if (s_parseint (&args, &i) && s_parse (&args, &cmd))
             {
                 extra = cont->meta_interest;
                 cont->meta_interest = ExtraSet (NULL, 0, i, ConvToUTF8 (cmd, enc));
@@ -670,7 +670,7 @@ BOOL ContactMetaLoad (Contact *cont)
         }
         else if (strcmp (cmd, "background"))
         {
-            if (s_parseint (&args, &i) && s_parserem (&args, &cmd))
+            if (s_parseint (&args, &i) && s_parse (&args, &cmd))
             {
                 extra = cont->meta_background;
                 cont->meta_interest = ExtraSet (NULL, 0, i, ConvToUTF8 (cmd, enc));
@@ -679,7 +679,7 @@ BOOL ContactMetaLoad (Contact *cont)
         }
         else if (strcmp (cmd, "affiliation"))
         {
-            if (s_parseint (&args, &i) && s_parserem (&args, &cmd))
+            if (s_parseint (&args, &i) && s_parse (&args, &cmd))
             {
                 extra = cont->meta_affiliation;
                 cont->meta_interest = ExtraSet (NULL, 0, i, ConvToUTF8 (cmd, enc));

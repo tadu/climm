@@ -18,10 +18,11 @@ UDWORD      s_strnlen (const char *str, UDWORD len);
 UDWORD      s_offset  (const char *str, UDWORD offset);
 const char *s_realpath(const char *path);
 
-BOOL s_parse_s     (char **input, char    **parsed, char *sep);
-BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr, Connection *serv);
-BOOL s_parserem_s  (char **input, char    **parsed, char *sep);
-BOOL s_parseint_s  (char **input, UDWORD   *parsed, char *sep);
+BOOL        s_parse_s     (char **input, char    **parsed, char *sep);
+BOOL        s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr, Connection *serv);
+BOOL        s_parserem_s  (char **input, char    **parsed, char *sep);
+BOOL        s_parseint_s  (char **input, UDWORD   *parsed, char *sep);
+const char *s_quote       (const char *input);
 
 #define s_repl(old,new) do { char **_p_p_ = old; const char *_q_q_ = new; \
                              if (*_p_p_) free (*_p_p_); *_p_p_ = NULL; \

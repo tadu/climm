@@ -503,11 +503,23 @@ BOOL s_parse_s (char **input, char **parsed, char *sep)
     }
     while (*p)
     {
-        if (*p == '\\' && *(p + 1))
+        if (*p == '\\')
         {
             p++;
-            *(q++) = *(p++);
-            continue;
+            if (*p == 'x' && p[1] && p[2])
+            {
+                p++;
+                *q = (*p >= '0' && *p <= '9' ? *p - '0' : *p >= 'a' && *p <= 'f' ? *p - 'a' + 10 : *p - 'A' + 10) << 4;
+                p++;
+                *q = *p >= '0' && *p <= '9' ? *p - '0' : *p >= 'a' && *p <= 'f' ? *p - 'a' + 10 : *p - 'A' + 10;
+                p++, q++;
+                continue;
+            }
+            else if (*p)
+            {
+                *(q++) = *(p++);
+                continue;
+            }
         }
         if (*p == '"' && s)
         {
@@ -698,3 +710,41 @@ BOOL s_parseint_s (char **input, UDWORD *parsed, char *sep)
     return TRUE;
 }
 
+#define SUPERSAFE "%*+./0123456789:=@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"
+
+/*
+ * Quote a string for use in a config file
+ */
+const char *s_quote (const char *input)
+{
+    static char *t = NULL;
+    static UDWORD size = 0;
+    const char *tmp;
+    
+    if (!t)
+        t = malloc (size = 32);
+    if (!t || !input || !*input)
+        return "";
+    for (tmp = input; *tmp; tmp++)
+        if (!strchr (SUPERSAFE, *tmp))
+            break;
+    if (*tmp)
+        return input;
+    *t = 0;
+    t = s_cat (t, &size, "\"");
+    for (tmp = input; *tmp; tmp++)
+    {
+        if (strchr ("\\\"", *tmp))
+            t = s_catf (t, &size, "\\%c", *tmp);
+        else if (*tmp & 0xe0)
+            t = s_catf (t, &size, "%c", *tmp);
+        else
+            t = s_catf (t, &size, "\\x%c%c",
+                    (*tmp / 16) <= 9 ? ((UBYTE)*tmp / 16) + '0'
+                                     : ((UBYTE)*tmp / 16) - 10 + 'a',
+                    (*tmp & 15) <= 9 ? (*tmp & 15) + '0'
+                                     : (*tmp & 15) - 10 + 'a');
+    }
+    t = s_cat (t, &size, "\"");
+    return t;
+}
