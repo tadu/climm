@@ -14,7 +14,8 @@ dnl @author Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 dnl
 
 AC_DEFUN([AC_FUNC_SNPRINTF],
-[AC_MSG_CHECKING(for working snprintf)
+[AC_CHECK_FUNCS(snprintf vsnprintf)
+AC_MSG_CHECKING(for working snprintf)
 AC_CACHE_VAL(ac_cv_have_working_snprintf,
 [AC_TRY_RUN(
 [#include <stdio.h>

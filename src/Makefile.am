@@ -30,7 +30,7 @@ snprintf.c:
 	|| cp ../replace/snprintf.c ../replace/snprintf.h .
 
 distclean:
-	rm snprintf.c
+	rm -f snprintf.c
 
 buildmark.o: @LIBOBJS@ force
 
