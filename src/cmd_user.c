@@ -51,6 +51,8 @@ static jump_t jump[] = {
     { &CmdUserRandom,        "rand",         NULL, 0,   0 },
     { &CmdUserRandomSet,     "setr",         NULL, 0,   0 },
     { &CmdUserHelp,          "help",         NULL, 0,   0 },
+    { &CmdUserInfo,          "f",            NULL, 0,   0 },
+    { &CmdUserInfo,          "finger",       NULL, 0,   0 },
     { &CmdUserInfo,          "info",         NULL, 0,   0 },
     { &CmdUserTrans,         "lang",         NULL, 0,   0 },
     { &CmdUserTrans,         "trans",        NULL, 0,   0 },
