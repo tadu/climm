@@ -1736,8 +1736,6 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
         case 1:
             {
             strc_t str;
-            str_s bstr = { NULL, 0, 0 };
-
             int enc = ENC_LATIN1, icqenc = 0;
             
             remenc = ContactPrefVal (cont, CO_ENCODING);
@@ -1761,15 +1759,7 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
                 enc = ENC_LATIN9;
             }
 
-            str = ConvTo (text, enc);
-            s_init (&bstr, "", str->len + 2);
-            memcpy (bstr.txt, str->txt, str->len + 1);
-            bstr.len = str->len;
-            if (bstr.len > 450)
-            {
-                bstr.len = 450;
-                bstr.txt[450] = '\0';
-            }
+            str = s_split (&text, enc, 450);
 
             PacketWriteTLV     (pak, 2);
             PacketWriteTLV     (pak, 1281);
@@ -1780,14 +1770,14 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
             PacketWriteTLVDone (pak);
             PacketWriteTLV     (pak, 257);
             PacketWriteB4      (pak, icqenc);
-            PacketWriteData    (pak, bstr.txt, bstr.len);
+            PacketWriteData    (pak, str->txt, str->len);
             PacketWriteTLVDone (pak);
             PacketWriteTLVDone (pak);
             PacketWriteB2 (pak, 6);
             PacketWriteB2 (pak, 0);
             SnacSend (serv, pak);
-            if (bstr.len == 450) /* FIXME - message splitting */
-                return SnacCliSendmsg (serv, cont, text + 450, type, format);
+            if (*text)
+                return SnacCliSendmsg (serv, cont, text, type, format);
             }
             break;
         case 4:
