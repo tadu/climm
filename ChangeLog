@@ -1,4 +1,9 @@
 
+2001-05-31 Michel Oosterhof <micheloo@xs4all.nl>
+	* src/file_utils.c, include/file_utils.h:
+	  Fix termination of wrong string with '\0', use HAVE_UNISTD_H
+	  instead of UNIX, tighten Set_rcfile parameter to const.
+
 2001-05-24 Dmitri Lukyanov <ldv@sdsl-64-7-10-170.dsl.iad.megapath.net>
 	* lang/ru.i18n: Update language/country name translations again.
 

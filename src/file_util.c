@@ -19,6 +19,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #ifdef _WIN32
 #include <io.h>
 #define S_IRUSR        _S_IREAD
@@ -32,11 +36,6 @@
 #endif
 #endif
 
-#ifdef UNIX
-#include <unistd.h>
-#endif
-
-
 /****/
 
 #define      ADD_STRING(a,b)     else if (!strcasecmp (tmp, a))   \
@@ -46,7 +45,7 @@
 
 static char rcfile[256];
 
-void Set_rcfile (char *name)
+void Set_rcfile (const char *name)
 {
     char *path = 0;
     char *home;
@@ -82,7 +81,7 @@ void Set_rcfile (char *name)
     else
     {
         strncpy (rcfile, name, 256);
-        name[255] = 0;
+        rcfile[255] = 0;
     }
 }
 
