@@ -85,7 +85,7 @@ static RETSIGTYPE micq_sigwinch_handler (int a)
     struct winsize ws;
 
     scrwd = 0;
-    ioctl (STDIN, TIOCGWINSZ, &ws);
+    ioctl (STDIN_FILENO, TIOCGWINSZ, &ws);
     scrwd = ws.ws_col;
 }
 

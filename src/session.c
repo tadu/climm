@@ -14,6 +14,7 @@
 #include "tcp.h"
 #include "preferences.h"
 #include <string.h>
+#include <netdb.h>
 #include <assert.h>
 
 #define listlen 40

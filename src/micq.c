@@ -285,7 +285,7 @@ int main (int argc, char *argv[])
         }
 
 #ifndef _WIN32
-        M_Add_rsocket (STDIN);
+        M_Add_rsocket (STDIN_FILENO);
 #endif
 
         R_redraw ();

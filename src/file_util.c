@@ -731,12 +731,25 @@ int Save_RC ()
     Contact *cont;
     Session *ss;
 
+    M_print (i18n (9999, "Saving preferences to %s.\n"), prG->rcfile);
     rcf = fopen (prG->rcfile, "w");
-    if (!rcf && errno == ENOENT)
+    if (!rcf)
     {
-        k = mkdir (PrefUserDir (), 0700);
-        if (!k)
-            rcf = fopen (prG->rcfile, "w");
+        int rc = errno;
+        if (rc == ENOENT)
+        {
+            char *tmp = strdup (PrefUserDir ());
+            if (tmp[strlen (tmp) - 1] == '/')
+                tmp[strlen (tmp) - 1] = '\0';
+            M_print (i18n (9999, "Creating directory %s.\n"), tmp);
+            k = mkdir (tmp, 0700);
+            if (!k)
+                rcf = fopen (prG->rcfile, "w");
+            if (!rcf)
+                rc = errno;
+        }
+        if (!rcf)
+            M_print (i18n (1872, "failed: %s (%d)\n"), strerror (rc), rc);
     }
     if (!rcf)
         return -1;

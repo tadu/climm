@@ -293,7 +293,6 @@ void UtilIOConnectTCP (Session *sess)
     sess->sok = socket (AF_INET, SOCK_STREAM, 0);
     if (sess->sok < 0)
         CONN_FAIL_RC (i18n (1638, "Couldn't create socket"));
-    
     rc = fcntl (sess->sok, F_GETFL, 0);
     if (rc != -1)
         rc = fcntl (sess->sok, F_SETFL, rc | O_NONBLOCK);
@@ -445,8 +444,8 @@ static void UtilIOConnectCallback (Session *sess)
                 sess->connect += CONNECT_SOCKS_ADD;
                 if (buf[1] == 2)
                 {
-                    snprintf (buf, sizeof (buf), "%c%c%s%c%s%n", 1, strlen (prG->s5Name), 
-                              prG->s5Name, strlen (prG->s5Pass), prG->s5Pass, &len);
+                    snprintf (buf, sizeof (buf), "%c%c%s%c%s%n", 1, (char) strlen (prG->s5Name), 
+                              prG->s5Name, (char) strlen (prG->s5Pass), prG->s5Pass, &len);
                     sockwrite (sess->sok, buf, len);
                     return;
                 }
@@ -459,7 +458,7 @@ static void UtilIOConnectCallback (Session *sess)
                     CONN_FAIL  (i18n (1600, "[SOCKS] Authorization failure"));
             case 4:
                 if (sess->server)
-                    snprintf (buf, sizeof (buf), "%c%c%c%c%c%s%c%c%n", 5, 1, 0, 3, strlen (sess->server),
+                    snprintf (buf, sizeof (buf), "%c%c%c%c%c%s%c%c%n", 5, 1, 0, 3, (char)strlen (sess->server),
                               sess->server, (char)(sess->port >> 8), (char)(sess->port & 255), &len);
                 else if (sess->ip)
                     snprintf (buf, sizeof (buf), "%c%c%c%c%c%c%c%c%c%c%n", 5, 1, 0, 1, (char)(sess->ip >> 24),

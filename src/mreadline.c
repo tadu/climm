@@ -323,6 +323,10 @@ int R_process_input (void)
 
     if (!read (STDIN_FILENO, &ch, 1))
         return 0;
+#ifdef __BEOS__
+    if (ch == (char)0x80)
+        return 0;
+#endif
     if (!istat)
     {
         if (prG->tabs != TABS_SIMPLE && ch != '\t')

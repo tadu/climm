@@ -108,6 +108,7 @@ int M_select (void)
     {
         FD_ZERO (&readfds);
         FD_ZERO (&writefds);
+        FD_ZERO (&exceptfds);
         res = errno;
         if (res == EINTR)
             return 0;
