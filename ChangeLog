@@ -1,5 +1,9 @@
 
 2001-06-25 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Core dump fixes. Lots of 'em.
+	* lang/*.i18n: regenerate, update en_fun, de.
+
+2001-06-25 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Add bright red color COLERR.
 	* New functions CmdUserLookup, CmdUserLookupName.
 	* Use them to replace <whatever>_cmd strings.

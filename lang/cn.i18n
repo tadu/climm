@@ -28,6 +28,7 @@
 027:YES
 028:NO
 #-#029:½Ð¿é¤J " YES_STR " or " NO_STR "¶
+#029:Please enter YES or NO!
 030: logged off.
 031: logged on.
 032: - Instant Message
@@ -186,7 +187,7 @@
 #185:Technical
 #186:University Student
 #187:Web Building
-#188:©1Unrecognized command in rc file '%s', ignored.©0¶
+#188:Unrecognized command in rc file '%s', ignored.
 #189:UIN = %ld¶
 #190:port = %ld¶
 #191:passwd = %s¶
@@ -657,12 +658,12 @@
 #656:Enter the user's nick name:
 #657:Enter the user's first name:
 #658:Enter the user's last name:
-#659:Message sent!¶
+#659:Unkown section %s in configuration file.
 #660:Invalid Command: %s¶
 #661:Shell commands have been disabled.¶
 #662:Color is ©3%s©0.¶
 #663:Enter sex:
-#664:Composing message to ©1all©0:¶
+#664:Composing message to ©4all©0:¶
 #665:%s not recognized as a nick name.
 #666:Unignored %s.
 #667:Ignoring %s.
@@ -673,8 +674,8 @@
 #672:'s IP address is 
 #673:	The port is %d¶
 #674:	The port is unknown¶
-#675:Need uin to send to
-#676:Need uin to send to¶
+#675:Ignored line:
+#676:Need uin to send to.¶
 #677:%s not recognized as a nick name¶
 #678:Need URL please.¶
 #679:Sorry saving your personal reply messages went wrong!¶
@@ -716,16 +717,22 @@
 #715:Micq                      49 (might not work but try it)
 #716:None                      -1¶
 #717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
+#718:Sorry, can't initialize Windows Sockets...
 #719:Shows how long Micq has been running.
 #720:uin can be either a number or the nickname of the user.
 #721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
+#722:Type help to see your current command, because this  one you typed wasn't one!¶
 #723:%s's IP address is 
 #724:Automatic replies are %s.¶
+#725:<all>
+#726:Need uin to ask for.¶
 #727:The Do not disturb message is:
 #728:The Away message is:
 #729:The Not available message is:
 #730:The Occupied message is:
 #731:The Invisible message is:
+#732:maximal number of contacts reached. Ask a wizard to enlarge me!
+#733:Warning:
 #734:Sorry wrong syntax, can't find a status somewhere.\r¶
 #735:Must give a message.¶
 #736:Sorry wrong syntax. Read tha help man!¶
@@ -755,5 +762,7 @@
 #760:¶Your new UIN is %s%ld%s!¶
 #761:unknown
 #762:Ack!!!!!!  %d\a¶
+#763:The command '%s' has been renamed to '%s'.
+#764:The command '%s' has still it's original name.
 #800:Change the working language to <lang>.
 #801:Displays a list of people on your contact list in a screen wide format.

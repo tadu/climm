@@ -192,7 +192,7 @@
 185:Techniker
 186:Student (Uni)
 187:Webdesigner
-188:©1Unbekannte Option '%s' in der Konfigurationsdatei ignoriert.©0¶
+188:Unbekannte Option '%s' in der Konfigurationsdatei ignoriert.
 189:Benutzernummer = %ld¶
 190:Port    = %ld¶
 191:Paßwort = %s¶
@@ -672,12 +672,12 @@
 656:Geben Sie den Spitznamen des Benutzers ein:
 657:Geben Sie den Vornamen des Benuters ein:
 658:Geben Sie den Nachnamen des Benuters ein:
-659:Nachricht gesendet!¶
+659:Unbekannter Abschnitt %s in der Konfigurationsdatei.
 660:Ungültiges Kommando: %s¶
 661:Shell-Kommandos wurden abgeschaltet.¶
 662:Farbe ist ©3%s©0.¶
 663:Geschlecht:
-664:Erstelle Nachricht an ©1alle©0:¶
+664:Erstelle Nachricht an ©4alle©0:¶
 665:%s ist kein bekannter Spitzname.
 666:Ignoriere %s nicht mehr.
 667:Ignoriere %s.
@@ -688,7 +688,7 @@
 672:s IP-Adresse ist 
 673:	Der Port ist %d.¶
 674:	Der Port ist unbekannt.¶
-675:Benötige Benutzernummer, an die ich schicken soll
+675:Ignoriere Zeile:
 676:Benötige Benutzernummer, an die ich schicken soll.¶
 677:%s ist kein bekannter Spitzname.¶
 678:Benötige URL.¶
@@ -731,16 +731,22 @@
 715:mICQ                      49 (wird möglicherweise nicht funktionieren, aber ein Versuch ist's wert)
 716:Keine                     -1¶
 717:! als erstes Zeichen, um ein Shell-Kommando auszuführen (z.B. "!ls"  "!dir" "!mkdir temp").
+718:Kann den Socket unter Windows nicht initialisieren.
 719:Zeigt, wie lange mICQ schon läuft.
 720:<uin> kann die Benutzernummer oder der Spitzname eines Benutzers sein.
 721:Bei einer leeren Nachricht können mehrere Zeilen eingegeben werden.¶Dabei bedeutet eine Zeile nur mit . das Ende der Nachricht.¶Ebenso verwirft eine Zeile nur mit # die Nachricht.
+722:Unbekanntes Kommando zum Umbenennen, gebe "help" für Hilfe ein.
 723:%ss IP-Adresse ist 
 724:Automatische Antworten sind %s.¶
+725:<alle>
+726:Benötige Nummer des Benutzers, der Autorisiert werden soll.
 727:Die "Bitte nicht stören"-Nachricht lautet:
 728:Die "Nicht da"-Nachricht lautet:
 729:Die "Nicht erreichbar"-Nachricht lautet:
 730:Die "Beschäftigt"-Nachricht lautet:
 731:Die "Unsichtbar"-Nachricht lautet:
+732:Maximalzahl an Kontakten erreicht. Bitte einen Zauberer, diese zu vergrößern!
+733:Warnung:
 734:Leider falsche Syntax, kann keinen Status finden.¶
 735:Benötige eine Nachricht.¶
 736:Leider falsche Syntax. Lies doch die Hilfe, Mensch!¶
@@ -770,5 +776,7 @@
 760:¶Ihre neue Benutzernummer ist %s%ld%s!¶
 761:unbekannt
 762:Bestätigt!!!!!!  %d\a¶
+763:Das Kommando "%s" wurde in "%s" umbenannt.
+764:Das Kommando "%s" hat noch den ursprünglichen Namen.
 800:Wählt die Sprache <lang> aus.
 801:Zeigt die Kontaktliste im ausführlichen Format an.

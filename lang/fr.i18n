@@ -88,6 +88,7 @@
 087:Ignorant les données supplémentaires suivant le numéro
 088:Entrez votre UIN (0 pour créer un nouveau):
 089:Traduction déchargée.
+#090:%s is a UIN, not a nick name.
 091:If faut entrer un mot de passe !
 092:Entrez-le encore pour vérifier:
 093:Les mots de passe ne sont pas identiques ; veuillez re-essayer.
@@ -185,7 +186,7 @@
 185:Technique
 186:Étudiant (université)
 187:Construction de pages web
-188:©1Commande inconnue dans le fichier rc: '%s'. Ignoré.©0¶
+188:Commande inconnue dans le fichier rc: '%s'. Ignoré.¶
 189:UIN = %ld¶
 190:port = %ld¶
 191:mot de passe = %s¶
@@ -193,7 +194,6 @@
 193:status = %ld¶
 194:Nombre de contacts = %d¶
 195:UIN du contact[0] = %ld¶
-#196:Message_cmd = %s¶
 196:cmd de message = %s¶
 # what does it mean ? when is it used ?
 # found it in file_util.c
@@ -498,6 +498,7 @@
 495:N'a pu pas trouver un utilisateur au hasard
 496:%d/%d/%d
 497:Type: %d     Longueur: %d¶
+#498:Info for:
 499:Autre
 500:Surnom:
 501:Nom:
@@ -557,6 +558,10 @@
 555:Votre nom de famille:
 556:Votre adresse email:
 557:Souhaitez-vous que les utilisateurs de Mirabilis nécessitent votre autorisation?
+#558:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
+#559:Enter max age (22,29,39,49,59,120):
+#560:Enter a city:
+#561:Enter a state:
 562:©1Info pour %ld¶
 563:Surnom:
 564:Prénom:
@@ -573,6 +578,8 @@
 575:Age:
 576:non spécifié
 577:Sexe:
+#578:Enter country's phone ID number:
+#579:Enter company: 
 580:Numéro de téléphone:
 581:Page web:
 582:A propos de l'utilisateur:
@@ -580,6 +587,9 @@
 584:Avis: La commande '%s' a échouée, donnant un valeur d'erreur %d¶
 585:Ack ! Packet mutilé
 586:©4¶%s©0 vous a ajouté à sa liste de contacts.¶
+#587:Enter department: 
+#588:Enter position: 
+#589:Should the users be online?
 590:©4¶%s©0 demande votre autorisation.
 591:Raison:
 592:<%s> vous a envoyé un email:¶
@@ -606,7 +616,6 @@
 613:Aucun logiciel de Mirabilis n'a été déconstruit ou décompilé.¶
 614:Le fichier de configuration est "%s"¶
 615:Le repertoire du journal est "%s"¶
-#616:Started BeOS InputThread¶\r
 616:InputThread de BeOS lancé¶\r
 617:Il n'y a plus de mémoire !\a¶
 618:¶Données total: %d¶
@@ -650,11 +659,12 @@
 656:Entrez le surnom de l'utilisateur:
 657:Entrez le prénom de l'utilisateur:
 658:Entrez le nom de famille de l'utilisateur:
-659:Message envoyé !¶
+#659:Unkown section %s in configuration file.
 660:Commande inconnue: %s¶
 661:Les commandes shell sont interdites.¶
 662:Le couleur est ©3%s©0.¶
-664:Composant un message pour ©1tous©0:¶
+#663:Enter sex:
+664:Composant un message pour ©4tous©0:¶
 665:%s n'est pas reconnu comme surnom
 666:N'ignorant pas %s !¶
 667:Ignorant %s !¶
@@ -665,7 +675,7 @@
 672: - IP 
 673:	Port: %d¶
 674:	Port: inconnu¶
-675:À quel UIN ?
+#675:Ignored line:
 676:À quel UIN ?¶
 677:%s n'est pas reconnu comme surnom¶
 678:Veuillez entrez une URL.¶
@@ -691,6 +701,8 @@
 698:Packets distincts reçus:
 699:Il faut donner un UIN/surnom valide¶
 700:%s ne se retrouve pas dans votre liste de contacts.¶
+#701:%d users not returned.
+#702:Display a list of nicknames that you can tab through.
 703:©2Modes de status:¶
 704:©2Groupes:¶
 705:Général                    1¶
@@ -713,11 +725,15 @@
 722:	Faites # sur un nouveau ligne pour la terminer.©0¶
 723:%s - IP 
 724:Les réponses automatiques sont %s.¶
+#725:<all>
+#726:Need uin to ask for.¶
 727:Le message Ne pas déranger est:
 728:Le message Absent est:
 729:Le message Non disponible est:
 730:Le message Occupé est:
 731:Le message Invisible est:
+#732:maximal number of contacts reached. Ask a wizard to enlarge me!
+#733:Warning:
 734:Je ne comprends pas !\r¶
 735:Il faut entrer un message.¶
 736:Je ne comprends pas ! Lisez donc l'aide !¶ 
@@ -748,3 +764,7 @@
 760:¶Votre nouveau UIN est %s%ld%s !¶
 761:inconnu
 762:Ack !!!!!!  %d\a¶
+#763:The command '%s' has been renamed to '%s'.
+#764:The command '%s' has still it's original name.
+#800:Change the working language to <lang>.
+#801:Displays a list of people on your contact list in a screen wide format.

@@ -602,18 +602,19 @@ JUMP_F(CmdUserAlter)
     int quiet = 0;
 
     cmd = strtok (args, " ");
+
+    if (cmd && !strcasecmp ("quiet", cmd))
+    {
+        quiet = 1;
+        cmd = strtok (NULL, " ");
+    }
+        
     if (cmd == NULL)
     {
         M_print (i18n (738, "Need a command to alter!\n"));
         return 0;
     }
     
-    if (!strcasecmp ("quiet", cmd))
-    {
-        quiet = 1;
-        cmd = strtok (NULL, " ");
-    }
-        
     j = CmdUserLookup (cmd, CU_DEFAULT);
     if (!j)
         j = CmdUserLookup (cmd, CU_USER);
@@ -658,7 +659,7 @@ JUMP_F (CmdUserMessage)
 
     if (status)
     {
-        arg1 = strtok (args, "");
+        arg1 = args;
         msg[offset] = 0;
         if (strcmp (arg1, END_MSG_STR) == 0)
         {
@@ -808,7 +809,7 @@ JUMP_F (CmdUserMessage)
         status = data;
     }
     if (status == 8)
-        R_doprompt (i18n (42, "msg> "));
+        R_doprompt (i18n (42, "msg all> "));
     else
         R_doprompt (i18n (41, "msg> "));
     return status;
@@ -1447,7 +1448,7 @@ JUMP_F(CmdUserAdd)
     UDWORD uin;
 
     arg1 = strtok (args, " \t");
-    if (arg1 != NULL)
+    if (arg1)
     {
         uin = atoi (arg1);
         arg1 = strtok (NULL, "");
@@ -1488,7 +1489,7 @@ JUMP_F(CmdUserAuth)
     UDWORD uin;
 
     arg1 = strtok (NULL, "");
-    if (arg1 == NULL)
+    if (!arg1)
     {
         M_print (i18n (676, "Need uin to send to.\n"));
     }
@@ -1527,7 +1528,7 @@ JUMP_F(CmdUserURL)
     UDWORD uin;
 
     arg1 = strtok (args, " ");
-    if (arg1 == NULL)
+    if (!arg1)
     {
         M_print (i18n (676, "Need uin to send to.\n"));
     }
@@ -1542,7 +1543,7 @@ JUMP_F(CmdUserURL)
         {
             arg1 = strtok (NULL, " ");
             last_uin = uin;
-            if (arg1 != NULL)
+            if (arg1)
             {
                 arg2 = strtok (NULL, "");
                 if (!arg2)
@@ -1599,7 +1600,7 @@ JUMP_F(CmdUserLast)
     UDWORD uin;
 
     arg1 = strtok (args, "\t\n");
-    if (arg1 == NULL)
+    if (!arg1)
     {
         int i;
         M_print (i18n (682, "You have received messages from:\n"));
@@ -1692,15 +1693,13 @@ JUMP_F(CmdUserQuit)
 JUMP_F(CmdUserSearch)
 {
     static MORE_INFO_STRUCT user;
-    char *arg1 = strtok (args, "\n");
 
     switch (status)
     {
         case 0:
-            arg1 = strtok (args, "\n");
-            if (arg1)
+            if (args)
             {
-                start_search (sok, arg1, "", "", "");
+                start_search (sok, args, "", "", "");
                 return 0;
             }
             return 100;
@@ -1708,19 +1707,19 @@ JUMP_F(CmdUserSearch)
             M_print ("%s ", i18n (655, "Enter the user's e-mail address:"));
             return ++status;
         case 101:
-            user.email = strdup ((char *) arg1);
+            user.email = strdup ((char *) args);
             M_print ("%s ", i18n (656, "Enter the user's nick name:"));
             return ++status;
         case 102:
-            user.nick = strdup ((char *) arg1);
+            user.nick = strdup ((char *) args);
             M_print ("%s ", i18n (657, "Enter the user's first name:"));
             return ++status;
         case 103:
-            user.first = strdup ((char *) arg1);
+            user.first = strdup ((char *) args);
             M_print ("%s", i18n (658, "Enter the user's last name:"));
             return ++status;
         case 104:
-            user.last = strdup ((char *) arg1);
+            user.last = strdup ((char *) args);
             start_search (sok, user.email, user.nick, user.first, user.last);
             return 0;
     }
@@ -1732,7 +1731,6 @@ JUMP_F(CmdUserSearch)
  */
 JUMP_F(CmdUserWpSearch)
 {
-    char *arg1 = strtok (args, "");
     int temp;
     static WP_STRUCT wp;
 
@@ -1742,35 +1740,35 @@ JUMP_F(CmdUserWpSearch)
             M_print ("%s ", i18n (656, "Enter the user's nick name:"));
             return 200;
         case 200:
-            wp.nick = strdup ((char *) arg1);
+            wp.nick = strdup ((char *) args);
             M_print ("%s ", i18n (657, "Enter the user's first name:"));
             return ++status;
         case 201:
-            wp.first = strdup ((char *) arg1);
+            wp.first = strdup ((char *) args);
             M_print ("%s ", i18n (658, "Enter the user's last name:"));
             return ++status;
         case 202:
-            wp.last = strdup ((char *) arg1);
+            wp.last = strdup ((char *) args);
             M_print ("%s ", i18n (655, "Enter the user's e-mail address:"));
             return ++status;
         case 203:
-            wp.email = strdup ((char *) arg1);
+            wp.email = strdup ((char *) args);
             M_print ("%s ", i18n (558, "Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):"));
             return ++status;
         case 204:
-            wp.minage = atoi (arg1);
+            wp.minage = atoi (args);
             M_print ("%s ", i18n (559, "Enter max age (22,29,39,49,59,120):"));
             return ++status;
         case 205:
-            wp.maxage = atoi (arg1);
+            wp.maxage = atoi (args);
             M_print (i18n (663, "Enter sex:"));
             return ++status;
         case 206:
-            if (!strncasecmp (arg1, i18n (528, "female"), 1))
+            if (!strncasecmp (args, i18n (528, "female"), 1))
             {
                 wp.sex = 1;
             }
-            else if (!strncasecmp (arg1, i18n (529, "male"), 1))
+            else if (!strncasecmp (args, i18n (529, "male"), 1))
             {
                 wp.sex = 2;
             }
@@ -1781,8 +1779,8 @@ JUMP_F(CmdUserWpSearch)
             M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
             return ++status;
         case 207:
-            temp = atoi (arg1);
-            if ((0 == temp) && (toupper (arg1[0]) == 'L'))
+            temp = atoi (args);
+            if ((0 == temp) && (toupper (args[0]) == 'L'))
             {
                 TablePrintLang ();
                 M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
@@ -1795,33 +1793,33 @@ JUMP_F(CmdUserWpSearch)
             }
             return status;
         case 208:
-            wp.city = strdup ((char *) arg1);
+            wp.city = strdup ((char *) args);
             M_print ("%s ", i18n (561, "Enter a state:"));
             return ++status;
         case 209:
-            wp.state = strdup ((char *) arg1);
+            wp.state = strdup ((char *) args);
             M_print ("%s ", i18n (578, "Enter country's phone ID number:"));
             return ++status;
         case 210:
-            wp.country = atoi ((char *) arg1);
+            wp.country = atoi ((char *) args);
             M_print ("%s ", i18n (579, "Enter company: "));
             return ++status;
         case 211:
-            wp.company = strdup ((char *) arg1);
+            wp.company = strdup ((char *) args);
             M_print ("%s ", i18n (587, "Enter department: "));
             return ++status;
         case 212:
-            wp.department = strdup ((char *) arg1);
+            wp.department = strdup ((char *) args);
             M_print ("%s ", i18n (588, "Enter position: "));
             return ++status;
         case 213:
-            wp.position = strdup ((char *) arg1);
+            wp.position = strdup ((char *) args);
             M_print ("%s ", i18n (589, "Should the users be online?"));
             return ++status;
 /* A few more could be added here, but we're gonna make this
  the last one -KK */
         case 214:
-            if (!strcasecmp (arg1, i18n (28, "NO")))
+            if (!strcasecmp (args, i18n (28, "NO")))
             {
                 wp.online = FALSE;
                 Search_WP (sok, &wp);
@@ -1836,7 +1834,7 @@ JUMP_F(CmdUserWpSearch)
                 free (wp.state);
                 return 0;
             }
-            else if (!strcasecmp (arg1, i18n (27, "YES")))
+            else if (!strcasecmp (args, i18n (27, "YES")))
             {
                 wp.online = TRUE;
                 Search_WP (sok, &wp);
@@ -1867,7 +1865,6 @@ JUMP_F(CmdUserWpSearch)
 JUMP_F(CmdUserUpdate)
 {
     static MORE_INFO_STRUCT user;
-    char *arg1 = strtok (args, "");
 
     switch (status)
     {
@@ -1875,74 +1872,74 @@ JUMP_F(CmdUserUpdate)
             M_print ("%s ", i18n (553, "Enter Your New Nickname:"));
             return 300;
         case 300:
-            user.nick = strdup ((char *) arg1);
+            user.nick = strdup ((char *) args);
             M_print ("%s ", i18n (554, "Enter your new first name:"));
             return ++status;
         case 301:
-            user.first = strdup ((char *) arg1);
+            user.first = strdup ((char *) args);
             M_print ("%s ", i18n (555, "Enter your new last name:"));
             return ++status;
         case 302:
-            user.last = strdup ((char *) arg1);
+            user.last = strdup ((char *) args);
             M_print ("%s ", i18n (556, "Enter your new email address:"));
             return ++status;
         case 303:
-            user.email = strdup ((char *) arg1);
+            user.email = strdup ((char *) args);
             M_print ("%s ", i18n (542, "Enter other email address:"));
             return ++status;
         case 304:
-            user.email2 = strdup ((char *) arg1);
+            user.email2 = strdup ((char *) args);
             M_print ("%s ", i18n (543, "Enter old email address:"));
             return ++status;
         case 305:
-            user.email3 = strdup ((char *) arg1);
+            user.email3 = strdup ((char *) args);
             M_print ("%s ", i18n (544, "Enter new city:"));
             return ++status;
         case 306:
-            user.city = strdup ((char *) arg1);
+            user.city = strdup ((char *) args);
             M_print ("%s ", i18n (545, "Enter new state:"));
             return ++status;
         case 307:
-            user.state = strdup ((char *) arg1);
+            user.state = strdup ((char *) args);
             M_print ("%s ", i18n (546, "Enter new phone number:"));
             return ++status;
         case 308:
-            user.phone = strdup ((char *) arg1);
+            user.phone = strdup ((char *) args);
             M_print ("%s ", i18n (547, "Enter new fax number:"));
             return ++status;
         case 309:
-            user.fax = strdup ((char *) arg1);
+            user.fax = strdup ((char *) args);
             M_print ("%s ", i18n (548, "Enter new street address:"));
             return ++status;
         case 310:
-            user.street = strdup ((char *) arg1);
+            user.street = strdup ((char *) args);
             M_print ("%s ", i18n (549, "Enter new cellular number:"));
             return ++status;
         case 311:
-            user.cellular = strdup ((char *) arg1);
+            user.cellular = strdup ((char *) args);
             M_print ("%s ", i18n (550, "Enter new zip code (must be numeric):"));
             return ++status;
         case 312:
-            user.zip = atoi ((char *) arg1);
+            user.zip = atoi ((char *) args);
             M_print ("%s ", i18n (551, "Enter your country's phone ID number:"));
             return ++status;
         case 313:
-            user.country = atoi ((char *) arg1);
+            user.country = atoi ((char *) args);
             M_print ("%s ", i18n (552, "Enter your time zone (+/- 0-12):"));
             return ++status;
         case 314:
-            user.c_status = atoi ((char *) arg1);
+            user.c_status = atoi ((char *) args);
             user.c_status <<= 1;
             M_print ("%s ", i18n (557, "Do you want to require Mirabilis users to request your authorization? (YES/NO)"));
             return ++status;
         case 315:
-            if (!strcasecmp (arg1, i18n (28, "NO")))
+            if (!strcasecmp (args, i18n (28, "NO")))
             {
                 user.auth = FALSE;
                 M_print ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
                 return ++status;
             }
-            else if (!strcasecmp (arg1, i18n (27, "YES")))
+            else if (!strcasecmp (args, i18n (27, "YES")))
             {
                 user.auth = TRUE;
                 M_print ("%s ", i18n (622, "Do you want to apply these changes? (YES/NO)"));
@@ -1955,7 +1952,7 @@ JUMP_F(CmdUserUpdate)
             }
             return status;
         case 316:
-            if (!strcasecmp (arg1, i18n (28, "NO")))
+            if (!strcasecmp (args, i18n (28, "NO")))
             {
                 free (user.nick);
                 free (user.last);
@@ -1963,7 +1960,7 @@ JUMP_F(CmdUserUpdate)
                 free (user.email);
                 return 0;
             }
-            else if (!strcasecmp (arg1, i18n (27, "YES")))
+            else if (!strcasecmp (args, i18n (27, "YES")))
             {
                 Update_More_User_Info (sok, &user);
                 free (user.nick);
@@ -1989,7 +1986,6 @@ JUMP_F(CmdUserOther)
 {
     static OTHER_INFO_STRUCT other;
     int temp;
-    char *arg1 = strtok (args, "");
 
     switch (status)
     {
@@ -1997,15 +1993,15 @@ JUMP_F(CmdUserOther)
             M_print ("%s ", i18n (535, "Enter new age:"));
             return 400;
         case 400:
-            other.age = atoi (arg1);
+            other.age = atoi (args);
             M_print ("%s ", i18n (536, "Enter new sex:"));
             return ++status;
         case 401:
-            if (!strncasecmp (arg1, i18n (528, "female"), 1))
+            if (!strncasecmp (args, i18n (528, "female"), 1))
             {
                 other.sex = 1;
             }
-            else if (!strncasecmp (arg1, i18n (529, "male"), 1))
+            else if (!strncasecmp (args, i18n (529, "male"), 1))
             {
                 other.sex = 2;
             }
@@ -2016,24 +2012,24 @@ JUMP_F(CmdUserOther)
             M_print ("%s ", i18n (537, "Enter new homepage:"));
             return ++status;
         case 402:
-            other.hp = strdup (arg1);
+            other.hp = strdup (args);
             M_print ("%s ", i18n (538, "Enter new year of birth (4 digits):"));
             return ++status;
         case 403:
-            other.year = atoi (arg1) - 1900;
+            other.year = atoi (args) - 1900;
             M_print ("%s ", i18n (539, "Enter new month of birth:"));
             return ++status;
         case 404:
-            other.month = atoi (arg1);
+            other.month = atoi (args);
             M_print ("%s ", i18n (540, "Enter new day of birth:"));
             return ++status;
         case 405:
-            other.day = atoi (arg1);
+            other.day = atoi (args);
             M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
             return ++status;
         case 406:
-            temp = atoi (arg1);
-            if ((0 == temp) && (toupper (arg1[0]) == 'L'))
+            temp = atoi (args);
+            if ((0 == temp) && (toupper (args[0]) == 'L'))
             {
                 TablePrintLang ();
             }
@@ -2045,8 +2041,8 @@ JUMP_F(CmdUserOther)
             M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
             return status;
         case 407:
-            temp = atoi (arg1);
-            if ((0 == temp) && (toupper (arg1[0]) == 'L'))
+            temp = atoi (args);
+            if ((0 == temp) && (toupper (args[0]) == 'L'))
             {
                 TablePrintLang ();
             }
@@ -2058,8 +2054,8 @@ JUMP_F(CmdUserOther)
             M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
             return status;
         case 408:
-            temp = atoi (arg1);
-            if ((0 == temp) && (toupper (arg1[0]) == 'L'))
+            temp = atoi (args);
+            if ((0 == temp) && (toupper (args[0]) == 'L'))
             {
                 TablePrintLang ();
                 M_print ("%s ", i18n (534, "Enter a language by number or L for a list:"));
@@ -2080,27 +2076,26 @@ JUMP_F(CmdUserAbout)
 {
     static int offset = 0;
     static char msg[1024];
-    char *arg1 = strtok (args, "");
 
     if (status > 100)
     {
         msg[offset] = 0;
-        if (!strcmp (arg1, END_MSG_STR))
+        if (!strcmp (args, END_MSG_STR))
         {
             Update_About (sok, msg);
             return 2;
         }
-        else if (!strcmp (arg1, CANCEL_MSG_STR))
+        else if (!strcmp (args, CANCEL_MSG_STR))
         {
             return 2;
         }
         else
         {
-            if (offset + strlen (arg1) < 450)
+            if (offset + strlen (args) < 450)
             {
-                strcat (msg, arg1);
+                strcat (msg, args);
                 strcat (msg, "\r\n");
-                offset += strlen (arg1) + 2;
+                offset += strlen (args) + 2;
             }
             else
             {
@@ -2111,9 +2106,9 @@ JUMP_F(CmdUserAbout)
     }
     else
     {
-        if (arg1)
+        if (args)
         {
-            Update_About (sok, arg1);
+            Update_About (sok, args);
             return 0;
         }
         offset = 0;
@@ -2199,7 +2194,7 @@ void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_fl
             }
             cmd = strtok (buf, " \n\t");
 
-            if ( cmd == NULL)
+            if (!cmd)
             {
                 if (!command)
                     Prompt ();
@@ -2224,13 +2219,13 @@ void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_fl
             else if (!strcasecmp (cmd, "reg"))
             {
                 arg1 = strtok (NULL, "");
-                if (arg1 != NULL)
+                if (arg1)
                     reg_new_user (sok, arg1);
             }
             else if (!strcasecmp (cmd, "pass"))
             {
                 arg1 = strtok (NULL, "");
-                if (arg1 != NULL)
+                if (arg1)
                     Change_Password (sok, arg1);
             }
             else if (!strcasecmp (cmd, "ver"))

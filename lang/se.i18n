@@ -185,7 +185,7 @@
 185:Teknisk
 186:Högskolestuderande
 187:Webutveckling
-188:©1Okänt kommando i inställningsfil '%s', ignorerad.©0¶
+188:Okänt kommando i inställningsfil '%s', ignorerad.¶
 189:UIN = %ld¶
 190:port = %ld¶
 191:lösenord = %s¶
@@ -433,7 +433,7 @@
 433:Ändra status till ej tillgänglig.
 434:Ändra status till upptagen.
 435:Ändra status till stör ej.
-#436:Ändra status till <Free for Chat>.
+#436:Mark as Free for Chat.
 437:Ändra status till osynlig.
 438:Uppdaterar informationen om dig själv.
 439:Ställer in din slumpmässiga användaregrupp.
@@ -664,12 +664,12 @@
 656:Ange namn:
 657:Ange förnamn:
 658:Ange efternamn:
-659:Meddelandet skickat!¶
+#659:Unkown section %s in configuration file.
 660:Felaktigt kommando: %s¶
 661:Skalkommandor är avstängda.¶
 662:Color is ©3%s©0.¶
 663:Ange kön:
-664:Skriver meddelande till ©1all©0:¶
+664:Skriver meddelande till ©4all©0:¶
 665:%s är inte något känt namn.
 666:Slutar ignornera %s.
 667:Ignorerar %s.
@@ -680,8 +680,8 @@
 672:'s IP adress är
 673:	Porten är %d¶
 674:	Porten är okänd¶
-675:Behöver ICQ-nummer för att skicka
-676:Behöver ICQ-nummer för att skicka¶
+#675:Ignored line:
+676:Behöver ICQ-nummer för att skicka.¶
 677:%s är inte ett känt namn¶
 678:Ange URL.¶
 679:Tyvärr, kunde ej spara ditt svarsmeddelande!¶
@@ -723,16 +723,22 @@
 715:Micq                      49 (kanske inte fungerar, men testa!)
 #716:None                      -1¶
 717:! som det första tecknet av ett kommando kommer köra ett skalkommando (t.ex. "!ls"  "!dir" "!mkdir temp").
+#718:Sorry, can't initialize Windows Sockets...
 719:Visar hur länge micq varit igång.
 720:kan vara ett nummer eller namn på användare.
-#721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Skriver # ensamt på en rad för att avbryta ett meddelande.
+#721:Sending a blank message will put the client into multiline mode.¶Use . on a line by itself to end message.¶Use # on a line by itself to cancel the message.
+#722:Type help to see your current command, because this  one you typed wasn't one!¶
 723:%s IP adress är
 724:Automatiska svar är %s.¶
+#725:<all>
+#726:Need uin to ask for.¶
 #727:The Do not disturb message is:
 #728:The Away message is:
 #729:The Not available message is:
 #730:The Occupied message is:
 #731:The Invisible message is:
+#732:maximal number of contacts reached. Ask a wizard to enlarge me!
+#733:Warning:
 #734:Sorry wrong syntax, can't find a status somewhere.\r¶
 #735:Must give a message.¶
 #736:Sorry wrong syntax. Read tha help man!¶
@@ -762,5 +768,7 @@
 760:¶Ditt nya nummer är %s%ld%s!¶
 761:okänt
 #762:Ack!!!!!!  %d\a¶
+#763:The command '%s' has been renamed to '%s'.
+#764:The command '%s' has still it's original name.
 #800:Change the working language to <lang>.
 #801:Displays a list of people on your contact list in a screen wide format.
