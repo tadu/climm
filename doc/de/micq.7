@@ -1,5 +1,5 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: micq.7,v 1.28 2002/08/09 01:22:20
+.\"  EN: micq.7,v 1.36 2003/01/05 23:46:10
 .TH MICQ 7 mICQ DE
 .SH NAME
 .B mICQ
@@ -7,121 +7,8 @@
 .SH BESCHREIBUNG
 Diese Hilfeseite beschreibt die Befehle, die aus mICQ heraus verwendet
 werden k\(:onnen. Diese Seite enth\(:alt prinzipiell dieselben Informationen wie
-die Hilfe innerhalb von mICQ.
-.SH BEFEHLE
-.TP
-.BI trans \ [Sprache|Nr]\ ...
-Wechsle zur Sprache
-.IR Sprache ,
-gegeben durch ihren ISO-Sprachcode, oder gibt die \(:Ubersetzung
-der Textes mit der Nummer
-.I Nr
-aus. Um die durch die Umgebungsvariablen
-.BR LANG ,
-.B LC_ALL
-und
-.B LC_MESSAGES
-bestimmte Sprache auszuw\(:ahlen, kann
-.BR ! ,
-.B auto
-oder
-.B default
-verwendet werden. Um \(:uberhaupt keine \(:Ubersetzung auszuw\(:ahlen,
-kann man
-.BR . ,
-.B none
-oder
-.B unload
-verwenden. Um zur Fehlersuche die Nummern der
-\(:ubersetzten Texte mitauszugeben, kann man
-.B debug
-voranstellen. Um an ein paar Stellen lustige Meldungen
-zu verwenden, kann man
-.B _fun
-anh\(:angen.
-.sp
-Die Dateien aus ~/.micq/i18n/*.i18n haben Vorrang  \(:uber die globalen
-Dateien, w\(:ahrend die "lustigen" \(:uber die normalen Vorrang haben.
-.sp
-Tats\(:achlich kann man sogar soviele Argumente angeben, wie man will,
-um z.B. den 117. Text in Deutsch auszugeben und dann zur Standardsprache
-zur\(:uckzukehren, gebe man "trans de 117 default" ein.
-.TP
-.B tabs 
-Zeigt eine Liste von Benutzern, zu denen man bereits Nachrichten
-geschickt hat bzw. von denen man bereits welche Empfangen hat, und
-die man mittels das <tab>-Taste durchgehen kann.
-.TP
-.B save
-Speichert die aktuellen Einstellungen in der Kon\(figurationsdatei ab,
-welches
-.I ~/.micq/micqrc
-ist, wenn nicht anders angegeben. Vorsicht, dies wird alle hinzugef\(:ugten
-Kommentare in dieser Datei \(:uberschreiben.
-.TP
-.BI r \ [Nachricht]
-Antwortet auf die zuletzt empfangene Nachricht. Ohne
-.I Nachricht
-wird der Mehr-Zeilen-Modus aktiviert. Um eine Mehr-Zeilen-Nachricht abzuschicken,
-gebe man einen Punkt
-.RB ( . )
-auf einer Zeile f\(:ur sich ein. Um die Nachricht abzubrechen, gebe man ein Doppelkreuz
-.RB ( # )
-auf einer Zeile f\(:ur sich ein.
-.TP
-.BI a \ [Nachricht]
-Schickt eine Nachricht zur gleichen Person wie die letzte Nachricht.
-Siehe 
-.B r
-f\(:ur das Verhalten ohne
-.IR Nachricht .
-.TP
-.BI msg \ Benutzernummer|Spitzname\ [Nachricht]
-Schickt eine Nachricht an
-.IR Benutzernummer|Spitzname .
-Siehe
-.B r 
-f\(:ur das Verhalten ohne
-.IR Nachricht .
-.TP
-.BI url \ Benutzernummer|Spitzname\ URL\ Nachricht
-Schickt eine
-.I Nachricht
-\(:uber die Seite
-.I URL
-an
-.IR Benutzernummer|Spitzname .
-.TP
-.BI sms \ HandyNr\ Nachricht
-Verschickt eine SMS-Nachricht
-.I Nachricht
-an die Handy-Nummer
-.IR HandyNr ,
-die in der Form +<Landeskode><Nummer> sein mu\(ss.
-.TP
-.B msga
-Schickt eine Mehr-Zeilen-Nachricht an jeden auf der Kontaktliste. Siehe
-auch
-.BI r .
-.TP
-.BI resend \ Benutzernummer|Spitzname\ ...
-Schickt die letzte Nachricht erneut an
-.I Benutzernummer
-oder 
-.IR Spitzname .
-Es k\(:onnen beliebig viele Argumente angegeben werden.
-.TP
-.B uptime
-Zeigt an, wie lange mICQ bereits l\(:auft.
-.TP
-.BI last \ [Kontakt]
-Zeigt die zuletzt empfangene Nachricht von
-.IR Kontakt ,
-welches eine
-.I Benutzernummer
-oder ein
-.I Spitzname
-sein kann, oder von allen, die bisher eine Nachricht geschickt haben.
+die Hilfe innerhalb von mICQ, nur pr\(:aziser und umfangreicher.
+.SH BEFEHLE BEZ\(:UGLICH DES MICQ ICQ-PROGRAMMS
 .TP
 .BI verbose \ [verb]
 Setzt die Ausf\(:uhrlichkeit der Ausgaben von mICQ auf
@@ -168,9 +55,7 @@ Zeige den Direktverbindungs-Handschlag.
 .TP
 .B 4194304
 Zeige den Verbindungsaufbau von Verbindungen.
-.RE
-
-.RS
+.PP
 In jedem Fall bewirkt eine Ausf\(:uhlichkeit gr\(:o\(sser als 0 die Ausgabe von mehr
 Informationen, und eine gr\(:o\(sser als 1 von noch mehr.
 .RE
@@ -178,30 +63,14 @@ Informationen, und eine gr\(:o\(sser als 1 von noch mehr.
 .B clear
 L\(:oscht den Bildschirm.
 .TP
-.BI sound \ [Befehl]
-Schaltet Piepsen ein oder aus, oder verwende stattdessen
-.IR Befehl .
-.TP
-.BI soundonline \ [Befehl]
-Schaltet Piepsen f\(:ur sich verbindende Benutzer ein oder aus, oder verwende stattdessen
-.IR Befehl .
-.TP
-.BI soundoffline \ [Befehl]
-Schaltet Piepsen f\(:ur sich ausloggende Benutzer ein oder aus, oder verwende stattdessen
-.IR Befehl .
-.TP
-.B q
-Beendet mICQ.
-.TP
-.BI auto \ [on|off]
-Schaltet automatische Antworten ein oder aus, oder zeigt die aktuellen
-automatischen Antworten an.
-.TP
-.BI auto \ Status\ Nachricht
-Setzt die automatische Antwort f\(:ur den Status
-.I Status
-auf
-.IR Nachricht .
+.BI sound \ [on|off|event]
+Schaltet Piepsen ein
+.RB ( on )
+oder aus
+.RB ( off ),
+oder verwendet stattdessen das Ereignis-Skript
+.RB ( event ).
+Neue Syntax seit 0.4.10.
 .TP
 .BI autoaway \ [Zeit|on|off]
 Gehe nach
@@ -211,17 +80,304 @@ oder schaltet dies an (\fBon\fR) (mit der letzten verwendeten Zeit) oder ab (\fB
 Eine Zeit von 0 schaltet dies ebenfalls ab. Ist kein Argument gegeben,
 zeigt es die aktuelle Einstellung an.
 .TP
+.BI auto \ [on|off]
+Schaltet automatische Antworten ein
+.RB ( on )
+oder aus
+.RB ( off ),
+oder zeigt die aktuellen automatischen Antworten an.
+.TP
+.BI auto \ Status\ Nachricht
+Setzt die automatische Antwort f\(:ur den Status
+.I Status
+auf
+.IR Nachricht .
+.TP
+.BI alias \ [Alias\ Erweiterung]
+Erzeugt ein neues Alias mit dem Namen
+.IR Alias ,
+das durch
+.IR Erweiterung
+ersetzt wird.
+Listet alle Aliase auf, wenn keine Parameter angegeben sind.
+Wenn die Zeichenkette %s in der
+.I Erweiterung
+vorhanden ist, wird sie durch die beim Aufruf des Alias angegebenen Argumente ersetzt,
+andernfalls werden diese an das Ende angeh\(:angt.
+Neu seit 0.4.10.
+.TP
+.BI unalias \ alias
+L\(:osche den Alias mit dem Namen
+.IR Alias .
+Neu seit 0.4.10.
+.TP
 .BI alter \ Befehl\ Neu
 Mache den urspr\(:unglich oder vorher als
 .I Befehl
 bekannten Befehl unter dem Namen
 .I Neu
-bekannt.
+bekannt. Dieser Befehl ist seit mICQ 0.4.10 veraltet und
+durch den
+.BR alias \-Befehl
+ersetzt.
+.BI trans \ [Sprache|Nr]\ ...
+Wechsle zur Sprache
+.IR Sprache ,
+gegeben durch ihren ISO-Sprachcode, oder gibt die \(:Ubersetzung
+der Textes mit der Nummer
+.I Nr
+aus. Um die durch die Umgebungsvariablen
+.BR LANG ,
+.B LC_ALL
+und
+.B LC_MESSAGES
+bestimmte Sprache auszuw\(:ahlen, kann
+.BR ! ,
+.B auto
+oder
+.B default
+verwendet werden. Um \(:uberhaupt keine \(:Ubersetzung auszuw\(:ahlen,
+kann man
+.BR . ,
+.B none
+oder
+.B unload
+verwenden. Um zur Fehlersuche die Nummern der
+\(:ubersetzten Texte mitauszugeben, kann man
+.B debug
+voranstellen. Um an ein paar Stellen lustige Meldungen
+zu verwenden, kann man
+.B _fun
+anh\(:angen.
+.sp
+Die Dateien aus ~/.micq/i18n/*.i18n haben Vorrang  \(:uber die globalen
+Dateien, w\(:ahrend die "lustigen" \(:uber die normalen Vorrang haben.
+.sp
+Tats\(:achlich kann man sogar soviele Argumente angeben, wie man will,
+um z.B. den 117. Text in Deutsch auszugeben und dann zur Standardsprache
+zur\(:uckzukehren, gebe man "trans de 117 default" ein.
 .TP
-.BI auth \ [req|grant|deny|add]\ Benutzernummer|Spitzname
-Erlaubt es
-.IR Benutzernummer|Spitzname ,
-Sie zu seiner Kontaktliste hinzuzuf\(:ugen
+.B uptime
+Zeigt an, wie lange mICQ bereits l\(:auft, sowie einige Statistiken.
+.TP
+.BI set \ Option\ Wert
+Schaltet die Option
+.I Option
+entweder
+.I an
+.RB ( on ),
+.I aus
+.RB ( off )
+oder auf einen optionsspezifischen
+.BR Wert .
+.I Option
+kann dabei sein:
+.RS
+.TP
+.BR hermit :
+ignoriere alle Nicht-Kontakte,
+.TP
+.BR delbs :
+interpretiere das L\(:oschzeichen als R\(:uckschritt,
+.TP
+.BR funny :
+lustige Meldungen verwenden,
+.TP
+.BR log :
+logge ein- und ausgehende Nachrichten,
+.TP
+.BR logonoff :
+logge zus\(:atzlich Statuswechsel,
+.TP
+.BR auto :
+schicke automatische Antworten wenn man z.B. abwesend ist,
+.TP
+.BR uinprompt :
+f\(:ugt den zuletzt verwendeten Spitznamen in den Prompt ein,
+.TP
+.BR autosave :
+speichert das micqrc automatisch beim Beenden,
+.TP
+.BR autofinger :
+fingert automatisch neue Benutzernummern,
+.TP
+.BR linebreak :
+setzt den Stil f\(:ur Zeilenumbr\(:uche bei Nachrichten auf:
+.BR simple ,
+um die Nachricht nach dem Spitznamen auszugeben und normal umzubrechen,
+.BR break ,
+um in jedem Fall vor der Nachricht zus\(:atzlich umzubrechen,
+.BR indent ,
+um alle Zeilen der Nachricht zur selben Stelle wie die erste Zeile einzur\(:ucken, oder
+.BR smart ,
+um einen Zeilenumbruch nur vor der Nachricht einzuf\(:ugen, wenn diese
+sonst nicht in die Zeile passen w\(:urde;
+.TP
+.BR tabs :
+setzt den Stil f\(:ur das Verhalten beim Dr\(:ucken der Tab-Taste auf:
+.BR simple ,
+um bei Tab einfach die Liste der zuletzt verwendeten Kontakte durchzugehen,
+.BR cycle ,
+um durch alle eingeloggten Kontakte zu gehen und dabei
+deren Namen automatisch zu vervollst\(:andigen,
+or
+.BR cycleall ,
+um durch alle (auch nicht-eingeloggte) Kontakte zu gehen und dabei
+deren Namen automatisch zu vervollst\(:andigen;
+.TP
+.BR silent :
+unterdr\(:ucke einen Teil der Ausgabe:
+.BR off (aus),
+.BR on (an),
+um Statuswechsel zu unterdr\(:ucken, oder
+.BR complete ,
+um Statuswechsel und Einloggen und Ausloggen zu unterdr\(:ucken.
+.PP
+Neue Optionen seit 0.4.10.
+.RE
+.TP
+.B save
+Speichert die aktuellen Einstellungen in der Kon\(figurationsdatei ab,
+welches
+.I ~/.micq/micqrc
+ist, wenn nicht anders angegeben. Vorsicht, dies wird alle hinzugef\(:ugten
+Kommentare in dieser Datei \(:uberschreiben.
+.TP
+.B q[uit]
+.TP
+.B exit
+Beendet mICQ.
+quit und exit sind neu seit 0.4.10.
+.SH BEFEHLE ZUM SENDEN VON NACHRICHTEN
+Ein Parameter
+.I <Kontakte>
+bezeichnet immer eine Komma-getrennte Liste von Kontakten, d.h. von
+Benutzernummern und Spitznamen. Wenn es der letzte Parameter ist,
+d\(:urfen die Kontakte auch durch Leerschritte getrennt sein.
+.TP
+.BI msg \ <Kontakte>\ [Nachricht]
+Schickt eine Nachricht an alle
+.IR Kontakte .
+Ohne
+.I Nachricht
+wird der Mehr-Zeilen-Modus aktiviert. Um eine Mehr-Zeilen-Nachricht abzuschicken,
+gebe man einen Punkt
+.RB ( . )
+auf einer Zeile f\(:ur sich ein. Um die Nachricht abzubrechen, gebe man ein Doppelkreuz
+.RB ( # )
+auf einer Zeile f\(:ur sich ein.
+.br
+Ausgehende und eingehende Nachrichten werden unterschiedlich je nach Transport markiert.
+.B \(Fo\(Fo\(Fo
+und
+.B \(Fc\(Fc\(Fc
+bezeichnet Nachrichten, die \(:uber eine direkte Verbindung versandt wurden;
+wenn eine ausgehende Nachricht nach einer Weile noch nicht von der Gegenseite
+best\(:atigt wurde, wird sie mit
+.BR ===
+markiert wiederholt.
+.B \(Fo<<
+und
+.B >>\(Fc
+bezeichnen "icq8"- (genannt auch "type-2"-) Nachrichten;
+wenn eine ausgehende Nachricht nach einer Weile noch nicht von der Gegenseite
+best\(:atigt wurde, wird sie mit
+.BR --=
+markiert wiederholt.
+Zuletzt bezeichnen
+.B <<<
+und
+.B >>>
+"icq5"-Nachrichten, welche auch "type-"-, "type-4"- oder "Offline"-Nachrichten
+genannt werden. Diese Art von Nachrichten werden nicht best\(:atigt.
+.br
+Eine Nachricht wird zun\(:achst versucht, \(:uber eine vorher bestehende
+direkte Verbindung verschickt zu werden; ist keine vorhanden, wird im
+Hintergrund versucht, eine solche f\(:ur sp\(:atere Nachrichten aufzubauen.
+In diesem Falle, oder wenn die Nachricht nach einer Weile immer noch nicht
+best\(:atigt wurde, wird die Verbindung als fehlgeschlagen abgebaut, und der
+n\(:achste Transport probiert: das Verschicken als type-2-Nachricht. Dieser
+Schritt wird \(:ubersprungen, wenn das Gegen\(:uber nicht durch geeignete
+"capabilities" die F\(:ahigkeit signalisiert hat, solche Nachrichten zu
+Empfangen. Wenn dieser Schritt \(:ubersprungen wird, ein Fehler auftaucht
+oder die Nachricht ebenfalls nicht best\(:atigt wird, z.B. wenn sich das
+Gegen\(:uber in der Zwischenzeit ausgeloggt hat, wird die Nachricht als
+normale type-4-Nachricht verschickt.
+.br
+Wenn das Gegen\(:uber die F\(:ahigkeit, solche zu empfangen, signalisiert
+hat, und die Unterst\(:utzung daf\(:ur zum \(:Ubersetzungszeitpunkt
+nicht ausgeschaltet wurde, werden Nachrichten UTF-8-kodiert \(:ubertragen
+und entsprechend markiert. Andernfalls wird die Nachricht mit der f\(:ur
+das Gegen\(:uber eingestellten Kodierung, oder, falls keine eingestellt ist,
+mit der als Standard f\(:ur andere eingestellten Kodierung verschickt.
+type-1, type-4 und Offline-Nachrichten k\(:onnen nicht mit ihrer
+Kodierung markiert werden, deshalb h\(:angt die korrekte \(:Ubertragung
+von 8bit-Zeichen (also insbesondere Umlauten) von der korrekten
+Einstellung ab.
+.TP
+.BI a \ [Nachricht]
+Schickt eine Nachricht zur gleichen Person wie die letzte Nachricht.
+Siehe 
+.B msg
+f\(:ur weitere Details.
+.IR Nachricht .
+.BI r \ [Nachricht]
+Antwortet auf die zuletzt empfangene Nachricht.
+Siehe 
+.B msg
+f\(:ur weitere Details.
+.TP
+.BI url \ <Kontakte>\ URL\ Nachricht
+Schickt eine
+.I Nachricht
+\(:uber die Seite
+.I URL
+an alle
+.IR Kontakte .
+.TP
+.BI sms \ [Kontakt]\ [HandyNr]\ Nachricht
+Verschickt eine SMS-Nachricht
+.I Nachricht
+an die Handy-Nummer
+.IR HandyNr ,
+die in der Form +<Landeskode><Nummer> sein mu\(ss,
+oder an die Handy-Nummer von
+.IR Kontakt ,
+die auf
+.IR HandNR
+gesetzt wird, falls diese noch nicht gesetzt ist.
+Es ist nicht zul\(:asslig,
+.IR HandyNr
+anzugeben, wenn
+.IR Kontakt
+bereits eine Handy-Nummer zugeordnet bekommen hat.
+Ung\(:ultige Handy-Nummern werden von den Meta-Daten eines
+Kontaktes entfernt.
+.BI getauto \ [auto|away|na|dnd|occ|ffc]\ [<Kontakte>]
+Holt automatische Antworten aller
+.IR Kontakte
+f\(:u den angegebenen Status, der
+.B away
+f\(:ur abwesend,
+.B na
+f\(:ur nicht verf\(:ugbar,
+.B dnd
+f\(:ur nicht st\(:oren,
+.B occ
+f\(:ur besch\(:aftigt und
+.B ffc
+f\(:ur f\(:ur Plaudereien frei sein kann. Wenn
+.B auto
+oder gar nichts angegeben ist, wird die automatische Antwort f\(:ur
+den Kontakt f\(:ur dessen jeweiligen Status geholt.
+Kontakte, die dabei nicht einen der genannten Stati haben, werden
+\(:ubersprungen.
+Neu seit 0.4.10.
+.TP
+.BI auth \ [req|grant|deny|add]\ <Kontakte>
+Erlaubt es allen
+.IR <Kontakten> ,
+Sie zu ihrer Kontaktliste hinzuzuf\(:ugen
 .RB ( grant ),
 verbietet dies
 .RB ( deny ),
@@ -230,93 +386,86 @@ beantragt dies
 oder teilt das Hinzuf\(:ugen nach Autorisierung mit
 .RB ( add ).
 .TP
+.BI resend \ <Kontakte>
+Schickt die letzte Nachricht erneut an weitere
+.IR Kontakte .
+.TP
+.BI last \ [<Kontakte>]
+Zeigt die zuletzt empfangene Nachricht aller
+.IR Kontakte 
+oder von allen, die bisher eine Nachricht geschickt haben.
+.TP
+.B tabs 
+Zeigt eine Liste von Benutzern, zu denen man bereits Nachrichten
+geschickt hat bzw. von denen man bereits welche Empfangen hat, und
+die man mittels das <tab>-Taste durchgehen kann.
+Siehe auch die
+.IR tabs -Option
+des
+.BR set -Befehls.
+.SH BEFEHLE ZUM FINDEN UND SUCHEN ANDERER BENUTZER
+.TP
 .BI rand \ [Nummer]
 Findet einen zuf\(:alligen Kontakt in der Interessengruppe
 .IR Nummer ,
 oder zeigt alle Interessengruppen an.
 .TP
-.BI pass \ Pa\(sswort
-Setzt das Pa\(sswort auf
-.IR Pa\(sswort . 
-.br
-Hinweis: Sie m\(:ussen danach mit
-.B save
-abspeichern, um diese \(:Anderung dauerhaft zu machen, falls Sie Ihr Pa\(sswort
-in Ihrem
-.I ~/.micq/micqrc
-abspeichern (siehe
-.BR micqrc (7),
-oder Ihr Pa\(sswort wird beim n\(:achsten Login fehlerhaft sein.
+.B s \ [Spitzname]
+Zeigt den aktuellen Status, oder die Details zu dem angegebenen Kontakt an,
+inklusive dessen Zweit-Namen.
 .TP
-.B search
+.BR e ,\  w ,\  ee ,\  ww ,\  eg ,\  wg ,\  eeg ,\  wwg
+Liste Teile der Kontaktliste auf. Die folgenden Zeichen werden
+dabei in der ersten Spalte angezeigt:
+.RS
 .TP
-.BI search \ eMail
+.B +
+Dieser Eintrag ist kein Kontakt, sondern lediglich ein Zweit-Name f\(:ur den
+vorhergehenden. Nur mit
+.BR ww .
 .TP
-.BI search \ Spitzname
+.B #
+Dieser Eintrag ist nicht auf der Kontaktliste, aber die Benutzernummer wurde
+schonmal verwendet. Nur mit
+.B w
+und
+.BR ww .
 .TP
-.BI search \ Vorname\ Nachname
-Sucht nach einem Benutzer mit der eMail-Adresse
-.IR eMail ,
-mit dem Spitznamen
-.IR Spitzname ,
-der kein @ enthalten darf, oder mit
-.I Vorname
-als Vor- und
-.I Nachname
-als Nachname. Ist kein Argument gegeben, frage nach
-Spitznamen, Vornamen, Nachnamen, eMail-Adresse und einem
-Haufen anderer Daten, nach denen man suchen kann.
+.B *
+Dieser Kontakt ist auf der Sichtbarkeitsliste, d.h. kann den Status auch
+im Falle von unsichtbar sehen.
 .TP
-.BI add \ Spitzname\ Zweit-Name
-.BI add \ Benutzernummer\ [Spitzname]
-F\(:ugt den Benutzer mit Benutzernummer
-.I Benutzernummer
-zur Kontaktliste unter dem Namen
-.IR Spitzname
-hinzu oder vergibt einen Zweit-Namen
-.I Zweit-Name
-f\(:ur
-.IR Spitzname .
-Ist
-.I Spitzname
-nicht angegeben, benutze
-.I Benutzernummer
-als Spitzname.
-.br
-Hinweis: Sie m\(:ussen mit
-.B save
-abspeichern, um diese \(:Anderungen dauerhaft zu machen.
+.B -
+Dieser Kontakt ist auf der Unsichtbarkeitsliste, d.h. kann als Status
+nur als ausgeloggt sehen.
 .TP
-.BI rem \ Zweit-Name
-Entfernt den Zweit-Namen
-.IR Zweit-Name .
-Wenn dies der einzige Name ist, entferne Kontakt
-von der Kontaktliste.
-.br
-Hinweis: Sie m\(:ussen mit
-.B save
-abspeichern, um diese \(:Anderungen dauerhaft zu machen.
+.B ^
+Dieser Kontakt wird ignoriert: keine Nachrichten und keine
+Statuswechsel werden angezeigt.
+.PP
+Die Befehle
+.B ww
+und
+.B ee
+geben eine weitere Spalte mit Zeichen aus. Wenn die erste Spalte sonst leer w\(:are,
+wird das entsprechende Zeichen aus dieser Spalte auch dort ausgegeben,
+solange es kein
+.BR ^ 
+ist.
 .TP
-.BI togvis \ Spitzname
-\(:Andert, ob
-.I Spitzname
-sehen kann, wenn Sie unsichtbar sind.
+.B &
+Eine direkte Verbindung wurde aufgebaut.
 .TP
-.BI toginvis \ Spitzname
-\(:Andert, ob
-.I Spitzname
-Sie niemals sehen kann.
+.B \(ba
+Eine direkte Verbindung wurde versucht, aufzubauen, dies schlug jedoch fehl.
 .TP
-.BI togig \ Spitzname
-\(:Andert, ob Nachrichten und Status\(:anderungen von
-.I Spitzname
-ignoriert werden sollen.
+.B :
+Eine direkte Verbindung wird gerade aufgebaut.
 .TP
-.BI f[inger] \ Benutzernummer|Spitzname
+.B ^
+Keine direkte Verbindung aufgebaut, aber die IP-Adresse und der Port sind bekannt.
 .TP
-.BI info \ Benutzernummer|Spitzname
-Zeigt alle Daten \(:uber
-.IR Benutzernummer|Spitzname .
+.RE
 .TP
 .B e
 Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind.
@@ -330,17 +479,23 @@ Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind, mit mehr Details.
 .B ww
 Zeigt alle Kontakte auf der Kontaktliste, mit mehr Details.
 .TP
+.B e
+Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind, sortiert nach Kontaktgruppe.
+.TP
+.B w
+Zeigt alle Kontakte auf der Kontaktliste, sortiert nach Kontaktgruppe.
+.TP
+.B ee
+Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind, mit mehr Details, sortiert nach Kontaktgruppe.
+.TP
+.B ww
+Zeigt alle Kontakte auf der Kontaktliste, mit mehr Details, sortiert nach Kontaktgruppe.
+.TP
 .B wide
 Zeigt alle Kontakte auf der Kontaktliste in einem breiten Format.
 .TP
 .B ewide
 Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind, in einem breiten Format.
-.TP
-.B s \ [Spitzname]
-Zeigt den aktuellen Status, oder die Details zu dem angegebenen Kontakt.
-.TP
-.B i
-Zeigt alle Kontakte auf der Ignorieren-Liste.
 .TP
 .BI status \ [Spitzname]
 Zeigt den Status von
@@ -356,9 +511,130 @@ oder
 .B ww
 stattdessen.
 .TP
+.BI f[inger] \ Kontakte
+.TP
+.BI info \ Kontakte
+Zeigt alle Meta-Daten \(:uber alle
+.IR Kontakte .
+.TP
+.B i
+Zeigt alle Kontakte auf der Ignorieren-Liste.
+.TP
+.B search
+.TP
+.BI search \ eM@il
+.TP
+.BI search \ Spitzname
+.TP
+.BI search \ Vorname\ Nachname
+Sucht nach einem Benutzer mit der eMail-Adresse
+.IR eM@il ,
+mit dem Spitznamen
+.IR Spitzname ,
+der kein @ enthalten darf, oder mit
+.I Vorname
+als Vor- und
+.I Nachname
+als Nachname. Ist kein Argument gegeben, frage nach
+Spitznamen, Vornamen, Nachnamen, eMail-Adresse und einem
+Haufen anderer Daten, nach denen man suchen kann.
+.TP
+.BI add[group] \ <Gruppe>\ [<Kontakte>]
+F\(:uge alle Kontakte in
+.IR Kontakte
+zur Kontaktgruppe
+.IR Gruppe
+hinzu, welche erforderlichenfalls neu angelegt wird,
+falls man den Befehl als
+.B addgroup
+aufruft.
+Neu seit 0.4.10.
+.br
+Hinweis: Sie m\(:ussen mit
+.B save
+abspeichern, um diese \(:Anderungen dauerhaft zu machen.
+.TP
+.BI add[alias] \ <Spitzname>\ <Zweit-Name>
+.TP
+.BI add[alias] \ <Benutzernummer>\ [<Spitzname>]
+F\(:ugt den Benutzer mit Benutzernummer
+.I Benutzernummer
+zur Kontaktliste unter dem Namen
+.IR Spitzname
+hinzu oder vergibt einen Zweit-Namen
+.I Zweit-Name
+f\(:ur
+.IR Spitzname .
+Neu (addalias) seit 0.4.10.
+.br
+Hinweis: Sie m\(:ussen mit
+.B save
+abspeichern, um diese \(:Anderungen dauerhaft zu machen.
+.TP
+.BI rem[group] \ [all]\ <Gruppe>
+.TP
+.BI rem[group] \ <Gruppe> <Kontakte>
+Entferne alle Kontakte in
+.IR Kontakte
+aus der Kontaktgruppe
+.IR Gruppe ,
+oder entferne diese Gruppe vollst\(:andig, falls
+.B all
+angegeben ist.
+Neu seit 0.4.10.
+.br
+Hinweis: Sie m\(:ussen mit
+.B save
+abspeichern, um diese \(:Anderungen dauerhaft zu machen.
+.TP
+.BI rem[alias] \ [all]\ <Kontakte>
+Entfernt alle in
+.IR Kontakte
+angegebenen Zweit-Namen.
+Wenn dies der einzige Name ist, oder wenn
+.B all
+angegeben wurde, entferne den jeweiligen Kontakt
+von der Kontaktliste.
+Neu seit 0.4.10.
+.br
+Hinweis: Sie m\(:ussen mit
+.B save
+abspeichern, um diese \(:Anderungen dauerhaft zu machen.
+.TP
+.BI togig \ Spitzname
+\(:Andert, ob Nachrichten und Status\(:anderungen von
+.I Spitzname
+ignoriert werden sollen.
+.TP
+.BI toginvis \ Spitzname
+\(:Andert, ob
+.I Spitzname
+Sie niemals sehen kann.
+.TP
+.BI togvis \ Spitzname
+\(:Andert, ob
+.I Spitzname
+sehen kann, wenn Sie unsichtbar sind.
+.SH BEFEHLE BEZ\(:UGLICH IHRES ICQ-KONTOS
+.TP
 .BI reg \ Pa\(sswort
 Erzeugt eine neue Benutzernummer mit dem Pa\(sswort
 .IR Pa\(sswort .
+.TP
+.BI pass \ Pa\(sswort
+Setzt das Pa\(sswort auf
+.IR Pa\(sswort . 
+.br
+Hinweis: das Pa\(sswort darf nicht mit einem \('o (Byte 0xf3) beginnen.
+.br
+Hinweis: Sie m\(:ussen danach mit
+.B save
+abspeichern, um diese \(:Anderung dauerhaft zu machen, falls Sie Ihr Pa\(sswort
+in Ihrem
+.I ~/.micq/micqrc
+abspeichern (siehe
+.BR micqrc (7),
+oder Ihr Pa\(sswort wird beim n\(:achsten Login fehlerhaft sein.
 .TP
 .BI change \ [Nummer\ [Nachricht]]
 Wechselt in den Status
@@ -403,35 +679,49 @@ Aktualisiert weitergehende Benutzerinformationen wie Alter und Geschlecht.
 .B about
 Aktualisiert den Punkt "\(:Uber" der Benutzerinformationen.
 .TP
-.BI set \ Option\ Wert
-Schaltet die Option
-.I Option
-entweder
-.I an
-.RB ( on )
-oder
-.I aus
-.RB ( off ).
-.I Option
-kann
-.B color
-(Farben verwenden),
-.B funny
-(lustige Meldungen)
-oder
-.B quiet
-(weniger Meldungen) sein.
-.TP
-.BI peek \ Spitzname
-\(:Uberpr\(:uft, ob
-.I Spitzname
-tats\(:achlich verbunden ist oder nicht. Dies mi\(ssbraucht einen Fehler im ICQ-Protokoll, um
-dies herauszu\(finden; es kann nur herausgefunden werden, ob verbunden oder nicht.
-.TP
 .BI setr \ [Nummer]
 Setzt die Interessengruppe f\(:ur zuf\(:allige Kontakte auf
 .IR Nummer .
 Ohne Argumente: listet m\(:ogliche Interessengruppen auf.
+.SH BEFEHLE F\(:UR WEITERGEHENDE F\(:AHIGKEITEN
+.TP
+.BI meta \ [show|load|save|set|get|rget]\ <Kontakte>
+Bearbeite Benutzerinformationen aller Kontakte. Es gibt folgende Unterbefehle:
+.RS
+.TP
+.B show
+Zeigt die Benutzerinformationen aller
+.I Kontakte
+an.
+.TP
+.B load
+L\(:ad die gespeicherten Benutzerinformationen aller
+.IR Kontakte
+und zeigt diese an.
+.TP
+.B save
+Speichert die Benutzerinformationen aller
+.IR Kontakte .
+.TP
+.B set
+Setzt die eigenen Benutzerinformationen auf dem Server.
+.TP
+.B get
+Fragt die Benutzerinformationen f\(:ur alle
+.I Kontakte
+ab und zeigt diese an.
+.TP
+.B getr
+Fragt die Benutzerinformationen f\(:ur den kontakt, von dem
+die letzte Nachricht empfangen wurde, ab und zeigt diese an.
+.PP
+Neu seit 0.4.10.
+.RE
+.TP
+.BI file \ [...]
+K\(:urzel f\(:ur
+.BR peer\ file .
+Neu seit 0.4.10.
 .TP
 .BI peer \ Befehl\ Benutzernummer|Spitzname
 wendet den Befehl
@@ -451,24 +741,6 @@ Schlie\(sst eine Direktverbindung zu diesem Benutzer bzw. setzt sie zur\(:uck.
 .TP
 .B off
 Deaktiviert Direktverbindungen f\(:ur diesen Benutzer.
-.TP
-.B auto
-Fragt die aktuelle automatische Antwort des Benutzers ab.
-.TP
-.B away
-Fragt die aktuelle automatische Antwort f\(:ur "abwesend" des Benutzers ab.
-.TP
-.B dnd
-Fragt die aktuelle automatische Antwort f\(:ur "nicht st\(:oren" des Benutzers ab.
-.TP
-.B na
-Fragt die aktuelle automatische Antwort f\(:ur "nicht verf\(:ugbar" des Benutzers ab.
-.TP
-.B occ
-Fragt die aktuelle automatische Antwort f\(:ur "besch\(:aftigt" des Benutzers ab.
-.TP
-.B ffc
-Fragt die aktuelle "f\(:ur Plaudereien frei"-Meldung des Benutzers ab.
 .TP
 .BI file \ Datei\ Beschreibung
 Sendet eine einzelne Datei
@@ -516,6 +788,7 @@ W\(:ahlt die angegebene Server-Verbindung als die aktuelle aus.
 kann dabei die sowohl die Verbindungsnummer als auch die in der
 Server-Verbindung verwendete Benutzernummer sein.
 .RE
+.TP
 .BI contact \ [Befehl]
 Bearbeitet die Server-seitige Kontaktliste:
 .RS
@@ -531,8 +804,15 @@ Kontaktliste sind.
 .B import
 L\(:ad die Server-seitige Kontaktliste herunter und f\(:ugt alle Kontakte
 der lokalen Kontaktliste hinzu.
+.PP
+Es gibt noch keine M\(:oglichkeit, die Kontaktliste auf dem Server zu speichern.
 .RE
-
+.TP
+.BI peek \ Spitzname
+\(:Uberpr\(:uft, ob
+.I Spitzname
+tats\(:achlich verbunden ist oder nicht. Dies mi\(ssbraucht einen Fehler im ICQ-Protokoll, um
+dies herauszu\(finden; es kann nur herausgefunden werden, ob verbunden oder nicht.
 .SH SIEHE AUCH
 .BR micq (1),
 .BR micqrc (5)
