@@ -1,0 +1,80 @@
+Jan 20, 2001
+mc - cleaned up code into subdirs 
+
+Jun 9, 2000
+Word wraping at the screen boundaries
+nickname sym links to log files
+fixed russian/japanese encoding on last command
+added japanese encoding
+wide command
+uptime command
+config.h file
+option to disable shell command ability
+added -L command line option to change the logging directory
+Added LogDir to the ~/.micqrc 
+clear command is no configurable
+
+Mar 19, 2000
+Added logtype in ~/.micqrc file to use old style logging
+Added the -f file command line option for using alternate config files
+Added simpler color macros.
+Added some new countries
+Added internationalization strings
+Beos support should work now.
+Fixed msga bug with no newline.
+Fixed bug with about messages and russian encoding.
+Fixed a bug with invisible sub-statuses not being displayed properly.
+
+Mar 11, 2000
+Added some color to the user info display
+Fixed the long standing "auto away" segfaulting bug
+Added Hermit mode to keep random people from messaging you.
+Added more info display capablities
+Added the other command to update other user info (age sex homepage)
+About command can now make multiline about messages just like message mulitline mode.
+Added peliminary SOCKS5 support
+Added BEOS support.
+Added screen width option for dumb terminals that don't automatically wrap.
+Added compile time configurable tab stops (default 8 characters)
+Extended the status command so status nick gives info on nick
+
+Sept 12, 1999
+Improved tabbed nick names
+added more info to the update commad
+added ability to update about info.
+various cosmetic changes
+decode language codes
+
+May 12, 1999
+added tabbed nick names
+added e & i commands
+added togig and toginv commands
+removed potential ^L exploit
+added line editing commands
+added configurable auto away timings
+added new logging format
+added configurable max contacts limit
+added many new translations
+
+Feb 21, 1999
+V5 of the ICQ protocol.
+Anti-spoofing/hijacking.
+Several memory leaks that may or may not be related to V5
+More internationalizatio strings.
+Brazilian language support started.
+dumb bug with user offline being displayed incorrectly.
+Added na to the auto away.
+Users who change status to their current status (i.e no change) are no longer displayed.
+several small bugs.
+
+Jan 27, 1999
+Added new innovative (patent pending) CHANGELOG feature.
+Password changing!
+Added auto away functionality.
+Fixed minor bug in russian translation tables.
+Fixed (hopefully) bug in russian msga command.
+Began lang.h internationalization effort - currently only english.
+Revamped the logging function.
+Changed output functions to better manage screen space.
+fixed that stupid offline at startup bug. :)
+Improved help display so it doesn't scroll off the screen.

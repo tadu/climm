@@ -1,0 +1,781 @@
+########################
+##  THE ICQ PROTOCOL  ##
+########################
+
+Version 0.91
+Last update 12 April 1998
+(Minor update 11 May 1998)
+Created by Magnus Ihse (d95-mih@nada.kth.se)
+Copyright © 1998
+
+The home page of this specification is
+http://www.student.nada.kth.se/~d95-mih/icq/
+To participate in the mailing list icq-devel, send a mail to
+majordomo@tjsgroup.com, with the message body consisting only of the
+line "subscribe icq-devel".
+
+About this document
+-------------------
+Please note: I am in no way affiliated with Mirabilis. This is an unofficial
+specification, based solely on TCP/UDP packet traces and my own guesswork. 
+This means that the information in here might be (and probably _will_ be
+:-)) incorrect. It also means that even _if_ some parts of this specification
+_is_ correct, they may change at any moment due to the Divine Will of 
+Mirabilis.
+
+I am a computer science student at the Royal Institute of Technology in
+Sweden, and this is a hobby project - something I have been doing in my 
+free time (i.e., late in the nights :-)). This means that I don't have 
+much time to spend on updating this document.
+
+Recently I have received a lot of requests for this document, and many
+persons have offered to help me complete and correct it. I am very thankful
+for such help, and all contributions will of cource receive proper credit.
+Otherwere in this document is described in more detail what you can do to
+help, and how you should do it.
+
+Legal information
+-----------------
+Aa far as I can tell (but I am not a laywer), the way I have extracted
+this information complies with Mirabilis License agreement, which states:
+"You agree not to reverse engineer, decompile or disassemble the software." 
+I have not reverse engineered, decompiled or disassembled the software
+(i.e. Mirabilis ICQ client) to get this information. I have only been
+looking at the TCP and UDP packets send out from, and received by, my
+computer.
+
+If you are a Mirabilis employee, and you feel that this document still
+violates the Licence agreement, or if you on other grounds think that
+this document is dubious - please contact me as soon as possible!
+(My e-mail address given at top of this document.)
+
+
+Copyright
+---------
+This document is protected under internation copyright law. You may
+not modify this document. You may, however, make an unlimited number
+of copies of this document, as long as it is kept intact. You may
+freely distribute this document electronically (on the Internet or 
+otherwise) or on paper.
+
+Any trademarks mentioned in this text belongs to their respective owner.
+
+Disclaimer
+----------
+LICENSE AGREEMENT
+
+This document and the information present herein is provided by Magnus Ihse
+("the Author") for your personal use only. You agree to the full 
+responsibility for the results of your use of this document or the information 
+present herein.
+
+By using this document or the information present herein, you accept
+the terms of this license agreement.
+
+THIS INFORMATION IS PROVIDED ON AN "AS IS" BASIS. THE AUTHOR MAKES NO 
+WARRANTIES, EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THOSE OF 
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, WITH RESPECT TO THIS 
+DOCUMENT AND THE INFORMATION PRESENT HEREIN. THE AUTHOR DOES NOT WARRANT, 
+GUARANTEE OR MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF 
+THE USE OF THIS DOCUMENT OR THE INFORMATION PRESENT HEREIN, IN TERMS OF THE 
+ACCURACY, RELIABILITY, QUALITY, VALIDITY, STABILITY, COMPLETENESS, 
+CURRENTNESS, OR OTHERWISE. THE ENTIRE RISK OF USING THE INFORMATION PRESENT 
+IN THIS DOCUMENT IS ASSUMED BY THE USER.
+
+IN NO EVENT WILL THE AUTHOR BE LIABLE TO ANY PARTY (i) FOR ANY DIRECT, 
+INDIRECT, SPECIAL, PUNITIVE, INCIDENTAL OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+BUT NOT LIMITED TO, DAMAGES FOR LOSS OF BUSINESS PROFITS, BUSINESS 
+INTERRUPTION, LOSS OF PROGRAMS OR INFORMATION, AND THE LIKE), OR ANY OTHER 
+DAMAGES ARISING IN ANY WAY OUT OF THE AVAILABILITY, USE, RELIANCE ON, OR 
+INABILITY TO USE THIS DOCUMENT OR THE INFORMATION PRESENT HEREIN, EVEN IF 
+THE AUTHOR HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES, AND 
+REGARDLESS OF THE FORM OF ACTION, WHETHER IN CONTRACT, TORT, OR OTHERWISE; 
+OR (ii) FOR ANY CLAIM ATTRIBUTABLE TO ERRORS, OMISSIONS, OR OTHER 
+INACCURACIES IN, OR DESTRUCTIVE PROPERTIES OF ANY INFORMATION.
+
+Writing an ICQ clone
+--------------------
+Since the public release of this document, at least two different ICQ clones
+have been created. They are at the time of writing very much under 
+development, but are at least partly functioning. :-) More information can
+be found on my web page, or through the icq-devel mailing list.
+(For web page URL or subscription information, see top of this document.)
+
+What needs to be done
+---------------------
+The worst deficiency of this document is the lack of information about 
+version 3 and version 4 of the protocol. These versions are used by ICQ98
+(older beta versions of ICQ98 seems to have used only version 3, the latest
+version as of today seems to use both version 3 and version 4). This document
+only describes version 2 of the protocol, which was used by versions up to
+but not including ICQ98 (I think v1.113 was the latest version of ICQ using 
+version 2 of the protocol). Note that the ICQ version numbers refer to the
+Windows 95/NT version of ICQ. I think that the Mac and Java version still
+uses version 2, but I haven't checked this (please correct me if I'm wrong!).
+
+So, what's the difference between version 2 and 3/4? As far as I can tell,
+the major difference is that all packets in version 3/4 has some sort of 
+unique code attached to it. I think it is part of an anti-spoof scheme, but
+I am not sure. I have not been able to figure out how this code is generated,
+and I definitely need help on this. There are also minor changes in the 
+packet format. The basic structure still seems intact, however.
+
+That this document doesn't cover version 3 and 4 doesn't mean that it can't
+be used for building an ICQ clone, however. Mirabilis servers still supports
+version 2 clients (or at least they did when I last checked). There is 
+reason to suspect that this might change some day, since the version 1
+clients have been phased out, and are not useable any more.
+
+Furthermore are there some fields in the packets which I just couldn't figure
+out. You will find these marked "Unknown", and some typical value in the 
+Content column.
+
+Many packet types are missing from this description for sure. If Mirabilis
+have used all multiples of 10 for their codes, there seem to be a lot of
+them missing. :-)
+
+There is much about the peer-to-peer communication that still is not
+clear to me. (This protocol seems not to have changed in ICQ98, however.)
+
+And finally, some of the features of ICQ have not even been addressed in this
+document. This includes file transfer and chat, but also some of the new
+features of ICQ98.
+
+If you can help in filling any of these gaps, or correct the information
+given here, please do not hesitate to contact me! I'd prefer if you
+send an e-mail to d95-mih@nada.kth.se with subject "ICQ Update".
+(Please note! Sending an empty mail with the subject "ICQ Update" does
+NOT mean that I'll mail you a copy of the spec when it's updated! If
+you are interested in keeping up to date with the ICQ specification, please
+join the mailing list instead.)
+
+Introduction
+------------
+Communication with persons online is done through a direct TCP connection
+to that person. All other communication is done through UDP packets sent to
+the ICQ server. All UDP packets must be acknowledged by the receiver.
+Retransmission will occur in 10 seconds if a acknowledgement is not
+received. After 6 unsuccessfull transmissions, a B_MESSAGE_ACK message will
+be sent. The whole procedure is repeated 2 times. If there is still no
+reply, the ICQ client will assume the user to be disconneced.
+
+Before any communication between users can take place, the client must
+register at the server by logging in. During the login process, the client
+sends information about itself to the server, including its IP address, the
+TCP port reserved for ICQ, the user's password and the user's contact list.
+From now on, the client will assume itself to be 'connected', and will every
+now and then send a 'keep alive' message to the server. This keep alive
+message performs two functions: it makes the client sure that it still has
+access to the server, and it makes the server sure that the user is still
+online. By default, the client will 'connect' to the server on UDP port 4000.
+
+Functions such as sending messages to offline users, getting information
+about a user, searching for users in the ICQ Global Directory and changing
+password is done by sending UDP packets to the ICQ server. These packets do
+all follow a simple template, including the senders UIN, a special code
+indicating which function the server should perform, and optional
+parameters.
+
+When a user sends a message/URL/etc to another user that is currently
+connected, the ICQ client will establish a TCP connection directly to that
+user, and send the message using a format similar (but not identical) to the
+format used by the UDP packet messaging. After the message has been sent,
+the TCP connection is not closed, but instead kept open and used for future
+messages to that user. The connection is closed when either of the two users
+disconnect from their ICQ connection.
+
+Please note that throughout this document, all numbers are in hexadecimal
+unless stated otherwise. Integers consisting of more than one byte is stored
+with the least significant byte first, and the most significant byte last
+(as is usual on the PC/Intel architecture). All text strings etc are
+preceded by a two byte long LENGTH field, indicating the length of the
+string. All strings are also NULL terminated, i.e. followed by the byte with
+the value 00. When reading packets, either information may be used to
+determine the length of the string, but when sending both must be present.
+All strings are coded as usual MS Windows texts, i.e. in ISO Latin-1
+charset, and lines terminated by CR/LF. (Not all strings may contain line
+breaks. This should be clear from context.)
+
+
+
+         COMMUNICATION BETWEEN SERVER AND CLIENT USING UDP
+         =================================================
+
+
+The UDP packet sent from the client to the server has the following general
+layout:
+
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  02 00                 VERSION          Identifies the packet as an ICQ packet
+ 2 bytes  xx xx                 COMMAND          Code for service the server should provide
+ 2 bytes  xx xx                 SEQ_NUM          Sequence number
+ 4 bytes  xx xx xx xx           UIN              The senders UIN
+ variable                       PARAMETERS       0 or more parameters (depending on COMMAND)
+
+The UDP packet sent from the server to the client has the following general
+layout:
+
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  02 00                 VERSION          Identifies the packet as an ICQ packet
+ 2 bytes  xx xx                 COMMAND          Code for service the server should provide
+ 2 bytes  xx xx                 SEQ_NUM          Sequence number
+ variable                       PARAMETERS       0 or more parameters (depending on COMMAND)
+
+The VERSION field is present on all ICQ packets, and identifies the packet
+as a ICQ message. The SEQ_NUM contains a sequence number for the packet. All
+packets must have a unique sequence number (unless it is a retransmission).
+This is used to avoid confusion if a UDP packet is lost or duplicated (as
+may happen). Normally, the SEQ_NUM of the current packet is <the SEQ_NUM of
+the previous packet> + 1. Note that the server and the client has separate
+numbering, so that SEQ_NUM = 3 of a packet sent from the server is different
+from SEQ_NUM = 3 of a packet sent from the client. Note also that the server
+start counting on 00 00, and the client start counting on 01 00.
+
+The following commands are available for the client to send to the server:
+
+ Code        Name             Description
+ ----        ----             -----------
+ 0A 00       ACK              Acknowledgement
+ 0E 01       SEND_MESSAGE     Send message through server (to offline user)
+ E8 03       LOGIN            Login on server
+ 06 04       CONTACT_LIST     Inform the server of my contact list
+ 1A 04       SEARCH_UIN       Search for user using his/her UIN
+ 24 04       SEARCH_USER      Search for user using his/her name or e-mail
+ 2E 04       KEEP_ALIVE       Sent to indicate connection is still up
+ 38 04       SEND_TEXT_CODE   Send special message to server as text
+ 4C 04       LOGIN_1          Sent during login
+ 60 04       INFO_REQ         Request basic information about a user
+ 6A 04       EXT_INFO_REQ     Request extended information about a user
+ 9C 04       CHANGE_PASSWORD  Change the user's password
+ D8 04       STATUS_CHANGE    User has changed online status (Away etc)
+ 28 05       LOGIN_2          Sent during login
+
+Not yet described in detail (v0.1 of this document)
+ 0A 05       UPDATE_INFO      Update my basic information
+ B0 04       UPDATE_EXT_INFO  Update my extended information
+ 3C 05       ADD_TO_LIST      Add user to my contact list
+ 56 04       REQ_ADD_TO_LIST  Request authorization to add to contact list
+ BA 04       QUERY_SERVERS    Query the server about address to other servers
+ C4 04       QUERY_ADDONS     Query the server about globally defined add-ons
+ EC 04       NEW_USER_1       Ask for permission to add a new user
+ FC 03       NEW_USER_REG     Register a new user
+ A6 04       NEW_USER_INFO    Send basic information about a new user
+ 42 04       CMD_X1           *Unknown
+ 56 04       MSG_TO_NEW_USER  Send a message to a user not on my contact list
+ (this one is also used to request permission to add someone with 'authorize'
+ status to your contact list)
+
+The following commands can be sent from the server to the client, either as
+a response to a client command, or to notify the client of some event.
+
+ Code        Name             Description
+ ----        ----             -----------
+ 0A 00       ACK              Acknowledgement
+ 5A 00       LOGIN_REPLY      Login reply
+ 6E 00       USER_ONLINE      User on contact list is online/has changed online status
+ 78 00       USER_OFFLINE     User on contact list has gone offline
+ 8C 00       USER_FOUND       User record found matching search criteria
+ DC 00       RECEIVE_MESSAGE  Message sent while offline/through server
+ A0 00       END_OF_SEARCH    No more USER_FOUND will be sent
+ 18 01       INFO_REPLY       Return basic information about a user
+ 22 01       EXT_INFO_REPLY   Return extended information about a user
+ A4 01       STATUS_UPDATE    User on contact list has changed online status (Away etc)
+
+Not yet described in detail (v0.1 of this document)
+ 1C 02       REPLY_X1         *Unknown (returned during login)
+ E6 00       REPLY_X2         *Unknown (confirm my UIN?)
+ E0 01       UPDATE_REPLY     Confirmation of basic information update
+ C8 00       UPDATE_EXT_REPLY Confirmation of extended information update
+ 46 00       NEW_USER_UIN     Confirmation of creation of new user and newly assigned UIN
+ B4 00       NEW_USER_REPLY   Confirmation of new user basic information
+ 82 00       QUERY_REPLY      Response to QUERY_SEVERS or QUERY_ADDONS
+ C2 01       SYSTEM_MESSAGE   System message with URL'ed button
+
+The UDP messages will now be examined in closer detail.
+
+
+
+         MESSAGES SENT BY THE CLIENT
+         ===========================
+
+
+ACK (0A 00)  Acknowledgement
+---
+
+Parameters: None
+
+NOTE! Unlike all other commands, in ACK the field SEQ_NUM contains the
+sequence number of the *server's* packet the client wishes to acknowledge.
+Note further that an ACK should *not* be acknowledged!
+
+
+SEND_MESSAGE (0E 01)  Send message through server (to offline user)
+------------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 4 bytes  xx xx xx xx           RECEIVER_UIN     UIN of the user the message is sent to
+ 2 bytes  (see below)           MESSAGE_TYPE     Type of message being sent
+ 2 bytes  xx xx                 LENGTH           Length of MESSAGE including NULL
+ variable                       MESSAGE          The message, ended by a NULL (00)
+
+MESSAGE_TYPE can be one of the following:
+ 01 00 - the message is a normal message
+ 04 00 - the message is an URL, and actually consists of two parts,
+ separated by the code FE.
+The first part is the description of the URL, and the second part is the
+actual URL.
+
+
+LOGIN (E8 03)  Login on server
+-----
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 4 bytes  xx xx xx xx           PORT             The TCP port to use for incoming connections
+ 2 bytes  xx xx                 LENGTH           Length of PASSWORD including NULL
+ variable                       PASSWORD         The user's password + NULL (max 8 chars)
+ 4 bytes  78 00 00 00           X1               *Unknown
+ 4 bytes  xx xx xx xx           USER_IP          The user's IP address
+ 1 byte   04                    X2               *Unknown
+ 4 bytes  xx xx xx xx           STATUS           Users online status (normally 00 00 00 00)
+ 4 bytes  02 00 00 00           X3               *Unknown
+ 2 bytes  xx xx                 LOGIN_SEQ_NUM    Login sequence number
+ 4 bytes  00 00 00 00           X4               *Unknown
+ 4 bytes  08 00 78 00           X5               *Unknown
+
+
+CONTACT_LIST (06 04)  Inform the server of my contact list
+------------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  xx xx                 NUM_CONTACTS     Number of contacts following
+{4 bytes  xx xx xx xx           UIN              UIN of user on contact list }
+The last field is repeated for as many users as NUM_CONTACTS indicate.
+
+The server will send online/offline notification to client only of users
+registered using CONTACT_LIST.
+
+
+SEARCH_UIN (1A 04)  Search for user using his/her UIN
+----------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  xx xx                 SEARCH_SEQ_NUM   Search sequence number
+ 4 bytes  xx xx xx xx           SEARCHED_UIN     The UIN to search for
+
+The SEARCH_SEQ_NUM should be a unique number, to distinguish from other
+searches. The reply from the server will contain the SEARCH_SEQ_NUM of the
+search, to facitilate matching query and answer.
+
+
+SEARCH_USER (24 04)  Search for user using his/her name or e-mail
+-----------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  xx xx                 SEARCH_SEQ_NUM   Search sequence number
+ 2 bytes  xx xx                 LENGTH           Length of NICK_NAME including NULL
+ variable                       NICK_NAME        Nick name to search for, NULL terminated
+ 2 bytes  xx xx                 LENGTH           Length of FIRST_NAME including NULL
+ variable                       FIRST_NAME       First name to search for, NULL terminated
+ 2 bytes  xx xx                 LENGTH           Length of LAST_NAME including NULL
+ variable                       LAST_NAME        Nick name to search for, NULL terminated
+ 2 bytes  xx xx                 LENGTH           Length of E_MAIL including NULL
+ variable                       E_MAIL           E-mail to search for, NULL terminated
+
+Note that search fields (NICK_NAME, FIRST_NAME, LAST_NAME, E_MAIL) may be
+empty, but not all at the same time, i.e. at least one field must contain
+data. Note also that you may only search either on E_MAIL (in which the
+other fields must be empty), or on name (in which E_MAIL must be empty, and
+one or more of the other fields must contain data).
+
+
+KEEP_ALIVE (2E 04)  Sent to indicate connection is still up
+----------
+
+Parameters: None
+
+This command should be sent at regular intervals (normally every 2 minutes,
+or 120 seconds) from the client to the server.
+
+
+SEND_TEXT_CODE (38 04)  Send special message to server as text
+--------------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  xx xx                 LENGTH           Length of TEXT_CODE including NULL
+ variable                       TEXT_CODE        Message to send to server, NULL terminated
+ 2 bytes  xx xx                 X1               *Unknown (code, usually 04 00 or 05 00)
+
+The TEXT_CODE can contain for instance:
+ "B_USER_DISCONNECTED" (in which case the X1 field should containt 05 00) if
+  the user has disconnected.
+ "B_MESSAGE_ACK" (in which case the X1 field should containt 05 00) if the
+  client has problem connecting to the server. This is a request for the
+  server to answer immediately to the client.
+
+
+LOGIN_1 (4C 04)  Sent during login
+-------
+
+Parameters: None
+
+This is sent during login. The exact purpose of this command is *Unknown.
+
+
+INFO_REQ (60 04)  Request basic information about a user
+--------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  xx xx                 INFO_SEQ_NUM     Information sequential number
+ 4 bytes  xx xx xx xx           QUERY_UIN        UIN of user to request information about
+
+The server will respond with a INFO_REPLY, with the same INFO_SEQ_NUM.
+
+
+EXT_INFO_REQ (6A 04)  Request extended information about a user
+------------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  xx xx                 INFO_SEQ_NUM     Information sequential number
+ 4 bytes  xx xx xx xx           QUERY_UIN        UIN of user to request information about
+
+The server will respond with a EXT_INFO_REPLY, with the same INFO_SEQ_NUM.
+
+
+CHANGE_PASSWORD (9C 04)  Change the user's password
+---------------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  xx xx                 PASSWORD_SEQ_NUM Password changing sequential number
+ 2 bytes  xx xx                 LENGTH           Length of NEW_PASSWORD including NULL
+ variable                       NEW_PASSWORD     The new password, NULL terminated (max 8 chars)
+
+
+STATUS_CHANGE (D8 04)  User has changed online status (Away etc)
+-------------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 4 bytes  (see below)           STATUS           User's online status (Away etc)
+
+The STATUS may take four different values:
+ 00 00 00 00 = Online/connected
+ 01 00 00 00 = Away
+ 11 00 00 00 = Do Not Disturb (DND)
+ 00 01 00 00 = Invisible
+
+
+LOGIN_2 (28 05)  Sent during login
+-------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 1 byte   00                    X1               *Unknown
+
+
+
+         MESSAGES SENT BY THE SERVER
+         ===========================
+
+
+ACK (0A 00)  Acknowledgement
+---
+
+Parameters: None
+
+NOTE! Unlike all other commands, in ACK the field SEQ_NUM contains the
+sequence number of the *client's* packet the server acknowledges. Note
+further that an ACK should *not* be acknowledged!
+
+
+LOGIN_REPLY (5A 00)  Login reply
+-----------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 4 bytes  xx xx xx xx           USER_UIN         The user's UIN
+ 4 bytes  xx xx xx xx           USER_IP          The user's IP address
+ 2 bytes  xx xx                 LOGIN_SEQ_NUM    Login sequence number
+ 4 bytes  01 00 01 00           X1               *Unknown
+ 4 bytes  xx 00 16 00           X2               *Unknown (xx=19 or 18)
+ 4 bytes  8C 00 00 00           X3               *Unknown
+ 4 bytes  78 00 05 00           X4               *Unknown
+ 6 bytes  0A 00 05 00 01 00     X5               *Unknown
+
+This is sent from the server upon receipt of a LOGIN. The LOGIN_SEQ_NUM is
+the same as in the corresponding LOGIN.
+
+
+USER_ONLINE (6E 00)  User on contact list is online/has changed online status
+-----------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 4 bytes  xx xx xx xx           REMOTE_UIN       The UIN of the user who has logged in
+ 4 bytes  xx xx xx xx           REMOTE_IP        The IP address of the user
+ 4 bytes  xx xx xx xx           REMOTE_PORT      The TCP port of the user
+ 4 bytes  xx xx xx xx           REMOTE_REAL_IP   The actual IP address of the user
+ 1 byte   04                    X1               *Unknown
+ 4 bytes  xx xx xx xx           STATUS           New status of the user
+ 4 bytes  02 00 00 00           X2               *Unkown
+
+The REMOTE_IP is the "outer" IP address of the remote user, the
+REMOTE_REAL_IP is the "inner" IP address. These two will be identical unless
+the remote user is behind a firewall. The REMOTE_IP is the "official" IP
+address, as shown e.g. by the Info box in the client. The REMOTE_PORT is the
+TCP port number to use when the client wishes to open a direct connection
+to the remote user.
+
+
+USER_OFFLINE (78 00)  User on contact list has gone offline
+------------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 4 bytes  xx xx xx xx           REMOTE_UIN       The UIN of the user who has logged out
+
+
+USER_FOUND (8C 00)  User record found matching search criteria
+----------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  xx xx                 SEARCH_SEQ_NUM   Search sequence number
+ 4 bytes  xx xx xx xx           FOUND_UIN        Found user's UIN
+ 2 bytes  xx xx                 LENGTH           Length of NICK_NAME including NULL
+ variable                       NICK_NAME        Found user's nick name, NULL terminated
+ 2 bytes  xx xx                 LENGTH           Length of FIRST_NAME including NULL
+ variable                       FIRST_NAME       Found user's first name, NULL terminated
+ 2 bytes  xx xx                 LENGTH           Length of LAST_NAME including NULL
+ variable                       LAST_NAME        Found user's last name, NULL terminated
+ 2 bytes  xx xx                 LENGTH           Length of E_MAIL including NULL
+ variable                       E_MAIL           Found user's e-mail, NULL terminated
+ 1 byte   xx                    AUTHORIZE        User's authorization status
+
+For each user found matching the criterion, a USER_FOUND will be returned.
+When all USER_FOUND's have been sent, the server will send an END_OF_SEARCH.
+If no users where found matching the criterion, an END_OF_SEARCH will be
+sent immediately, and no USER_FOUND will be sent. The AUTHORIZE determine
+wether the user allow anyone to include him/her on their contact list, or
+wether the user must accept first. Possible values of AUTHORIZE:
+ 00 = The user must authorize the client to include him/her on the client's
+ contact list
+ 01 = The user allows anyone to include him/her on their contact list
+
+
+RECEIVE_MESSAGE (DC 00)  Message sent while offline/through server
+---------------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 4 bytes  xx xx xx xx           REMOTE_UIN       The sending user's UIN
+ 2 bytes  xx xx                 YEAR             The year the message was sent
+ 1 byte   xx                    MONTH            The month the message was sent
+ 1 byte   xx                    DAY              The day of the month the message was sent
+ 1 byte   xx                    HOUR             The hour the message was sent in GMT
+ 1 byte   xx                    MINUTE           The minute the message was sent
+ 2 bytes  xx xx                 TYPE             The type of message (message, URL, etc)
+ 2 bytes  xx xx                 LENGTH           Length of MESSAGE including NULL
+ variable                       MESSAGE          The message sent, NULL terminated
+
+Note that the HOUR contains the local time - 1 (unless GMT is involved
+somehow?). The TYPE identifies the type of message this is:
+ 01 00 = Normal message
+ 04 00 = URL (MESSAGE contains first the description, then a FE, and then
+ the actual URL)
+ 0C 00 = 'You were added' message. (MESSAGE contains: <nick name> FE <first
+ name> FE <last name> FE <e-mail> FE <ASCII authorize>. The <ASCII
+ authorize> is '1' (31) if the user allows anyone to add him/her to their
+ contact list, and '0' (30) otherwise.)
+
+
+END_OF_SEARCH (A0 00)  No more USER_FOUND will be sent
+-------------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  xx xx                 SEARCH_SEQ_NUM   Search sequence number
+ 1 byte   xx                    MORE_FOUND       More users found but not displayed?
+
+If MORE_FOUND is 00, then the returned USER_FOUND's contain information
+about all matching users. If MORE_FOUND is 01 however, then the server has
+found more users matching, but will not display more matches. The limit is
+drawn by 40 users. If a search request results in more than 40 matches,
+only the 40 first will be sent to the client, and MORE_FOUND will be set to
+01.
+
+
+INFO_REPLY (18 01)  Return basic information about a user
+----------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  xx xx                 INFO_SEQ_NUM     Information sequence number
+ 4 bytes  xx xx xx xx           REMOTE_UIN       The remote user's UIN
+ 2 bytes  xx xx                 LENGTH           Lenght of NICK_NAME including NULL
+ variable                       NICK_NAME        The remote user's nick name
+ 2 bytes  xx xx                 LENGTH           Lenght of FIRST_NAME including NULL
+ variable                       FIRST_NAME       The remote user's first name
+ 2 bytes  xx xx                 LENGTH           Lenght of LAST_NAME including NULL
+ variable                       LAST_NAME        The remote user's last name
+ 2 bytes  xx xx                 LENGTH           Lenght of E_MAIL including NULL
+ variable                       E_MAIL           The remote user's e-mail
+ 1 byte   xx                    AUTHORIZE        User's authorization status
+
+Note that the parameters are identical to command USER_FOUND (8C 00). For
+more information about the fields, see USER_FOUND.
+
+EXT_INFO_REPLY (22 01)  Return extended information about a user
+--------------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  xx xx                 INFO_SEQ_NUM     Information sequence number
+ 4 bytes  xx xx xx xx           REMOTE_UIN       The remote user's UIN
+ 2 bytes  xx xx                 LENGTH           Lenght of CITY including NULL
+ variable                       CITY             The remote user's city
+ 2 bytes  xx xx                 COUNTRY_CODE     The remote user's country code
+ 1 byte   xx                    COUNTRY_STATUS   Indicates if COUNTRY_CODE is entered or not
+ 2 bytes  xx xx                 LENGTH           Lenght of STATE including NULL
+ variable                       STATE            The remote user's state (USA only)
+ 2 bytes  xx xx                 AGE              The remote user's age
+ 1 byte   xx                    SEX              The remote user's sex
+ 2 bytes  xx xx                 LENGTH           Lenght of PHONE including NULL
+ variable                       PHONE            The remote user's city
+ 2 bytes  xx xx                 LENGTH           Lenght of HOME_PAGE including NULL
+ variable                       HOME_PAGE        The remote user's city
+ 2 bytes  xx xx                 LENGTH           Lenght of ABOUT including NULL
+ variable                       ABOUT            The remote user's city
+
+The code used in COUNTRY_CODE is the international telephone prefix, e.g.
+01 00 (1) for the USA, 2C 00 (44) for the UK, 2E 00 (46) for Sweden, etc.
+COUNTRY_STATUS is normally FE, unless the remote user has not entered a
+country, in which casse COUNTRY_CODE will be FF FF, and COUNTRY_STATUS will
+be 9C. The field AGE has the value FF FF if the user has not entered his/her
+age. The field SEX has three (!) possible values:
+ 00 = Not specified
+ 01 = Female
+ 02 = Male
+The ABOUT field is an optional free form field that allows the user to make
+a personal presentation of himself/herself.
+
+
+STATUS_UPDATE (A4 01)  User on contact list has changed online status (Away etc)
+-------------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 4 bytes  xx xx xx xx           REMOTE_UIN       UIN of the user whos status has changed
+ 4 bytes  xx xx xx xx           STATUS           The new online status of the user
+
+The online status in STATUS is the same as used in STATUS_CHANGE (D8 04).
+See STATUS_CHANGE for details.
+
+
+
+         COMMUNICATION BETWEEN TWO CLIENTS USING TCP (Peer to peer mode)
+         ===============================================================
+
+When a user wishes to send a message, an URL etc, to another user (called
+the "remote" user as opposite to the "local" user), the local user first
+checks to see if a TCP connection already is established to that user. If
+so is the case, then that connection will be used. If not, the user checks
+the remote users IP address and port number (information sent to the user
+from the server when the remote user logged in), and makes a connection to
+that address. Typical port numbers are in the range 1200-1300 (decimal).
+When a new connection is formed, a CHANNEL_INIT message must be sent. From
+there on, however, every time the user wishes to send a message, a
+CHANNEL_MESSAGE is sent. All messages sent must be acknowledged by the other
+side, using CHANNEL_ACK. Furthermore, all messages is replied to by another
+message from the receiver - which most often is empty, unless the user has
+posted a Away/DND message, in case this will be sent as a reply.
+
+The TCP communication is similar to the UDP communication, in that all
+communication is done trough separate packets (often, but now always
+associated with individual TCP packets). Each packet must contain the
+packet's length (excluding the length count) as the first two bytes. Most
+messages contains the senders UIN as the next field.
+
+CHANNEL_INIT  Initiate inter-user communication using TCP
+------------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  1A 00                 LENGTH           Length of this packet
+ 1 byte   FF                    INIT_IDENT       Identifies this packet as an initiation
+ 4 bytes  02 00 00 00           X1               *Unknown
+ 4 bytes  00 00 00 00           X2               *Unknown
+ 4 bytes  xx xx xx xx           MY_UIN           The local user's UIN
+ 4 bytes  xx xx xx xx           MY_IP            The user's IP address
+ 4 bytes  xx xx xx xx           MY_IP_REAL       The user's actual IP address
+ 1 byte   04                    X3               *Unknown
+ 4 bytes  xx xx xx xx           MY_PORT          The user's TCP port for incoming messages
+
+Note that the port used for the "outgoing" connection is different from
+MY_PORT, the port other clients use to connect to this client. For the
+difference between MY_IP and MY_IP_REAL, see USER_ONLINE.
+
+CHANNEL_MESSAGE  Send message to online user
+------------
+
+Parameters:
+ Length   Content (if fixed)    Name             Description
+ ------   ------------------    ----             -----------
+ 2 bytes  xx xx                 LENGTH           Length of this packet
+ 4 bytes  xx xx xx xx           UIN              The local user's UIN
+ 2 bytes  02 00                 VERSION          Identifies this as a ICQ packet
+ 2 bytes  EE 07                 MSG_COMMAND      The message type for CHANNEL_MESSAGE
+ 2 bytes  00 00                 X1               *Unknown
+ 4 bytes  xx xx xx xx           UIN_2            The local user's UIN
+ 2 bytes  xx xx                 TYPE             Message type
+ 2 bytes  xx xx                 LENGTH           Length of MESSAGE including NULL
+ variable                       MESSAGE          The message to be sent, NULL terminated
+ 4 bytes  xx xx xx xx           MY_IP_REAL       The user's actual IP address
+ 4 bytes  xx xx xx xx           MY_IP            The user's IP address
+ 4 bytes  xx xx xx xx           PORT             The user's TCP port for incoming messages
+ 1 byte   04                    X2               *Unknown
+ 2 bytes  00 00                 X3               *Unknown
+ 2 bytes  xx xx                 CMD_TYPE         Identifies message as new message or reply
+ 4 bytes  xx xx xx xx           X4               *Unknown (checksum? sequence number?)
+
+The TYPE is the same as described in RECEIVE_MESSAGE. The difference between
+MY_IP and MY_IP_REAL is described in USER_ONLINE. The CMD_TYPE can have two
+possible values:
+ 10 00 = This is a new ('real', user initiated) message
+ 00 00 = This is an auto reply
+The auto reply is sent as an acknowledgement to all 'real' messages. They
+usually contains an empty message, but if the remote user is 'Away' or in
+DND mode, the reply will contain the Away/DND message. The X4 field is a
+bit tricky. It is always between 00 FF FF FF and FF FF FF FF, but the exact
+function of the field is unknown.

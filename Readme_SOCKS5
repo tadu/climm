@@ -1,0 +1,28 @@
+############# THE BEOS PORT IS NO LONGER BROKEN ################
+
+The little story...
+
+At work i'm behind a socks5 firewall, so i needed an ICQ clone for BeOS
+with socks5 support, there's one, ICBM, but it crashes at login, so it's
+not usable. I managed to use mICQ, a great text mode ICQ clone under FreeBSD,
+I found a port of version 0.3.2 (ported by catlettc@canvaslink.com) for BeOS
+and decided to add socks5 support.
+
+First i took the sources of ICBM to see the socks5 implementation, in c++
+but easily adaptable in c, however i was having difficulties with some
+functions. I discovered that ICBM, based on BeCQ, is based on mICQ, i also
+discovered the socks5 support included in ICBM come from libicq.tar.gz
+available on freshmeat iirc, and libicq is based also on mICQ! If
+everything is based on mICQ, it must be a good client, and the one to
+modify. So i did it ;)
+
+If you launch micq for the first time it'll ask you for socks5 server/port
+
+Parameters are saved in the .micqrc file so you can change it.
+
+I don't need authentification here so i don't know if this part works.
+
+Frédéric Lamorce.
+BeDevId #15453
+flamorce@dataradio.com or fred@bemail.org
+http://www.colba.net/~tiange

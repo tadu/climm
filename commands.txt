@@ -1,0 +1,36 @@
+Read README for information on getting starte with Micq this is mostly for
+power users who insist on tinkering with things. :)
+
+Customizable commands have been implemented via the rc file, the keywords are:
+
+message_cmd
+add_cmd
+info_cmd
+quit_cmd
+reply_cmd
+again_cmd
+list_cmd
+away_cmd
+na_cmd
+dnd_cmd
+online_cmd
+occ_cmd
+ffc_cmd
+inv_cmd
+status_cmd
+auth_cmd
+auto_cmd
+change_cmd
+search_cmd
+url_cmd
+update_cmd
+
+to set the message command (normally msg) to say /msg add the following line 
+to .micqrc
+
+message_cmd /msg
+
+Be sure to have an carriage return at the end of the statement.
+Also be sure to have only one space seperating the command and the keyword 
+( message_cmd, etc. ) or else the space will be come part of the command.
+Commands can't contain spaces so this would be bad.

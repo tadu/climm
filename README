@@ -1,0 +1,85 @@
+micq - a portable ICQ Console Client
+$Id$
+
+current Version: 0.4.6
+====================================
+
+
+a) Copyright and stuff
+
+Code written by "Matthew D. Smith" (the original
+Author of mICQ) is released as Public Domain.
+
+Code written by other Authors is released into
+public domain, too - when not otherwise noted.
+
+Beginning from 0.4.7 all the Code is released
+as (GPL | BSD-ish) Licence - when not otherwise noted.
+
+No-one from the micq Project is in any way affiliated with
+Mirabelis. We get neither money nor any hints from them.
+
+
+b) about mICQ
+
+mICQ is a very portable ICQ Console Client originally
+written by "Matthew D. Smith". mICQ is known to compile
+on many systems, including (but not limited to) Linux,
+BSD, BeOS, Windows and Amiga.
+
+When the Author passed away 2001-01-05, some of us Users
+overtook the "leadership" of the project and its now
+actively developed by some of us Freaks.
+
+mICQ is now hosted at Sourceforge, where you might find
+it at <http://sourceforge.net/projects/micq/>
+
+
+c) Mailinglist
+
+They are hosted by <dan@iquest.net>, but might move to
+sourceforge.
+
+Currently you:
+    post	            micq@phantom.iquest.net
+    subscribe	  micq-subscribe@phantom.iquest.net
+    unsubscfibe	micq-unsubscribe@phantom.iquest.net
+    help	       micq-help@phantom.iquest.net
+
+An Archive might be found at:
+<http://phantom.iquest.net:/micq/>
+
+
+d) Download
+
+You might get it at:
+    http://sourceforge.net/projects/micq/
+
+Primary Mirror
+    ftp://micq.chatzone.org:/
+    ftp://micq.ukeer.de:/
+
+CVS (do that only if you know what cvs is)
+export CVSROOT=:pserver:anonymous@micq.sourceforge.net:/home/cvsroot
+cvs login
+[leave password empty]
+cvs -z9 co micq
+
+
+e) Compile
+
+cd include
+vi config.h
+cd ../src
+vi Makefile
+make
+
+
+f) Usage
+
+just type 'micq'
+It will ask you for an UID (if you have none, just type '0') and a
+Password.
+
+
+g) Youll find original docs in the src/ Subdirectory.
