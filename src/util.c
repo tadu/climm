@@ -479,7 +479,7 @@ void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, c
         if (*tmp == '\'' || *tmp == '\\')
             *tmp = '"';
 
-    cmd = s_sprintf ("%s icq %ld '%s' %s %ld '%s'",
+    cmd = s_sprintf ("%s icq %ld '%s' global %s %ld '%s'",
                      myscript, cont ? cont->uin : 0, mynick, mytype, msgtype, mytext);
 
     rc = system (cmd);
