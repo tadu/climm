@@ -1,13 +1,13 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.63 2003/01/04 15:44:18
-1000:iso-8859-1
+#  EN: __.i18n,v 1.63.2.1 2003/01/09 18:00:20
+1000.iso-8859-1
 1001:de
 1002:de_DE
 1003:0-4-9-10
 1004:Rico -mc- Glöckner, Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
 1006:2003-01-05
-1007:iso-8859-1
+1007.iso-8859-1
 1010:[Automatische Nachricht] Benutzer ist nicht da (User is Away)
 1011:[Automatische Nachricht] Benutzer ist nicht verfügbar (User is not available)
 1012:[Automatische Nachricht] Benutzer ist beschäftigt (User is Occupied)
@@ -525,7 +525,7 @@
 1596:[SOCKS] Kann den Rechnernamen %s nicht auflösen: %s.
 1597:[SOCKS] Kann keinen Socket erzeugen.\n
 1598:[SOCKS] Verbindung verweigert.\n
-1599:[SOCKS] Autorisationsmethode ungültig.\n
+1599:[SOCKS] Autorisierungsmethode ungültig.\n
 1600:[SOCKS] Autorisierung fehlgeschlagen.\n
 1601:[SOCKS] Allgemeiner SOCKS-Server-Fehlschlag.\n
 1602:Bitte Staat eingeben:
@@ -533,7 +533,7 @@
 1604:Soll der Benutzer online sein?
 1605:Soll Ihr Status im Web einsehbar sein? (Ja/Nein)
 1606:Paket mit falscher Sitzungskennung ID %08lx (richtig: %08lx) mit Kommando %04x ignoriert.\n
-1607:Benutzung: micq [-h] [-v[level]] [-f <KonfDatei>] [-l <ProtDatei>]\n
+1607:Benutzung: micq [-h] [-c] [-i <locale>] [-b <basedir>] \n            [-f <configfile>] [-v[<level>]] [-l <logplace>]\n
 1612:Dieses Programm wurde ohne Hilfe oder Zustimmung von Mirabilis erstellt.\n
 1613:Dazu wurde kein Programmcode von Mirabilis zurückentwickelt oder zurückübersetzt.\n
 1618:Benutzernummer:
