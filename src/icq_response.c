@@ -442,8 +442,8 @@ void User_Offline (int sok, UBYTE * pak)
     M_print (" %s\n", i18n (30, "logged off."));
     log_event (remote_uin, LOG_ONLINE, "User logged off %s\n", UIN2Name (remote_uin));
 
-    if (uiG.SoundOnline == SOUND_CMD)
-        system (uiG.Sound_Str_Online);
+    if (uiG.SoundOffline == SOUND_CMD)
+        system (uiG.Sound_Str_Offline);
 
     if ((con = UIN2Contact (remote_uin)) != NULL)
     {
@@ -472,8 +472,8 @@ void User_Online (int sok, UBYTE * pak)
         Print_Status (new_status);
         M_print (").");
 
-        if (uiG.SoundOffline == SOUND_CMD)
-            system (uiG.Sound_Str_Offline);
+        if (uiG.SoundOnline == SOUND_CMD)
+            system (uiG.Sound_Str_Online);
 
         if ((con = UIN2Contact (remote_uin)))
         {
