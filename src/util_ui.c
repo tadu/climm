@@ -105,42 +105,46 @@ void UtilUIDisplayMeta (Contact *cont)
     if ((mg = cont->meta_general) && cont->updated & (UPF_GENERAL_A | UPF_DISC))
     {
         M_printf (COLSERVER "%-15s" COLNONE " " COLCONTACT "%s" COLNONE "\t%s\n",
-                  i18n (1500, "Nickname:"), mg->nick ? mg->nick : "",
+                  i18n (1500, "Nickname:"), s_sanitize (mg->nick),
                   mg->auth == 1 ? i18n (1943, "(no authorization needed)")
                                 : i18n (1944, "(must request authorization)"));
         if (mg->first && *mg->first && mg->last && *mg->last)
-            M_printf (COLSERVER "%-15s" COLNONE " %s\t %s\n",
-                     i18n (1501, "Name:"), mg->first, mg->last);
+        {
+            M_printf (COLSERVER "%-15s" COLNONE " %s", i18n (1501, "Name:"), s_sanitize (mg->first));
+            M_printf ("\t %s\n", s_sanitize (mg->last));
+        }
         else if (mg->first && *mg->first)
-            M_printf (AVPFMT, i18n (1564, "First name:"), mg->first);
+            M_printf (AVPFMT, i18n (1564, "First name:"), s_sanitize (mg->first));
         else if (mg->first && *mg->last)
-            M_printf (AVPFMT, i18n (1565, "Last name:"), mg->last);
+            M_printf (AVPFMT, i18n (1565, "Last name:"), s_sanitize (mg->last));
         if (mg->email && *mg->email)
             M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
-                      i18n (1566, "Email address:"), mg->email);
+                      i18n (1566, "Email address:"), s_sanitize (mg->email));
     }
     if (mg && cont->updated & (UPF_GENERAL_B | UPF_GENERAL_E | UPF_DISC))
     {
         if (mg->city && *mg->city && mg->state && *mg->state)
-            M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n",
-                     i18n (1505, "Location:"), mg->city, mg->state);
+        {
+            M_printf (COLSERVER "%-15s" COLNONE " %s", i18n (1505, "Location:"), s_sanitize (mg->city));
+            M_printf (", %s\n", s_sanitize (mg->state));
+        }
         else if (mg->city && *mg->city)
-            M_printf (AVPFMT, i18n (1570, "City:"), mg->city);
+            M_printf (AVPFMT, i18n (1570, "City:"), s_sanitize (mg->city));
         else if (mg->state && *mg->state)
-            M_printf (AVPFMT, i18n (1574, "State:"), mg->state);
+            M_printf (AVPFMT, i18n (1574, "State:"), s_sanitize (mg->state));
         if (mg->phone && *mg->phone)
-            M_printf (AVPFMT, i18n (1506, "Phone:"), mg->phone);
+            M_printf (AVPFMT, i18n (1506, "Phone:"), s_sanitize (mg->phone));
         if (mg->fax && *mg->fax)
-            M_printf (AVPFMT, i18n (1507, "Fax:"), mg->fax);
+            M_printf (AVPFMT, i18n (1507, "Fax:"), s_sanitize (mg->fax));
     }
     if (mg && cont->updated & (UPF_GENERAL_B | UPF_DISC))
     {
         if (mg->street && *mg->street)
-            M_printf (AVPFMT, i18n (1508, "Street:"), mg->street);
+            M_printf (AVPFMT, i18n (1508, "Street:"), s_sanitize (mg->street));
         if (mg->cellular && *mg->cellular)
-            M_printf (AVPFMT, i18n (1509, "Cellular:"), mg->cellular);
+            M_printf (AVPFMT, i18n (1509, "Cellular:"), s_sanitize (mg->cellular));
         if (mg->zip && *mg->zip)
-            M_printf (AVPFMT, i18n (1510, "Zip:"), mg->zip);
+            M_printf (AVPFMT, i18n (1510, "Zip:"), s_sanitize (mg->zip));
     }
     if (mg && cont->updated & (UPF_GENERAL_B | UPF_GENERAL_E | UPF_DISC))
     {
@@ -175,7 +179,7 @@ void UtilUIDisplayMeta (Contact *cont)
         for ( ; me; me = me->meta_email)
         {
             if (me->email && *me->email)
-                M_printf (" %s %s\n", me->email,
+                M_printf (" %s %s\n", s_sanitize (me->email),
                            me->auth == 1 ? i18n (1943, "(no authorization needed)") 
                          : me->auth == 0 ? i18n (1944, "(must request authorization)")
                          : "");
@@ -199,7 +203,7 @@ void UtilUIDisplayMeta (Contact *cont)
     if (mm && cont->updated & (UPF_MORE | UPF_GENERAL_E | UPF_DISC))
     {
         if (mm->homepage && *mm->homepage)
-            M_printf (AVPFMT, i18n (1531, "Homepage:"), mm->homepage);
+            M_printf (AVPFMT, i18n (1531, "Homepage:"), s_sanitize (mm->homepage));
     }
     if (mm && cont->updated & (UPF_MORE | UPF_DISC))
     {
@@ -226,20 +230,22 @@ void UtilUIDisplayMeta (Contact *cont)
     if ((mw = cont->meta_work))
     {
         if (mw->wcity && *mw->wcity && mw->wstate && *mw->wstate)
-            M_printf (COLSERVER "%-15s" COLNONE " %s, %s\n", 
-                     i18n (1524, "Work Location:"), mw->wcity, mw->wstate);
+        {
+            M_printf (COLSERVER "%-15s" COLNONE " %s", i18n (1524, "Work Location:"), s_sanitize (mw->wcity));
+            M_printf (", %s\n", s_sanitize (mw->wstate));
+        }
         else if (mw->wcity && *mw->wcity)
-            M_printf (AVPFMT, i18n (1873, "Work City:"), mw->wcity);
+            M_printf (AVPFMT, i18n (1873, "Work City:"), s_sanitize (mw->wcity));
         else if (mw->wstate && *mw->wstate)
-            M_printf (AVPFMT, i18n (1874, "Work State:"), mw->wstate);
+            M_printf (AVPFMT, i18n (1874, "Work State:"), s_sanitize (mw->wstate));
         if (mw->wphone && *mw->wphone)
-            M_printf (AVPFMT, i18n (1523, "Work Phone:"), mw->wphone);
+            M_printf (AVPFMT, i18n (1523, "Work Phone:"), s_sanitize (mw->wphone));
         if (mw->wfax && *mw->wfax)
-            M_printf (AVPFMT, i18n (1521, "Work Fax:"), mw->wfax);
+            M_printf (AVPFMT, i18n (1521, "Work Fax:"), s_sanitize (mw->wfax));
         if (mw->waddress && *mw->waddress)
-            M_printf (AVPFMT, i18n (1522, "Work Address:"), mw->waddress);
+            M_printf (AVPFMT, i18n (1522, "Work Address:"), s_sanitize (mw->waddress));
         if (mw->wzip && *mw->wzip)
-            M_printf (AVPFMT, i18n (1520, "Work Zip:"), mw->wzip);
+            M_printf (AVPFMT, i18n (1520, "Work Zip:"), s_sanitize (mw->wzip));
         if (mw->wcountry)
         {
             if ((tabd = TableGetCountry (mw->wcountry)))
@@ -250,16 +256,16 @@ void UtilUIDisplayMeta (Contact *cont)
                          i18n (1513, "Work Country Code:"), mw->wcountry);
         }
         if (mw->wcompany && *mw->wcompany)
-            M_printf (AVPFMT, i18n (1519, "Company Name:"), mw->wcompany);
+            M_printf (AVPFMT, i18n (1519, "Company Name:"), s_sanitize (mw->wcompany));
         if (mw->wdepart && *mw->wdepart)
-            M_printf (AVPFMT, i18n (1518, "Department:"), mw->wdepart);
+            M_printf (AVPFMT, i18n (1518, "Department:"), s_sanitize (mw->wdepart));
         if (mw->wposition && *mw->wposition)
-            M_printf (AVPFMT, i18n (1517, "Job Position:"), mw->wposition);
+            M_printf (AVPFMT, i18n (1517, "Job Position:"), s_sanitize (mw->wposition));
         if (mw->woccupation)
             M_printf (COLSERVER "%-15s" COLNONE " %s\n", 
                       i18n (1516, "Occupation:"), TableGetOccupation (mw->woccupation));
         if (mw->whomepage && *mw->whomepage)
-            M_printf (AVPFMT, i18n (1515, "Work Homepage:"), mw->whomepage);
+            M_printf (AVPFMT, i18n (1515, "Work Homepage:"), s_sanitize (mw->whomepage));
     }
     if ((ml = cont->meta_interest))
     {
@@ -269,9 +275,9 @@ void UtilUIDisplayMeta (Contact *cont)
             if (!ml->text)
                 continue;
             if ((tabd = TableGetInterest (ml->data)))
-                M_printf ("  %s: %s\n", tabd, ml->text);
+                M_printf ("  %s: %s\n", tabd, s_sanitize (ml->text));
             else
-                M_printf ("  %ld: %s\n", ml->data, ml->text);
+                M_printf ("  %ld: %s\n", ml->data, s_sanitize (ml->text));
         }
     }
     if ((ml = cont->meta_background))
@@ -282,9 +288,9 @@ void UtilUIDisplayMeta (Contact *cont)
             if (!ml->text)
                 continue;
             if ((tabd = TableGetPast (ml->data)))
-                M_printf ("  %s: %s\n", tabd, ml->text);
+                M_printf ("  %s: %s\n", tabd, s_sanitize (ml->text));
             else
-                M_printf ("  %ld: %s\n", ml->data, ml->text);
+                M_printf ("  %ld: %s\n", ml->data, s_sanitize (ml->text));
         }
     }
     if ((ml = cont->meta_affiliation))
@@ -295,9 +301,9 @@ void UtilUIDisplayMeta (Contact *cont)
             if (!ml->text)
                 continue;
             if ((tabd = TableGetAffiliation (ml->data)))
-                M_printf ("  %s: %s\n", tabd, ml->text);
+                M_printf ("  %s: %s\n", tabd, s_sanitize (ml->text));
             else
-                M_printf ("  %ld: %s\n", ml->data, ml->text);
+                M_printf ("  %ld: %s\n", ml->data, s_sanitize (ml->text));
         }
     }
     if ((mo = cont->meta_obsolete))
@@ -307,12 +313,12 @@ void UtilUIDisplayMeta (Contact *cont)
                       i18n (2195, "Obsolete number:"), mo->unknown, mo->unknown);
         if (mo->description && *mo->description)
             M_printf (COLSERVER "%-15s" COLNONE " %s\n",
-                      i18n (2196, "Obsolete text:"), mo->description);
+                      i18n (2196, "Obsolete text:"), s_sanitize (mo->description));
         if (mo->empty)
             M_printf (COLSERVER "%-15s" COLNONE "%d\n",
                       i18n (2197, "Obsolete byte"), mo->empty);
     }
     if (cont->meta_about && *cont->meta_about)
-        M_printf (COLSERVER "%-15s" COLNONE "\n%s\n",
-                  i18n (1525, "About:"), s_ind (cont->meta_about));
+        M_printf (COLSERVER "%-15s" COLNONE "\n%s%s\n",
+                  i18n (1525, "About:"), COLMSGINDENT, s_ind (cont->meta_about));
 }

@@ -9,8 +9,6 @@
 
 #include "micq.h"
 
-#ifdef USE_MREADLINE
-
 #include "mreadline.h"
 #include "util_ui.h"
 #include "util.h"
@@ -1204,13 +1202,13 @@ void M_print (const char *org)
     {
         for (test = save = str; *test; test++)
         {
-            if (strchr ("\b\n\r\t\a\x1b", *test)) /* special character reached - emit text till last saved position */
+            if (!(*test & 0xe0) || (*test == 127)) /* special character reached - emit text till last saved position */
             {
                 if (save != str)
                     test = save;
                 break;
             }
-            if (strchr ("-.,_:;!?/ ", *test)) /* punctuation found - save position after it */
+            else if (strchr ("-.,_:;!?/ ", *test)) /* punctuation found - save position after it */
             {
                 temp = test + 1;
                 if (chardiff (temp, str) <= sw - CharCount)
@@ -1430,102 +1428,6 @@ void M_printf (const char *str, ...)
     M_print (buf);
     va_end (args);
 }
-
-#else
-
-/*
- * Print a string to the output, interpreting color and indenting codes.
- */
-void M_print (char *str)
-{
-    int i, temp;
-    static int chars_printed = 0;
-
-    for (i = 0; str[i] != 0; i++)
-    {
-        if (str[i] != '\a')
-        {
-            if (str[i] == '\n')
-            {
-                printf ("\n");
-                chars_printed = 0;
-            }
-            else if (str[i] == '\r')
-            {
-                printf ("\r");
-                chars_printed = 0;
-            }
-            else if (str[i] == '\t')
-            {
-                temp = (chars_printed % TAB_STOP);
-                /*chars_printed += TAB_STOP - temp; */
-                temp = TAB_STOP - temp;
-                for (; temp != 0; temp--)
-                {
-                    M_prints (" ");
-                }
-            }
-            else if ((str[i] >= 32) || (str[i] < 0))
-            {
-                printf ("%c", str[i]);
-                chars_printed++;
-                if ((Get_Max_Screen_Width () != 0) && (chars_printed > Get_Max_Screen_Width ()))
-                {
-                    printf ("\n");
-                    chars_printed = 0;
-                }
-            }
-        }
-        else if (prG->sound == SFLAG_EVENT && prG->event_cmd && *prG->event_cmd)
-            EventExec (NULL, prG->event_cmd, 4, 0, NULL);
-        else if (prG->sound == SFLAG_BEEP)
-            printf ("\a");
-    }
-}
-
-/**************************************************************
-M_printf with colors.
-***************************************************************/
-void M_printf (char *str, ...)
-{
-    va_list args;
-    char buf[2048];
-    char *str1, *str2;
-
-    va_start (args, str);
-    vsnprintf (buf, sizeof (buf), str, args);
-    str2 = buf;
-    while ((str1 = strchr (str2, '\x1b')) != NULL)
-    {
-        str1[0] = 0;
-        M_prints (str2);
-        str1[0] = '\x1b';
-        if (strchr (".<>v^", str1[1]))
-        {
-            char c = str1[2];
-            str1[2] = 0;
-            M_prints (str1);
-            str1[2] = c;
-            str2 = str1 + 2;
-        }
-        else
-        {
-            str2 = strchr (str1, 'm');
-            if (str2)
-            {
-                str2[0] = 0;
-                if (prG->flags & FLAG_COLOR)
-                    printf ("%sm", str1);
-                str2++;
-            }
-            else
-                str2 = str1 + 1;
-        }
-    }
-    M_prints (str2);
-    va_end (args);
-}
-#endif
 
 /*
  * Returns current horizontal position

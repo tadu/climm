@@ -7,9 +7,6 @@
    if this is unset. */
 #define ANSI_TERM
 
-/* Use the arrow keys on ansi terminals.  Very good to have if it works */
-#define USE_MREADLINE
-
 /* remove this line to disable shell commands from within mICQ */
 #define SHELL_COMMANDS
 

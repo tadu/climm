@@ -790,3 +790,37 @@ const char *s_quote (const char *input)
     t = s_cat (t, &size, "\"");
     return t;
 }
+
+/*
+ * Remove all control characters from string
+ */
+const char *s_sanitize (const char *input)
+{
+    static char *t = NULL;
+    static UDWORD size = 0;
+    const char *tmp;
+    
+    if (!t)
+        t = malloc (size = 32);
+    if (!t || !input || !*input)
+        return "";
+    for (tmp = input; *tmp; tmp++)
+        if (!(*tmp & 0xe0) || (*tmp == 127))
+            break;
+    if (!*tmp)
+        return input;
+    *t = 0;
+    for (tmp = input; *tmp; tmp++)
+    {
+        if ((*tmp & 0xe0) && (*tmp != 127))
+            t = s_catf (t, &size, "%c", *tmp);
+        else
+            t = s_catf (t, &size, "\\x%c%c",
+                    (*tmp / 16) <= 9 ? ((UBYTE)*tmp / 16) + '0'
+                                     : ((UBYTE)*tmp / 16) - 10 + 'a',
+                    (*tmp & 15) <= 9 ? (*tmp & 15) + '0'
+                                     : (*tmp & 15) - 10 + 'a');
+    }
+    return t;
+}
+

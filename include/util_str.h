@@ -23,6 +23,7 @@ BOOL        s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **
 BOOL        s_parserem_s  (char **input, char    **parsed, char *sep);
 BOOL        s_parseint_s  (char **input, UDWORD   *parsed, char *sep);
 const char *s_quote       (const char *input);
+const char *s_sanitize    (const char *input);
 
 #define s_repl(old,new) do { char **_p_p_ = old; const char *_q_q_ = new; \
                              if (*_p_p_) free (*_p_p_); *_p_p_ = NULL; \
