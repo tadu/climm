@@ -585,6 +585,11 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
 
     tlv = TLVRead (pak, PacketReadLeft (pak));
 
+#ifdef WIP
+    if (tlv[6].nr != cont->status)
+        M_print ("FIXME: status embedded in message 0x%08x different from server status 0x%08x.\n", tlv[6].nr, cont->status);
+#endif
+
     if (tlv[6].len && cont && cont->status != STATUS_OFFLINE)
         IMOnline (cont, event->conn, tlv[6].nr);
 
