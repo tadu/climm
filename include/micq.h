@@ -488,86 +488,117 @@ typedef struct {
 	UBYTE lang3;
 } OTHER_INFO_STRUCT, *OTHER_INFO_PTR;
 
-#include "i18n.h"
-int Connect_Remote( char *hostname, int port, FD_T aux );
+/*
+ * Should you decide to move a global variable from one struct to another,
+ * change it manually in the header file, and then in the src directory
+ * the following incantation can be handy (assuming you want to move, say,
+ * Hermit, from uiG to ssG):
+ * perl -pi -e 's/(\W)uiG\.(Hermit)(\W)/$1ssG.$2$3/g;' *.c
+ */
 
-extern Contact_Member Contacts[ MAX_CONTACTS ]; /* no more than 100 contacts max */
-extern int Num_Contacts;
-extern UDWORD UIN; /* current User Id Number */
-extern BOOL Contact_List;
-extern UWORD last_cmd[ 1024 ]; /* command issued for the first 1024 SEQ #'s */
-/******************** should use & 0x3ff on all references to this */
-extern UWORD seq_num;  /* current sequence number */
-extern UDWORD our_ip;
-extern UDWORD our_port; /* the port to make tcp connections on */
-extern BOOL Quit;
-extern BOOL Verbose;
-extern UBYTE Sound; /* sound setting for normal beeps etc */
-extern UBYTE SoundOnline; /* sound setting for users comming online */
-extern UBYTE SoundOffline; /* sound settng for users going offline */
-extern UDWORD Current_Status;
-extern UDWORD last_recv_uin;
-extern char passwd[100];
-extern char server[100];
-extern UBYTE LogType;
-extern UDWORD remote_port;
+/* user interface global state variables */
+typedef struct {
+        Contact_Member Contacts[ MAX_CONTACTS ]; /* MAX_CONTACTS <= 100 */
+        int Num_Contacts;
+        BOOL Contact_List;     /* I think we always have a contact list now */
+        BOOL Verbose;          /* displays extra debugging info */
+        UBYTE Sound;           /* sound setting for normal beeps etc */
+        UBYTE SoundOnline;     /* sound setting for users comming online */
+        UBYTE SoundOffline;    /* sound settng for users going offline */
+        UDWORD Current_Status;
+        UDWORD last_recv_uin;
+        UBYTE LogType;         /* Currently 0 = no logging
+                                            1 = old style ~/micq_log
+                                            2 = new style ~/micq.log/uin.log
+                                            ****************************** */
+        BOOL auto_resp;
+        char auto_rep_str_na[450];
+        char auto_rep_str_away[450];
+        char auto_rep_str_occ[450];
+        char auto_rep_str_inv[450];
+        char auto_rep_str_dnd[450];
+        UBYTE Sound_Str[150];           /* shellcmd to exec on normal beeps */
+        UBYTE Sound_Str_Online[150];    /* shellcmd to exec on usr online */
+        UBYTE Sound_Str_Offline[150];   /* shellcmd to exec on usr offline */
+        BOOL del_is_bs;                 /* del char is backspace */
+        BOOL last_uin_prompt;           /* use last UIN's nick as prompt */
+        int  line_break_type;           /* see .rc file for modes */
+
+        BOOL Russian;    /* Do we do koi8-r <->Cp1251 codeset translation? */
+        BOOL JapaneseEUC;/* Do we do Shift-JIS <->EUC codeset translation? */
+        BOOL Logging;          /* Do we log messages to ~/micq_log? This */
+                               /* should probably have different levels  */
+        BOOL Color;            /* Do we use ANSI color? */
+        UWORD Max_Screen_Width;
+        BOOL Hermit;
+/* aaron
+   Variable to hold the time that Micq is started, for the "uptime" command,
+   which shows how long Micq has been running. */
+        time_t MicqStartTime;
+/* end of aaron */
+
+#ifdef MSGEXEC
+ /*
+  * Ben Simon:
+  * receive_script -- a script that gets called anytime we receive
+  * a message
+  */
+        char receive_script[255];
+#endif
+} user_interface_state;
+
+extern user_interface_state uiG;
+
+/* session global state variables */
+typedef struct {
+        UDWORD UIN; /* current User Id Number */
+
+/******* should use & 0x3ff in the indexing of all references to last_cmd */
+        UWORD last_cmd[ 1024 ]; /* command issued for the first */
+                                /* 1024 SEQ #'s                 */
+
+        BOOL serv_mess[1024];   /* used so that we don't get duplicate */
+                                /* messages with the same SEQ          */
+
+        UWORD seq_num;  /* current sequence number */
+        UDWORD our_ip;
+        UDWORD our_port; /* the port to make tcp connections on */
+        BOOL Quit;
+        char passwd[100];
+        char server[100];
+        UDWORD remote_port;
+        UDWORD set_status;
+        unsigned int next_resend;
+        UDWORD our_session;
+        BOOL Done_Login;
+        unsigned int away_time;
+        UDWORD real_packs_sent;
+        UDWORD real_packs_recv;
+        UDWORD Packets_Sent;
+        UDWORD Packets_Recv;
+} session_state;
+
+extern session_state ssG;
 
 /* SOCKS5 stuff begin*/
-extern int s5Use;
-extern char s5Host[100];
-extern unsigned short s5Port;
-extern int  s5Auth;
-extern char s5Name[64];
-extern char s5Pass[64];
-extern unsigned long s5DestIP;
-extern unsigned short s5DestPort;
+/* SOCKS5 global state variables */
+typedef struct {
+        int s5Use;
+        char s5Host[100];
+        unsigned short s5Port;
+        int  s5Auth;
+        char s5Name[64];
+        char s5Pass[64];
+        unsigned long s5DestIP;
+        unsigned short s5DestPort;
+} socks5_state;
 /* SOCKS5 stuff end */
- 
-extern UDWORD set_status;
-extern BOOL auto_resp;
-extern char auto_rep_str_na[450];
-extern char auto_rep_str_away[450];
-extern char auto_rep_str_occ[450];
-extern char auto_rep_str_inv[450];
-extern char auto_rep_str_dnd[450];
-extern UBYTE Sound_Str[150];           /* shellcmd to exec on normal beeps */
-extern UBYTE Sound_Str_Online[150];    /* shellcmd to exec on usr online */
-extern UBYTE Sound_Str_Offline[150];   /* shellcmd to exec on usr offline */
-extern BOOL Done_Login;
 
-extern BOOL del_is_bs;
-extern BOOL last_uin_prompt;
-extern int  line_break_type;
-
-extern BOOL Russian;
-extern BOOL JapaneseEUC;
-extern BOOL Logging;
-extern BOOL Color;
-
-extern unsigned int next_resend;
-extern UDWORD our_session;
+extern socks5_state s5G;
 		
 #define LOG_MESS 1
 #define LOG_AUTO_MESS 2
 #define LOG_ONLINE 3
 
-extern unsigned int away_time;
-extern BOOL Hermit;
-
-extern UWORD Max_Screen_Width;
-extern UDWORD real_packs_sent;
-extern UDWORD real_packs_recv;
-extern UDWORD Packets_Sent;
-extern UDWORD Packets_Recv;
-
-/* aaron
-   Variable to hold the time that Micq is started, for the "uptime" command,
-   which shows how long Micq has been running.                               */
-extern time_t MicqStartTime;
-/* end of aaron */
-
-
-#ifdef MSGEXEC
-	extern char receive_script[255];
-#endif
-
+#include "i18n.h"
+int Connect_Remote( char *hostname, int port, FD_T aux );

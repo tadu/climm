@@ -766,3 +766,7 @@
 #764:The command '%s' has still it's original name.
 #800:Change the working language to <lang>.
 #801:Displays a list of people on your contact list in a screen wide format.
+#802:SoundOnline cmd
+#803:SoundOffline cmd
+#804:SoundOnline
+#805:SoundOffline

@@ -656,7 +656,7 @@
 656:Enter the user's nick name:
 657:Enter the user's first name:
 658:Enter the user's last name:
-659:Unkown section %s in configuration file.
+659:Unknown section %s in configuration file.
 660:Invalid Command: %s¶
 661:Shell commands have been disabled.¶
 662:Color is ©3%s©0.¶
@@ -764,3 +764,7 @@
 764:The command '%s' has still it's original name.
 800:Change the working language to <lang>.
 801:Displays a list of people on your contact list in a screen wide format.
+802:SoundOnline cmd
+803:SoundOffline cmd
+804:SoundOnline
+805:SoundOffline

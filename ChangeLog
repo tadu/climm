@@ -1,3 +1,10 @@
+
+2001-08-11 Georgi Kuzmanov <georgi@cs.man.ac.uk>
+	* Big stuff-all-globals-into-a-struct-patch: one for preferences (uiG),
+	  session (ssG) and socks5 (s5G).
+	* This patch is big.
+	* It deserves a few more lines.
+
 2001-08-02 Sander Smeenk <ssmeenk@debian.org>
 	* Added support for SoundOnline & SoundOffline events
 

@@ -780,3 +780,7 @@
 764:Das Kommando "%s" hat noch den ursprünglichen Namen.
 800:Wählt die Sprache <lang> aus.
 801:Zeigt die Kontaktliste im ausführlichen Format an.
+802:Klang-Befehl, wenn jemand verbindet:
+803:Klang-Befehl, wenn jemand sich abmeldet:
+804:Klang, wenn jemand verbindet:
+805:Klang, wenn sich jemand abmeldet:
