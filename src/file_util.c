@@ -256,13 +256,9 @@ void Initialize_RC_File ()
     prG->chat      = 49;
 
     conn->contacts = ContactGroupFind (0, conn, s_sprintf ("contacts-icq8-%ld", uin), 1);
-#ifdef ENABLE_UTF8
-    ContactFind (conn->contacts, 0, 82274703, "R\xc3\xbc" "diger Kuhlmann", 1);
-#else
-    ContactFind (conn->contacts, 0, 82274703, "R\xfc" "diger Kuhlmann", 1);
-#endif
-    ContactFind (conn->contacts, 0, 82274703, "mICQ maintainer", 1);
     ContactFind (conn->contacts, 0, 82274703, "Tadu", 1);
+
+    M_printf (i18n (2381, "I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n"));
 
     if (uin)
         Save_RC ();
@@ -924,7 +920,7 @@ void Read_RC_File (FILE *rcf)
                         else
                         {
                             M_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                            M_printf (i18n (9999, "Peer-to-peer connection not associated to server connection, discarding.\n"));
+                            M_printf (i18n (2382, "Peer-to-peer connection not associated to server connection, discarding.\n"));
                             conn->spref->type = 0;
                             section = -1;
                         }
