@@ -477,6 +477,14 @@ void UserOnlineSetVersion (Contact *con, UDWORD tstamp, UDWORD tstamp2)
         v3 = (tstamp2 &     0xff00) >> 8;
         v4 =  tstamp2 &       0xff;
     }
+    else if (tstamp == 0xffffff8f)
+    {
+        new = "StrICQ";
+        v1 = (tstamp2 & 0x7f000000) >> 24;
+        v2 = (tstamp2 &   0xff0000) >> 16;
+        v3 = (tstamp2 &     0xff00) >> 8;
+        v4 =  tstamp2 &       0xff;
+    }
     
     if (new)
     {
@@ -611,8 +619,8 @@ void Do_Msg (Session *sess, const char *timestr, UWORD type, const char *text, U
     TabAddUIN (uin);            /* Adds <uin> to the tab-list */
     UtilCheckUIN (sess, uin);
 
-    log_event (uin, LOG_MESS, "You received instant message type %x (TCP? %d) from %s\n%s\n",
-               type, tcp, ContactFindName (uin), cdata);
+    log_event (uin, LOG_MESS, "You received %s message type %x from %s\n%s\n",
+               tcp ? "TCP" : "instant", type, ContactFindName (uin), cdata);
 
     cont = ContactFind (uin);
     if (cont && (cont->flags & CONT_IGNORE))
