@@ -29,7 +29,7 @@
 extern int h_errno;
 
 #ifndef HAVE_HSTRERROR
-const char *hstrerror (int rc)
+static const char *hstrerror (int rc)
 {
     return "";
 }
