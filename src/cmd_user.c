@@ -116,7 +116,7 @@ static jump_t jump[] = {
     { NULL, NULL, NULL, 0 }
 };
 
-#define SESSION Session *sess; if (!(sess = SessionFind (TYPEF_ANY_SERVER, 0))) \
+#define SESSION Session *sess; if (!(sess = SessionFind (TYPEF_ANY_SERVER, 0, NULL))) \
     { M_print (i18n (1931, "Couldn't find server connection.\n")); return 0; }
 
 /*
@@ -688,7 +688,7 @@ static JUMP_F(CmdUserTCP)
             M_print (i18n (1845, "Nick %s unknown.\n"), nick);
             return 0;
         }
-        sess = SessionFind (TYPE_LISTEN, 0);
+        sess = SessionFind (TYPE_LISTEN, 0, NULL);
         if (!sess)
         {
             M_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
@@ -1763,9 +1763,9 @@ static JUMP_F(CmdUserRegister)
     if (arg1)
     {
         Session *sess;
-        if ((sess = SessionFind (TYPE_SERVER, 0)))
+        if ((sess = SessionFind (TYPE_SERVER, 0, NULL)))
             SrvRegisterUIN (sess, arg1);
-        else if ((sess = SessionFind (TYPE_SERVER_OLD, 0)))
+        else if ((sess = SessionFind (TYPE_SERVER_OLD, 0, NULL)))
             CmdPktCmdRegNewUser (sess, arg1);     /* TODO */
         else
             SrvRegisterUIN (NULL, arg1);

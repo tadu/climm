@@ -94,19 +94,34 @@ Session *SessionNr (int i)
 /*
  * Finds a session of given type and/or given uin.
  * Actually, you may specify TYPEF_* here that must all be set.
+ * The parent is the session this one has to have as parent.
  */
-Session *SessionFind (UWORD type, UDWORD uin)
+Session *SessionFind (UWORD type, UDWORD uin, const Session *parent)
 {
     int i;
     
-    for (i = 0; i < listlen; i++)
-        if (slist[i] && ((slist[i]->type & type) == type) && (slist[i]->uin == uin) && uin)
-            return slist[i];
-    if (uin)
-        return NULL;
-    for (i = 0; i < listlen; i++)
-        if (slist[i] && ((slist[i]->type & type) == type) && (slist[i]->connect & CONNECT_OK))
-            return slist[i];
+    if (parent)
+    {
+        if (uin)
+            for (i = 0; i < listlen; i++)
+                if (slist[i] && ((slist[i]->type & type) == type) && (slist[i]->uin == uin) && slist[i]->parent == parent)
+                    return slist[i];
+        if (!uin)
+            for (i = 0; i < listlen; i++)
+                if (slist[i] && ((slist[i]->type & type) == type) && (slist[i]->connect & CONNECT_OK) && slist[i]->parent == parent)
+                    return slist[i];
+    }
+    else
+    {
+        if (uin)
+            for (i = 0; i < listlen; i++)
+                if (slist[i] && ((slist[i]->type & type) == type) && (slist[i]->uin == uin))
+                    return slist[i];
+        if (!uin)
+            for (i = 0; i < listlen; i++)
+                if (slist[i] && ((slist[i]->type & type) == type) && (slist[i]->connect & CONNECT_OK))
+                    return slist[i];
+    }
     return NULL;
 }
 

@@ -36,6 +36,7 @@ struct Session_s
 
         PreferencesSession *spref; /* preferences for this session */
         Session            *assoc; /* associated UDP <-> TCP or parent TCP session */
+        Session            *parent;/* parent session */
         
         jump_sess_f *dispatch;     /* function to call on select() */
         jump_sess_f *reconnect;    /* function to call for reconnect */
@@ -55,8 +56,28 @@ Session    *SessionC     (void);
 Session    *SessionClone (Session *sess);
 void        SessionInit  (Session *sess);
 Session    *SessionNr    (int i);
-Session    *SessionFind  (UWORD type, UDWORD uin);
+Session    *SessionFind  (UWORD type, UDWORD uin, const Session *parent);
 void        SessionClose (Session *sess);
 const char *SessionType  (Session *sess);
+
+/*
+                            TYPE_SERVER
+                           ^ |       ^
+                          /  a       |
+                         p   |       p
+                        /    V       |
+                   TYPE_LISTENER   TYPE_FILELISTENER
+                        ^                 ^
+                        |                 |
+                        p                 p
+                        |                 |
+                TYPE_CIRECT(uin)   TYPE_FILEDIRECT(uin)
+                                          |  ^
+                                          a  |
+                                          |  p
+                                          V  |
+                                        TYPE_FILE
+
+*/
 
 #endif

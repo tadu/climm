@@ -126,6 +126,7 @@ void PrefLoad (Preferences *pref);
 #define ASSERT_DIRECT_FILE(s) (assert (s), assert ((s)->type == TYPE_FILE || (s)->type == TYPE_DIRECT))
 #define ASSERT_FILE(s)        (assert (s), assert ((s)->type == TYPE_FILE))
 #define ASSERT_SERVER(s)      (assert (s), assert ((s)->type == TYPE_SERVER))
+#define ASSERT_ANY_LISTEN     (assert (s), assert ((s)->type & TYPEF_ANY_LISTEN)
 
 #endif
 

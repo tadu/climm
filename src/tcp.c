@@ -131,7 +131,7 @@ void TCPDirectOpen (Session *sess, UDWORD uin)
     if (!cont || cont->TCP_version < 6)
         return;
 
-    if ((peer = SessionFind (TYPE_DIRECT, uin)))
+    if ((peer = SessionFind (TYPE_DIRECT, uin, NULL)))
     {
         if (peer->connect & CONNECT_MASK)
             return;
@@ -160,9 +160,9 @@ void TCPDirectClose (UDWORD uin)
 {
     Session *peer;
     
-    if ((peer = SessionFind (TYPE_DIRECT, uin)))
+    if ((peer = SessionFind (TYPE_DIRECT, uin, NULL)))
         TCPClose (peer);
-    if ((peer = SessionFind (TYPE_FILE, uin)))
+    if ((peer = SessionFind (TYPE_FILE, uin, NULL)))
         TCPClose (peer);
 }
 
@@ -174,7 +174,7 @@ void TCPDirectOff (UDWORD uin)
     Contact *cont;
     Session *peer;
     
-    peer = SessionFind (TYPE_DIRECT, uin);
+    peer = SessionFind (TYPE_DIRECT, uin, NULL);
     cont = ContactFind (uin);
     
     if (!peer && cont)
@@ -1001,7 +1001,7 @@ static Session *TCPReceiveInit (Session *sess, Packet *pak)
             M_print ("\x1b»\n");
         }
 
-        if (sess->type == TYPE_DIRECT && (peer = SessionFind (sess->type, uin)) && peer != sess)
+        if (sess->type == TYPE_DIRECT && (peer = SessionFind (sess->type, uin, NULL)) && peer != sess)
         {
             if (peer->connect & CONNECT_OK)
             {
@@ -1345,7 +1345,7 @@ static int TCPSendMsgAck (Session *sess, UWORD seq, UWORD type, BOOL accept)
     switch (type)
     {
         case TCP_MSG_FILE:
-            peer = SessionFind (TYPE_FILE, sess->uin);
+            peer = SessionFind (TYPE_FILE, sess->uin, NULL);
             PacketWriteB2   (pak, peer->port);   /* port */
             PacketWrite2    (pak, 0);            /* padding */
             PacketWriteStr  (pak, "");           /* file name - empty */
@@ -1394,7 +1394,7 @@ static int TCPSendGreetAck (Session *sess, UWORD seq, UWORD cmd, BOOL accept)
     flags ^= TCP_MSGF_LIST;
 
     pak = PacketTCPC (sess, TCP_CMD_ACK, seq, TCP_MSG_GREETING, status, flags, "");
-    peer = SessionFind (TYPE_FILE, sess->uin);
+    peer = SessionFind (TYPE_FILE, sess->uin, NULL);
     TCPGreet (pak, cmd, "", peer->port, 0, "");
     TCPSendPacket (pak, sess);
     return 1;
@@ -1425,11 +1425,11 @@ BOOL TCPGetAuto (Session *sess, UDWORD uin, UWORD which)
 
     ASSERT_LISTEN (sess);
     
-    peer = SessionFind (TYPE_DIRECT, uin);
+    peer = SessionFind (TYPE_DIRECT, uin, NULL);
     if (peer && (peer->connect & CONNECT_FAIL))
         return 0;
     TCPDirectOpen (sess, uin);
-    peer = SessionFind (TYPE_DIRECT, uin);
+    peer = SessionFind (TYPE_DIRECT, uin, NULL);
     
     if (!peer)
         return 0;
@@ -1488,11 +1488,11 @@ BOOL TCPSendMsg (Session *sess, UDWORD uin, char *msg, UWORD sub_cmd)
 
     ASSERT_LISTEN (sess);
     
-    peer = SessionFind (TYPE_DIRECT, uin);
+    peer = SessionFind (TYPE_DIRECT, uin, NULL);
     if (peer && (peer->connect & CONNECT_FAIL))
         return 0;
     TCPDirectOpen (sess, uin);
-    peer = SessionFind (TYPE_DIRECT, uin);
+    peer = SessionFind (TYPE_DIRECT, uin, NULL);
     
     if (!peer)
         return 0;
@@ -1543,11 +1543,11 @@ BOOL TCPSendFiles (Session *sess, UDWORD uin, char *description, char **files, c
     if (!cont->local_ip && !cont->outside_ip)
         return 0;
 
-    peer = SessionFind (TYPE_DIRECT, uin);
+    peer = SessionFind (TYPE_DIRECT, uin, NULL);
     if (peer && (peer->connect & CONNECT_FAIL))
         return 0;
     TCPDirectOpen (sess, uin);
-    peer = SessionFind (TYPE_DIRECT, uin);
+    peer = SessionFind (TYPE_DIRECT, uin, NULL);
 
     if (!peer)
         return 0;
@@ -1751,7 +1751,7 @@ static void TCPCallBackReceive (Event *event)
                         port = PacketReadB2 (pak);
                         M_print (i18n (2070, "File transfer to port %d.\n"), port);
                         
-                        fsess = SessionFind (TYPE_FILE, event->sess->uin);
+                        fsess = SessionFind (TYPE_FILE, event->sess->uin, NULL);
                         fsess->port = port;
                         fsess->ip = event->sess->ip;
                         fsess->server = NULL;
@@ -1794,7 +1794,7 @@ static void TCPCallBackReceive (Event *event)
                                 
                                 M_print (i18n (2070, "File transfer to port %d.\n"), port);
                                 
-                                fsess = SessionFind (TYPE_FILE, event->sess->uin);
+                                fsess = SessionFind (TYPE_FILE, event->sess->uin, NULL);
                                 fsess->port = port;
                                 fsess->ip = event->sess->ip;
                                 fsess->server = NULL;
