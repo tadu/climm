@@ -195,7 +195,7 @@ ContactGroup *s_parsecg_s (const char **input, const char *sep, Connection *serv
     {
         for (i = 0; (cg = ContactGroupIndex (i)); i++)
         {
-            if (cg->serv == serv && !strcmp (cg->name, t->txt))
+            if (cg->serv == serv && cg->name && !strcmp (cg->name, t->txt))
             {
                 *input = p;
                 return cg;
