@@ -1701,8 +1701,18 @@ void SnacCliAddcontact (Connection *conn, Contact *cont)
     if (cont)
         PacketWriteUIN (pak, cont->uin);
     else
+    {
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
+        {
+            if (i && !(i % 256))
+            {
+                SnacSend (conn, pak);
+                pak = SnacC (conn, 3, 4, 0, 0);
+            }
             PacketWriteUIN (pak, cont->uin);
+            
+        }
+    }
     SnacSend (conn, pak);
 }
 
@@ -1828,7 +1838,8 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             }
 
             str = ConvTo (text, enc);
-            s_init (&bstr, str->txt, 0);
+            s_init (&bstr, "", str->len + 2);
+            memcpy (bstr.txt, str->txt, str->len + 1);
             if (bstr.len > 450)
             {
                 bstr.len = 450;
