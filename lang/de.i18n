@@ -1,12 +1,12 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.63.2.14 2004/01/05 23:59:18
+#  EN: __.i18n,v 1.63.2.15 2004/01/16 01:02:29
 1000:iso-8859-1
 1001:de
 1002:de_DE
-1003:0-4-10-5
+1003:0-4-10-6
 1004:Rico -mc- Glöckner, Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
-1006:2003-10-06
+1006:2004-01-16
 1007.iso-8859-1
 1010:[Automatische Nachricht] Benutzer ist nicht da (User is Away)
 1011:[Automatische Nachricht] Benutzer ist nicht verfügbar (User is not available)
@@ -1141,12 +1141,13 @@
 2380:«%«
 2381:Ich füge den Autor von mICQ zur Kontaktliste hinzu. Diese Gelegenheit sollte man nicht mißbrauchen - bitte erst den "help"-Befehl benutzen und einen ernsthaften Versuch machen, die Hilfeseiten und die FAQ (häufig gestellte Fragen) zu lesen, und erst danach fragen.\n
 2382:Verbindungsannahme gehört zu keiner Server-Verbindung, wird ignoriert.\n
-#2383:View your last messages of <contact>. Type 'h' as short command.
-#2384:Case insensitive search of <pattern> in log file of <contact>.
-#2385:Couldn't open %s for reading: %s (%d).\n
-#2386:Found %s%d%s matches.\n
-#2387:%s <contact> [<last> [<number>]] -- Show history of <contact>.\n
-#2388:%s <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
-#2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
-#2390:No or empty pattern given.\n
-#2391:Case sensitive search of <pattern> in log file of <contact>.
+2383:Zeigt die letzten Nachrichten von <Kontakt>. Kann zu "h" abgekürzt werden.
+2384:Suche nach <Text> in der Log-Datei von <Kontakt> (ignoriere Großschreibung).
+2385:Konnte %s nicht zum Lesen öffnen: %s (%d).\n
+2386:Insgesamt %s%d%s Treffer gefunden.\n
+2387:%s <Kontakt> [<last> [<number>]] -- Show history of <contact>.\n
+2388:%s <Kontakt> <Text> -- Suche <Text> in den Nachrichten von <Kontakt> (ignoriere Großschreibung).\n
+2389:%s <Kontakt> <Text> -- Suche <Text> in den Nachrichten von <Kontakt> (beachte Großschreibung).\n
+2390:Kein oder ein leerer Text angegeben.\n
+2391:Suche nach <Text> in der Log-Datei von <Kontakt> (beachte Großschreibung).
+2392:Dein Status ist %s (%s).\n
