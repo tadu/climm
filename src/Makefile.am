@@ -30,8 +30,13 @@ memmove.h:
 	ln -s $(top_srcdir)/replace/memmove.c . || cp $(top_srcdir)/replace/memmove.c .
 	ln -s $(top_srcdir)/replace/memmove.h . || cp $(top_srcdir)/replace/memmove.h .
 
+timegm.o: timegm.c
+timegm.c:
+	rm -rf timegm.c
+	ln -s $(top_srcdir)/replace/timegm.c . || cp $(top_srcdir)/replace/timegm.c .
+
 clean:
-	rm -f snprintf.c snprintf.h memmove.c memmove.h .cvsupdate
+	rm -f snprintf.c snprintf.h memmove.c memmove.h timegm.c .cvsupdate
 
 buildmark.o: .cvsupdate
 

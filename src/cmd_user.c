@@ -48,9 +48,9 @@
 #include <sys/stat.h>                   /* fopen parameter */
 #include <errno.h>
 
-#define MAX_STR_BUF 2048                /* buffer length for history */
+#define MAX_STR_BUF 256                 /* buffer length for history */
 #define DEFAULT_HISTORY_COUNT 10        /* count of last messages of history */
-#define MALIGN(n)    (((n) & -128)+128) /* align of 2^7 blocks for malloc()
+#define MEMALIGN(n)  (((n) & -128)+128) /* align of 2^7 blocks for malloc()
                                            in CmdUserFind() */
 
 static jump_f
@@ -155,6 +155,7 @@ static jump_t jump[] = {
     { &CmdUserUptime,        "uptime",       2,   0 },
     { &CmdUserHistory,       "h",            2,   0 },
     { &CmdUserHistory,       "history",      2,   0 },
+    { &CmdUserHistory,       "historyd",     2,   1 },
     { &CmdUserFind,          "find",         2,   0 },
     { &CmdUserFind,          "finds",        2,   1 },
     { &CmdUserQuit,          "q",            0,   1 },
@@ -487,7 +488,8 @@ static JUMP_F(CmdUserHelp)
         CMD_USER_HELP  ("auth [grant|deny|req|add] <contacts>", i18n (2313, "Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list."));
         CMD_USER_HELP  ("resend <contacts>", i18n (1770, "Resend your last message to <contacts>."));
         CMD_USER_HELP  ("last [<contacts>]", i18n (1403, "Displays the last message received from <contacts> or from everyone."));
-        CMD_USER_HELP  ("history <contact> [<last> [<number>]]", i18n (2383, "View your last messages of <contact>. Type 'h' as short command."));
+        CMD_USER_HELP  ("history <contact> [<last> [<count>]]", i18n (2383, "View your last messages of <contact>. Type 'h' as short command."));
+        CMD_USER_HELP  ("historyd <contact> [<date> [<count>]]", i18n (2395, "View your messages of <contact> since <date>."));
         CMD_USER_HELP  ("find <contact> <pattern>", i18n (2384, "Case insensitive search of <pattern> in log file of <contact>."));
         CMD_USER_HELP  ("finds <contact> <pattern>", i18n (2391, "Case sensitive search of <pattern> in log file of <contact>."));
         CMD_USER_HELP  ("tabs", i18n (1098, "Display a list of nicknames that you can tab through.")); 
@@ -2090,9 +2092,9 @@ static JUMP_F(CmdUserOpt)
     if (!*args)
     {
         rl_printf (data == COF_CONTACT ? i18n (9999, "Options for contact %s:\n") :
-                  data == COF_GROUP   ? i18n (9999, "Options for contact group %s:\n")
-                                      : i18n (9999, "Global options:\n"),
-                  coptobj);
+                   data == COF_GROUP   ? i18n (9999, "Options for contact group %s:\n")
+                                       : i18n (9999, "Global options:\n"),
+                   coptobj);
         
         for (i = 0; (optname = OptList[i].name); i++)
         {
@@ -2825,20 +2827,27 @@ static JUMP_F(CmdUserLast)
  * these messages. Reset position to the first requested message and print
  * them all.
  *
- * Only the 'real' log files are read, not the symlink
- * file like putlog().
+ * Only the 'real' log files are read, not the symlink file like putlog().
  *
  * Comand parameter:
- *      h[istory] <contact> [min [num]]
+ *      h[istory] <contact> [<min> [<count>]]
  *
  *      <contact> Nick or UIN
- *      min       Last messages of log file. If min is negative, count from
+ *      <min>     Last messages of log file. If <min> is negative, count from
  *                begining. -1 means the first message, -13 the 13th message
- *                of logfile. If min is zero dump all messages. Default is
+ *                of logfile. If <min> is zero dump all messages. Default is
  *                DEFAULT_HISTORY_COUNT.
- *      num       Number of shown message. <contact> -1 20 list the first
- *                20 messages.  Default is min (if min is negative default is
+ *      <num>     Number of shown message. <contact> -1 20 list the first
+ *                20 messages.  Default is <min> (if <min> is negative default is
  *                DEFAULT_HISTORY_COUNT).
+ *
+ * Comand parameter:
+ *      historyd  <contact> <date> [<count>]
+ *
+ *      <contact> Nick or UIN
+ *      <date>    Earliest date of shown messages. <date> has to be in
+ *                ISO 8601 format (CCYY-MM-DD or CCYY-MM-DDThh:mm:ss).
+ *      <count>   Count of shown message. Default is DEFAULT_HISTORY_COUNT.
  */
 static JUMP_F(CmdUserHistory)
 {
@@ -2846,7 +2855,10 @@ static JUMP_F(CmdUserHistory)
 
     int n, msgCount;
     int msgMin = DEFAULT_HISTORY_COUNT, msgNum = DEFAULT_HISTORY_COUNT;
-    int year, month, day, hour, min;
+    time_t time, htime = (time_t)0;
+    struct tm stamp, hstamp;
+    char timestr[MAX_STR_BUF];
+    const char *timeformat;
     BOOL isMsg = FALSE, isEmptyMsg = FALSE;
     strc_t par, p, line;
 
@@ -2868,18 +2880,45 @@ static JUMP_F(CmdUserHistory)
         if ((par = s_parse (&args)))
             rl_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), par->txt);
         else
-            rl_print (i18n (2387, "history <contact> [<last> [<number>]] -- Show history of <contact>.\n"));
+            rl_print (i18n (9999, "history <contact> [<last> [<count>]] -- Show history of <contact>.\n"));
         return 0;
     }
 
     n = 0;
+    if (data == 1)
+        memset (&hstamp, 0, sizeof (struct tm));
     while ((par = s_parse_s (&args, MULTI_SEP)))
     {
         switch (n)
         {
             case 0:
-                if (!sscanf (par->txt, "%d", &msgMin))
-                    msgMin = DEFAULT_HISTORY_COUNT;
+                /* scan history date */
+                if (data == 1)
+                {
+                    if ((strlen (par->txt) == 10 &&
+                         sscanf (par->txt, "%4d-%2d-%2d",
+                                 &hstamp.tm_year, &hstamp.tm_mon, &hstamp.tm_mday) == 3) ||
+                        (strlen (par->txt) == 19 &&
+                         sscanf (par->txt, "%4d-%2d-%2dT%2d:%2d:%2d",
+                                 &hstamp.tm_year, &hstamp.tm_mon, &hstamp.tm_mday,
+                                 &hstamp.tm_hour, &hstamp.tm_min, &hstamp.tm_sec) == 6))
+                    {
+                        hstamp.tm_mon--;
+                        hstamp.tm_year -= 1900;
+                        htime = timelocal (&hstamp);
+                        msgMin = 0;
+                    }
+                    else
+                    {
+                        rl_printf (i18n (2396, "Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n"), par->txt);
+                        return 0;
+                    }
+                }
+                else
+                {
+                    if (!sscanf (par->txt, "%d", &msgMin))
+                        msgMin = DEFAULT_HISTORY_COUNT;
+                }
                 break;
             case 1:
                 if (!sscanf (par->txt, "%d", &msgNum))
@@ -2887,7 +2926,6 @@ static JUMP_F(CmdUserHistory)
         }
         n++;
     }
-
 
     /*
      * get filename of logfile and open it for reading.
@@ -2920,11 +2958,13 @@ static JUMP_F(CmdUserHistory)
      *  correct parameters min and num parameters
      */
     if (n == 1)
-        msgNum = (msgMin < 0) ? (DEFAULT_HISTORY_COUNT) : (msgMin);
-    if (msgMin == 0)
+        msgNum = (msgMin > 0) ? msgMin : (DEFAULT_HISTORY_COUNT);
+    if (msgMin == 0 && data != 1)
         msgNum = 0;
     if (msgNum < 0)
         msgNum = -msgNum;
+
+    memset (&stamp, 0, sizeof (struct tm));
 
     /* Get array of last file positions, reset memory to zeros */
     if (msgMin > 0)
@@ -2999,13 +3039,15 @@ static JUMP_F(CmdUserHistory)
         }
         else
         {
-            msgMin   = msgCount - msgMin;
+            msgMin   = msgCount - msgMin + 1;
             msgCount = msgMin - 1;
         }
     }
     else
         msgMin   = -msgMin;
 
+    timeformat = s_sprintf ("%s%s%s%s", COLDEBUG, i18n (2393, "%Y-%m-%d"),
+                            COLNONE, i18n (2394, " %I:%M %p"));
 
     /*
      * dump message.
@@ -3047,17 +3089,18 @@ static JUMP_F(CmdUserHistory)
                 {
                     case 0:
                         if (msgCount > msgMin-2)
-                            sscanf (p->txt, "%4d%2d%2d%2d%2d",
-                                    &year, &month, &day, &hour, &min);
+                            sscanf (p->txt, "%4d%2d%2d%2d%2d%2d",
+                                    &stamp.tm_year, &stamp.tm_mon, &stamp.tm_mday,
+                                    &stamp.tm_hour, &stamp.tm_min, &stamp.tm_sec);
                         break;
                     case 2:
                         if ((p->txt[0] == '<' && p->txt[1] == '-') ||
                             (p->txt[0] == '-' && p->txt[1] == '>'))
                         {
                             msgCount++;
-                            /* msgCount isn't in requested history scope
+                            /* evaluate requested history scope
                                if all lines are dumped, exit */
-                            if (msgCount < msgMin)
+                            if (msgCount < msgMin && data != 1)
                                 break;
                             if (msgNum > 0 &&
                                 msgCount + 1 > msgMin + msgNum)
@@ -3070,12 +3113,28 @@ static JUMP_F(CmdUserHistory)
                             if (isEmptyMsg)
                                 rl_printf ("%s\n", COLNONE);
 
+                            /* convert local time */
+                            stamp.tm_mon--;
+                            stamp.tm_year -= 1900;
+                            time = timegm (&stamp);
+
+                            if (time != -1)
+                            {
+                                localtime_r (&time, &stamp);
+                                /* history date command */
+                                if (data == 1 &&
+                                    difftime (time, htime) < 0)
+                                {
+                                    msgMin = msgCount + 1;
+                                    break;
+                                }
+                            }
+
                             isMsg = TRUE;
                             isEmptyMsg = TRUE;
 
-                            rl_printf ("%s%.2d.%.2d.%.4d%s %.2d:%.2d [%4d] ",
-                                       COLDEBUG, day, month, year, COLNONE, hour, min,
-                                       msgCount);
+                            strftime (timestr, MAX_STR_BUF, timeformat, &stamp);
+                            rl_printf ("%s %s[%4d] ", timestr, COLNONE, msgCount);
 
                             if (*p->txt == '<')
                                 rl_printf ("%s<- ", COLINCOMING);
@@ -3138,7 +3197,10 @@ static JUMP_F(CmdUserFind)
     char *msg = NULL, *m, *msgLower = NULL, *mL;
     UDWORD size = 0;
     int n, msgCount, matchCount = 0, patternLen, len;
-    int year, month, day, hour, min;
+    time_t time;
+    struct tm stamp;
+    char timestr[MAX_STR_BUF];
+    const char *timeformat;
     BOOL isMsg = FALSE, isIncoming = FALSE, doRead = TRUE;
     strc_t par, line;
 
@@ -3174,7 +3236,7 @@ static JUMP_F(CmdUserFind)
     pattern = strdup (pattern);
 
     /* find is case insensitive, lower pattern */
-    if (data == 0)
+    if (!data)
         for (p = pattern; *p; p++)
             *p = tolower (*p);
 
@@ -3206,6 +3268,8 @@ static JUMP_F(CmdUserFind)
         return 0;
     }
 
+    timeformat = s_sprintf ("%s%s%s%s", COLDEBUG, i18n (2393, "%Y-%m-%d"),
+                            COLNONE, i18n (2394, " %I:%M %p"));
 
     /*
      * read message for message into *msg and dump it if pattern is found.
@@ -3229,8 +3293,9 @@ static JUMP_F(CmdUserFind)
                 switch (n)
                 {
                     case 0:
-                        sscanf (par->txt, "%4d%2d%2d%2d%2d",
-                                &year, &month, &day, &hour, &min);
+                        sscanf (par->txt, "%4d%2d%2d%2d%2d%2d",
+                                &stamp.tm_year, &stamp.tm_mon, &stamp.tm_mday,
+                                &stamp.tm_hour, &stamp.tm_min, &stamp.tm_sec);
                         break;
                     case 2:
                         if ((par->txt[0] == '<' && par->txt[1] == '-') ||
@@ -3260,15 +3325,15 @@ static JUMP_F(CmdUserFind)
 
             if (!msg)
             {
-                msg = (char*) malloc (size = MALIGN (strlen (linep)));
+                msg = (char*) malloc (size = MEMALIGN (strlen (linep) + 1));
                 *msg = '\0';
                 if (!data)
                     msgLower = (char*) malloc (size);
             }
             len = strlen (msg);
-            if (size - len < strlen (linep))
+            if (size < len + strlen (linep))
             {
-                msg = realloc (msg, size += MALIGN (strlen (linep)));
+                msg = realloc (msg, size += MEMALIGN (strlen (linep) + 1));
                 if (!data)
                     msgLower = realloc (msgLower, size);
             }
@@ -3304,8 +3369,17 @@ static JUMP_F(CmdUserFind)
             continue;
 
         matchCount++;
-        rl_printf ("%s%.2d.%.2d.%.4d%s %.2d:%.2d [%4d] ",
-                   COLDEBUG, day, month, year, COLNONE, hour, min, msgCount);
+
+        /* convert local time */
+        stamp.tm_mon--;
+        stamp.tm_year -= 1900;
+        time = timegm (&stamp);
+
+        if (time != -1)
+            localtime_r (&time, &stamp);
+
+        strftime (timestr, MAX_STR_BUF, timeformat, &stamp);
+        rl_printf ("%s %s[%4d] ", timestr, COLNONE, msgCount);
 
         if (isIncoming)
             rl_printf ("%s<- ", COLINCOMING);

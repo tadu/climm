@@ -295,7 +295,8 @@ fi
 AC_FUNC_VPRINTF
 AC_FUNC_SNPRINTF
 AC_FUNC_MEMMOVE
-AC_CHECK_FUNCS([atexit memset memcmp mkdir strcasecmp uname fcntl wcwidth iswalnum iswspace \
+AC_CHECK_FUNCS([localtime_r timegm atexit memset memcmp mkdir strcasecmp uname fcntl \
+                wcwidth iswalnum iswspace \
                 strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
                 symlink chmod tcgetattr gettimeofday setlocale nl_langinfo select atoll])
 
@@ -378,7 +379,7 @@ AC_CHECK_DECLS(h_errno,,,[$ac_includes_default
 #include <winsock2.h>
 #endif])
 
-AC_CHECK_TYPES([wchar_t, socklen_t, BOOL, UBYTE, UWORD, UDWORD],,,[$ac_includes_default
+AC_CHECK_TYPES([wchar_t, wint_t, socklen_t, BOOL, UBYTE, UWORD, UDWORD],,,[$ac_includes_default
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
