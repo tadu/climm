@@ -1,7 +1,6 @@
 # $Id$ Finnish
-#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
+#  EN: __.i18n,v 1.63.2.16 2004/03/10 22:31:00
 #-#1010:User is Away [Auto-Message]
-#1000:iso-8859-1
 #1001:<lang>
 #1002:<lang_cc>
 #1003:0
@@ -13,14 +12,14 @@
 #-#1012:User is Occupied [Auto-Message]
 #1012:User is occupied [Auto-Message]
 1013:User is offline
-1014:Ei mik‰‰n
+1014:Ei mik√§√§n
 1015:tammi
 1016:helmi
 1017:maalis
 1018:huhti
 1019:touko
-1020:kes‰
-1021:hein‰
+1020:kes√§
+1021:hein√§
 1022:elo
 #-#1023:syys
 #1023:Sep
@@ -41,7 +40,7 @@
 #1033:Incoming v8 server packet:
 #1034:Maximum number of tries reached. Giving up.
 1036:Unknown command %s, type /help for help.
-#-#1037:Viestipuskuri t‰yttyi, alkuosa l‰hetetty\n
+#-#1037:Viestipuskuri t√§yttyi, alkuosa l√§hetetty\n
 #+#1037:Message sent before last line buffer is full\n
 #-#1038:Viesti peruttu\n
 #+#1038:Message canceled\n
@@ -52,31 +51,31 @@
 #1039:The server claims we're not connected.\n
 #1040:mICQ> 
 1041:viesti> 
-1043:Kaikki k‰ytt‰j‰t lˆydetty.
-1044:Liian monta k‰ytt‰j‰‰ lˆydetty.
+1043:Kaikki k√§ytt√§j√§t l√∂ydetty.
+1044:Liian monta k√§ytt√§j√§√§ l√∂ydetty.
 1045:Haku valmis.
 1046:Pituus
-1047:Ylim‰‰r‰inen data
+1047:Ylim√§√§r√§inen data
 #-#1048:SEQ
 #-#1049:Ver
 #1048:Error code: %ld\n
 1050:Yhteys palvelimeen muodostettu.
-#-#1052:Yhteytt‰ ei voitu muodostaa.\n
-1053:Yhteys muodostettu.  Odotetaan, ett‰ %s vastaa.\n
+#-#1052:Yhteytt√§ ei voitu muodostaa.\n
+1053:Yhteys muodostettu.  Odotetaan, ett√§ %s vastaa.\n
 1055:Soketin luonti ei onnistu.
-#-#1056:Soketti luotu, yritet‰‰n yhteytt‰.\n
+#-#1056:Soketti luotu, yritet√§√§n yhteytt√§.\n
 #+#1056:Socket created attempting to connect\n
 #-#1057:Osoitetta 
-#-#1058:%s ei lˆytynyt.\n
+#-#1058:%s ei l√∂ytynyt.\n
 #-#1060:Laveustaso %d.\n
 #+#1060:Verbosity level is %d.\n
-#-#1061:Lempinime‰ %s ei lˆydy\n
-#-#1062:Torjutut k‰ytt‰j‰t: 
+#-#1061:Lempinime√§ %s ei l√∂ydy\n
+#-#1062:Torjutut k√§ytt√§j√§t: 
 #-#1063:Salasana : 
 #-#1064:\nUusi status (automaattisesti vaihdettu) on 
 #-#1071:Statuksesi on 
-#-#1072:K‰ytt‰ji‰ irti verkosta: 
-#-#1073:K‰ytt‰ji‰ verkkoyhteydess‰: 
+#-#1072:K√§ytt√§ji√§ irti verkosta: 
+#-#1073:K√§ytt√§ji√§ verkkoyhteydess√§: 
 #1056:Socket created, attempting to connect.\n
 #1060:Verbosity level is %ld.\n
 #1061:'%s' not recognized as a nick name.\n
@@ -85,7 +84,6 @@
 #1064:Automatically changed status to %s.\n
 #1072:Users offline:
 #1073:Users online:
-#1077:in dedication to Matthew D. Smith.
 #1078:No translation available.
 #1079:Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n
 #1080:Couldn't load "%s" internationalization.\n
@@ -101,7 +99,7 @@
 #1097:SOCKS5 password:
 #1098:Display a list of nicknames that you can tab through.
 #1099:Unknown language.
-1100:Ei mit‰‰n
+1100:Ei mit√§√§n
 1101:Arabia
 1102:Bhojpuri
 1103:Bulgaria
@@ -139,7 +137,7 @@
 1135:Puola
 1136:Portugali
 1137:Romania
-1138:Ven‰j‰
+1138:Ven√§j√§
 1139:Serbokroatia
 1140:Slovakki
 1141:Slovenia
@@ -207,13 +205,13 @@
 1212:Ascension-saari
 1213:Australia
 1214:Australian Antarktis-Territorio
-1215:It‰valta
+1215:It√§valta
 1216:Azerbaidzan
 1217:Bahamasaaret
 1218:Bahrain
 1219:Bangladesh
 1220:Barbados
-1221:Valkoven‰j‰
+1221:Valkoven√§j√§
 1222:Belgia
 1223:Belize
 1224:Benin
@@ -223,7 +221,7 @@
 1228:Bosnia-Herzegovina
 1229:Botswana
 1230:Brasilia
-1231:Brittil‰iset Neitsytsaaret
+1231:Brittil√§iset Neitsytsaaret
 1232:Brunei
 1233:Bulgaria
 1234:Burkina Faso
@@ -256,12 +254,12 @@
 1261:Equador
 1262:Egypti
 1263:El Salvador
-1264:P‰iv‰ntasaajan Guinea
+1264:P√§iv√§ntasaajan Guinea
 1265:Eritrea
 1266:Viro
 1267:Etiopia
 1268:Entinen Jugoslavia
-1269:F‰rsaaret
+1269:F√§rsaaret
 1270:Falkland-saaret
 1271:Mikronesia
 1272:Fidzi
@@ -278,7 +276,7 @@
 1283:Ghana
 1284:Gibraltar
 1285:Kreikka
-1286:Grˆnlanti
+1286:Gr√∂nlanti
 1287:Grenada
 1288:Guadeloupe
 1289:Guam
@@ -306,7 +304,7 @@
 1311:Jordania
 1312:Kazakstan
 1313:Kenia
-1314:Etel‰-Korea
+1314:Etel√§-Korea
 1315:Kuwait
 1316:Liberia
 1317:Libya
@@ -340,14 +338,14 @@
 1345:Puerto Rico
 1346:Qatar
 1347:Romania
-1348:Ven‰j‰
+1348:Ven√§j√§
 1349:Saipan
 1350:San Marino
 1351:Saudi Arabia
 1352:Senegal
 1353:Singapore
 1354:Slovakia
-1355:Etel‰-Afrikka
+1355:Etel√§-Afrikka
 1356:Espanja
 1357:Sri Lanka
 1358:Surinam
@@ -387,44 +385,44 @@
 1392:Zimbabwe
 #-#1400:		Shows locally stored info on user\n
 #-#1401:		Updates other user info like age and sex\n
-#-#1402:		P‰ivitt‰‰ k‰ytt‰j‰tietosi.\n
-#-#1403:		N‰ytt‰‰ viimeisen viestin, jonka on l‰hett‰nyt <nick>.\n			H‰nen on oltava tuttavalistallasi.\n
-#-#1404:		Torjuu/n‰ytt‰‰ k‰ytt‰j‰n.\n
-#-#1405:		Listaa torjutut k‰ytt‰j‰t.\n
-#-#1406:	N‰ytt‰‰/piilottaa sinut k‰ytt‰j‰lt‰ ollessasi n‰kym‰tˆn.\n
-#-#1407:			N‰ytt‰‰ verkkoyhteydess‰ olevat tuttavalistasi j‰senet.\n
+#-#1402:		P√§ivitt√§√§ k√§ytt√§j√§tietosi.\n
+#-#1403:		N√§ytt√§√§ viimeisen viestin, jonka on l√§hett√§nyt <nick>.\n			H√§nen on oltava tuttavalistallasi.\n
+#-#1404:		Torjuu/n√§ytt√§√§ k√§ytt√§j√§n.\n
+#-#1405:		Listaa torjutut k√§ytt√§j√§t.\n
+#-#1406:	N√§ytt√§√§/piilottaa sinut k√§ytt√§j√§lt√§ ollessasi n√§kym√§t√∂n.\n
+#-#1407:			N√§ytt√§√§ verkkoyhteydess√§ olevat tuttavalistasi j√§senet.\n
 #-#1408:		Vaihtaa salasanan.\n
-#-#1409:		L‰hett‰‰ viestin k‰ytt‰j‰lle uin.\n
-#-#1410:	L‰hett‰‰ viestin ja URL:n k‰ytt‰j‰lle uin.\n
-#-#1411:	L‰hett‰‰ monirivisen viestin kaikille tuttavalistasi j‰senille.\n
-#-#1412:		L‰hett‰‰ viestin uudelleen samalle k‰ytt‰j‰lle.\n
-#-#1413:		Antaa k‰ytt‰j‰lle luvan lis‰t‰ Sinut listalleen.\n
-#-#1414:		Vastaa viimeisimm‰n viestin l‰hett‰j‰lle.\n
-#-#1415:		Etsii sattumanvaraisen k‰ytt‰j‰n halutusta ryhm‰st‰ tai n‰ytt‰‰ ryhm‰t.\n
-#-#1416:			N‰ytt‰‰ kaikkien tuttavalistasi j‰senten statuksen.\n
+#-#1409:		L√§hett√§√§ viestin k√§ytt√§j√§lle uin.\n
+#-#1410:	L√§hett√§√§ viestin ja URL:n k√§ytt√§j√§lle uin.\n
+#-#1411:	L√§hett√§√§ monirivisen viestin kaikille tuttavalistasi j√§senille.\n
+#-#1412:		L√§hett√§√§ viestin uudelleen samalle k√§ytt√§j√§lle.\n
+#-#1413:		Antaa k√§ytt√§j√§lle luvan lis√§t√§ Sinut listalleen.\n
+#-#1414:		Vastaa viimeisimm√§n viestin l√§hett√§j√§lle.\n
+#-#1415:		Etsii sattumanvaraisen k√§ytt√§j√§n halutusta ryhm√§st√§ tai n√§ytt√§√§ ryhm√§t.\n
+#-#1416:			N√§ytt√§√§ kaikkien tuttavalistasi j√§senten statuksen.\n
 #-#1417:	Vaihtaa komennon nimen toiseksi.\n
 #-#1418:			Asettaa tulostuksen laveustason (oletus = 0).\n
-#-#1419:				Tyhjent‰‰ n‰ytˆn.\n
-#-#1420:				Vaihtaa uudesta viestist‰ kertovan piippauksen p‰‰lle tai pois.\n
-#-#1421:				Vaihtaa v‰rien n‰ytˆn p‰‰lle tai pois.\n
+#-#1419:				Tyhjent√§√§ n√§yt√∂n.\n
+#-#1420:				Vaihtaa uudesta viestist√§ kertovan piippauksen p√§√§lle tai pois.\n
+#-#1421:				Vaihtaa v√§rien n√§yt√∂n p√§√§lle tai pois.\n
 #-#1422:			Lopettaa yhteyden ja ohjelman.\n
-#-#1423:				N‰ytt‰‰, onko automaattivastaus p‰‰ll‰.\n
-#-#1424:			Kytkee automaattivastauksen p‰‰lle tai pois.\n
+#-#1423:				N√§ytt√§√§, onko automaattivastaus p√§√§ll√§.\n
+#-#1424:			Kytkee automaattivastauksen p√§√§lle tai pois.\n
 #-#1425:		Asettaa automaattivastauksen tekstin.\n
-#-#1426:	Muodostaa uuden k‰ytt‰j‰tunnuksen annetulla salasanalla.\n
-#-#1427:	Asettaa statuksesi halutuksi.\n		Ilman numeroa n‰ytt‰‰ listan vaihtoehdoista.\n
-#-#1428:	Lis‰‰ numeron tuttavalistallesi annetulla lempinimell‰.\n
-#-#1429:	Hakee ICQ-k‰ytt‰j‰‰ s‰hkˆpostiosoitteen perusteella.\n
-#-#1430:		N‰ytt‰‰ k‰ytt‰j‰n tiedot k‰ytt‰j‰numeron perusteella.\n
-#-#1431:		Asettaa statukseksi \"verkkoyhteydess‰\".\n
+#-#1426:	Muodostaa uuden k√§ytt√§j√§tunnuksen annetulla salasanalla.\n
+#-#1427:	Asettaa statuksesi halutuksi.\n		Ilman numeroa n√§ytt√§√§ listan vaihtoehdoista.\n
+#-#1428:	Lis√§√§ numeron tuttavalistallesi annetulla lempinimell√§.\n
+#-#1429:	Hakee ICQ-k√§ytt√§j√§√§ s√§hk√∂postiosoitteen perusteella.\n
+#-#1430:		N√§ytt√§√§ k√§ytt√§j√§n tiedot k√§ytt√§j√§numeron perusteella.\n
+#-#1431:		Asettaa statukseksi \"verkkoyhteydess√§\".\n
 #-#1432:		Asettaa statukseksi \"poissa\".\n
 #-#1433:		Asettaa statukseksi \"saavuttamattomissa\".\n
 #-#1434:		Asettaa statukseksi \"kiireinen\".\n
-#-#1435:		Asettaa statukseksi \"‰l‰ h‰iritse\".\n
+#-#1435:		Asettaa statukseksi \"√§l√§ h√§iritse\".\n
 #-#1436:		Asettaa statukseksi \"keskusteluhaluinen\".\n
-#-#1437:		Asettaa statukseksi \"n‰kym‰tˆn\".\n
-#-#1438:		Muuttaa tietojasi (s‰hkˆposti, lempinimi yms.)\n
-#-#1439:		Asettaa k‰ytt‰j‰ryhm‰si satunnaista hakua varten.\n
+#-#1437:		Asettaa statukseksi \"n√§kym√§t√∂n\".\n
+#-#1438:		Muuttaa tietojasi (s√§hk√∂posti, lempinimi yms.)\n
+#-#1439:		Asettaa k√§ytt√§j√§ryhm√§si satunnaista hakua varten.\n
 #1393:successful
 #1394:unsuccessful
 #1400:Shows locally stored info on <uin> or <nick>, or on yourself.
@@ -465,12 +463,12 @@
 #1440:Random User:
 #1441:remote IP:
 1442:Valitse yksi allaolevista aiheista.
-#-#1443:N‰yttˆasetukset yms.
-#-#1444:Muiden k‰ytt‰jien haku.
+#-#1443:N√§ytt√∂asetukset yms.
+#-#1444:Muiden k√§ytt√§jien haku.
 #1443:Commands relating to mICQ displays and configuration.
 #1444:Commands relating to finding and seeing other users.
-1445:Omien tietojesi k‰sittely ICQ-palvelimella.
-1446:Viestien l‰hett‰minen.
+1445:Omien tietojesi k√§sittely ICQ-palvelimella.
+1446:Viestien l√§hett√§minen.
 1447:Asetukset
 1448:Viesti
 1449:Haku
@@ -598,8 +596,8 @@
 #1539:Enter new month of birth:
 #1540:Enter new day of birth:
 1541:About> 
-#-#1542:Toinen s‰hkˆpostiosoite: 
-#-#1543:Vanha s‰hkˆpostiosoite: 
+#-#1542:Toinen s√§hk√∂postiosoite: 
+#-#1543:Vanha s√§hk√∂postiosoite: 
 #-#1544:Uusi kaupunki: 
 #-#1545:Uusi osavaltio: 
 #-#1546:Uusi puhelinnumero: 
@@ -608,12 +606,12 @@
 #-#1549:Uusi matkapuhelinnumero: 
 #-#1550:Uusi postinumero (vain numeroita): 
 #-#1551:Maatunnus (puhelinnumerossa): 
-#-#1552:Aikavyˆhyke (+/- 0-12): 
+#-#1552:Aikavy√∂hyke (+/- 0-12): 
 #-#1553:Uusi lempinimi : 
 #-#1554:Uusi etunimi : 
 #-#1555:Uusi sukunimi : 
-#-#1556:Uusi s‰hkˆpostiosoite : 
-#-#1557:Tarvitaanko lupaasi tuttavalistalle lis‰‰miseesi? : 
+#-#1556:Uusi s√§hk√∂postiosoite : 
+#-#1557:Tarvitaanko lupaasi tuttavalistalle lis√§√§miseesi? : 
 #1544:Enter new city:
 #1545:Enter new state:
 #1546:Enter new phone number:
@@ -668,7 +666,7 @@
 #1639:The new UIN is %ld!\n
 #1640:Failed to update info.\n
 #1641:User info successfully updated.\n
-#1642:IP
+#1642:IP:
 #1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
 #1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
 #1645:You entered an incorrect password.\n
@@ -797,7 +795,6 @@
 #1826:Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
 #1830:Discarding message to %s after %ld send attempts.  Message content:\n
 #1833:Peer to peer TCP connection established.\n
-#1835:Error while writing to socket - %s (%d)\n
 #1841:Received malformed initialization acknowledgement packet.\n
 #1842:Closing socket %d to %s.\n
 #1843:Closing socket %d.\n
@@ -861,12 +858,12 @@
 #1918:Ignored server request for a minimum report interval of %d.\n
 #1919:UIN mismatch: %ld vs %ld.\n
 #1920:Registration of new UIN refused.\n
-1921:Verkkoyhteydess‰
-1922:ƒl‰ h‰iritse
+1921:Verkkoyhteydess√§
+1922:√Ñl√§ h√§iritse
 1923:Poissa
 1924:Saavuttamattomissa
 1925:Kiireinen
-1926:N‰kym‰tˆn
+1926:N√§kym√§t√∂n
 1927:Valmis keskustelemaan
 1929:User is DND [Auto-Message]
 #1931:Current session is closed. Try another or open this one.\n
@@ -996,10 +993,8 @@
 #2090:file peer-to-peer
 #2091:Queueing %s as %s for transfer.\n
 #2092:TCP message %s discarded - lost session.\n
-#2093:%02d %-12s version %d for %s (%lx), at %s:%ld %s\n
 #2094:conn login         Open first server connection.\n
 #2095:conn remove <nr>   Remove connection <nr>.\n
-#2096:Connection %ld is not open.\n
 #2097:conn select <nr>   Select connection <nr> as server connection.\n
 #2098:Connection %ld is not a server connection.\n
 #2099:Selected connection %ld (version %d, UIN %ld) as current connection.\n
@@ -1064,7 +1059,7 @@
 #2167:Error - unknown packet.\n
 #2168:File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n
 #2169:File transfer aborted by peer (%d).\n
-#2170:Sending with speed %lx to %s.\n
+#2170:Sending at speed %lx to %s.\n
 #2171:Advanced
 #2172:Commands for advanced features.
 #2176:Displays verbose the current status of everyone on your contact list.
@@ -1094,9 +1089,8 @@
 #2205:  -c, --nocolor  disable colors\n
 #2206:The server doesn't want to give us offline messages.\n
 #2207:Protocol error in command to old ICQ server: %d.\n
-#2208:Detected UTF-8 encoding, however, this mICQ was compiled without UTF-8 support.\n
+#2208:Detected UTF-8 encoding. However, this mICQ was compiled without UTF-8 support.\n
 #2209:Detected UTF-8 encoding.\n
-#2210:%smICQ (Matt's ICQ clone)%s version %s%s%s (compiled on %s)\n
 #2211:Your status is %s.\n
 #2212:changed status to %s
 #2213:logged on (%s)
@@ -1109,20 +1103,18 @@
 #2221:Removed temporary contact '%s' (%ld).\n
 #2222:Script command '%s' failed: %s (%d).\n
 #2223:Opening remote control FIFO at %s... 
-2225:fj‰rrkontroll
+2225:fj√§rrkontroll
 #2226:Couldn't create FIFO
 #2227:Couldn't open FIFO
 #2228:Couldn't set FIFO nonblocking
-#2229:Refusing file request '%s' (%ld bytes): %s.\n
 #2230:Refusing chat request (%s/%s) from %s.\n
-#2231:File transfer '%s' rejected by peer: %s.\n
 #2232:requests authorization: %s%s\n
 #2233:refused authorization: %s%s\n
 #2234:Message %s discarded - lost session.\n
 #2235:No nick name given.\n
 #2236:Information for %s%s%s (%ld):\n
 #2237:Webaware:
-2238:Gˆm IP:
+2238:G√∂m IP:
 #2239:Unknown more:
 #2240:No contact group given.\n
 #2241:Added '%s' to contact group '%s'.\n
@@ -1166,17 +1158,17 @@
 #2279:    log:        do logging.\n
 #2280:    logonoff:   also log status changes.\n
 #2281:    auto:       send auto-replies.\n
-#2282:    uinprompt:  have the last nick in the prompt.\n
+#2282:    uinprompt:  display the last nick in the prompt.\n
 #2283:    autosave:   automatically save the micqrc.\n
 #2284:    autofinger: automatically finger new UINs.\n
 #2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
 #2286:    tabs:       style for tab-handling: simple, cycle, cycleall.\n
 #2287:    silent:     suppress some output: off, on, complete.\n
 #2288:Indentation style is %s%s%s.\n
-#2289:ªªª
-#2290:´´´
-#2291:>>ª
-#2292:´<<
+#2289:¬ª¬ª¬ª
+#2290:¬´¬´¬´
+#2291:>>¬ª
+#2292:¬´<<
 #2293:--=
 #2294:===
 #2295:>>>
@@ -1204,3 +1196,73 @@
 2318:Finnish (%s) translation loaded (%ld entries).\n
 #2319:Accept an incoming file transfer from <uin> or <nick>.
 #2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
+#2327:%smICQ (Matt's ICQ clone)%s version %s%s%s\n
+#2328:You logged in too frequently, please wait 30 minutes before trying again.\n
+#2329:syntax error
+#2330:removing non-contact
+#2331:unknown
+#2332:Contact error %d (%s) for %d contacts: 
+#2333:%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n
+#2334:  show - show current known meta data\n
+#2335:  load - load from file and show meta data\n
+#2336:  save - save meta data to file\n
+#2337:  set  - upload own meta data to server\n
+#2338:  get  - query server for meta data\n
+#2339:  rget - query server for last sender's meta data\n
+#2340:File transfer '%s' rejected by peer: %s%s.\n
+#2341:Refusing file request '%s' (%ld bytes): %s%s.\n
+#2342:Scripting
+#2343:Scripting extensions.
+#2344:Execute Tcl script from <file>.
+#2345:Execute Tcl script in <string>.
+#2346:The following Tcl commands are supported:\n
+#2347:micq receive <script> [<contact>]
+#2348:Install hook to receive messages from UIN or nick, or all if omitted.
+#2349:Callback arguments: from message
+#2350:micq unreceive [<contact>]
+#2351:Uninstall message hook for UIN or nick.
+#2352:micq event <script>
+#2353:Install event hook. Callback arguments: type ...
+#2354:micq unevent
+#2355:Uninstall event hook.
+#2356:List all installed hooks. Format: <type> <command> <filter>.
+#2357:micq exec <cmd>
+#2358:Execute micq command.
+#2359:micq nick <uin>
+#2360:Find nick from <uin>.
+#2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
+#2362:Wrong number of arguments. Try 'help'.
+#2363:Error: recursive 'micq exec' not allowed.
+#2364:No connection found.
+#2365:unknown command: %s
+#2366:TCL error in file %s: %s\n
+#2367:TCL error: %s\n
+#2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
+#2369:Refuse an incoming file transfer from <uin> or <nick>.
+#2370:%02d %-12s version %d%s for %s (%lx), at %s:%ld %s\n
+#2371:SSL init failed.\n
+#2372:Could not send SSL request to %s\n
+#2373:Error while reading from socket (SSL): %s (%d)\n
+#2374:SSL error: %s [%d]\n
+#2375:SSL handshake ok\n
+#2376:SSL read from %s [ERR=%d]: %s
+#2377:SSL write to %s [ERR=%d]: %s
+#2378:peer ssl <nick>   - initiate SSL handshake.
+2379:¬ª%¬ª
+2380:¬´%¬´
+#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+#2382:Peer-to-peer connection not associated to server connection, discarding.\n
+#2383:View your last messages of <contact>. Type 'h' as short command.
+#2384:Case insensitive search of <pattern> in log file of <contact>.
+#2385:Couldn't open %s for reading: %s (%d).\n
+#2386:Found %s%d%s matches.\n
+#2387:%s <contact> [<last> [<count>]] -- Show history of <contact>.\n
+#2388:%s <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
+#2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
+#2390:No or empty pattern given.\n
+#2391:Case sensitive search of <pattern> in log file of <contact>.
+#2392:Your status is %s (%s).\n
+#2393:%m/%d/%Y
+#2394: %I:%M %p
+#2395:View your messages of <contact> since <date>.
+#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n

@@ -1,13 +1,12 @@
 # $Id$ Romana (Romanian)
-#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
-1000:iso-8859-2
+#  EN: __.i18n,v 1.63.2.16 2004/03/10 22:31:00
 1001:ro
 1002:ro_RO
 1003:0-4-10
 1004:Digor Dumitru, Alina Pelin
 1005:Alina Pelin
 1006:18-01-2003
-1007.iso-8859-2
+1008:iso-8859-2
 1010:Utilizatorul e plecat [Auto-Message]
 1011:Utilizatorul nu e disponibil [Auto-Message]
 1012:Utilizatorul e ocupat [Auto-Message]
@@ -55,7 +54,7 @@
 1064:Starea a fost automat schimbata in %s.\n
 1072:Utilizatori indisponibili:
 1073:Utilizatori accesibili:
-1077:consacrat lui Matthew D. Smith.
+1077.consacrat lui Matthew D. Smith.
 1078:Traducere nu exista.
 1079:Traducere (%s, %s) din %s, ultima modificare facuta la %s de %s, pentru mICQ %d.%d.%d%s.\n
 1080:N-am reusit sa incarc internationalizarea "%s".\n
@@ -540,7 +539,7 @@
 1639:Noul UIN este %ld!\n
 1640:Innoirea informatiei a esuat.\n
 1641:Informatia utilizatorului innoita cu succes.\n
-1642:IP
+1642:IP:
 #1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
 #1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
 1645:Ati introdus gresit parola.\n
@@ -670,7 +669,7 @@
 1826:Trimit din nou mesajul %04x (%s) secventa %04lx (incercare #%ld, lungime %d).\n
 1830:Ignor mesaj pentru %s dupa %ld incercari de a trimite.  Continutul mesajului:\n
 1833:Conexiune TCP "Peer to peer" stabilita.\n
-1835:Eroare la scrierea in socket - %s (%d)\n
+1835.Eroare la scrierea in socket - %s (%d)\n
 1841:Am primit un pachet rau de initializare a confirmarii.\n
 1842:Inchidere socket %d catre %s.\n
 1843:Inchidere socket %d.\n
@@ -869,10 +868,9 @@
 #2090:file peer-to-peer
 2091:Pun pe %s in coada ca %s pentru transfer.\n
 2092:Mesajul TCP %s ignorat - sesiune pierduta.\n
-#2093:%02d %-12s version %d for %s (%lx), at %s:%ld %s\n
 2094:conn login         Deschide prima conexiune server.\n
 2095:conn remove <nr>   Sterge conexiunea <nr>.\n
-2096:Conexiunea %ld nu e deschisa.\n
+2096.Conexiunea %ld nu e deschisa.\n
 2097:conn select <nr>   Selecteaza conexiunea <nr> pentru a fi conexiune server.\n
 2098:Conexiunea %ld nu e conexiune la server.\n
 2099:Conexiunea selectata %ld (versiunea %d, UIN %ld) va fi curenta.\n
@@ -969,7 +967,7 @@
 2207:Eroare de protocol in comanda catre ICQ serverul vechi: %d.\n
 2208:S-a detectat codificare UTF-8, insa, acest mICQ e compilat fara suport UTF-8.\n
 2209:S-a detectat codificare UTF-8.\n
-2210:%smICQ (ICQ clonul lui Matt)%s versiunea %s%s%s (compilat la %s)\n
+2210.%smICQ (ICQ clonul lui Matt)%s versiunea %s%s%s (compilat la %s)\n
 2211:Starea dvs. este %s.\n
 2212:am schimbat starea in %s
 2213:conectat la (%s)
@@ -986,9 +984,9 @@
 2226:N-am putut crea FIFO
 2227:N-am putut deschide FIFO
 2228:N-am putut seta FIFO nonblocking
-2229:Cererea fisierului '%s' (%ld bytes) a fost refuzata: %s.\n
+2229.Cererea fisierului '%s' (%ld bytes) a fost refuzata: %s.\n
 2230:Cererea chatului (%s/%s) de la %s a fost refuzata.\n
-2231:Transferul de fisiere '%s' a fost refuzat de partener: %s.\n
+2231.Transferul de fisiere '%s' a fost refuzat de partener: %s.\n
 2232:cere autorizare: %s%s\n
 2233:a refuzat autorizarea: %s%s\n
 2234:Mesajul %s a fost ignorat - conexiune pierduta.\n
@@ -1078,3 +1076,72 @@
 #2319:Accept an incoming file transfer from <uin> or <nick>.
 #2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
 2327:%smICQ (ICQ clonul lui Matt)%s versiunea %s%s%s\n
+#2328:You logged in too frequently, please wait 30 minutes before trying again.\n
+#2329:syntax error
+#2330:removing non-contact
+#2331:unknown
+#2332:Contact error %d (%s) for %d contacts: 
+#2333:%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n
+#2334:  show - show current known meta data\n
+#2335:  load - load from file and show meta data\n
+#2336:  save - save meta data to file\n
+#2337:  set  - upload own meta data to server\n
+#2338:  get  - query server for meta data\n
+#2339:  rget - query server for last sender's meta data\n
+2340:Transferul de fisiere '%s' a fost refuzat de partener: %s%s.\n
+2341:Cererea fisierului '%s' (%ld bytes) a fost refuzata: %s%s.\n
+#2342:Scripting
+#2343:Scripting extensions.
+#2344:Execute Tcl script from <file>.
+#2345:Execute Tcl script in <string>.
+#2346:The following Tcl commands are supported:\n
+#2347:micq receive <script> [<contact>]
+#2348:Install hook to receive messages from UIN or nick, or all if omitted.
+#2349:Callback arguments: from message
+#2350:micq unreceive [<contact>]
+#2351:Uninstall message hook for UIN or nick.
+#2352:micq event <script>
+#2353:Install event hook. Callback arguments: type ...
+#2354:micq unevent
+#2355:Uninstall event hook.
+#2356:List all installed hooks. Format: <type> <command> <filter>.
+#2357:micq exec <cmd>
+#2358:Execute micq command.
+#2359:micq nick <uin>
+#2360:Find nick from <uin>.
+#2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
+#2362:Wrong number of arguments. Try 'help'.
+#2363:Error: recursive 'micq exec' not allowed.
+#2364:No connection found.
+#2365:unknown command: %s
+#2366:TCL error in file %s: %s\n
+#2367:TCL error: %s\n
+#2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
+#2369:Refuse an incoming file transfer from <uin> or <nick>.
+#2370:%02d %-12s version %d%s for %s (%lx), at %s:%ld %s\n
+#2371:SSL init failed.\n
+#2372:Could not send SSL request to %s\n
+#2373:Error while reading from socket (SSL): %s (%d)\n
+#2374:SSL error: %s [%d]\n
+#2375:SSL handshake ok\n
+#2376:SSL read from %s [ERR=%d]: %s
+#2377:SSL write to %s [ERR=%d]: %s
+#2378:peer ssl <nick>   - initiate SSL handshake.
+2379:}%}
+2380:{%{
+#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+#2382:Peer-to-peer connection not associated to server connection, discarding.\n
+#2383:View your last messages of <contact>. Type 'h' as short command.
+#2384:Case insensitive search of <pattern> in log file of <contact>.
+#2385:Couldn't open %s for reading: %s (%d).\n
+#2386:Found %s%d%s matches.\n
+#2387:%s <contact> [<last> [<count>]] -- Show history of <contact>.\n
+#2388:%s <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
+#2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
+#2390:No or empty pattern given.\n
+#2391:Case sensitive search of <pattern> in log file of <contact>.
+#2392:Your status is %s (%s).\n
+#2393:%m/%d/%Y
+#2394: %I:%M %p
+#2395:View your messages of <contact> since <date>.
+#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n

@@ -1,12 +1,12 @@
 # $Id$ (Indonesian)
-#  EN: __.i18n,v 1.63.2.2 2003/01/10 15:57:15
-1000:iso-8859-1
+#  EN: __.i18n,v 1.63.2.16 2004/03/10 22:31:00
 1001:id
 1002:id_ID
 1003:0-4-10-2
 1004:L. Budi Handoko
 1005:L. Budi Handoko
 1006:22 April 2003
+1008:iso-8859-1
 1010:User sedang jauh [Pesan Otomatis]
 1011:User sedang tidak ditempat [Pesan Otomatis]
 1012:User sedang sibuk [Pesan Otomatis]
@@ -54,7 +54,7 @@
 1064:Otomatis berubah status menjadi %s.\n
 1072:User-user offline:
 1073:User-user online:
-1077:didedikasikan kepada Matthew D. Smith.
+1077.didedikasikan kepada Matthew D. Smith.
 1078:Tidak ada terjemahan yang tersedia.
 1079:Terjemahan (%s, %s) dari %s, terakhir di perbaiki pada %s oleh %s, untuk mICQ %d.%d.%d%s.\n
 1080:Tidak dapat memuat peng-internasionalan "%s".\n
@@ -537,7 +537,7 @@
 1639:UIN baru adalah %ld!\n
 1640:Gagal untuk memperbaharui informasi.\n
 1641:Informasi user berhasil diperbaharui.\n
-1642:IP
+1642:IP:
 1643:Telah diketahui SRV_X1 0x021C Daftar kontak selesai?\n
 1644:Telah diketahui SRV_X2 0x00E6 Pesan lama selesai?\n
 1645:Anda memasukkan password yang salah.\n
@@ -621,7 +621,7 @@
 1762:UIN baru Anda adalah: %ld.\n
 1763:Perintah '%s' telah diubah menjadi '%s'.
 1764:Perintah '%s' tidak berubah.
-1765:%s UIN-nya %ld.
+1765.%s UIN-nya %ld.
 1766:Mengubah status ke jauh/tidak ditempat setelah nganggur selama %s%ld%s detik.\n
 1767:Menganti perputaran otomatis ke jauh/tidak ditempat.
 1768:Nama perintah '%s' telah digunakan.\n
@@ -667,7 +667,7 @@
 1826:Mengirim ulang pesan %04x (%s) urutan %04lx (usaha #%ld, len %d).\n
 1830:Menghilangkan pesan ke %s setelah %ld usaha pengiriman.  Isi pesan:\n
 1833:Koneksi Peer to peer TCP terlaksana.\n
-1835:Salah sewaktu menulis ke soket - %s (%d)\n
+1835.Salah sewaktu menulis ke soket - %s (%d)\n
 1841:Menerima paket pengenalan awal malformed.\n
 1842:Menutup soket %d ke %s.\n
 1843:Menutup soket %d.\n
@@ -866,10 +866,10 @@
 2090:file peer-to-peer
 2091:Mengantri %s sebagai %s untuk transfer.\n
 2092:Pesan TCP %s dihapus - sesi telah hilang.\n
-2093:%02d %-12s versi %d untuk %s (%lx), pada %s:%ld %s\n
+2093.%02d %-12s versi %d untuk %s (%lx), pada %s:%ld %s\n
 2094:conn login         Membuka koneksi server pertama.\n
 2095:conn remove <nr>   Menutup koneksi <nr>.\n
-2096:Koneksi %ld tidak terbuka.\n
+2096.Koneksi %ld tidak terbuka.\n
 2097:conn select <nr>   Pilih koneksi <nr> sebagai koneksi ke server.\n
 2098:Koneksi %ld bukan koneksi ke server.\n
 2099:Koneksi terpilih %ld (versi %d, UIN %ld) sebagai koneksi aktif.\n
@@ -966,7 +966,7 @@
 2207:Kesalahan protokol pada perintah kepada server ICQ tua: %d.\n
 2208:Terdeteksi pengkodean UTF-8, bagaimanapun juga, mICQ ini dkompile tanpa dukungan UTF-8.\n
 2209:Terdeteksi pengkodean UTF-8.\n
-2210:%smICQ (Matt's ICQ clone)%s versi %s%s%s (dikompilasi pada %s)\n
+2210.%smICQ (Matt's ICQ clone)%s versi %s%s%s (dikompilasi pada %s)\n
 2211:Status Anda adalah %s.\n
 2212:berubah status menjadi %s
 2213:masuk (%s)
@@ -983,9 +983,9 @@
 2226:Tidak dapat membuat FIFO
 2227:Tidak dapat membuka FIFO
 2228:Tidak dapat men-set FIFO nonblocking
-2229:Menolak permintan file '%s' (%ld byte): %s.\n
+2229.Menolak permintan file '%s' (%ld byte): %s.\n
 2230:Menolak permintaan bicara (%s/%s) dari %s.\n
-2231:Transfer file '%s' ditolak oleh peer: %s.\n
+2231.Transfer file '%s' ditolak oleh peer: %s.\n
 2232:meminta otorisasi: %s%s\n
 2233:otorisasi yang ditolak: %s%s\n
 2234:Pesan %s dihilangkan - sesi telah hilang.\n
@@ -1043,10 +1043,10 @@
 2286:    tabs:       gaya untuk menangani tab: simple, cycle, cycleall.\n
 2287:    silent:     menghilangkan beberapa keluaran: off, on, complete.\n
 2288:Gaya indentasi %s%s%s.\n
-2289:»»»
-2290:«««
-2291:>>»
-2292:«<<
+2289:Â»Â»Â»
+2290:Â«Â«Â«
+2291:>>Â»
+2292:Â«<<
 2293:--=
 2294:===
 2295:>>>
@@ -1075,3 +1075,72 @@
 2319:Menerima transfer file yang datang dari <uin> atau <nick>.
 2320:peer accept <nick> [<id>]\n                  - menerima transfer file yang datang.\n
 2327:%smICQ (Matt's ICQ clone)%s versi %s%s%s\n
+#2328:You logged in too frequently, please wait 30 minutes before trying again.\n
+#2329:syntax error
+#2330:removing non-contact
+#2331:unknown
+#2332:Contact error %d (%s) for %d contacts: 
+#2333:%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n
+#2334:  show - show current known meta data\n
+#2335:  load - load from file and show meta data\n
+#2336:  save - save meta data to file\n
+#2337:  set  - upload own meta data to server\n
+#2338:  get  - query server for meta data\n
+#2339:  rget - query server for last sender's meta data\n
+2340:Transfer file '%s' ditolak oleh peer: %s%s.\n
+2341:Menolak permintan file '%s' (%ld byte): %s%s.\n
+#2342:Scripting
+#2343:Scripting extensions.
+#2344:Execute Tcl script from <file>.
+#2345:Execute Tcl script in <string>.
+#2346:The following Tcl commands are supported:\n
+#2347:micq receive <script> [<contact>]
+#2348:Install hook to receive messages from UIN or nick, or all if omitted.
+#2349:Callback arguments: from message
+#2350:micq unreceive [<contact>]
+#2351:Uninstall message hook for UIN or nick.
+#2352:micq event <script>
+#2353:Install event hook. Callback arguments: type ...
+#2354:micq unevent
+#2355:Uninstall event hook.
+#2356:List all installed hooks. Format: <type> <command> <filter>.
+#2357:micq exec <cmd>
+#2358:Execute micq command.
+#2359:micq nick <uin>
+#2360:Find nick from <uin>.
+#2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
+#2362:Wrong number of arguments. Try 'help'.
+#2363:Error: recursive 'micq exec' not allowed.
+#2364:No connection found.
+#2365:unknown command: %s
+#2366:TCL error in file %s: %s\n
+#2367:TCL error: %s\n
+#2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
+#2369:Refuse an incoming file transfer from <uin> or <nick>.
+2370:%02d %-12s versi %d%s untuk %s (%lx), pada %s:%ld %s\n
+#2371:SSL init failed.\n
+#2372:Could not send SSL request to %s\n
+#2373:Error while reading from socket (SSL): %s (%d)\n
+#2374:SSL error: %s [%d]\n
+#2375:SSL handshake ok\n
+#2376:SSL read from %s [ERR=%d]: %s
+#2377:SSL write to %s [ERR=%d]: %s
+#2378:peer ssl <nick>   - initiate SSL handshake.
+2379:Â»%Â»
+2380:Â«%Â«
+#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+#2382:Peer-to-peer connection not associated to server connection, discarding.\n
+#2383:View your last messages of <contact>. Type 'h' as short command.
+#2384:Case insensitive search of <pattern> in log file of <contact>.
+#2385:Couldn't open %s for reading: %s (%d).\n
+#2386:Found %s%d%s matches.\n
+#2387:%s <contact> [<last> [<count>]] -- Show history of <contact>.\n
+#2388:%s <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
+#2389:%s <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
+#2390:No or empty pattern given.\n
+#2391:Case sensitive search of <pattern> in log file of <contact>.
+#2392:Your status is %s (%s).\n
+#2393:%m/%d/%Y
+#2394: %I:%M %p
+#2395:View your messages of <contact> since <date>.
+#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n

@@ -1,17 +1,16 @@
-# $Id$ PortuguÍs (Brazillian)
-#  EN: __.i18n,v 1.63.2.3 2003/04/08 15:28:43
-1000:iso-8859-1
+# $Id$ Portugu√™s (Brazillian)
+#  EN: __.i18n,v 1.63.2.16 2004/03/10 22:31:00
 1001:pt
 1002:pt_BR
 1003:0-4-10
 1004:Leonardo Rosa
 1005:Leonardo Rosa
 1006:2003-04-08
-1007.iso-8859-1
-1010:Usu·rio est· ausente [Mensagem Autom·tica]
-1011:Usu·rio est· n„o disponÌvel [Mensagem Autom·tica]
-1012:Usu·rio est· ocupado [Mensagem Autom·tica]
-1013:Usu·rio est· desconectado
+1008:iso-8859-1
+1010:Usu√°rio est√° ausente [Mensagem Autom√°tica]
+1011:Usu√°rio est√° n√£o dispon√≠vel [Mensagem Autom√°tica]
+1012:Usu√°rio est√° ocupado [Mensagem Autom√°tica]
+1013:Usu√°rio est√° desconectado
 1014:Nenhum
 1015:Jan
 1016:Fev
@@ -26,91 +25,91 @@
 1025:Nov
 1026:Dez
 1027:SIM
-1028:N√O
-1029:Por favor entre SIM ou N√O!
+1028:N√ÉO
+1029:Por favor entre SIM ou N√ÉO!
 1030:desconectou.
 1032:debug: duplo pacote #%04lx tipo %04x (%s)\n
 1033:Pacote v8 chegando do servidor:
-1034:N˙mero m·ximo de tentativas alcanÁado. Desistindo..
+1034:N√∫mero m√°ximo de tentativas alcan√ßado. Desistindo..
 1036:Comando desconhecido %s, digite /help para ajuda.
 1037:Mensagem parcialmente enviada.\n
 1038:Mensagem cancelada.\n
-1039:O servidor avisa que nÛs n„o estamos conectados.\n
+1039:O servidor avisa que n√≥s n√£o estamos conectados.\n
 1040:mICQ> 
 1041:msg> 
-1043:Todos os usu·rios encontrados.
-1044:Usu·rios demais encontrados.
+1043:Todos os usu√°rios encontrados.
+1044:Usu√°rios demais encontrados.
 1045:Busca Completa.
 1046:Comprimento
 1047:Dado Extra
-1048:CÛdigo de erro: %ld\n
+1048:C√≥digo de erro: %ld\n
 1050:Login bem sucedido!
 1053:Conectado em %s, esperando por resposta\n
-1055:CriaÁ„o de socket falhou
+1055:Cria√ß√£o de socket falhou
 1056:Socket criado, tentando conectar-se.\n
-1060:NÌvel de informaÁ„o verbal ajustado para %ld.\n
-1061:'%s' n„o reconhecido como um apelido.\n
-1062:Usu·rios ignorados:
+1060:N√≠vel de informa√ß√£o verbal ajustado para %ld.\n
+1061:'%s' n√£o reconhecido como um apelido.\n
+1062:Usu√°rios ignorados:
 1063:Entre com a senha:
 1064:Estado mudado automaticamente para %s.\n
-1072:Usu·rios desconectados:
-1073:Usu·rios conectados:
-1077:em memÛria de Matthew D. Smith.
-1078:Nenhuma traduÁ„o disponÌvel.
-1079:TraduÁ„o (%s, %s) de %s, ˙ltima modificaÁ„o em %s por %s, para mICQ %d.%d.%d%s.\n
-1080:N„o pude ler internacionalizaÁ„o "%s".\n
-1081:Leitura da traduÁ„o br bem sucedida (%ld entradas).\n
+1072:Usu√°rios desconectados:
+1073:Usu√°rios conectados:
+1077.em mem√≥ria de Matthew D. Smith.
+1078:Nenhuma tradu√ß√£o dispon√≠vel.
+1079:Tradu√ß√£o (%s, %s) de %s, √∫ltima modifica√ß√£o em %s por %s, para mICQ %d.%d.%d%s.\n
+1080:N√£o pude ler internacionaliza√ß√£o "%s".\n
+1081:Leitura da tradu√ß√£o br bem sucedida (%ld entradas).\n
 1082:Tentando reconectar... [tentativa %d de %d]\n
 1085:on
 1086:off
-1089:TraduÁ„o descarregada.
-1093:Senhas n„o conferem - por favor tente novamente.
+1089:Tradu√ß√£o descarregada.
+1093:Senhas n√£o conferem - por favor tente novamente.
 1094:SOCKS5 servidor:
 1095:SOCKS5 porta:
-1096:SOCKS5 nome do usu·rio:
+1096:SOCKS5 nome do usu√°rio:
 1097:SOCKS5 senha:
-1098:Mostra uma lista de apelidos que vocÍ pode tabular.
-1099:LÌngua desconhecida.
+1098:Mostra uma lista de apelidos que voc√™ pode tabular.
+1099:L√≠ngua desconhecida.
 1100:Nenhum
-1101:¡rabe
+1101:√Årabe
 1102:Bhojpuri
-1103:B˙lgaro
-1104:BirmanÍs
-1105:CantonÍs
-1106:Catal„o
-1107:ChinÍs
+1103:B√∫lgaro
+1104:Birman√™s
+1105:Canton√™s
+1106:Catal√£o
+1107:Chin√™s
 1108:Croata
 1109:Tcheco
-1110:DinamarquÍs
-1111:HolandÍs
-1112:InglÍs
+1110:Dinamarqu√™s
+1111:Holand√™s
+1112:Ingl√™s
 1113:Esperanto
 1114:Estoniano
 1115:Persa
-1116:FinlandÍs
-1117:FrancÍs
-1118:GaÈlio
-1119:Alem„o
+1116:Finland√™s
+1117:Franc√™s
+1118:Ga√©lio
+1119:Alem√£o
 1120:Grego
 1121:Hebreu
 1122:Hindu
-1123:H˙ngaro
-1124:IslandÍs
-1125:IndonÈsio
+1123:H√∫ngaro
+1124:Island√™s
+1125:Indon√©sio
 1126:Italiano
-1127:JaponÍs
+1127:Japon√™s
 1128:Cambojano
 1129:Coreano
 1130:Lao
-1131:Let„o
+1131:Let√£o
 1132:Lituano
-1133:Mal·sio
-1134:NorueguÍs
-1135:PolonÍs
-1136:PortuguÍs
-1137:RomanÍs
+1133:Mal√°sio
+1134:Noruegu√™s
+1135:Polon√™s
+1136:Portugu√™s
+1137:Roman√™s
 1138:Russo
-1139:SÈrvio
+1139:S√©rvio
 1140:Eslovaco
 1141:Esloveno
 1142:Somali
@@ -118,90 +117,90 @@
 1144:Swahili
 1145:Sueco
 1146:Filipino
-1147:T·rtaro
-1148:TailandÍs
+1147:T√°rtaro
+1148:Tailand√™s
 1149:Turco
 1150:Ucraniano
 1151:Urdu
 1152:Vietnamita
 1153:Judeu
-1154:Yorub·
+1154:Yorub√°
 1155:Africano
-1156:BÛsnio
+1156:B√≥snio
 1157:Persa
-1158:AlbanÍs
-1159:ArmÍnio
-1161:AcadÍmico
+1158:Alban√™s
+1159:Arm√™nio
+1161:Acad√™mico
 1162:Administrativo
 1163:Arte/Entretenimento
 1164:Estudante Colegial
 1165:Computadores
 1166:Comunidade & Social
-1167:EducaÁ„o
+1167:Educa√ß√£o
 1168:Engenharia
-1169:ServiÁos Financeiros
+1169:Servi√ßos Financeiros
 1170:Governo
-1171:Estudante 2o. Grau
+1171:Estudante de 2o. Grau
 1172:Lar
-1173:ICQ - Dando Ajuda
+1173:ICQ - Fornecendo Ajuda
 1174:Lei
 1175:Gerencial
 1176:Manufatura
-1177:MÈdico/Sa˙de
+1177:M√©dico/Sa√∫de
 1178:Militar
-1179:OrganizaÁ„o N„o-governamental
+1179:Organiza√ß√£o N√£o-governamental
 1180:Profissional
 1181:Vendedor
 1182:Aposentado
-1183:CiÍncia & Pesquisa
+1183:Ci√™ncia & Pesquisa
 1184:Esportes
-1185:TÈcnico
-1186:Estudante Universit·rio
-1187:ConstruÁ„o de Redes
+1185:T√©cnico
+1186:Estudante Universit√°rio
+1187:Constru√ß√£o de Redes
 1188:Comando desconhecido no arquivo rc '%s', ignorado.
-1198:Outros ServiÁos
-1200:n„o fornecido
-1201:Afeganist„o
-1202:Alb‚nia
-1203:ArgÈlia
+1198:Outros Servi√ßos
+1200:n√£o fornecido
+1201:Afeganist√£o
+1202:Alb√¢nia
+1203:Arg√©lia
 1204:Samoa Americana
 1205:Andorra
 1206:Angola
 1207:Anguilla
-1208:AntÌgua e Barbuda
+1208:Ant√≠gua e Barbuda
 1209:Argentina
-1210:ArmÍnia
+1210:Arm√™nia
 1211:Aruba
-1212:Ilha Ascens„o
-1213:Austr·lia
-1214:TerritÛrio Ant·rtico Australiano
-1215:¡ustria
-1216:Azerbaij„o
+1212:Ilha Ascens√£o
+1213:Austr√°lia
+1214:Territ√≥rio Ant√°rtico Australiano
+1215:√Åustria
+1216:Azerbaij√£o
 1217:Bahamas
 1218:Barhein
 1219:Bangladesh
 1220:Barbados
 1221:Byelarus
-1222:BÈlgica
+1222:B√©lgica
 1223:Belize
 1224:Benin
 1225:Bermuda
-1226:But„o
-1227:BolÌvia
-1228:BÛsnia-Herzegovina
+1226:But√£o
+1227:Bol√≠via
+1228:B√≥snia-Herzegovina
 1229:Botswana
 1230:Brasil
 1231:Ilhas Virgens (Reino Unido)
 1232:Brunei
-1233:Bulg·ria
+1233:Bulg√°ria
 1234:Burkina Faso
 1235:Burundi
 1236:Camboja
-1237:Camarıes
-1238:Canad·
+1237:Camar√µes
+1238:Canad√°
 1239:Ilhas Cabo Verde
 1240:Ilhas Cayman
-1241:Rep˙blica Centro Africana
+1241:Rep√∫blica Centro Africana
 1242:Chade
 1243:Ilha Natal
 1244:Ilhas Cocos
@@ -210,205 +209,205 @@
 1247:Ilhas Cook
 1248:Chile
 1249:China
-1250:ColÙmbia
+1250:Col√¥mbia
 1251:Costa Rica
-1252:Cro·cia
+1252:Cro√°cia
 1253:Cuba
 1254:Chipre
-1255:Rep˙blica Tcheca
+1255:Rep√∫blica Tcheca
 1256:Dinamarca
 1257:Diego Garcia
 1258:Djibuti
 1259:Dominica
-1260:Rep˙blica Dominicana
+1260:Rep√∫blica Dominicana
 1261:Equador
 1262:Egito
 1263:El Salvador
-1264:GuinÈ Equatorial
-1265:EritrÈia
-1266:EstÙnia
-1267:EtiÛpia
-1268:MacedÙnia
+1264:Guin√© Equatorial
+1265:Eritr√©ia
+1266:Est√¥nia
+1267:Eti√≥pia
+1268:Maced√¥nia
 1269:Ilhas de Faeroe
 1270:Ilhas Falkland
-1271:Estados Federados da MicronÈsia
+1271:Estados Federados da Micron√©sia
 1272:Fiji
-1273:Finl‚nda
-1274:FranÁa
+1273:Finl√¢nda
+1274:Fran√ßa
 1275:Antilhas Francesas
 1276:Antilhas Francesas
 1277:Guiana Francesas
-1278:PolinÈsia Francesas
-1279:Gab„o
-1280:G‚mbia
-1281:GeÛrgia
+1278:Polin√©sia Francesas
+1279:Gab√£o
+1280:G√¢mbia
+1281:Ge√≥rgia
 1282:Alemanha
 1283:Gana
 1284:Gibraltar
-1285:GrÈcia
-1286:Groenl‚ndia
+1285:Gr√©cia
+1286:Groenl√¢ndia
 1287:Granada
 1288:Guadalupe
 1289:Guam
-1290:BaÌa Guant‚nomo
+1290:Ba√≠a Guant√¢nomo
 1291:Guatemala
-1292:GuinÈ
-1293:GuinÈ-Bissau
+1292:Guin√©
+1293:Guin√©-Bissau
 1294:Guiana
 1295:Haiti
 1296:Honduras
 1297:Hong Kong
 1298:Hungria
-1299:Isl‚ndia
-1300:Õndia
-1301:IndonÈsia
-1302:INMARSAT
-1303:INMARSAT Atl‚ntico-Leste
-1304:Ir„
+1299:Isl√¢ndia
+1300:√çndia
+1301:Indon√©sia
+1302:INMARSAT (Organiza√ß√£o Internacional de Telecomunica√ß√µes Mar√≠timas via Sat√©lite)
+1303:INMARSAT Atl√¢ntico-Leste (Organiza√ß√£o Internacional de Telecomunica√ß√µes Mar√≠timas via Sat√©lite)
+1304:Ir√£
 1305:Iraque
 1306:Irlanda
 1307:Israel
-1308:It·lia
+1308:It√°lia
 1309:Costa do Marfim
-1310:Jap„o
-1311:Jord‚nia
-1312:Cazaquist„o
-1313:QuÍnia
-1314:CorÈia do Sul
+1310:Jap√£o
+1311:Jord√¢nia
+1312:Cazaquist√£o
+1313:Qu√™nia
+1314:Cor√©ia do Sul
 1315:Kuwait
-1316:LibÈria
-1317:LÌbia
+1316:Lib√©ria
+1317:L√≠bia
 1318:Liechtenstein
 1319:Luxemburgo
 1320:Malawi
-1321:Mal·sia
+1321:Mal√°sia
 1322:Mali
 1323:Malta
-1324:MÈxico
-1325:MÙnaco
+1324:M√©xico
+1325:M√¥naco
 1326:Marrocos
-1327:NamÌbia
+1327:Nam√≠bia
 1328:Nepal
 1329:Holanda
 1330:Antilhas Holandesas
-1331:Nova CaledÙnia
-1332:Nova Zel‚ndia
-1333:Nicar·gua
-1334:NigÈria
+1331:Nova Caled√¥nia
+1332:Nova Zel√¢ndia
+1333:Nicar√°gua
+1334:Nig√©ria
 1335:Noruega
-1336:Om„
-1337:Paquist„o
-1338:Panam·
-1339:Papua Nova GuinÈ
+1336:Om√£
+1337:Paquist√£o
+1338:Panam√°
+1339:Papua Nova Guin√©
 1340:Paraguai
 1341:Peru
 1342:Filipinas
-1343:PolÙnia
+1343:Pol√¥nia
 1344:Portugal
 1345:Porto Rico
 1346:Qatar
-1347:RomÍnia
-1348:R˙ssia
+1347:Rom√™nia
+1348:R√∫ssia
 1349:Saipan
 1350:San Marino
-1351:Ar·bia Saudita
+1351:Ar√°bia Saudita
 1352:Senegal
 1353:Singapura
-1354:Eslov·quia
-1355:¡frica do Sul
+1354:Eslov√°quia
+1355:√Åfrica do Sul
 1356:Espanha
 1357:Sri Lanka
 1358:Suriname
-1359:SuÈcia
-1360:SuÌÁa
+1359:Su√©cia
+1360:Su√≠√ßa
 1361:Taiwan
-1362:Tanz‚nia
-1363:Tail‚ndia
+1362:Tanz√¢nia
+1363:Tail√¢ndia
 1364:Ilha Tinian
 1365:Togo
 1366:Ilhas Tokelau
 1367:Tonga
 1368:Trinidad Tobago
-1369:TunÌsia
+1369:Tun√≠sia
 1370:Turquia
-1371:Turcomenist„o
+1371:Turcomenist√£o
 1372:Ilhas Turks e Caicos
 1373:Tuvalu
 1374:Uganda
-1375:Ucr‚nia
-1376:Emirados ¡rabes
+1375:Ucr√¢nia
+1376:Emirados √Årabes
 1377:Reino Unido
 1378:Estados Unidos das Ilhas Virgens
 1379:EUA
 1380:Uruguai
-1381:Uzbequist„o
+1381:Uzbequist√£o
 1382:Vanuatu
 1383:Cidade do Vaticano
 1384:Venezuela
-1385:Vietn„
+1385:Vietn√£
 1386:Ilhas Wallis e Futuna
 1387:Samoa Oeste
-1388:IÍmen
-1389:Iugosl·via
+1388:I√™men
+1389:Iugosl√°via
 1390:Zaire
-1391:Z‚mbia
-1392:Zimb·bue
+1391:Z√¢mbia
+1392:Zimb√°bue
 1393:bem sucedido
 1394:mal sucedido
-1400:Mostra informaÁıes armazenadas localmente para <uin> ou <apelido>, ou o seu prÛprio.
-1401:Atualiza mais informaÁıes do usu·rio como idade e sexo.
-1402:Atualiza suas informaÁıes sobre usu·rio.
-1403:Mostra a ˙ltima mensagem recebida de <contatos> ou de todos.
-1404:Troca ignorar/n„o ignorar <contatos>.
+1400:Mostra informa√ß√µes armazenadas localmente para <uin> ou <apelido>, ou o seu pr√≥prio.
+1401:Atualiza mais informa√ß√µes do usu√°rio como idade e sexo.
+1402:Atualiza suas informa√ß√µes sobre usu√°rio.
+1403:Mostra a √∫ltima mensagem recebida de <contatos> ou de todos.
+1404:Troca ignorar/n√£o ignorar <contatos>.
 1405:Lista apelidos/uins ignorados.
-1406:Troca sua visibilidade para <contatos> quando vocÍ estiver invisÌvel.
+1406:Troca sua visibilidade para <contatos> quando voc√™ estiver invis√≠vel.
 1407:Mostra o estado atual das pessoas conectadas na sua lista de contatos.
 1408:Altera sua senha para <senha>.
 1409:Envia uma mensagem para <contatos>.
 1410:Envia uma url e mensagem para <contatos>.
-1412:Envia uma mensagem para a ˙ltima pessoa que vocÍ enviou uma mensagem.
-1414:Responde ‡ ˙ltima pessoa que mandou uma mensagem para vocÍ.
-1415:Encontra um usu·rio aleatÛrio no grupo de interesse <nr> ou lista os grupos.
+1412:Envia uma mensagem para a √∫ltima pessoa que voc√™ enviou uma mensagem.
+1414:Responde √† √∫ltima pessoa que mandou uma mensagem para voc√™.
+1415:Encontra um usu√°rio aleat√≥rio no grupo de interesse <nr> ou lista os grupos.
 1416:Mostra o estado atual de todos em sua lista de contatos.
-1418:Ajusta o nÌvel de informaÁ„o verbal ou mostra o nÌvel.
+1418:Ajusta o n√≠vel de informa√ß√£o verbal ou mostra o n√≠vel.
 1419:Limpa a tela.
 1420:Troca o bipe quando receber novas mensagens para on ou off, ou usa o script de eventos.
 1422:Logoff e sai.
-1424:Ajusta quando auto responder se n„o estiver conectado, ou mostra a configuraÁ„o.
+1424:Ajusta quando auto responder se n√£o estiver conectado, ou mostra a configura√ß√£o.
 1425:Ajusta a mensagem a ser enviada como uma auto resposta para o estado.
 1426:Cria um novo UIN com a senha especificada.
-1427:Muda seu estado para o estado numerado, ou lista os modos disponÌveis.
+1427:Muda seu estado para o estado numerado, ou lista os modos dispon√≠veis.
 1428:Adiciona todos os contatos em <contatos> para o grupo de contatos <grupo>.
-1429:Procura um usu·rio ICQ.
-1430:Mostra informaÁıes gerais para <uin> ou <apelido>.
-1431:Ajustar estado para "conectado".
-1432:Ajustar estado para "ausente".
-1433:Ajustar estado para "n„o disponÌvel".
-1434:Ajustar estado para "ocupado".
-1435:Ajustar estado para "n„o perturbe".
-1436:Ajustar estado para "livre para bate papo".
-1437:Ajustar estado para "invisÌvel".
-1438:Atualiza suas informaÁıes b·sicas (email, apelido, etc.).
-1439:Ajusta seu grupo aleatÛrio de usu·rio.
-1440:Usu·rio AleatÛrio:
+1429:Procura um usu√°rio ICQ.
+1430:Mostra informa√ß√µes gerais para <uin> ou <apelido>.
+1431:Ajusta estado para "conectado".
+1432:Ajusta estado para "ausente".
+1433:Ajusta estado para "n√£o dispon√≠vel".
+1434:Ajusta estado para "ocupado".
+1435:Ajusta estado para "n√£o perturbe".
+1436:Ajusta estado para "livre para bate papo".
+1437:Ajusta estado para "invis√≠vel".
+1438:Atualiza suas informa√ß√µes b√°sicas (email, apelido, etc.).
+1439:Ajusta seu grupo aleat√≥rio de usu√°rio.
+1440:Usu√°rio Aleat√≥rio:
 1441:IP remoto:
-1442:Por favor selecione um dos tÛpicos de ajuda abaixo.
-1443:Comandos para a aparÍncia e configuraÁ„o do mICQ.
-1444:Comandos para encontrar e ver outros usu·rios.
+1442:Por favor selecione um dos t√≥picos de ajuda abaixo.
+1443:Comandos para a apar√™ncia e configura√ß√£o do mICQ.
+1444:Comandos para encontrar e ver outros usu√°rios.
 1445:Comandos para sua conta ICQ.
 1446:Comandos para enviar mensagens.
 1447:Cliente
 1448:Mensagem
-1449:Usu·rio   
+1449:Usu√°rio
 1450:Conta
 1451:IP  local:
 1452:Estado:
-1453:vers„o TCP:
-1454:Conex„o:
+1453:vers√£o TCP:
+1454:Conex√£o:
 1455:Arte
 1456:Carros
-1457:F„s de Celebridades
-1458:ColeÁıes
+1457:F√£s de Celebridades
+1458:Cole√ß√µes
 1459:Computadores
 1460:Cultura & Literatura
 1461:Fitness
@@ -417,167 +416,167 @@
 1465:Internet
 1466:Estilo de Vida
 1467:Filmes/TV
-1468:M˙sica
+1468:M√∫sica
 1469:Atividades Extras
-1470:FiliaÁ„o
-1471:Animais/de EstimaÁ„o
-1472:Religi„o
-1473:CiÍncia/Tecnologia
-1474:PerÌcias
+1470:Filia√ß√£o
+1471:Animais/de Estima√ß√£o
+1472:Religi√£o
+1473:Ci√™ncia/Tecnologia
+1474:Per√≠cias
 1475:Esportes
 1476:Web Design
 1477:Natureza e Meio Ambiente
-1478:Novidades & MÌdias
+1478:Novidades & M√≠dias
 1479:Governo
-1480:NegÛcios & Economia
-1481:MÌstica
+1480:Neg√≥cios & Economia
+1481:M√≠stica
 1482:Viagem
 1483:Astronomia
-1484:EspaÁo
-1485:Vestu·rio
+1484:Espa√ßo
+1485:Vestu√°rio
 1486:Festas
 1487:Mulheres
-1488:CiÍncias sociais
+1488:Ci√™ncias sociais
 1489:60's
 1490:70's
 1491:80's
 1492:50's
 1493:Ponto-a-Ponto
 1494:Servidor Apenas
-1495:Nenhum Usu·rio AleatÛrio Encontrado
+1495:Nenhum Usu√°rio Aleat√≥rio Encontrado
 1497:falhou
 1499:Outro
 1500:Apelido:
 1501:Nome:
-1505:LocalizaÁ„o:
+1505:Localiza√ß√£o:
 1506:Fone:
 1507:Fax:
 1508:Rua:
 1509:Celular:
 1510:CEP:
-1511:PaÌs:
-1512:CÛdigo do PaÌs:
-1513:CÛdigo do PaÌs de Trabalho:
-1514:PaÌs de Trabalho:
+1511:Pa√≠s:
+1512:C√≥digo do Pa√≠s:
+1513:C√≥digo do Pa√≠s de Trabalho:
+1514:Pa√≠s de Trabalho:
 1515:Homepage de Trabalho:
-1516:Profiss„o:
-1517:PosiÁ„o no Trabalho:
+1516:Profiss√£o:
+1517:Posi√ß√£o no Trabalho:
 1518:Departamento:
 1519:Nome da Companhia:
 1520:CEP do Trabalho:
 1521:Fax do Trabalho:
-1522:EndereÁo do Trabalho:
+1522:Endere√ßo do Trabalho:
 1523:Fone do Trabalho:
-1524:LocalizaÁ„o do Trabalho:
+1524:Localiza√ß√£o do Trabalho:
 1525:Sobre:
 1528:feminino
 1529:masculino
-1530:n„o especificado
+1530:n√£o especificado
 1531:Homepage:
 1532:Nascimento:
-1533:LÌnguas:
-1534:Entre um idioma pelo n˙mero ou L para uma lista:
+1533:L√≠nguas:
+1534:Entre um idioma pelo n√∫mero ou L para uma lista:
 1535:Entre com a nova idade:
 1536:Entre com o novo sexo:
 1537:Entre com a nova homepage:
-1538:Entre com o novo ano de nascimento (4 dÌgitos):
-1539:Entre com o novo mÍs de nascimento:
+1538:Entre com o novo ano de nascimento (4 d√≠gitos):
+1539:Entre com o novo m√™s de nascimento:
 1540:Entre com o novo dia de nascimento:
 1541:Sobre> 
 1544:Entre com a nova cidade:
 1545:Entre com o novo estado:
-1546:Entre com o novo n˙mero de telefone:
-1547:Entre com o novo n˙mero de fax:
-1548:Entre com o novo endereÁo:
-1549:Entre com o novo n˙mero de celular:
-1550:Entre com o novo CEP (deve ser numÈrico):
-1551:Entre com o cÛdigo de ·rea telefÙnico do seu paÌs:
-1552:Entre com o seu cÛdigo de zona (+/- 0-12):
+1546:Entre com o novo n√∫mero de telefone:
+1547:Entre com o novo n√∫mero de fax:
+1548:Entre com o novo endere√ßo:
+1549:Entre com o novo n√∫mero de celular:
+1550:Entre com o novo CEP (deve ser num√©rico):
+1551:Entre com o c√≥digo de √°rea telef√¥nico do seu pa√≠s:
+1552:Entre com o seu c√≥digo de zona (+/- 0-12):
 1553:Entre Com o Seu Novo Apelido:
 1554:Entre com o seu primeiro nome:
 1555:Entre com o seu sobrenome:
-1556:Entre com o seu endereÁo de email:
-1557:VocÍ quer que os usu·rios Mirabilis peÁam sua autorizaÁ„o? (SIM/N√O)
+1556:Entre com o seu endere√ßo de email:
+1557:Voc√™ quer que os usu√°rios Mirabilis pe√ßam sua autoriza√ß√£o? (SIM/N√ÉO)
 1564:Primeiro nome:
 1565:Sobrenome:
-1566:EndereÁo de email:
+1566:Endere√ßo de email:
 1570:Cidade:
 1574:Estado:
 1575:Idade:
-1578:Entre com o cÛdigo de ·rea telefÙnico do paÌs:
+1578:Entre com o c√≥digo de √°rea telef√¥nico do pa√≠s:
 1579:Entre com a companhia:
 1587:Entre com o departamento:
 1592:<%s> lhe enviou uma mensagem por email:\n
 1593:<%s> lhe enviou uma mensagem web:\n
 1595:\nLista de Contatos.\n============================================\n%d Contatos\n
-1596:[SOCKS] N„o pude encontrar hostname %s: %s.
-1597:[SOCKS] CriaÁ„o de socket falhou\n
-1598:[SOCKS] Conex„o requerida recusada
-1599:[SOCKS] MÈtodo de autenticaÁ„o incorreto
-1600:[SOCKS] AutorizaÁ„o falhou
+1596:[SOCKS] N√£o pude encontrar hostname %s: %s.
+1597:[SOCKS] Cria√ß√£o de socket falhou\n
+1598:[SOCKS] Conex√£o requerida recusada
+1599:[SOCKS] M√©todo de autentica√ß√£o incorreto
+1600:[SOCKS] Autoriza√ß√£o falhou
 1601:[SOCKS] Falha geral no servidor SOCKS
 1602:Entre um estado:
-1603:Entre com a posiÁ„o:
-1604:Os usu·rios devem estar conectados?
-1605:VocÍ quer que o seu estado esteja disponÌvel na rede? (SIM/N√O)
-1606:Recebido uma m· sess„o ID %08lx (correto: %08lx) com cmd %04x ignorado.\n
-1607:Uso: micq [-h] [-c] [-i <locale>] [-b <dirbase>] \n            [-f <config>] [-v[<nÌvel>]] [-l <logplace>]\n
-1612:Este programa foi feito sem qualquer ajuda da Mirabilis ou sua permiss„o.\n
-1613:Nem engenharia reversa nem decompilaÁ„o de qualquer cÛdigo da Mirabilis tomou parte na elaboraÁ„o deste programa.\n
+1603:Entre com a posi√ß√£o:
+1604:Os usu√°rios devem estar conectados?
+1605:Voc√™ quer que o seu estado esteja dispon√≠vel na rede? (SIM/N√ÉO)
+1606:Recebido uma m√° sess√£o ID %08lx (correto: %08lx) com cmd %04x ignorado.\n
+1607:Uso: micq [-h] [-c] [-i <locale>] [-b <dirbase>] \n            [-f <config>] [-v[<n√≠vel>]] [-l <logplace>]\n
+1612:Este programa foi feito sem qualquer ajuda da Mirabilis ou sua permiss√£o.\n
+1613:Nem engenharia reversa nem decompila√ß√£o de qualquer c√≥digo da Mirabilis tomou parte na elabora√ß√£o deste programa.\n
 1618:UIN:
 1619:Aviso:
-1620:n˙mero m·ximo de contatos encontrado. Pergunta a um mago como aumentar!
-1621:usu·rios n„o retornaram.
-1622:Deseja aplicar estar mudanÁas? (SIM/N√O)
+1620:n√∫mero m√°ximo de contatos encontrado. Pergunta a um mago como aumentar!
+1621:usu√°rios n√£o retornaram.
+1622:Deseja aplicar estar mudan√ßas? (SIM/N√ÉO)
 1623:Pacote duplicado %04X\n
-1624:Desculpe, n„o pude inicializar Windows Sockets...
-1632:\nConex„o inst·vel. Saindo....
+1624:Desculpe, n√£o pude inicializar Windows Sockets...
+1632:\nConex√£o inst√°vel. Saindo....
 1634:ok.\n
-1637:N„o pude ligar socket para a porta livre\n
-1638:N„o pude criar socket
-1639:O novo UIN È %ld!\n
-1640:AtualizaÁ„o de informaÁıes falhou.\n
-1641:InformaÁıes de usu·rio atualizadas com sucesso.\n
-1642:IP
+1637:N√£o pude ligar socket para a porta livre\n
+1638:N√£o pude criar socket
+1639:O novo UIN √© %ld!\n
+1640:Atualiza√ß√£o de informa√ß√µes falhou.\n
+1641:Informa√ß√µes de usu√°rio atualizadas com sucesso.\n
+1642:IP:
 1643:Conhecido SRV_X1 0x021C Lista de contatos pronta?\n
 1644:Conhecido SRV_X2 0x00E6 Antigas mensagens prontas?\n
-1645:VocÍ entrou uma senha inv·lida.\n
+1645:Voc√™ entrou uma senha inv√°lida.\n
 1646:Servidor ocupado.\n
 1648:A resposta foi %04x	
-1649:A vers„o era %x	
+1649:A vers√£o era %x	
 1650:\nO SEQ era %04lx	
 1651:O tamanho era %d\n
 1653:Desconectado
 1654:Conectado
-1655:Entre o endereÁo de email do usu·rio:
-1656:Entre com o apelido do usu·rio:
-1657:Entre com o primeiro nome do usu·rio:
-1658:Entre com o sobrenome do usu·rio:
-1659:SeÁ„o %s desconhecida no arquivo de configuraÁ„o.
-1660:Comando Inv·lido: %s\n
+1655:Entre o endere√ßo de email do usu√°rio:
+1656:Entre com o apelido do usu√°rio:
+1657:Entre com o primeiro nome do usu√°rio:
+1658:Entre com o sobrenome do usu√°rio:
+1659:Se√ß√£o %s desconhecida no arquivo de configura√ß√£o.
+1660:Comando Inv√°lido: %s\n
 1661:Comandos shell foram desabilitados.\n
-1666:N„o ignorado %s.\n
+1666:N√£o ignorado %s.\n
 1667:Ignorando %s.\n
-1670:VisÌvel normalmente para %s agora.\n
-1671:Sempre visÌvel para %s agora.\n
-1672:O endereÁo IP de %s È 
-1673:A porta È %ld.\n
-1674:A porta È desconhecida.\n
+1670:Vis√≠vel normalmente para %s agora.\n
+1671:Sempre vis√≠vel para %s agora.\n
+1672:O endere√ßo IP de %s √© 
+1673:A porta √© %ld.\n
+1674:A porta √© desconhecida.\n
 1675:Linha ignorada:
 1676:Precisa de uin/apelido para enviar.\n
 1678:Precisa URL por favor.\n
 1679:Desculpe, salvando suas mensagens pessoais de resposta foram erradas!\n
-1680:Suas opÁıes pessoais foram salvas!\n
-1681:⁄ltimas %d pessoas com quem vocÍ falou:\n
-1682:VocÍ recebeu mensagens de:\n
-1687:mICQ est· rodando por
+1680:Suas op√ß√µes pessoais foram salvas!\n
+1681:√öltimas %d pessoas com quem voc√™ falou:\n
+1682:Voc√™ recebeu mensagens de:\n
+1687:mICQ est√° rodando por
 1688:dias
 1689:horas
 1690:minutos
 1691:segundos
 1692:Contatos:
 1696:Sexo:
-1700:%s n„o È um usu·rio v·lido em sua lista.\n
+1700:%s n√£o √© um usu√°rio v√°lido em sua lista.\n
 1703:Modos de estado:\n
 1704:Grupos:\n
 1705:Geral
@@ -592,16 +591,16 @@
 1714:Procurando homem
 1715:mICQ
 1716:Nenhum
-1717:'!' como o primeiro caractere de um comando executar· um comando shell (p.ex. '!ls', '!dir', '!mkdir temp')
-1719:Mostra h· quanto tempo mICQ est· rodando e algumas estatÌsticas.
-1720:<contatos> È uma lista separada por vÌrgula de UINs e apelidos de usu·rios.
-1721:Enviando uma mensagem em branco colocar· o cliente em modo multilinha.\nUse . em uma linha prÛpria para encerrar a mensagem.\nUse # em uma linha prÛpria para cancelar a mensagem.
-1724:Respostas autom·ticas s„o %s.\n
-1727:A mensagem "n„o perturbe" È:
-1728:A mensagem "ausente" È:
-1729:A mensagem "n„o disponÌvel" È:
-1730:A mensagem "ocupado" È:
-1731:A mensagem "invisÌvel" È:
+1717:'!' como o primeiro caractere de um comando executar√° um comando shell (p.ex. '!ls', '!dir', '!mkdir temp')
+1719:Mostra h√° quanto tempo mICQ est√° rodando e algumas estat√≠sticas.
+1720:<contatos> √© uma lista separada por v√≠rgula de UINs e apelidos de usu√°rios.
+1721:Enviando uma mensagem em branco colocar√° o cliente em modo multilinha.\nUse . em uma linha pr√≥pria para encerrar a mensagem.\nUse # em uma linha pr√≥pria para cancelar a mensagem.
+1724:Respostas autom√°ticas s√£o %s.\n
+1727:A mensagem "n√£o perturbe" √©:
+1728:A mensagem "ausente" √©:
+1729:A mensagem "n√£o dispon√≠vel" √©:
+1730:A mensagem "ocupado" √©:
+1731:A mensagem "invis√≠vel" √©:
 1735:Deve dar uma mensagem.\n
 1738:Precisa de um comando para alterar.\n
 1741:Deve receber uma mensagem primeiro.\n
@@ -609,470 +608,539 @@
 1743:Erro de tamanho no comprimento dos pacotes.\n
 1744:servidor (v5)
 1745:desconhecido
-1746: nr tipo         pacotes/pacotes ˙nicos enviados/recebidos\n
+1746: nr tipo         pacotes/pacotes √∫nicos enviados/recebidos\n
 1747:total
-1754:Nota: VocÍ precisa salvar ('save') para escrever a nova lista de contatos no disco.\n
-1755:adicionou vocÍ em sua lista de contatos.\n
-1756:\nCriando Conex„o...\n
-1757:N„o pude estabelecer conex„o.\n
+1754:Nota: Voc√™ precisa salvar ('save') para escrever a nova lista de contatos no disco.\n
+1755:adicionou voc√™ em sua lista de contatos.\n
+1756:\nCriando Conex√£o...\n
+1757:N√£o pude estabelecer conex√£o.\n
 1758:Mandando Pedido...\n
 1759:Esperando resposta....\n
-1760:\nSeu novo UIN È %s%ld%s!\n
+1760:\nSeu novo UIN √© %s%ld%s!\n
 1761:desconhecido
-1762:Seu novo UIN È: %ld.\n
+1762:Seu novo UIN √©: %ld.\n
 1763:O comando '%s' foi renomeado para '%s'.
-1764:O comando '%s' n„o foi alterado.
+1764:O comando '%s' n√£o foi alterado.
 1765.%s possui UIN %ld.
-1766:Alterando estado para ausente/n„o disponÌvel apÛs inativo %s%ld%s segundos.\n
-1767:Troca auto ciclo para ausente/n„o disponÌvel.
-1768:O comando nome '%s' j· est· sendo usado.\n
-1770:Manda novamente sua ˙ltima mensagem para <contatos>.
-1771:VocÍ n„o enviou mensagem alguma para ninguÈm ainda!\n
+1766:Alterando estado para ausente/n√£o dispon√≠vel ap√≥s inativo %s%ld%s segundos.\n
+1767:Troca auto ciclo para ausente/n√£o dispon√≠vel.
+1768:O comando nome '%s' j√° est√° sendo usado.\n
+1770:Manda novamente sua √∫ltima mensagem para <contatos>.
+1771:Voc√™ n√£o enviou mensagem alguma para ningu√©m ainda!\n
 1774:Pacotes chegando:
 1775:Pacotes saindo:
-1777:Abrindo conex„o ponto-a-ponto com o hostname:%ld... 
+1777:Abrindo conex√£o ponto-a-ponto com o hostname:%ld... 
 1781:Sua senha para UIN %ld:\n
-1782:VocÍ precisa de uma senha para seu novo UIN.\n
-1783:Para prevenir erros de digitaÁ„o, por favor entre com sua senha novamente.\n
-1784:Se vocÍ estiver sob firewall, deve usar um servidor SOCKS5. No caso, por favor entre com seu hostname ou endereÁo IP. De outro modo, ou estiver inseguro, apenas pressione enter.\n
+1782:Voc√™ precisa de uma senha para seu novo UIN.\n
+1783:Para prevenir erros de digita√ß√£o, por favor entre com sua senha novamente.\n
+1784:Se voc√™ estiver sob firewall, deve usar um servidor SOCKS5. No caso, por favor entre com seu hostname ou endere√ßo IP. De outro modo, ou estiver inseguro, apenas pressione enter.\n
 1785:sucesso.\n
-1786:TambÈm preciso da porta do servidor que o servidor socks escuta. Se estiver em d˙vida, pressione enter para a porta padr„o.\n
-1787:VocÍ provavelmente precisa se autenticar no servidor socks. No caso, vocÍ precisa entrar o nome de usu·rio que o administrador do servidor socks lhe deu. Do contr·rio, apenas pressione enter.\n
-1788:Agora eu tambÈm preciso da senha para esse usu·rio.\n
+1786:Tamb√©m preciso da porta do servidor que o servidor socks escuta. Se estiver em d√∫vida, pressione enter para a porta padr√£o.\n
+1787:Voc√™ provavelmente precisa se autenticar no servidor socks. No caso, voc√™ precisa entrar o nome de usu√°rio que o administrador do servidor socks lhe deu. Do contr√°rio, apenas pressione enter.\n
+1788:Agora eu tamb√©m preciso da senha para esse usu√°rio.\n
 1789:Pacote mal formado recebido: (%d)
-1790:Auxiliador de configuraÁ„o encerrado. ParabÈns pelo seu novo UIN!\n
-1791:Auxiliador de configuraÁ„o encerrado. ParabÈns!\n
-1792:Desculpe, AOL n„o quer nos dar um novo UIN, provavelmente devido a muitos pedidos de novos UIN por este IP. Por favor tente novamente mais tarde.\n
-1793:Nenhum UIN v·lido encontrado. O auxiliador de configuraÁ„o ir· gui·-lo atravÈs do processo de selecionar algum.\n
-1794:Se vocÍ j· possui um UIN, por favor entre-o. Do contr·rio, entre 0, e irei requerer um para vocÍ.\n
+1790:Auxiliador de configura√ß√£o encerrado. Parab√©ns pelo seu novo UIN!\n
+1791:Auxiliador de configura√ß√£o encerrado. Parab√©ns!\n
+1792:Desculpe, AOL n√£o quer nos dar um novo UIN, provavelmente devido a muitos pedidos de novos UIN por este IP. Por favor tente novamente mais tarde.\n
+1793:Nenhum UIN v√°lido encontrado. O auxiliador de configura√ß√£o ir√° gui√°-lo atrav√©s do processo de selecionar algum.\n
+1794:Se voc√™ j√° possui um UIN, por favor entre-o. Do contr√°rio, entre 0, e irei requerer um para voc√™.\n
 1795:Senha:
-1796:Auxiliador de configuraÁ„o encerrado. Por favor espere atÈ que o registro tenha finalizado.\n
-1797:FinanÁas e corporaÁ„o
+1796:Auxiliador de configura√ß√£o encerrado. Por favor espere at√© que o registro tenha finalizado.\n
+1797:Finan√ßas e corpora√ß√£o
 1798:Escola Elementar
 1799:Escola Superior
 1800:Altera o idioma de trabalho para <idioma> ou mostra a palavra <nr>.
 1801:Mostra uma lista de pessoas em sua lista de contatos em um formato de tela cheia.
 1807:Mensagem chegando (seq %04x) de %s cancelada\n
-1808:ColÈgio
+1808:Col√©gio
 1810:Universidade
 1812:Lugar de Trabalho Anterior
-1813:OrganizaÁ„o Anterior
+1813:Organiza√ß√£o Anterior
 1814:Mensagem de auto-resposta enviada para %s%s%s.\n
-1815:    funny:      usa mensagens engraÁadas para saÌda.\n
-1817:A ferramenta de script de eventos est· desabilitada.\n
-1818:Aviso: Sintaxe depreciada encontrada no arquivo rc!\n    Por favor atualize ou salve ("save") o arquivo rc e verifique as mudanÁas.\n
-1820:%s <opÁ„o> [on|off|<valor>] - controla opÁıes simples.\n
-1822:    color:      usa textos coloridos para a saÌda.\n
+1815:    funny:      usa mensagens engra√ßadas para sa√≠da.\n
+1817:A ferramenta de script de eventos est√° desabilitada.\n
+1818:Aviso: Sintaxe depreciada encontrada no arquivo rc!\n    Por favor atualize ou salve ("save") o arquivo rc e verifique as mudan√ßas.\n
+1820:%s <op√ß√£o> [on|off|<valor>] - controla op√ß√µes simples.\n
+1822:    color:      usa textos coloridos para a sa√≠da.\n
 1823:Pacote parcial chegando:
 1825:Descartado um pacote %04x (%s)
-1826:Re-enviando mensagem %04x (%s) seq¸Íncia %04lx (tentativa #%ld, compr %d).\n
-1830:Descartando mensagem para %s apÛs %ld tentativas de enviar. Conte˙do da mensagem:\n
-1833:Conex„o TCP ponto-a-ponto estabelecida.\n
-1835:Erro enquanto escrevendo no socket - %s (%d)\n
-1841:Pacote de reconhecimento de inicializaÁ„o mal formado recebido.\n
+1826:Re-enviando mensagem %04x (%s) seq√º√™ncia %04lx (tentativa #%ld, compr %d).\n
+1830:Descartando mensagem para %s ap√≥s %ld tentativas de enviar. Conte√∫do da mensagem:\n
+1833:Conex√£o TCP ponto-a-ponto estabelecida.\n
+1835.Erro enquanto escrevendo no socket - %s (%d)\n
+1841:Pacote de reconhecimento de inicializa√ß√£o mal formado recebido.\n
 1842:Fechando socket %d para %s.\n
 1843:Fechando socket %d.\n
-1844:Mensagem TCP %04x descartada apÛs tempo limite.\n
+1844:Mensagem TCP %04x descartada ap√≥s tempo limite.\n
 1845:Apelido %s desconhecido.\n
-1846:Abre e fecha conexıes diretas (ponto-a-ponto):\n
-1847:peer open  <apelido> - Abre conex„o direta.\n
-1848:peer close <apelido> - Fecha/reseta conex„o(ıes) direta(s).\n
-1849:Erro na seleÁ„o: %s (%d)\n
-1850:Tempo limite na conex„o com %s a %s:%ld\n
-1855:Conex„o TCP para %s a %s:%ld falhou.\n
-1856:Descartado um %04x (%s) pacote de sess„o antiga %08lx (atual: %08lx).\n
-1857:VocÍ deseja esconder seu IP de outros contatos? (SIM/N√O)
+1846:Abre e fecha conex√µes diretas (ponto-a-ponto):\n
+1847:peer open  <apelido> - Abre conex√£o direta.\n
+1848:peer close <apelido> - Fecha/reseta conex√£o(√µes) direta(s).\n
+1849:Erro na sele√ß√£o: %s (%d)\n
+1850:Tempo limite na conex√£o com %s a %s:%ld\n
+1855:Conex√£o TCP para %s a %s:%ld falhou.\n
+1856:Descartado um %04x (%s) pacote de sess√£o antiga %08lx (atual: %08lx).\n
+1857:Voc√™ deseja esconder seu IP de outros contatos? (SIM/N√ÉO)
 1864:Incapaz de abrir arquivo rc %s.
-1866:Esta vers„o do mICQ foi compilada sem suporte a conex„o direta (ponto-a-ponto).\n
+1866:Esta vers√£o do mICQ foi compilada sem suporte a conex√£o direta (ponto-a-ponto).\n
 1867:Recebido um pacote mal formado (muito curto) - ignorado.\n
 1868:Recebido um multi-pacote mal formado (subpacote muito longo) - restante ignorado.\n
-1869:Versıes de protocolo inferiores a 5 n„o s„o mais suportadas.\n
-1870:peer off   <apelido> - Fecha conex„o(ıes) direta(s) e n„o tenta mais.\n
-1871:Abrindo conex„o v8 para %s:%ld... 
+1869:Vers√µes de protocolo inferiores a 5 n√£o s√£o mais suportadas.\n
+1870:peer off   <apelido> - Fecha conex√£o(√µes) direta(s) e n√£o tenta mais.\n
+1871:Abrindo conex√£o v8 para %s:%ld... 
 1872:falhou: %s (%d)\n
 1873:Cidade de trabalho:
 1874:Estado de trabalho:
 1875:Interesses pessoais:
-1876:HistÛrico pessoal:
+1876:Hist√≥rico pessoal:
 1877:ok.\n
 1878:Erro enquanto lendo do socket: %s (%d)\n
-1879:AfiliaÁıes:
-1880:Pacote chegando n„o È um FLAP: id È %d.\n
+1879:Afilia√ß√µes:
+1880:Pacote chegando n√£o √© um FLAP: id √© %d.\n
 1881:FLAP canal 1 sem dados.\n
 1882:FLAP canal 1 cmd 1 dados extra:\n
 1883:FLAP canal 1 comando desconhecido %d.\n
 1884:FLAP com canal desconhecido %ld recebido.\n
-1885:Conex„o v8 encerrada.\n
-1887:Conexıes:
-1888:n„o disponibilidade em rede
+1885:Conex√£o v8 encerrada.\n
+1887:Conex√µes:
+1888:n√£o disponibilidade em rede
 1889:servidor
 1890:ponto-a-ponto
-1891:Conex„o %ld j· est· aberta.\n
-1892:conn               Lista conexıes disponÌveis.\n
-1893:conn login <nr>    Abre conex„o <nr>.\n
-1894:N„o h· conex„o n˙mero %ld.\n
+1891:Conex√£o %ld j√° est√° aberta.\n
+1892:conn               Lista conex√µes dispon√≠veis.\n
+1893:conn login <nr>    Abre conex√£o <nr>.\n
+1894:N√£o h√° conex√£o n√∫mero %ld.\n
 1895:Login falhou:\n
-1896:Conex„o encerrada com o servidor:\n
+1896:Conex√£o encerrada com o servidor:\n
 1897:TLV %d incompleto, compr %ld de %d - ignorando.\n
 1898:Redirecionando ao servidor %s... 
-1899:FamÌlia requerida desconhecida: %d\n
-1900:Est· somente para leitura.
-1901:autorizou vocÍ para adicion·-lo em sua lista de contatos.\n
-1902:Abrindo conex„o v5 para %s:%ld... 
+1899:Fam√≠lia requerida desconhecida: %d\n
+1900:Est√° somente para leitura.
+1901:autorizou voc√™ para adicion√°-lo em sua lista de contatos.\n
+1902:Abrindo conex√£o v5 para %s:%ld... 
 1903:Pacote v8 do servidor saindo:
-1904:Servidor n„o entende ver %d (apenas %d) para famÌlia %d!\n
+1904:Servidor n√£o entende ver %d (apenas %d) para fam√≠lia %d!\n
 1905:SNAC (%x,%x) [%s] flags %x ref %lx\n
-1907:Aviso: Servidor pensa que nosso UIN È %ld, quando ele È %ld.\n
-1908:Pacote USERONLINE recebido para n„o-contato.\n
-1909:Pacote USEROFFLINE recebido para n„o-contato.\n
+1907:Aviso: Servidor pensa que nosso UIN √© %ld, quando ele √© %ld.\n
+1908:Pacote USERONLINE recebido para n√£o-contato.\n
+1909:Pacote USEROFFLINE recebido para n√£o-contato.\n
 1911:conectando
 1912:fechado
-1914:Incapaz de alocar estrutura de conex„o.\n
-1915:Servidor diz que nÛs estamos a %s.\n
-1918:Pedido do servidor ignorado para um intervalo de relatÛrio de %d.\n
+1914:Incapaz de alocar estrutura de conex√£o.\n
+1915:Servidor diz que n√≥s estamos a %s.\n
+1918:Pedido do servidor ignorado para um intervalo de relat√≥rio de %d.\n
 1919:UIN errado: %ld vs %ld.\n
 1920:Registro de novo UIN recusado.\n
 1921:Conectado
-1922:N„o Perturbe
+1922:N√£o Perturbe
 1923:Ausente
-1924:N„o DisponÌvel
+1924:N√£o Dispon√≠vel
 1925:Ocupado
-1926:InvisÌvel
+1926:Invis√≠vel
 1927:Livre para bate papo
-1929:Usu·rio est· n„o perturbe [Mensagem Autom·tica]
-1931:Sess„o atual est· fechada. Tente outra ou abra esta.\n
+1929:Usu√°rio est√° n√£o perturbe [Mensagem Autom√°tica]
+1931:Sess√£o atual est√° fechada. Tente outra ou abra esta.\n
 1934:conectado
 1935:    tipo %d socket %d ip %s (%d) em [%s,%s] id %lx/%x/%x\n
 1936:Entre idade min (18-22,23-29,30-39,40-49,50-59,60-120):
 1937:Entre idade max (22,29,39,49,59,120):
 1938:Entre sexo:
 1939:Entre uma cidade:
-1940:Resultados de Meta Usu·rio desconhecidos %lx.\n
-1942:EndereÁos de Email adicionais:
-1943:(n„o precisa autorizaÁ„o)
-1944:(deve pedir autorizaÁ„o)
-1945:Resposta de Meta Usu·rio desconhecida
+1940:Resultados de Meta Usu√°rio desconhecidos %lx.\n
+1942:Endere√ßos de Email adicionais:
+1943:(n√£o precisa autoriza√ß√£o)
+1944:(deve pedir autoriza√ß√£o)
+1945:Resposta de Meta Usu√°rio desconhecida
 1947:ouvinte
 1948:Incapaz de encontrar hostname %s: %s.
 1949:falhou:\n
 #1950:Couldn't set socket nonblocking
 1951:Incapaz de encontrar  hostname %s: %s (%d).
-1952:Incapaz de abrir conex„o
+1952:Incapaz de abrir conex√£o
 #1953:couldn't bind socket to free port
 1954:incapaz de ouvir no socket
-1955:Conex„o falhou
-1958:[SOCKS] Pedido de conex„o recusado (%d)
-1960:Entre com os dados para encontrar usu·rio. Entre '.' para iniciar a busca.\n
+1955:Conex√£o falhou
+1958:[SOCKS] Pedido de conex√£o recusado (%d)
+1960:Entre com os dados para encontrar usu√°rio. Entre '.' para iniciar a busca.\n
 1961:URL: %s\n
-1966: Conex„o recusada na porta %ld a %s\n
-1967:Mais InformaÁıes para
-1968:Usu·rio encontrado:\n
+1966: Conex√£o recusada na porta %ld a %s\n
+1967:Mais Informa√ß√µes para
+1968:Usu√°rio encontrado:\n
 1969:desconectado
 1970:conectado
-1971:n„o perturbe
+1971:n√£o perturbe
 1972:ausente
 1973:ocupado
-1974:n„o disponÌvel
-1975:invisÌvel
+1974:n√£o dispon√≠vel
+1975:invis√≠vel
 1976:livre para bate papo
-1977:¡udio e visual
+1977:√Åudio e visual
 1978:Esportes e atletismo
-1979:PublicaÁıes
-1980:AutomaÁ„o Residencial
+1979:Publica√ß√µes
+1980:Automa√ß√£o Residencial
 1981:Org. de Alunos
 1982:Org. de Caridade
 1983:Org. Social/Clube
-1984:Org. Comunit·ria
+1984:Org. Comunit√°ria
 1985:Org. Cultural
-1986:F„ Clubes
-1987:Fraternidade/AssistÍncia
+1986:F√£ Clubes
+1987:Fraternidade/Assist√™ncia
 1988:Org. Passatempos
 1989:Org. Internacional
 1990:Org. Natureza e Ambiente
 1991:Org. Profissional
-1992:Org. TÈcnica/CientÌfica
+1992:Org. T√©cnica/Cient√≠fica
 1993:Grupo de Auto Ajuda
 1994:Org. Religiosa/Espiritual
 1995:Org. Esportes
 1996:Org. Suporte
-1997:Org. NegÛcios e ComÈrcio
-1998:Uni„o
-1999:Org. Volunt·ria
+1997:Org. Neg√≥cios e Com√©rcio
+1998:Uni√£o
+1999:Org. Volunt√°ria
 2000:Entretenimento
-2001:EletrÙnicos de Consumo
+2001:Eletr√¥nicos de Consumo
 2002:Lojas de Utilidades
-2003:Sa˙de e Beleza
-2004:MÌdia
-2005:Produtos domÈsticos
-2006:Cat·logo de pedido por correio
-2007:ServiÁos de negÛcios
-2009:Encontrado um companheiro de bate papo aleatÛrio UIN %ld no grupo de bate papo %d.\n
-2011:VocÍ n„o possui uma conex„o de escuta ponto-a-ponto.\n
+2003:Sa√∫de e Beleza
+2004:M√≠dia
+2005:Produtos dom√©sticos
+2006:Cat√°logo de pedido por correio
+2007:Servi√ßos de neg√≥cios
+2009:Encontrado um companheiro de bate papo aleat√≥rio UIN %ld no grupo de bate papo %d.\n
+2011:Voc√™ n√£o possui uma conex√£o de escuta ponto-a-ponto.\n
 2012:Nenhuma senha fornecida.\n
-2013:Este comando È apenas para v8.\n
-2014:Nenhum n˙mero dado.\n
+2013:Este comando √© apenas para v8.\n
+2014:Nenhum n√∫mero dado.\n
 2015:Nenhuma mensagem dada.\n
-2017:O usu·rio est· conectado, mas possivelmente invisÌvel.\n
-2020:Ficando visÌvel para %s.\n
-2021:Ficando invisÌvel para %s.\n
-2022:O usu·rio est· desconectado.\n
-2023:Conex„o direta fechada pelo ponto.\n
-2024:Vers„o de protocolo %d desconhecida para protocolo ICQ ponto-a-ponto.\n
+2017:O usu√°rio est√° conectado, mas possivelmente invis√≠vel.\n
+2020:Ficando vis√≠vel para %s.\n
+2021:Ficando invis√≠vel para %s.\n
+2022:O usu√°rio est√° desconectado.\n
+2023:Conex√£o direta fechada pelo ponto.\n
+2024:Vers√£o de protocolo %d desconhecida para protocolo ICQ ponto-a-ponto.\n
 2026:TCP cookie:
-2029:Erro de protocolo na conex„o ponto-a-ponto
-2031:Conex„o falhou muito seguidamente, desistindo.\n
-2032:Agendando reconex„o v8 em %d segundos.\n
+2029:Erro de protocolo na conex√£o ponto-a-ponto
+2031:Conex√£o falhou muito seguidamente, desistindo.\n
+2032:Agendando reconex√£o v8 em %d segundos.\n
 2033:nascido hoje
-2034:Abrindo conex„o TCP a %s:%ld... 
-2036:Salvar preferÍncias atuais no disco.
-2037:Abrir ou fechar uma conex„o ponto-a-ponto, ou desabilitar uso de conexıes ponto-a-ponto para <uin> ou <apelido>.
-2038:Abre conex„o n˙mero <nr>, ou a primeira conex„o com o servidor.
+2034:Abrindo conex√£o TCP a %s:%ld... 
+2036:Salvar prefer√™ncias atuais no disco.
+2037:Abrir ou fechar uma conex√£o ponto-a-ponto, ou desabilitar uso de conex√µes ponto-a-ponto para <uin> ou <apelido>.
+2038:Abre conex√£o n√∫mero <nr>, ou a primeira conex√£o com o servidor.
 2039:Envia uma mensagem para o telefone <celular> (do <apelido>).
 2042:Mostra uma lista de pessoas conectadas na sua lista de contatos em um formato de tela cheia.
 2043:Remove todos os contatos em <contatos> do grupo de contatos <grupo>.
-2044:Seleciona, limpa ou mostra uma <opÁ„o>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
-2045:Muda sua visibilidade para <contatos> quando vocÍ estiver conectado.
-2046:VocÍ pode querer usar protocolo vers„o 8 para o protocolo ICQ ponto-a-ponto ao invÈs.\n
-2047:Criando diretÛrio %s.\n
-2048:Salvando preferÍncias para %s.\n
+2044:Seleciona, limpa ou mostra uma <op√ß√£o>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
+2045:Muda sua visibilidade para <contatos> quando voc√™ estiver conectado.
+2046:Voc√™ pode querer usar protocolo vers√£o 8 para o protocolo ICQ ponto-a-ponto ao inv√©s.\n
+2047:Criando diret√≥rio %s.\n
+2048:Salvando prefer√™ncias para %s.\n
 2049:Recebendo grupo "%s":\n
 2051:Erro no socket: %s (%d)\n
-2054:A mensagem "livre para bate papo" È:
-2055:Usu·rio est· livre para pate papo e quer conversar sobre qualquer coisa.
+2054:A mensagem "livre para bate papo" √©:
+2055:Usu√°rio est√° livre para pate papo e quer conversar sobre qualquer coisa.
 2056:getauto [auto] <apelido> - Busca a auto-resposta para o contato.\n
 2057:getauto away   <apelido> - Busca a auto-resposta para ausente do contato.\n
-2058:getauto na     <apelido> - Busca a auto-resposta para n„o disponÌvel do contato.\n
-2059:getauto dnd    <apelido> - Busca a auto-resposta para do n„o perturbe do contato.\n
+2058:getauto na     <apelido> - Busca a auto-resposta para n√£o dispon√≠vel do contato.\n
+2059:getauto dnd    <apelido> - Busca a auto-resposta para do n√£o perturbe do contato.\n
 2060:getauto ffc    <apelido> - Busca a auto-resposta para livre para bate papo do contato.\n
-2063:VocÍ precisa salvar sua senha no seu arquivo ~/.micq/micqrc.\n
+2063:Voc√™ precisa salvar sua senha no seu arquivo ~/.micq/micqrc.\n
 2065:Comando TCP_MSG_GREET_ %04x desconhecido.\n
 2066:Comando TCP_MSG_ %04x desconhecido.\n
 2067:e/s arquivo
-2068:Abrindo conex„o de transferÍncia de arquivo para %s:%ld... \n
-2070:TransferÍncia de arquivo '%s' para porta %ld.\n
-2071:N„o pude determinar arquivo %s: %s (%d)\n
-2072:TransferÍncia de arquivo #%ld (%s) cancelada devido ‡ conex„o fechada.\n
-2073:Uso de memÛria: processando %ld pacotes.\n
+2068:Abrindo conex√£o de transfer√™ncia de arquivo para %s:%ld... \n
+2070:Transfer√™ncia de arquivo '%s' para porta %ld.\n
+2071:N√£o pude determinar arquivo %s: %s (%d)\n
+2072:Transfer√™ncia de arquivo #%ld (%s) cancelada devido √† conex√£o fechada.\n
+2073:Uso de mem√≥ria: processando %ld pacotes.\n
 2078:Pacote TCP saindo (%d - %s): %s
 2079:Pacote TCP chegando (%d - %s): %s
 2080:Resposta de entrega do servidor SMS:\n%s\n
 2081:    a %p parent %p assoc %p\n
-2082:Abrindo conex„o ouvinte de arquivo no host local :%ld... 
-2083:Arquivo %s n„o pode ser aberto: %s (%d).\n
-2084:Erro durante procura por equivalÍncia %ld: %s (%ld).\n
+2082:Abrindo conex√£o ouvinte de arquivo no host local :%ld... 
+2083:Arquivo %s n√£o pode ser aberto: %s (%d).\n
+2084:Erro durante procura por equival√™ncia %ld: %s (%ld).\n
 2086:Erro durante leitura do arquivo %s: %s (%d).\n
 2087:Envio de arquivo %s finalizado.\n
 2088:Envio de todos os %d arquivos finalizado.\n
 2089:ouvinte de arquivo
 2090:arquivo ponto-a-ponto
-2091:Colocando %s na fila como %s para transferÍncia.\n
-2092:Mensagem TCP %s descartada - sess„o perdida.\n
-2093:%02d %-13s vers„o %d para %s (%lx), a %s:%ld %s\n
-2094:conn login         Abre primeira conex„o com o servidor.\n
-2095:conn remove <nr>   Remove conex„o <nr>.\n
-2096:Conex„o %ld n„o est· aberta.\n
-2097:conn select <nr>   Seleciona conex„o <nr> como conex„o servidor.\n
-2098:Conex„o %ld n„o È uma conex„o servidor.\n
-2099:Selecionada conex„o %ld (vers„o %d, UIN %ld) como conex„o atual.\n
-2100:conn select <uin>  Seleciona conex„o com UIN <uin> como conex„o servidor.\n
-2101:Removendo conex„o %ld e seus dependentes completamente.\n
-2102:Conex„o %ld È uma conex„o configurada.\n
+2091:Colocando %s na fila como %s para transfer√™ncia.\n
+2092:Mensagem TCP %s descartada - sess√£o perdida.\n
+2093.%02d %-13s vers√£o %d para %s (%lx), a %s:%ld %s\n
+2094:conn login         Abre primeira conex√£o com o servidor.\n
+2095:conn remove <nr>   Remove conex√£o <nr>.\n
+2096.Conex√£o %ld n√£o est√° aberta.\n
+2097:conn select <nr>   Seleciona conex√£o <nr> como conex√£o servidor.\n
+2098:Conex√£o %ld n√£o √© uma conex√£o servidor.\n
+2099:Selecionada conex√£o %ld (vers√£o %d, UIN %ld) como conex√£o atual.\n
+2100:conn select <uin>  Seleciona conex√£o com UIN <uin> como conex√£o servidor.\n
+2101:Removendo conex√£o %ld e seus dependentes completamente.\n
+2102:Conex√£o %ld √© uma conex√£o configurada.\n
 2103:contact show    Mostra lista de contatos no lado do servidor.\n
-2104:contact diff    Mostra contatos no servidor que n„o est„o na lista local.\n
+2104:contact diff    Mostra contatos no servidor que n√£o est√£o na lista local.\n
 2105:contact import  Adiciona lista do servidor na lista de contatos local.\n
-2106:⁄ltima mensagem de %s%s%s a %s:\n
+2106:√öltima mensagem de %s%s%s a %s:\n
 2107:Nenhuma mensagem recebida de %s%s%s.\n
 2108:auto
-2109:vers„o
-2110:peer files <apelido> <arquivo1> <como1> ... [<descriÁ„o>]\n
-2111:                  - Envia arquivo1 como como1, ..., com descriÁ„o.\n
-2112:                  - como = '/': retira caminho, como = '.': como È\n
+2109:vers√£o
+2110:peer files <apelido> <arquivo1> <como1> ... [<descri√ß√£o>]\n
+2111:                  - Envia arquivo1 como como1, ..., com descri√ß√£o.\n
+2112:                  - como = '/': retira caminho, como = '.': como √©\n
 2113:Estado desconhecido '%s'.\n
-2114:O comando chamado '%s' n„o existe.\n
-2115:'%s' n„o È um inteiro.\n
+2114:O comando chamado '%s' n√£o existe.\n
+2115:'%s' n√£o √© um inteiro.\n
 2116:Nenhum apelido dado.\n
 2117:%ld adicionado como %s.\n
-2118:Sem memÛria.\n
-2119:auth [grant] <apelido>    - concede autorizaÁ„o.\n
-2120:auth deny <apelido> <msg> - recusa autorizaÁ„o.\n
-2121:auth req  <apelido> <msg> - pede autorizaÁ„o.\n
-2122:Nota: VocÍ precisa salvar ('save') para gravar a nova senha no disco.\n
+2118:Sem mem√≥ria.\n
+2119:auth [grant] <apelido>    - concede autoriza√ß√£o.\n
+2120:auth deny <apelido> <msg> - recusa autoriza√ß√£o.\n
+2121:auth req  <apelido> <msg> - pede autoriza√ß√£o.\n
+2122:Nota: Voc√™ precisa salvar ('save') para gravar a nova senha no disco.\n
 2123:%sErro de sintaxe %s: Poucos argumentos: '%s'\n
-2124:%sErro de sintaxe%s: N„o È um inteiro: '%s'\n
-2126:est· desconectado, mensagem acumulada no servidor.\n
+2124:%sErro de sintaxe%s: N√£o √© um inteiro: '%s'\n
+2126:est√° desconectado, mensagem acumulada no servidor.\n
 2127:       URL: %s %s%s%s\n
-2128: DescriÁ„o: %s%s%s\n
+2128: Descri√ß√£o: %s%s%s\n
 2129:         URL: %s%s%s\n
 2130:Compondo mensagem para %stodos%s:\n
 2131:Compondo mensagem para %s%s%s:\n
-2133:Cor est· %s%s%s.\n
-2134:Mensagens engraÁadas s„o %s%s%s.\n
-2135:SaÌda silenciosa est· %s%s%s.\n
+2133:Cor est√° %s%s%s.\n
+2134:Mensagens engra√ßadas s√£o %s%s%s.\n
+2135:Sa√≠da silenciosa est√° %s%s%s.\n
 2136:Senha alterada foi %s%s%s.\n
-2137:MudanÁa de informaÁıes sobre foi %s%s%s.\n
-2138:MudanÁa de informaÁıes foi %s%s%s.\n
-2139:Outra mudanÁa de informaÁıes foi %s%s%s.\n
-2140:MudanÁa de grupo de bate papo aleatÛrio foi %s%s%s.\n
+2137:Mudan√ßa de informa√ß√µes sobre foi %s%s%s.\n
+2138:Mudan√ßa de informa√ß√µes foi %s%s%s.\n
+2139:Outra mudan√ßa de informa√ß√µes foi %s%s%s.\n
+2140:Mudan√ßa de grupo de bate papo aleat√≥rio foi %s%s%s.\n
 2141:Busca %sfalhou%s.\n
-2142:Conex„o direta com %s impossÌvel.\n
-2145:auth add  <apelido>       - adicionar autorizaÁ„o.\n
-2146:'%s' j· È um alias para '%s' (%ld).\n
-2147:'%s' (%ld) j· È usado para um apelido.\n
+2142:Conex√£o direta com %s imposs√≠vel.\n
+2145:auth add  <apelido>       - adicionar autoriza√ß√£o.\n
+2146:'%s' j√° √© um alias para '%s' (%ld).\n
+2147:'%s' (%ld) j√° √© usado para um apelido.\n
 2148:Adicionado '%s' como um alias para '%s' (%ld).\n
 2149:Removido alias '%s' para '%s' (%ld).\n
 2150:Removido contato '%s' (%ld).\n
-2156:conn close <nr>    Fecha conex„o <nr>.\n
+2156:conn close <nr>    Fecha conex√£o <nr>.\n
 2157:Moldova
 2158:Nenhum arquivo dado.\n
 2159:Alguns arquivos.
-2160:peer file  <apelido> <arquivo> [<descriÁ„o>]\n
+2160:peer file  <apelido> <arquivo> [<descri√ß√£o>]\n
 2161:Recebendo %ld arquivos juntos com %ld bytes na velocidade %lx de %s.\n
 2162:Recebendo arquivo %s (%s) com %ld bytes como %s.\n
-2163:Enviando arquivo %ld na equivalÍncia %ld.\n
+2163:Enviando arquivo %ld na equival√™ncia %ld.\n
 2164:Erro escrevendo arquivo.\n
 2165:O ponto enviou mais bytes (%ld) que o tamanho do arquivo (%ld).\n
-2166:RecepÁ„o de arquivo finalizada.\n
+2166:Recep√ß√£o de arquivo finalizada.\n
 2167:Erro - pacote desconhecido.\n
-2168:TransferÍncia de arquivo #%ld (%s) abandonada apÛs %ld tentativas devido „o timeout.\n
-2169:TransferÍncia de arquivo abortada pelo ponto (%d).\n
+2168:Transfer√™ncia de arquivo #%ld (%s) abandonada ap√≥s %ld tentativas devido √£o timeout.\n
+2169:Transfer√™ncia de arquivo abortada pelo ponto (%d).\n
 2170:Enviando com velocidade %lx para %s.\n
-2171:AvanÁado  
-2172:Comandos para caracterÌsticas avanÁadas.
-2176:Mostra informaÁıes do estado atual de todos na sua lista de contatos.
-2177:Mostra informaÁıes do estado atual de pessoas conectadas na sua lista de contatos.
-2179:Envia a todos os <contatos> um ˙nico arquivo.
+2171:Avan√ßado  
+2172:Comandos para caracter√≠sticas avan√ßadas.
+2176:Mostra informa√ß√µes do estado atual de todos na sua lista de contatos.
+2177:Mostra informa√ß√µes do estado atual de pessoas conectadas na sua lista de contatos.
+2179:Envia a todos os <contatos> um √∫nico arquivo.
 2180:Envia a <uin> ou <apelido> diversos arquivos.
-2181:Fecha ou remove conex„o n˙mero <nr>.
-2182:Seleciona conex„o servidor n˙mero <nr> como conex„o servidor atual.
-2183:Verifica se todos os <contatos> est„o desconectados ou invisÌveis.
+2181:Fecha ou remove conex√£o n√∫mero <nr>.
+2182:Seleciona conex√£o servidor n√∫mero <nr> como conex√£o servidor atual.
+2183:Verifica se todos os <contatos> est√£o desconectados ou invis√≠veis.
 2184:%s%-10s%s - %s\n
-2185:Fechando conex„o %ld.\n
+2185:Fechando conex√£o %ld.\n
 2186:Aceitando arquivo '%s' (%ld bytes).\n
-2188:VocÍ est· enviando dados muito r·pido - pare de digitar agora, ou o servidor ir· desconectar!\n
-2191:Erro de mensagem instant‚nea: %d.\n
+2188:Voc√™ est√° enviando dados muito r√°pido - pare de digitar agora, ou o servidor ir√° desconectar!\n
+2191:Erro de mensagem instant√¢nea: %d.\n
 2192:Habilidades: 
-2194:N„o sei como abrir este tipo de conex„o.\n
-2195:N˙mero obsoleto:
+2194:N√£o sei como abrir este tipo de conex√£o.\n
+2195:N√∫mero obsoleto:
 2196:Texto obsoleto:
 2197:Byte Obsoleto
-2198:Senha imprÛpria '%s' - n„o deve comeÁar com o byte 0xf3.\n
+2198:Senha impr√≥pria '%s' - n√£o deve come√ßar com o byte 0xf3.\n
 2199:  -h, --help     gera esta texto de ajuda\n
-2200:  -v, --verbose  ajusta (ou aumenta) nÌvel de informaÁ„o verbal (a maioria para depuraÁ„o)\n
-2201:  -b, --basedir  usa BASE dir dado (padr„o: %s)\n
-2202:  -f, --config   usa arquivo de configuraÁ„o dado (padr„o: %s)\n
-2203:  -l, --logplace usa arquivo/dir log dado (padr„o: %s)\n
-2204:  -i, --i18n     usa locale dado (padr„o: auto-detectado)\n
+2200:  -v, --verbose  ajusta (ou aumenta) n√≠vel de informa√ß√£o verbal (a maioria para depura√ß√£o)\n
+2201:  -b, --basedir  usa BASE dir dado (padr√£o: %s)\n
+2202:  -f, --config   usa arquivo de configura√ß√£o dado (padr√£o: %s)\n
+2203:  -l, --logplace usa arquivo/dir log dado (padr√£o: %s)\n
+2204:  -i, --i18n     usa locale dado (padr√£o: auto-detectado)\n
 2205:  -c, --nocolor  desabilita cores\n
-2206:O servidor n„o quer dar-nos mensagens desconectadas.\n
+2206:O servidor n√£o quer dar-nos mensagens desconectadas.\n
 2207:Erro de protocolo no comando a um servidor ICQ antigo: %d.\n
-2208:Detectada codificaÁ„o UTF-8, entretanto, este mICQ foi compilado sem suporte a UTF-8.\n
-2209:Detectada codificaÁ„o UTF-8.\n
-2210:%smICQ (clone ICQ do Matt)%s vers„o %s%s%s (compilado em %s)\n
-2211:Seu estado È %s.\n
+2208:Detectada codifica√ß√£o UTF-8, entretanto, este mICQ foi compilado sem suporte a UTF-8.\n
+2209:Detectada codifica√ß√£o UTF-8.\n
+2210.%smICQ (clone ICQ do Matt)%s vers√£o %s%s%s (compilado em %s)\n
+2211:Seu estado √© %s.\n
 2212:teve estado alterado para %s
 2213:conectou (%s)
 2214:Info para %s%lu%s:\n
-2215:Este mICQ n„o pode converter entre SJIS ou EUC e unicode.\n
-2216:Este mICQ n„o conhece a codificaÁ„o '%s'.\n
-2217:Este mICQ n„o pode converter entre '%s' e unicode.\n
+2215:Este mICQ n√£o pode converter entre SJIS ou EUC e unicode.\n
+2216:Este mICQ n√£o conhece a codifica√ß√£o '%s'.\n
+2217:Este mICQ n√£o pode converter entre '%s' e unicode.\n
 2218:UIN: %s\n
 2220:diversos
-2221:Removidos contatos tempor·rios '%s' (%ld).\n
+2221:Removidos contatos tempor√°rios '%s' (%ld).\n
 2222:Comando script '%s' falhou: %s (%d).\n
 2223:Abrindo FIFO de controle remoto a %s... 
 2225:ctrl. remoto
 2226:Incapaz de criar FIFO
 2227:Incapaz de abrir FIFO
-2228:Incapaz de ajustar FIFO para n„o bloquear
-2229:Recusando pedido de arquivo '%s' (%ld bytes): %s.\n
+2228:Incapaz de ajustar FIFO para n√£o bloquear
+2229.Recusando pedido de arquivo '%s' (%ld bytes): %s.\n
 2230:Recusando pedido de bate papo (%s/%s) de %s.\n
-2231:TransferÍncia de arquivo '%s' rejeitado pelo ponto: %s.\n
-2232:pede autorizaÁ„o: %s%s\n
-2233:autorizaÁ„o recusada: %s%s\n
-2234:Mensagem %s descartada - sess„o perdida.\n
+2231.Transfer√™ncia de arquivo '%s' rejeitado pelo ponto: %s.\n
+2232:pede autoriza√ß√£o: %s%s\n
+2233:autoriza√ß√£o recusada: %s%s\n
+2234:Mensagem %s descartada - sess√£o perdida.\n
 2235:Nenhum apelido dado.\n
-2236:InformaÁıes para %s%s%s (%ld):\n
-2237:Disponibilidade em rede:
+2236:Informa√ß√µes para %s%s%s (%ld):\n
+2237:Presen√ßa na rede:
 2238:Esconder IP:
 2239:Mais desconhecido:
 2240:Nenhum grupo de contatos dado.\n
 2241:Adicionado '%s' para o grupo de contatos '%s'.\n
 2242:Importados %d novos contatos, adicionados %d vezes para um grupo de contatos.\n
 2243:Contato '%s' removido do grupo '%s'.\n
-2244:Grupo de contatos '%s' j· possui o contato '%s' (%ld).\n
+2244:Grupo de contatos '%s' j√° possui o contato '%s' (%ld).\n
 2245:Adicionado grupo de contatos '%s'.\n
-2246:Contato '%s' n„o est· no grupo '%s'.\n
+2246:Contato '%s' n√£o est√° no grupo '%s'.\n
 2247:Incapaz de ler meta dados para '%s' (%ld).\n
 2248:Meta dados salvos para '%s' (%ld).\n
 2249:Incapaz de salvar meta dados para '%s' (%ld).\n
-2250:N˙mero '%s' n„o est· no formato +<cÛdigo_paÌs><provedor_celular><n˙mero>.\n
+2250:N√∫mero '%s' n√£o est√° no formato +<c√≥digo_pa√≠s><provedor_celular><n√∫mero>.\n
 2251:Erro:
-2252:Um bipe È gerado pelo %sbipe%s.\n
-2253:Um bipe È gerado rodando o script %seventos%s.\n
-2254:Um bipe n„o È nunca gerado.
-2255:Um bipe por contatos ficando conectados È sempre gerado rodando o script %seventos%s.\n
-2256:Um bipe por contatos ficando desconectados È sempre gerado rodando o script %seventos%s.\n
-2257:CodificaÁ„o:
-2258:Nenhum pedido de transferÍncia de arquivos pendente encontrado para %s (seq¸Íncia %ld).\n
-2259:pede transferÍncia de arquivo '%s' de %ld bytes (seq¸Íncia %ld).\n
-2260:Por favor tente o comando getauto ao invÈs.\n
-2261:Hermit Ès %s%s%s.\n
-2262:Interpretar um caractere delete como backspace est· %s%s%s.\n
-2263:Logando est· %s%s%s.\n
-2264:Logando mudanÁas de estado est· %s%s%s.\n
-2265:Respostas autom·ticas s„o %s%s%s.\n
-2266:Ter o ˙ltimo apelido no prompt est· %s%s%s.\n
-2267:Salvar automaticamente est· %s%s%s.\n
-2268:'Finger' autom·tico de novos UINs est· %s%s%s.\n
+2252:Um bipe √© gerado pelo %sbipe%s.\n
+2253:Um bipe √© gerado rodando o script %seventos%s.\n
+2254:Um bipe n√£o √© nunca gerado.
+2255:Um bipe por contatos ficando conectados √© sempre gerado rodando o script %seventos%s.\n
+2256:Um bipe por contatos ficando desconectados √© sempre gerado rodando o script %seventos%s.\n
+2257:Codifica√ß√£o:
+2258:Nenhum pedido de transfer√™ncia de arquivos pendente encontrado para %s (seq√º√™ncia %ld).\n
+2259:pede transfer√™ncia de arquivo '%s' de %ld bytes (seq√º√™ncia %ld).\n
+2260:Por favor tente o comando getauto ao inv√©s.\n
+2261:Hermit √©s %s%s%s.\n
+2262:Interpretar um caractere delete como backspace est√° %s%s%s.\n
+2263:Logando est√° %s%s%s.\n
+2264:Logando mudan√ßas de estado est√° %s%s%s.\n
+2265:Respostas autom√°ticas s√£o %s%s%s.\n
+2266:Ter o √∫ltimo apelido no prompt est√° %s%s%s.\n
+2267:Salvar automaticamente est√° %s%s%s.\n
+2268:'Finger' autom√°tico de novos UINs est√° %s%s%s.\n
 2269:break
 2270:simple
 2271:indent
 2272:smart
 2273:cycle
 2274:cycleall
-2275:Estilo tab est· %s%s%s.\n
+2275:Estilo tab est√° %s%s%s.\n
 2276:completo
-2277:    hermit:     ignora todos os n„o-contatos.\n
+2277:    hermit:     ignora todos os n√£o-contatos.\n
 2278:    delbs:      interpreta caracteres delete como backspace.\n
 2279:    log:        fazer logging.\n
-2280:    logonoff:   tambÈm logar mudanÁas de estado.\n
+2280:    logonoff:   tamb√©m logar mudan√ßas de estado.\n
 2281:    auto:       enviar auto-respostas.\n
-2282:    uinprompt:  ter o ˙ltimo apelido no prompt.\n
+2282:    uinprompt:  ter o √∫ltimo apelido no prompt.\n
 2283:    autosave:   automaticamente salvar o micqrc.\n
 2284:    autofinger: automaticamente 'finger' novos UINs.\n
 2285:    linebreak:  estilo para quebra de linha das mensagens: simple, break, indent, smart.\n
 2286:    tabs:       estilo para manipular tab: simple, cycle, cycleall.\n
-2287:    silent:     suprimir alguma saÌda: off, on, complete.\n
-2288:Estilo de identaÁ„o est· %s%s%s.\n
-2289:ªªª
-2290:´´´
-2291:>>ª
-2292:´<<
+2287:    silent:     suprimir alguma sa√≠da: off, on, complete.\n
+2288:Estilo de identa√ß√£o est√° %s%s%s.\n
+2289:¬ª¬ª¬ª
+2290:¬´¬´¬´
+2291:>>¬ª
+2292:¬´<<
 2293:--=
 2294:===
 2295:>>>
 2296:<<<
-2297:Alias para o quÍ?\n
+2297:Alias para o qu√™?\n
 2298:Remover qual alias?\n
-2299:Alias n„o existe.\n
+2299:Alias n√£o existe.\n
 2300:Seleciona um alias ou lista aliases atuais.
 2301:Apaga um alias.
-2302:Muitos nÌveis de expans„o de um alias; provavelmente um laÁo infinito.\n
-2303:Caractere inv·lido 0x%x no nome do alias.\n
-2304:Pega resposta autom·tica de todos os <contatos> para o estado atual, ausente, n„o disponÌvel, n„o perturbe, ocupado, ou livre para bate papo.
+2302:Muitos n√≠veis de expans√£o de um alias; provavelmente um la√ßo infinito.\n
+2303:Caractere inv√°lido 0x%x no nome do alias.\n
+2304:Pega resposta autom√°tica de todos os <contatos> para o estado atual, ausente, n√£o dispon√≠vel, n√£o perturbe, ocupado, ou livre para bate papo.
 2305:Manipula meta dados de contatos.
 2306:Pede a lista de contatos do servidor e mostra todos ou novos contatos ou importa.
 2307:Mostra o estado atual das pessoas conectadas na sua lista de contatos, classificadas por grupos de contatos.
 2308:Mostra o estado atual de todos em sua lista de contatos, classificado por grupos de contatos.
-2309:Mostra informaÁıes do estado atual das pessoas conectadas na sua lista de contatos, classificadas por grupos de contatos.
-2310:Mostra informaÁıes do estado atual de todos em sua lista de contatos, classificado por grupos de contatos.
+2309:Mostra informa√ß√µes do estado atual das pessoas conectadas na sua lista de contatos, classificadas por grupos de contatos.
+2310:Mostra informa√ß√µes do estado atual de todos em sua lista de contatos, classificado por grupos de contatos.
 2311:Adiciona <uin> como <novo apelido>, ou adiciona alias <novo apelido> para <uin> ou <apelido>.
 2312:Remove todos os aliases em <contatos>, remove contato se 'all' for dado.
-2313:Concede, recusa, pede ou reconhece autorizaÁ„o de/para <contatos> para vocÍ/eles em sua(s) listas de contatos.
-2314:Estes s„o comandos avanÁados. Esteja certo de ter que ler as p·ginas de manual para informaÁıes completas.\n
+2313:Concede, recusa, pede ou reconhece autoriza√ß√£o de/para <contatos> para voc√™/eles em sua(s) listas de contatos.
+2314:Estes s√£o comandos avan√ßados. Esteja certo de ter que ler as p√°ginas de manual para informa√ß√µes completas.\n
 2315:Incapaz de observar estado de %s - muitos observadores.\n
-2317:TraduÁ„o %s n„o encontrada. VocÍ gostaria de traduzir o mICQ para o seu idiome?\n
-2318:TraduÁ„o portuguesa (%s) carregada (%ld entradas).\n
-2319:Aceita um arquivo vindo de <uin> ou <nick>.
-2320:peer accept <nick> [<id>]\n                  - aceita uma transferÍncia de arquivo chegando.\n
-2327:%smICQ (clone ICQ do Matt)%s vers„o %s%s%s\n
+2317:Tradu√ß√£o %s n√£o encontrada. Voc√™ gostaria de traduzir o mICQ para o seu idiome?\n
+2318:Tradu√ß√£o portuguesa (%s) carregada (%ld entradas).\n
+2319:Aceita um arquivo vindo de <uin> ou <apelido>.
+2320:peer accept <apelido> [<id>]\n                  - aceita uma transfer√™ncia de arquivo chegando.\n
+2327:%smICQ (clone ICQ do Matt)%s vers√£o %s%s%s\n
+2328:Voc√™ logou muito freq√ºentemente, por favor espere 30 minutos antes de tentar novamente\n
+2329:erro de sintaxe
+2330:removendo n√£o-contato
+2331:desconhecido
+2332:Erro de contato %d (%s) para %d contatos: 
+2333:%s [show|load|save|set|get|rget] <contacts> - manipular meta dados para contatos.\n
+2334:  show - mostra meta dados conhecidos atualmente\n
+2335:  load - l√™ de arquivo e mostra meta dados\n
+2336:  save - salva meta dados em arquivo\n
+2337:  set  - envia os pr√≥prios meta dados para o servidor\n
+2338:  get  - pede meta dados para o servidor\n
+2339:  rget - pede os √∫ltimos meta dados do remetente para o servidor\n
+2340:Transfer√™ncia de arquivo '%s' rejeitado pelo ponto: %s%s.\n
+2341:Recusando pedido de arquivo '%s' (%ld bytes): %s%s.\n
+2342:Scripting
+2343:Extens√µes para scripting.
+2344:Executar script Tcl de <arquivo>.
+2345:Executar script Tcl em <texto>.
+2346:Os seguintes comandos TCL s√£o suportados:\n
+2347:micq receive <script> [<contato>]
+2348:Instalar la√ßo para receber mensagens de UIN ou apelido, ou todos se omitido.
+2349:Argumentos de retorno: da mensagem
+2350:micq unreceive [<contato>]
+2351:Desinstalar la√ßo de mensagem para UIN ou apelido.
+2352:micq event <script>
+2353:Instalar la√ßo de evento. Argumentos de retorno: tipo ...
+2354:micq unevent
+2355:Desinstalar la√ßo de evento.
+2356:Listar todos os la√ßo instalados. Formato: <tipo> <comando> <filtro>.
+2357:micq exec <cmd>
+2358:Executar comando micq.
+2359:micq nick <uin>
+2360:Procurar apelido de <uin>.
+2361:N√∫mero errado de argumentos para comando '%s %s'. %d esperado.\n
+2362:N√∫mero errado de argumentos. Tente 'help'.
+2363:Erro: 'micq exec' recursivo n√£o permitido.
+2364:Nenhuma conex√£o encontrada.
+2365:comando desconhecido: %s
+2366:erro TCL no arquivo %s: %s\n
+2367:erro TCL: %s\n
+2368:peer deny <apelido> [<id>] [<raz√£o>]\n               - rejeita pedido para transferir arquivo.\n
+2369:Rejeita pedido para transferir arquivo de <uin> ou <apelido>.
+2370:%02d %-13s vers√£o %d%s para %s (%lx), a %s:%ld %s\n
+2371:inicializa√ß√£o SSL falhou.\n
+2372:Imposs√≠vel enviar pedido SSL para %s\n
+2373:Erro durante leitura do socket (SSL): %s (%d)\n
+2374:erro SSL: %s [%d]\n
+2375:negocia√ß√£o SSL ok\n
+2376:leitura SSL de %s [ERR=%d]: %s
+2377:escrita SSL para %s [ERR=%d]: %s
+2378:peer ssl <apelido>   - inicia negocia√ß√£o SSL.
+2379:¬ª%¬ª
+2380:¬´%¬´
+2381:Eu irei adicionar o autor do mICQ √† sua lista de contatos para sua conveni√™ncia. N√£o abuse desta oportunidade - por favor use o comando help e tente seriamente ler as p√°ginas de manual e o FAQ antes de fazer perguntas.\n
+2382:Conex√£o Ponto-a-ponto n√£o associada √† conex√£o do servidor, descartando.\n
+2383:V√™ suas √∫ltimas mensagens de <contato>. Tecle 'h' como um comando abreviado.
+2384:Busca em caso insensitivo de <padr√£o> no arquivo log de <contato>.
+2385:Imposs√≠vel abrir %s para leitura: %s (%d).\n
+2386:Encontrados %s%d%s ocorr√™ncias.\n
+2387:%s <contato> [<√∫ltimo> [<count>]] -- Mostra o hist√≥rico de <contato>.\n
+2388:%s <contato> <padr√£o> -- Busca <padr√£o> em caso insensitivo no hist√≥rico de <contato>.\n
+2389:%s <contato> <padr√£o> -- Busca <padr√£o> em caso sensitivo no hist√≥rico de <contato>.\n
+2390:Padr√£o vazio ou nenhum dado.\n
+2391:Busca em caso sensitivo de <padr√£o> no arquivo log de <contato>.
+2392:Seu estado √© %s (%s).\n
+#2393:%m/%d/%Y
+#2394: %I:%M %p
+#2395:View your messages of <contact> since <date>.
+#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
