@@ -2083,11 +2083,11 @@ JUMP_F(CmdUserAbout)
         if (!strcmp (args, END_MSG_STR))
         {
             Update_About (sok, msg);
-            return 2;
+            return 0;
         }
         else if (!strcmp (args, CANCEL_MSG_STR))
         {
-            return 2;
+            return 0;
         }
         else
         {
@@ -2264,6 +2264,6 @@ void CmdUserProcess (SOK_T sok, const char *command, int *idle_val, int *idle_fl
             }
         }
     }
-    if ((!status || (status == 2)) && !Quit && !command)
+    if (!status && !Quit && !command)
         Prompt ();
 }

@@ -1,4 +1,7 @@
 
+2001-06-27 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Tiny fix for double prompts printed when replying.
+
 2001-06-25 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Core dump fixes. Lots of 'em.
 	* lang/*.i18n: regenerate, update en_fun, de.
