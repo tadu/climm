@@ -533,6 +533,7 @@ BOOL s_parse_s (char **input, char **parsed, char *sep)
         if (*p == '"' && s)
         {
             *q = '\0';
+            *parsed++;
             *input = p + 1;
             return TRUE;
         }
@@ -637,12 +638,12 @@ BOOL s_parsenick_s (char **input, Contact **parsed, char *sep, Contact **parsedr
 }
 
 /*
- * Finds the remaining non-whitespace line.
+ * Finds the remaining non-whitespace line, but parses '\'.
  */
 BOOL s_parserem_s (char **input, char **parsed, char *sep)
 {
     static char *t = NULL;
-    char *p = *input, *q, s = 0;
+    char *p = *input, *q;
     
     while (*p && strchr (sep, *p))
         p++;
@@ -653,22 +654,29 @@ BOOL s_parserem_s (char **input, char **parsed, char *sep)
         return FALSE;
     }
 
-    if (*p == '"')
-        s = 1;
-    
     s_repl (&t, p);
-    *parsed = q = t + s;
-    q = q + strlen (q) - 1;
-    while (strchr (sep, *q))
-        *(q--) = '\0';
-    if (s)
+    *parsed = t;
+    for (q = t ; *p; )
     {
-        if (*q == '"')
-            *(q--) = '\0';
+        if (*p == '\\')
+        {
+            p++;
+            if (*p == 'x' && p[1] && p[2])
+            {
+                p++;
+                *q = (*p >= '0' && *p <= '9' ? *p - '0' : *p >= 'a' && *p <= 'f' ? *p - 'a' + 10 : *p - 'A' + 10) << 4;
+                p++;
+                *q = *p >= '0' && *p <= '9' ? *p - '0' : *p >= 'a' && *p <= 'f' ? *p - 'a' + 10 : *p - 'A' + 10;
+                p++, q++;
+            }
+            else if (*p)
+                *(q++) = *(p++);
+        }
         else
-            (*parsed)--;
+            *(q++) = *(p++);
     }
-    *input = p + strlen (p);
+    *q = '\0';
+    *input = p;
     return TRUE;
 }
 
