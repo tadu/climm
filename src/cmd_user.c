@@ -3211,10 +3211,8 @@ static JUMP_F(CmdUserSearch)
                     SnacCliSearchbypersinf (conn, NULL, NULL, arg1, par->txt);
                 else
                     CmdPktCmdSearchUser (conn, NULL, NULL, arg1, par->txt);
-                free (arg1);
-                return 0;
             }
-            if (strchr (arg1, '@'))
+            else if (strchr (arg1, '@'))
             {
                 if (conn->type == TYPE_SERVER)
                     SnacCliSearchbymail (conn, arg1);
