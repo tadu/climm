@@ -87,6 +87,10 @@ typedef struct Extra_s                 Extra;
 #define STATUSF_AWAY      0x00000001
 #define STATUSF_FFC       0x00000020
 #define STATUSF_BIRTH     0x00080000
+#define STATUSF_WEBAWARE  0x00010000
+#define STATUSF_IP        0x00020000
+#define STATUSF_DC_AUTH   0x10000000
+#define STATUSF_DC_CONT   0x20000000
 
 #define STATUS_OFFLINE    0xffffffff
 #define STATUS_INV         STATUSF_INV

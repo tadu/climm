@@ -657,6 +657,14 @@ void Read_RC_File (FILE *rcf)
                         which = -3;
                     else if (!strcasecmp (cmd, "silent"))
                         which = -4;
+                    else if (!strcasecmp (cmd, "webaware"))
+                        which = FLAG_WEBAWARE;
+                    else if (!strcasecmp (cmd, "hideip"))
+                        which = FLAG_HIDEIP;
+                    else if (!strcasecmp (cmd, "dcauth"))
+                        which = FLAG_DC_AUTH;
+                    else if (!strcasecmp (cmd, "dccont"))
+                        which = FLAG_DC_CONT;
                     else
                         ERROR;
                     if (which > 0)
@@ -1246,6 +1254,14 @@ int Save_RC ()
     fprintf (rcf, "set tabs       %s # type of tab completion (simple, cycle, cycleall)\n\n",
                     prG->tabs == TABS_SIMPLE ? "simple" :
                     prG->tabs == TABS_CYCLE ? "cycle" : "cycleall");
+    if (prG->flags & FLAG_WEBAWARE)
+        fprintf (rcf, "set webaware   %s # whether to be globally webaware\n", "on");
+    if (prG->flags & FLAG_HIDEIP)
+        fprintf (rcf, "set hideip     %s # whether to hide the local IP globally\n", "on");
+    if (prG->flags & FLAG_DC_AUTH)
+        fprintf (rcf, "set dcauth     %s # whether to allow dc only from authorized contacts\n", "on");
+    if (prG->flags & FLAG_DC_CONT)
+        fprintf (rcf, "set dccont     %s # whether to allow dc only from contacts\n", "on");
 
     fprintf (rcf, "# Colors. color scheme 0|1|2|3 or color <use> <color>\n");
     {

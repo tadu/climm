@@ -21,7 +21,7 @@ struct Preferences_s
     UWORD  sound;       /* how to beep */
     UDWORD status;      /* status to use when logging in */
     UWORD  screen;      /* manual maximum screen width; 0 = auto */
-    UWORD  flags;       /* flags for output */
+    UDWORD flags;       /* flags for output */
     UDWORD away_time;   /* time after which to be away automatically; 0 = disable */
     UWORD  tabs;        /* type of tab completion */
     
@@ -86,7 +86,10 @@ const char *PrefLogNameReal (Preferences *pref);
 #define FLAG_ULTRAQUIET (1 << 13)
 #define FLAG_AUTOSAVE   (1 << 14)
 #define FLAG_AUTOFINGER (1 << 15)
-#define FLAG_
+#define FLAG_WEBAWARE   (1 << 16)
+#define FLAG_HIDEIP     (1 << 17)
+#define FLAG_DC_AUTH    (1 << 18)
+#define FLAG_DC_CONT    (1 << 19)
 /*      FLAG_S5
  *      FLAG_S5_USE
  */

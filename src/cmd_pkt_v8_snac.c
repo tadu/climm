@@ -1329,6 +1329,13 @@ void SnacCliSetstatus (Connection *conn, UDWORD status, UWORD action)
 {
     Packet *pak;
     
+    if (prG->flags & FLAG_WEBAWARE)
+        status |= STATUSF_WEBAWARE;
+    if (prG->flags & FLAG_DC_AUTH)
+        status |= STATUSF_DC_AUTH;
+    if (prG->flags & FLAG_DC_CONT)
+        status |= STATUSF_DC_CONT;
+    
     pak = SnacC (conn, 1, 0x1e, 0, 0);
     if ((action & 1) && (status & STATUSF_INV))
         SnacCliAddvisible (conn, 0);
@@ -1338,11 +1345,7 @@ void SnacCliSetstatus (Connection *conn, UDWORD status, UWORD action)
     {
         PacketWriteB2 (pak, 0x0c); /* TLV 0C */
         PacketWriteB2 (pak, 0x25);
-#ifdef HIDELANIP
-        PacketWriteB4 (pak, 0);
-#else
-        PacketWriteB4 (pak, conn->our_local_ip);
-#endif
+        PacketWriteB4 (pak, prG->flags & FLAG_HIDEIP ? 0 : conn->our_local_ip);
         if (conn->assoc && conn->assoc->connect & CONNECT_OK)
         {
             PacketWriteB4 (pak, conn->assoc->port);

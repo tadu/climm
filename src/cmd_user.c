@@ -2390,6 +2390,10 @@ static JUMP_F(CmdUserSet)
         else if (!strcasecmp (arg1, "linebreak"))  data = -1;
         else if (!strcasecmp (arg1, "tabs"))       data = -2;
         else if (!strcasecmp (arg1, "silent"))     data = -3;
+        else if (!strcasecmp (arg1, "webaware"))   data = FLAG_WEBAWARE;
+        else if (!strcasecmp (arg1, "hideip"))     data = FLAG_HIDEIP;
+        else if (!strcasecmp (arg1, "dcauth"))     data = FLAG_DC_AUTH;
+        else if (!strcasecmp (arg1, "dccont"))     data = FLAG_DC_CONT;
         else if (!strcasecmp (arg1, "quiet"))
         {
             quiet = 1;
