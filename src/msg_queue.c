@@ -50,7 +50,7 @@ static Queue *queue = &queued;
 
 static Event *q_QueueDequeueEvent (Event *event, struct QueueEntry *previous);
 static Event *q_EventDep (Event *event);
-static Event *q_QueuePop (void);
+static Event *q_QueuePop (DEBUG0PARAM);
 static void q_QueueEnqueue (Event *event);
 
 /*
@@ -87,7 +87,7 @@ UDWORD QueueTime ()
 /*
  * Removes the event most due from the queue, or NULL.
  */
-static Event *q_QueuePop (void)
+static Event *q_QueuePop (DEBUG0PARAM)
 {
     Event *event;
     struct QueueEntry *temp;
@@ -113,7 +113,8 @@ static Event *q_QueuePop (void)
 /*
  * Adds a new entry to the queue.
  */
-void QueueEnqueue (Event *event)
+#undef QueueEnqueue
+void QueueEnqueue (Event *event DEBUGPARAM)
 {
     Debug (DEB_QUEUE, "<" STR_DOT STR_DOT STR_DOT " %s %p: %08lx %p %ld %x @ %p t %ld",
            QueueType (event->type), event, event->seq, event->pak,
@@ -163,9 +164,10 @@ static void q_QueueEnqueue (Event *event)
 /*
  * Adds a new entry to the queue. Creates Event for you.
  */
+#undef QueueEnqueueData
 Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
                          time_t due, Packet *pak, Contact *cont,
-                         ContactOptions *opt, Queuef *callback)
+                         ContactOptions *opt, Queuef *callback DEBUGPARAM)
 {
     Event *event = calloc (sizeof (Event), 1);
     uiG.events++;
@@ -192,9 +194,10 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
 /*
  * Adds a new waiting entry to the queue. Creates Event for you.
  */
+#undef QueueEnqueueDep
 Event *QueueEnqueueDep (Connection *conn, UDWORD type, UDWORD id,
                         Event *dep, Packet *pak, Contact *cont,
-                        ContactOptions *opt, Queuef *callback)
+                        ContactOptions *opt, Queuef *callback DEBUGPARAM)
 {
     Event *event = calloc (sizeof (Event), 1);
     uiG.events++;
@@ -219,7 +222,8 @@ Event *QueueEnqueueDep (Connection *conn, UDWORD type, UDWORD id,
     return event;
 }
 
-Event *QueueDequeueEvent (Event *event)
+#undef QueueDequeueEvent
+Event *QueueDequeueEvent (Event *event DEBUGPARAM)
 {
     return q_QueueDequeueEvent (event, NULL);
 }
@@ -276,7 +280,8 @@ static Event *q_QueueDequeueEvent (Event *event, struct QueueEntry *previous)
 /*
  * Removes and returns an event given by sequence number and type.
  */
-Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
+#undef QueueDequeue
+Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq DEBUGPARAM)
 {
     Event *event;
     struct QueueEntry *iter;
@@ -317,7 +322,8 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq)
 /*
  * Removes and returns an event given by type, and sequence number and/or UIN.
  */
-Event *QueueDequeue2 (Connection *conn, UDWORD type, UDWORD seq, Contact *cont)
+#undef QueueDequeue2
+Event *QueueDequeue2 (Connection *conn, UDWORD type, UDWORD seq, Contact *cont DEBUGPARAM)
 {
     Event *event;
     struct QueueEntry *iter;
@@ -377,7 +383,8 @@ static Event *q_EventDep (Event *event)
     return NULL;
 }
 
-void EventD (Event *event)
+#undef EventD
+void EventD (Event *event DEBUGPARAM)
 {
     Event *oevent;
 
@@ -406,7 +413,8 @@ void EventD (Event *event)
 /*
  * Activate all events depending on given event
  */
-void QueueRelease (Event *event)
+#undef QueueRelease
+void QueueRelease (Event *event DEBUGPARAM)
 {
     Event *oevent;
     
@@ -424,7 +432,8 @@ void QueueRelease (Event *event)
  * Cancels all events for a given (to be removed) session
  * by calling the callback with empty session pointer.
  */
-void QueueCancel (Connection *conn)
+#undef QueueCancel
+void QueueCancel (Connection *conn DEBUGPARAM)
 {
     Event *event;
     struct QueueEntry *iter;
@@ -465,7 +474,8 @@ void QueueCancel (Connection *conn)
  * callback function.  Callback function may re-enqueue them, but the event
  * is not reconsidered even if it is still due.
  */
-void QueueRun (void)
+#undef QueueRun
+void QueueRun (DEBUG0PARAM)
 {
     time_t now = time (NULL);
     Event *event;
@@ -479,7 +489,7 @@ void QueueRun (void)
         if (queue->head->event->flags & QUEUE_FLAG_CONSIDERED)
             break;
 
-        event = q_QueuePop ();
+        event = q_QueuePop (DEBUG0ARGS);
         event->flags |= QUEUE_FLAG_CONSIDERED;
         event->callback (event);
     }
@@ -489,7 +499,8 @@ void QueueRun (void)
  * Checks whether there is an event waiting for uin of that type,
  * and delivers the event with the lowest sequence number
  */
-void QueueRetry (Connection *conn, UDWORD type, Contact *cont)
+#undef QueueRetry
+void QueueRetry (Connection *conn, UDWORD type, Contact *cont DEBUGPARAM)
 {
     struct QueueEntry *iter;
     Event *event = NULL;

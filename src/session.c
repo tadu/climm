@@ -52,7 +52,8 @@ static ConnectionList slist = { NULL, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
  * Creates a new session.
  * Returns NULL if not enough memory available.
  */
-Connection *ConnectionC (UWORD type)
+#undef ConnectionC
+Connection *ConnectionC (UWORD type DEBUGPARAM)
 {
     ConnectionList *cl;
     Connection *conn;
@@ -94,11 +95,12 @@ Connection *ConnectionC (UWORD type)
  * Clones an existing session, while blanking out some values.
  * Returns NULL if not enough memory available.
  */
-Connection *ConnectionClone (Connection *conn, UWORD type)
+#undef ConnectionClone
+Connection *ConnectionClone (Connection *conn, UWORD type DEBUGPARAM)
 {
     Connection *child;
     
-    child = ConnectionC (type);
+    child = ConnectionC (type DEBUGFOR);
     if (!child)
         return NULL;
 
@@ -219,7 +221,8 @@ UDWORD ConnectionFindNr (Connection *conn)
 /*
  * Closes and removes a session.
  */
-void ConnectionClose (Connection *conn)
+#undef ConnectionClose
+void ConnectionClose (Connection *conn DEBUGPARAM)
 {
     ConnectionList *cl;
     Connection *clc;
@@ -255,7 +258,7 @@ void ConnectionClose (Connection *conn)
             if ((clc = cl->conn[j]) && clc->parent == conn)
             {
                 clc->parent = NULL;
-                ConnectionClose (clc);
+                ConnectionClose (clc DEBUGFOR);
                 cl = &slist;
                 j = -1;
             }

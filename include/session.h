@@ -80,15 +80,19 @@ struct Connection_s
 #define CONNECT_SOCKS_ADD  0x1000
 #define CONNECT_SOCKS      0xf000
 
-Connection    *ConnectionC       (UWORD type);
-Connection    *ConnectionClone   (Connection *conn, UWORD type);
+Connection    *ConnectionC       (UWORD type DEBUGPARAM);
+Connection    *ConnectionClone   (Connection *conn, UWORD type DEBUGPARAM);
 Connection    *ConnectionNr      (int i);
 Connection    *ConnectionFind    (UWORD type, const Contact *cont, const Connection *parent);
 Connection    *ConnectionFindUIN (UWORD type, UDWORD uin);
 UDWORD         ConnectionFindNr  (Connection *conn);
-void           ConnectionClose   (Connection *conn);
+void           ConnectionClose   (Connection *conn DEBUGPARAM);
 const char    *ConnectionType    (Connection *conn);
 val_t          ConnectionPrefVal (Connection *conn, UDWORD flag);
+
+#define ConnectionC(t)       ConnectionC(t DEBUGARGS)
+#define ConnectionClone(c,t) ConnectionClone(c,t DEBUGARGS)
+#define ConnectionClose(c)   ConnectionClose(c DEBUGARGS)
 
 /*
                             TYPE_SERVER

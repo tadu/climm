@@ -213,7 +213,7 @@ void SrvCallBackReceive (Connection *conn)
 
     if (PacketRead1 (pak) != 0x2a)
     {
-        Debug (DEB_PROTOCOL, "Incoming packet is not a FLAP: id is %d.\n", PacketRead1 (pak));
+        DebugH (DEB_PROTOCOL, "Incoming packet is not a FLAP: id is %d.\n", PacketRead1 (pak));
         return;
     }
     

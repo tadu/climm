@@ -60,10 +60,15 @@ struct Cap_s
 
 #define HAS_CAP(caps,cap) ((caps) & (1L << (cap)))
 
-Packet *PacketC        (void);
-Packet *PacketCreate   (str_t str);
-Packet *PacketClone    (const Packet *pak);
-void    PacketD        (Packet *pak);
+Packet *PacketC        (DEBUG0PARAM);
+Packet *PacketCreate   (str_t str DEBUGPARAM);
+Packet *PacketClone    (const Packet *pak DEBUGPARAM);
+void    PacketD        (Packet *pak DEBUGPARAM);
+
+#define PacketC()       PacketC(DEBUG0ARGS)
+#define PacketCreate(s) PacketCreate(s DEBUGARGS)
+#define PacketClone(p)  PacketClone(p DEBUGARGS)
+#define PacketD(p)      PacketD(p DEBUGARGS)
 
 void        PacketWrite1      (      Packet *pak,           UBYTE  data);
 void        PacketWrite2      (      Packet *pak,           UWORD  data);

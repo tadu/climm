@@ -108,25 +108,35 @@ struct Contact_s
 };
 
 
-ContactGroup *ContactGroupC       (Connection *serv, UWORD id, const char *name);
+ContactGroup *ContactGroupC       (Connection *serv, UWORD id, const char *name DEBUGPARAM);
 ContactGroup *ContactGroupFind    (Connection *serv, UWORD id, const char *name);
 ContactGroup *ContactGroupIndex   (int i);
 UWORD         ContactGroupID      (ContactGroup *group);
 UDWORD        ContactGroupCount   (ContactGroup *group);
-void          ContactGroupD       (ContactGroup *group);
+void          ContactGroupD       (ContactGroup *group DEBUGPARAM);
 
 /* NULL ContactGroup accesses global list */
 Contact      *ContactIndex        (ContactGroup *group, int i);
-Contact      *ContactUIN          (Connection *conn, UDWORD uin);
+Contact      *ContactUIN          (Connection *conn, UDWORD uin DEBUGPARAM);
 Contact      *ContactFind         (ContactGroup *group, UWORD id, UDWORD uin, const char *nick);
-Contact      *ContactFindCreate   (ContactGroup *group, UWORD id, UDWORD uin, const char *nick);
-BOOL          ContactAdd          (ContactGroup *group, Contact *cont);
+Contact      *ContactFindCreate   (ContactGroup *group, UWORD id, UDWORD uin, const char *nick DEBUGPARAM);
+BOOL          ContactAdd          (ContactGroup *group, Contact *cont DEBUGPARAM);
 BOOL          ContactHas          (ContactGroup *group, Contact *cont);
-BOOL          ContactRem          (ContactGroup *group, Contact *cont);
-void          ContactD            (Contact *cont);
+BOOL          ContactRem          (ContactGroup *group, Contact *cont DEBUGPARAM);
+void          ContactD            (Contact *cont DEBUGPARAM);
 
-BOOL          ContactAddAlias     (Contact *cont, const char *nick);
-BOOL          ContactRemAlias     (Contact *cont, const char *nick);
+BOOL          ContactAddAlias     (Contact *cont, const char *nick DEBUGPARAM);
+BOOL          ContactRemAlias     (Contact *cont, const char *nick DEBUGPARAM);
+
+#define ContactGroupC(s,i,n)       ContactGroupC(s,i,n DEBUGARGS)
+#define ContactGroupD(g)           ContactGroupD(g DEBUGARGS)
+#define ContactUIN(c,u)            ContactUIN(c,u DEBUGARGS)
+#define ContactFindCreate(g,i,u,n) ContactFindCreate(g,i,u,n DEBUGARGS)
+#define ContactAdd(g,c)            ContactAdd(g,c DEBUGARGS)
+#define ContactRem(g,c)            ContactRem(g,c DEBUGARGS)
+#define ContactD(c)                ContactD(c DEBUGARGS)
+#define ContactAddAlias(c,n)       ContactAddAlias(c,n DEBUGARGS)
+#define ContactRemAlias(c,n)       ContactRemAlias(c,n DEBUGARGS)
 
 UWORD         ContactID           (Contact *cont);
 void          ContactSetCap       (Contact *cont, Cap *cap);

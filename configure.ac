@@ -420,6 +420,17 @@ fi
 
 # Optimize.
 
+AC_CACHE_CHECK(checking for variadic macro support, ac_cv_macro_variadic,
+  [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#define variadic(a,...) printf (a, ## __VA_ARGS__) ]],
+      [[variadic ("bla\n");
+        variadic ("bla%sbla\n", "bla");]])],
+    [ac_cv_macro_variadic=yes],
+    [ac_cv_macro_variadic=no])])
+if test "x$ac_cv_macro_variadic" = xyes; then
+    AC_DEFINE(HAVE_VARIADIC_MACRO,1,[have support for advances variadic macros])
+fi
+
+
 if test "x$GCC" = xyes; then
     CFLAGS="$CFLAGS -Wall"
 fi

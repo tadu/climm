@@ -82,7 +82,8 @@ static void ContactGroupInit (void)
     }
 }
 
-ContactGroup *ContactGroupC (Connection *conn, UWORD id, const char *name)
+#undef ContactGroupC
+ContactGroup *ContactGroupC (Connection *conn, UWORD id, const char *name DEBUGPARAM)
 {
     ContactGroup *cg;
     int i;
@@ -184,7 +185,8 @@ UDWORD ContactGroupCount (ContactGroup *group)
 /*
  * Remove a contact group.
  */
-void ContactGroupD (ContactGroup *group)
+#undef ContactGroupD
+void ContactGroupD (ContactGroup *group DEBUGPARAM)
 {
     ContactGroup *tmp;
     int i;
@@ -244,7 +246,7 @@ Contact *ContactIndex (ContactGroup *group, int i)
     return group->contacts[i];
 }
 
-static Contact *ContactC (UWORD id, UDWORD uin, const char *nick)
+static Contact *ContactC (UWORD id, UDWORD uin, const char *nick DEBUGPARAM)
 {
     Contact *cont;
 
@@ -265,7 +267,8 @@ static Contact *ContactC (UWORD id, UDWORD uin, const char *nick)
 /*
  * Finds a contact for a connection
  */
-Contact *ContactUIN (Connection *conn, UDWORD uin)
+#undef ContactUIN
+Contact *ContactUIN (Connection *conn, UDWORD uin DEBUGPARAM)
 {
     Contact *cont;
     
@@ -281,7 +284,7 @@ Contact *ContactUIN (Connection *conn, UDWORD uin)
     if ((cont = ContactFind (CONTACTGROUP_NONCONTACTS, 0, uin, NULL)))
         return cont;
 
-    if (!(cont = ContactC (0, uin, NULL)))
+    if (!(cont = ContactC (0, uin, NULL DEBUGFOR)))
         return NULL;
 
     ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
@@ -323,7 +326,8 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
 /*
  * Finds a contact on a contact group, possibly creating it
  */
-Contact *ContactFindCreate (ContactGroup *group, UWORD id, UDWORD uin, const char *nick)
+#undef ContactFindCreate
+Contact *ContactFindCreate (ContactGroup *group, UWORD id, UDWORD uin, const char *nick DEBUGPARAM)
 {
     Contact *cont;
     
@@ -352,7 +356,7 @@ Contact *ContactFindCreate (ContactGroup *group, UWORD id, UDWORD uin, const cha
         return cont;
     }
     
-    if (!(cont = ContactC (id, uin, nick)))
+    if (!(cont = ContactC (id, uin, nick DEBUGFOR)))
         return NULL;
 
     if (nick)
@@ -373,7 +377,8 @@ Contact *ContactFindCreate (ContactGroup *group, UWORD id, UDWORD uin, const cha
 /*
  * Delete a contact by hiding it as good as possible.
  */
-void ContactD (Contact *cont)
+#undef ContactD
+void ContactD (Contact *cont DEBUGPARAM)
 {
     ContactAlias *ca, *cao;
     ContactGroup *cg;
@@ -401,7 +406,8 @@ void ContactD (Contact *cont)
 /*
  * Adds a contact to a contact group.
  */
-BOOL ContactAdd (ContactGroup *group, Contact *cont)
+#undef ContactAdd
+BOOL ContactAdd (ContactGroup *group, Contact *cont DEBUGPARAM)
 {
     ContactGroup *orig = group;
     if (!group)
@@ -454,7 +460,8 @@ BOOL ContactHas (ContactGroup *group, Contact *cont)
 /*
  * Removes a contact from a contact group.
  */
-BOOL ContactRem (ContactGroup *group, Contact *cont)
+#undef ContactRem
+BOOL ContactRem (ContactGroup *group, Contact *cont DEBUGPARAM)
 {
     ContactGroup *orig = group;
     int i;
@@ -485,7 +492,8 @@ BOOL ContactRem (ContactGroup *group, Contact *cont)
 /*
  * Adds an alias to a contact.
  */
-BOOL ContactAddAlias (Contact *cont, const char *nick)
+#undef ContactAddAlias
+BOOL ContactAddAlias (Contact *cont, const char *nick DEBUGPARAM)
 {
     ContactAlias **caref;
     ContactAlias *ca;
@@ -522,7 +530,8 @@ BOOL ContactAddAlias (Contact *cont, const char *nick)
 /*
  * Removes an alias from a contact.
  */
-BOOL ContactRemAlias (Contact *cont, const char *nick)
+#undef ContactRemAlias
+BOOL ContactRemAlias (Contact *cont, const char *nick DEBUGPARAM)
 {
     ContactAlias **caref;
     ContactAlias *ca;

@@ -322,7 +322,8 @@ void UtilIOConnectUDP (Connection *conn)
  * Usage: conn->dispatch will be called with conn->connect++ if ok,
  * conn->connect+=2 if fail.
  */
-void UtilIOConnectTCP (Connection *conn)
+#undef UtilIOConnectTCP
+void UtilIOConnectTCP (Connection *conn DEBUGPARAM)
 {
     int rc, rce;
     socklen_t length;
@@ -555,7 +556,7 @@ static void UtilIOConnectCallback (Connection *conn)
     {
         eno = 0;
         rc = 0;
-        Debug (DEB_IO, "UtilIOConnectCallback: %x", conn->connect);
+        DebugH (DEB_IO, "UtilIOConnectCallback: %x", conn->connect);
         switch ((eno = conn->connect / CONNECT_SOCKS_ADD) % 7)
         {
             case 0:
@@ -620,7 +621,7 @@ static void UtilIOConnectCallback (Connection *conn)
                     conn->connect |= 8 * CONNECT_SOCKS_ADD;
                     conn->dispatch = conn->utilio;
                     EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip));
-                    UtilIOConnectTCP (conn);
+                    UtilIOConnectTCP (conn DEBUGNONE);
                     return;
                 }
                 if (buf[1])

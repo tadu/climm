@@ -22,24 +22,37 @@ struct Event_s
 
 void        QueueInit         (Queue **queue);
 UDWORD      QueueTime         (void);
-Event      *QueueDequeueEvent (Event *event);
-void        QueueEnqueue      (Event *event);
+Event      *QueueDequeueEvent (Event *event DEBUGPARAM);
+void        QueueEnqueue      (Event *event DEBUGPARAM);
 Event      *QueueEnqueueData  (Connection *conn, UDWORD type, UDWORD seq, time_t due,
-                               Packet *pak, Contact *cont, ContactOptions *opt, Queuef *callback);
+                               Packet *pak, Contact *cont, ContactOptions *opt, Queuef *callback DEBUGPARAM);
 Event      *QueueEnqueueDep   (Connection *conn, UDWORD type, UDWORD seq, Event *dep,
-                               Packet *pak, Contact *cont, ContactOptions *opt, Queuef *callback);
-Event      *QueueDequeue      (Connection *conn, UDWORD type, UDWORD seq);
-Event      *QueueDequeue2     (Connection *conn, UDWORD type, UDWORD seq, Contact *cont);
-void        QueueRetry        (Connection *conn, UDWORD type, Contact *cont);
-void        QueueRelease      (Event *event);
-void        QueueCancel       (Connection *conn);
-void        QueueRun          (void);
-void        EventD            (Event *event);
+                               Packet *pak, Contact *cont, ContactOptions *opt, Queuef *callback DEBUGPARAM);
+Event      *QueueDequeue      (Connection *conn, UDWORD type, UDWORD seq DEBUGPARAM);
+Event      *QueueDequeue2     (Connection *conn, UDWORD type, UDWORD seq, Contact *cont DEBUGPARAM);
+void        QueueRetry        (Connection *conn, UDWORD type, Contact *cont DEBUGPARAM);
+void        QueueRelease      (Event *event DEBUGPARAM);
+void        QueueCancel       (Connection *conn DEBUGPARAM);
+void        QueueRun          (DEBUG0PARAM);
+void        EventD            (Event *event DEBUGPARAM);
+
+#define QueueDequeueEvent(e)               QueueDequeueEvent(e DEBUGARGS)
+#define QueueEnqueue(e)                    QueueEnqueue(e DEBUGARGS)
+#define QueueEnqueueData(c,t,s,d,p,C,o,cb) QueueEnqueueData(c,t,s,d,p,C,o,cb DEBUGARGS)
+#define QueueEnqueueDep(c,t,s,d,p,C,o,cb)  QueueEnqueueDep(c,t,s,d,p,C,o,cb DEBUGARGS)
+#define QueueDequeue(c,t,s)                QueueDequeue(c,t,s DEBUGARGS)
+#define QueueDequeue2(c,t,s,C)             QueueDequeue2(c,t,s,C DEBUGARGS)
+#define QueueRetry(c,t,C)                  QueueRetry(c,t,C DEBUGARGS)
+#define QueueRelease(e)                    QueueRelease(e DEBUGARGS)
+#define QueueCancel(c)                     QueueCancel(c DEBUGARGS)
+#define QueueRun()                         QueueRun(DEBUG0ARGS)
+#define EventD(e)                          EventD(e DEBUGARGS)
 
 const char *QueueType (UDWORD type);
 
 #ifdef ENABLE_DEBUG
 void        QueuePrint (void);
+
 #endif
 
 #define NOW   (time_t)-1

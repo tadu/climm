@@ -20,13 +20,19 @@ struct ContactOption_s
 ContactOptions *ContactOptionsC (void);
 void ContactOptionsD (ContactOptions *opt);
 
-BOOL ContactOptionsGetVal   (const ContactOptions *opt, UDWORD flag, val_t *val);
-BOOL ContactOptionsSetVal   (ContactOptions *opt, UDWORD flag, val_t val);
+BOOL ContactOptionsGetVal   (const ContactOptions *opt, UDWORD flag, val_t *val DEBUGPARAM);
+BOOL ContactOptionsSetVal   (ContactOptions *opt, UDWORD flag, val_t val DEBUGPARAM);
 ContactOptions *ContactOptionsSetVals  (ContactOptions *opt, UDWORD flag, ...);
-val_t ContactOptionsUndef   (ContactOptions *opt, UDWORD flag);
+val_t ContactOptionsUndef   (ContactOptions *opt, UDWORD flag DEBUGPARAM);
 
-BOOL ContactOptionsGetStr   (const ContactOptions *opt, UDWORD flag, const char **res);
-BOOL ContactOptionsSetStr   (ContactOptions *opt, UDWORD flag, const char *val);
+BOOL ContactOptionsGetStr   (const ContactOptions *opt, UDWORD flag, const char **res DEBUGPARAM);
+BOOL ContactOptionsSetStr   (ContactOptions *opt, UDWORD flag, const char *val DEBUGPARAM);
+
+#define ContactOptionsGetVal(o,f,v) ContactOptionsGetVal(o,f,v DEBUGARGS)
+#define ContactOptionsSetVal(o,f,v) ContactOptionsSetVal(o,f,v DEBUGARGS)
+#define ContactOptionsUndef(o,f)    ContactOptionsUndef(o,f DEBUGARGS)
+#define ContactOptionsGetStr(o,f,r) ContactOptionsGetStr(o,f,r DEBUGARGS)
+#define ContactOptionsSetStr(o,f,r) ContactOptionsSetStr(o,f,r DEBUGARGS)
 
 const char *ContactOptionsC2S (const char *color);
 const char *ContactOptionsS2C (const char *str);

@@ -489,7 +489,7 @@ static JUMP_SRV_F (CmdPktSrvAck)
     
     ccmd = PacketReadAt2 (event->pak, CMD_v5_OFF_CMD);
 
-    Debug (DEB_QUEUE, STR_DOT STR_DOT STR_DOT STR_DOT " ack type %04lx (%s) seq %04lx",
+    DebugH (DEB_QUEUE, STR_DOT STR_DOT STR_DOT STR_DOT " ack type %04lx (%s) seq %04lx",
                       ccmd, CmdPktCmdName (ccmd), event->seq >> 16);
 
     if (ccmd == CMD_SEND_MESSAGE)

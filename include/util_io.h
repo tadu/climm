@@ -4,7 +4,7 @@
 #define MICQ_UTIL_IO_H
 
 void    UtilIOConnectUDP (Connection *conn);
-void    UtilIOConnectTCP (Connection *conn);
+void    UtilIOConnectTCP (Connection *conn DEBUGPARAM);
 void    UtilIOConnectF   (Connection *conn);
 int     UtilIOError      (Connection *conn);
 void    UtilIOSocksAccept(Connection *conn);
@@ -14,5 +14,7 @@ Packet *UtilIOReceiveF   (Connection *conn);
 BOOL    UtilIOSendTCP    (Connection *conn, Packet *pak);
 void    UtilIOSendUDP    (Connection *conn, Packet *pak);
 strc_t  UtilIOReadline   (FILE *fd);
+
+#define UtilIOConnectTCP(c) UtilIOConnectTCP(c DEBUGARGS)
 
 #endif /* MICQ_UTIL_IO_H */

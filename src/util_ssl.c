@@ -116,7 +116,8 @@ int SSLInit ()
  *
  * Returns 0 if SSL/TLS not supported by peer.
  */
-int ssl_supported (Connection *conn)
+#undef ssl_supported
+int ssl_supported (Connection *conn DEBUGPARAM)
 {
     Contact *cont;
     UBYTE status_save = conn->ssl_status;
@@ -165,7 +166,8 @@ int ssl_supported (Connection *conn)
  *
  * return: 1 means ok. 0 failed.
  */
-int ssl_connect (Connection *conn, BOOL is_client)
+#undef ssl_connect
+int ssl_connect (Connection *conn, BOOL is_client DEBUGPARAM)
 {
     int ret;
     int kx_prio[2] = { GNUTLS_KX_ANON_DH, 0 };
@@ -205,7 +207,81 @@ int ssl_connect (Connection *conn, BOOL is_client)
     return ssl_handshake (conn) != 0;
 }
 
-int ssl_handshake (Connection *conn)
+/*
+ * sockread wrapper for network connections
+ *
+ * Calls default sockread() for non-SSL connections.
+ */
+int ssl_read (Connection *conn, UBYTE *data, UWORD len_p)
+{
+    int len, rc;
+    Contact *cont = conn->cont;
+    
+    if (conn->ssl_status == SSL_STATUS_HANDSHAKE)
+    {
+        ssl_handshake (conn);
+        errno = EAGAIN;
+        return -1;
+    }
+    if (conn->ssl_status != SSL_STATUS_OK)
+    {
+        len = sockread (conn->sok, data, len_p);
+        rc = errno;
+        if (!len && !rc)
+            rc = ECONNRESET;
+        errno = rc;
+        return len;
+    }
+
+    len = gnutls_record_recv (conn->ssl, data, len_p);
+    if (len > 0)
+        DebugH (DEB_SSL, "read %d bytes from %s", len, cont->nick);
+    if (len < 0)
+    {
+        SSL_FAIL (s_sprintf (i18n (2376, "SSL read from %s [ERR=%d]: %s"), 
+                  cont->nick, len, gnutls_strerror (len)), len);
+        ssl_disconnect (conn);
+    }
+    if (!len)
+    {
+        errno = EAGAIN;
+        len = -1;
+    }
+    return len;
+}
+
+/*
+ * sockwrite wrapper for network connections
+ *
+ * Calls default sockwrite() for non-SSL connections.
+ */
+int ssl_write (Connection *conn, UBYTE *data, UWORD len_p)
+{
+    int len;
+    Contact *cont = conn->cont;
+    
+    if (conn->ssl_status == SSL_STATUS_HANDSHAKE)
+    {
+        ssl_handshake (conn);
+        return 0;
+    }
+    if (conn->ssl_status != SSL_STATUS_OK)
+        return sockwrite (conn->sok, data, len_p);
+
+    len = gnutls_record_send (conn->ssl, data, len_p);
+    if (len > 0)
+        DebugH (DEB_SSL, "write %d bytes to %s", len, cont->nick);
+    if (len < 0)
+    {
+        SSL_FAIL (s_sprintf (i18n (2377, "SSL write to %s [ERR=%d]: %s"), 
+                 cont->nick, len, gnutls_strerror (len)), len);
+        ssl_disconnect (conn);
+    }
+    return len;
+}
+
+#undef ssl_handshake
+int ssl_handshake (Connection *conn DEBUGPARAM)
 {
     Contact *cont = conn->cont;
     int ret;
@@ -243,76 +319,19 @@ int ssl_handshake (Connection *conn)
 }
 
 /*
- * sockread wrapper for network connections
- *
- * Calls default sockread() for non-SSL connections.
+ * Shutdown SSL session and release SSL memory
  */
-int ssl_read (Connection *conn, UBYTE *data, UWORD len_p)
+#undef ssl_close
+void ssl_close (Connection *conn DEBUGPARAM)
 {
-    int len, rc;
-    Contact *cont = conn->cont;
-    
-    if (conn->ssl_status == SSL_STATUS_HANDSHAKE)
-    {
-        ssl_handshake (conn);
-        errno = EAGAIN;
-        return -1;
-    }
-    if (conn->ssl_status != SSL_STATUS_OK)
-    {
-        len = sockread (conn->sok, data, len_p);
-        rc = errno;
-        if (!len && !rc)
-            rc = ECONNRESET;
-        errno = rc;
-        return len;
-    }
+    Debug (DEB_SSL, "ssl_close");
 
-    len = gnutls_record_recv (conn->ssl, data, len_p);
-    if (len > 0)
-        Debug (DEB_SSL, "read %d bytes from %s", len, cont->nick);
-    if (len < 0)
+    if (conn->ssl_status == SSL_STATUS_OK)
     {
-        SSL_FAIL (s_sprintf (i18n (2376, "SSL read from %s [ERR=%d]: %s"), 
-                  cont->nick, len, gnutls_strerror (len)), len);
+        Debug (DEB_SSL, "ssl_close calling ssl_disconnect");
         ssl_disconnect (conn);
     }
-    if (!len)
-    {
-        errno = EAGAIN;
-        len = -1;
-    }
-    return len;
-}
-
-/*
- * sockwrite wrapper for network connections
- *
- * Calls default sockwrite() for non-SSL connections.
- */
-int ssl_write (Connection *conn, UBYTE *data, UWORD len_p)
-{
-    int len;
-    Contact *cont = conn->cont;
-    
-    if (conn->ssl_status == SSL_STATUS_HANDSHAKE)
-    {
-        ssl_handshake (conn);
-        return 0;
-    }
-    if (conn->ssl_status != SSL_STATUS_OK)
-        return sockwrite (conn->sok, data, len_p);
-
-    len = gnutls_record_send (conn->ssl, data, len_p);
-    if (len > 0)
-        Debug (DEB_SSL, "write %d bytes to %s", len, cont->nick);
-    if (len < 0)
-    {
-        SSL_FAIL (s_sprintf (i18n (2377, "SSL write to %s [ERR=%d]: %s"), 
-                 cont->nick, len, gnutls_strerror (len)), len);
-        ssl_disconnect (conn);
-    }
-    return len;
+    sockclose (conn->sok);
 }
 
 /*
@@ -320,7 +339,8 @@ int ssl_write (Connection *conn, UBYTE *data, UWORD len_p)
  *
  * Note: does not close socket. Frees SSL data only.
  */
-void ssl_disconnect (Connection *conn)
+#undef ssl_disconnect
+void ssl_disconnect (Connection *conn DEBUGPARAM)
 {
     Debug (DEB_SSL, "ssl_disconnect");
 
@@ -331,21 +351,6 @@ void ssl_disconnect (Connection *conn)
             free (conn->ssl);
         conn->ssl = NULL;
     }
-}
-
-/*
- * Shutdown SSL session and release SSL memory
- */
-void ssl_close (Connection *conn)
-{
-    Debug (DEB_SSL, "ssl_close");
-
-    if (conn->ssl_status == SSL_STATUS_OK)
-    {
-        Debug (DEB_SSL, "ssl_close calling ssl_disconnect");
-        ssl_disconnect (conn);
-    }
-    sockclose (conn->sok);
 }
 
 /* 

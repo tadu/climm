@@ -35,7 +35,7 @@
 #endif
 #endif
 
-#define ENABLE_DEBUG
+#define ENABLE_DEBUG 1
 
 struct Queue_s;
 struct Event_s;
@@ -67,6 +67,29 @@ typedef struct Extra_s                 Extra;
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
+
+#if ENABLE_DEBUG && HAVE_VARIADIC_MACRO
+#define DEBUGARGS    , __FILE__, __LINE__
+#define DEBUGPARAM   , const char *debugfile, int debugline
+#define DEBUG0ARGS   __FILE__, __LINE__
+#define DEBUG0PARAM  const char *debugfile, int debugline
+#define DEBUGFOR     , debugfile, debugline
+#define DEBUGNONE    , "", 0
+#define Debug(l,f,...) DebugReal (l, f " {%s:%d}<<{%s:%d}", ## __VA_ARGS__, \
+                                  __FILE__, __LINE__, debugfile, debugline)
+#define DebugH(l,f,...) DebugReal (l, f " {%s:%d}<|", ## __VA_ARGS__, \
+                                   __FILE__, __LINE__)
+#else
+#define DEBUGARGS
+#define DEBUGPARAM
+#define DEBUG0ARGS   void
+#define DEBUG0PARAM
+#define DEBUGFOR
+#define DEBUGNONE
+#define DebugH DebugReal
+#define Debug DebugReal
+#endif
+
 #include "mreadline.h"
 #include "msg_queue.h"
 #include "mselect.h"

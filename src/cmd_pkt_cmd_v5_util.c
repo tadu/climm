@@ -335,7 +335,7 @@ void PacketSendv5 (const Packet *pak, Connection *conn)
     assert (pak);
     assert (conn);
 
-    Debug (DEB_PACKET, "---- %p sent", pak);
+    DebugH (DEB_PACKET, "---- %p sent", pak);
 
     cpak = Wrinkle (pak);
     UtilIOSendUDP (conn, cpak);

@@ -17,13 +17,19 @@
 int SSLInit ();
 int ssl_write (Connection *conn, UBYTE *data, UWORD len);
 int ssl_read (Connection *conn, UBYTE *data, UWORD len);
-void ssl_close (Connection *conn);
-void ssl_disconnect (Connection *conn);
-int ssl_supported (Connection *conn);
-int ssl_connect (Connection *conn, BOOL is_client);
-int ssl_handshake (Connection *conn);
+void ssl_close (Connection *conn DEBUGPARAM);
+void ssl_disconnect (Connection *conn DEBUGPARAM);
+int ssl_supported (Connection *conn DEBUGPARAM);
+int ssl_connect (Connection *conn, BOOL is_client DEBUGPARAM);
+int ssl_handshake (Connection *conn DEBUGPARAM);
 const char *ssl_strerror (int error);
 BOOL TCPSendSSLReq (Connection *list, Contact *cont);
+
+#define ssl_close(c)      ssl_close(c DEBUGARGS)
+#define ssl_disconnect(c) ssl_disconnect(c DEBUGARGS)
+#define ssl_supported(c)  ssl_supported(c DEBUGARGS)
+#define ssl_connect(c,i)  ssl_connect(c,i DEBUGARGS)
+#define ssl_handshake(c)  ssl_handshake(c DEBUGARGS)
 
 #define SSL_STATUS_NA       0       /* unknown */
 #define SSL_STATUS_FAILED   1       /* SSL handshake with peer failed */

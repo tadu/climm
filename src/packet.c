@@ -86,7 +86,8 @@ static int packetstrind = 0;
 #define PACKETSTRINVALID 4
 #define PACKETSTREMPTY 5
 
-Packet *PacketC (void)
+#undef PacketC
+Packet *PacketC (DEBUG0PARAM)
 {
     Packet *pak;
     
@@ -99,7 +100,8 @@ Packet *PacketC (void)
     return pak;
 }
 
-Packet *PacketCreate (str_t str)
+#undef PacketCreate
+Packet *PacketCreate (str_t str DEBUGPARAM)
 {
     Packet *newpak;
     
@@ -115,14 +117,16 @@ Packet *PacketCreate (str_t str)
     return newpak;
 }
 
-void PacketD (Packet *pak)
+#undef PacketD
+void PacketD (Packet *pak DEBUGPARAM)
 {
     Debug (DEB_PACKET, "---> %p free", pak);
     uiG.packets--;
     free (pak);
 }
 
-Packet *PacketClone (const Packet *pak)
+#undef PacketClone
+Packet *PacketClone (const Packet *pak DEBUGPARAM)
 {
     Packet *newpak;
     
