@@ -696,21 +696,28 @@ void Get_Input (SOK_T sok, int *idle_val, int *idle_flag)
                 return;
             }
             cmd = strtok (buf, " \n\t");
-            if (NULL == cmd)
-            {
-                Prompt ();
-                return;
-            }
+
+	    if ( cmd == NULL)
+	    {
+		Prompt ();
+		return;
+	    }
 
             /* skip all non-alhphanumeric chars on the beginning
              * to accept IRC like commands starting with a /
              * or talker like commands starting with a .
              * or whatever */
-            while (!isalnum (cmd[0]))
+            if (!isalnum (cmd[0]))
                 cmd++;
 
+            if ( *cmd == '\0' )
+            {
+                Prompt ();
+                return;
+            }
+
             /* goto's removed and code fixed by Paul Laufer. Enjoy! */
-            if ((strcasecmp (cmd, "quit") == 0) || (strcasecmp (cmd, "/quit") == 0))
+	    if ((strcasecmp (cmd, "quit") == 0) || (strcasecmp (cmd, "/quit") == 0))
             {
                 Quit = TRUE;
             }

@@ -1,4 +1,7 @@
 
+2001-05-02 Rico Gloeckner <mc@ukeer.de>
+	* fixed tiny Input bug
+
 2001-04-27 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Makefile, src/Makefile: Fixes.
 	* include/micq.h, include/color.h:
