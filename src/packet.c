@@ -235,7 +235,7 @@ void PacketWriteLen4Done (Packet *pak)
     UWORD pos;
     
     pos = PacketReadAt4 (pak, pak->tpos);
-    PacketWriteAt4 (pak, pak->tpos, pak->wpos - pak->tpos - 2);
+    PacketWriteAt4 (pak, pak->tpos, pak->wpos - pak->tpos - 4);
     pak->tpos = pos;
 }
 
