@@ -2,6 +2,9 @@
 # originally by Matt D. Smith
 # rewritten by  Rico Gloeckner <mc@verdinet.de>
 
+DESTDIR =
+prefix = /usr/local
+
 CC = gcc
 CFLAGS = -O2 -Wall -DUNIX
 
@@ -37,7 +40,7 @@ micq : ${OBJS}
 	${CC} ${CFLAGS} ${INCLUDE} -o micq ${OBJS} ${CLIBS}
 
 .c.o:     
-	${CC} ${CFLAGS} ${INCLUDE} -c $< -o $@
+	${CC} ${CFLAGS} ${INCLUDE} -c $< -o $@ -DPREFIX="\"$(prefix)\""
 
 buildmark.o: force
 
@@ -47,7 +50,8 @@ clean :
 	rm -f ${OBJS} micq *~
 
 install:
-	install -g root -o root -m 755 micq /usr/local/bin
+	install -d -g root -o root -m 755 $(DESTDIR)/$(prefix)/bin
+	install -g root -o root -m 755 micq $(DESTDIR)/$(prefix)/bin
 
 indent:
 	@for i in *.c; do \

@@ -41,9 +41,9 @@
 static void Auto_Reply (SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg);
 static void Multi_Packet (SOK_T sok, UBYTE * data);
 
-
 /*extern unsigned int next_resend;*/
 /*extern BOOL serv_mess[ 1024 ];  used so that we don't get duplicate messages with the same SEQ */
+static int Reconnect_Count = 0;
 
 static void Auto_Reply (SOK_T sok, SIMPLE_MESSAGE_PTR s_mesg)
 {
@@ -259,17 +259,13 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
         case SRV_TRY_AGAIN:
             R_undraw ();
             M_print (MESSCOL "Server is busy please try again.\nTrying again...\n");
-#ifdef UNIX
-#ifndef __BEOS__
+#if defined (UNIX) && !defined (__BEOS__) && !defined (AMIGA)
             if (fork () == 0)
             {
                 sleep (5);
                 Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
                 exit (0);
             }
-#else
-            Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
-#endif
 #else
             Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
 #endif
@@ -288,13 +284,29 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
         case SRV_NOT_CONNECTED:
             R_undraw ();
             Time_Stamp ();
-#ifdef FUNNY_MSGS
-            M_print (" Server sent \"Go away!!\" command. Lag sucks! :(\n");
+            M_print (" ");
+            Reconnect_Count++;
+            if (Reconnect_Count >= MAX_RECONNECT_ATTEMPTS)
+            {
+                M_print ("%s\n", i18n (34, "Maximum number of tries reached. Giving up."));
+                Quit = TRUE;
+                R_redraw ();
+                break;
+            }
+            M_print ("%s\n", i18n (39, "Server has forced us to disconnect.  This may be because of network lag."));
+            M_print (i18n (82, "Trying to reconnect... [try %d out of %d]"), Reconnect_Count, MAX_RECONNECT_ATTEMPTS);
+#if defined (UNIX) && !defined (__BEOS__) && !defined (AMIGA)
+            if (!fork ())
+            {
+                sleep (5);
+                Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
+                exit (0);
+            }
 #else
-            M_print (" Server has forced us to disconnect.  This may be because of network lag.\n");
+            sleep (2);
+            Login (sok, UIN, &passwd[0], our_ip, our_port, set_status);
 #endif
-            R_redraw ();
-            Quit = TRUE;
+            M_print ("\n");
             break;
         case SRV_END_OF_SEARCH:
             R_undraw ();

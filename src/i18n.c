@@ -34,11 +34,11 @@ int i18nOpen (const char *loc)
     if (!loc)
         return 0;
 
-        i18nf = M_fdopen ("/usr/local/share/micq/%s.i18n", loc);
+        i18nf = M_fdopen (PREFIX "/share/micq/%s.i18n", loc);
     if (i18nf == -1 && strchr (loc, '_'))
-        i18nf = M_fdopen ("/usr/local/share/micq/%.*s.i18n", strrchr (loc, '_') - loc, loc);
+        i18nf = M_fdopen (PREFIX "/share/micq/%.*s.i18n", strrchr (loc, '_') - loc, loc);
     if (i18nf == -1 && strchr (loc, '_'))
-        i18nf = M_fdopen ("/usr/local/share/micq/%.*s.i18n", strchr (loc, '_') - loc, loc);
+        i18nf = M_fdopen (PREFIX "/share/micq/%.*s.i18n", strchr (loc, '_') - loc, loc);
     if (i18nf == -1)
         i18nf = M_fdopen ("%s/.micq/%s.i18n", getenv ("HOME") ? getenv ("HOME") : "", loc);
     if (i18nf == -1 && strchr (loc, '_'))

@@ -1,4 +1,10 @@
 
+2001-04-26 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
+	* Makefile, src/Makefile, src/i18n.c, src/server.c:
+	  Adapt from Debian changes (by maintainer Sander Smeenk
+	  <ssmeenk@debian.org>): Reconnect patch, and use $(DESTDIR) and
+	  $(prefix).
+
 2001-04-23 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* include/*.h, src/*.c:
 	  Finish moving prototypes to individual files. Make functions
