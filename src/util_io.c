@@ -913,7 +913,7 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
 #if ENABLE_SSL
     ssl_sockclose (conn);
 #else
-    sockclose (conn);
+    sockclose (conn->sok);
 #endif
     conn->sok = -1;
 
