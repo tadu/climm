@@ -56,6 +56,7 @@ static void SrvCallBackReconn (Session *sess)
 
     Time_Stamp ();
     M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
+    sess->connect = 0;
     if (reconn < 5)
     {
         M_print (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << reconn);

@@ -586,7 +586,6 @@ Packet *UtilIOReceiveTCP (Session *sess)
     }
 
     PacketD (pak);
-    sess->connect = 0;
     sockclose (sess->sok);
     sess->sok = -1;
     sess->incoming = NULL;
@@ -596,6 +595,7 @@ Packet *UtilIOReceiveTCP (Session *sess)
         Time_Stamp ();
         M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
         M_print (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+        sess->connect = 0;
     }
     else
         sess->reconnect (sess);

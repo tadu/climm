@@ -187,6 +187,7 @@ static void TCPDispatchReconn (Session *sess)
     Time_Stamp ();
     M_print (" %s%10s%s ", COLCONTACT, ContactFindName (sess->uin), COLNONE);
     M_print (i18n (2023, "Direct connection closed by peer.\n"));
+    TCPClose (sess);
 }
 
 /*
