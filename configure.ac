@@ -41,7 +41,7 @@ if test "x$ac_arg_use_utf8" = "xno"; then
 fi
 
 if test "x$ac_arg_use_iconv" != "xno"; then
-  AC_CHECK_FUNC([iconv], [ac_arg_use_iconv=glibc], [ac_arg_use_iconv=builtin])
+  AC_CHECK_FUNC([iconv], [ac_arg_use_iconv=system], [ac_arg_use_iconv=builtin])
   if test "x$ac_arg_use_iconv" = "xbuiltin"; then
     AC_CHECK_LIB([iconv], [iconv], [ac_arg_use_iconv=iconv])
     if test "x$ac_arg_use_iconv" = "xbuiltin"; then
@@ -294,11 +294,11 @@ AC_FUNC_VPRINTF
 AC_FUNC_SNPRINTF
 AC_FUNC_MEMMOVE
 AC_CHECK_FUNCS([atexit memset memcmp mkdir strcasecmp uname fcntl \
-                strchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
+                strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
                 symlink chmod tcgetattr gettimeofday setlocale select])
 
 for f in memset mkdir atexit \
-         strcasecmp strchr strdup strncasecmp strpbrk strrchr strstr strtol; do
+         strcasecmp strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol; do
     if eval test "x\$ac_cv_func_$f" != "xyes"; then
         AC_MSG_ERROR([Required function $f is missing. Sorry.])
     fi

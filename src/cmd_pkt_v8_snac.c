@@ -655,8 +655,9 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
     Packet *p = NULL, *pp = NULL, *pak;
     Extra *extra = NULL;
     TLV *tlv;
-    UDWORD midtim, midrnd, midtime, midrand, uin, unk, tmp;
+    UDWORD midtim, midrnd, midtime, midrand, uin, unk, tmp, type1enc;
     UWORD seq1, tcpver, len, i, msgtyp, type;
+    const char *txt = NULL;
     char *text = NULL;
 
     pak = event->pak;
@@ -692,19 +693,54 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             if (!tlv[2].len)
             {
                 SnacSrvUnknown (event);
+                TLVD (tlv);
                 return;
             }
 
             p = PacketCreate (tlv[2].str, tlv[2].len);
             PacketReadB2 (p);
             PacketReadData (p, NULL, PacketReadB2 (p));
-            PacketReadB2 (p);
-            text = PacketReadStrB (p);
+                       PacketReadB2 (p);
+            len      = PacketReadB2 (p);
+            
+            type1enc = PacketReadB4 (p);
+            if (len < 4)
+            {
+                SnacSrvUnknown (event);
+                TLVD (tlv);
+                PacketD (p);
+                return;
+            }
+            text = calloc (1, len - 2);
+            PacketReadData (p, text, len - 4);
             PacketD (p);
             /* TLV 1, 2(!), 3, 4, f ignored */
+            switch (type1enc)
+            {
+                case 0x00020000:
+                    txt = ConvToUTF8 (text, ENC_UCS2BE, len - 4, 0);
+                    break;
+                case 0x00030000:
+                    txt = ConvToUTF8 (text, ENC_LATIN1, -1, 0);
+                    break;
+                case 0x0003ffff:
+                    txt = ConvToUTF8 (text, ConvEnc ("CP1257"), -1, 0);
+                    break;
+                case 0x00000000:
+                case 0x0000ffff: /* vICQ sends them */
+                    if (ConvIsUTF8 (text) && len - 4 == strlen (text))
+                        txt = ConvToUTF8 (text, ENC_UTF8, -1, 0);
+                    else
+                        txt = c_in_to_0 (text, cont);
+                    break;
+                default:
+                    SnacSrvUnknown (event);
+                    txt = c_in_to_0 (text, cont);
+                    break;
+            }
             IMSrvMsg (cont, event->conn, NOW, ExtraSet (ExtraSet (extra,
                       EXTRA_ORIGIN, EXTRA_ORIGIN_v5, NULL),
-                      EXTRA_MESSAGE, MSG_NORM, c_in_to_0 (text + 4, cont)));
+                      EXTRA_MESSAGE, MSG_NORM, txt));
             Auto_Reply (event->conn, cont);
             break;
         case 2:
@@ -822,6 +858,7 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
             break;
         default:
             SnacSrvUnknown (event);
+            TLVD (tlv);
             return;
     }
     TLVD (tlv);
@@ -1506,7 +1543,7 @@ void SnacCliSetstatus (Connection *conn, UDWORD status, UWORD action)
         else
         {
             PacketWriteB4 (pak, 0);
-            PacketWrite1  (pak, 0);
+            PacketWrite1  (pak, 1);
             PacketWriteB2 (pak, 8);
             PacketWriteB4 (pak, 0);
         }
@@ -1558,10 +1595,12 @@ void SnacCliSetuserinfo (Connection *conn)
     
     pak = SnacC (conn, 2, 4, 0, 0);
     PacketWriteTLV     (pak, 5);
-    PacketWriteCapID   (pak, CAP_SRVRELAY);
     PacketWriteCapID   (pak, CAP_ISICQ);
+    PacketWriteCapID   (pak, CAP_SRVRELAY);
 #if defined(ENABLE_UTF8)
+#ifndef HAVE_ICONV
     if (ENC(enc_loc) != ENC_EUC && ENC(enc_loc) != ENC_SJIS)
+#endif
         PacketWriteCapID   (pak, CAP_UTF8);
 #endif
     PacketWriteCapID   (pak, CAP_MICQ);
@@ -1689,21 +1728,43 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
         case 1:
             {
             char buf[451];
-            snprintf (buf, sizeof (buf), "%s", c_out_to (text, cont));
+            const char *p;
+            int enc = ENC_LATIN1, icqenc = 3;
+            size_t len, olen;
+            
+            if (cont->status == STATUS_OFFLINE)
+            {
+                enc = ENC_UTF8;
+                icqenc = 0;
+            }
+            else
+                for (p = text; *p; p++)
+                    if (!(~*p & 0xc0) && (*p & 0x3c))
+                    {
+                        icqenc = 2;
+                        enc = ENC_UCS2BE;
+                    }
+            p = ConvFromUTF8 (text, enc, &len);
+            if (len > 450)
+                len = 450;
+            memcpy (buf, p, len);
+            buf[450] = 0;
+
             PacketWriteTLV     (pak, 2);
             PacketWriteTLV     (pak, 1281);
-            PacketWrite1       (pak, 1);
+            PacketWriteB2      (pak, 0x0106); /* FIXME: don't do this, if no CAP_UTF8, but what instead? */
             PacketWriteTLVDone (pak);
             PacketWriteTLV     (pak, 257);
-            PacketWrite4       (pak, 0);
-            PacketWriteStr     (pak, buf);
+            PacketWriteB2      (pak, icqenc);
+            PacketWriteB2      (pak, 0);
+            PacketWriteData    (pak, buf, len);
             PacketWriteTLVDone (pak);
             PacketWriteTLVDone (pak);
             PacketWriteB2 (pak, 6);
             PacketWriteB2 (pak, 0);
             SnacSend (conn, pak);
-            if (strlen (text) > 450)
-                return SnacCliSendmsg (conn, cont, text + 450, type, format);
+            if (len == 450 && strlen (text) > (olen = strlen (ConvToUTF8 (buf, enc, len, 0))))
+                return SnacCliSendmsg (conn, cont, text + olen, type, format);
             }
             break;
         case 4:

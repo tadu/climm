@@ -595,24 +595,24 @@ BOOL ContactMetaLoad (Contact *cont)
             else if (!strcmp (cmd, "b_alias")) { s_parse (&args, &cmd); /* ignore for now */ }
             else if (!strcmp (cmd, "b_enc"))   { if (s_parse (&args, &cmd))  cont->encoding = ConvEnc (cmd) & ~ENC_AUTO; }
             else if (!strcmp (cmd, "b_flags")) { if (s_parseint (&args, &i)) cont->flags = ((cont->flags & ~CONT_ISEDITED) | (i & CONT_ISEDITED)); }
-            else if (!strcmp (cmd, "b_about")) { if (s_parse (&args, &cmd))  s_repl (&cont->meta_about, ConvToUTF8 (cmd, enc, 0)); }
+            else if (!strcmp (cmd, "b_about")) { if (s_parse (&args, &cmd))  s_repl (&cont->meta_about, ConvToUTF8 (cmd, enc, -1, 0)); }
             else if (!strcmp (cmd, "b_seen"))  { if (s_parseint (&args, &i)) cont->seen_time = i; }
             else if (!strcmp (cmd, "b_micq"))  { if (s_parseint (&args, &i)) cont->seen_micq_time = i; }
         }
         else if (!strncmp (cmd, "g_", 2))
         {
             MetaGeneral *mg = CONTACT_GENERAL (cont);
-            if      (!strcmp (cmd, "g_nick"))    { if (s_parse (&args, &cmd))  s_repl (&mg->first,    ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "g_first"))   { if (s_parse (&args, &cmd))  s_repl (&mg->first,    ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "g_last"))    { if (s_parse (&args, &cmd))  s_repl (&mg->last,     ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "g_email"))   { if (s_parse (&args, &cmd))  s_repl (&mg->email,    ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "g_city"))    { if (s_parse (&args, &cmd))  s_repl (&mg->city,     ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "g_state"))   { if (s_parse (&args, &cmd))  s_repl (&mg->state,    ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "g_phone"))   { if (s_parse (&args, &cmd))  s_repl (&mg->phone,    ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "g_fax"))     { if (s_parse (&args, &cmd))  s_repl (&mg->fax,      ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "g_zip"))     { if (s_parse (&args, &cmd))  s_repl (&mg->zip,      ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "g_street"))  { if (s_parse (&args, &cmd))  s_repl (&mg->street,   ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "g_cell"))    { if (s_parse (&args, &cmd))  s_repl (&mg->cellular, ConvToUTF8 (cmd, enc, 0)); }
+            if      (!strcmp (cmd, "g_nick"))    { if (s_parse (&args, &cmd))  s_repl (&mg->first,    ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "g_first"))   { if (s_parse (&args, &cmd))  s_repl (&mg->first,    ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "g_last"))    { if (s_parse (&args, &cmd))  s_repl (&mg->last,     ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "g_email"))   { if (s_parse (&args, &cmd))  s_repl (&mg->email,    ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "g_city"))    { if (s_parse (&args, &cmd))  s_repl (&mg->city,     ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "g_state"))   { if (s_parse (&args, &cmd))  s_repl (&mg->state,    ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "g_phone"))   { if (s_parse (&args, &cmd))  s_repl (&mg->phone,    ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "g_fax"))     { if (s_parse (&args, &cmd))  s_repl (&mg->fax,      ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "g_zip"))     { if (s_parse (&args, &cmd))  s_repl (&mg->zip,      ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "g_street"))  { if (s_parse (&args, &cmd))  s_repl (&mg->street,   ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "g_cell"))    { if (s_parse (&args, &cmd))  s_repl (&mg->cellular, ConvToUTF8 (cmd, enc, -1, 0)); }
             else if (!strcmp (cmd, "g_country")) { if (s_parseint (&args, &i)) mg->country = i; }
             else if (!strcmp (cmd, "g_tz"))      { if (s_parseint (&args, &i)) mg->tz = i; }
             else if (!strcmp (cmd, "g_flags"))   { if (s_parseint (&args, &i))
@@ -625,23 +625,23 @@ BOOL ContactMetaLoad (Contact *cont)
         else if (!strncmp (cmd, "w_", 2))
         {
             MetaWork *mw = CONTACT_WORK (cont);
-            if      (!strcmp (cmd, "w_city"))     { if (s_parse (&args, &cmd))  s_repl (&mw->wcity,     ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "w_state"))    { if (s_parse (&args, &cmd))  s_repl (&mw->wstate,    ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "w_phone"))    { if (s_parse (&args, &cmd))  s_repl (&mw->wphone,    ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "w_fax"))      { if (s_parse (&args, &cmd))  s_repl (&mw->wfax,      ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "w_address"))  { if (s_parse (&args, &cmd))  s_repl (&mw->waddress,  ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "w_zip"))      { if (s_parse (&args, &cmd))  s_repl (&mw->wzip,      ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "w_company"))  { if (s_parse (&args, &cmd))  s_repl (&mw->wcompany,  ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "w_depart"))   { if (s_parse (&args, &cmd))  s_repl (&mw->wdepart,   ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "w_position")) { if (s_parse (&args, &cmd))  s_repl (&mw->wposition, ConvToUTF8 (cmd, enc, 0)); }
-            else if (!strcmp (cmd, "w_homepage")) { if (s_parse (&args, &cmd))  s_repl (&mw->whomepage, ConvToUTF8 (cmd, enc, 0)); }
+            if      (!strcmp (cmd, "w_city"))     { if (s_parse (&args, &cmd))  s_repl (&mw->wcity,     ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "w_state"))    { if (s_parse (&args, &cmd))  s_repl (&mw->wstate,    ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "w_phone"))    { if (s_parse (&args, &cmd))  s_repl (&mw->wphone,    ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "w_fax"))      { if (s_parse (&args, &cmd))  s_repl (&mw->wfax,      ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "w_address"))  { if (s_parse (&args, &cmd))  s_repl (&mw->waddress,  ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "w_zip"))      { if (s_parse (&args, &cmd))  s_repl (&mw->wzip,      ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "w_company"))  { if (s_parse (&args, &cmd))  s_repl (&mw->wcompany,  ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "w_depart"))   { if (s_parse (&args, &cmd))  s_repl (&mw->wdepart,   ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "w_position")) { if (s_parse (&args, &cmd))  s_repl (&mw->wposition, ConvToUTF8 (cmd, enc, -1, 0)); }
+            else if (!strcmp (cmd, "w_homepage")) { if (s_parse (&args, &cmd))  s_repl (&mw->whomepage, ConvToUTF8 (cmd, enc, -1, 0)); }
             else if (!strcmp (cmd, "w_country"))  { if (s_parseint (&args, &i)) mw->wcountry = i; }
             else if (!strcmp (cmd, "w_occup"))    { if (s_parseint (&args, &i)) mw->woccupation = i; }
         }
         else if (!strncmp (cmd, "m_", 2))
         {
             MetaMore *mm = CONTACT_MORE (cont);
-            if      (!strcmp (cmd, "m_homepage")) { if (s_parse (&args, &cmd))  s_repl (&mm->homepage, ConvToUTF8 (cmd, enc, 0)); }
+            if      (!strcmp (cmd, "m_homepage")) { if (s_parse (&args, &cmd))  s_repl (&mm->homepage, ConvToUTF8 (cmd, enc, -1, 0)); }
             else if (!strcmp (cmd, "m_age"))      { if (s_parseint (&args, &i)) mm->age = i; }
             else if (!strcmp (cmd, "m_year"))     { if (s_parseint (&args, &i)) mm->year = i; }
             else if (!strcmp (cmd, "m_unknown"))  { if (s_parseint (&args, &i)) mm->unknown = i; }
@@ -669,14 +669,14 @@ BOOL ContactMetaLoad (Contact *cont)
             if (s_parseint (&args, &i)) mo->given = i;
             if (s_parseint (&args, &i)) mo->empty = i;
             if (s_parseint (&args, &i)) mo->unknown = i;
-            if (s_parse (&args, &cmd)) s_repl (&mo->description, ConvToUTF8 (cmd, enc, 0));
+            if (s_parse (&args, &cmd)) s_repl (&mo->description, ConvToUTF8 (cmd, enc, -1, 0));
         }
         else if (!strcmp (cmd, "interest"))
         {
             if (s_parseint (&args, &i) && s_parse (&args, &cmd))
             {
                 extra = cont->meta_interest;
-                cont->meta_interest = ExtraSet (NULL, 0, i, ConvToUTF8 (cmd, enc, 0));
+                cont->meta_interest = ExtraSet (NULL, 0, i, ConvToUTF8 (cmd, enc, -1, 0));
                 cont->meta_interest->more = extra;
             }
         }
@@ -685,7 +685,7 @@ BOOL ContactMetaLoad (Contact *cont)
             if (s_parseint (&args, &i) && s_parse (&args, &cmd))
             {
                 extra = cont->meta_background;
-                cont->meta_interest = ExtraSet (NULL, 0, i, ConvToUTF8 (cmd, enc, 0));
+                cont->meta_interest = ExtraSet (NULL, 0, i, ConvToUTF8 (cmd, enc, -1, 0));
                 cont->meta_interest->more = extra;
             }
         }
@@ -694,7 +694,7 @@ BOOL ContactMetaLoad (Contact *cont)
             if (s_parseint (&args, &i) && s_parse (&args, &cmd))
             {
                 extra = cont->meta_affiliation;
-                cont->meta_interest = ExtraSet (NULL, 0, i, ConvToUTF8 (cmd, enc, 0));
+                cont->meta_interest = ExtraSet (NULL, 0, i, ConvToUTF8 (cmd, enc, -1, 0));
                 cont->meta_interest->more = extra;
             }
         }
@@ -704,7 +704,7 @@ BOOL ContactMetaLoad (Contact *cont)
         }
 #ifdef WIP
         if (s_parse (&args, &cmd))
-            M_printf ("FIXME: Ignored trailing stuff: '%s' from '%s'.\n", ConvToUTF8 (cmd, enc, 0), buf);
+            M_printf ("FIXME: Ignored trailing stuff: '%s' from '%s'.\n", ConvToUTF8 (cmd, enc, -1, 0), buf);
 #endif
     }
     if (fclose (f))

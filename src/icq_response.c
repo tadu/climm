@@ -448,7 +448,7 @@ void Recv_Message (Connection *conn, Packet *pak)
     Contact *cont;
     char *text, *ctext;
     UDWORD uin;
-    UWORD type;
+    UWORD type, len;
 
 #ifdef HAVE_TIMEZONE
     stamp.tm_sec   = -timezone;
@@ -469,13 +469,19 @@ void Recv_Message (Connection *conn, Packet *pak)
     /* FIXME: The following probably only works correctly in Europe. */
     stamp.tm_isdst = -1;
     type           = PacketRead2 (pak);
+    len            = PacketReadAt2 (pak, pak->rpos);
     ctext          = PacketReadLNTS (pak);
     
     cont = ContactUIN (conn, uin);
     if (!cont)
         return;
-
-    text = strdup (c_in_to (ctext, cont));
+    
+    if (len - 1 == strlen (ctext) && ConvIsUTF8 (ctext))
+        text = strdup (ConvToUTF8 (ctext, ENC_UTF8, -1, 1));
+    else if (type == MSG_NORM && len & 1)
+        text = strdup (ConvToUTF8 (ctext, ENC_UCS2BE, len - 1, 1));
+    else
+        text = strdup (c_in_to (ctext, cont));
     free (ctext);
 
     uiG.last_rcvd_uin = uin;
