@@ -53,6 +53,7 @@ static SNAC SNACv[] = {
     { 12,  1, NULL, NULL},
     { 19,  4, NULL, NULL},
     { 21,  1, NULL, NULL},
+    { 34,  0, NULL, NULL},
     {  0,  0, NULL, NULL}
 };
 
@@ -83,7 +84,7 @@ void SnacCliReady (Connection *serv)
     
     for (s = SNACv; s->fam; s++)
     {
-        if (s->fam == 12 || s->fam == 8)
+        if (!s->cmd || s->fam == 12)
             continue;
 
         PacketWriteB2 (pak, s->fam);
@@ -252,7 +253,7 @@ void SnacCliFamilies (Connection *serv)
     
     for (s = SNACv; s->fam; s++)
     {
-        if (s->fam == 12 || s->fam == 8)
+        if (!s->cmd || s->fam == 12)
             continue;
 
         PacketWriteB2 (pak, s->fam);
