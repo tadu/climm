@@ -8,8 +8,15 @@
  */
 
 #include "micq.h"
+#if HAVE_STRING_H
 #include <string.h>
+#endif
+#if HAVE_ERRNO_H
 #include <errno.h>
+#endif
+#if HAVE_CTYPE_H
+#include <ctype.h>
+#endif
 #include "conv.h"
 #include "preferences.h"
 #include "util_str.h"
@@ -35,20 +42,22 @@ UBYTE ConvEnc (const char *enc)
     {
         conv_encs = calloc (sizeof (enc_t), conv_nr = 15);
         conv_encs[0].enc = strdup ("none");
-        conv_encs[1].enc = strdup ("utf-8");
-        conv_encs[2].enc = strdup ("iso-8859-1");
-        conv_encs[3].enc = strdup ("iso-8859-15");
-        conv_encs[4].enc = strdup ("koi8-u");
-        conv_encs[5].enc = strdup ("cp1251");      /* NOT cp-1251, NOT windows* */
-        conv_encs[6].enc = strdup ("iso-8859-1");  /* this is dupe (!) */
-        conv_encs[7].enc = strdup ("euc-jp");
-        conv_encs[8].enc = strdup ("shift-jis");
+        conv_encs[1].enc = strdup ("UTF-8");
+        conv_encs[2].enc = strdup (ICONV_LATIN1_NAME);
+        conv_encs[3].enc = strdup ("ISO-8859-15");
+        conv_encs[4].enc = strdup ("KOI8-U");
+        conv_encs[5].enc = strdup ("CP1251");      /* NOT cp-1251, NOT windows* */
+        conv_encs[6].enc = strdup (ICONV_LATIN1_NAME);  /* this is dupe (!) */
+        conv_encs[7].enc = strdup ("EUC-JP");
+        conv_encs[8].enc = strdup ("SHIFT-JIS");
     }
-    if (!strcmp (enc, "windows-1251") || !strcmp (enc, "cp-1251"))
-        enc = "cp1251";
+    if (!strcasecmp (enc, "WINDOWS-1251") || !strcmp (enc, "CP-1251"))
+        enc = "CP1251";
+    if (!strcasecmp (enc, "ISO-8859-1") || !strcasecmp (enc, "ISO8859-1") || !strcasecmp (enc, "LATIN1"))
+        enc = ICONV_LATIN1_NAME;
 #ifndef ENABLE_ICONV
-    if (!strncmp (enc, "koi8", 4))
-        enc = "koi8-u";
+    if (!strncasecmp (enc, "KOI8", 4))
+        enc = "KOI8-U";
 #endif
     for (nr = 0; conv_encs[nr].enc; nr++)
         if (!strcasecmp (conv_encs[nr].enc, enc))
@@ -74,12 +83,14 @@ UBYTE ConvEnc (const char *enc)
     }
     if (!conv_encs[nr].enc)
     {
-        conv_encs[nr].enc = strdup (enc);
+        char *p;
+        for (conv_encs[nr].enc = p = strdup (enc); *p; p++)
+            *p = toupper (*p);
         conv_encs[nr + 1].enc = NULL;
     }
 #ifdef ENABLE_ICONV
-    conv_encs[nr].to   = iconv_open ("utf-8", enc);
-    conv_encs[nr].from = iconv_open (enc, "utf-8");
+    conv_encs[nr].to   = iconv_open ("UTF-8", enc);
+    conv_encs[nr].from = iconv_open (enc, "UTF-8");
     if (conv_encs[nr].to == (iconv_t)(-1) || conv_encs[nr].from == (iconv_t)(-1))
         return ENC_AUTO | nr;
     return nr;

@@ -31,10 +31,8 @@ AC_ARG_ENABLE([peer2peer], AC_HELP_STRING([--disable-peer2peer], [disable peer t
               ac_arg_use_peer2peer=$enableval, ac_arg_use_peer2peer=yes)
 AC_ARG_ENABLE([utf8], AC_HELP_STRING([--disable-utf8], [disnable use of UTF-8 internally]),
               ac_arg_use_utf8=$enableval, ac_arg_use_utf8=yes)
-AC_ARG_ENABLE([iconv], AC_HELP_STRING([--enable-iconv], [use libiconv for character conversion]),
-              ac_arg_use_iconv=$enableval, ac_arg_use_iconv=auto)
 AC_ARG_ENABLE([iconv], AC_HELP_STRING([--disable-iconv], [do not use iconv() at all]),
-              ac_arg_use_iconv=$enableval)
+              ac_arg_use_iconv=$enableval, ac_arg_use_iconv=auto)
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
 
@@ -43,24 +41,18 @@ if test "x$ac_arg_use_utf8" = "xno"; then
 fi
 
 if test "x$ac_arg_use_iconv" != "xno"; then
-  if test "x$ac_arg_use_iconv" = "xauto"; then
-    AC_CHECK_FUNC([iconv], [ac_arg_use_iconv=glibc], [ac_arg_use_iconv=none])
-  else
-    ac_arg_use_iconv=iconv
-    AC_CHECK_LIB([iconv], [iconv],, [ac_arg_use_iconv=none])
-    if test "x$ac_arg_use_iconv" = "xnone"; then
-      ac_arg_use_iconv=libiconv
-      AC_CHECK_LIB([iconv], [libiconv],, [ac_arg_use_iconv=none])
-    fi
-    if test "x$ac_arg_use_iconv" = "xnone"; then
-      AC_CHECK_FUNC([iconv], [ac_arg_use_iconv=glibc])
+  AC_CHECK_FUNC([iconv], [ac_arg_use_iconv=glibc], [ac_arg_use_iconv=builtin])
+  if test "x$ac_arg_use_iconv" = "xbuiltin"; then
+    AC_CHECK_LIB([iconv], [iconv], [ac_arg_use_iconv=iconv])
+    if test "x$ac_arg_use_iconv" = "xbuiltin"; then
+      AC_CHECK_LIB([iconv], [libiconv], [ac_arg_use_iconv=libiconv])
     fi
   fi
 else
-  ac_arg_use_iconv=none
+  ac_arg_use_iconv=builtin
 fi
 
-if test "x$ac_arg_use_iconv" != "xnone"; then
+if test "x$ac_arg_use_iconv" != "xbuiltin"; then
   AC_CACHE_CHECK(for iconv declaration, ac_cv_iconv_const,
     [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
         #include <iconv.h>]],
@@ -83,22 +75,31 @@ if test "x$ac_arg_use_iconv" != "xnone"; then
     [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
           #include <iconv.h>]],
         [[iconv_t res;
-          res = iconv_open ("utf-8", "iso-8859-1");
-          if (res == (iconv_t)-1 || !res) exit (2);
-          res = iconv_open ("iso-8859-1", "utf-8");
-          if (res == (iconv_t)-1 || !res) exit (2);
-          res = iconv_open ("utf-8", "iso-8859-15");
-          if (res == (iconv_t)-1 || !res) exit (3);
-          res = iconv_open ("iso-8859-15", "utf-8");
-          if (res == (iconv_t)-1 || !res) exit (3);
-          res = iconv_open ("utf-8", "koi8-u");
-          if (res == (iconv_t)-1 || !res) exit (4);
-          res = iconv_open ("koi8-u", "utf-8");
-          if (res == (iconv_t)-1 || !res) exit (4);
-          res = iconv_open ("utf-8", "cp1251");
+          res = iconv_open ("UTF-8", "ISO-8859-1");
+          if (res == (iconv_t)-1 || !res)
+          {
+              res = iconv_open ("UTF-8", "ISO8859-1");
+              if (res == (iconv_t)-1 || !res) exit (2);
+              res = iconv_open ("ISO8859-1", "UTF-8");
+              if (res == (iconv_t)-1 || !res) exit (3);
+          }
+          else
+          {
+              res = iconv_open ("ISO-8859-1", "UTF-8");
+              if (res == (iconv_t)-1 || !res) exit (4);
+          }
+          res = iconv_open ("UTF-8", "ISO-8859-15");
           if (res == (iconv_t)-1 || !res) exit (5);
-          res = iconv_open ("cp1251", "utf-8");
-          if (res == (iconv_t)-1 || !res) exit (5);
+          res = iconv_open ("ISO-8859-15", "UTF-8");
+          if (res == (iconv_t)-1 || !res) exit (6);
+          res = iconv_open ("UTF-8", "KOI8-U");
+          if (res == (iconv_t)-1 || !res) exit (7);
+          res = iconv_open ("KOI8-U", "UTF-8");
+          if (res == (iconv_t)-1 || !res) exit (8);
+          res = iconv_open ("UTF-8", "CP1251");
+          if (res == (iconv_t)-1 || !res) exit (9);
+          res = iconv_open ("CP1251", "UTF-8");
+          if (res == (iconv_t)-1 || !res) exit (10);
           exit (0);]])],
       [ac_cv_iconv_min=ok],
       [ac_cv_iconv_min=broken],
@@ -106,7 +107,23 @@ if test "x$ac_arg_use_iconv" != "xnone"; then
   ])
   if test $ac_cv_iconv_min != ok; then
     ac_arg_use_iconv=none
+    AC_DEFINE([ICONV_LATIN1_NAME], ["ISO-8859-1"], [the name of the latin1 encoding])
+  else
+    AC_CACHE_CHECK(for iconv name of latin-1 encoding, ac_cv_iconv_latin1_name,
+      [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
+            #include <iconv.h>]],
+          [[iconv_t res;
+            res = iconv_open ("UTF-8", "ISO-8859-1");
+            if (res == (iconv_t)-1 || !res) exit (1);
+            exit (0);]])],
+        [ac_cv_iconv_latin1_name=ISO-8859-1],
+        [ac_cv_iconv_latin1_name=ISO8859-1],
+        [ac_cv_iconv_latin1_name=cannothappen])
+    ])
+    AC_DEFINE_UNQUOTED([ICONV_LATIN1_NAME], ["$ac_cv_iconv_latin1_name"])
   fi
+else
+  AC_DEFINE([ICONV_LATIN1_NAME], ["ISO-8859-1"])
 fi
 
 if test "x$ac_arg_use_remote" != "xno"; then
@@ -155,7 +172,7 @@ fi
 
 AC_MSG_CHECKING([whether to enable usage of utf-8 internally])
 AC_MSG_RESULT([$ac_arg_use_utf8])
-AC_MSG_CHECKING([whether to enable iconv and which iconv to use])
+AC_MSG_CHECKING([whether to enable iconv and which iconv lib to use])
 AC_MSG_RESULT([$ac_arg_use_iconv])
 AC_MSG_CHECKING([whether to enable peer to peer connections])
 AC_MSG_RESULT([$ac_arg_use_peer2peer])
@@ -167,7 +184,7 @@ if test "x$ac_arg_use_utf8" = "xyes"; then
 fi
 
 if test "x$ac_arg_use_iconv" != "xnone"; then
-  AC_DEFINE_UNQUOTED(ENABLE_ICONV, "$ac_arg_use_iconv", [Whether to use iconv functions])
+  AC_DEFINE_UNQUOTED(ENABLE_ICONV, "$ac_arg_use_iconv", [Which lib to use for iconv() functions])
 fi
 
 if test "x$ac_arg_use_peer2peer" = "xyes"; then
@@ -189,7 +206,7 @@ fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h])
+AC_CHECK_HEADERS([locale.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
