@@ -768,7 +768,7 @@
 1898:Redirigiendo al servidor %s... 
 1899:Pedido de familia desconocida:: %d¶
 1900:Es de solo lectura.
-1901:te autorizó a agregarlo/a a tu lista de contactos.
+1901:te autorizó a agregarlo/a a tu lista de contactos.¶
 1902:Abriendo conexión v5 a %s:%d... 
 1903:Mensaje saliente v8 al servidor:
 1904:El servidor no comprende ver %d (solo %d) para la familia %d!¶
@@ -979,4 +979,4 @@
 2138:El cambio de la información fue %s%s%s.¶
 2139:El cambio de la información adicional fue %s%s%s.¶
 2140:El cambio de grupo de usuarios al azar fue %s%s%s.¶
-2141:Busqueda %sfallida%s.
+2141:Busqueda %sfallida%s.¶

@@ -829,7 +829,7 @@
 1898:Redirige vers le serveur %s... 
 1899:Famille inconnue demandée: %d¶
 1900:C'est en lecture-seule.
-1901:vous a autorisé à l'ajouter dans votre liste de contacts.
+1901:vous a autorisé à l'ajouter dans votre liste de contacts.¶
 1902:Ouverture d'une connection v5 vers %s:%d... 
 1903:Paquet du server v8 sortant:
 1904:Le serveur ne comprend pas ver %d (seulement %d) pour la famille %d!¶
@@ -1042,4 +1042,4 @@
 2138:Changement des informations supplémentaires a %s%s%s.¶
 2139:Changement des informations de l'utilisateur a %s%s%s.¶
 #2140:Random chat group change was %s%s%s.¶
-2141:Recherche %séchouée%s.
+2141:Recherche %séchouée%s.¶

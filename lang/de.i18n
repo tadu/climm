@@ -780,7 +780,7 @@
 1898:Weiterleitung zu Server %s... 
 1899:Unbekannte Befehlsfamilie angefordert: %d.¶
 1900:Nur lesbar.
-1901:hat Dich authorisiert, ihn zu Deiner Kontaktliste hinzuzufügen.
+1901:hat Dich authorisiert, ihn zu Deiner Kontaktliste hinzuzufügen.¶
 1902:Öffne Verbindung zu v5-Server bei %s:%d... 
 1903:Ausgehendes v8-Server-Paket:
 1904:Der Server versteht Version %d (nur Version %d) für Familie %d!¶
@@ -990,4 +990,4 @@
 2138:Änderung der grundlegenden Informationen war %s%s%s.¶
 2139:Änderung der sonstigen Informationen war %s%s%s.¶
 2140:Interessengruppenänderung war %s%s%s.¶
-2141:Suche %sfehlgeschlagen%s.
+2141:Suche %sfehlgeschlagen%s.¶
