@@ -3268,7 +3268,11 @@ static JUMP_F(CmdUserHistory)
                     {
                         hstamp.tm_mon--;
                         hstamp.tm_year -= 1900;
+#if HAVE_TIMELOCAL                        
                         htime = timelocal (&hstamp);
+#else
+                        htime = mktime (&hstamp);
+#endif
                         msgMin = 0;
                     }
                     else

@@ -360,9 +360,13 @@ fi
 AC_FUNC_VPRINTF
 AC_FUNC_SNPRINTF
 AC_FUNC_MEMMOVE
-AC_CHECK_FUNCS([localtime_r timegm atexit memcmp mkdir strcasecmp uname fcntl \
+AC_CHECK_FUNCS([localtime_r timegm timelocal atexit memcmp mkdir strcasecmp uname fcntl \
                 strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol strtok_r \
                 symlink chmod tcgetattr gettimeofday setlocale select sigprocmask])
+
+if test "x$ac_cv_func_timegm" != xyes; then
+    AC_LIBOBJ(timegm)
+fi
 
 for f in mkdir atexit \
          strcasecmp strchr memchr strdup strncasecmp strpbrk strrchr strstr strtol; do

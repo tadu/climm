@@ -3,6 +3,8 @@
  * Replacement function timegm is copied from Linux timegm man page.
  */
 
+#include "micq.h"
+
 time_t portable_timegm (struct tm *tm)
 {
     time_t ret;
