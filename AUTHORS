@@ -31,13 +31,22 @@ Current Translators:
 
 	Nikola Lecic		<lecicc__at__ptt.yu>
 	    serbian (sr_yu) translation 0.4.10
+	    serbian man pages, serbian web page
+	
+	Alonso Andres
+	    portuguese/brazil (pt) translation 0.4.10
+
+	Leonardo Rosa		<leorosa@feq.unicamp.br>
+	    portuguese/brazil (pt) translation 0.4.10
+	    updated portuguese man pages to 0.4.10
+	    portuguese web page
 
 	Artem Sokolov		<sokolov__at__ukr.net>
 	    ukrainian (uk.i18n) translation 0.4.10
 	    2 ukrainian man pages
 	
         J. Grant		<jg__at__jguk.org>
-            japanese (ja_jp) translation 0.4.9.4
+            japanese (ja_jp) translation 0.4.10
 
 	Alberto Bertogli	<albertogli__at__telpin.com.ar>
 	    spanish (es.i18n) translation 0.4.9.3
@@ -56,10 +65,10 @@ Current Translators:
         Digor Dumitru, Alina Pelin
             (partial) romanian (ro.i18n) translation
         
-        Deives Michellis	<dmichellis__at__yahoo.com>
-            portuguese/brazil (pt_br) man pages
-
 Former Translators:
+
+        Deives Michellis	<dmichellis__at__yahoo.com>
+            portuguese/brazil (pt_br) man pages to 0.4.9.?
 
 	Guillaume Coqueblin	<esquimo_2ooo__at__caramail.com>
 	    (update) french (fr.i18n) translation to >= 0.4.8pl9

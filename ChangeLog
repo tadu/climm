@@ -1,5 +1,16 @@
 -*- coding: utf-8 -*-
 
+2003-02-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+	* debian sync
+	* special-case around Kopete as well
+	* Debian maintainer saw the light, so removing Debian blurb
+	* fix importing multi-packet contact list
+	* fix 0xfe stuff
+	* update micq.spec
+	* handle SRV_SERVERPAUSE
+	* fix quoting issues with " in nick names, aliases, alters, ...
+	* add pt translation
+
 2003-02-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
 	* fix set tabs command
 	* fix buildmark
