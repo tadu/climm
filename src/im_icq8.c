@@ -303,18 +303,38 @@ static void IMRosterAddup (Event *event)
             }
     
     for (rc = roster->ignore; rc; rc = rc->next)
+    {
         cont = IMRosterCheckCont (serv, rc);
+        rg = IMRosterGroup (roster, rc->tag);
+        if (cont->group && cont->group->id && rg && rg->id && cont->group->id != rg->id)
+            SnacCliRosterupdate (serv, cont->group, cont);
+    }
 
     for (rc = roster->invisible; rc; rc = rc->next)
+    {
         cont = IMRosterCheckCont (serv, rc);
+        rg = IMRosterGroup (roster, rc->tag);
+        if (cont->group && cont->group->id && rg && rg->id && cont->group->id != rg->id)
+            SnacCliRosterupdate (serv, cont->group, cont);
+    }
 
     for (rc = roster->normal; rc; rc = rc->next)
+    {
         cont = IMRosterCheckCont (serv, rc);
+        rg = IMRosterGroup (roster, rc->tag);
+        if (cont->group && cont->group->id && rg && rg->id && cont->group->id != rg->id)
+            SnacCliRosterupdate (serv, cont->group, cont);
+    }
 
     for (rc = roster->visible; rc; rc = rc->next)
+    {
         cont = IMRosterCheckCont (serv, rc);
+        rg = IMRosterGroup (roster, rc->tag);
+        if (cont->group && cont->group->id && rg && rg->id && cont->group->id != rg->id)
+            SnacCliRosterupdate (serv, cont->group, cont);
+    }
 
-    for (i = 0; (cont = ContactIndex (serv->contacts, i)); i++)    
+    for (i = 0; (cont = ContactIndex (serv->contacts, i)); i++)
         if (!ContactPrefVal (cont, CO_ISSBL))
             if (ContactPrefVal (cont, CO_WANTSBL) && !ContactPrefVal (cont, CO_IGNORE))
             {
