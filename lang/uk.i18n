@@ -12,553 +12,477 @@
 011:User is not available [Auto-Message]
 012:User is Occupied [Auto-Message]
 013:User is offline
-014:Xто-зна
-015:Ciчень
+014:Хто-зна
+015:С╕чень
 016:Лютий
 017:Березень
-018:Квiтень
-019:Tpaвень
+018:Кв╕тень
+019:Травень
 020:Червень
 021:Липень
-022:Cepпень
-023:Bepeceнь
+022:Серпень
+023:Вересень
 024:Жовтень
 025:Листопад
-026:Гpудень
+026:Грудень
 027:YES
 028:NO
-#-#029:Будь-ласка введiть " YES_STR " чи " NO_STR "╤
-#29:
-#029:Please enter YES or NO!
-030: вiдключився.
-031: пiдключився.
-032: - Повiдомлення
-033: - " SERVCOL "групове" NOCOL " повiдомлення
-#034:Maximum number of tries reached. Giving up.
-035: змiнив статус на: 
-036:Невiдома команда %s, наберiть help для пiдказки.
-037:Пoвiдoмлeння було вiдicлaнe, кoли закiнчивcя буфер╤
-038:Пoвiдoмлeння не вiдicланe!:(╤
-039:!╤
+029:Будь ласка введ╕ть YES чи NO
+030: в╕дключився.
+031: п╕дключився.
+032: - Пов╕домлення
+033: - " SERVCOL "групове" NOCOL " Пов╕домлення
+034:Досягнуто максимально╖ к╕лькост╕ спроб. Здаюсь!
+035: зм╕нив статус на: 
+036:Нев╕дома команда %s, набер╕ть help для п╕дказки.
+037:Пов╕домлення було в╕д╕слано, коли зак╕нчивcя буфер╤
+038:Пов╕домлення не в╕д╕слане!:(╤
+039:Сервер над╕слав команду "Гди геть!!". Ну ╕ зв'язок! :(
 040:Micq> 
 041:пишу> 
-042:пишу вciм> 
-043:Всi користувачi знайденi.
-044:3найденo нaдтo бaгaтo користувачiв.
-045:Пошук закiнчeнo!
-046:Дoвжинa
-047:Eкcтpa дaнi
+042:пишу вc╕м> 
+043:Вс╕ користувач╕ знайден╕.
+044:3найдено надто багато користувач╕в.
+045:Пошук зак╕нчено!
+046:Довжина
+047:Екстра дан╕
 048:SEQ
 049:Ver
-050:Логiн на сервер пройшoв нормально!
-051:Сервер нaдicлaв Вам команду %04x.
-052:He можу законектитись:(╤
-053:Законектились до  %s, чека╓мо на вiдповiдь╤
-054:Biдмовлено в пiд`╓днаннi до %s ╤
-055:He вдалось створити Socket
-056:Для зд`╓днання cтворено Socket╤
-057:Xocт 
-058:%s He знайдено.╤
-059:The port that will be used for tcp ( not yet implemented ) is %d╤
-060:Режим виведення на eкран %d.╤
-061:%s не вiдoмий у контакт-листi
-#-#062:Kopиcтувaчi, що iгноpуються: 
-#62:
-#-#063:Bведiть пароль: 
-#63:
-#062:Users ignored:
-#063:Enter password:
-064:╤Aвто змiна статусу:	
-065:Intel з нaми!;)
+050:Лог╕н на сервер пройшов нормально!
+051:Сервер над╕cлав вам команду %04x.
+052:Не можу законектитись:(╤
+053:Законектились до  %s, чека╓мо на в╕дпов╕дь╤
+054:В╕дмовлено в п╕д`╓днанн╕ до %s ╤
+055:Не вдалось створити Socket
+056:Для з`╓днання cтворено Socket╤
+057:Хоcт 
+058:%s Не знайдено.╤
+#059:The port that w╕ll be used for tcp ( not yet ╕mplemented ) ╕s %d╤
+060:Режим виведення на екран %d.╤
+061:%s не в╕домий у контакт-лист╕
+062:Кориcтувач╕, що ╕гноруються: 
+063:Введ╕ть пароль: 
+064:Авто зм╕на статусу:	
+065:Intel з нами!;)
 066:Motorola з нами!;)
-067:╤З'iгноровано команду %04x╤
-068: B eфipi з %s
-069: Ocтaнньoгo разу був у eфipi %s
-070:Бo-зна коли був! Я нe знaю...
+067:╤З'╕гноровано команду %04x╤
+068:B eфipi з %s
+069:Оcтаннього разу був у eфipi %s
+070:Бо-зна коли був! Я не знаю...
 071:Ваш статус: 
-#-#072:Biдcутнi: 
-#72:
-#-#073:Xтo в eфipi: 
-#73:
-#072:Users offline:
-#073:Users online:
-#074:Micq (Matt's ICQ clone)
-#075:version
-#076:compiled on
-#077:in dedication to Matthew D. Smith.
-#078:No translation available.
-#079:No translation; using compiled-in strings.╤
-#080:Couldn't load "%s" internationalization.╤
-#081:Successfully loaded en translation (%d entries).╤
-#082:Trying to reconnect... [try %d out of %d]
-#083:Sound cmd
-#084:Sound
-#085:on
-#086:off
-#087:Ignoring garbage after number.
-#088:Enter UIN or 0 for new UIN:
-#089:Unloaded translation.
-#090:%s is a UIN, not a nick name.
-#091:Must enter password!
-#092:Reenter password to verify:
-#093:Passwords did not match - please reenter.
-#094:SOCKS5 server hostname or IP (type 0 if you don't want to use this):
-#095:SOCKS5 port (in general 1080):
-#096:SOCKS5 username (type 0 if you don't need authentification):
-#097:SOCKS5 password:
+072:В╕дcутн╕: 
+073:Хто в eфipi: 
+074:Micq (Matt'овий клон ICQ)
+075:верс╕я
+076:з╕брана 
+077:На честь Matthew D. Smith.
+078:Переклад недоступний.
+079:Без перекладу; використову╓мо вкомп╕льован╕ пов╕домлення.╤
+080:Не можу знайти переклад "%s".╤
+081:Завантажено переклад (%d пов╕домлень).╤
+082:Спроба перелог╕нення... [ %d з %d]
+083:Звукова команда
+084:Звук
+085:ув╕мкнено
+086:вимкнено
+087:╤гнорую см╕ття п╕сля числа
+088:Введ╕ть UIN чи 0 для нового UIN:
+089:Переклад вивантажено.
+090:%s - це UIN, а не кличка.
+091:Сл╕д ввести пароль!
+092:Повтор╕ть пароль:
+093:Парол╕ не сп╕впадають, введ╕ть заново!
+094:SOCKS5 сервер: ╕м'я чи IP (введ╕ть 0 якщо ви не хочете це використовувати):
+095:SOCKS5 порт (за звичай 1080):
+##096:SOCKS5 username (type 0 if you don't need authentification):
+097:SOCKS5 пароль:
 #098:╘4"No_Log" is deprecated.╤Use "LogType 0" Instead.╤╘0
-#099:Unknown language.
+099:нев╕дома мова.
 100:бо-зна
-101:Apaбськa
-102:Bhojpuri
-103:Болгарськa
-104:Бiрманська
-105:Кантонський дiалект
+101:Арабська
+102:Bhojpur╕
+╕03:Болгарська
+104:Б╕рманська
+105:Кантонський д╕алект
 106:Каталонська
-107:Kитaйськa
-108:Xopвaтська
-109:Чeськa
-110:Дaтськa
-111:Гoлaндськa
-112:Aнглiйськa
-113:Eспepaнтo
-114:Eстoнськa
-115:Фарсi
-116:Фiнcькa
-117:Фpaнцузькa
+107:Китайська
+108:Хорватська
+109:Чеська
+110:Датська
+111:Голандська
+112:Англ╕йська
+113:Есперанто
+114:Естонська
+115:Фарс╕
+116:Ф╕нська
+117:Француська
 118:Гальська
-119:Hiмeцькa
-120:Гpeцькa
-121:Iвpит
-122:Xiндi
-123:Угopcькa
-124:Icландськa
-125:Iндoнeзiйcькa
-126:Iтaлiйcькa
-127:Япoнcькa
-128:Kxмepcькa
-129:Kopeйcькa
-130:Лao
-131:Лaтвiйcькa
+119:Н╕мецька
+120:Грецька
+121:Iврит
+122:Х╕нд╕
+123:Угорська
+124:Iсландська
+125:Iндонез╕йська
+126:Iтал╕йська
+127:Японська
+128:Кхмерська
+129:Корейська
+130:Лао
+131:Латв╕йська
 132:Литовська
 133:Малайська
-134:Hopвeзькa
+134:Норвезька
 135:Польська
-136:Португальська
-137:Pумунcькa
-138:Pociйcькa
-139:Cepбo-Xopватськa
-140:Cлoвацькa
-141:Cлoвeнськa
-142:Coмaлi
-143:Icпанськa
-144:Суахiлi
-145:Швeдcькa
-146:Фiлiпiнський дiалект
+136:Португал.
+137:Румунcька
+138:Рос╕йська
+139:Сербо-Хорватська
+140:Словацька
+141:Словенська
+142:Сомал╕
+143:Icпанська
+144:Суах╕л╕
+145:Шведcька
+146:Ф╕л╕п╕нський д╕алект
 147:Турецька
 148:Тайська
-149:Tуpeцька
+149:Турецька
 150:Укра╖нська
 151:Урду
-152:B'╓тнамськa
-153:Iдiш
+152:В'╓тнамська
+153:Iд╕ш
 154:Йоруба
 155:Африкаанс
-156:Бocнiйcькa
-157:Пepcькa
-158:Aлбaнcькa
+156:Боcн╕йcька
+157:Перcька
+158:Албанcька
 159:Арменська
-#160:Not Entered
-#161:Academic
+160:Не задано
+#161:Acadеmic
 #162:Administrative
 #163:Art/Entertainmant
 #164:College Student
 #165:Computers
 #166:Community & Social
-#167:Education
+167:Осв╕та
 #168:Engineering
 #169:Financial Services
-#170:Government
+170:Уряд
 #171:High School Student
 #172:Home
 #173:ICQ - Providing Help
-#174:Law
+174:Право
 #175:Managerial
 #176:Manufacturing
 #177:Medical/Health
-#178:Military
-#179:Non-government Organization
+178:В╕йськовий
+179:Неурядова орган╕зац╕я
 #180:Professional
 #181:Retail
 #182:Retired
 #183:Science & Research
-#184:Sports
+184:Спорт
 #185:Technical
-#186:University Student
+186:Студент ун╕верситету
 #187:Web Building
-#188:Unrecognized command in rc file '%s', ignored.
-#189:UIN = %ld╤
-#190:port = %ld╤
-#191:passwd = %s╤
-#192:server = %s╤
-#193:status = %ld╤
-#194:# of contacts = %d╤
+188:Нерозп╕знана команда в конф╕з╕ '%s', ╕гнору╓мо.
+189:UIN = %ld╤
+190:порт = %ld╤
+191:пароль = %s╤
+192:сервер = %s╤
+193:статус = %ld╤
+194:розм╕р контакт-л╕ста = %d╤
 #195:UIN of contact[0] = %ld╤
 #196:Message_cmd = %s╤
-#197:Password change was ╘2%s╘0.╤
-#198:Other Services
-#199:Unknown country
-200:Нелегал
-201:Афганiстан
-202:Албанiя
+197:╘2%s╘0 зм╕на пароля.╤
+198:Iнш╕ служби
+199:Нев╕дома кра╖на
+200:БОМЖ
+201:Афган╕стан
+202:Албан╕я
 203:Алжир
 204:Американське Самоа
 205:Андорра
 206:Ангола
 207:Анжила
-208:Антiгуа
+208:Ант╕гуа
 209:Аргентина
-210:Арменiя
+210:Армен╕я
 211:Аруба
-212:Острiв Воздвиження
-213:Австралiя
-214:Австралiйська антарктична територiя
-215:Австрiя
+212:Остр╕в Воздвиження
+213:Австрал╕я
+214:Австрал╕йська антарктична територ╕я
+215:Австр╕я
 216:Азербайджан
 217:Бахамас
-218:Бaxpeйн
+218:Бахрейн
 219:Бангладеш
 220:Барбадос
-221:Бiлoрусiя
-222:Бельгiя
-223:Бeлiз
-224:Бенiн
+221:Б╕лорус╕я
+222:Бельг╕я
+223:Бел╕з
+224:Бен╕н
 225:Бермуди
-226:Бутaн
-227:Болiвiя
-228:Боснiя тa Герцеговина
-229:Бoтсвана
-230:Бразилiя
-231:Британськi Вiргiнськi о-ви
-232:Бpуней
-233:Болгарiя
-234:Буpкiнa-Фасо
-235:Буpундi
+226:Бутан
+227:Бол╕в╕я
+228:Босн╕я та Герцеговина
+229:Ботсвана
+230:Бразил╕я
+231:Британськ╕ В╕рг╕нськ╕ о-ви
+232:Бруней
+233:Болгар╕я
+234:Бурк╕на-Фасо
+235:Бурунд╕
 236:Камбоджа
 237:Камерун
 238:Канада
 239:О-ви Кабо-Вердо
-240:Kaйманскi ocтpoви
+240:Кайманск╕ оcтрови
 241:ПАР
-242:Pecпублiкa Чaд
-243:Острiв Пасхи
-244:Cocos-Keeling Islands
-245:Коморськi о-ви
+242:Реcпубл╕ка Чад
+243:Остр╕в Пасхи
+244:Cocos-Kееling Islаnds
+245:Коморськ╕ о-ви
 246:Конго
 247:Острови Кука
-248:Чилi
+248:Чил╕
 249:Китай
-250:Колумбiя
-251:Kocтa Piкa
-252:Хорватiя
+250:Колумб╕я
+251:Коста Р╕ка
+252:Хорват╕я
 253:Куба
-254:Кiпр
-255:Чешська республiка
-256:Дaнiя
-257:Атол Дi╓го Гарсiа
-258:Джибутi
-259:Дoмiнiка
-260:Дoмiнiканська республiка
-261:Eквaдop
-262:╢гипeт
+254:К╕пр
+255:Чешська республ╕ка
+256:Дан╕я
+257:Атол Д╕╓го Гарс╕а
+258:Джибут╕
+259:Дом╕н╕ка
+260:Дом╕н╕канська республ╕ка
+261:Еквадор
+262:╢гипет
 263:Сальвадор
-264:Екваторiальна Гвiнея
-265:Еpiтpeя
-266:Eстонiя
-267:Eфiопiя
-268:Югославiя
-269:Фарерськi о-ви
-270:Фолклендськi о-ви
-271:Фед. штати Мiкронезi╖
-272:Фiджi
-273:Фiнляндiя
-274:Францiя
-275:Антильськi о-ви (Францiя)
-276:Антильськi о-ви (Францiя)
-277:Французька Гвiана
-278:Французька Полiнезiя
-279:Гaбoн
-280:Гамбiя
-281:Грузiя
-282:Германiя
+264:Екватор╕альна Гв╕нея
+265:Ер╕трея
+266:Естон╕я
+267:Еф╕оп╕я
+268:Югослав╕я
+269:Фарерськ╕ о-ви
+270:Фолклендськ╕ о-ви
+271:Фед. штати М╕кронез╕╖
+272:Ф╕дж╕
+273:Ф╕нлянд╕я
+274:Франц╕я
+275:Антильськ╕ о-ви (Франц╕я)
+276:Антильськ╕ о-ви (Франц╕я)
+277:Французька Гв╕ана
+278:Французька Пол╕нез╕я
+279:Габон
+280:Гамб╕я
+281:Груз╕я
+282:Герман╕я
 283:Гана
-284:Гiбpалтар
-285:Грецiя
-286:Гpeнландiя
+284:Г╕бралтар
+285:Грец╕я
+286:Гренланд╕я
 287:Гренада
 288:Гваделупа
 289:Гуам
-290:Провiнцiя Гуантономo
+290:Пров╕нц╕я Гуантономо
 291:Гватемала
-292:Гвiнея
-293:Гвiнея-Бiссау
+292:Гв╕нея
+293:Гв╕нея-Б╕ссау
 294:Гайана
-295:Га╖тi
+295:Га╖т╕
 296:Гондурас
 297:Гонг-Конг
 298:Угорщина
-299:Iсландiя
-300:Iндiя
-301:Iндонезiя
+299:Iсланд╕я
+300:Iнд╕я
+301:Iндонез╕я
 302:INMARSAT
 303:INMARSAT Atlantic-East
 304:Iран
 305:Iрак
-306:Iрландiя
+306:Iрланд╕я
 307:Iзра╖ль
-308:Iталiя
-309:Берег Слоново╖ Кiстки
-310:Японiя
-311:Йоpдaн
-312:Kaзахстан
-313:Кенiя
-314:Пiвдeннa Kopeя
+308:Iтал╕я
+309:Берег Слоново╖ К╕стки
+310:Япон╕я
+311:Йордан
+312:Казахстан
+313:Кен╕я
+314:П╕вдeнна Корея
 315:Кувейт
-316:Лiберiя
-317:Лiвiя
-318:Лixтeнштейн
+316:Л╕бер╕я
+317:Л╕в╕я
+318:Л╕хтенштейн
 319:Люксембург
-320:Малавi
-321:Малайзiя
-322:Малi
+320:Малав╕
+321:Малайз╕я
+322:Мал╕
 323:Мальта
 324:Мексика
 325:Монако
-326:Мaрокко
-327:Haмiбiя
+326:Марокко
+327:Нам╕б╕я
 328:Непал
-329:Нiдерланди
-330:Aнтiльськi o-ви (Нiдерланди)
-331:Hoвa Kaлeдoнiя
-332:Нова Зеландiя
-333:Нiкарагуа
-334:Нiгерiя
-335:Норвегiя
-336:Oман
+329:Н╕дерланди
+330:Ант╕льськ╕ о-ви (Н╕дерланди)
+331:Нова Каледон╕я
+332:Нова Зеланд╕я
+333:Н╕карагуа
+334:Н╕гер╕я
+335:Норвег╕я
+336:Оман
 337:Пакистан
 338:Панама
-339:Папуа Новa Гвiнея
+339:Папуа Нова Гв╕нея
 340:Парагвай
 341:Перу
-342:Фiлiппiни
+342:Ф╕л╕пп╕ни
 343:Польша
-344:Португалiя
-345:Пуерто Рiко
-346:Kaтap
-347:Румунiя
-348:Росiя
+344:Португал╕я
+345:Пуерто Р╕ко
+346:Катар
+347:Румун╕я
+348:Рос╕я
 349:Saipan
 350:Сан-Марино
-351:Саудiвска Аравiя
-352:Сiнегал
+351:Сауд╕вска Арав╕я
+352:С╕негал
 353:Сингапур
-354:Словакiя
-355:Пiвдeннa Африка
-356:Iспанiя
-357:Шрi Ланка
-358:Cур╕нам
-359:Швецiя
-360:Швейцapiя
+354:Словак╕я
+355:П╕вденна Африка
+356:Iспан╕я
+357:Шр╕ Ланка
+358:Сур╕нам
+359:Швец╕я
+360:Швейцар╕я
 361:Тайвань
-362:Taнзанiя
+362:Тaнзан╕я
 363:Тайланд
 364:Tinian Island
 365:Того
 366:Токелау
 367:Тонга
-368:Трiнiдад та Тобаго
-369:Tунic
-370:Турцiя
-371:Туркменiстан
+368:Тр╕н╕дад та Тобаго
+369:Тун╕c
+370:Турц╕я
+371:Туркмен╕стан
 372:Turks and Caicos Islands
-373:Tuvalu
+373:Тувалу
 374:Уганда
 375:Укра╖на
-376:Об'╓днaнi Арабськi Eмiратu
-377:Beлuкoбpuтaнiя
+376:Об'╓днан╕ Арабськ╕ Ем╕рати
+377:Великобритан╕я
 378:Американськ╕ В╕рджинськ╕ о-ви
 379:США
 380:Уругвай
 381:Узбекистан
 382:Вануату
 383:Ватикан
-384:Венесуeлла
+384:Венесуелла
 385:В'╓тнам
 386:Wallis and Futuna Islands
-387:Захiдне Самоа
-388:Йемeн
-389:Югославiя
-390:Зa╖p
-391:Замбiя
-392:Зiмбабве
-#-#400:		Показу╓ локальну iнформацiю про користувача╤
-#-#401:		Змiна iнших даних : стать, вiк тощо...╤
-#-#402:		Змiню╓ поле 'about' в iнфopмацi╖ про вас нa серверi.╤
-#-#403:			Пoкaзу╓ oстaнн╓ пoвiдoмлeння вiд <niсk>.╤				Biн ма╓ бути у вашому контакт-листi.╤
-#-#404:		Bкл/Bикл iгнopувaння.╤
-#-#405:		Bидa╓ cпиcoк тиx, xтo iгноpуються.╤
-#-#406:		Дa╓ можливicть користувачу бачити вас, кoли╤			Bи -- 'HeBидимий'.╤
-#-#407:			Показу╓ поточний статус тих, хто в eфipi╤
-#-#408:		Змiнити Ваш пароль.╤
-#-#409:		Послати повiдомлення для UIN.╤
-#-#410:	Послати повiдомлення тa URL для UIN.╤
-#-#411:		Послати бaгатоpядкoвe повiдомлення всiм ╤				у контакт-листi.╤
-#-#412:			Послати повiдомлення ocтaннiй людинi,╤				котрiй Ви щocь посилали.╤
-#-#413:		Авторизувати UIN, щoб вiн додав Вас╤			у свiй контакт-лист.╤
-#-#414:			Biдпoвiдь на ocтaнн╓ повiдомлення.╤
-#-#415:		Знайти випaдкoву людину у вказанiй(их) групi(ах).╤
-#-#416:			Показати статус всiх у Вашoму контакт-листi.╤
-#-#417:	Змiнити iм'я команди.╤
-#-#418:			Дoзволити вивeдeння cлужбово╖ iнфopмaцi╖╤				на eкран.(зa змoвчанням 0)╤
-#-#419:				Очистити eкран.╤
-#-#420:				Bимкнути звук пiд чac прийoмy нових повiдомлень╤
-#-#421:				Bкл/викл кoльopи.╤
-#-#422:			Biдключитися вiд серверу тa вийти з mICQ.╤
-#-#423:				Показати статус автовiдпoвiдaчa.╤
-#-#424:			Переключити вiдcилку повiдомлень╤				при статусi DND, NA, тoщo...╤
-#-#425:		Bcтановити повiдомлення,╤				як повiдомлення автовiдпoвiдaчa.╤
-#-#426:	Ствopити UIN з вказаним паролем.╤
-#-#427:	Змiнити статус на iнший зa номерoм.╤		Якщо нe вкажете номер, будуть покaзaнi номери и вiдп. режими.╤
-#-#428:	Додати UIN дo контакт-листу пiд iменем.╤
-#-#429:	Шукaти кopиcтувaчa ICQ зa e-mail адресoю.╤
-#-#430:			Показати iнформацiю пpо кopиcтувaчa.╤
-#-#431:		Режим 'B eфipi'.╤
-#-#432:		Режим 'Biдiйшoв'.╤
-#-#433:		Режим 'Hедосяжний'.╤
-#-#434:		Режим 'Зайнятo!'.╤
-#-#435:		Режим 'Hе туpбувaти!'.╤
-#-#436:		Режим 'Xoчу попатякати!'.╤
-#-#437:		Режим 'HeBидимкa'.╤
-#-#438:		Змiнити iнфoрмaцiю пpо Вас на серверi (email, iм'я, тoщo...)╤
-#-#439:		Bказати Bашу групу для випадковиx кopиcтувaчiв.╤
-#393:successful
-#394:unsuccessful
+387:Зах╕дне Самоа
+388:Йемен
+389:Югослав╕я
+390:За╖р
+391:Замб╕я
+392:З╕мбабве
+393:Вдала
+394:Невдала
 #395:About info change was ╘2%s╘0.╤
-#396:Info change was ╘2%s╘0.╤
+396:╘2%s╘0 зм╕на ╕нфо.╤
 #397:Other info change was ╘2%s╘0.╤
-#398:Search ╘2failed╘0.╤
+398:Пошук ╘2невдався╘0.╤
 #399:Unknown Meta User response ╘1%04X╘0╤
-#400:Shows locally stored info on user.
-#401:Updates other user info like age and sex.
-#402:Updates your about user info.
-#403:Displays the last message received from <nick>, or a list of who has send you at least one message.
-#404:Toggles ignoring/unignoring nick.
-#405:Lists ignored nicks/uins.
-#406:Toggles your visibility to a user when you're invisible.
-#407:Displays the current status of online people on your contact list.
-#408:Changes your password to secret.
-#409:Sends a message to uin.
-#410:Sends a url and message to uin.
-#411:Sends a multiline message to everyone on your list.
-#412:Sends a message to the last person you sent a message to.
-#413:Authorize uin to add you to their list.
-#414:Replys to the last person to send you a message.
-#415:Finds a random user in the specified group or lists the groups.
-#416:Displays the current status of everyone on your contact list.
-#417:This command allows you to alter your command set on the fly.
-#418:Set the verbosity level (default 0).
-#419:Clears the screen.
-#420:Toggles beeping when recieving new messages.
-#421:Toggles displaying colors.
-#422:Logs off and quits.
-#423:Displays your autoreply status.
-#424:Toggles sending messages when your status is DND, NA, etc.
-#425:Sets the message to send as an auto reply for the status.
-#426:Creates a new UIN with the specified password.
-#427:Changes your status to the status number. Without a number it lists the available modes.
-#428:Adds the uin number to your contact list with nickname.
-#429:Searches for a ICQ user.
-#430:Displays general info on uin.
-#431:Change status to Online.
-#432:Mark as Away.
-#433:Mark as Not Available.
-#434:Mark as Occupied.
-#435:Mark as Do not Disturb.
-#436:Mark as Free for Chat.
-#437:Mark as Invisible.
-#438:Updates your basic info (email, nickname, etc.).
-#439:Sets your random user group.
-#440:Random User:
-#441:IP:
-442:	Виберiть одну з тем:
-443:Команди конфiгурац╕╖ та налаштувань дисплею.
-444:Команди пошуку користувачiв.
-445:Команди, що стосуються Вашого UIN-номеру.
-446:Команди вiдсилання пoвiдoмлeнь.
+400:Показу╓ локальну ╕нформац╕ю про користувача
+401:Зм╕на ╕нших даних : стать, в╕к тощо...
+402:Зм╕ню╓ поле 'about' в ╕нформац╕╖ про вас на сервер╕.
+403:Показу╓ останн╓ пов╕домлення в╕д <niсk>. В╕н ма╓ бути у вашому контакт-лист╕.
+404:Вкл/Викл ╕гнорування.
+405:Вида╓ cпиcок тих, хто ╕гноруються.
+406:Да╓ можлив╕cть користувачу бачити вас, коли ви -- 'Hевидимий'.
+407:Показу╓ поточний статус тих, хто в eфipi.
+408:Зм╕нити ваш пароль.
+409:Послати пов╕домлення для UIN.
+410:Послати пов╕домлення та URL для UIN.
+411:Послати багаторядкове пов╕домлення вс╕м у контакт-лист╕.
+412:Послати пов╕домлення оcтанн╕й людин╕, котр╕й ви щоcь посилали.
+413:Авторизувати UIN, щоб в╕н додав вас у св╕й контакт-лист.
+414:В╕дпов╕дь на оcтанн╓ пов╕домлення.
+415:Знайти випадкову людину у вказан╕й груп╕.
+416:Показати статус вс╕х у вашому контакт-лист╕.
+417:Зм╕нити ╕м'я команди.
+418:Дозволити виведення cлужбово╖ ╕нформац╕╖ на екран.(за змовчанням 0)
+419:Очистити екран.
+420:Ув╕мкнути/вимкнути звук п╕д чаc прийому нових пов╕домлень
+421:Ув╕мкнути/вимкнути кольори.
+422:В╕дключитися в╕д серверу та вийти з mICQ.
+423:Показати статус автов╕дпов╕дача.
+424:Переключити в╕дcилку пов╕домлень при статус╕ DND, NA, тощо...
+425:Вcтановити пов╕домлення, як пов╕домлення автов╕дпов╕дача.
+426:Створити UIN з вказаним паролем.
+427:Зм╕нити статус на ╕нший за номером. Якщо не вкажете номер, будуть показан╕ номери та в╕дпов╕дн╕ режими.
+428:Додати UIN до контакт-листу п╕д ╕менем.
+429:Шукати кориcтувача ICQ за e-mail адресою.
+430:Показати ╕нформац╕ю про кориcтувача.
+431:Режим 'B eфipi'.
+432:Режим 'Biдiйшoв'.
+433:Режим 'Hедосяжний'.
+434:Режим 'Зайнятo!'.
+435:Режим 'Hе туpбувaти!'.
+436:Режим 'Xoчу попатякати!'.
+437:Режим 'Heвидимкa'.
+438:Зм╕нити ╕нформац╕ю про вас на сервер╕ (email, ╕м'я, тощо...)
+439:Вказати вашу групу для випадкових кориcтувач╕в.
+440:Випадковий користувач:
+441:IP:
+442:Вибер╕ть одну з тем:
+443:Команди конф╕гурац╕╖ та налаштувань дисплею.
+444:Команди пошуку користувач╕в.
+445:Команди, що стосуються вашого UIN-номеру.
+446:Команди в╕дсилання пов╕домлень.
 447:Client
 448:Message
 449:User
 450:Account
-#-#500:Кличкa       : 
-#-#501:Iм'я         : 
-#-#502:Email        : 
-#-#503:Iнший Email  : 
-#-#504:Старий Email : 
-#-#505:Де живе      : 
-#-#506:Телефон      : 
-#-#507:Факс         : 
-#-#508:Адреса       : 
-#-#509:Мобiла       : 
-#-#510:Пошт.iндекс  : 
-#-#511:Кра╖на       : 
-#-#512:Код кра╖ни   : 
-#-#513:Робота: Код кра╖ни : 
-#-#514:Робота: Кра╖на  : 
-#-#515:Робота: Homepage: 
-#-#516:Рiд занять      : 
-#-#517:Посада          : 
-#-#518:Вiддiл          : 
-#-#519:Компанiя        : 
-#-#520:Роб.пошт.iндекс : 
-#-#521:Роб. факс       : 
-#-#522:Роб. адреса     : 
-#-#523:Роб. телефон    : 
-#-#524:Де працю╓       : 
-#-#525:Про себе : 
-#451:IP2:
-#452:Status:
-#453:TCP version:
-#454:Connection:
-#455:Art
-#456:Cars
+451:IP2:
+452:Статус:
+453:Верс╕я TCP:
+454:З'╓днання:
+455:Мистецтво
+456:Авто
 #457:Celebrity Fans
 #458:Collections
-#459:Computers
+459:Комп'ютери
 #460:Culture & Literature
 #461:Fitness
-#462:Games
-#463:Hobbies
+462:Iгри
+463:Хобб╕
 #464:ICQ - Providing Help
-#465:Internet
+465:Internet
 #466:Lifestyle
-#467:Movies/TV
-#468:Music
+467:К╕но/ТБ
+468:Музика
 #469:Outdoor Activities
 #470:Parenting
 #471:Pets/Animals
-#472:Religion
+472:Рел╕г╕я
 #473:Science/Technology
 #474:Skills
-#475:Sports
-#476:Web Design
+475:Спорт
+476:Веб дизайн
 #477:Nature and Environment
 #478:News & Media
-#479:Government
+479:Уряд
 #480:Business & Economy
 #481:Mystics
-#482:Travel
-#483:Astronomy
-#484:Space
+482:Подорож╕
+483:Астроном╕я
+484:Космос
 #485:Clothing
 #486:Parties
 #487:Women
@@ -568,136 +492,106 @@
 #491:80's
 #492:50's
 #493:Peer-to-Peer
-#494:Server Only
+494:Лише через сервер
 #495:No Random User Found
 #496:%02d/%02d/%04d
 #497:Type: %d	 Len: %d╤
-#498:Info for:
+498:Iнформац╕я про:
 #499:Other
-#500:Nickname:
-#501:Name:
-#502:Email:
-#503:Other Email:
-#504:Old Email:
-#505:Location:
-#506:Phone:
-#507:Fax:
-#508:Street:
-#509:Cellular:
-#510:Zip:
-#511:Country:
-#512:Country Code:
-#513:Work Country Code:
-#514:Work Country:
-#515:Work Homepage:
-#516:Occupation:
-#517:Job Position:
-#518:Department:
-#519:Company Name:
-#520:Work Zip:
-#521:Work Fax:
-#522:Work Address:
-#523:Work Phone:
-#524:Work Location:
-#525:About:
+500:Кличка: 
+501:Iм'я: 
+502:Email: 
+503:Iнший Email: 
+504:Старий Email: 
+505:Де живе: 
+506:Телефон: 
+507:Факс: 
+508:Адреса: 
+509:Моб╕ла: 
+510:Пошт. ╕ндекс: 
+511:Кра╖на: 
+512:Код кра╖ни: 
+513:Робота:Код кра╖ни: 
+514:Робота:Кра╖на: 
+515:Робота:Homepage: 
+516:Р╕д занять: 
+517:Посада: 
+518:В╕дд╕л: 
+519:Компан╕я: 
+520:Роб.пошт.╕ндекс: 
+521:Роб. факс: 
+522:Роб. адреса: 
+523:Роб. телефон: 
+524:Де працю╓: 
+525:Про себе: 
 526:Не введено
-#-#527:Вiк          : 
-#-#528:Стать жiноча
-#-#529:Стать чоловiча
-#-#530:Стать не вказано
-#-#531:Homepage     : 
-#-#532:Народився    : 
-#-#533:Мови         : 
-#-#534:Введiть номер мови (L -- список можливих): 
-#-#535:Скiльки Вам рокiв: 
-#-#536:Ваша стать (male/female): 
-#-#537:URL homepage'i: 
-#-#538:Piк народження (4 цифри): 
-#-#539:Мiсяць народження (номер): 
-#-#540:День народження: 
-#527:Age:
-#528:female
-#529:male
-#530:not specified
-#531:Homepage:
-#532:Born:
-#533:Languages:
-#534:Enter a language by number or L for a list:
-#535:Enter new age:
-#536:Enter new sex:
-#537:Enter new homepage:
-#538:Enter new year of birth (4 digits):
-#539:Enter new month of birth:
-#540:Enter new day of birth:
+527:В╕к: 
+528:ж╕ноча
+529:чолов╕ча
+530:поки що не визначився
+531:Homepage: 
+532:Народився: 
+533:Мови: 
+534:Введ╕ть номер мови (L -- список можливих): 
+535:Ск╕льки вам рок╕в: 
+536:Ваша стать (male/female): 
+537:URL homepage'╕: 
+538:Р╕к народження (4 цифри): 
+539:М╕сяць народження (номер): 
+540:День народження: 
 541:About> 
-#-#542:Iнший E-mail : 
-#-#543:Старий E-mail : 
-#-#544:Вашe мicто : 
-#-#545:Ваш штат(для америносiв) : 
-#-#546:Hoмep телефону : 
-#-#547:Hoмep фaксу : 
-#-#548:Bулиця, будинок, кiмната : 
-#-#549:Hoмep мобiли : 
-#-#550:Ваш поштовий iндекс(5 цифр) : 
-#-#551:Teлeфoнний кoд Вaшo╖ кра╖ни : 
-#-#552:Ваш часовий пояс (+/- 0-12) : 
-#-#553:Вашa кличкa : 
-#-#554:Ваше iм'я : 
-#-#555:Вашe пpiзвищe : 
-#-#556:E-mail : 
-#-#557:Bимaгaти авторизацi╖ у iншиx кopиcтувaчiв? : 
-#542:Enter other email address:
-#543:Enter old email address:
-#544:Enter new city:
-#545:Enter new state:
-#546:Enter new phone number:
-#547:Enter new fax number:
-#548:Enter new street address:
-#549:Enter new cellular number:
-#550:Enter new zip code (must be numeric):
-#551:Enter your country's phone ID number:
-#552:Enter your time zone (+/- 0-12):
-#553:Enter Your New Nickname:
-#554:Enter your new first name:
-#555:Enter your new last name:
-#556:Enter your new email address:
-#557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
+542:Iнший E-mail : 
+543:Старий E-mail : 
+544:Ваше м╕cто : 
+545:Ваш штат(для америнос╕в) : 
+546:Номер телефону : 
+547:Номер факсу : 
+548:Вулиця, будинок, к╕мната : 
+549:Номер моб╕ли : 
+550:Ваш поштовий ╕ндекс(5 цифр) : 
+551:Телефонний код вашо╖ кра╖ни : 
+552:Ваш часовий пояс (+/- 0-12) : 
+553:Ваша кличка : 
+554:Ваше ╕м'я : 
+555:Ваше пр╕звище : 
+556:E-mail : 
+557:Вимагати авторизац╕╖ у ╕нших кориcтувач╕в? : 
 #558:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
 #559:Enter max age (22,29,39,49,59,120):
 #560:Enter a city:
 #561:Enter a state:
-#562:╘1Info for %ld╤
+562:╘1╤нформац╕я про %ld╤
 #563:Nick name:
 #564:First name:
 #565:Last name:
 #566:Email address:
 #567:No authorization needed.╘0 
 #568:Must request authorization.╘0 
-#569:╘1More Info for %ld╤
-#570:City:
-#571:Country:
-#572:Country code:
-#573:Time Zone:
-#574:State:
-#575:Age:
-#576:not entered
-#577:Sex:
-#578:Enter country's phone ID number:
-#579:Enter company: 
-#580:Phone number:
-#581:Home page:
-#582:About:
-#583:╘1User found %ld╤
+569:╘1Троха б╕льше про %ld╤
+570:М╕сто:
+571:Кра╖на:
+572:Код кра╖ни:
+573:Часовий пояс:
+574:Штат:
+575:В╕к:
+576:не введено
+577:Стать:
+578:Телефонний код кра╖ни: 
+579:Назва ф╕рми: 
+580:Номер телефону:
+581:Homepage:
+582:Про себе:
+583:╘1Знайдено користувача %ld╤
 #584:Warning! Script command '%s' failed with exit value %d╤
-#585:Ack!!!!!!!  Bad packet
-#586:╘4╤%s╘0 has added you to their contact list.╤
+585:Ой!!!!!!!  Поганий пакет
+586:╘4╤%s╘0 додав вас у св╕й контакт-л╕ст.╤
 #587:Enter department: 
 #588:Enter position: 
 #589:Should the users be online?
-#590:╘4╤%s╘0 has requested your authorization to be added to their contact list.╤
-#591:Reason:
-#592:<%s> emailed you a message:╤
-#593:<%s> send you a web message:╤
+590:╘4╤%s╘0 просить авторизац╕╖ щоби додати вас у св╕й контакт-л╕ст.╤
+591:Аргументац╕я:
+592:<%s> намилив вам листа:╤
+593:<%s> над╕слав вам web-пов╕домлення:╤
 #594:        URL: %s╘3%s╘0╤
 #595:╤Contact List.╤╘3============================================╤╘0%d Contacts╤
 #596:[SOCKS] Can't find hostname: %s╤
@@ -711,42 +605,42 @@
 #604:Seq: %08X	
 #605:Ses: %08X╤
 #606:Got a bad session ID %08X with CMD %04X ignored.╤
-#607:Usage: micq [-v|-V] [-f|-F <rc-file>] [-l|-L <logfile>] [-?|-h]╤
+607:Використання: micq [-v|-V] [-f|-F <конф╕г>] [-l|-L <лог>] [-?|-h]╤
 #608:        -v   Turn on verbose Mode (useful for Debugging only)╤
 #609:        -f   specifies an alternate Config File (default: ~/.micqrc)╤
 #610:        -l   specifies an alternate LogFile╤
-#611:        -?   gives this help screen╤╤
+611:        -?   вида╓ оцю дов╕дку╤╤
 #612:This program was made without any help from Mirabilis or their consent.╤
 #613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.╤
-#614:The config file for this session is "%s"╤
+614:Файл конф╕гурац╕╖ ц╕╓╖ сес╕╖ - "%s"╤
 #615:The logging directory for this session is "%s"╤
-#616:Started BeOS InputThread╤\r
-#617:Memory exhausted!!╤
+616:Запуска╓мо п╕д BeOS InputThread╤\r
+617:Вичерпано пам'ять!!!╤
 #618:╤Total entries %d╤
 #619:SEQ = %04x	CMD = %04x	attempts = %d	len = %d╤
 #620:Removed message with SEQ %04X CMD 
 #621: from resend queue because of ack.╤
-#622:Do you want to apply these changes? (YES/NO)
+622:Застосувати ц╕ зм╕ни? (YES/NO)
 #623:╤Doubled packet %04X╤
 #624:Resending message with SEQ num %04X CMD 
-#625:(Attempt #%d.)
+625:(спроба N%d.)
 #626:Discarding message to 
 #627: after %d send attempts.  Message content:╤
-#628: Description: ╘3%s╘0╤
-#629: URL:         ╘3%s╘0
-#630:Discarded a 
-#631: packet.
-#632:╤Connection unstable. Exiting....
-#633:ACK!!! %d╤
+628: Опис:    ╘3%s╘0╤
+629: URL:     ╘3%s╘0
+630:В╕дкинуто 
+631: пакет.
+632:╤Нестаб╕льне з'╓днання. Виходим...
+633:ОЙ!!! %d╤
 #634:╤Send Keep_Alive packet to the server╤
 #635:You have encounterd a bug in my code :( I now own you a beer!╤Greetings Fryslan!╤
 #636:[ Sent auto-reply message to %d(%d)]╤
 #637:╤Packet Number %d╤
 #638:╤The SEQ was %04X╤
-#639:The new UIN is %ld!╤
+639:Отримано новий UIN: %ld!╤
 #640:Failed to update info.╤
 #641:User info successfully updated.╤
-#642:IP
+642:IP
 #643:Acknowleged SRV_X1 0x021C Done Contact list?╤
 #644:Acknowleged SRV_X2 0x00E6 Done old messages?╤
 #645:╘3You entered an incorrect password.╘0╤
@@ -757,40 +651,40 @@
 #650:╤The SEQ was %04X	
 #651:The size was %d╤
 #652:Insuffificient memory to display a wide Contact List.╤
-#653:Offline
-#654:Online
+653:В╕дключений
+654:В еф╕р╕
 #655:Enter the user's e-mail address:
 #656:Enter the user's nick name:
 #657:Enter the user's first name:
 #658:Enter the user's last name:
 #659:Unknown section %s in configuration file.
-#660:Invalid Command: %s╤
+660:Неправильна команда: %s╤
 #661:Shell commands have been disabled.╤
 #662:Color is ╘3%s╘0.╤
-#663:Enter sex:
-#664:Composing message to ╘4all╘0:╤
+663:Яко╖ стат╕: 
+664:Пишу пов╕домлення ╘4вс╕м╘0:╤
 #665:%s not recognized as a nick name.
 #666:Unignored %s.
 #667:Ignoring %s.
 #668:You must specify a nick name.
-#669:%s added.
+669:Додано: %s.
 #670:Invisible to %s now.
 #671:Visible to %s now.
-#672:'s IP address is 
-#673:	The port is %d╤
-#674:	The port is unknown╤
+672: - IP адреса 
+673:	порт %d╤
+674:	порт нев╕домий╤
 #675:Ignored line:
 #676:Need uin to send to.╤
 #677:%s not recognized as a nick name╤
-#678:Need URL please.╤
+678:А де ж URL?╤
 #679:Sorry saving your personal reply messages went wrong!╤
 #680:Your personal settings have been saved!╤
 #681:Last %d people you talked to:╤
-#682:You have received messages from:╤
-#683:Unknown Contact: %s╤
+682:Ви отримували пов╕домлення в╕д:╤
+683:Нев╕домий контакт: %s╤
 #684:%s is not a known Contact╤
-#685:Last message from ╘4%s╘0:╤
-#686:No messages received from ╘4%s╘0╤
+685:Останн╓ пов╕домлення в╕д ╘4%s╘0:╤
+686:В╕д ╘4%s╘0 пов╕домлень не було╤
 #687:Micq has been running for
 #688:days
 #689:hours
@@ -800,35 +694,35 @@
 #693:Packets sent:
 #694:Packets recieved:
 #695:Lag:
-#696:Sex:
+696:Стать:
 #697:Distinct packets sent:
 #698:Distinct packets recieved:
 #699:Must give a valid uin/nickname╤
 #700:%s is not a valid user in your list.╤
 #701:%d users not returned.
-#702:Display a list of nicknames that you can tab through.
+702:Показу╓ список кличок, як╕ можна п╕дставляти <tab>'ом.
 #703:╘2Status modes: ╤
-#704:╘2Groups: ╤
-#705:General                    1╤
-#706:Romance                    2╤
-#707:Games                      3╤
-#708:Students                   4╤
+704:╘Групи: ╤
+705:Загальна                   1╤
+706:Роматика                   2╤
+707:Iгри                       3╤
+708:Студенти                   4╤
 #709:20 something               6╤
 #710:30 something               7╤
 #711:40 something               8╤
-#712:50+                        9╤
+712:50+                        9╤
 #713:Man chat requesting women 10╤
 #714:Woman chat requesting men 11╤
-#715:Micq                      49 (might not work but try it)
-#716:None                      -1╤
-#717:! as the first character of a command will execute a shell command (e.g. "!ls"  "!dir" "!mkdir temp")
+715:Micq                      49 (може не працювати, але спробуйте:)
+716:Нема                      -1╤
+717:! як перший символ команди винона╓ команду оболонки (типу "!ls" "!mkdir temp")
 #718:Sorry, can't initialize Windows Sockets...
-#719:Shows how long Micq has been running.
+719:Показу╓ як довго працю╓ Micq + деяка статистику.
 #720:uin can be either a number or the nickname of the user.
 #721:Sending a blank message will put the client into multiline mode.╤Use . on a line by itself to end message.╤Use # on a line by itself to cancel the message.
-#722:Type help to see your current command, because this one you typed wasn't one!
-#723:%s's IP address is 
-#724:Automatic replies are %s.╤
+#722:Type help to see your current command, because this one you typed wasn't one!╤
+723:%s: IP адреса 
+724:Статус автов╕дпов╕дача: %s.╤
 #725:<all>
 #726:Need uin to ask for.╤
 #727:The Do not disturb message is:
@@ -842,17 +736,17 @@
 #735:Must give a message.╤
 #736:Sorry wrong syntax. Read tha help man!╤
 #737:Automatic reply setting╤
-#738:Need a command to alter!╤
-#739:Composing message to ╘4%s╘0:╤
-#740:Composing message to ╘2%d╘0:╤
+738:А яку ж команду зм╕нювати?╤
+739:Пов╕домлення для ╘4%s╘0:╤
+740:Пов╕домлення для ╘2%d╘0:╤
 #741:Must receive a message first╤
 #742:Must write one message first╤
-#743:Keep Alive
+743:Живучий пакет
 #744:Secondary Keep Alive
-#745:Contact List
+745:Контакт-л╕ст
 #746:Invisible List
 #747:Visible List
-#748:Random Search
+748:Пошук випадкового користувача
 #749:Set Random
 #750:Delete Server Messages
 #751:Finish Login
@@ -860,13 +754,13 @@
 #753:Send Message
 #754:Info Request
 #755:Extended Info Request
-#756:╤Creating Connection...╤
+756:╤Створення з'╓днання...╤
 #757:Couldn't establish connection╤
 #758:Sending Request...╤
 #759:Waiting for response....╤
 #760:╤Your new UIN is %s%ld%s!╤
-#761:unknown
-#762:Ack!!!!!!  %d╤
+761:нев╕дома
+762:Ой!!!!!!  %d╤
 #763:The command '%s' has been renamed to '%s'.
 #764:The command '%s' is unchanged.
 #765:%s has UIN %d.
@@ -876,8 +770,8 @@
 #769:Displays your current online status.
 #770:Resend your last message to a new uin.
 #771:You haven't sent a message to anyone yet!╤
-#800:Change the working language to <lang>.
-#801:Displays a list of people on your contact list in a screen wide format.
+800:Зм╕нити переклад ╕нтерфейсу на <lang>.
+801:Виводить контакт-лист у широкоформатному режим╕.
 #802:SoundOnline cmd
 #803:SoundOffline cmd
 #804:SoundOnline
