@@ -10,11 +10,12 @@ struct Extra_s
     char   *text;
 };
 
-Extra      *ExtraSet  (Extra *extra, UWORD type, UDWORD value, const char *text);
-Extra      *ExtraFind (Extra *extra, UWORD type);
-UDWORD      ExtraGet  (Extra *extra, UWORD type);
-const char *ExtraGetS (Extra *extra, UWORD type);
-void        ExtraD    (Extra *extra);
+Extra      *ExtraSet   (Extra *extra, UWORD type, UDWORD value, const char *text);
+Extra      *ExtraClone (Extra *extra);
+Extra      *ExtraFind  (Extra *extra, UWORD type);
+UDWORD      ExtraGet   (Extra *extra, UWORD type);
+const char *ExtraGetS  (Extra *extra, UWORD type);
+void        ExtraD     (Extra *extra);
 
 #define EXTRA_TRANS        0x11
 #define EXTRA_MESSAGE      0x23
@@ -23,6 +24,7 @@ void        ExtraD    (Extra *extra);
 #define EXTRA_ORIGIN       0x51
 #define EXTRA_REF          0x61
 #define EXTRA_FORCE        0x71
+#define EXTRA_FILETRANS    0x83
 
 #define EXTRA_TRANS_DC     0x1
 #define EXTRA_TRANS_TYPE2  0x2

@@ -2,7 +2,7 @@
 /*
  * Handles (mostly optional) extra data (e.g. for messages).
  *
- * This file is Copyright  Rdiger Kuhlmann; it may be distributed under
+ * This file is Copyright © Rüdiger Kuhlmann; it may be distributed under
  * version 2 of the GPL licence.
  *
  * $Id$
@@ -27,6 +27,22 @@ void ExtraD (Extra *extra)
         free (extra);
         extra = tmp;
     }
+}
+
+Extra *ExtraClone (Extra *extra)
+{
+    Extra *nex;
+
+    if (!extra)
+        return NULL;
+    if (!(nex = calloc (1, sizeof (Extra))))
+        return NULL;
+    *nex = *extra;
+    nex->text = nex->text ? strdup (nex->text) : nex->text;
+    Debug (DEB_EXTRA, "*+=* %p (%04lx: '%s' %08lx)", nex, nex->tag,
+           nex->text ? nex->text : "", nex->data);
+    nex->more = ExtraClone (extra->more);
+    return nex;
 }
 
 Extra *ExtraFind (Extra *extra, UWORD type)
