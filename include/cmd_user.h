@@ -8,8 +8,8 @@
 #define CU_DEFAULT 1
 #define CU_USER    2
 
-typedef int (jump_f)(char *args, int data, int status);
-#define JUMP_F(f) int f (char *args, int data, int status)
+typedef int (jump_f)(char *args, UDWORD data, UDWORD status);
+#define JUMP_F(f) int f (char *args, UDWORD data, UDWORD status)
 
 struct jumpstr {
     jump_f *f;

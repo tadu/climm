@@ -170,13 +170,12 @@ const char *CmdUserLookupName (const char *cmd)
  */
 static JUMP_F(CmdUserChange)
 {
-    char *arg1;
+    char *arg1 = NULL;
     SESSION;
 
     if (data == -1)
     {
-        arg1 = strtok (args, " \n\r");
-        if (!arg1)
+        if (!UtilUIParseInt (&args, &data))
         {
             M_print (i18n (1703, COLCLIENT "Status modes: \n"));
             M_print ("  %-20s %d\n", i18n (1921, "Online"),         STATUS_ONLINE);
@@ -189,18 +188,14 @@ static JUMP_F(CmdUserChange)
             M_print (COLNONE "\n");
             return 0;
         }
-        data = atoi (arg1);
-        arg1 = strtok (NULL, "\n");
     }
-    else
-        arg1 = strtok (args, "\n");
-    if (arg1)
+    if (UtilUIParseRemainder (&args, &arg1))
     {
-        if      (data & STATUSF_DND) { if (prG->auto_dnd) free (prG->auto_dnd); prG->auto_dnd = strdup (arg1); }
-        else if (data & STATUSF_OCC) { if (prG->auto_occ) free (prG->auto_occ); prG->auto_occ = strdup (arg1); }
-        else if (data & STATUSF_NA)  { if (prG->auto_na)  free (prG->auto_na);  prG->auto_na  = strdup (arg1); }
-        else if (data & STATUSF_AWAY){ if (prG->auto_away)free (prG->auto_away);prG->auto_away= strdup (arg1); }
-        else if (data & STATUSF_FFC) { if (prG->auto_ffc) free (prG->auto_ffc); prG->auto_ffc = strdup (arg1); }
+        if      (data & STATUSF_DND) { if (prG->auto_dnd)  free (prG->auto_dnd);  prG->auto_dnd  = strdup (arg1); }
+        else if (data & STATUSF_OCC) { if (prG->auto_occ)  free (prG->auto_occ);  prG->auto_occ  = strdup (arg1); }
+        else if (data & STATUSF_NA)  { if (prG->auto_na)   free (prG->auto_na);   prG->auto_na   = strdup (arg1); }
+        else if (data & STATUSF_AWAY){ if (prG->auto_away) free (prG->auto_away); prG->auto_away = strdup (arg1); }
+        else if (data & STATUSF_FFC) { if (prG->auto_ffc)  free (prG->auto_ffc);  prG->auto_ffc  = strdup (arg1); }
     }
 
     if (sess->ver > 6)
@@ -221,11 +216,10 @@ static JUMP_F(CmdUserChange)
  */
 static JUMP_F(CmdUserRandom)
 {
-    char *arg1;
+    UDWORD arg1 = 0;
     SESSION;
     
-    arg1 = strtok (args, " \n\r");
-    if (arg1 == NULL)
+    if (!UtilUIParseInt (&args, &arg1))
     {
         M_print (i18n (1704, COLCLIENT "Groups: \n"));
         M_print (i18n (1705, "General                    1\n"));
@@ -244,9 +238,9 @@ static JUMP_F(CmdUserRandom)
     else
     {
         if (sess->ver > 6)
-            SnacCliSearchrandom (sess, atoi (arg1));
+            SnacCliSearchrandom (sess, arg1);
         else
-            CmdPktCmdRandSearch (sess, atoi (arg1));
+            CmdPktCmdRandSearch (sess, arg1);
     }
     return 0;
 }
@@ -256,11 +250,10 @@ static JUMP_F(CmdUserRandom)
  */
 static JUMP_F(CmdUserRandomSet)
 {
-    char *arg1;
+    UDWORD arg1 = 0;
     SESSION;
     
-    arg1 = strtok (args, " \n\r");
-    if (arg1 == NULL)
+    if (!UtilUIParseInt (&args, &arg1))
     {
         M_print (i18n (1704, COLCLIENT "Groups: \n"));
         if (sess->ver > 6)
@@ -283,9 +276,9 @@ static JUMP_F(CmdUserRandomSet)
     else
     {
         if (sess->ver > 6)
-            SnacCliSetrandom (sess, atoi (arg1));
+            SnacCliSetrandom (sess, arg1);
         else
-            CmdPktCmdRandSet (sess, atoi (arg1));
+            CmdPktCmdRandSet (sess, arg1);
     }
     return 0;
 }
@@ -294,26 +287,18 @@ static JUMP_F(CmdUserRandomSet)
  * Displays help.
  */
 
-/* TODO: needs updateing */
+/* FIXME: update help strings */
 
 static JUMP_F(CmdUserHelp)
 {
-    char *arg1;
-    arg1 = strtok (args, " \n\r");
+    char *arg1 = NULL, *t = NULL;
 
-    if (!arg1)
-    {
-        M_print (COLCLIENT "%s\n", i18n (1442, "Please select one of the help topics below."));
-        M_print ("%s\t-\t%s\n", i18n (1447, "Client"),
-                 i18n (1443, "Commands relating to mICQ displays and configuration."));
-        M_print ("%s\t-\t%s\n", i18n (1448, "Message"),
-                 i18n (1446, "Commands relating to sending messages."));
-        M_print ("%s\t-\t%s\n", i18n (1449, "User"),
-                 i18n (1444, "Commands relating to finding other users."));
-        M_print ("%s\t-\t%s\n", i18n (1450, "Account"),
-                 i18n (1445, "Commands relating to your ICQ account."));
-    }
-    else if (!strcasecmp (arg1, i18n (1447, "Client")))
+    if (UtilUIParse (&args, &t))
+        arg1 = t;
+    if (UtilUIParseRemainder (&args, &t))
+        arg1 = NULL;
+
+    if (arg1 && !strcasecmp (arg1, i18n (1447, "Client")))
     {
         M_print (COLMESSAGE "%s [<nr>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("verbose"),
@@ -369,7 +354,7 @@ static JUMP_F(CmdUserHelp)
         M_print ("  " COLCLIENT "" COLINDENT "%s" COLEXDENT "" COLNONE "\n",
                  i18n (1717, "! as the first character of a command will execute a shell command (e.g. \"!ls\"  \"!dir\" \"!mkdir temp\")"));
     }
-    else if (!strcasecmp (arg1, i18n (1448, "Message")))
+    else if (arg1 && !strcasecmp (arg1, i18n (1448, "Message")))
     {
         M_print (COLMESSAGE "%s <uin|nick>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("auth"),
@@ -409,7 +394,7 @@ static JUMP_F(CmdUserHelp)
         M_print ("  " COLCLIENT "" COLINDENT "%s" COLEXDENT "" COLNONE "\n",
                  i18n (1721, "Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message."));
     }
-    else if (!strcasecmp (arg1, i18n (1449, "User")))
+    else if (arg1 && !strcasecmp (arg1, i18n (1449, "User")))
     {
         M_print (COLMESSAGE "%s [<nr>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("rand"),
@@ -460,7 +445,7 @@ static JUMP_F(CmdUserHelp)
                  CmdUserLookupName ("togvis"),
                  i18n (1406, "Toggles your visibility to a user when you're invisible."));
     }
-    else if (!strcasecmp (arg1, i18n (1450, "Account")))
+    else if (arg1 && !strcasecmp (arg1, i18n (1450, "Account")))
     {
         M_print (COLMESSAGE "%s <status>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                  CmdUserLookupName ("change"),
@@ -495,6 +480,18 @@ static JUMP_F(CmdUserHelp)
                  CmdUserLookupName ("setr"),
                  i18n (1439, "Sets your random user group."));
     }
+    else
+    {
+        M_print (COLCLIENT "%s\n", i18n (1442, "Please select one of the help topics below."));
+        M_print ("%s\t-\t%s\n", i18n (1447, "Client"),
+                 i18n (1443, "Commands relating to mICQ displays and configuration."));
+        M_print ("%s\t-\t%s\n", i18n (1448, "Message"),
+                 i18n (1446, "Commands relating to sending messages."));
+        M_print ("%s\t-\t%s\n", i18n (1449, "User"),
+                 i18n (1444, "Commands relating to finding other users."));
+        M_print ("%s\t-\t%s\n", i18n (1450, "Account"),
+                 i18n (1445, "Commands relating to your ICQ account."));
+    }
     return 0;
 }
 
@@ -503,11 +500,10 @@ static JUMP_F(CmdUserHelp)
  */
 static JUMP_F(CmdUserPass)
 {
-    char *arg1;
+    char *arg1 = NULL;
     SESSION;
     
-    arg1 = strtok (args, "\n");
-    if (!arg1)
+    if (!UtilUIParseRemainder (&args, &arg1))
         M_print (i18n (2012, "No password given.\n"));
     else
     {
@@ -527,7 +523,7 @@ static JUMP_F(CmdUserPass)
  */
 static JUMP_F(CmdUserSMS)
 {
-    char *arg1, *arg2;
+    char *arg1 = NULL, *arg2 = NULL;
     SESSION;
     
     if (sess->ver < 6)
@@ -535,16 +531,14 @@ static JUMP_F(CmdUserSMS)
         M_print (i18n (2013, "This command is v8 only.\n"));
         return 0;
     }
-    arg1 = strtok (args, " ");
-    if (!arg1)
+    if (!UtilUIParse (&args, &arg1))
         M_print (i18n (2014, "No number given.\n"));
     else
     {
-        arg2 = strtok (NULL, "\n");
-        if (!arg2)
+        if (!UtilUIParseRemainder (&args, &arg2))
             M_print (i18n (2015, "No message given.\n"));
-
-        SnacCliSendsms (sess, arg1, arg2);
+        else
+            SnacCliSendsms (sess, arg1, arg2);
     }
     return 0;
 }
@@ -554,39 +548,30 @@ static JUMP_F(CmdUserSMS)
  */
 static JUMP_F(CmdUserInfo)
 {
-    char *arg1;
-    UDWORD uin;
+    Contact *cont = NULL;
     SESSION;
 
-    arg1 = strtok (args, "\n");
-    if (arg1 == NULL)
+    if (!UtilUIParseNick (&args, &cont))
     {
-        M_print (i18n (1932, "Need uin to ask for.\n"));
+        M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
         return 0;
     }
-    uin = ContactFindByNick (arg1);
-    if (-1 == uin)
-    {
-        M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
-        return 0;
-    }
-    M_print (i18n (1672, "%s's IP address is "), arg1);
-    Print_IP (uin);
-    if ((UWORD) Get_Port (uin) != (UWORD) 0xffff)
-    {
-        M_print (i18n (1673, "\tThe port is %d\n"), (UWORD) Get_Port (uin));
-    }
+    M_print (i18n (1672, "%s's IP address is "), cont->nick);
+    Print_IP (cont->uin); /* FIXME: static buffer helper instead of printer */
+
+    if ((UWORD) Get_Port (cont->uin) != (UWORD) 0xffff)
+        M_print (i18n (1673, "\tThe port is %d\n"), (UWORD) Get_Port (cont->uin));
     else
-    {
         M_print (i18n (1674, "\tThe port is unknown\n"));
-    }
-    M_print (i18n (1765, "%s has UIN %d."), arg1, uin);
+
+    M_print (i18n (1765, "%s has UIN %d."), cont->nick, cont->uin);
     M_print ("\n");
+
     if (sess->ver > 6)
-        SnacCliMetareqinfo (sess, uin);
+        SnacCliMetareqinfo (sess, cont->uin);
     else
-        CmdPktCmdMetaReqInfo (sess, uin);
-/*   send_ext_info_req( sok, uin );*/
+        CmdPktCmdMetaReqInfo (sess, cont->uin);
+
     return 0;
 }
 
@@ -595,21 +580,19 @@ static JUMP_F(CmdUserInfo)
  */
 static JUMP_F(CmdUserPeek)
 {
-    UDWORD uin;
+    Contact *cont = NULL;
     SESSION;
     
     if (sess->ver < 6)
-        return 0;
-    if (!args || !*args)
     {
-        M_print (i18n (2028, "Wrong argument count.\n"), strlen(args));
+        M_print (i18n (2013, "This command is v8 only.\n"));
         return 0;
     }
-    uin = ContactFindByNick (args);
-    if (uin == -1)
-        M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);
+
+    if (!UtilUIParseNick (&args, &cont))
+        M_print (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
     else
-        SnacCliSendmsg (sess, uin, "", 0xe8);
+        SnacCliSendmsg (sess, cont->uin, "", 0xe8);
     return 0;
 }
 
@@ -619,37 +602,40 @@ static JUMP_F(CmdUserPeek)
  */
 static JUMP_F(CmdUserTrans)
 {
-    const char *arg1;
-    int ver;
+    char *arg1 = NULL, *p = NULL;
 
-    arg1 = strtok (args, " \t\n");
-    if (!arg1)
+    if (!UtilUIParse (&args, &arg1))
     {
-        ver = atoi (i18n (1003, "0"));
+        UDWORD v1 = 0, v2 = 0, v3 = 0, v4 = 0;
+
+        arg1 = strdup (i18n (1003, "0"));
+        UtilUIParseInt (&arg1, &v1); if (*arg1 == '-') arg1++;
+        UtilUIParseInt (&arg1, &v2); if (*arg1 == '-') arg1++;
+        UtilUIParseInt (&arg1, &v3); if (*arg1 == '-') arg1++;
+        UtilUIParseInt (&arg1, &v4); if (*arg1 == '-') arg1++;
+        
         /* i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n") */
         M_print (i18n (-1, "1079:No translation; using compiled-in strings.¶"),
                  i18n (1001, "<lang>"), i18n (1002, "<lang_cc>"), i18n (1004, "<translation authors>"),
                  i18n (1006, "<last edit date>"), i18n (1005, "<last editor>"),
-                 ver / 1000, (ver / 100) % 10, (ver / 10) % 10, ver % 10 ? UtilFill (".pl%d", ver % 10) : "");
+                 v1, v2, v3, v4 ? p = UtilFill (".%d", v4) : "");
+        if (p)
+            free (p);
         return 0;
     }
-    for (;arg1; arg1 = strtok (NULL, " \t"))
+    while (1)
     {
-        char *p;
-        int i;
-        i = strtol (arg1, &p, 10);
-        if (i || !*p)
+        UDWORD i, l = 0;
+
+        if (UtilUIParseInt (&args, &i))
         {
-            if (*p)
-                M_print ("%s\n", i18n (1087, "Ignoring garbage after number."));
             M_print ("%3d:%s\n", i, i18n (i, i18n (1078, "No translation available.")));
+            continue;
         }
-        else
+        if (UtilUIParse (&args, &arg1))
         {
             if (!strcmp (arg1, "all"))
             {
-                const char *p;
-                int l = 0;
                 for (i = 0; i - l < 100; i++)
                 {
                     p = i18n (i, NULL);
@@ -679,8 +665,9 @@ static JUMP_F(CmdUserTrans)
                     M_print ("No internationalization requested.\n");
             } 
         }
+        else
+            return 0;
     }
-    return 0;
 }
 
 /*
@@ -689,40 +676,37 @@ static JUMP_F(CmdUserTrans)
 static JUMP_F(CmdUserTCP)
 {
 #ifdef TCP_COMM
-    char *cmd, *nick;
-    UDWORD uin;
+    char *arg1 = NULL;
+    Contact *cont = NULL;
     Session *list;
     SESSION;
 
-    cmd = strtok (args, " \t\n");
-    if (cmd)
+    while (1)
     {
-        nick = strtok (NULL, " \t\n");
-        if (!nick)
-        {
-            M_print (i18n (1916, "Need a nick or uin.\n"));
-            return 0;
-        }
-        uin = ContactFindByNick (nick);
-        if (uin == -1)
-        {
-            M_print (i18n (1845, "Nick %s unknown.\n"), nick);
-            return 0;
-        }
         if (!(list = sess->assoc))
         {
             M_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
             return 0;
         }
-        if (!strcmp (cmd, "open"))
-            TCPDirectOpen  (list, uin);
-        else if (!strcmp (cmd, "close"))
-            TCPDirectClose (list, uin);
-        else if (!strcmp (cmd, "reset"))
-            TCPDirectClose (list, uin);
-        else if (!strcmp (cmd, "off"))
-            TCPDirectOff   (list, uin);
-        else if (!strcmp (cmd, "file"))
+
+        if (!UtilUIParse (&args, &arg1))
+            break;
+
+        if (!UtilUIParseNick (&args, &cont))
+        {
+            M_print (i18n (1845, "Nick %s unknown.\n"), args);
+            return 0;
+        }
+
+        if (!strcmp (arg1, "open"))
+            TCPDirectOpen  (list, cont->uin);
+        else if (!strcmp (arg1, "close"))
+            TCPDirectClose (list, cont->uin);
+        else if (!strcmp (arg1, "reset"))
+            TCPDirectClose (list, cont->uin);
+        else if (!strcmp (arg1, "off"))
+            TCPDirectOff   (list, cont->uin);
+        else if (!strcmp (arg1, "file"))
         {
             char *files[10], *ass[10], *des = NULL, *as;
             int count;
@@ -745,35 +729,38 @@ static JUMP_F(CmdUserTCP)
                 files[count] = des;
                 ass[count] = as;
             }
-            TCPSendFiles (list, uin, des, files, ass, count);
+            TCPSendFiles (list, cont->uin, des, files, ass, count);
         }
 #ifdef WIP
-        else if (!strcmp (cmd, "ver"))
-            TCPGetAuto     (list, uin, TCP_MSG_GET_VER);
+        else if (!strcmp (arg1, "ver"))
+            TCPGetAuto     (list, cont->uin, TCP_MSG_GET_VER);
 #endif
-        else if (!strcmp (cmd, "auto"))
-            TCPGetAuto     (list, uin, 0);
-        else if (!strcmp (cmd, "away"))
-            TCPGetAuto     (list, uin, TCP_MSG_GET_AWAY);
-        else if (!strcmp (cmd, "na"))
-            TCPGetAuto     (list, uin, TCP_MSG_GET_NA);
-        else if (!strcmp (cmd, "dnd"))
-            TCPGetAuto     (list, uin, TCP_MSG_GET_DND);
-        else if (!strcmp (cmd, "ffc"))
-            TCPGetAuto     (list, uin, TCP_MSG_GET_FFC);
+        else if (!strcmp (arg1, "auto"))
+            TCPGetAuto     (list, cont->uin, 0);
+        else if (!strcmp (arg1, "away"))
+            TCPGetAuto     (list, cont->uin, TCP_MSG_GET_AWAY);
+        else if (!strcmp (arg1, "na"))
+            TCPGetAuto     (list, cont->uin, TCP_MSG_GET_NA);
+        else if (!strcmp (arg1, "dnd"))
+            TCPGetAuto     (list, cont->uin, TCP_MSG_GET_DND);
+        else if (!strcmp (arg1, "ffc"))
+            TCPGetAuto     (list, cont->uin, TCP_MSG_GET_FFC);
+        else
+            break;
+        return 0;
     }
-    else
-    {
-        M_print (i18n (1846, "Opens and closes TCP connections:\n"));
-        M_print (i18n (1847, "    open  <nick> - Opens TCP connection.\n"));
-        M_print (i18n (1848, "    close <nick> - Closes/resets TCP connection(s).\n"));
-        M_print (i18n (1870, "    off   <nick> - Closes TCP connection(s) and don't try TCP again.\n"));
-        M_print (i18n (2056, "    auto  <nick> - Get the auto-response from the contact.\n"));
-        M_print (i18n (2057, "    away  <nick> - Get the auto-response for away from the contact.\n"));
-        M_print (i18n (2058, "    na    <nick> - Get the auto-response for not available from the contact.\n"));
-        M_print (i18n (2059, "    dnd   <nick> - Get the auto-response for do not disturb from the contact.\n"));
-        M_print (i18n (2060, "    ffc   <nick> - Get the auto-response for free for chat from the contact.\n"));
-    }
+    M_print (i18n (1846, "Opens and closes TCP connections:\n"));
+    M_print (i18n (1847, "    open  <nick> - Opens TCP connection.\n"));
+    M_print (i18n (1848, "    close <nick> - Closes/resets TCP connection(s).\n"));
+    M_print (i18n (1870, "    off   <nick> - Closes TCP connection(s) and don't try TCP again.\n"));
+    M_print (i18n (2056, "    auto  <nick> - Get the auto-response from the contact.\n"));
+    M_print (i18n (2057, "    away  <nick> - Get the auto-response for away from the contact.\n"));
+    M_print (i18n (2058, "    na    <nick> - Get the auto-response for not available from the contact.\n"));
+    M_print (i18n (2059, "    dnd   <nick> - Get the auto-response for do not disturb from the contact.\n"));
+    M_print (i18n (2060, "    ffc   <nick> - Get the auto-response for free for chat from the contact.\n"));
+    M_print (i18n (2110, "    file  <nick> <file1> <as1> ... <description>\n"));
+    M_print (i18n (2111, "                 - Send file1 as as1, ..., with description.\n"));
+    M_print (i18n (2112, "                 - as = '/': strip path, as = '.': as is\n"));
 #else
     M_print (i18n (1866, "This version of mICQ is compiled without TCP support.\n"));
 #endif
@@ -785,11 +772,9 @@ static JUMP_F(CmdUserTCP)
  */
 static JUMP_F(CmdUserAuto)
 {
-    char *cmd;
-    char *arg1;
+    char *arg1 = NULL, *arg2 = NULL;
 
-    cmd = strtok (args, "\n");
-    if (cmd == NULL)
+    if (!UtilUIParse (&args, &arg1))
     {
         M_print (i18n (1724, "Automatic replies are %s.\n"),
                  prG->flags & FLAG_AUTOREPLY ? i18n (1085, "on") : i18n (1086, "off"));
@@ -801,153 +786,113 @@ static JUMP_F(CmdUserAuto)
         M_print ("%30s %s\n", i18n (2054, "The \"free for chat\" message is:"),  prG->auto_ffc);
         return 0;
     }
-    else if (strcasecmp (cmd, "on") == 0)
+
+    if      (!strcasecmp (arg1, "on")  || !strcasecmp (arg1, i18n (1085, "on")))
     {
         prG->flags |= FLAG_AUTOREPLY;
         M_print (i18n (1724, "Automatic replies are %s.\n"), i18n (1085, "on"));
+        return 0;
     }
-    else if (strcasecmp (cmd, "off") == 0)
+    else if (!strcasecmp (arg1, "off") || !strcasecmp (arg1, i18n (1086, "off")))
     {
         prG->flags &= ~FLAG_AUTOREPLY;
         M_print (i18n (1724, "Automatic replies are %s.\n"), i18n (1086, "off"));
+        return 0;
+    }
+
+    if (!UtilUIParseRemainder (&args, &arg2))
+    {
+        M_print (i18n (1735, "Must give a message.\n"));
+        return 0;
+    }
+
+    if      (!strcasecmp (arg1, "dnd")  || !strcasecmp (arg1, CmdUserLookupName ("dnd")))
+    {
+        if (prG->auto_dnd)  free (prG->auto_dnd);  prG->auto_dnd  = strdup (arg2);
+    }
+    else if (!strcasecmp (arg1, "away") || !strcasecmp (arg1, CmdUserLookupName ("away")))
+    {
+        if (prG->auto_away) free (prG->auto_away); prG->auto_away = strdup (arg2);
+    }
+    else if (!strcasecmp (arg1, "na")   || !strcasecmp (arg1, CmdUserLookupName ("na")))
+    {
+        if (prG->auto_na)   free (prG->auto_na);   prG->auto_na   = strdup (arg2);
+    }
+    else if (!strcasecmp (arg1, "occ")  || !strcasecmp (arg1, CmdUserLookupName ("occ")))
+    {
+        if (prG->auto_occ)  free (prG->auto_occ);  prG->auto_occ  = strdup (arg2);
+    }
+    else if (!strcasecmp (arg1, "inv")  || !strcasecmp (arg1, CmdUserLookupName ("inv")))
+    {
+        if (prG->auto_inv)  free (prG->auto_inv);  prG->auto_inv  = strdup (arg2);
+    }
+    else if (!strcasecmp (arg1, "ffc")  || !strcasecmp (arg1, CmdUserLookupName ("ffc")))
+    {
+        if (prG->auto_ffc)  free (prG->auto_ffc);  prG->auto_ffc  = strdup (arg2);
     }
     else
-    {
-        arg1 = strtok (cmd, " \t\n");
-        if (arg1 == NULL)
-        {
-            M_print (i18n (1734, "Sorry wrong syntax, can't find a status somewhere.\r\n"));
-            return 0;
-        }
-        if (!strcasecmp (arg1, CmdUserLookupName ("dnd")))
-        {
-            cmd = strtok (NULL, "\n");
-            if (cmd == NULL)
-            {
-                M_print (i18n (1735, "Must give a message.\n"));
-                return 0;
-            }
-            prG->auto_dnd = strdup (cmd);
-        }
-        else if (!strcasecmp (arg1, CmdUserLookupName ("away")))
-        {
-            cmd = strtok (NULL, "\n");
-            if (cmd == NULL)
-            {
-                M_print (i18n (1735, "Must give a message.\n"));
-                return 0;
-            }
-            prG->auto_away = strdup (cmd);
-        }
-        else if (!strcasecmp (arg1, CmdUserLookupName ("na")))
-        {
-            cmd = strtok (NULL, "\n");
-            if (cmd == NULL)
-            {
-                M_print (i18n (1735, "Must give a message.\n"));
-                return 0;
-            }
-            prG->auto_na = strdup (cmd);
-        }
-        else if (!strcasecmp (arg1, CmdUserLookupName ("occ")))
-        {
-            cmd = strtok (NULL, "\n");
-            if (cmd == NULL)
-            {
-                M_print (i18n (1735, "Must give a message.\n"));
-                return 0;
-            }
-            prG->auto_occ = strdup (cmd);
-        }
-        else if (!strcasecmp (arg1, CmdUserLookupName ("inv")))
-        {
-            cmd = strtok (NULL, "\n");
-            if (cmd == NULL)
-            {
-                M_print (i18n (1735, "Must give a message.\n"));
-                return 0;
-            }
-            prG->auto_inv = strdup (cmd);
-        }
-        else if (!strcasecmp (arg1, CmdUserLookupName ("ffc")))
-        {
-            cmd = strtok (NULL, "\n");
-            if (cmd == NULL)
-            {
-                M_print (i18n (1735, "Must give a message.\n"));
-                return 0;
-            }
-            prG->auto_ffc = strdup (cmd);
-        }
-        else
-            M_print (i18n (1736, "Sorry wrong syntax. Read tha help man!\n"));
-        M_print (i18n (1737, "Automatic reply setting\n"));
-    }
+        M_print (i18n (2113, "Unknown status '%s'.\n"));
     return 0;
 }
 
 /*
  * Relabels commands.
  */
+
+/* FIXME: write an alias system. */
+
 static JUMP_F(CmdUserAlter)
 {
-    char *cmd;
+    char *arg1 = NULL, *arg2 = NULL;
     jump_t *j;
     int quiet = 0;
 
-    cmd = strtok (args, " \t\n");
+    UtilUIParse (&args, &arg1);
 
-    if (cmd && !strcasecmp ("quiet", cmd))
+    if (arg1 && !strcasecmp ("quiet", arg1))
     {
         quiet = 1;
-        cmd = strtok (NULL, " \t\n");
+        UtilUIParse (&args, &arg1);
     }
         
-    if (cmd == NULL)
+    if (!arg1)
     {
-        M_print (i18n (1738, "Need a command to alter!\n"));
+        M_print (i18n (1738, "Need a command to alter.\n"));
         return 0;
     }
     
-    j = CmdUserLookup (cmd, CU_DEFAULT);
+    j = CmdUserLookup (arg1, CU_DEFAULT);
     if (!j)
-        j = CmdUserLookup (cmd, CU_USER);
+        j = CmdUserLookup (arg1, CU_USER);
     if (!j)
     {
-        M_print (i18n (1722, "Type help to see your current command, because this one you typed wasn't one!"));
-        M_print ("\n");
+        M_print (i18n (2114, "The command name '%s' does not exist.\n"), arg1);
+        return 0;
     }
-    else
+    
+    if (UtilUIParse (&args, &arg2))
     {
-        char *new = strtok (NULL, " \t\n");
-        
-        if (new)
+        if (CmdUserLookup (arg2, CU_USER))
         {
-            if (CmdUserLookup (new, CU_USER))
-            {
-                if (!quiet)
-                {
-                    M_print (i18n (1768, "The label '%s' is already being used."), new);
-                    M_print ("\n");
-                }
-                return 0;
-            }
-            else
-            {
-                if (j->name)
-                    free ((char *) j->name);
-                j->name = strdup (new);
-            }
+            if (!quiet)
+                M_print (i18n (1768, "The command name '%s' is already being used.\n"), arg2);
+            return 0;
         }
-        
-        if (!quiet)
+        else
         {
             if (j->name)
-                M_print (i18n (1763, "The command '%s' has been renamed to '%s'."), j->defname, j->name);
-            else
-                M_print (i18n (1764, "The command '%s' is unchanged."), j->defname);
-            M_print ("\n");
+                free ((char *) j->name);
+            j->name = strdup (arg2);
         }
+    }
+    
+    if (!quiet)
+    {
+        if (j->name)
+            M_print (i18n (1763, "The command '%s' has been renamed to '%s'."), j->defname, j->name);
+        else
+            M_print (i18n (1764, "The command '%s' is unchanged."), j->defname);
+        M_print ("\n");
     }
     return 0;
 }
@@ -957,8 +902,7 @@ static JUMP_F(CmdUserAlter)
  */
 static JUMP_F (CmdUserResend)
 {
-    UDWORD uin;
-    char *arg1, *b;
+    Contact *cont = NULL;
     SESSION;
 
     if (!uiG.last_message_sent) 
@@ -967,32 +911,23 @@ static JUMP_F (CmdUserResend)
         return 0;
     }
 
-#ifdef HAVE_STRTOK_R
-    arg1 = strtok_r (args, UIN_DELIMS, &b);
-#else
-    arg1 = strtok (args, UIN_DELIMS);
-#endif
-    if (!arg1)
+    if (!UtilUIParseNick (&args, &cont))
     {
-        M_print (i18n (1676, "Need uin to send to.\n"));
+        M_print (i18n (1676, "Need uin/nick to send to.\n"));
         return 0;
     }
     
-    while (arg1)
+    while (1)
     {
-        uin = ContactFindByNick (arg1);
-        if (uin == -1)
-            M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
-        else
-            icq_sendmsg (sess, uiG.last_sent_uin = uin,
-                         uiG.last_message_sent, uiG.last_message_sent_type);
-#ifdef HAVE_STRTOK_R
-        arg1 = strtok_r (NULL, UIN_DELIMS, &b);
-#else
-        arg1 = NULL;
-#endif
+        icq_sendmsg (sess, uiG.last_sent_uin = cont->uin,
+                     uiG.last_message_sent, uiG.last_message_sent_type);
+        if (!UtilUIParseNick (&args, &cont))
+        {
+            if (*args)
+                M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);
+            return 0;
+        }
     }
-    return 0;
 }
 
 /*
@@ -1188,14 +1123,16 @@ static JUMP_F (CmdUserMessage)
  */
 static JUMP_F(CmdUserVerbose)
 {
-    char *arg1;
+    UDWORD i = 0;
 
-    arg1 = strtok (args, "\n");
-    if (arg1 != NULL)
+    if (UtilUIParseInt (&args, &i))
+        prG->verbose = i;
+    else if (*args)
     {
-        prG->verbose = atoi (arg1);
+        M_print (i18n (2115, "'%s' is not an integer.\n"), args);
+        return 0;
     }
-    M_print (i18n (1060, "Verbosity level is %d.\n"), prG->verbose);
+    M_print (i18n (1060, "Verbosity level is %d.\n"), prG->verbose = i);
     return 0;
 }
 
@@ -1227,25 +1164,14 @@ static JUMP_F(CmdUserStatusDetail)
     Session *peer;
     UDWORD stati[] = { STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
                        STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
-    char *name = strtok (args, "\n");
     SESSION;
 
-    if (name && (data & 8))
+    if ((data & 8) && !UtilUIParseNick (&args, &cont))
     {
-        uin = ContactFindByNick (name);
-        if (uin == -1)
-        {
-            M_print (i18n (1699, "Must give a valid uin/nickname\n"));
-            return 0;
-        }
-        cont = ContactFind (uin);
-        if (cont == NULL)
-        {
-            M_print (i18n (1700, "%s is not a valid user in your list.\n"), name);
-            return 0;
-        }
+        M_print (i18n (1700, "%s is not a valid user in your list.\n"), args);
+        return 0;
     }
-    else
+    else if (cont)
     {
         for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))
         {
@@ -1604,18 +1530,15 @@ static JUMP_F(CmdUserStatusShort)
  */
 static JUMP_F(CmdUserSound)
 {
-    char *arg1;
-    
-    if ((arg1 = strtok (args, "\n")))
+    if (strlen (args))
     {
         prG->sound &= ~SFLAG_BEEP & ~SFLAG_CMD;
-        if (!strcasecmp (arg1, i18n (1085, "on")))
+        if (!strcasecmp (args, i18n (1085, "on")))
            prG->sound |= SFLAG_BEEP;
-        else if (!strcasecmp (arg1, i18n (1086, "off"))) ;
-        else
+        else if (strcasecmp (args, i18n (1086, "off")))
         {
            prG->sound |= SFLAG_CMD;
-           prG->sound_cmd = strdup (arg1);
+           prG->sound_cmd = strdup (args);
         }
     }
     if (prG->sound & SFLAG_BEEP)
@@ -1632,18 +1555,15 @@ static JUMP_F(CmdUserSound)
  */
 static JUMP_F(CmdUserSoundOnline)
 {
-    char *arg1;
-    
-    if ((arg1 = strtok (args, "\n")))
+    if (strlen (args))
     {
         prG->sound &= ~SFLAG_ON_BEEP & ~SFLAG_ON_CMD;
-        if (!strcasecmp (arg1, i18n (1085, "on")))
+        if (!strcasecmp (args, i18n (1085, "on")))
            prG->sound |= SFLAG_ON_BEEP;
-        else if (!strcasecmp (arg1, i18n (1086, "off"))) ;
-        else
+        else if (strcasecmp (args, i18n (1086, "off")))
         {
            prG->sound |= SFLAG_ON_CMD;
-           prG->sound_on_cmd = strdup (arg1);
+           prG->sound_on_cmd = strdup (args);
         }
     }
     if (prG->sound & SFLAG_ON_BEEP)
@@ -1660,18 +1580,15 @@ static JUMP_F(CmdUserSoundOnline)
  */
 static JUMP_F(CmdUserSoundOffline)
 {
-    char *arg1;
-    
-    if ((arg1 = strtok (args, "\n")))
+    if (strlen (args))
     {
         prG->sound &= ~SFLAG_OFF_BEEP & ~SFLAG_OFF_CMD;
-        if (!strcasecmp (arg1, i18n (1085, "on")))
+        if (!strcasecmp (args, i18n (1085, "on")))
            prG->sound |= SFLAG_OFF_BEEP;
-        else if (!strcasecmp (arg1, i18n (1086, "off"))) ;
-        else
+        else if (strcasecmp (args, i18n (1086, "off")))
         {
            prG->sound |= SFLAG_OFF_CMD;
-           prG->sound_off_cmd = strdup (arg1);
+           prG->sound_off_cmd = strdup (args);
         }
     }
     if (prG->sound & SFLAG_OFF_BEEP)
@@ -1688,25 +1605,26 @@ static JUMP_F(CmdUserSoundOffline)
  */
 static JUMP_F(CmdUserAutoaway) 
 {
-    char *arg1;
+    char *arg1 = NULL;
+    UDWORD i = 0;
 
-    if ((arg1 = strtok (args, " \t\n")))
+    if (UtilUIParseInt (&args, &i))
+    {
+        if (prG->away_time)
+            uiG.away_time_prev = prG->away_time;
+        prG->away_time = i;
+    }
+    else if (UtilUIParse (&args, &arg1))
     {
         if      (!strcmp (arg1, i18n (1085, "on"))  || !strcmp (arg1, "on"))
         {
             prG->away_time = uiG.away_time_prev ? uiG.away_time_prev : default_away_time;
         }
-        else if (!strcmp (arg1, i18n (1086, "off")) || !strcmp (arg1, "off") || !atoi (arg1))
+        else if (!strcmp (arg1, i18n (1086, "off")) || !strcmp (arg1, "off"))
         {
             if (prG->away_time)
                 uiG.away_time_prev = prG->away_time;
             prG->away_time = 0;
-        }
-        else
-        {
-            if (prG->away_time)
-                uiG.away_time_prev = prG->away_time;
-            prG->away_time = atoi (arg1);
         }
     }
     M_print (i18n (1766, "Changing status to away resp. not available after idling %s%d%s seconds.\n"),
@@ -1720,11 +1638,11 @@ static JUMP_F(CmdUserAutoaway)
 static JUMP_F(CmdUserSet)
 {
     int quiet = 0;
-    char *arg1;
+    char *arg1 = NULL;
     
     arg1 = strtok (args, " \t\n");
     
-    if (!arg1 || !strcmp (arg1, "help") || !strcmp (arg1, "?"))
+    if (!UtilUIParse (&args, &arg1) || !strcmp (arg1, "help") || !strcmp (arg1, "?"))
     {
         M_print (i18n (1820, "%s <option> [on|off] - control simple options.\n"), CmdUserLookupName ("set"));
         M_print (i18n (1822, "    color: use colored text output.\n"));
@@ -1733,8 +1651,7 @@ static JUMP_F(CmdUserSet)
     }
     else if (!strcmp (arg1, "color"))
     {
-        arg1 = strtok (NULL, "\n");
-        if (arg1)
+        if (UtilUIParse (&args, &arg1))
         {
             if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (1085, "on")))
             {
@@ -1756,8 +1673,7 @@ static JUMP_F(CmdUserSet)
     }
     else if (!strcmp (arg1, "funny"))
     {
-        arg1 = strtok (NULL, "\n");
-        if (arg1)
+        if (UtilUIParse (&args, &arg1))
         {
             if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (1085, "on")))
             {
@@ -1779,8 +1695,7 @@ static JUMP_F(CmdUserSet)
     }
     else if (!strcmp (arg1, "quiet"))
     {
-        arg1 = strtok (NULL, "\n");
-        if (arg1)
+        if (UtilUIParse (&args, &arg1))
         {
             if (!strcmp (arg1, "on") || !strcmp (arg1, i18n (1085, "on")))
             {
@@ -1820,18 +1735,15 @@ static JUMP_F(CmdUserClear)
  */
 static JUMP_F(CmdUserRegister)
 {
-    char *arg1;
-    
-    arg1 = strtok (args, "\n");
-    if (arg1)
+    if (strlen (args))
     {
         Session *sess;
         if ((sess = SessionFind (TYPE_SERVER, 0, NULL)))
-            SrvRegisterUIN (sess, arg1);
+            SrvRegisterUIN (sess, args);
         else if ((sess = SessionFind (TYPE_SERVER_OLD, 0, NULL)))
-            CmdPktCmdRegNewUser (sess, arg1);     /* TODO */
+            CmdPktCmdRegNewUser (sess, args);     /* TODO */
         else
-            SrvRegisterUIN (NULL, arg1);
+            SrvRegisterUIN (NULL, args);
     }
     return 0;
 }
@@ -1841,43 +1753,24 @@ static JUMP_F(CmdUserRegister)
  */
 static JUMP_F(CmdUserTogIgnore)
 {
-    char *arg1;
-    Contact *bud;
-    UDWORD uin;
+    Contact *cont = NULL;
     SESSION;
 
-    arg1 = strtok (args, "\n");
-    if (!arg1)
+    if (!UtilUIParseNick (&args, &cont))
     {
-        M_print (i18n (1668, "You must specify a nick name."));
-        M_print ("\n");
+        M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);
         return 0;
     }
 
-    uin = ContactFindByNick (arg1);
-    if (uin == -1)
+    if (cont->flags & CONT_IGNORE)
     {
-        M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
-        return 0;
-    }
-
-    bud =  ContactFind (uin);
-    if (!bud)
-    {
-        M_print (i18n (1090, "%s is a UIN, not a nick name."), arg1);
-        M_print ("\n");
-        return 0;
-    }
-
-    if (bud->flags & CONT_IGNORE)
-    {
-        bud->flags &= ~CONT_IGNORE;
-        M_print (i18n (1666, "Unignored %s."), bud->nick);
+        cont->flags &= ~CONT_IGNORE;
+        M_print (i18n (1666, "Unignored %s."), cont->nick);
     }
     else
     {
-        bud->flags |= CONT_IGNORE;
-        M_print (i18n (1667, "Ignoring %s."), bud->nick);
+        cont->flags |= CONT_IGNORE;
+        M_print (i18n (1667, "Ignoring %s."), cont->nick);
     }
     M_print ("\n");
     return 0;
@@ -1888,52 +1781,33 @@ static JUMP_F(CmdUserTogIgnore)
  */
 static JUMP_F(CmdUserTogInvis)
 {
-    char *arg1;
-    Contact *bud;
-    UDWORD uin;
+    Contact *cont = NULL;
     SESSION;
 
-    arg1 = strtok (args, "\n");
-    if (!arg1)
+    if (!UtilUIParseNick (&args, &cont))
     {
-        M_print (i18n (1668, "You must specify a nick name."));
-        M_print ("\n");
+        M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);
         return 0;
     }
 
-    uin = ContactFindByNick (arg1);
-    if (uin == -1)
+    if (cont->flags & CONT_HIDEFROM)
     {
-        M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
-        return 0;
-    }
-
-    bud =  ContactFind (uin);
-    if (!bud)
-    {
-        M_print (i18n (1090, "%s is a UIN, not a nick name."), arg1);
-        M_print ("\n");
-        return 0;
-    }
-
-    if (bud->flags & CONT_HIDEFROM)
-    {
-        bud->flags &= ~CONT_HIDEFROM;
+        cont->flags &= ~CONT_HIDEFROM;
         if (sess->ver > 6)
-            SnacCliReminvis (sess, uin);
+            SnacCliReminvis (sess, cont->uin);
         else
-            CmdPktCmdUpdateList (sess, uin, INV_LIST_UPDATE, FALSE);
-        M_print (i18n (2020, "Being visible to %s."), bud->nick);
+            CmdPktCmdUpdateList (sess, cont->uin, INV_LIST_UPDATE, FALSE);
+        M_print (i18n (2020, "Being visible to %s."), cont->nick);
     }
     else
     {
-        bud->flags |= CONT_HIDEFROM;
-        bud->flags &= ~CONT_INTIMATE;
+        cont->flags |= CONT_HIDEFROM;
+        cont->flags &= ~CONT_INTIMATE;
         if (sess->ver > 6)
-            SnacCliAddinvis (sess, uin);
+            SnacCliAddinvis (sess, cont->uin);
         else
-            CmdPktCmdUpdateList (sess, uin, INV_LIST_UPDATE, TRUE);
-        M_print (i18n (2021, "Being invisible to %s."), bud->nick);
+            CmdPktCmdUpdateList (sess, cont->uin, INV_LIST_UPDATE, TRUE);
+        M_print (i18n (2021, "Being invisible to %s."), cont->nick);
     }
     if (sess->ver < 6)
     {
@@ -1951,52 +1825,33 @@ static JUMP_F(CmdUserTogInvis)
  */
 static JUMP_F(CmdUserTogVisible)
 {
-    char *arg1;
-    Contact *bud;
-    UDWORD uin;
+    Contact *cont = NULL;
     SESSION;
 
-    arg1 = strtok (args, "\n");
-    if (!arg1)
+    if (UtilUIParseNick (&args, &cont))
     {
-        M_print (i18n (1668, "You must specify a nick name."));
-        M_print ("\n");
+        M_print (i18n (1061, "%s not recognized as a nick name.\n"), args);
         return 0;
     }
 
-    uin = ContactFindByNick (arg1);
-    if (uin == -1)
+    if (cont->flags & CONT_INTIMATE)
     {
-        M_print (i18n (1061, "%s not recognized as a nick name.\n"), arg1);
-        return 0;
-    }
-
-    bud =  ContactFind (uin);
-    if (!bud)
-    {
-        M_print (i18n (1090, "%s is a UIN, not a nick name."), arg1);
-        M_print ("\n");
-        return 0;
-    }
-
-    if (bud->flags & CONT_INTIMATE)
-    {
-        bud->flags &= ~CONT_INTIMATE;
+        cont->flags &= ~CONT_INTIMATE;
         if (sess->ver > 6)
-            SnacCliRemvisible (sess, uin);
+            SnacCliRemvisible (sess, cont->uin);
         else
-            CmdPktCmdUpdateList (sess, uin, VIS_LIST_UPDATE, FALSE);
-        M_print (i18n (1670, "Normal visible to %s now."), ContactFindNick (uin));
+            CmdPktCmdUpdateList (sess, cont->uin, VIS_LIST_UPDATE, FALSE);
+        M_print (i18n (1670, "Normal visible to %s now."), cont->nick);
     }
     else
     {
-        bud->flags |= CONT_INTIMATE;
-        bud->flags &= ~CONT_HIDEFROM;
+        cont->flags |= CONT_INTIMATE;
+        cont->flags &= ~CONT_HIDEFROM;
         if (sess-> ver > 6)
-            SnacCliAddvisible (sess, uin);
+            SnacCliAddvisible (sess, cont->uin);
         else
-            CmdPktCmdUpdateList (sess, uin, VIS_LIST_UPDATE, TRUE);
-        M_print (i18n (1671, "Always visible to %s now."), ContactFindNick (uin));
+            CmdPktCmdUpdateList (sess, cont->uin, VIS_LIST_UPDATE, TRUE);
+        M_print (i18n (1671, "Always visible to %s now."), cont->nick);
     }
 
     M_print ("\n");

@@ -585,6 +585,7 @@ BOOL UtilUIParseNick (char **input, Contact **parsed)
         }
     }
     max = 0;
+    *parsed = NULL;
     ll = strlen (p);
     for (r = ContactStart (); ContactHasNext (r); r = ContactNext (r))
     {
@@ -601,6 +602,34 @@ BOOL UtilUIParseNick (char **input, Contact **parsed)
         return TRUE;
     }
     return FALSE;
+}
+
+/*
+ * Finds the remaining non-whitespace line.
+ * String pointer is advanced to point after the parsed argument.
+ */
+BOOL UtilUIParseRemainder (char **input, char **parsed)
+{
+    static char *t = NULL;
+    char *p = *input;
+    
+    while (*p && strchr (" \t\r\n", *p))
+        p++;
+    
+    *input = p;
+    if (!*p)
+    {
+        *parsed = NULL;
+        return FALSE;
+    }
+    
+    if (t)
+        free (t);
+    *parsed = t = strdup (p);
+    t = t + strlen (t) - 1;
+    while (strchr (" \t\r\n", *t))
+        *(t--) = '\0';
+    return TRUE;
 }
 
 /*
