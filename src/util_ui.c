@@ -119,6 +119,42 @@ UWORD Get_Max_Screen_Width ()
 static int CharCount = 0;       /* number of characters printed on line. */
 static int IndentCount = 0;
 
+#define LOGOS 10
+static const char *logos[LOGOS] = { NULL };
+static UBYTE logoc = 0;
+static UBYTE first = 0;
+
+void M_logo (const char *logo)
+{
+    if (logoc != LOGOS)
+        logos[logoc++] = logo;
+    first = 2;
+}
+
+static const char *M_getlogo ()
+{
+    UBYTE i;
+    const char *logo;
+
+    if (!logoc)
+        return first ? "         " : "";
+    logo = logos[0];
+    logoc--;
+    for (i = 0; i < logoc; i++)
+        logos[i] = logos[i + 1];
+    return ConvFromUTF8 (logo, prG->enc_loc);
+}
+
+void M_logo_clear ()
+{
+    first = 1;
+    puts ("");
+    while (logoc)
+        puts (M_getlogo ());
+    M_print ("\r");
+    first = 0;
+}
+
 #ifdef ENABLE_UTF8
 #define chardiff(aa,bb)  (ENC(enc_loc) == ENC_UTF8 ? s_strnlen ((bb), (aa) - (bb)) : (aa) - (bb))
 #define charoff(str,off) (ENC(enc_loc) == ENC_UTF8 ? s_offset ((str), (off))      : (off))
@@ -133,22 +169,34 @@ static int IndentCount = 0;
 void M_print (const char *org)
 {
     const char *test, *save, *temp, *str;
+    char *fstr;
     int i;
     int sw = Get_Max_Screen_Width () - IndentCount;
     
 #ifdef ENABLE_UTF8
-    char *fstr = strdup (ConvFromUTF8 (org, prG->enc_loc));
-    str = fstr;
+    fstr = strdup (ConvFromUTF8 (org, prG->enc_loc));
 #else
-    str = org;
+    fstr = strdup (org);
 #endif
+    str = fstr;
+
+    if (first)
+    {
+        sw -= 9;
+        if (first == 2)
+        {
+            if (!CharCount)
+                printf ("%s", M_getlogo ());
+            first = 1;
+        }
+    }
 
     R_remprompt ();
     for (; *str; str++)
     {
         for (test = save = str; *test; test++)
         {
-            if (strchr ("\n\r\t\a\x1b", *test)) /* special character reached - emit text till last saved position */
+            if (strchr ("\b\n\r\t\a\x1b", *test)) /* special character reached - emit text till last saved position */
             {
                 if (save != str)
                     test = save;
@@ -179,7 +227,7 @@ void M_print (const char *org)
             }
             if (chardiff (test, str) > sw - CharCount) /* remainder doesn't fit anymore => linebreak */
             {
-                printf ("\n%*s", IndentCount, "");
+                printf ("\n%s%*s", M_getlogo (), IndentCount, "");
                 CharCount = 0;
             }
             printf ("%.*s", test - str, str);
@@ -188,8 +236,12 @@ void M_print (const char *org)
         }
         switch (*str)           /* Take care of specials */
         {
+            case '\b':
+                CharCount -= 1;
+                printf ("\b");
+                break;
             case '\n':
-                printf ("\n%*s", IndentCount, "");
+                printf ("\n%s%*s", M_getlogo (), IndentCount, "");
                 CharCount = 0;
                 break;
             case '\r':
@@ -204,7 +256,7 @@ void M_print (const char *org)
                 i = TAB_STOP - (CharCount % TAB_STOP);
                 if (CharCount + i > sw)
                 {
-                    printf ("\n%*s", IndentCount, "");
+                    printf ("\n%s%*s", M_getlogo (), IndentCount, "");
                     CharCount = 0;
                 }
                 else
@@ -226,7 +278,7 @@ void M_print (const char *org)
                         switch (prG->flags & (FLAG_LIBR_BR | FLAG_LIBR_INT))
                         {
                             case FLAG_LIBR_BR:
-                                printf ("\n");
+                                printf ("\n%s", M_getlogo ());
                                 CharCount = 0;
                                 break;
                             case FLAG_LIBR_INT:
@@ -238,7 +290,7 @@ void M_print (const char *org)
                                 save = strstr (str, "\x1b»");
                                 if (save && chardiff (save, str) - 2 > sw - CharCount)
                                 {
-                                    printf ("\n");
+                                    printf ("\n%s", M_getlogo ());
                                     CharCount = 0;
                                     break;
                                 }
@@ -301,9 +353,7 @@ void M_print (const char *org)
                 str--;
         }
     }
-#ifdef ENABLE_UTF8
     free (fstr);
-#endif
 }
 
 /*
