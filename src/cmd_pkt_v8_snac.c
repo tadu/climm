@@ -1259,7 +1259,7 @@ void SnacCliFamilies (Connection *conn)
  *
  * action: 1 = send status 2 = send connection info (3 = both)
  */
-void SnacCliSetstatus (Connection *conn, UWORD status, UWORD action)
+void SnacCliSetstatus (Connection *conn, UDWORD status, UWORD action)
 {
     Packet *pak;
     

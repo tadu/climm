@@ -17,7 +17,7 @@ void   SnacCliBuddy        (Connection *conn);
 void   SnacCliReqicbm      (Connection *conn);
 void   SnacCliReqbos       (Connection *conn);
 void   SnacCliSetuserinfo  (Connection *conn);
-void   SnacCliSetstatus    (Connection *conn, UWORD status, UWORD action);
+void   SnacCliSetstatus    (Connection *conn, UDWORD status, UWORD action);
 void   SnacCliReady        (Connection *conn);
 void   SnacCliSeticbm      (Connection *conn);
 void   SnacCliAddcontact   (Connection *conn, Contact *cont);
