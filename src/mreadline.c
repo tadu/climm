@@ -205,12 +205,13 @@ void R_process_input_tab (void)
     UDWORD uin;
     const char *msgcmd = CmdUserLookupName ("msg");
 
-    if (strpbrk (s, UIN_DELIMS) && strpbrk (s, UIN_DELIMS) - s < strlen (s) - 1)
+    if (strncmp (s, msgcmd, strlen (s) < strlen (msgcmd) ? strlen (s) : strlen (msgcmd)))
     {
         M_print ("\a");
         return;
     }
-    if (strncmp (s, msgcmd, strlen (s) < strlen (msgcmd) ? strlen (s) : strlen (msgcmd)))
+    if (strpbrk (s, UIN_DELIMS) && strpbrk (s, UIN_DELIMS) - s < strlen (s) - 1
+        && !strchr (UIN_DELIMS, s[strlen (s) - 1]))
     {
         M_print ("\a");
         return;

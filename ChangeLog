@@ -1,4 +1,12 @@
 
+	* more ui fixes: status change msg, "r" command
+	* packet.c cleanup for...
+	* ... (Peter Backes)
+	* avoid code duplication: remove User_Online, Status_Update,
+	  User_Offline
+	* fix tcp message types
+	* allow UIN_DELIM characters in UIN (except for the last character)!
+
 2002-04-30 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* Some logging/output cleanup (Peter Backes)
 	* Implemented SRV_ADDEDYOU handling (Peter Backes)

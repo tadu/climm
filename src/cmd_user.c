@@ -779,7 +779,8 @@ JUMP_F (CmdUserMessage)
     static UDWORD multi_uin;
     static int offset = 0;
     static char msg[1024];
-    char *arg1;
+    char *arg1, *p;
+    int len;
     Contact *cont;
     SESSION(TYPE_SERVER_OLD | TYPE_SERVER);
 
@@ -849,18 +850,28 @@ JUMP_F (CmdUserMessage)
         switch (data)
         {
             case 1:
-                arg1 = strtok (args, UIN_DELIMS);
+                arg1 = strtok (p = strdup (args), UIN_DELIMS);
                 if (!arg1)
                 {
                     M_print (i18n (676, "Need uin to send to.\n"));
                     return 0;
                 }
                 uin = ContactFindByNick (arg1);
-                if (uin == -1)
+                len = 0;
+                while (uin == -1)
                 {
-                    M_print (i18n (61, "%s not recognized as a nick name"), arg1);
-                    M_print ("\n");
-                    return 0;
+                    len += strlen (arg1);
+                    free (p);
+                    p = strdup (args);
+                    arg1 = strtok (p + len + 1, UIN_DELIMS);
+                    if (!arg1)
+                    {
+                        
+                        M_print (i18n (61, "%s not recognized as a nick name"), strtok (args, UIN_DELIMS));
+                        M_print ("\n");
+                        return 0;
+                    }
+                    uin = ContactFindByNick (p);
                 }
                 arg1 = strtok (NULL, "");
                 break;
