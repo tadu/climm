@@ -1876,7 +1876,6 @@ static JUMP_F(CmdUserAdd)
     }
 
     if (!UtilUIParseRemainder (&args, &arg1))
-        arg1 = strdup (cont->nick);
     {
         M_print (i18n (2116, "No new nick name given.\n"));
         return 0;
