@@ -195,10 +195,11 @@ static void rl_dump_line (void)
     fprintf (stderr, "colpos %ld ucspos %ld bytepos %ld\n", rl_colpos, rl_ucspos, rl_bytepos);
     for (i = bp = 0; i < rl_ucscol.len; i++)
     {
-        char *p;
+        char *p = strdup (rl_display.txt + bp);
+        p[rl_ucsbytes.txt[i]] = 0;
         fprintf (stderr, " %02x%02x %d/%d %s",
                  (UBYTE)rl_ucs.txt[2 * i], (UBYTE)rl_ucs.txt[2 * i + 1], rl_ucscol.txt[i], rl_ucsbytes.txt[i],
-                 s_qquote (p = strndup (rl_display.txt + bp, rl_ucsbytes.txt[i])));
+                 s_qquote (p));
         bp += rl_ucsbytes.txt[i];
         free (p);
     }
