@@ -65,7 +65,7 @@ void CmdPktCmdTCPRequest (Session *sess, UDWORD tuin, UDWORD port)
     PacketWrite4 (pak, tuin);
     PacketWrite4 (pak, sess->our_local_ip);
     PacketWrite4 (pak, sess->assoc->port);
-    PacketWrite1 (pak, TCP_OK_FLAG);
+    PacketWrite1 (pak, sess->assoc->status);
     PacketWrite4 (pak, port);
     PacketWrite4 (pak, sess->assoc->port);
     PacketWrite2 (pak, 2);
@@ -97,7 +97,7 @@ void CmdPktCmdLogin (Session *sess)
     PacketWrite4 (pak, 0x000000d5);
     PacketWrite4 (pak, sess->our_local_ip);
     PacketWrite1 (pak, sess->assoc && sess->assoc->connect & CONNECT_OK ?
-                       TCP_OK_FLAG : 0);         /* 1=firewall | 2=proxy | 4=tcp */
+                       sess->assoc->status : 0);         /* 1=firewall | 2=proxy | 4=tcp */
     PacketWrite4 (pak, prG->status);
     PacketWrite2 (pak, sess->assoc && sess->assoc->connect & CONNECT_OK ?
                        sess->assoc->ver : 0);

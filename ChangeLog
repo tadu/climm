@@ -12,6 +12,8 @@
 	* allow selection of current connection, remove connections
 	* make colors customizable
 	* fix contact list download, improve contact command
+	* adding Trillian bugaround: set connectivity properly (see micqrc.5)
+	* 0.4.9.3
 
 2002-08-17 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* auto-extend TLV array

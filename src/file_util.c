@@ -223,6 +223,7 @@ void Initalize_RC_File ()
     sesst->flags = sesst->spref->flags;
     sesst->spref->version = 8;
     sesst->ver = 8;
+    sesst->status = prG->s5Use ? 2 : TCP_OK_FLAG;
 
     prG->status = STATUS_ONLINE;
     prG->tabs = TABS_SIMPLE;
@@ -678,6 +679,7 @@ void Read_RC_File (FILE *rcf)
                             oldsess->assoc = sess;
                             sess->parent = oldsess;
                         }
+                        sess->spref->status = TCP_OK_FLAG;
                     }
                     else 
                         continue;
@@ -762,6 +764,8 @@ void Read_RC_File (FILE *rcf)
         sess->ver    = sess->spref->version;
         sess->type   = sess->spref->type;
         sess->flags  = sess->spref->flags;
+        if (prG->s5Use && sess->type & TYPEF_SERVER)
+            sess->type = sess->spref->type = 2;
         if (sess->spref->type == TYPE_SERVER || sess->spref->type == TYPE_SERVER_OLD)
             oldsess = sess;
     }

@@ -96,6 +96,19 @@ free for chat
 256
 invisible
 .RE
+
+.RS
+For peer to peer connections, this is used for the direct connection setting:
+.TP
+1
+We're firewalled and can't receive any connection. Don't even try.
+.TP
+2
+We're firewalled, but use SOCKS and can receive connections. This is the default.
+.TP
+4
+We're not firewalled at all.
+.RE
 .SH GENERAL
 The
 .B General

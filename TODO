@@ -32,7 +32,7 @@ various people:
  : fix memory leaks (most fixed)
  : finish implementing file transfer (fixed?)
  : fix missing online flags (fixed)
- : Trillian bugaround
+ : Trillian bugaround (fixed?)
  : use old-style auth stuff as well :-/ (fixed?)
  : fix wrong-destination messages (fixed)
  : "" quoting of arguments

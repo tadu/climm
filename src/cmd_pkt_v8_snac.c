@@ -973,7 +973,7 @@ void SnacCliSetstatus (Session *sess, UWORD status, UWORD action)
         if (sess->assoc && sess->assoc->connect & CONNECT_OK)
         {
             PacketWriteB4 (pak, sess->assoc->port);
-            PacketWrite1  (pak, TCP_OK_FLAG);
+            PacketWrite1  (pak, sess->assoc->status);
             PacketWriteB2 (pak, sess->assoc->ver);
             PacketWriteB4 (pak, sess->assoc->our_session);
         }
@@ -1517,7 +1517,7 @@ void SnacCliSetrandom (Session *sess, UWORD group)
         PacketWriteB4 (pak, 0);
         PacketWriteB4 (pak, 0);
         PacketWrite1  (pak, sess->assoc && sess->assoc->connect & CONNECT_OK
-                            ? TCP_OK_FLAG : 0);
+                            ? sess->assoc->status : 0);
         PacketWrite2  (pak, sess->assoc && sess->assoc->connect & CONNECT_OK
                             ? sess->assoc->ver : 0);
         PacketWriteB4 (pak, 0);

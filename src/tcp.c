@@ -732,8 +732,7 @@ Packet *PeerPacketC (Session *peer, UBYTE cmd)
     
     pak = PacketC ();
     if (peer->type != TYPE_MSGDIRECT || peer->ver > 6 || cmd != PEER_MSG)
-{        PacketWrite1 (pak, cmd);
-M_print ("Adding: %d %x %d %x\n",peer->type,peer->connect,peer->ver,cmd);}
+        PacketWrite1 (pak, cmd);
     return pak;
 }
 
@@ -796,7 +795,7 @@ void TCPSendInitv6 (Session *peer)
     PacketWrite4  (pak, peer->parent->parent->uin);            /* our UIN          */
     PacketWriteB4 (pak, peer->parent->parent->our_outside_ip); /* our (remote) IP  */
     PacketWriteB4 (pak, peer->parent->parent->our_local_ip);   /* our (local)  IP  */
-    PacketWrite1  (pak, TCP_OK_FLAG);                          /* connection type  */
+    PacketWrite1  (pak, peer->parent->status);                 /* connection type  */
     PacketWrite4  (pak, peer->parent->port);                   /* our (other) port */
     PacketWrite4  (pak, peer->our_session);                    /* session id       */
 
@@ -849,7 +848,7 @@ static void TCPSendInit (Session *peer)
     PacketWrite4  (pak, peer->parent->parent->uin);             /* our UIN          */
     PacketWriteB4 (pak, peer->parent->parent->our_outside_ip);  /* our (remote) IP  */
     PacketWriteB4 (pak, peer->parent->parent->our_local_ip);    /* our (local)  IP  */
-    PacketWrite1  (pak, TCP_OK_FLAG);                  /* connection type  */
+    PacketWrite1  (pak, peer->parent->status);                  /* connection type  */
     PacketWrite4  (pak, peer->parent->port);           /* our (other) port */
     PacketWrite4  (pak, peer->our_session);            /* session id       */
     PacketWrite4  (pak, 0x00000050);
