@@ -1623,9 +1623,8 @@ static void TCPCallBackReceive (Event *event)
                     IMIntMsg (cont, peer, NOW, STATUS_OFFLINE, INT_MSGACK_DC, e_msg_text, NULL);
                     if (~cont->flags & CONT_SEENAUTO && strlen (tmp))
                     {
-                        IMSrvMsg (cont, peer, NOW, ExtraSet (ExtraSet (ExtraSet (NULL,
+                        IMSrvMsg (cont, peer, NOW, ExtraSet (ExtraSet (NULL,
                                   EXTRA_ORIGIN, EXTRA_ORIGIN_dc, NULL),
-                                  EXTRA_STATUS, status, NULL),
                                   EXTRA_MESSAGE, MSG_NORM, tmp));
                         cont->flags |= CONT_SEENAUTO;
                     }
