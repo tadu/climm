@@ -1516,11 +1516,11 @@ void SnacCliSetstatus (Connection *serv, UDWORD status, UWORD action)
 {
     Packet *pak;
     
-    if (prG->flags & FLAG_WEBAWARE)
+    if (ConnectionPrefVal (serv, CO_WEBAWARE))
         status |= STATUSF_WEBAWARE;
-    if (prG->flags & FLAG_DC_AUTH)
+    if (ConnectionPrefVal (serv, CO_DCAUTH))
         status |= STATUSF_DC_AUTH;
-    if (prG->flags & FLAG_DC_CONT)
+    if (ConnectionPrefVal (serv, CO_DCCONT))
         status |= STATUSF_DC_CONT;
     
     pak = SnacC (serv, 1, 0x1e, 0, 0);
@@ -1532,7 +1532,7 @@ void SnacCliSetstatus (Connection *serv, UDWORD status, UWORD action)
     {
         PacketWriteB2 (pak, 0x0c); /* TLV 0C */
         PacketWriteB2 (pak, 0x25);
-        PacketWriteB4 (pak, prG->flags & FLAG_HIDEIP ? 0 : serv->our_local_ip);
+        PacketWriteB4 (pak, ConnectionPrefVal (serv, CO_HIDEIP) ? 0 : serv->our_local_ip);
         if (serv->assoc && serv->assoc->connect & CONNECT_OK)
         {
             PacketWriteB4 (pak, serv->assoc->port);

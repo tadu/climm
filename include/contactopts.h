@@ -76,6 +76,11 @@ extern struct ContactOption_s ContactOptionsList[];
 #define CO_TIMEONLINE    (COF_NUMERIC | COF_CONTACT| 0x0c) /* time since contact is online          */
 #define CO_TIMEMICQ      (COF_NUMERIC | COF_CONTACT| 0x0d) /* time contact last used mICQ           */
 
+#define CO_WEBAWARE      (COF_NUMERIC | CO_GROUP   | 0x0e) /* this connection is webaware           */
+#define CO_HIDEIP        (COF_NUMERIC | CO_GROUP   | 0x0f) /* this connection hides its LAN ip      */
+#define CO_DCAUTH        (COF_NUMERIC | CO_GROUP   | 0x20) /* this connection requires auth for dc  */
+#define CO_DCCONT        (COF_NUMERIC | CO_GROUP   | 0x21) /* this connection: dc only for contacts */
+
 #define CO_AUTOAWAY      (COF_STRING  | CO_CONTACT | 0x04) /* the away auto reply message           */
 #define CO_AUTONA        (COF_STRING  | CO_CONTACT | 0x05) /* the not available auto reply message  */
 #define CO_AUTOOCC       (COF_STRING  | CO_CONTACT | 0x06) /* the occupied auto reply message       */

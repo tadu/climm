@@ -87,6 +87,7 @@ Connection    *ConnectionFindUIN (UWORD type, UDWORD uin);
 UDWORD         ConnectionFindNr  (Connection *conn);
 void           ConnectionClose   (Connection *conn);
 const char    *ConnectionType    (Connection *conn);
+val_t          ConnectionPrefVal (Connection *conn, UWORD flag);
 
 /*
                             TYPE_SERVER

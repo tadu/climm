@@ -312,3 +312,17 @@ const char *ConnectionType (Connection *conn)
             return i18n (1745, "unknown");
     }
 }
+
+/*
+ * Query an option for a contact group
+ */
+val_t ConnectionPrefVal (Connection *conn, UWORD flag)
+{
+    val_t res = 0;
+    if (conn->contacts && ContactOptionsGetVal (&conn->contacts->copts, flag, &res))
+        return res;
+    if (ContactOptionsGetVal (&prG->copts, flag, &res))
+        return res;
+    return 0;
+}
+

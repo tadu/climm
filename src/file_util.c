@@ -631,13 +631,13 @@ int Read_RC_File (FILE *rcf)
                     else if (!strcasecmp (cmd, "silent"))
                         which = -4;
                     else if (!strcasecmp (cmd, "webaware"))
-                        which = FLAG_WEBAWARE;
+                        which = -5;
                     else if (!strcasecmp (cmd, "hideip"))
-                        which = FLAG_HIDEIP;
+                        which = -6;
                     else if (!strcasecmp (cmd, "dcauth"))
-                        which = FLAG_DC_AUTH;
+                        which = -7;
                     else if (!strcasecmp (cmd, "dccont"))
-                        which = FLAG_DC_CONT;
+                        which = -8;
                     else
                         ERROR;
                     if (which > 0)
@@ -732,6 +732,26 @@ int Read_RC_File (FILE *rcf)
                             ContactOptionsSetVal (&prG->copts, CO_SHOWONOFF, 0);
                         }
                         dep = 18;
+                    }
+                    else if (which == -5)
+                    {
+                        ContactOptionsSetVal (&prG->copts, CO_WEBAWARE, 1);
+                        dep = 3247;
+                    }
+                    else if (which == -6)
+                    {
+                        ContactOptionsSetVal (&prG->copts, CO_HIDEIP, 1);
+                        dep = 2345;
+                    }
+                    else if (which == -7)
+                    {
+                        ContactOptionsSetVal (&prG->copts, CO_DCAUTH, 1);
+                        dep = 3274;
+                    }
+                    else if (which == -8)
+                    {
+                        ContactOptionsSetVal (&prG->copts, CO_DCCONT, 1);
+                        dep = 8723;
                     }
                 }
                 else if (!strcasecmp (cmd, "options"))
@@ -1463,14 +1483,6 @@ int Save_RC ()
                     prG->flags & FLAG_LIBR_INT 
                     ? prG->flags & FLAG_LIBR_BR ? "smart " : "indent"
                     : prG->flags & FLAG_LIBR_BR ? "break " : "simple");
-    fprintf (rcf, "set webaware   %s # whether to be globally webaware\n",
-                    prG->flags & FLAG_WEBAWARE ? "on" : "off");
-    fprintf (rcf, "set hideip     %s # whether to hide the local IP globally\n",
-                    prG->flags & FLAG_HIDEIP ? "on" : "off");
-    fprintf (rcf, "set dcauth     %s # whether to allow dc only from authorized contacts\n",
-                    prG->flags & FLAG_DC_AUTH ? "on" : "off");
-    fprintf (rcf, "set dccont     %s # whether to allow dc only from contacts\n",
-                    prG->flags & FLAG_DC_CONT ? "on" : "off");
     fprintf (rcf, "\n");
     
     fprintf (rcf, "%s\n\n", ContactOptionsString (&prG->copts));

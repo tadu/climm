@@ -1957,7 +1957,7 @@ static JUMP_F(CmdUserAutoaway)
  */
 static JUMP_F(CmdUserSet)
 {
-    int quiet = 0, setstatus = 0;
+    int quiet = 0;
     strc_t par;
     const char *str = "";
     
@@ -1973,10 +1973,6 @@ static JUMP_F(CmdUserSet)
         else if (!strcasecmp (par->txt, "autosave"))   { data = FLAG_AUTOSAVE;   str = i18n (2267, "Automatic saves are %s%s%s.\n"); }
         else if (!strcasecmp (par->txt, "autofinger")) { data = FLAG_AUTOFINGER; str = i18n (2268, "Automatic fingering of new UINs is %s%s%s.\n"); }
         else if (!strcasecmp (par->txt, "linebreak"))  data = -1;
-        else if (!strcasecmp (par->txt, "webaware"))   { data = FLAG_WEBAWARE; setstatus = 1; }
-        else if (!strcasecmp (par->txt, "hideip"))     { data = FLAG_HIDEIP;   setstatus = 1; }
-        else if (!strcasecmp (par->txt, "dcauth"))     { data = FLAG_DC_AUTH;  setstatus = 1; }
-        else if (!strcasecmp (par->txt, "dccont"))     { data = FLAG_DC_CONT;  setstatus = 1; }
         else if (!strcasecmp (par->txt, "quiet"))
         {
             quiet = 1;
@@ -2004,8 +2000,6 @@ static JUMP_F(CmdUserSet)
             }
             if (!quiet && str)
                 M_printf (str, COLQUOTE, prG->flags & data ? i18n (1085, "on") : i18n (1086, "off"), COLNONE);
-            if (setstatus && conn && conn->type == TYPE_SERVER)
-                SnacCliSetstatus (conn, conn->status & 0xffff, 3);
             break;
         case -1:
             if (par)
@@ -2032,7 +2026,6 @@ static JUMP_F(CmdUserSet)
     {
         M_printf (i18n (1820, "%s <option> [on|off|<value>] - control simple options.\n"), "set");
         M_print (i18n (1822, "    color:      use colored text output.\n"));
-        M_print (i18n (2277, "    hermit:     ignore all non-contacts.\n"));
         M_print (i18n (2278, "    delbs:      interpret delete characters as backspace.\n"));
         M_print (i18n (1815, "    funny:      use funny messages for output.\n"));
         M_print (i18n (2281, "    auto:       send auto-replies.\n"));
@@ -2040,7 +2033,6 @@ static JUMP_F(CmdUserSet)
         M_print (i18n (2283, "    autosave:   automatically save the micqrc.\n"));
         M_print (i18n (2284, "    autofinger: automatically finger new UINs.\n"));
         M_print (i18n (2285, "    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n"));
-        M_print (i18n (2286, "    tabs:       style for tab-handling: simple, cycle, cycleall.\n"));
     }
     return 0;
 }
@@ -2055,6 +2047,7 @@ static JUMP_F(CmdUserOpt)
     const char *optname = NULL, *res = NULL, *optobj = NULL;
     char *coptname, *coptobj, *col;
     ContactOptions *copts = NULL;
+    Connection *connl = NULL;
     int i;
     UWORD flag = 0;
     val_t val;
@@ -2066,7 +2059,15 @@ static JUMP_F(CmdUserOpt)
         copts = &prG->copts;
         data = COF_GLOBAL;
         optobj = "";
-        coptobj = strdup ("");
+        coptobj = strdup (optobj);
+    }
+    else if (!data && s_parsekey (&args, "connection") && conn->contacts)
+    {
+        copts = &conn->contacts->copts;
+        data = COF_GROUP;
+        optobj = conn->contacts->name;
+        coptobj = strdup (optobj);
+        connl = conn;
     }
     else if ((!data || data == COF_GROUP) && s_parsecg (&args, &cg, conn))
     {
@@ -2111,6 +2112,8 @@ static JUMP_F(CmdUserOpt)
                 M_printf (i18n (9999, "opt - short hand for optglobal, optgroup or optcontact.\n"));
             if (!data || data == COF_GLOBAL)
                 M_printf (i18n (9999, "optglobal            [<option> [<value>]] - set global option.\n"));
+            if (!data)
+                M_printf (i18n (9999, "optconnection        {<option> [<value>]] - set connection option.\n"));
             if (!data || data == COF_GROUP)
                 M_printf (i18n (9999, "optgroup   <group>   [<option> [<value>]] - set contact group option.\n"));
             if (!data || data == COF_CONTACT)
@@ -2300,6 +2303,8 @@ static JUMP_F(CmdUserOpt)
             M_printf (i18n (9999, "Invalid value %s for boolean option %s.\n"), s_qquote (par->txt), coptname);
             continue;
         }
+        if (flag & COF_GROUP && ~flag & COF_CONTACT && data == COF_GROUP && connl)
+            SnacCliSetstatus (conn, conn->status & 0xffff, 3);
         free (coptname);
     }
     free (coptobj);
