@@ -850,10 +850,11 @@ static JUMP_SNAC_F(SnacSrvRecvmsg)
                         UWORD  sver = PacketRead2  (pp);
                         UDWORD sunk = PacketRead4  (pp);
 #else
-                                      PacketRead4  (pp);
-                                      PacketRead4  (pp);
-                        UWORD  sver = PacketRead2  (pp);
-                                      PacketRead4  (pp);
+                        UWORD sver;
+                               PacketRead4  (pp);
+                               PacketRead4  (pp);
+                        sver = PacketRead2  (pp);
+                               PacketRead4  (pp);
 #endif
                         if (suin != uin)
                         {
