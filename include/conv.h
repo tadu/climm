@@ -13,7 +13,7 @@ const char *ConvCrush0xFE  (const char *in);
 BOOL        ConvIsUTF8     (const char *in);
 const char *ConvToUTF8     (const char *in, UBYTE enc, size_t totalin, UBYTE keep0xfe);
 const char *ConvFromUTF8   (const char *in, UBYTE enc, size_t *resultlen);
-#define     c_out_for(t,c) (CONT_UTF8 (c) ? t : c_out_to (t,c))
+#define     c_out_for(t,c,mt) (CONT_UTF8 (c,mt) ? t : c_out_to (t,c))
 #define     c_out(t)       ConvFromUTF8 (t, prG->enc_rem, NULL)
 #define     c_in(t)        ConvToUTF8   (t, prG->enc_rem, -1, 1)
 #define     c_out_to(t,c)  ConvFromUTF8 (t, (c) && (c)->encoding ? (c)->encoding : prG->enc_rem, NULL)
@@ -27,7 +27,7 @@ const char *ConvFromUTF8   (const char *in, UBYTE enc, size_t *resultlen);
 #define     ConvToUTF8(i,e,l,k) i
 #define     ConvFromUTF8(i,e,x) i
 #define     ConvIsUTF8(i)  0
-#define     c_out_for(t,c) t
+#define     c_out_for(t,c,mt) t
 #define     c_out(t)       t
 #define     c_in(t)        t
 #define     c_out_to(t,c)  t

@@ -1559,18 +1559,21 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
     
     switch (format)
     {
+        const char *convtext;
+        int remenc;
+
         case 1:
             {
             char buf[451];
             const char *p;
 
-            int enc = ENC_LATIN1, remenc, icqenc = 0;
+            int enc = ENC_LATIN1, icqenc = 0;
             size_t len, olen;
             
             remenc = cont->encoding ? cont->encoding : prG->enc_rem;
             
 #ifdef ENABLE_UTF8
-            if (HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 8
+            if (HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 7
                 && !(cont->dc->id1 == 0xffffff42 && cont->dc->id2 < 0x00040a03)) /* exclude old mICQ */
             {
                 enc = ENC_UCS2BE;
@@ -1581,7 +1584,7 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             {
                 /* too bad, there's nothing we can do */
                 enc = remenc;
-                icqenc = 0;
+                icqenc = 0x30000;
             }
             if (type != 1)
             {
@@ -1615,11 +1618,22 @@ UBYTE SnacCliSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD 
             }
             break;
         case 4:
+            remenc = cont->encoding ? cont->encoding : prG->enc_rem;
+            convtext = ConvFromUTF8 (text, remenc, NULL);
+            
             PacketWriteTLV     (pak, 5);
             PacketWrite4       (pak, conn->uin);
             PacketWrite1       (pak, type);
             PacketWrite1       (pak, 0);
+#if 0
+            PacketWrite2 (pak, strlen (convtext) + strlen (ConvEncName (remenc)) + 2);
+            PacketWriteData (pak, convtext, strlen (convtext));
+            PacketWrite1 (pak, 0);
+            PacketWriteData (pak, ConvEncName (remenc), strlen (ConvEncName (remenc)));
+            PacketWrite1 (pak, 0);
+#else
             PacketWriteLNTS    (pak, c_out_to (text, cont));
+#endif
             PacketWriteTLVDone (pak);
             PacketWriteB2 (pak, 6);
             PacketWriteB2 (pak, 0);
@@ -1726,7 +1740,6 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
         switch (type & 0xff)
         {
             case MSG_AUTO:
-            case MSG_URL:
             case MSG_AUTH_REQ:
             case MSG_AUTH_GRANT:
             case MSG_AUTH_DENY:
@@ -1763,11 +1776,11 @@ UBYTE SnacCliSendmsg2 (Connection *conn, Contact *cont, Extra *extra)
        PacketWrite1       (pak, 0);
        PacketWrite2       (pak, conn->our_seq_dc);
       PacketWriteLenDone (pak);
-      SrvMsgAdvanced     (pak, conn->our_seq_dc, type, conn->status, cont->status, -1, c_out_for (text, cont));
+      SrvMsgAdvanced     (pak, conn->our_seq_dc, type, conn->status, cont->status, -1, c_out_for (text, cont, type));
       PacketWrite4       (pak, TCP_COL_FG);
       PacketWrite4       (pak, TCP_COL_BG);
 #ifdef ENABLE_UTF8
-      if (CONT_UTF8 (cont))
+      if (CONT_UTF8 (cont, type))
           PacketWriteDLStr     (pak, CAP_GID_UTF8);
 #endif
      PacketWriteTLVDone (pak);

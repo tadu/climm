@@ -491,7 +491,7 @@ void PeerFileResend (Event *event)
     
     e_msg_text = ExtraGetS (event->extra, EXTRA_MESSAGE);
 
-    if (event->attempts >= MAX_RETRY_ATTEMPTS || (!event->pak && !event->seq))
+    if (event->attempts >= MAX_RETRY_P2P_ATTEMPTS || (!event->pak && !event->seq))
     {
         M_printf ("%s " COLCONTACT "%*s" COLNONE " ", s_now, uiG.nick_len + s_delta (cont->nick), cont->nick);
         M_printf (i18n (2168, "File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n"),
