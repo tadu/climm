@@ -1,4 +1,7 @@
 
+2001-05-20 Dmitri Lukyanov <ldv@sdsl-64-7-10-170.dsl.iad.megapath.net>
+	* lang/ru.i18n: Update language/counrtry name translations.
+
 2001-05-12 Rüdiger Kuhlmann <micq-list-CKH1bDCG6x4V@ruediger-kuhlmann.de>
 	* lang/i18n-*: Mark changed translation strings.
 	* lang/*.i18n: Regenerate, update de.i18n.

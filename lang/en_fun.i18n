@@ -78,7 +78,7 @@
 078:No translation available.
 079:No translation; using compiled-in strings.¶
 080:Couldn't load "%s" internationalization.¶
-081:Successfully loaded en translation (%d entries).¶
+081:Successfully loaded English (funny) translation (%d entries).¶
 082:But hey, let's just poke the server again... [try %d out of %d]
 083:Sound cmd
 084:Sound
@@ -492,7 +492,7 @@
 493:Peer-to-Peer
 494:Server Only
 495:No Random User Found
-496::\a¶Date %d/%d/%d	%d:%02d UTC¶
+496:%d/%d/%d
 497:Type: %d	 Len: %d¶
 499:Other
 500:Nickname:

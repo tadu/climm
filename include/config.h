@@ -55,8 +55,9 @@
 #define COLOR_SCHEME_M
 */
 
-/* Uncomment the below line for humorous messages*/
-/* #define FUNNY_MSGS */
+/* FUNNY_MSGS */
+/* use translation cc_fun for funny messages, */
+/* it is not compiled into the program anymore */
 
 /* Use the arrow keys on ansi terminals.  Very good to have if it works */
 #define USE_MREADLINE

@@ -321,11 +321,10 @@ void Recv_Message (int sok, UBYTE * pak)
 /*    M_print( "\n" );*/
     r_mesg = (RECV_MESSAGE_PTR) pak;
     last_recv_uin = Chars_2_DW (r_mesg->uin);
-    Print_UIN_Name (Chars_2_DW (r_mesg->uin));
-    M_print (i18n (496, ":\a\nDate %d/%d/%d\t%d:%02d UTC\n"), r_mesg->month, r_mesg->day,
-             Chars_2_Word (r_mesg->year), r_mesg->hour, r_mesg->minute);
-
-    M_print (i18n (497, "Type: %d\t Len: %d\n"), Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len));
+    M_print (i18n (496, "%02d/%02d/%04d"), r_mesg->month, r_mesg->day, Chars_2_Word (r_mesg->year));
+    M_print (" %02d:%02d UTC \a" CYAN BOLD "%10s" COLNONE " ",
+             r_mesg->hour, r_mesg->minute, UIN2Name (Chars_2_DW (r_mesg->uin)));
+/*    M_print (i18n (497, "Type: %d\t Len: %d\n"), Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len));*/
     Do_Msg (sok, Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len),
             (r_mesg->len + 2), last_recv_uin);
 

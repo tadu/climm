@@ -510,7 +510,7 @@
 493:Benutzer-zu-Benutzer
 494:Nur Server
 495:Kein zufälliger Benutzer gefunden
-496::\a¶Datum %d.%d.%d	%d:%02d UTC¶
+496:%d.%d.%d
 497:Typ: %d	Länge: %d¶
 499:Anderes
 500:Spitzname:

@@ -208,7 +208,6 @@ void Server_Response (SOK_T sok, UBYTE * data, UDWORD len, UWORD cmd, UWORD ver,
         case SRV_RECV_MESSAGE:
             R_undraw ();
             Recv_Message (sok, data);
-            M_print ("\n");
             R_redraw ();
             break;
         case SRV_X1:
