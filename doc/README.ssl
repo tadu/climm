@@ -1,0 +1,62 @@
+This document describes the behaviour and implementation details of mICQ's SSL
+support. A small FAQ can be found at the end.
+
+
+***   COMPILATION   ***
+
+To enable SSL support in mICQ, gnutls from www.gnutls.org needs to be installed
+on your system.
+
+Specify the command line option --enable-ssl when running configure.
+
+
+***   BEHAVIOUR / USING SSL   ***
+
+Whenever mICQ opens a direct connection to another peer, it tries to start SSL
+encryption if the peer is considered to be SSL capable. mICQ detects SSL
+capability of licq peers by the licq specific timestamp flag. mICQ peers are
+expected to support SSL anyway. Why this does not raise problems with older mICQ
+peers that indeed do not support SSL will be explained below.
+
+In contrary if the direct connection is incoming from another peer, mICQ does
+not try to start SSL for two reasons. First we want to avoid mutual SSL
+start trials among mICQ and other "auto-start-ssl" clients. Second this gives a
+behaviour as usual for the licq user.
+
+The mICQ user can force the starting of SSL encryption anyway by issuing the
+"peer ssl <contact>" command, if not done so by the peer.
+
+
+***   IMPLEMENTATION   ***
+
+SSL encryption is started after establishing a direct connection by sending
+a special ICQ packet to the peer. This packet is designed like a common simple
+text message as depicted in
+http://www.stud.uni-karlsruhe.de/~uck4/ICQ/Packets/Peer/Msg/2
+
+The message type field is set to 0x00EF and its content is empty. The response
+must be a similar message with content set to "1". These details are taken from
+licq.
+
+If the peer does not answer at all (there are bad guys out there) or responds
+with a "NACK" (Not acknowledged), SSL handshake will not be started.
+
+Licq also supports stopping SSL encryption on a direct connection. But mICQ
+never sends a SSL stop request and closes the direct connection upon receiving
+one.
+
+
+***   FAQ   ***
+
+Q: I'm connected to a licq peer, but SSL is established upon explicit command
+only (peer ssl <contact>). Why is SSL not activated upon connection immediately?
+
+A: mICQ only establishes SSL encryption on its own if the direct connection is
+going from mICQ to the peer, not vice versa. This inhibits mutual SSL handshake
+attempts between ICQ clients starting SSL on their own.
+
+
+Q: Why did you not use OpenSSL instead of gnutls? My software distribution
+provides OpenSSL but no gnutls. This leads to inconvenience!
+
+A: OpenSSL's licence is no strict GPL.
