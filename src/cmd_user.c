@@ -627,11 +627,9 @@ static JUMP_F(CmdUserHelp)
         M_printf (COLMESSAGE "%s files <uin|nick> <file1> <as1> ... <fileN> <asN> <description>" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("peer"),
                   i18n (2180, "Send <uin> or <nick> several files."));
-#if 0
         M_printf (COLMESSAGE "%s accept <uin|nick> [<id>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("peer"),
                   i18n (2319, "Accept an incoming file transfer from <uin> or <nick>."));
-#endif
         M_printf (COLMESSAGE "%s open|login [<nr>]" COLNONE "\n\t" COLINDENT "%s" COLEXDENT "\n",
                   CmdUserLookupName ("conn"),
                   i18n (2038, "Opens connection number <nr>, or the first server connection."));
@@ -1095,9 +1093,7 @@ static JUMP_F(CmdUserPeer)
     M_print (i18n (2110, "peer files <nick> <file1> <as1> ... [<description>]\n"));
     M_print (i18n (2111, "                  - Send file1 as as1, ..., with description.\n"));
     M_print (i18n (2112, "                  - as = '/': strip path, as = '.': as is\n"));
-#if 0
     M_print (i18n (2320, "peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n"));
-#endif
 #else
     M_print (i18n (1866, "This version of mICQ is compiled without direct connection (peer to peer) support.\n"));
 #endif
