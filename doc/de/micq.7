@@ -1,357 +1,422 @@
-\" $Id$
-.\"This is the man page for ~/.micq/micqrc."
-.\".TH MICQ 7 "February 15, 2002" "MICQ(7)"
-.Dd 02. August 2002
-.Dt MICQ 7
-.Os MICQ(7)
-.Sh NAME
-mICQ - interaktive Befehle
-.Sh BESCHREIBUNG
+.\" $Id$
+.\"  EN: micq.7,v 1.16 2002/08/09 01:22:20
+.TH MICQ 7 mICQ DE
+.SH NAME
+.B mICQ
+\- interaktive Befehle
+.SH BESCHREIBUNG
 Diese Hilfeseite beschreibt die Befehle, die aus mICQ heraus verwendet
-werden können. Diese Seite enthält prinzipiell die selben Informationen wie
+werden können. Diese Seite enthält prinzipiell dieselben Informationen wie
 die Hilfe innerhalb von mICQ.
-.Sh BEFEHLE
-.Bl -tag -width Fl
-.It Ic trans Op Ar Sprache|Nr ...
+.SH BEFEHLE
+.TP
+.BI trans \ [Sprache|Nr]\ ...
 Wechsle zur Sprache
-.Ar Sprache ,
+.IR Sprache ,
 gegen durch ihren ISO-Sprachcode, oder gibt die Übersetzung
 der Textes mit der Nummer
-.Ar Nr
+.I Nr
 aus. Um die durch die Umgebungsvariablen
-.Ic LANG ,
-.Ic LC_ALL
+.BR LANG ,
+.B LC_ALL
 und
-.Ic LC_MESSAGES
+.B LC_MESSAGES
 bestimmte Sprache auszuwählen, kann
-.Ic \&! ,
-.Ic auto
+.BR ! ,
+.B auto
 oder
-.Ic default .
+.B default
 verwendet werden. Um überhaupt keine Übersetzung auszuwählen,
 kann man
-.Ic \&. ,
-.Ic none
+.BR . ,
+.B none
 oder
-.Ic unload
+.B unload
 verwenden. Um zur Fehlersuche die Nummern der
 übersetzten Texte mitauszugeben, kann man
-.Ic debug
+.B debug
 voranstellen. Um an ein paar Stellen lustige Meldungen
 zu verwenden, kann man
-.Ic _fun
+.B _fun
 anhängen.
 .sp
-Die Dateien aus ~/.micq/i18n/*.i18n haben Vorrang über die globalen
+Die Dateien aus ~/.micq/i18n/*.i18n haben Vorrang  über die globalen
 Dateien, während die "lustigen" über die normalen Vorrang haben.
 .sp
 Tatsächlich kann man sogar soviele Argumente angeben, wie man will,
-um z.B. den 17. Text in Deutsch auszugeben und dann zur Standardsprache
+um z.B. den 117. Text in Deutsch auszugeben und dann zur Standardsprache
 zurückzukehren, gebe man "trans de 117 default" ein.
-.It Ic tabs 
+.TP
+.B tabs 
 Zeigt eine Liste von Benutzern, zu denen man bereits Nachrichten
 geschickt hat bzw. von denen man bereits welche Empfangen hat, und
 die man mittels das <tab>-Taste durchgehen kann.
-.It Ic save
+.TP
+.B save
 Speichert die aktuellen Einstellungen in der Konfigurationsdatei ab,
 welches
-.Pa ~/.micq/micqrc
+.I ~/.micq/micqrc
 ist, wenn nicht anders angegeben. Vorsicht, dies wird alle hinzugefügten
 Kommentare in dieser Datei überschreiben.
-.It Ic r Op Ar Nachricht
+.TP
+.BI r \ [Nachricht]
 Antwortet auf die zuletzt empfangene Nachricht. Ohne
-.Ar Nachricht
+.I Nachricht
 wird der Mehr-Zeilen-Modus aktiviert. Um eine Mehr-Zeilen-Nachricht abzuschicken,
 gebe man einen Punkt
-.Ic ( . )
+.RB ( . )
 auf einer Zeile für sich ein. Um die Nachricht abzubrechen, gebe man ein Doppelkreuz
-.Ic ( # )
+.RB ( # )
 auf einer Zeile für sich ein.
-.It Ic a Op Ar Nachricht
+.TP
+.BI a \ [Nachricht]
 Schickt eine Nachricht zur gleichen Person wie die letzte Nachricht.
 Siehe 
-.Ic r
+.B r
 für das Verhalten ohne
-.Ar Nachricht .
-.It Ic msg Ar Benutzernummer|Spitzname Ic Op Ar Nachricht
+.IR Nachricht .
+.TP
+.BI msg \ Benutzernummer|Spitzname\ [Nachricht]
 Schickt eine Nachricht an
-.Ar Benutzernummer|Spitzname .
+.IR Benutzernummer|Spitzname .
 Siehe
-.Ic r 
+.B r 
 für das Verhalten ohne
-.Ar Nachricht .
-.It Ic url Ar Benutzernummer|Spitzname Ic Ar URL Ar Nachricht
+.IR Nachricht .
+.TP
+.BI url \ Benutzernummer|Spitzname\ URL\ Nachricht
 Schickt eine
-.Ar Nachricht
+.I Nachricht
 über die Seite
-.Ar URL
+.I URL
 an
-.Ar Benutzernummer|Spitzname .
-.It Ic sms Ar HandyNr Nachricht
+.IR Benutzernummer|Spitzname .
+.TP
+.BI sms \ HandyNr\ Nachricht
 Verschickt eine SMS-Nachricht
-.Ar Nachricht
+.I Nachricht
 an die Handy-Nummer
-.Ar HandyNr ,
+.IR HandyNr ,
 die in der Form +<Landeskode><Nummer> sein muß.
-.It Ic msga
+.TP
+.B msga
 Schickt eine Mehr-Zeilen-Nachricht an jeden auf der Kontaktliste. Siehe
 auch
-.Ic r .
-.It Ic resend Ar Benutzernummer|Spitzname ...
+.BI r .
+.TP
+.BI resend \ Benutzernummer|Spitzname\ ...
 Schickt die letzte Nachricht erneut an
-.Ar Benutzernummer
+.I Benutzernummer
 oder 
-.Ar Spitzname .
+.IR Spitzname .
 Es können beliebig viele Argumente angegeben werden.
-.It Ic uptime
+.TP
+.B uptime
 Zeigt an, wie lange mICQ bereits läuft.
-.It Ic last Op Ar Kontakt
+.TP
+.BI last \ [Kontakt]
 Zeigt eine Liste von Benutzern, von denen bereits eine Nachricht kam,
 oder die letzte empfangene Nachricht von
-.Ar Kontakt ,
+.IR Kontakt ,
 welches eine
-.Ar Benutzernummer
+.I Benutzernummer
 oder ein
-.Ar Spitzname
+.I Spitzname
 sein kann.
-.It Ic verbose Op Ar verb
+.TP
+.BI verbose \ [verb]
 Setzt die Ausführlichkeit der Ausgaben von mICQ auf
-.Ar verb ,
+.IR verb ,
 oder zeigt die aktuelle Ausführlichkeit an. Die Ausführlichkeit ist eine Menge von
 Werten, die aufaddiert werden:
-.Bl -tag -width Fl
-.It 128
+.RS
+.TP
+.B 128
 Zeigt ein- und ausgehende Pakete.
-.It 256
+.TP
+.B 256
 Schreibt ein- und ausgehende Pakete in eine Datei (~/.micq/debug/packets).
-.El
+.RE
+
+.RS
 Und noch einige weitere.
-.It Ic clear
+.RE
+.TP
+.B clear
 Löscht den Bildschirm.
-.It Ic sound Op Ar Befehl
+.TP
+.BI sound \ [Befehl]
 Schaltet Piepsen ein oder aus, oder verwende stattdessen
-.Ar Befehl .
-.It Ic soundonline Op Ar Befehl
+.IR Befehl .
+.TP
+.BI soundonline \ [Befehl]
 Schaltet Piepsen für sich verbindende Benutzer ein oder aus, oder verwende stattdessen
-.Ar Befehl .
-.It Ic soundoffline Op Ar Befehl
+.IR Befehl .
+.TP
+.BI soundoffline \ [Befehl]
 Schaltet Piepsen für sich ausloggende Benutzer ein oder aus, oder verwende stattdessen
-.Ar Befehl .
-.It Ic q
+.IR Befehl .
+.TP
+.B q
 Beendet mICQ.
-.It Ic auto Op Ar on|off
+.TP
+.BI auto \ [on|off]
 Schaltet automatische Antworten ein oder aus, oder zeigt die aktuellen
 automatischen Antworten an.
-.It Ic auto Ar Status Nachricht
+.TP
+.BI auto \ Status\ Nachricht
 Setzt die automatische Antwort für den Status
-.Ar Status
+.I Status
 auf
-.Ar Nachricht .
-.It Ic autoaway Op Ar Zeit|on|off
+.IR Nachricht .
+.TP
+.BI autoaway \ [Zeit|on|off]
 Gehe nach
-.Ar Zeit
+.I Zeit
 Sekunden automatisch in den Status "abwesend" bzw. "nicht verfügbar",
-oder schaltet dies ein (mit der letzten verwendeten Zeit) oder aus.
+oder schaltet dies an (\fBon\fR) (mit der letzten verwendeten Zeit) oder ab (\fBoff\fR).
 Eine Zeit von 0 schaltet dies ebenfalls ab. Ist kein Argument gegeben,
 zeigt es die aktuelle Einstellung an.
-.It Ic alter Ar Befehl Neu
+.TP
+.BI alter \ Befehl\ Neu
 Mache den ursprünglich oder vorher als
-.Ar Befehl
+.I Befehl
 bekannten Befehl unter dem Namen
-.Ar Neu
+.I Neu
 bekannt.
-.It Ic auth Ar Benutzernummer|Spitzname
+.TP
+.BI auth \ Benutzernummer|Spitzname
 Erlaubt es
-.Ar Benutzernummer|Spitzname ,
+.IR Benutzernummer|Spitzname ,
 Sie zu seiner Kontaktliste hinzuzufügen.
-.It Ic rand Op Ar Nummer
+.TP
+.BI rand \ [Nummer]
 Findet einen zufälligen Kontakt in der Interessengruppe
-.Ar Nummer ,
+.IR Nummer ,
 oder zeigt alle Interessengruppen an.
-.It Ic pass Ar Paßwort
+.TP
+.BI pass \ Paßwort
 Setzt das Paßwort auf
-.Ar Paßwort . 
+.IR Paßwort . 
 .br
 Hinweis: Sie müssen danach mit
-.Ar save
+.B save
 abspeichern, um diese Änderung dauerhaft zu machen, falls Sie Ihr Paßwort
 in Ihrem
-.Pa ~/.micq/micqrc
+.I ~/.micq/micqrc
 abspeichern (siehe
-.Xr micqrc 7 ) ,
+.BR micqrc (7),
 oder Ihr Paßwort wird beim nächsten Login fehlerhaft sein.
-.It Ic search
-.It Ic search Ar eMail
-.It Ic search Ar Spitzname
-.It Ic search Ar Vorname Nachname
+.TP
+.B search
+.TP
+.BI search \ eMail
+.TP
+.BI search \ Spitzname
+.TP
+.BI search \ Vorname\ Nachname
 Sucht nach einem Benutzer mit der eMail-Adresse
-.Ar eMail ,
+.IR eMail ,
 mit dem Spitznamen
-.Ar Spitzname ,
+.IR Spitzname ,
 der kein @ enthalten darf, oder mit
-.Ar Vorname
+.I Vorname
 als Vor- und
-.Ar Nachname
+.I Nachname
 als Nachname. Ist kein Argument gegeben, frage nach
 Spitznamen, Vornamen, Nachnamen, eMail-Adresse und einem
 Haufen anderer Daten, nach denen man suchen kann.
-.It Ic add Ar Benutzernummer Op Ar Spitzname
+.TP
+.BI add \ Benutzernummer\ [Spitzname]
 Fügt die Benutzernummer
-.Ar Benutzernummer
+.I Benutzernummer
 zur Kontaktliste hinzu unter dem Namen
-.Ar Spitzname ,
+.IR Spitzname ,
 oder nennt
-.Ar Benutzernummer
+.I Benutzernummer
 in
-.Ar Spitzname
+.I Spitzname
 um. Ist
-.Ar Spitzname
+.I Spitzname
 nicht gegeben, benutze
-.Ar Benutzernummer
+.I Benutzernummer
 als Spitzname.
 .br
 Hinweis: Sie müssen mit
-.Ar save
+.B save
 abspeichern, um diese Änderungen dauerhaft zu machen.
-.It Ic rem Ar Spitzname
+.TP
+.BI rem \ Spitzname
 Entfernt
-.Ar Spitzname
-von der Kontektliste.
+.I Spitzname
+von der Kontaktliste.
 .br
-Hinweise: Sie müssen mit
-.Ar save
+Hinweis: Sie müssen mit
+.B save
 abspeichern, um diese Änderungen dauerhaft zu machen.
-.It Ic togvis Ar Spitzname
+.TP
+.BI togvis \ Spitzname
 Ändert, ob
-.Ar Spitzname
+.I Spitzname
 sehen kann, wenn Sie unsichtbar sind.
-.It Ic toginvis Ar Spitzname
+.TP
+.BI toginvis \ Spitzname
 Ändert, ob
-.Ar Spitzname
-Sie niemal sehen kann.
-.It Ic togig Ar Spitzname
+.I Spitzname
+Sie niemals sehen kann.
+.TP
+.BI togig \ Spitzname
 Ändert, ob Nachrichten und Statusänderungen von
-.Ar Spitzname
+.I Spitzname
 ignoriert werden sollen.
-.It Ic info Ar Benutzernummer|Spitzname
+.TP
+.BI info \ Benutzernummer|Spitzname
 Zeigt alle Daten über
-.Ar Benutzernummer|Spitzname .
-.It Ic w
+.IR Benutzernummer|Spitzname .
+.TP
+.B w
 Zeigt alle Kontakte auf der Kontaktliste.
-.It Ic e
+.TP
+.B e
 Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind.
-.It Ic wide
+.TP
+.B wide
 Zeigt alle Kontakte auf der Kontaktliste in einem breiten Format.
-.It Ic ewide
+.TP
+.B ewide
 Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind, in einem breiten Format.
-.It Ic s
+.TP
+.B s
 Zeigt den aktuellen Status.
-.It Ic i
+.TP
+.B i
 Zeigt alle Kontakte auf der Ignorieren-Liste.
-.It Ic status Ar Spitzname
+.TP
+.BI status \ [Spitzname]
 Zeigt den Status von
-.Ar Spitzname .
-Dies beinhaltet die IP-Adresse, verwendete Version des ICQ-Protokolls für
-Direktverbindungen und den Verbindungstyp.
-.It Ic change Op Ar Nummer
+.IR Spitzname ;
+dies beinhaltet die IP-Adresse, verwendete Version des ICQ-Protokolls für
+Direktverbindungen und den Verbindungstyp, oder gebe für alle Kontakte
+die benutzernummer, den Spitznamen, den Status und den Zeitpunkt des
+letzten Verbunden-Seins aus.
+.TP
+.BI change \ [Nummer]
 Wechselt in den Status
-.Ar Nummer .
+.IR Nummer .
 Ohne eine Nummer: liste die verfügbaren Nummern auf.
-.It Ic reg Paßwort
+.TP
+.BI reg \ Paßwort
 Erzeugt eine neue Benutzernummer mit dem Paßwort
-.Ar Paßwort .
-.It Ic online
+.IR Paßwort .
+.TP
+.B online
 Wechselt in den Status "verbunden".
-.It Ic away
+.TP
+.B away
 Wechselt in den Status "abwesend".
-.It Ic na
+.TP
+.B na
 Wechselt in den Status "nicht verfügbar".
-.It Ic occ             
+.TP
+.B occ             
 Wechselt in den Status "beschäftigt".
-.It Ic dnd 
+.TP
+.B dnd 
 Wechselt in den Status "nicht stören".
-.It Ic ffc
+.TP
+.B ffc
 Wechselt in den Status "frei für Plaudereien".
-.It Ic inv
+.TP
+.B inv
 Wechselt in den Status "unsichtbar".
-.It Ic update
+.TP
+.B update
 Aktualisiert die auf dem Server gespeicherten Benutzerinformationen (eMail-Adresse, Spitzname, und so weiter).
-.It Ic other
+.TP
+.B other
 Aktualisiert weitergehende Benutzerinformationen wie Alter und Geschlecht.
-.It Ic about
+.TP
+.B about
 Aktualisiert den Punkt "Über" der Benutzerinformationen.
-.It Ic set Ar Option Ar Wert
+.TP
+.BI set \ Option\ Wert
 Schaltet die Option
-.Ar Option
+.I Option
 entweder
-.Ic an
+.I an
+.RB ( on )
 oder
-.Ic aus .
-.Ar Option
+.I aus
+.RB ( off ).
+.I Option
 kann
-.Ic color
+.B color
 (Farben verwenden),
-.Ic funny
+.B funny
 (lustige Meldungen)
 oder
-.Ic quiet
+.B quiet
 (weniger Meldungen) sein.
-.It Ic peek Ar Spitzname
+.TP
+.BI peek \ Spitzname
 Überprüft, ob
-.Ar Spitzname
+.I Spitzname
 tatsächlich verbunden ist oder nicht. Dies mißbraucht einen Fehler im ICQ-Protokoll, um
 dies herauszufinden; es kann nur herausgefunden werden, ob verbunden oder nicht.
-.It Ic setr Op Ar Nummer
+.TP
+.BI setr \ [Nummer]
 Setzt die Interessengruppe für zufällige Kontakte auf
-.Ar Nummer .
+.IR Nummer .
 Ohne Argumente: listet mögliche Interessengruppen auf.
-.It Ic tcp Ar Befehl Ar Benutzernummer|Spitzname
+.TP
+.BI tcp \ Befehl\ Benutzernummer|Spitzname
 wendet den Befehl
-.Ar Befehl
+.I Befehl
 auf den durch Benutzernummer
-.Ar Benutzernummer
+.I Benutzernummer
 oder Spitzname
-.Ar Spitzname
+.I Spitzname
 angegebenen Benutzer an.
-.Ar Befehl
+.I Befehl
 kann dabei sein:
-.Ic open ,
+.BR open ,
 um eine Direktverbindung über TCP zu diesem Benutzer, oder
-.Ic close ,
+.BR close ,
 um eine solche zu schließen und zurückzusetzen, oder
-.Ic off ,
+.BR off ,
 um niemals automatisch eine Direktverbindung aufzubauen, bis diese mit
-.Ic close
+.B close
 geschlossen wird, oder
-.Ic auto ,
+.BR auto ,
 um die aktuelle automatische Antwort des Benutzers abzufragen, oder
-.Ic away ,
-.Ic dnd ,
-.Ic na ,
-.Ic occ
+.BR away ,
+.BR dnd ,
+.BR na ,
+.B occ
 oder
-.Ic ffc ,
+.BR ffc ,
 um die aktuelle automatische Antwort des Benutzers für den
 entsprechenden Status abzufragen.
-.It Ic conn Op Ar Befehl Ar Nr
+.TP
+.BI conn \ [Befehl\ Nr]
 Zeigt alle offenen Verbindungen, oder wendet den Befehl
-.Ar Befehl
+.I Befehl
 auf die Verbindung
-.Ar Nr 
+.I Nr 
 an.
-.Ar Befehl
+.I Befehl
 kann dabei
-.Ic open
+.B open
 oder
-.Ic login
+.B login
 sein, um die Verbindung zu öffnen, wenn sie dies derzeit nicht ist.
-.El
-.Sh SIEHE AUCH
-.Xr micq 1 ,
-.Xr micqrc 5
-.Sh AUTOR
-Diese hilfeseite wurde von James Morrison
-.Pa <ja2morrison@student.math.uwaterloo.ca>
+
+.SH SIEHE AUCH
+.BR micq (1),
+.BR micqrc (5)
+.SH AUTOR
+Diese Hilfeseite wurde von James Morrison
+.I <ja2morrison@student.math.uwaterloo.ca>
 erschaffen, um eine Referenz für alle interaktiven Befehle in
-.Ic mICQ
+.B mICQ
 zu erschaffen. Sie wurde übersetzt von Rüdiger Kuhlmann.

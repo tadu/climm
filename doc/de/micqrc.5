@@ -1,285 +1,319 @@
 .\" $Id$
-.\"This is the man page for ~/.micqrc."
-.Dd 02. August 2002
-.Dt MICQRC 5
-.Os MICQRC(5)
-.\".TH micqrc 5 "February 15, 2002"
-.Sh NAME
-.Ic ~/.micq/micqrc
+.\"  EN: micqrc.5,v 1.9 2002/08/09 01:22:20
+.TH MICQRC 5 mICQ
+.SH NAME
+.B ~/.micq/micqrc
 \- die Konfigurationsdatei für mICQ
-.Sh BESCHREIBUNG
+.SH BESCHREIBUNG
 Diese Hilfeseite beschreibt die konfigurationsdatei für mICQ. Dieses besteht
 aus mehreren Abschnitten, die jeweils durch
-.Ic [section]
+.I [section]
 eingeleitet werden, wobei
-.Ic section
+.I section
 der Name des Abschnittes ist.
-.Sh VERBINDUNGEN - connection
+.SH VERBINDUNGEN - connection
 Ein Abschnitt
-.Ic Connection
+.B Connection
 beschreibt eine Verbindung innerhalb ICQ. Typischerweise gibt es genau zwei davon,
 die voneinander abhängen: eine Verbindung zum ICQ-Server, und eine Verbindung,
 auf der auf eingehende Direktverbindungen gewartet wird.
-.Bl -tag -width Fl
-.It Ic type Ar type Op Ar auto
+.TP
+.BI type \ type\ [auto]
 Wählt 
-.Ar type
+.I type
 als Typ der Verbindung:
-.Ic server
+.B server
 für eine Verbindung zum ICQ-Server oder
-.Ic peer
+.B peer
 für eine Verbindung für eingehende Direktverbindungen. Wenn
-.Ar auto
+.B auto
 gegeben ist, öffne diese Verbindung beim Programmstart.
 Dies möchte man normalerweise, es sei denn, man hat mehrere Benutzernummern,
 dann verwendet man es nur für diejenige, die man gerade verwenden will.
-.It Ic version Ar nr
+.TP
+.BI version \ nr
 Setzt die Version, die für diese Verbindung zu verwenden ist, auf
-.Ar nr .
-Man beachte, daß für Sever-Verbindungen nur die Versionen
-.Ic 5 ,
-.Ic 7
+.IR nr .
+Man beachte, daß für Server-Verbindungen nur die Versionen
+.IR 5 ,
+.I 7
 und
-.Ic 8 ,
+.IR 8 ,
 und für Direktverbindungen
-.Ic 6 ,
-.Ic 7
+.IR 6 ,
+.I 7
 und
-.Ic 8
+.I 8
 unterstützt werden. Empfehlenswerterweise verwende man stets
 Version 8.
-.It Ic server Ar server
-Der Rechnername des Servers, zu dem verbunden werden soll
-.Ar server .
+.TP
+.BI server \ server
+Setzt den Rechnername, zu dem verbunden werden soll, auf
+.IR server .
 Dies ist standardmäßig
-.Ic login.icq.com .
+.IR login.icq.com .
 Unbenutzt für Direktverbindungen.
-.It Ic port Ar port
+.TP
+.BI port \ port
 Setzt den Port, zu dem verbunden werden soll, bzw. auf dem
 auf eingehende Verbindungen gewartet werden soll, auf
-.Ar port.
-.It Ic uin Ar UIN
+.IR port .
+.TP
+.BI uin \ UIN
 Setzt die Benutzernummer, mit der einzuloggen ist, auf
-.Ar UIN .
+.IR UIN .
 Unbenutzt für Direktverbindungen.
-.It Ic password Op Ar password
+.TP
+.BI password \ password
 Setzt das Login-Paßwort auf
-.Ar password .
+.IR password .
 Unbenutzt für Direktverbindungen. Wenn dies weggelassen wird, fragt mICQ
-beim Programmstart nach dem Paßwort.
-.It Ic status Ar nr
+beim Programmstart nach dem Paßwort. Benutzer von BeOS müssen diese
+Option verwenden.
+.TP
+.BI status \ nr
 Setzt den Status beim Login auf
-.Ar nr .
+.IR nr .
 Status kann dabei sein:
-.br
-0   verbunden
-.br
-1   abwesend
-.br
-5   nicht verfügbar
-.br
-17  beschäftigt
-.br
-19  nicht stören
-.br
-32  frei für Plaudereien
-.br
-256 unsichtbar
-.El
-.Sh ALLGEMEINES - general
+.RS
+.TP
+0
+verbunden
+.TP
+1
+abwesend
+.TP
+5
+nicht verfügbar
+.TP
+17
+beschäftigt
+.TP
+19
+nicht stören
+.TP
+32
+frei für Plaudereien
+.TP
+256
+unsichtbar
+.RE
+
+.SH ALLGEMEINES - general
 Dieser Abschnitt enthält Optionen für SOCKS 5, die möglicherweise später
 in einen eigenen Abschnitt wandern, allgemeine Optionen, und ein paar
 Texte, die man anpassen kann.
-.Bl -tag -width Fl
-.It Ic s5_use Ar number
+.TP
+.BI s5_use \ number
 Falls
-.Ar number
-auf 1 ist, verwende SOCKS 5, bei 0 nicht.
-.It Ic s5_host Ar host
+.I number
+gleich 1 ist, verwende SOCKS 5, sonst nicht.
+.TP
+.BI s5_host \ host
 Verwende als SOCKS-5-Server den Rechner
-.Ar host .
-.It Ic s5_port Ar port
+.IR host .
+.TP
+.BI s5_port \ port
 Verbinde zum SOCKS-5-Server auf Port
-.Ar port .
-.It Ic s5_auth Ar number
+.IR port .
+.TP
+.BI s5_auth \ number
 Falls
-.Ar number
-auf 1 ist, authentifiziere beim SOCKS-5-Server mit Paßwort, bei 0 nicht.
-.It Ic s5_name Ar name
+.IR number
+gleich 1 ist, authentifiziere beim SOCKS-5-Server mit Paßwort, ansonsten nicht.
+.TP
+.BI s5_name \ name
 Verwende
-.Ar name
+.I name
 als Benutzername beim SOCKS-5-Server.
-.br
-.It Ic s5_pass Ar password
+.TP
+.BI s5_pass \ password
 Verwende Paßwort
-.Ar password
+.I password
 beim SOCKS-5-Server.
-.El
-.sp
+.PP
 Jetzt die Optionen:
-.Bl -tag -width Fl
-.It Ic verbose Ar level
+.TP
+.BI verbose \ level
 Setzt die Ausfühlichkeit bei der Ausgabe auf
-.Ar level .
-.It Ic auto_away Ar time
-Setzt die Zeit, nach de automatisch nach "abwesend" und "nicht verfügbar"
+.IR level .
+.TP
+.BI auto_away \ time
+Setzt die Zeit, nach der automatisch nach "abwesend" und "nicht verfügbar"
 gewechselt wird, auf
-.Ar time
+.I time
 Sekunden. Deaktiviere mit
-.Ic 0
+.I 0
 Sekunden.
-.It Ic Screen_width Ar width
+.TP
+.BI Screen_width \ width
 Setzt die standardmäßige Bildschirmbreite auf
-.Ar width .
-Wenn nicht gesetzt oder
-.Ic 0 ,
-wird 80 verwendet. Dies wird sehr selten benötigt, da normalerweise die
+.IR width .
+Wenn nicht gesetzt oder auf
+.BR 0 ,
+wird
+.B 80
+verwendet. Dies wird sehr selten benötigt, da normalerweise die
 Bildschirmbreite zur Laufzeit bestimmt werden kann.
-.It Ic set delbs Ar on|off
+.TP
+.BI set \ delbs\ on|off
 Wenn es auf
-.Ar on
+.B on
 gesetzt ist, funktioniert das DELETE-Zeichen wie ein Rückschritt. Wenn es auf
-.Ar off
+.B off
 gesetzt ist, funktioniert es wie ein Löschen-Zeichen.
-.It Ic set russian Ar on|off
-Aktiviere oder deaktiviere rusische Zeichenkonvertierung zwischen koi8-r/u und cp1251.
-.It Ic set japanese Ar on|off
+.TP
+.BI set \ russian\ on|off
+Aktiviere (\fBon\fR) oder deaktiviere (\fBoff\fR) russische Zeichenkonvertierung zwischen koi8-r/u und cp1251.
+.TP
+.BI set \ japanese\ on|off
 Aktiviere oder deaktiviere japanische Zeichenkonvertierung zwischen Shift-JIS und EUC.
-.It Ic set funny Ar on|off
+.TP
+.BI set \ funny\ on|off
 Aktiviere oder deaktiviere lustige Meldungen.
-.It Ic set color Ar on|off
+.TP
+.BI set \ color\ on|off
 Aktiviere oder deaktiviere Farben.
-.It Ic set hermit Ar on|off
+.TP
+.BI set \ hermit\ on|off
 Wenn es auf
-.Ar on
+.B on
 gesetzt ist, ignoriere alle Nachrichten von Personen, die nicht auf der Kontaktliste sind.
-.It Ic set log Ar on|off
+.TP
+.BI set \ log\ on|off
 Aktiviere oder deaktiviere das Loggen.
-.It Ic set logonoff Ar on|off
+.TP
+.BI set \ logonoff\ on|off
 Wenn geloggt wird, aktiviere oder deaktiviere das Loggen von sich verbindenden und ausloggenden Benutzern.
-.It Ic set auto Ar on|off
+.TP
+.BI set \ auto\ on|off
 Aktiviere oder deaktiviere automatische Antworten.
-.It Ic set uinprompt Ar on|off
+.TP
+.BI set \ uinprompt\ on|off
 Aktiviere oder deaktiviere das Verwenden in der Eingabeaufforderung des Spitznamens, von dem
 zuletzt eine Nachricht empfangen wurde.
-.It Ic set linebreak Ar type
+.TP
+.BI set \ linebreak\ type
 Setzt den Zeilenumbruchtyp für eingehende Nachrichten auf
-.Ar type ,
+.IR type ,
 der sein kann:
-.Ic simple ,
+.BR simple ,
 um ganz normal umzubrechen,
-.Ic break ,
+.BR break ,
 um vor jeder Nachricht einen Zeilenumbruch zu machen,
-.Ic indent ,
+.BR indent ,
 um vor jeder Nachricht einen Zeilenumbruch zu machen und die
 Nachricht einzurücken, und
-.Ic smart ,
+.BR smart ,
 um nur dann einen Zeilenumbruch vor der Nachricht zu machen,
 wenn diese nicht in die aktuelle Zeile paßt.
-.It Ic set tabs simple|cycle|cycleall
+.TP
+.BI set \ tabs\ simple|cycle|cycleall
 Wählt aus, wie mit der tab-Taste die Spitznamen durchgegangen werden.
 Ältere Versionen von mICQ kannten nur
-.Ic simple ,
+.BR simple ,
 welches nur beim
-.Ic msg
--Befehl funktioniert und den Befehl vervollständigt und durch alle
+.BR msg -Befehl
+funktioniert und den Befehl vervollständigt und durch alle
 Kontakte geht, von denen schon Nachrichten empfangen wurden bzw. zu
 denen schon Nachrichten geschickt wurden. Schon getippter Text
 nach dem Spitznamen ging verloren.
-.Ic cycle
+.B cycle
 hingegen geht alle Kontakte der Kontaktliste durch, die verbunden sind.
 Es läßt die sonstige Eingabe intakt, vervollständigt allerdings auch nicht
 den
-.Ic msg
--Befehl.
-.Ic cycleall
+.BR msg -Befehl.
+.B cycleall
 ist wie
-.Ic cycle ,
+.BR cycle ,
 nur daß alle, nicht nur die verbundenen, Kontakte durchgegangen werden.
-.El
-.sp
+.PP
 Zuletzt können noch einige Texte definiert werden:
-.Bl -tag -width Fl
-.It Ic logplace Ar file|dir
+.TP
+.BI logplace \ file|dir
 Logge in die Datei
-.Ar file ,
+.IR file ,
 oder logge in einzelne Dateien im Verzeichnis
-.Ar dir .
+.IR dir .
 Ein Pfad wird dabei als Verzeichnis aufgefaßt, wenn
 er mit einem
-.Ic /
+.I /
 endet.
-.It Ic sound Ar on|off|cmd
+.TP
+.BI sound \ on|off|cmd
 Aktiviere oder deaktiviere Piepsen. Ist das Argument weder
-.Ar on
+.B on
 noch
-.Ar off,
+.B off,
 dann ist es ein Programm, das stattdessen ausgeführt wird.
-.It Ic soundonline Ar on|off|cmd
+.TP
+.BI soundonline \ on|off|cmd
 Wie oben, aber nur bei sich verbindenden Kontakten.
-.It Ic soundoffline Ar on|off|cmd
+.TP
+.BI soundoffline \ on|off|cmd
 wie oben, aber nur bei sich ausloggenden Kontakten.
-.It Ic receivescript Ar cmd
+.TP
+.BI receivescript \ cmd
 Befehl, der ausgeführt wird, wenn eine Nachricht eingeht.
 Wenn dieser leer ist, wird nichts ausgeführt.
-.It Ic auto Ar status Ar string
+.TP
+.BI auto \ status\ string
 Setze die automatische Antwort im Status
-.Ar status
+.I status
 auf
-.Ar string .
+.I string .
 Diese Option kann für alle möglichen Werte
-.Ic away ,
-.Ic na ,
-.Ic dnd ,
-.Ic occ ,
-.Ic inv 
+.BR away ,
+.BR na ,
+.BR dnd ,
+.BR occ ,
+.B inv 
 oder
-.Ic ffc
+.B ffc
 für
-.Ar status
+.I status
 wiederholt werden.
-.El
 
-.Sh TEXTE - strings
+.SH TEXTE - strings
 Dieser Abschnitt enthält umbenannte Befehle.
-.Bl -tag -width Fl
-.It Ic alter Ar old Ar new
+.TP
+.BI alter \ old\ new
 Nenne den Befehl
-.Ar old
+.I old
 in
-.Ar new
+.I new
 um. Der alte Name kann weiterverwendet werden, wenn er nicht
 mit einem neuen
-.Ar new
+.I new
 übereinstimmt. Für mögliche Befehle siehe
-.Xr micq 7 .
-Diese option kann beliebig wiederholt werden.
-.El
-.Sh KONTAKTE - contacts
+.BR micq (7).
+Diese Option kann beliebig wiederholt werden.
+
+.SH KONTAKTE - contacts
 Dieser Abschnitt enthält die Kontakt-Liste.
-.Bl -tag -width Fl
-.It Ic [ Ar * ] [ Ar ~ ] [ Ar ^ ] Ar uin Ar nick
+.TP
+.I [*][~][^] uin nick
 Mach den Benutzer mit der Benutzernummer
-.Ar uin
+.I uin
 bekannt unter dem Spitznamen
-.Ar nick .
+.IR nick .
 Ist
-.Ar *
+.B *
 gegeben, dann ist man diesem Kontakt gegenüber auch sichtbar, wenn
 man eigentlich unsichtbar ist. Ist
-.Ar ~
+.B ~
 gegeben, ist man diesem Kontakt gegenüber immer nicht verbunden. Ist
-.Ar ^
+.B ^
 gegeben, dann ignoriere diesen Kontakt. Taucht eine
 Benutzernummer mehrfach auf, dann werden alle außer dem ersten
 als Alias behandelt.
-.El
+
 Hinweis: Die Kontaktliste muß immer der letzte Teil dieser Datei sein.
-.Sh SIEHE AUCH
-.Xr micq 1 ,
-.Xr micq 7
-.Sh AUTOR
+.SH SIEHE AUCH
+.BR micq (1),
+.BR micq (7)
+.SH AUTOR
 Diese Hilfeseite wurde von James Morrison
-.Pa <ja2morrison@student.math.uwaterloo.ca>
+.I <ja2morrison@student.math.uwaterloo.ca>
 geschrieben. Sie wurde an die neue Syntax angepaßt
 und ins Deutsche übersetzt von Rüdiger Kuhlmann.

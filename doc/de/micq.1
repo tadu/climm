@@ -1,105 +1,113 @@
 .\" $Id$
+.\"  EN: micq.1,v 1.9 2002/08/09 01:22:20
 .\"                                      Hey, EMACS: -*- nroff -*-
-.Dd 2. August 2002
-.Dt MICQ 1
-.Os MICQ(1)
-.\" Please adjust this date whenever revising the manpage.
-.Sh NAME
-.Ic micq
+.TH MICQ 1 mICQ DE
+.SH NAME
+.B mICQ
 \- ein kleines ICQ-Programm, das im Text-Modus läuft
-.Sh ÜBERSICHT
-.Ic micq Op Ar -v
-.Op Ar -f Dateiname
+.SH ÜBERSICHT
+.B micq
+.I [-v[level]]
+.I [-f Dateiname]
 .br
-.Sh BESCHREIBUNG
-.Ic mICQ
+.SH BESCHREIBUNG
+.I mICQ
 ist ein text-basiertes ICQ-Programm, das viele Eigenschaften
 des von Mirabilis erstellten ICQ unterstützt. Mit mICQ kann man
 das Paßwort ändern, neue Benutzernumern erzeugen, die
 Benutzerinformationen aktualisieren, andere Benutzer suchen,
 und so weiter.
-.Sh OPTIONEN
-.Bl -tag -width flag
-.It Fl v Op Ar level
+.SH OPTIONEN
+.TP
+.BI -v \ [level]
 Wählt den ausführlichen Modus bzw. setzt wie Ausführlichkeit auf
-.Ar level .
-.It Fl f Ar Dateiname
+.IR level .
+.TP
+.BI -f \ Dateiname
 Benutzt
-.Ar Dateiname
+.I Dateiname
 als Konfigurationsdatei.
-.It Fl l Ar Datei|Verzeichnis
+.TP
+.BI -l \ Datei|Verzeichnis
 Benutzt
-.Ar Datei
+.I Datei
 als Log-Datei, bzw. benutzt
-.Ar Verzeichnis ,
+.IR Verzeichnis ,
 um dort die nach Benutzern getrennte Log-Dateien abzulegen.
-.It Fl ?, h
+.TP
+.B -?, -h
 Gibt die Syntax aus.
-.El
 
-.Sh EIGENSCHAFTEN
-.Ic mICQ
+
+.SH EIGENSCHAFTEN
+.B mICQ
 ist sehr portabel und läuft unter Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD
 und jedem anderen modernen Unix-artigen System.
-.Ic mICQ version 0.4.8
-läuft unter Linux, AIX, HPUX, Tru64, teilweise BeOS und anderen
+.B mICQ version 0.4.9.2
+läuft unter Linux, AIX, HPUX, Tru64, AmigaOS, teilweise BeOS und anderen
 Unix-artigen Systemen. Andere Portierungen funktionieren
 möglicherweise ebenfalls noch, und jeder, der dies
 testen möchte, sei dazu aufgerufen.
-.Sh GESCHICHTE
+.SH GESCHICHTE
 .Bl -tag -width Fl
-.It 16. August 1998
+.TP
+16. August 1998
 Matthew D. Smith gibt die erste Version von micq frei,
 gefolgt von 12 datierten Freigaben bis zum 25. Septembet 1998.
-.It 5. Januar 2001
+.TP
+5. Januar 2001
 Matthew D. Smith stirb in einem Autounfall.
 Die Benutzer fahren dort fort, wo Matthew aufgehört hat,
 formieren
-.Ic mICQ
+.B mICQ
 unter der BSD-Lizenz neu und nehmen
 die Entwicklung von
-.Ic mICQ
+.B mICQ
 wieder auf.
-.It 10. Juni 2002
+.TP
+10. Juni 2002
 Version 0.4.9 wird unter der GPL-Lizenz freigegeben und implementiert
 endlich die neue Version 8 des ICQ-Protokolls, und wurde von Rüdiger
 Kuhlmann gemacht.
-.Sh MAILINGLISTE
+.SH MAILINGLISTE
 Die mICQ-Mailingliste ist
-.Pa micq-list@mc.ukeer.de .
+.IR micq-list@mc.ukeer.de .
 Informationen über die Anmeldung und Archive finden sich unter
-.Pa http://www.micq.org/pipermail/micq-list/ .
-.Sh HERUNTERLADEN
+.IR http://www.micq.org/pipermail/micq-list/ .
+.SH HERUNTERLADEN
 Über HTTP von
-.Pa http://www.micq.org/download .
-.br
+.IR http://www.micq.org/download .
 Um die neueste Version aus dem CVS zu bekommen, gebe man ein:
-.br
+.sp
 cvs -d:pserver:anonymous@micq.org:/usr/local/cvsroot co micq
-.br
-.Sh SIEHE AUCH
-.Xr micqrc 5 ,
-.Xr micq 7
-.Sh DATEIEN
-.Bl -tag -width Fl
-.It ~/.micqrc
+
+.SH SIEHE AUCH
+.BR micqrc (5),
+.BR micq (7)
+.SH DATEIEN
+.TP
+.I ~/.micqrc
 Alte Konfigurationsdatei für mICQ - veraltet.
-.It ~/.micq/micqrc
+.TP
+.I ~/.micq/micqrc
 Konfigurationsdatei für mICQ.
-.It PREFIX/share/micq/*.i18n
+.TP
+.I PREFIX/share/micq/*.i18n
 Übersetzungsdateien mit Übersetzungen von alle Texten, die mICQ ausgibt.
-.It ~/.micq/i18n/*.i18n
+.TP
+.I ~/.micq/i18n/*.i18n
 Benutzer-Änderungen zu diesen Dateien.
-.It ~/.micq/history/
+.TP
+.I ~/.micq/history/
 Standardverzeichnis für Log-Dateien.
-.El
-.Sh FEHLERBERICHTE
+
+.SH FEHLERBERICHTE
 Fehlerberichte oder Kommentare bitte an Rüdiger Kuhlmann
-<micq@ruediger-kuhlmann.de> (Deutsch oder Englisch) schicken.
-.Sh AUTOR
+<micq@ruediger-kuhlmann.de> (auf Deutsch oder Englisch) schicken.
+.SH AUTOR
 Diese Hilfeseite basiert auf einer von James Morrison
-.Pa <ja2morrison@student.math.uwaterloo.ca>,
+.IR <ja2morrison@student.math.uwaterloo.ca> ,
 die aus der minimalen Hilfeseite hervorging, die Jordi Mallach
-.Pa <jordi@sindominio.net>
+.I <jordi@sindominio.net>
 für das  Debian-GNU/Linux-System geschrieben hat.
 Sie wurde von Rüdiger Kuhlmann übersetzt.
