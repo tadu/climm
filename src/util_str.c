@@ -686,6 +686,8 @@ BOOL s_parserem_s (char **input, char **parsed, char *sep)
             }
             else if (*p)
                 *(q++) = *(p++);
+            else
+                *(q++) = '\\';
         }
         else
             *(q++) = *(p++);
