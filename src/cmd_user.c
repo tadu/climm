@@ -912,14 +912,28 @@ JUMP_F (CmdUserMessage)
         }
         else
         {
-            while (offset + strlen (arg1) > 450)
+            int diff, first = 1;
+
+            while (offset + strlen (arg1) + 2 > 450)
             {
-                int diff;
                 M_print (i18n (1037, "Message sent before last line buffer is full\n"));
-                diff = 450 - offset - 2;
-                snprintf (msg + offset, diff, "%s\r\n", arg1);
-                msg [offset + diff] = '\0';
-                arg1 += diff;
+                if (first)
+                {
+                    diff = 0;
+                    first = 0;
+                }
+                else
+                {
+                    diff = 450 - offset - 2;
+                    while (arg1[diff] != ' ')
+                        if (!--diff)
+                            break;
+                    diff = diff ? diff : 450 - offset - 2;
+                    snprintf (msg + offset, diff, "%s\r\n", arg1);
+                    arg1 += diff;
+                    while (*arg1 == ' ')
+                        arg1++;
+                }
                 if (multi_uin == -1)
                 {
                     for (cont = ContactStart (); ContactHasNext (cont); cont = ContactNext (cont))

@@ -48,7 +48,7 @@ static void       TCPSendInitAck     (Session *sess);
 static void       TCPSendInit2       (Session *sess);
 static Session   *TCPReceiveInit     (Session *sess, Packet *pak);
 static void       TCPReceiveInitAck  (Session *sess, Packet *pak);
-/*static void       TCPReceiveInit2    (Session *sess, Packet *pak);*/
+static Session   *TCPReceiveInit2    (Session *sess, Packet *pak);
 
 static void       TCPCallBackTimeout (struct Event *event);
 static void       TCPCallBackTOConn  (struct Event *event);
@@ -80,11 +80,12 @@ void SessionInitPeer (Session *sess)
     port = sess->port;
     M_print (i18n (1777, "Opening peer-to-peer connection at localhost:%d... "), port);
 
-    sess->connect = 0;
-    sess->our_seq = -1;
-    sess->type    = TYPE_PEER;
-    sess->flags   = 0;
-    sess->dispatch = &TCPDispatchMain;
+    sess->connect     = 0;
+    sess->our_seq     = -1;
+    sess->type        = TYPE_PEER;
+    sess->flags       = 0;
+    sess->dispatch    = &TCPDispatchMain;
+    sess->our_session = 0;
 
     UtilIOConnectTCP (sess);
 }
@@ -231,8 +232,7 @@ void TCPDispatchMain (Session *sess)
         }
     }
 
-    peer->connect     = 10 | CONNECT_SELECT_R;
-    peer->our_session = 0;
+    peer->connect     = 16 | CONNECT_SELECT_R;
     peer->uin         = 0;
 }
 
@@ -354,7 +354,7 @@ void TCPDispatchShake (Session *sess)
             M_print ("debug: TCPDispatchShake; Nick: %s state: %d\n", ContactFindName (sess->uin), sess->connect);
 
         cont = ContactFind (sess->uin);
-        assert (cont || ((sess->connect & CONNECT_MASK) == 10));
+        assert (cont || ((sess->connect & CONNECT_MASK) == 16));
         
         switch (sess->connect & CONNECT_MASK)
         {
@@ -371,25 +371,40 @@ void TCPDispatchShake (Session *sess)
                 TCPSendInitAck (sess);
                 continue;
             case 4:
-                sess->connect = 31 | CONNECT_SELECT_R;
+                sess->connect = 32 | CONNECT_SELECT_R;
                 TCPSendInit2 (sess);
                 return;
-            case 10:
+            case 5:
+                sess->connect = 32 | CONNECT_SELECT_R;
+                TCPReceiveInit2 (sess, pak);
+                continue;
+            case 16:
                 sess = TCPReceiveInit (sess, pak);
                 if (!sess || !sess->connect)
                     return;
                 sess->connect++;
                 TCPSendInitAck (sess);
                 continue;
-            case 11:
+            case 17:
                 sess->connect++;
                 TCPSendInit (sess);
                 return;
-            case 12:
-                sess->connect = 31 | CONNECT_SELECT_R;
+            case 18:
+                sess->connect++;
                 TCPReceiveInitAck (sess, pak);
+                if (sess->ver > 6)
+                    return;
                 continue;
-            case 31:
+            case 19:
+                sess->connect++;
+                if (sess->ver > 6)
+                    TCPReceiveInit2 (sess, pak);
+                continue;
+            case 20:
+                sess->connect = 32 | CONNECT_SELECT_R;
+                TCPSendInit2 (sess);
+                continue;
+            case 32:
                 QueueDequeue (queue, sess->ip, QUEUE_TYPE_TCP_TIMEOUT);
                 Time_Stamp ();
                 M_print (" ");
@@ -687,7 +702,10 @@ void TCPSendInitv6 (Session *sess)
     sess->stat_real_pak_sent++;
 
     if (prG->verbose)
-        M_print (i18n (1836, "Sending TCP direct connection initialization packet.\n"));
+    {
+        Time_Stamp ();
+        M_print (" %10d [%p] %s", sess->uin, sess, i18n (1836, "Sending TCP direct connection initialization packet.\n"));
+    }
 
     pak = PacketC ();
     PacketWrite1 (pak, TCP_CMD_INIT);                 /* command          */
@@ -740,7 +758,10 @@ void TCPSendInit (Session *sess)
     sess->stat_real_pak_sent++;
 
     if (prG->verbose)
-        M_print (i18n (2025, "Sending v8 TCP direct connection initialization packet.\n"));
+    {
+        Time_Stamp ();
+        M_print (" %10d [%p] %s", sess->uin, sess, i18n (2025, "Sending v8 TCP direct connection initialization packet.\n"));
+    }
 
     pak = PacketC ();
     PacketWrite1 (pak, TCP_CMD_INIT);                 /* command          */
@@ -775,7 +796,10 @@ void TCPSendInitAck (Session *sess)
         return;
 
     if (prG->verbose)
-        M_print (i18n (1837, "Acknowledging TCP direct connection initialization packet.\n"));
+    {
+        Time_Stamp ();
+        M_print (" %10d [%p] %s", sess->uin, sess, i18n (1837, "Acknowledging TCP direct connection initialization packet.\n"));
+    }
 
     sess->stat_real_pak_sent++;
 
@@ -798,7 +822,10 @@ void TCPSendInit2 (Session *sess)
         return;
     
     if (prG->verbose)
-        M_print (i18n (2027, "Sending third TCP direct connection packet.\n"));
+    {
+        Time_Stamp ();
+        M_print (" %10d [%p] %s", sess->uin, sess, i18n (2027, "Sending third TCP direct connection packet.\n"));
+    }
 
     sess->stat_real_pak_sent++;
     
@@ -806,20 +833,19 @@ void TCPSendInit2 (Session *sess)
     PacketWrite1 (pak, 3);
     PacketWrite4 (pak, 10);
     PacketWrite4 (pak, 1);
+    PacketWrite4 (pak, (sess->connect & 16) ? 1 : 0);
     PacketWrite4 (pak, 0);
     PacketWrite4 (pak, 0);
+    PacketWrite4 (pak, (sess->connect & 16) ? 0x40001 : 0);
     PacketWrite4 (pak, 0);
-    PacketWrite4 (pak, 0);
-    PacketWrite4 (pak, 0);
-    PacketWrite2 (pak, 1);
-    PacketWrite2 (pak, 4);
+    PacketWrite4 (pak, (sess->connect & 16) ? 0 : 0x40001);
     TCPSendPacket (pak, sess);
 }
 
 Session *TCPReceiveInit (Session *sess, Packet *pak)
 {
     Contact *cont;
-    UDWORD uin, size;
+    UDWORD uin, size, sid;
     Session *peer;
 
     ASSERT_DIRECT (sess);
@@ -840,7 +866,12 @@ Session *TCPReceiveInit (Session *sess, Packet *pak)
             break;
         
         cont = ContactFind (uin);
-        if (sess->our_session != PacketReadAt4 (pak, 32))
+
+        sid = PacketReadAt4 (pak, 32);
+
+        if (!sess->our_session)
+            sess->our_session = sess->ver > 6 ? cont->cookie : sid;
+        if (sess->our_session != sid)
             break;
 
         if (!cont)
@@ -854,11 +885,13 @@ Session *TCPReceiveInit (Session *sess, Packet *pak)
 
         if (prG->verbose)
         {
+            Time_Stamp ();
+            M_print (" %d [%p] ", uin, sess);
             M_print (i18n (1838, "Received direct connection initialization.\n"));
             M_print ("    \x1b«");
             M_print (i18n (1839, "Version %04x:%04x, Port %d, UIN %d, session %08x\n"),
                      PacketReadAt2 (pak, 1), PacketReadAt2 (pak, 3),
-                     PacketReadAt4 (pak, 11), PacketReadAt4 (pak, 15),
+                     PacketReadAt4 (pak, 11), uin,
                      PacketReadAt4 (pak, 32));
             M_print ("\x1b»\n");
         }
@@ -907,6 +940,21 @@ void TCPReceiveInitAck (Session *sess, Packet *pak)
         TCPClose (sess);
     }
 }
+
+Session *TCPReceiveInit2 (Session *sess, Packet *pak)
+{
+    Contact *cont;
+    UDWORD uin, size, sid;
+    Session *peer;
+
+    ASSERT_DIRECT (sess);
+
+    if (!pak)
+        return sess;
+    
+    return sess;
+}
+
 
 /*
  * Close socket and mark as inactive. If verbose, complain.
