@@ -14,6 +14,7 @@
 #include "packet.h"
 #include "conv.h"
 #include "util_ui.h"
+#include "util_str.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -592,5 +593,104 @@ char *PacketReadAtLNTS (Packet *pak, UWORD at)
 
 int PacketReadLeft  (const Packet *pak)
 {
+    if (pak->rpos > pak->len)
+        return 0;
     return pak->len - pak->rpos;
 }
+
+const char *PacketDump (Packet *pak, const char *syntax)
+{
+    char *t;
+    UDWORD size, nr, len, val;
+    const char *f;
+    
+    assert (pak);
+    assert (syntax);
+
+    size = 0;
+    t = strdup ("");
+    
+    for (f = syntax; *f && pak->len > pak->rpos; f++)
+    {
+        switch (*f)
+        {
+            case 'D':
+                if (pak->len < pak->rpos + 4) break;
+                t = s_catf (t, &size, "%s " COLDEBUG, s_dumpnd (pak->data + pak->rpos, 4));
+                nr = PacketReadB4 (pak);
+                t = s_catf (t, &size, "DWORD.B  0x%08x = %010u" COLNONE "\n", nr, nr);
+                continue;
+            case 'd':
+                if (pak->len < pak->rpos + 4) break;
+                t = s_catf (t, &size, "%s " COLDEBUG, s_dumpnd (pak->data + pak->rpos, 4));
+                nr = PacketRead4 (pak);
+                t = s_catf (t, &size, "DWORD.L  0x%08x = %010u" COLNONE "\n", nr, nr);
+                continue;
+            case 'W':
+                if (pak->len < pak->rpos + 2) break;
+                t = s_catf (t, &size, "%s " COLDEBUG, s_dumpnd (pak->data + pak->rpos, 2));
+                nr = PacketReadB2 (pak);
+                t = s_catf (t, &size, "WORD.B   0x%04x = %05u" COLNONE "\n", nr, nr);
+                continue;
+            case 'w':
+                if (pak->len < pak->rpos + 2) break;
+                t = s_catf (t, &size, "%s " COLDEBUG, s_dumpnd (pak->data + pak->rpos, 2));
+                nr = PacketRead2 (pak);
+                t = s_catf (t, &size, "WORD.L   0x%04x = %05u" COLNONE "\n", nr, nr);
+                continue;
+            case 'b':
+                nr = PacketRead1 (pak);
+                t = s_catf (t, &size, "%s " COLDEBUG, s_dumpnd (pak->data + pak->rpos, 1));
+                t = s_catf (t, &size, "BYTE     0x%02x = %03u" COLNONE "\n", nr, nr);
+                continue;
+            case 'B':
+                nr = PacketReadAtB2 (pak, pak->rpos);
+                if (pak->len < pak->rpos + nr + 2) break;
+                t = s_catf (t, &size, "%s " COLDEBUG, s_dumpnd (pak->data + pak->rpos, nr + 2));
+                t = s_catf (t, &size, "BStr     %s" COLNONE "\n", PacketReadStrB (pak));
+                continue;
+            case 'L':
+                nr = PacketReadAt4 (pak, pak->rpos);
+                if (pak->len < pak->rpos + nr + 4) break;
+                t = s_catf (t, &size, "%s " COLDEBUG, s_dumpnd (pak->data + pak->rpos, nr + 4));
+                t = s_catf (t, &size, "LNTS     %s" COLNONE "\n", PacketReadLNTS (pak));
+                continue;
+            case '-':
+                f -= 2;
+                continue;
+            case 'u':
+                nr = PacketReadAt1 (pak, pak->rpos);
+                t = s_catf (t, &size, "%s " COLDEBUG, s_dumpnd (pak->data + pak->rpos, nr + 1));
+                t = s_catf (t, &size, "UIN      %d" COLNONE "\n", PacketReadUIN (pak));
+                continue;
+            case 't':
+                nr  = PacketReadAtB2 (pak, pak->rpos);
+                len = PacketReadAtB2 (pak, pak->rpos + 2);
+                if (pak->len < pak->rpos + len + 4) break;
+                if (len == 2)
+                {
+                    val = PacketReadAtB2 (pak, pak->rpos + 4);
+                    t = s_catf (t, &size, "%s " COLDEBUG, s_dumpnd (pak->data + pak->rpos, len + 4));
+                    t = s_catf (t, &size, "TLV (% 2x) 0x%04x = %05u" COLNONE "\n", nr, val, val);
+                }
+                else if (len == 4)
+                {
+                    val = PacketReadAtB4 (pak, pak->rpos + 4);
+                    t = s_catf (t, &size, "%s " COLDEBUG, s_dumpnd (pak->data + pak->rpos, len + 4));
+                    t = s_catf (t, &size, "TLV (% 2x) 0x%08x = %010u" COLNONE "\n", nr, val, val);
+                }
+                else
+                {
+                    t = s_catf (t, &size, "%s " COLDEBUG, s_dumpnd (pak->data + pak->rpos, 4));
+                    t = s_catf (t, &size, "TLV (% 2x)" COLNONE "\n", nr);
+                    t = s_catf (t, &size, "%s", s_dump (pak->data + pak->rpos + 4, len));
+                }
+                pak->rpos += len + 4;
+                continue;
+        }
+        break;
+    }
+    t = s_catf (t, &size, "%s", s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
+    return t;
+}
+
