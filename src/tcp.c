@@ -643,6 +643,7 @@ static void TCPDispatchPeer (Connection *peer)
         UtilIOSelectAdd (peer->sok, READFDS);
         UtilIOSelect();
     }
+    peer->connect &= ~CONNECT_SELECT_W;
 }
 
 /*********************************************/
