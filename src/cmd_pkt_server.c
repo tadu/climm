@@ -125,14 +125,14 @@ void CmdPktSrvRead (Connection *conn)
     if (pak->len < 21)
     {
         if (prG->verbose & DEB_PROTOCOL)
-            M_print (i18n (1867, "Got a malformed (too short) packet - ignored.\n"));
+            M_print (i18n (1867, "Received a malformed (too short) packet - ignored.\n"));
         return;
     }
     if (session != conn->our_session)
     {
         if (prG->verbose & DEB_PROTOCOL)
         {
-            M_printf (i18n (1606, "Got a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n"),
+            M_printf (i18n (1606, "Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n"),
                      session, conn->our_session, cmd);
         }
         return;
@@ -143,7 +143,7 @@ void CmdPktSrvRead (Connection *conn)
         {
             if (prG->verbose & DEB_PROTOCOL)
             {
-                M_printf (i18n (1032, "debug: Doppeltes Packet #%04lx vom Typ %04x (%s)\n"),
+                M_printf (i18n (1032, "debug: double packet #%04lx type %04x (%s)\n"),
                          id, cmd, CmdPktSrvName (cmd));
             }
             CmdPktCmdAck (conn, id);       /* LAGGGGG!! */ 

@@ -328,7 +328,7 @@ static JUMP_SNAC_F(SnacSrvReplyinfo)
     uin = PacketReadUIN (pak);
     
     if (uin != event->conn->uin)
-        M_printf (i18n (1907, "Warning: Server thinks our UIN is %ld, while it is %ld.\n"),
+        M_printf (i18n (1907, "Warning: Server thinks our UIN is %ld, when it is %ld.\n"),
                  uin, event->conn->uin);
     PacketReadB2 (pak);
     PacketReadB2 (pak);

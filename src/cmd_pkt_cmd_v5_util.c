@@ -147,7 +147,7 @@ void ConnectionInitServerV5 (Connection *conn)
 {
     if (conn->spref->version < 5)
     {
-        M_print (i18n (1869, "Protocoll versions less than 5 are not supported anymore.\n"));
+        M_print (i18n (1869, "Protocol versions less than 5 are not supported anymore.\n"));
         return;
     }
     
