@@ -1478,7 +1478,7 @@ int PrefWriteStatusFile (void)
 
         for (i = 0; (cont = ContactIndex (0, i)); i++)
         {
-            if (cont->group->serv == ss)
+            if (cont->group && cont->group->serv == ss)
             {
                 ContactAlias *alias;
                 fprintf (stf, "entry %d %10ld %s", cont->id, cont->uin, s_quote (cont->nick));
