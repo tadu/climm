@@ -69,7 +69,7 @@ a NULL if no such string exists
 *********************************************/
 const char *Convert_Status_2_Str (UDWORD status)
 {
-    if (STATUS_OFFLINE == status)       /* this because -1 & 0xFFFF is not -1 */
+    if (STATUS_OFFLINE == (status | STATUS_INVISIBLE))       /* this because -1 & 0xFFFF is not -1 */
     {
         return i18n (1969, "offline");
     }
