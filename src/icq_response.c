@@ -330,7 +330,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
             break;
         case META_SRV_WP_FOUND: /* 0x01A4, wp-info + lasting */
         case META_SRV_WP_LAST_USER: /* 0x01AE, wp-info */
-            if ((len = PacketRead2 (p)) < 21)
+            if ((len = PacketRead2 (p)) < 19)
             {
                 M_print (i18n (1398, "Search " COLCLIENT "failed" COLNONE "."));
                 M_print ("\n");
@@ -386,7 +386,7 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
                 M_print (COLSERV "%-15s" COLNONE " %s\n", 
                     i18n (1575, "Age:"), i18n (1200, "Not entered"));
 
-            if (subtype == META_SRV_WP_FOUND && (dwdata = PacketRead4(p)))
+            if (subtype == META_SRV_WP_LAST_USER && (dwdata = PacketRead4(p)))
                 M_print ("%lu %s\n", dwdata, i18n (1621, "users not returned."));
             break;
         case 0x010E:
@@ -430,7 +430,7 @@ void Recv_Message (Session *sess, UBYTE * pak)
 
     r_mesg = (RECV_MESSAGE_PTR) pak;
     uiG.last_rcvd_uin = Chars_2_DW (r_mesg->uin);
-    M_print (i18n (1496, "%02d/%02d/%04d"), r_mesg->month, r_mesg->day, Chars_2_Word (r_mesg->year));
+    M_print (i18n (1962, "%04d-%02d-%02d"), Chars_2_Word (r_mesg->year), r_mesg->month, r_mesg->day);
     M_print (" %02d:%02d UTC \a" CYAN BOLD "%10s" COLNONE " ",
              r_mesg->hour, r_mesg->minute, ContactFindName (Chars_2_DW (r_mesg->uin)));
     Do_Msg (sess, Chars_2_Word (r_mesg->type), Chars_2_Word (r_mesg->len),
@@ -438,28 +438,49 @@ void Recv_Message (Session *sess, UBYTE * pak)
 }
 
 
-void UserOnlineSetVersion (Contact *con, UDWORD tstamp)
+void UserOnlineSetVersion (Contact *con, UDWORD tstamp, UDWORD tstamp2)
 {
     char buf[100];
     char *new = NULL;
     unsigned int ver = tstamp & 0xffff, ssl = 0;
+    char v1 = 0, v2 = 0, v3 = 0, v4 = 0;
 
-    if      ((tstamp & 0xff7f0000) == BUILD_LICQ)
+    if      ((tstamp & 0xff7f0000) == BUILD_LICQ && ver > 1000)
     {
-        if (ver > 1000) {new = "licq"; ver *= 10; }
-        else new = "mICQ";
+        new = "licq";
+        if (tstamp & BUILD_SSL)
+            ssl = 1;
+        v1 = ver / 1000;
+        v2 = (ver / 10) % 100;
+        v3 = ver % 10;
+        v4 = 0;
     }
-    else if ((tstamp & 0xff7f0000) == BUILD_MICQ)   new = "mICQ";
-    if       (tstamp &                BUILD_SSL)    ssl = 1;
+    else if ((tstamp & 0xff7f0000) == BUILD_MICQ || (tstamp & 0xff7f0000) == BUILD_LICQ)
+    {
+        new = "mICQ";
+        if (tstamp & BUILD_SSL)
+            ssl = 1;
+        v1 = ver / 10000;
+        v2 = (ver / 100) % 100;
+        v3 = (ver / 10) % 10;
+        v4 = ver % 10;
+    }
+    else if (tstamp == 0xffffffff)
+    {
+        new = "Miranda";
+        v1 = (tstamp2 & 0x7f000000) >> 24;
+        v2 = (tstamp2 &   0xff0000) >> 16;
+        v3 = (tstamp2 &     0xff00) >> 8;
+        v4 =  tstamp2 &       0xff;
+    }
     
     if (new)
     {
         strcpy (buf, new);
         strcat (buf, " ");
-                       sprintf (buf + strlen (buf), "%d.%d", ver / 10000,
-                                                            (ver / 100) % 100);
-        if (ver % 100) sprintf (buf + strlen (buf), ".%d",  (ver / 10)  %  10);
-        if (ver % 10)  sprintf (buf + strlen (buf), " cvs %d",   ver        %  10);
+                      sprintf (buf + strlen (buf), "%d.%d", v1, v2);
+        if (v3 || v4) sprintf (buf + strlen (buf), ".%d", v3);
+        if (v4)       sprintf (buf + strlen (buf), " cvs %d", v4);
         if (ssl) strcat (buf, "/SSL");
     }
     else if (prG->verbose)

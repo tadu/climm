@@ -57,7 +57,6 @@
 1056:Socket erhalten, versuche zu verbinden...¶
 1057:Ausgehendes Server-Paket (Version 8):
 1058:SNAC (%x,%x) [%s] Flags %x Referenz %x¶
-1059:©1Eingehendes Server-Paket (Version 8):
 1060:Ausführlichkeit is %d.¶
 1061:%s ist kein Spitzname.¶
 1062:ignorierte User:

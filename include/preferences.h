@@ -86,7 +86,6 @@ void PrefLoad (Preferences *pref);
 #define SFLAG_OFF_BEEP   16
 #define SFLAG_OFF_CMD    32
 
-#define TYPE_UNKNOWN      0
 #define TYPE_SERVER_OLD   1
 #define TYPE_SERVER       2
 #define TYPE_PEER         3

@@ -48,15 +48,15 @@
 1048:Error code: %d¶
 1049:UIN: %d¶
 1050:Login successful!
-1051:URL: %s¶
+1051: 
 1052: 
 1053:Connected to %s, waiting for response¶
-1054: Conection Refused on port %d at %s¶
+1054: 
 1055:Socket creation failed
 1056:Socket created attempting to connect¶
 1057: 
 1058: 
-1059:©1Incoming v8 server packet:
+1059: 
 1060:Verbosity level is %d.¶
 1061:%s not recognized as a nick name.¶
 1062:Users ignored:
@@ -493,7 +493,7 @@
 1493:Peer-to-Peer
 1494:Server Only
 1495:No Random User Found
-1496:%02d/%02d/%04d
+1496: 
 1497:failed
 1498:Info for:
 1499:Other
@@ -622,9 +622,9 @@
 1622:Do you want to apply these changes? (YES/NO)
 1623:Doubled packet %04X¶
 1624:Sorry, can't initialize Windows Sockets...
-1625:popping type %d seq %08x at %p (pak %p)
+1625: 
 1626:enqueuing type %d seq %08x at %p (pak %p)
-1627:couldn't dequeue type %d seq %08x
+1627: 
 1628: Description: ©3%s©0¶
 1629: URL:         ©3%s©0
 1630:dequeue type %d seq %08x at %p (pak %p)
@@ -633,7 +633,7 @@
 1633: 
 1634:ok¶
 1635:You have encounterd a bug in my code :( I now own you a beer!¶Greetings Fryslan!¶
-1636:Auto-response message for %s:¶
+1636: 
 1637:Can't bind socket to free port¶
 1638:Couldn't create socket
 1639:The new UIN is %ld!¶
@@ -803,8 +803,8 @@
 1803:SoundOffline cmd
 1804:SoundOnline
 1805:SoundOffline
-1806:Received ACK for message (seq %04X) from %s¶
-1807:Cancelled incoming message (seq %04X) from %s¶
+1806:Received ACK for message (seq %04x) from %s¶
+1807:Cancelled incoming message (seq %04x) from %s¶
 1808:College
 1809:Unable to retrieve auto-response message for %s.
 1810:University
@@ -957,3 +957,10 @@
 1957: 
 1958:[SOCKS] Connection request refused (%d)
 1959:Other
+1960:Enter data to search user for. Enter \'.\' to start the search.¶
+1961:URL: %s¶
+1962:%04d-%02d-%02d
+1963:popping type %d seq %08x at %p (pak %p)
+1964:couldn't dequeue type %d seq %08x
+1965:Auto-response message for %s:¶
+1966: Conection Refused on port %d at %s¶

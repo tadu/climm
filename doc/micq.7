@@ -129,10 +129,21 @@ Note: you should alter your password directly in your
 .Pa .micq/micqrc
 file (see
 .Xr micqrc 7 ) .
+.It Ic search
 .It Ic search Ar email
+.It Ic search Ar nick
+.It Ic search Ar first nick
 Search for a user with
 .Ar email
-as their email address.
+as their email address, with
+.Ar nick
+as their nick (which can't contain an @), or with
+.Ar first
+as their first and
+.Ar last
+as their last name. If no argument is given, ask for
+nick name, first name, last name, email address and a whole bunch of other data
+to search for.
 .It Ic add Ar uin Op Ar nickname
 Add
 .Ar uin
@@ -148,9 +159,9 @@ is not given, use
 .Ar uin
 as nickname.
 .br
-Note: for renaming, you need to
+Note: you need to
 .Ar save
-to make this persist.
+to make this persistent.
 .It Ic rem Ar nick
 Remove
 .Ar nick
@@ -158,7 +169,7 @@ from your contact list.
 .br
 Note: you need to
 .Ar save
-to make this persist.
+to make this persistent.
 .It Ic w
 List all people in your contact list.
 .It Ic e

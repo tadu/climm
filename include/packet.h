@@ -11,7 +11,7 @@ struct Packet_s
     UBYTE    ver;
     UDWORD   cmd;
 
-    UWORD    rpos, wpos;
+    UWORD    rpos, wpos, tpos;
     UBYTE    socks[10];
     UBYTE    data[PacketMaxData];
 };
@@ -28,8 +28,13 @@ void        PacketWriteB4     (      Packet *pak,           UDWORD data);
 void        PacketWriteData   (      Packet *pak,           const char *data, UWORD len);
 void        PacketWriteStrB   (      Packet *pak,           const char *data);
 void        PacketWriteLNTS   (      Packet *pak,           const char *data);
+void        PacketWriteLLNTS  (      Packet *pak,           const char *data);
 void        PacketWriteStrCUW (      Packet *pak,           const char *data);
 void        PacketWriteUIN    (      Packet *pak, UDWORD uin);
+void        PacketWriteTLV    (      Packet *pak, UDWORD type);
+void        PacketWriteTLVDone(      Packet *pak);
+void        PacketWriteLen    (      Packet *pak);
+void        PacketWriteLenDone(      Packet *pak);
 UWORD       PacketWritePos    (const Packet *pak);
 void        PacketWriteAt1    (      Packet *pak, UWORD at, UBYTE  data);
 void        PacketWriteAt2    (      Packet *pak, UWORD at, UWORD  data);

@@ -38,7 +38,7 @@ static jump_f
     CmdUserSoundOffline, CmdUserAutoaway, CmdUserSet, CmdUserClear,
     CmdUserTogIgnore, CmdUserTogVisible, CmdUserAdd, CmdUserRem, CmdUserRInfo,
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
-    CmdUserUptime, CmdUserSearch, CmdUserWpSearch, CmdUserUpdate,
+    CmdUserUptime, CmdUserOldSearch, CmdUserSearch, CmdUserUpdate,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserTCP, CmdUserConn;
 
 static void CmdUserProcess (const char *command, int *idle_val, int *idle_flag);
@@ -95,8 +95,8 @@ static jump_t jump[] = {
     { &CmdUserTCP,           "tcp",          NULL, 0,   0 },
     { &CmdUserQuit,          "q",            NULL, 0,   0 },
 
+    { &CmdUserOldSearch,     "oldsearch",    NULL, 0,   0 },
     { &CmdUserSearch,        "search",       NULL, 0,   0 },
-    { &CmdUserWpSearch,      "wpsearch",     NULL, 0,   0 },
     { &CmdUserUpdate,        "update",       NULL, 0,   0 },
     { &CmdUserOther,         "other",        NULL, 0,   0 },
     { &CmdUserAbout,         "about",        NULL, 0,   0 },
@@ -474,6 +474,7 @@ JUMP_F(CmdUserInfo)
 JUMP_F(CmdUserTrans)
 {
     const char *arg1;
+    int ver;
 
     arg1 = strtok (args, " \t");
     if (!arg1)
@@ -753,7 +754,7 @@ JUMP_F (CmdUserResend)
 {
     UDWORD uin;
     char *arg1;
-    SESSION_TYPE(TYPE_SERVER_OLD);
+    SERVER_SESSION;
 
     arg1 = strtok (args, UIN_DELIMS);
     if (!uiG.last_message_sent) 
@@ -2118,7 +2119,7 @@ JUMP_F(CmdUserQuit)
 /*
  * Search for a user.
  */
-JUMP_F(CmdUserSearch)
+JUMP_F(CmdUserOldSearch)
 {
     static char *email, *nick, *first, *last;
     SERVER_SESSION;
@@ -2172,42 +2173,89 @@ JUMP_F(CmdUserSearch)
 /*
  * Do a whitepage search.
  */
-JUMP_F(CmdUserWpSearch)
+JUMP_F(CmdUserSearch)
 {
     int temp;
-    static MetaWP wp;
-    SESSION_TYPE(TYPE_SERVER_OLD);
+    static MetaWP wp = { 0 };
+    char *arg1 = NULL, *arg2 = NULL;
+    SERVER_SESSION;
 
-    switch (status)
+    if (!strcmp (args, "."))
+        status += 400;
+
+    switch (status % 400)
     {
         case 0:
+            if (args)
+                arg1 = strtok (args, " \t\n");
+            if (arg1)
+                arg2 = strtok (NULL, "");
+            if (arg2)
+            {
+                if (sess->ver > 6)
+                    SnacCliSearchbypersinf (sess, NULL, arg1, arg2);
+                else
+                    CmdPktCmdSearchUser (sess, NULL, NULL, arg1, arg2);
+                return 0;
+            }
+            else if (arg1)
+            {
+                if (strchr (arg1, '@'))
+                {
+                    if (sess->type == TYPE_SERVER_OLD)
+                        CmdPktCmdSearchUser (sess, arg1, "", "", "");
+                    else
+                        SnacCliSearchbymail (sess, arg1);
+                }
+                else
+                {
+                    if (sess->type == TYPE_SERVER_OLD)
+                        CmdPktCmdSearchUser (sess, NULL, arg1, NULL, NULL);
+                    else
+                        SnacCliSearchbypersinf (sess, arg1, NULL, NULL);
+                }
+                return 0;
+            }
+            M_print (i18n (1960, "Enter data to search user for. Enter \'.\' to start the search.\n"));
             R_dopromptf ("%s ", i18n (1656, "Enter the user's nick name:"));
             return 200;
         case 200:
-            wp.nick = strdup ((char *) args);
+            wp.nick = strdup (args);
             R_dopromptf ("%s ", i18n (1657, "Enter the user's first name:"));
             return ++status;
         case 201:
-            wp.first = strdup ((char *) args);
+            wp.first = strdup (args);
             R_dopromptf ("%s ", i18n (1658, "Enter the user's last name:"));
             return ++status;
         case 202:
-            wp.last = strdup ((char *) args);
+            wp.last = strdup (args);
             R_dopromptf ("%s ", i18n (1655, "Enter the user's e-mail address:"));
             return ++status;
         case 203:
-            wp.email = strdup ((char *) args);
+            wp.email = strdup (args);
+            R_dopromptf ("%s ", i18n (1604, "Should the users be online?"));
+            return ++status;
+/* A few more could be added here, but we're gonna make this
+ the last one -KK */
+        case 204:
+            if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
+            {
+                M_print ("%s\n", i18n (1029, "Please enter YES or NO!"));
+                R_dopromptf ("%s ", i18n (1604, "Should the users be online?"));
+                return status;
+            }
+            wp.online = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
             R_dopromptf ("%s ", i18n (1936, "Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):"));
             return ++status;
-        case 204:
+        case 205:
             wp.minage = atoi (args);
             R_dopromptf ("%s ", i18n (1937, "Enter max age (22,29,39,49,59,120):"));
             return ++status;
-        case 205:
+        case 206:
             wp.maxage = atoi (args);
             R_doprompt (i18n (1938, "Enter sex:"));
             return ++status;
-        case 206:
+        case 207:
             if (!strncasecmp (args, i18n (1528, "female"), 1))
             {
                 wp.sex = 1;
@@ -2222,7 +2270,7 @@ JUMP_F(CmdUserWpSearch)
             }
             R_dopromptf ("%s ", i18n (1534, "Enter a language by number or L for a list:"));
             return ++status;
-        case 207:
+        case 208:
             temp = atoi (args);
             if ((0 == temp) && (toupper (args[0]) == 'L'))
             {
@@ -2236,52 +2284,56 @@ JUMP_F(CmdUserWpSearch)
                 R_dopromptf ("%s ", i18n (1939, "Enter a city:"));
             }
             return status;
-        case 208:
+        case 209:
             wp.city = strdup ((char *) args);
             R_dopromptf ("%s ", i18n (1602, "Enter a state:"));
             return ++status;
-        case 209:
+        case 210:
             wp.state = strdup ((char *) args);
             R_dopromptf ("%s ", i18n (1578, "Enter country's phone ID number:"));
             return ++status;
-        case 210:
+        case 211:
             wp.country = atoi ((char *) args);
             R_dopromptf ("%s ", i18n (1579, "Enter company: "));
             return ++status;
-        case 211:
+        case 212:
             wp.company = strdup ((char *) args);
             R_dopromptf ("%s ", i18n (1587, "Enter department: "));
             return ++status;
-        case 212:
+        case 213:
             wp.department = strdup ((char *) args);
             R_dopromptf ("%s ", i18n (1603, "Enter position: "));
             return ++status;
-        case 213:
-            wp.position = strdup ((char *) args);
-            R_dopromptf ("%s ", i18n (1604, "Should the users be online?"));
-            return ++status;
-/* A few more could be added here, but we're gonna make this
- the last one -KK */
         case 214:
-            if (strcasecmp (args, i18n (1028, "NO")) && strcasecmp (args, i18n (1027, "YES")))
+            wp.position = strdup ((char *) args);
+        case 250:
+            if (sess->ver > 6)
             {
-                M_print ("%s\n", i18n (1029, "Please enter YES or NO!"));
-                R_dopromptf ("%s ", i18n (1604, "Should the users be online?"));
-                return status;
+                if (status > 250 && status <= 402)
+                    SnacCliSearchbypersinf (sess, wp.nick, wp.first, wp.last);
+                else if (status == 403 && !strlen (wp.nick)
+                         && !strlen (wp.last) && !strlen (wp.first))
+                    SnacCliSearchbymail (sess, wp.email);
+                else
+                    SnacCliSearchwp (sess, &wp);
             }
-            wp.online = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
+            else
+            {
+                if (status > 250 && status <= 403)
+                    CmdPktCmdSearchUser (sess, wp.email, wp.nick, wp.first, wp.last);
+                else
+                    CmdPktCmdMetaSearchWP (sess, &wp);
+            }
 
-            CmdPktCmdMetaSearchWP (sess, &wp);
-
-            free (wp.nick);
-            free (wp.last);
-            free (wp.first);
-            free (wp.email);
-            free (wp.company);
-            free (wp.department);
-            free (wp.position);
-            free (wp.city);
-            free (wp.state);
+            if (wp.nick)       free (wp.nick);       wp.nick = NULL;
+            if (wp.last)       free (wp.last);       wp.last = NULL;
+            if (wp.first)      free (wp.first);      wp.first = NULL;
+            if (wp.email)      free (wp.email);      wp.email = NULL;
+            if (wp.company)    free (wp.company);    wp.company = NULL;
+            if (wp.department) free (wp.department); wp.department = NULL;
+            if (wp.position)   free (wp.position);   wp.position = NULL;
+            if (wp.city)       free (wp.city);       wp.city = NULL;
+            if (wp.state)      free (wp.state);      wp.state = NULL;
             return 0;
     }
     return 0;

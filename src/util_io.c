@@ -215,7 +215,7 @@ SOK_T UtilIOConnectUDP (char *hostname, int port)
     {
         if (prG->verbose)
         {
-            M_print (i18n (1054, " Conection Refused on port %d at %s\n"), port, hostname);
+            M_print (i18n (1966, " Conection Refused on port %d at %s\n"), port, hostname);
             perror ("connect");
         }
         return -1;

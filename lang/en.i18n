@@ -58,7 +58,6 @@ i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %
 1056:Socket created attempting to connect¶
 1057: 
 1058: 
-1059:©1Incoming v8 server packet:
 1060:Verbosity level is %d.¶
 1061:%s not recognized as a nick name.¶
 1062:Users ignored:
@@ -804,8 +803,8 @@ i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %
 1803:SoundOffline cmd
 1804:SoundOnline
 1805:SoundOffline
-1806:Received ACK for message (seq %04X) from %s¶
-1807:Cancelled incoming message (seq %04X) from %s¶
+1806:Received ACK for message (seq %04x) from %s¶
+1807:Cancelled incoming message (seq %04x) from %s¶
 1808:College
 1809:Unable to retrieve auto-response message for %s.
 1810:University

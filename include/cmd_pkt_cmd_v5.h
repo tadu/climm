@@ -1,4 +1,7 @@
 
+#ifndef MICQ_CMD_PKT_CMD_H
+#define MICQ_CMD_PKT_CMD_H
+
 typedef struct
 {
    char  *nick,   *first,  *last; 
@@ -58,4 +61,4 @@ void CmdPktCmdInvisList (Session *sess);
 void CmdPktCmdVisList (Session *sess);
 void CmdPktCmdUpdateList (Session *sess, UDWORD uin, int which, BOOL add);
 
-
+#endif

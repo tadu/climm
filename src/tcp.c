@@ -458,12 +458,12 @@ void TCPDispatchPeer (Session *sess)
                     }
                     else if (PacketReadAt2 (pak, 26) & TCP_AUTO_RESPONSE_MASK)
                     {
-                        M_print (i18n (1636, "Auto-response message for %s:\n"), cont->nick);
+                        M_print (i18n (1965, "Auto-response message for %s:\n"), cont->nick);
                         M_print (MESSCOL "%s\n" NOCOL, PacketReadAtLNTS (pak, 28));
                     }
                     if (prG->verbose && PacketReadAt2 (pak, 26) != NORM_MESS)
                     {
-                        M_print (i18n (1806, "Received ACK for message (seq %04X) from %s\n"),
+                        M_print (i18n (1806, "Received ACK for message (seq %04x) from %s\n"),
                                  seq_in, cont->nick);
                     }
                     PacketD (event->pak);
@@ -477,7 +477,7 @@ void TCPDispatchPeer (Session *sess)
                     
                     if (prG->verbose)
                     {
-                        M_print (i18n (1807, "Cancelled incoming message (seq %04X) from %s\n"),
+                        M_print (i18n (1807, "Cancelled incoming message (seq %04x) from %s\n"),
                                  seq_in, cont->nick);
                     }
                     PacketD (event->pak);

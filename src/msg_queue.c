@@ -73,7 +73,7 @@ struct Event *QueuePop (struct Queue *queue)
             queue->due = INT_MAX;
         else
             queue->due = queue->head->event->due;
-        Debug (32, i18n (1625, "popping type %d seq %08x at %p (pak %p)"),
+        Debug (32, i18n (1963, "popping type %d seq %08x at %p (pak %p)"),
                event->type, event->seq, event, event->pak);
         return event;
     }
@@ -160,7 +160,7 @@ struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
 
     if (!queue->head)
     {
-        Debug (32, i18n (1627, "couldn't dequeue type %d seq %08x"), type, seq);
+        Debug (32, i18n (1964, "couldn't dequeue type %d seq %08x"), type, seq);
         return NULL;
     }
 
@@ -193,7 +193,7 @@ struct Event *QueueDequeue (struct Queue *queue, UDWORD seq, UDWORD type)
             return event;
         }
     }
-    Debug (32, i18n (1627, "couldn't dequeue type %d seq %08x"), type, seq);
+    Debug (32, i18n (1964, "couldn't dequeue type %d seq %08x"), type, seq);
     return NULL;
 }
 

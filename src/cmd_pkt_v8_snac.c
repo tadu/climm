@@ -192,7 +192,7 @@ JUMP_SNAC_F(SnacSrvUnknown)
     {
         Time_Stamp ();
         M_print (" " ESC "«");
-        M_print (" " ESC "«" COLSERV "%s ", i18n (1059, COLSERV "Incoming v8 server packet:"));
+        M_print (" " ESC "«" COLSERV "%s ", i18n (1033, "Incoming v8 server packet:"));
         SnacPrint (event->pak);
         M_print (ESC "»\n");
     }
@@ -356,6 +356,7 @@ JUMP_SNAC_F(SnacSrvUseronline)
     Contact *cont;
     Packet *p, *pak;
     TLV *tlv;
+    time_t t1, t2;
     
     pak = event->pak;
     cont = ContactFind (PacketReadUIN (pak));
@@ -382,7 +383,9 @@ JUMP_SNAC_F(SnacSrvUseronline)
         PacketReadB4 (p);
         PacketReadB4 (p);
         PacketReadB4 (p);
-        UserOnlineSetVersion (cont, PacketReadB4 (p));
+        t1 = PacketReadB4 (p);
+        t2 = PacketReadB4 (p);
+        UserOnlineSetVersion (cont, t1, t2);
         /* remainder ignored */
     }
     /* TLV 1, d, f, 2, 3 ignored */
@@ -625,6 +628,53 @@ JUMP_SNAC_F(SnacSrvSetinterval)
 }
 
 /*
+ * SRV_AUTHREQ - SNAC(13,19)
+ */
+JUMP_SNAC_F(SnacSrvAuthreq)
+{
+    Packet *pak;
+    UDWORD uin;
+    char *text;
+
+    pak = event->pak;
+    PacketReadData (pak, NULL, PacketReadB2 (pak));
+    /* TLV 1 ignored */
+    uin = PacketReadUIN (pak);
+    text = PacketReadStrB (pak);
+    Time_Stamp ();
+    M_print (i18n (1590, COLCONTACT "%10s" COLNONE " has requested your authorization to be added to their contact list.\n"),
+             ContactFindName (uin));
+    M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1591, "Reason:"), text);
+    free (text);
+    if (prG->sound & SFLAG_CMD)
+        ExecScript (prG->sound_cmd, uin, 0, NULL);
+    else if (prG->sound & SFLAG_BEEP)
+        printf ("\a");
+}
+
+/*
+ * SRV_AUTHREPLY - SNAC(13,1b)
+ */
+JUMP_SNAC_F(SnacSrvAuthreply)
+{
+    Packet *pak;
+    UDWORD uin;
+
+    pak = event->pak;
+    PacketReadData (pak, NULL, PacketReadB2 (pak));
+    /* TLV 1 ignored */
+    uin = PacketReadUIN (pak);
+    Time_Stamp ();
+    M_print (" " COLCONTACT "%10s" COLNONE " ", ContactFindName (uin));
+    M_print (i18n (1901, "has authorized you to add them to your contact list."));
+    M_print ("\n");
+    if (prG->sound & SFLAG_CMD)
+        ExecScript (prG->sound_cmd, uin, 0, NULL);
+    else if (prG->sound & SFLAG_BEEP)
+        printf ("\a");
+}
+
+/*
  * SRV_ADDEDYOU - SNAC(13,1c)
  */
 JUMP_SNAC_F(SnacSrvAddedyou)
@@ -645,94 +695,6 @@ JUMP_SNAC_F(SnacSrvAddedyou)
      * v5 specific.  --rtc
      */
 }
-
-/*
- * CLI_METAREQINFO - SNAC(15,2) - 2000/1232
- */
-void SnacCliMetareqinfo (Session *sess, UDWORD uin)
-{
-    Packet *pak;
-
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteB2 (pak, 1);  /* TLV(1) */
-    PacketWriteB2 (pak, 16);
-    PacketWrite2  (pak, 14);
-    PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 2000); /* Command: request information */
-    PacketWrite2  (pak, 2);
-    PacketWrite2  (pak, 1232); /* Type: user info */
-    PacketWrite4  (pak, uin);
-    SnacSend (sess, pak);
-}
-
-/*
- * CLI_SEARCHBYPERSINF - SNAC(15,2) - 2000/1375
- */
-void SnacCliSearchbypersinf (Session *sess, const char *nick, const char *name,
-    char *surname)
-{
-    Packet *pak;
-    int len;
-
-    len = strlen (nick) + strlen (name) + strlen (surname);
-
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteB2 (pak, 1);  /* TLV(1) */
-    PacketWriteB2 (pak, 33 + len);
-    PacketWrite2  (pak, 31 + len);
-    PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 2000); /* Command: request information */
-    PacketWrite2  (pak, 2);
-    PacketWrite2  (pak, 1375); /* search user by email in 2001b */
-    PacketWrite2  (pak, 320); /* key: first name */
-    PacketWrite2  (pak, strlen (name) + 3);
-    PacketWriteLNTS (pak, name);
-    PacketWrite2  (pak, 330); /* key: last name */
-    PacketWrite2  (pak, strlen (surname) + 3);
-    PacketWriteLNTS (pak, surname);
-    PacketWrite2  (pak, 340); /* key: nick */
-    PacketWrite2  (pak, strlen (nick) + 3);
-    PacketWriteLNTS (pak, nick);
-
-    SnacSend (sess, pak);
-}
-/*
- * CLI_SEARCHBYMAIL - SNAC(15,2) - 2000/{1395,1321}
- */
-void SnacCliSearchbymail (Session *sess, const char *email)
-{
-    Packet *pak;
-    int len;
-
-    len = strlen (email);
-
-    pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteB2 (pak, 1);  /* TLV(1) */
-#ifndef USE_OLD_PROTO
-    PacketWriteB2 (pak, 19 + len);
-    PacketWrite2  (pak, 17 + len);
-#else
-    PacketWriteB2 (pak, 15 + len);
-    PacketWrite2  (pak, 13 + len);
-#endif
-    PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 2000); /* Command: request information */
-    PacketWrite2  (pak, 2);
-#ifndef USE_OLD_PROTO
-    PacketWrite2  (pak, 1395); /* search uin by email in 2001b */
-    PacketWrite2  (pak, 350); /* key: email address */
-    PacketWrite2  (pak, len + 3);
-#else
-    PacketWrite2  (pak, 1231); /* Type: search by email */
-    /* Doesn't work (yields search failed).  Tried with length 
-     * prefixed as above, then the search doesn't fail completely
-     * but very strange data is returned.    --rtc
-     */
-#endif
-    PacketWriteLNTS (pak, email);
-    SnacSend (sess, pak);
-}
-
 /*
  * SRV_FROMOLDICQ - SNAC(15,3)
  */
@@ -840,53 +802,6 @@ JUMP_SNAC_F(SnacSrvNewuin)
     }
 }
 
-/*
- * SRV_AUTHREQ - SNAC(13,19)
- */
-JUMP_SNAC_F(SnacSrvAuthreq)
-{
-    Packet *pak;
-    UDWORD uin;
-    char *text;
-
-    pak = event->pak;
-    PacketReadData (pak, NULL, PacketReadB2 (pak));
-    /* TLV 1 ignored */
-    uin = PacketReadUIN (pak);
-    text = PacketReadStrB (pak);
-    Time_Stamp ();
-    M_print (i18n (1590, COLCONTACT "%10s" COLNONE " has requested your authorization to be added to their contact list.\n"),
-             ContactFindName (uin));
-    M_print ("%-15s " COLMESS "%s" COLNONE "\n", i18n (1591, "Reason:"), text);
-    free (text);
-    if (prG->sound & SFLAG_CMD)
-        ExecScript (prG->sound_cmd, uin, 0, NULL);
-    else if (prG->sound & SFLAG_BEEP)
-        printf ("\a");
-}
-
-/*
- * SRV_AUTHREPLY - SNAC(13,1b)
- */
-JUMP_SNAC_F(SnacSrvAuthreply)
-{
-    Packet *pak;
-    UDWORD uin;
-
-    pak = event->pak;
-    PacketReadData (pak, NULL, PacketReadB2 (pak));
-    /* TLV 1 ignored */
-    uin = PacketReadUIN (pak);
-    Time_Stamp ();
-    M_print (" " COLCONTACT "%10s" COLNONE " ", ContactFindName (uin));
-    M_print (i18n (1901, "has authorized you to add them to your contact list."));
-    M_print ("\n");
-    if (prG->sound & SFLAG_CMD)
-        ExecScript (prG->sound_cmd, uin, 0, NULL);
-    else if (prG->sound & SFLAG_BEEP)
-        printf ("\a");
-}
-
 /*************************************/
 
 /*
@@ -912,6 +827,27 @@ void SnacCliReady (Session *sess)
 }
 
 /*
+ * CLI_FAMILIES - SNAC(1,17)
+ */
+void SnacCliFamilies (Session *sess)
+{
+    Packet *pak;
+    SNAC *s;
+
+    pak = SnacC (sess, 1, 0x17, 0, 0);
+    
+    for (s = SNACv; s->fam; s++)
+    {
+        if (s->fam == 12 || s->fam == 8)
+            continue;
+
+        PacketWriteB2 (pak, s->fam);
+        PacketWriteB2 (pak, s->cmd);
+    }
+    SnacSend (sess, pak);
+}
+
+/*
  * CLI_SETSTATUS - SNAC(1,1E)
  *
  * action: 1 = send status 2 = send connection info (3 = both)
@@ -920,9 +856,9 @@ void SnacCliSetstatus (Session *sess, UWORD status, UWORD action)
 {
     Packet *pak;
     
+    pak = SnacC (sess, 1, 0x1e, 0, 0);
     if ((action & 1) && (status & STATUS_INVISIBLE))
         SnacCliAddvisible (sess, 0);
-    pak = SnacC (sess, 1, 0x1e, 0, 0);
     if (action & 1)
         PacketWriteTLV4 (pak, 6, status);
     if (action & 2)
@@ -952,43 +888,6 @@ void SnacCliSetstatus (Session *sess, UWORD status, UWORD action)
 }
 
 /*
- * CLI_SETUSERINFO - SNAC(2,4)
- */
-void SnacCliSetuserinfo (Session *sess)
-{
-    Packet *pak;
-    
-    pak = SnacC (sess, 2, 4, 0, 0);
-    PacketWriteTLVData (pak, 4,
-       "\x09\x46\x13\x49\x4C\x7F\x11\xD1\x82\x22\x44\x45\x53\x54\x00\x00"
-       "\x97\xB1\x27\x51\x24\x3C\x43\x34\xAD\x22\xD6\xAB\xF7\x3F\x14\x92"
-       "\x2E\x7A\x64\x75\xFA\xDF\x4D\xC8\x88\x6F\xEA\x35\x95\xFD\xB6\xDF"
-       "\x09\x46\x13\x44\x4C\x7F\x11\xD1\x82\x22\x44\x45\x53\x54\x00\x00", 64);
-    SnacSend (sess, pak);
-}
-
-/*
- * CLI_FAMILIES - SNAC(1,17)
- */
-void SnacCliFamilies (Session *sess)
-{
-    Packet *pak;
-    SNAC *s;
-
-    pak = SnacC (sess, 1, 0x17, 0, 0);
-    
-    for (s = SNACv; s->fam; s++)
-    {
-        if (s->fam == 12 || s->fam == 8)
-            continue;
-
-        PacketWriteB2 (pak, s->fam);
-        PacketWriteB2 (pak, s->cmd);
-    }
-    SnacSend (sess, pak);
-}
-
-/*
  * CLI_RATESREQUEST - SNAC(1,6)
  */
 void SnacCliRatesrequest (Session *sess)
@@ -1010,6 +909,22 @@ void SnacCliReqinfo (Session *sess)
 void SnacCliReqlocation (Session *sess)
 {
     SnacSend (sess, SnacC (sess, 2, 2, 0, 0));
+}
+
+/*
+ * CLI_SETUSERINFO - SNAC(2,4)
+ */
+void SnacCliSetuserinfo (Session *sess)
+{
+    Packet *pak;
+    
+    pak = SnacC (sess, 2, 4, 0, 0);
+    PacketWriteTLVData (pak, 4,
+       "\x09\x46\x13\x49\x4C\x7F\x11\xD1\x82\x22\x44\x45\x53\x54\x00\x00"
+       "\x97\xB1\x27\x51\x24\x3C\x43\x34\xAD\x22\xD6\xAB\xF7\x3F\x14\x92"
+       "\x2E\x7A\x64\x75\xFA\xDF\x4D\xC8\x88\x6F\xEA\x35\x95\xFD\xB6\xDF"
+       "\x09\x46\x13\x44\x4C\x7F\x11\xD1\x82\x22\x44\x45\x53\x54\x00\x00", 64);
+    SnacSend (sess, pak);
 }
 
 /*
@@ -1227,12 +1142,12 @@ void SnacCliReqofflinemsgs (Session *sess)
     Packet *pak;
 
     pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteB2 (pak, 1);  /* TLV(1) */
-    PacketWriteB2 (pak, 10);
+    PacketWriteTLV (pak, 1);
     PacketWrite2  (pak, 8);
     PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 0x3c);
+    PacketWrite2  (pak, 60);
     PacketWrite2  (pak, 2);
+    PacketWriteTLVDone (pak);
     SnacSend (sess, pak);
 }
 
@@ -1244,43 +1159,164 @@ void SnacCliAckofflinemsgs (Session *sess)
     Packet *pak;
 
     pak = SnacC (sess, 21, 2, 0, 0);
-    PacketWriteB2 (pak, 1);  /* TLV(1) */
-    PacketWriteB2 (pak, 10);
+    PacketWriteTLV (pak, 1);
     PacketWrite2  (pak, 8);
     PacketWrite4  (pak, sess->uin);
-    PacketWrite2  (pak, 0x3e);
+    PacketWrite2  (pak, 62);
     PacketWrite2  (pak, 2);
+    PacketWriteTLVDone (pak);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_METAREQINFO - SNAC(15,2) - 2000/1232
+ */
+void SnacCliMetareqinfo (Session *sess, UDWORD uin)
+{
+    Packet *pak;
+
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteTLV (pak, 1);
+    PacketWrite2  (pak, 14);
+    PacketWrite4  (pak, sess->uin);
+    PacketWrite2  (pak, 2000); /* Command: request information */
+    PacketWrite2  (pak, 2);
+    PacketWrite2  (pak, 1232); /* Type: user info */
+    PacketWrite4  (pak, uin);
+    PacketWriteTLVDone (pak);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_SEARCHBYPERSINF - SNAC(15,2) - 2000/1375
+ */
+void SnacCliSearchbypersinf (Session *sess, const char *nick, const char *name,
+    char *surname)
+{
+    Packet *pak;
+
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteTLV (pak, 1);
+    PacketWriteLen (pak);
+    PacketWrite4  (pak, sess->uin);
+    PacketWrite2  (pak, 2000); /* Command: request information */
+    PacketWrite2  (pak, 2);
+    PacketWrite2  (pak, 1375); /* search user by email in 2001b */
+    PacketWrite2  (pak, 320); /* key: first name */
+    PacketWriteLLNTS (pak, name);
+    PacketWrite2  (pak, 330); /* key: last name */
+    PacketWriteLLNTS (pak, surname);
+    PacketWrite2  (pak, 340); /* key: nick */
+    PacketWriteLLNTS (pak, nick);
+    PacketWriteLenDone (pak);
+    PacketWriteTLVDone (pak);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_SEARCHBYMAIL - SNAC(15,2) - 2000/{1395,1321}
+ */
+void SnacCliSearchbymail (Session *sess, const char *email)
+{
+    Packet *pak;
+    int len;
+
+    len = strlen (email);
+
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteTLV (pak, 1);
+    PacketWriteLen (pak);
+    PacketWrite4  (pak, sess->uin);
+    PacketWrite2  (pak, 2000); /* Command: request information */
+    PacketWrite2  (pak, 2);
+#ifndef USE_OLD_PROTO
+    PacketWrite2  (pak, 1395); /* search uin by email in 2001b */
+    PacketWrite2  (pak, 350); /* key: email address */
+    PacketWrite2  (pak, len + 3);
+#else
+    PacketWrite2  (pak, 1231); /* Type: search by email */
+    /* Doesn't work (yields search failed).  Tried with length 
+     * prefixed as above, then the search doesn't fail completely
+     * but very strange data is returned.    --rtc
+     */
+#endif
+    PacketWriteLNTS (pak, email);
+    PacketWriteLenDone (pak);
+    PacketWriteTLVDone (pak);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_SEARCHWP - SNAC(15,2) - 2000/3305
+ */
+void SnacCliSearchwp (Session *sess, MetaWP *wp)
+{
+    Packet *pak;
+
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteTLV     (pak, 1);
+    PacketWriteLen     (pak);
+    PacketWrite4       (pak, sess->uin);
+    PacketWrite2       (pak, 2000);
+    PacketWrite2       (pak, 2);
+    PacketWrite2       (pak, 1331);
+    PacketWriteLNTS    (pak, wp->first);
+    PacketWriteLNTS    (pak, wp->last);
+    PacketWriteLNTS    (pak, wp->nick);
+    PacketWriteLNTS    (pak, wp->email);
+    PacketWrite2       (pak, wp->minage);
+    PacketWrite2       (pak, wp->maxage);
+    PacketWrite1       (pak, wp->sex);
+    PacketWrite1       (pak, wp->language);
+    PacketWriteLNTS    (pak, wp->city);
+    PacketWriteLNTS    (pak, wp->state);
+    PacketWriteB2      (pak, wp->country);
+    PacketWriteLNTS    (pak, wp->company);
+    PacketWriteLNTS    (pak, wp->department);
+    PacketWriteLNTS    (pak, wp->position);
+    PacketWrite1       (pak, 0);    /* occupation); */
+    PacketWriteB2      (pak, 0);    /* past information); */
+    PacketWriteLNTS    (pak, NULL); /* description); */
+    PacketWriteB2      (pak, 0);    /* interests-category); */
+    PacketWriteLNTS    (pak, NULL); /* interests-specification); */
+    PacketWriteB2      (pak, 0);    /* affiliation/organization); */
+    PacketWriteLNTS    (pak, NULL); /* description); */
+    PacketWriteB2      (pak, 0);    /* homepage category); */
+    PacketWriteLNTS    (pak, NULL); /* description); */
+    PacketWrite1       (pak, wp->online);
+    PacketWriteLenDone (pak);
+    PacketWriteTLVDone (pak);
     SnacSend (sess, pak);
 }
 
 /*
  * CLI_REGISTERUSER - SNAC(17,4)
  */
-#define _REG_X2 0x28000300
-#define _REG_X3 0x8a4c0000
-#define _REG_X4 0x00000602
-#define REG_X1 0x00010033
-#define REG_X2 0x28000300
-#define REG_X3 0x9e270000
-#define REG_X4 0x00000302
+#define _REG_X1 0x28000300
+#define _REG_X2 0x8a4c0000
+#define _REG_X3 0x00000602
+#define REG_X1 0x28000300
+#define REG_X2 0x9e270000
+#define REG_X3 0x00000302
 void SnacCliRegisteruser (Session *sess)
 {
     Packet *pak;
     
     pak = SnacC (sess, 23, 4, 0, 0);
-    PacketWriteB4 (pak, REG_X1 + strlen (sess->passwd));
+    PacketWriteTLV (pak, 1);
+    PacketWriteB4 (pak, 0);
+    PacketWriteB4 (pak, REG_X1);
+    PacketWriteB4 (pak, 0);
     PacketWriteB4 (pak, 0);
     PacketWriteB4 (pak, REG_X2);
-    PacketWriteB4 (pak, 0);
-    PacketWriteB4 (pak, 0);
-    PacketWriteB4 (pak, REG_X3);
-    PacketWriteB4 (pak, REG_X3);
+    PacketWriteB4 (pak, REG_X2);
     PacketWriteB4 (pak, 0);
     PacketWriteB4 (pak, 0);
     PacketWriteB4 (pak, 0);
     PacketWriteB4 (pak, 0);
     PacketWriteLNTS (pak, sess->passwd);
+    PacketWriteB4 (pak, REG_X2);
     PacketWriteB4 (pak, REG_X3);
-    PacketWriteB4 (pak, REG_X4);
+    PacketWriteTLVDone (pak);
     SnacSend (sess, pak);
 }

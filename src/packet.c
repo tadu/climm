@@ -127,8 +127,24 @@ void PacketWriteStrB(Packet *pak, const char *data)
 void PacketWriteLNTS (Packet *pak, const char *data)
 {
     assert (pak);
+    if (!data)
+        data = "";
     assert (pak->wpos + strlen (data) < PacketMaxData);
 
+    PacketWrite2 (pak, strlen (data) + 1);
+    strcpy (&pak->data[pak->wpos], data);
+    pak->wpos += strlen (data);
+    PacketWrite1 (pak, 0);
+}
+
+void PacketWriteLLNTS (Packet *pak, const char *data)
+{
+    assert (pak);
+    if (!data)
+        data = "";
+    assert (pak->wpos + strlen (data) < PacketMaxData);
+
+    PacketWrite2 (pak, strlen (data) + 3);
     PacketWrite2 (pak, strlen (data) + 1);
     strcpy (&pak->data[pak->wpos], data);
     pak->wpos += strlen (data);
@@ -152,6 +168,43 @@ void PacketWriteUIN (Packet *pak, UDWORD uin)
     snprintf (str, sizeof (str), "%ld", uin);
     PacketWrite1 (pak, strlen (str));
     PacketWriteData (pak, str, strlen (str));
+}
+
+void PacketWriteTLV (Packet *pak, UDWORD type)
+{
+    UWORD pos;
+    
+    PacketWriteB2 (pak, type);
+    pos = pak->wpos;
+    PacketWriteB2 (pak, pak->tpos); /* will be length */
+    pak->tpos = pos;
+}
+
+void PacketWriteTLVDone (Packet *pak)
+{
+    UWORD pos;
+    
+    pos = PacketReadBAt2 (pak, pak->tpos);
+    PacketWriteBAt2 (pak, pak->tpos, pak->wpos - pak->tpos - 2);
+    pak->tpos = pos;
+}
+
+void PacketWriteLen (Packet *pak)
+{
+    UWORD pos;
+    
+    pos = pak->wpos;
+    PacketWriteB2 (pak, pak->tpos); /* will be length */
+    pak->tpos = pos;
+}
+
+void PacketWriteLenDone (Packet *pak)
+{
+    UWORD pos;
+    
+    pos = PacketReadBAt2 (pak, pak->tpos);
+    PacketWriteAt2 (pak, pak->tpos, pak->wpos - pak->tpos - 2);
+    pak->tpos = pos;
 }
 
 UWORD PacketWritePos (const Packet *pak)

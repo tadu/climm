@@ -113,7 +113,7 @@ void FlapChannel4 (Session *sess, Packet *pak)
         if (tlv[1].len && tlv[1].nr != sess->uin)
             M_print (i18n (1049, "UIN: %d\n"), tlv[1].nr);
         if (tlv[4].len)
-            M_print (i18n (1051, "URL: %s\n"), tlv[4].str);
+            M_print (i18n (1961, "URL: %s\n"), tlv[4].str);
         M_print (ESC "»\n");
 
         if ((sess->connect & CONNECT_MASK) && sess->sok != -1)
