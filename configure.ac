@@ -135,7 +135,7 @@ if test "x$WIP" != "x"; then
 fi
 
 if test "x$MICQ_EXTRAVERSION" != "x"; then
-    AC_DEFINE(EXTRAVERSION,$MICQ_EXTRAVERSION,[Extra version information like the distribution used])
+    AC_DEFINE_UNQUOTED(EXTRAVERSION,$MICQ_EXTRAVERSION,[Extra version information like the distribution used])
 else
     AC_DEFINE(EXTRAVERSION,["hand compiled"])
 fi
