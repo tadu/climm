@@ -1398,6 +1398,8 @@ static void rl_key_kill (void)
     rl_goto (0);
     rl_linecompress (&rl_temp, 0, -1);
     s_repl (&rl_yank, rl_temp.txt);
+    rl_tab_state = 0;
+    rl_tab_len = 0;
     rl_key_cut ();
 }
 
