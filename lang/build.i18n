@@ -1009,3 +1009,8 @@
 2009:Found random chat partner UIN %d in chat group %d.¶
 2010:None                       0¶
 2011:You do not have a listening peer-to-peer connection.¶
+2012:No password given.¶
+2013:This command is v8 only.¶
+2014:No number given.¶
+2015:No message given.¶
+2016:The server says about the SMS delivery:¶%s

@@ -1244,6 +1244,26 @@ void SnacCliMetasetmore (Session *sess, const MetaMore *user)
 }
 
 /*
+ * CLI_METASETPASS - SNAC(15,2) - 2000/1170
+ */
+void SnacCliMetasetpass (Session *sess, const char *newpass)
+{
+    Packet *pak;
+    
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteTLV     (pak, 1);
+    PacketWriteLen     (pak);
+    PacketWrite4       (pak, sess->uin);
+    PacketWrite2       (pak, 2000);
+    PacketWrite2       (pak, 2);
+    PacketWrite2       (pak, 1070);
+    PacketWriteLNTS    (pak, newpass);
+    PacketWriteLenDone (pak);
+    PacketWriteTLVDone (pak);
+    SnacSend (sess, pak);
+}
+
+/*
  * CLI_METAREQINFO - SNAC(15,2) - 2000/1232
  */
 void SnacCliMetareqinfo (Session *sess, UDWORD uin)
@@ -1402,6 +1422,41 @@ void SnacCliSearchwp (Session *sess, const MetaWP *wp)
     PacketWriteB2      (pak, 0);    /* homepage category); */
     PacketWriteLNTS    (pak, NULL); /* description); */
     PacketWrite1       (pak, wp->online);
+    PacketWriteLenDone (pak);
+    PacketWriteTLVDone (pak);
+    SnacSend (sess, pak);
+}
+
+/*
+ * CLI_SENDSMS - SNAC(15,2) - 2000/5250
+ */
+void SnacCliSendsms (Session *sess, const char *target, const char *text)
+{
+    Packet *pak;
+    char buf[2000], tbuf[100];
+    time_t t = time (NULL);
+
+    strftime (tbuf, sizeof (tbuf), "%a, %d %b %Y %H:%M:%S GMT", gmtime (&t));
+    snprintf (buf, sizeof (buf), "<icq_sms_message><destination>%s</destination>"
+             "<text>%s (www.mICQ.org)</text><codepage>1252</codepage><senders_UIN>%ld</senders_UIN>"
+             "<senders_name>%s</senders_name><delivery_receipt>Yes</delivery_receipt>"
+             "<time>%s</time></icq_sms_message>",
+             target, text, sess->uin, "mICQ", tbuf);
+
+    pak = SnacC (sess, 21, 2, 0, 0);
+    PacketWriteTLV     (pak, 1);
+    PacketWriteLen     (pak);
+    PacketWrite4       (pak, sess->uin);
+    PacketWrite2       (pak, 2000);
+    PacketWrite2       (pak, 2);
+    PacketWrite2       (pak, 5250);
+    PacketWriteB2      (pak, 1);
+    PacketWriteB2      (pak, 22);
+    PacketWriteB4      (pak, 0);
+    PacketWriteB4      (pak, 0);
+    PacketWriteB4      (pak, 0);
+    PacketWriteB4      (pak, 0);
+    PacketWriteTLVStr  (pak, 0, buf);
     PacketWriteLenDone (pak);
     PacketWriteTLVDone (pak);
     SnacSend (sess, pak);

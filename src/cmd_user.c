@@ -32,13 +32,13 @@
 static jump_f
     CmdUserChange, CmdUserRandom, CmdUserHelp, CmdUserInfo, CmdUserTrans,
     CmdUserAuto, CmdUserAlter, CmdUserMessage, CmdUserResend,
-    CmdUserVerbose, CmdUserRandomSet, CmdUserIgnoreStatus,
+    CmdUserVerbose, CmdUserRandomSet, CmdUserIgnoreStatus, CmdUserSMS,
     CmdUserStatusDetail, CmdUserStatusWide, CmdUserStatusShort,
     CmdUserStatusSelf, CmdUserSound, CmdUserSoundOnline, CmdUserRegister,
     CmdUserSoundOffline, CmdUserAutoaway, CmdUserSet, CmdUserClear,
     CmdUserTogIgnore, CmdUserTogVisible, CmdUserAdd, CmdUserRem, CmdUserRInfo,
     CmdUserAuth, CmdUserURL, CmdUserSave, CmdUserTabs, CmdUserLast,
-    CmdUserUptime, CmdUserOldSearch, CmdUserSearch, CmdUserUpdate,
+    CmdUserUptime, CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserTCP, CmdUserConn;
 
 static void CmdUserProcess (const char *command, int *idle_val, int *idle_flag);
@@ -94,6 +94,8 @@ static jump_t jump[] = {
     { &CmdUserTCP,           "peer",         NULL, 0,   0 },
     { &CmdUserTCP,           "tcp",          NULL, 0,   0 },
     { &CmdUserQuit,          "q",            NULL, 0,   0 },
+    { &CmdUserPass,          "pass",         NULL, 0,   0 },
+    { &CmdUserSMS,           "sms",          NULL, 0,   0 },
 
     { &CmdUserOldSearch,     "oldsearch",    NULL, 0,   0 },
     { &CmdUserSearch,        "search",       NULL, 0,   0 },
@@ -427,6 +429,57 @@ JUMP_F(CmdUserHelp)
                  i18n (1402, "Updates your about user info."));
         M_print (COLMESS "set <nr>" COLNONE "\n\t\x1b«%s\x1b»\n", 
                  i18n (1439, "Sets your random user group."));
+    }
+    return 0;
+}
+
+/*
+ * Sets a new password.
+ */
+JUMP_F(CmdUserPass)
+{
+    char *arg1;
+    SESSION;
+    
+    arg1 = strtok (args, "");
+    if (!arg1)
+        M_print (i18n (2012, "No password given.\n"));
+    else
+    {
+        if (sess->ver < 6)
+            CmdPktCmdMetaPass (sess, arg1);
+        else
+            SnacCliMetasetpass (sess, arg1);
+        sess->passwd = strdup (arg1);
+        if (sess->spref->passwd && strlen (sess->spref->passwd))
+            sess->spref->passwd = strdup (arg1);
+    }
+    return 0;
+}
+
+/*
+ * Sends an SMS message.
+ */
+JUMP_F(CmdUserSMS)
+{
+    char *arg1, *arg2;
+    SESSION;
+    
+    if (sess->ver < 6)
+    {
+        M_print (i18n (2013, "This command is v8 only.\n"));
+        return 0;
+    }
+    arg1 = strtok (args, " ");
+    if (!arg1)
+        M_print (i18n (2014, "No number given.\n"));
+    else
+    {
+        arg2 = strtok (NULL, "");
+        if (!arg2)
+            M_print (i18n (2015, "No message given.\n"));
+
+        SnacCliSendsms (sess, arg1, arg2);
     }
     return 0;
 }
@@ -1793,7 +1846,7 @@ JUMP_F(CmdUserRem)
     UDWORD uin;
     SESSION;
 
-    arg1 = strtok (args, " \t");
+    arg1 = strtok (args, "\t\n");
     if (arg1)
     {
         uin = ContactFindByNick (arg1);
@@ -2633,7 +2686,6 @@ void CmdUserProcess (const char *command, int *idle_val, int *idle_flag)
 {
     unsigned char buf[1024];    /* This is hopefully enough */
     char *cmd;
-    char *arg1;
 
     static jump_f *sticky = (jump_f *)NULL;
     static int status = 0;
@@ -2707,13 +2759,6 @@ void CmdUserProcess (const char *command, int *idle_val, int *idle_flag)
                 return;
             }
 
-            /* goto's removed and code fixed by Paul Laufer. Enjoy! */
-            else if (!strcasecmp (cmd, "pass"))
-            {
-                arg1 = strtok (NULL, "");
-/*                if (arg1 && sess->ver < 6)
-                    CmdPktCmdMetaPass (NULL, arg1);       TODO */
-            }
             else if (!strcasecmp (cmd, "ver"))
             {
                 M_print (BuildVersion ());

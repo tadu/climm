@@ -31,6 +31,8 @@ void SnacCliMetareqinfo     (Session *sess, UDWORD uin);
 void SnacCliMetasetabout    (Session *sess, const char *text);
 void SnacCliMetasetmore     (Session *sess, const MetaMore *user);
 void SnacCliMetasetgeneral  (Session *sess, const MetaGeneral *user);
+void SnacCliMetasetpass     (Session *sess, const char *newpass);
+void SnacCliSendsms         (Session *sess, const char *target, const char *text);
 void SnacCliSearchbypersinf (Session *sess, const char *email, const char *nick, const char *name, const char *surname);
 void SnacCliSearchbymail    (Session *sess, const char *email);
 void SnacCliSearchwp        (Session *sess, const MetaWP *wp);

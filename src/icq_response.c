@@ -95,6 +95,15 @@ void Meta_User (Session *sess, UDWORD uin, Packet *p)
         case META_SRV_PASS_UPDATE:
         case META_SRV_RANDOM_UPDATE:
             break;
+        case META_SRV_SMS_OK:
+            PacketRead4 (p);
+            PacketRead2 (p);
+            PacketReadStrB (p);
+            M_print (i18n (2016, "The server says about the SMS delivery:\n%s"),
+                      PacketReadStrB (p));
+            
+            len = PacketReadB2 (p);
+            break;
         case META_SRV_INFO:
             Display_Info_Reply (sess, p, NULL, 0);
             /* 3 unknown bytes ignored */

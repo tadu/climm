@@ -20,6 +20,7 @@
 #define META_SRV_GEN_UPDATE     100
 #define META_SRV_OTHER_UPDATE   120
 #define META_SRV_ABOUT_UPDATE   130
+#define META_SRV_SMS_OK         150
 #define META_SRV_PASS_UPDATE    170
 #define META_SRV_GEN            200
 #define META_SRV_WORK           210
