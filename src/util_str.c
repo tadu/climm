@@ -598,11 +598,6 @@ BOOL s_parserem_s (char **input, char **parsed, char *sep)
     
     while (*p && strchr (sep, *p))
         p++;
-    if (*p == '#')
-    {
-        while (*p)
-            p++;
-    }
     *input = p;
     if (!*p)
     {
@@ -611,13 +606,10 @@ BOOL s_parserem_s (char **input, char **parsed, char *sep)
     }
 
     if (*p == '"')
-    {
         s = 1;
-        p++;
-    }
     
     s_repl (&t, p);
-    *parsed = q = t;
+    *parsed = q = t + s;
     q = q + strlen (q) - 1;
     while (strchr (sep, *q))
         *(q--) = '\0';
@@ -626,7 +618,7 @@ BOOL s_parserem_s (char **input, char **parsed, char *sep)
         if (*q == '"')
             *(q--) = '\0';
         else
-            (*parsed)++;
+            (*parsed)--;
     }
     return TRUE;
 }
