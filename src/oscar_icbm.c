@@ -949,10 +949,19 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
         /* Requests for auto-response message */
         do  {
                 val_t val;
-        case MSGF_GETAUTO | MSG_GET_AWAY:  ack_msg = ContactPrefStr (cont, CO_AUTOAWAY); break;
-        case MSGF_GETAUTO | MSG_GET_OCC:   ack_msg = ContactPrefStr (cont, CO_AUTOOCC);  break;
-        case MSGF_GETAUTO | MSG_GET_NA:    ack_msg = ContactPrefStr (cont, CO_AUTONA);   break;
-        case MSGF_GETAUTO | MSG_GET_DND:   ack_msg = ContactPrefStr (cont, CO_AUTODND);  break;
+
+        case MSGF_GETAUTO | MSG_GET_AWAY:
+            ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTOAWAY)) && *tauto ? tauto : ContactPrefStr (cont, CO_AUTOAWAY);
+            break;
+        case MSGF_GETAUTO | MSG_GET_OCC:
+            ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTOOCC))  && *tauto ? tauto : ContactPrefStr (cont, CO_AUTOOCC);
+            break;
+        case MSGF_GETAUTO | MSG_GET_NA:
+            ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTONA))   && *tauto ? tauto : ContactPrefStr (cont, CO_AUTONA);
+            break;
+        case MSGF_GETAUTO | MSG_GET_DND:
+            ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTODND))  && *tauto ? tauto : ContactPrefStr (cont, CO_AUTODND);
+            break;
         case MSGF_GETAUTO | MSG_GET_FFC:   ack_msg = ContactPrefStr (cont, CO_AUTOFFC);  break;
         case MSGF_GETAUTO | MSG_GET_VER:
                 if (!OptGetVal (&prG->copts, CO_ENCODING, &val))
