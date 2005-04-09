@@ -281,11 +281,11 @@ void HistShow (Contact *cont)
     
     for (i = 0; i < HISTSIZE; i++)
         if (hist[i].conn && (!cont || hist[i].cont == cont))
-            rl_printf ("%s%s %s%*s %c%s %s" COLMSGINDENT "%s\n",
+            rl_printf ("%s%s %s%*s %s%s %s" COLMSGINDENT "%s\n",
                        COLDEBUG, s_time (&hist[i].stamp),
                        hist[i].inout == HIST_IN ? COLINCOMING : COLACK,
                        uiG.nick_len + s_delta (hist[i].cont->nick),
-                       hist[i].cont->nick, hist[i].inout == HIST_IN ? '<-' : '->',
+                       hist[i].cont->nick, hist[i].inout == HIST_IN ? "<-" : "->",
                        COLNONE, COLMESSAGE, hist[i].msg);
 }
 
