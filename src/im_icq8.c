@@ -155,7 +155,7 @@ static void IMRosterShow (Event *event)
     {
         IMRosterCheckGroup (serv, rg);
         if (prG->verbose)
-            rl_printf ("  %6d", rg->id);
+            rl_printf ("  %6d", rg->tag);
         rl_printf ("  %s%s%s\n",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE);
         cnt_groups++;
