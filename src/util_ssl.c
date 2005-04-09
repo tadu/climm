@@ -1,4 +1,4 @@
-/*
+
  * TLS Diffie Hellmann extension.
  *
  * mICQ TLS extension Copyright (C) © 2003-2005 Roman Hoog Antink
@@ -524,7 +524,11 @@ int ssl_handshake (Connection *conn DEBUGPARAM)
     if (ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED)
     {
         conn->ssl_status = SSL_STATUS_HANDSHAKE;
-        conn->connect |= CONNECT_SELECT_R | CONNECT_SELECT_W;
+        conn->connect &= ~CONNECT_SELECT_R & ~CONNECT_SELECT_W;
+        if (gnutls_record_get_direction (conn->ssl))
+           conn->connect |= CONNECT_SELECT_W;
+        else
+           conn->connect |= CONNECT_SELECT_R;
         return 1;
     }
 #else
