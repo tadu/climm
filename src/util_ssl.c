@@ -1,4 +1,4 @@
-
+/*
  * TLS Diffie Hellmann extension.
  *
  * mICQ TLS extension Copyright (C) © 2003-2005 Roman Hoog Antink
