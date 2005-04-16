@@ -346,6 +346,13 @@ static JUMP_F(CmdUserChange)
         }
     }
 
+    OptSetStr (&prG->copts, CO_TAUTODND,  NULL);
+    OptSetStr (&prG->copts, CO_TAUTOOCC,  NULL);
+    OptSetStr (&prG->copts, CO_TAUTONA,   NULL);
+    OptSetStr (&prG->copts, CO_TAUTOAWAY, NULL);
+    OptSetStr (&prG->copts, CO_TAUTOFFC,  NULL);
+    OptSetStr (&prG->copts, CO_TAUTOINV,  NULL);
+
     if (!(arg1 = s_parserem (&args)))
         arg1 = "";
 
