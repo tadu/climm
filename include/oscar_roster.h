@@ -29,6 +29,7 @@ struct Roster_s {
   RosterEntry *ignore;
   time_t import;
   char *ICQTIC;
+  char *delname;
   UDWORD delid;
   UDWORD deltag;
 };

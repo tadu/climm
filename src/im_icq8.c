@@ -75,6 +75,7 @@ static Contact *IMRosterCheckCont (Connection *serv, RosterEntry *rc)
         tcont->id = 0;
     }
     cont->id = rc->id;
+    cont->tag = rc->tag;
     return cont;
 }
 
@@ -111,30 +112,59 @@ static void IMRosterDoDelete (Event *event)
     
     if (!roster)
         return;
-    
-    for (re = roster->groups; re; re = re->next)
-        if (re->tag == roster->deltag && re->id == roster->delid)
-            SnacCliRosterentrydelete (serv, re);
 
-    for (re = roster->ignore; re; re = re->next)
-        if (re->tag == roster->deltag && re->id == roster->delid)
-            SnacCliRosterentrydelete (serv, re);
+    if (roster->delname)
+    {
+        for (re = roster->groups; re; re = re->next)
+            if (re->name == roster->delname)
+                SnacCliRosterentrydelete (serv, re);
 
-    for (re = roster->invisible; re; re = re->next)
-        if (re->tag == roster->deltag && re->id == roster->delid)
-            SnacCliRosterentrydelete (serv, re);
+        for (re = roster->ignore; re; re = re->next)
+            if (re->name == roster->delname)
+                SnacCliRosterentrydelete (serv, re);
 
-    for (re = roster->visible; re; re = re->next)
-        if (re->tag == roster->deltag && re->id == roster->delid)
-            SnacCliRosterentrydelete (serv, re);
+        for (re = roster->invisible; re; re = re->next)
+            if (re->name == roster->delname)
+                SnacCliRosterentrydelete (serv, re);
 
-    for (re = roster->normal; re; re = re->next)
-        if (re->tag == roster->deltag && re->id == roster->delid)
-            SnacCliRosterentrydelete (serv, re);
+        for (re = roster->visible; re; re = re->next)
+            if (re->name == roster->delname)
+                SnacCliRosterentrydelete (serv, re);
 
-    for (re = roster->generic; re; re = re->next)
-        if (re->tag == roster->deltag && re->id == roster->delid)
-            SnacCliRosterentrydelete (serv, re);
+        for (re = roster->normal; re; re = re->next)
+            if (re->name == roster->delname)
+                SnacCliRosterentrydelete (serv, re);
+
+        for (re = roster->generic; re; re = re->next)
+            if (re->name == roster->delname)
+                SnacCliRosterentrydelete (serv, re);
+    }
+    else
+    {
+        for (re = roster->groups; re; re = re->next)
+            if (re->tag == roster->deltag && re->id == roster->delid)
+                SnacCliRosterentrydelete (serv, re);
+
+        for (re = roster->ignore; re; re = re->next)
+            if (re->tag == roster->deltag && re->id == roster->delid)
+                SnacCliRosterentrydelete (serv, re);
+
+        for (re = roster->invisible; re; re = re->next)
+            if (re->tag == roster->deltag && re->id == roster->delid)
+                SnacCliRosterentrydelete (serv, re);
+
+        for (re = roster->visible; re; re = re->next)
+            if (re->tag == roster->deltag && re->id == roster->delid)
+                SnacCliRosterentrydelete (serv, re);
+
+        for (re = roster->normal; re; re = re->next)
+            if (re->tag == roster->deltag && re->id == roster->delid)
+                SnacCliRosterentrydelete (serv, re);
+
+        for (re = roster->generic; re; re = re->next)
+            if (re->tag == roster->deltag && re->id == roster->delid)
+                SnacCliRosterentrydelete (serv, re);
+    }
 
     IMRosterCancel (event);
 }
@@ -168,7 +198,7 @@ static void IMRosterShow (Event *event)
         rg = IMRosterGroup (roster, rc->tag);
         if (prG->verbose)
             rl_printf ("  %6d", rc->tag);
-        rl_printf ("  %s%-25s%s %s%-15s%s",
+        rl_printf ("  %s%-25s%s %s%15s%s",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE);
         if (prG->verbose)
@@ -185,7 +215,7 @@ static void IMRosterShow (Event *event)
         rg = IMRosterGroup (roster, rc->tag);
         if (prG->verbose)
             rl_printf ("  %6d", rc->tag);
-        rl_printf ("  %s%-25s%s %s%-15s%s",
+        rl_printf ("  %s%-25s%s %s%15s%s",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE);
         if (prG->verbose)
@@ -202,7 +232,7 @@ static void IMRosterShow (Event *event)
         rg = IMRosterGroup (roster, rc->tag);
         if (prG->verbose)
             rl_printf ("  %6d", rc->tag);
-        rl_printf ("  %s%-25s%s %s%-15s%s",
+        rl_printf ("  %s%-25s%s %s%15s%s",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE);
         if (prG->verbose)
@@ -219,7 +249,7 @@ static void IMRosterShow (Event *event)
         rg = IMRosterGroup (roster, rc->tag);
         if (prG->verbose)
             rl_printf ("  %6d", rc->tag);
-        rl_printf ("  %s%-25s%s %s%-15s%s",
+        rl_printf ("  %s%-25s%s %s%15s%s",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE);
         if (prG->verbose)
@@ -282,7 +312,7 @@ static void IMRosterAdddown (Event *event)
             ContactAddAlias (cont, rc->nick);
             ContactAddAlias (cont, rc->name);
         }
-        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
+        rl_printf ("  %s%-25s%s %s%15s%s %s%s%s\n",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE,
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
@@ -305,7 +335,7 @@ static void IMRosterAdddown (Event *event)
             ContactAddAlias (cont, rc->nick);
             ContactAddAlias (cont, rc->name);
         }
-        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
+        rl_printf ("  %s%-25s%s %s%15s%s %s%s%s\n",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE,
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
@@ -328,7 +358,7 @@ static void IMRosterAdddown (Event *event)
             ContactAddAlias (cont, rc->nick);
             ContactAddAlias (cont, rc->name);
         }
-        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
+        rl_printf ("  %s%-25s%s %s%15s%s %s%s%s\n",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE,
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
@@ -351,7 +381,7 @@ static void IMRosterAdddown (Event *event)
             ContactAddAlias (cont, rc->nick);
             ContactAddAlias (cont, rc->name);
         }
-        rl_printf ("  %s%-25s%s %s%-15s%s %s%s%s\n",
+        rl_printf ("  %s%-25s%s %s%15s%s %s%s%s\n",
             COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
             COLCONTACT, rc->name, COLNONE,
             COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
@@ -559,13 +589,14 @@ static void IMRosterDiff (Event *event)
                cnt_ignored, cnt_hidden, cnt_intimate, cnt_more);
 }
 
-UBYTE IMDeleteID (Connection *conn, int tag, int id)
+UBYTE IMDeleteID (Connection *conn, int tag, int id, const char *name)
 {
     Roster *roster;
     
     roster = OscarRosterC ();
     roster->deltag = tag;
     roster->delid = id;
+    roster->delname = name ? strdup (name) : NULL;
     QueueEnqueueData2 (conn, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (conn),
                        900, roster, IMRosterDoDelete, IMRosterCancel);
     return RET_OK;

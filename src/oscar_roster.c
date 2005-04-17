@@ -79,6 +79,7 @@ void OscarRosterD (Roster *roster)
     OscarRosterEntryD (roster->visible);
     OscarRosterEntryD (roster->invisible);
     OscarRosterEntryD (roster->ignore);
+    s_free (roster->delname);
     free (roster);
 }
 
@@ -576,6 +577,7 @@ JUMP_SNAC_F(SnacSrvUpdateack)
                 if (cont)
                 {
                     cont->id = 0;
+                    cont->tag = 0;
                     rl_printf (i18n (2566, "Contact upload for %s%s%s failed, already on server.\n"),
                                COLCONTACT, s_quote (cont->nick), COLNONE);
                 }

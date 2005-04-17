@@ -89,6 +89,7 @@ struct Contact_s
     Opt copts;
     UDWORD caps[2];
     UWORD  id;
+    UWORD  tag;
     UBYTE  v1, v2, v3, v4;
 
     char  *version;
