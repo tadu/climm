@@ -100,8 +100,8 @@ static jump_t jump[] = {
     { &CmdUserUnalias,       "unalias",      0,   0 },
     { &CmdUserAnyMess,       "_msg",         0,   0 },
     { &CmdUserMessage,       "msg",          0,   1 },
-    { &CmdUserMessage,       "r",            0,   2 },
-    { &CmdUserMessage,       "a",            0,   4 },
+/*    { &CmdUserMessage,       "r",            0,   2 },
+    { &CmdUserMessage,       "a",            0,   4 },*/
     { &CmdUserMessage,       "chat",         0,   8 },
     { &CmdUserGetAuto,       "getauto",      0,   0 },
     { &CmdUserResend,        "resend",       0,   0 },
@@ -1384,6 +1384,7 @@ static JUMP_F (CmdUserMessage)
                     ContactAdd (tcg, cont);
                 cg = tcg;
                 break;
+/*
             case 2:
                 if (!uiG.last_rcvd)
                 {
@@ -1402,6 +1403,7 @@ static JUMP_F (CmdUserMessage)
                 cg = ContactGroupC (NULL, 0, NULL);
                 ContactAdd (cg, uiG.last_sent);
                 break;
+*/
             default:
                 assert (0);
         }

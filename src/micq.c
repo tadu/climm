@@ -290,6 +290,8 @@ static void Init (int argc, char *argv[])
     i18nInit (arg_i);
     PreferencesInit (prG);
     ReadLineInit ();
+    ReadLineAutoExpand ("r", "msg %r");
+    ReadLineAutoExpand ("a", "msg %a");
     
     loaded = arg_h ? 0 : PrefLoad (prG);
     prG->verbose &= ~0x80000000UL;

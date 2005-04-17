@@ -174,6 +174,14 @@ static UWORD  rl_prompt_len = 0;
 static int    rl_prompt_stat = 0;
 static time_t rl_prompt_time = 0;
 
+typedef struct rl_autoexpandv_s {
+  struct rl_autoexpandv_s *next;
+  char *command;
+  char *replace;
+} rl_autoexpandv_t;
+      
+static rl_autoexpandv_t *rl_ae = NULL;
+
 /*
  * Initialize read line code
  */
@@ -1403,6 +1411,72 @@ static void rl_key_kill (void)
     rl_key_cut ();
 }
 
+/*** read line auto expander ***/
+
+const rl_autoexpand_t *ReadLineListAutoExpand (void)
+{
+    return (const rl_autoexpand_t *) rl_ae;
+}
+
+void ReadLineAutoExpand (const char *command, const char *replace)
+{
+    rl_autoexpandv_t *e;
+    
+    for (e = rl_ae; e; e = e->next)
+    {
+        if (!strcmp (command, e->command))
+        {
+            s_repl (&e->replace, replace);
+            return;
+        }
+    }
+    e = malloc (sizeof (rl_autoexpandv_t));
+    e->next = rl_ae;
+    e->command = strdup (command);
+    e->replace = strdup (replace);
+    rl_ae = e;
+}
+
+static void rl_checkautoexpand (void)
+{
+    rl_autoexpandv_t *e;
+    static str_s rl_exp = { NULL, 0, 0 };
+    char *p, *q;
+    
+    rl_linecompress (&rl_temp, 0, -1);
+        
+    for (e = rl_ae; e; e = e->next)
+        if (!strcmp (rl_temp.txt, e->command))
+            break;
+
+    if (!e)
+        return;
+    
+    s_init (&rl_exp, "", 0);
+    for (p = e->replace; *p && (q = strchr (p, '%')); p = q)
+    {
+        s_catn (&rl_exp, p, q - p);
+        if (q[1] == 'r')
+        {
+            if (uiG.last_rcvd)
+                s_cat (&rl_exp, uiG.last_rcvd->nick ? uiG.last_rcvd->nick : s_sprintf ("%lu", uiG.last_rcvd->uin));
+            q += 2;
+        }
+        else if (q[1] == 'a')
+        {
+            if (uiG.last_sent)
+                s_cat (&rl_exp, uiG.last_sent->nick ? uiG.last_sent->nick : s_sprintf ("%lu", uiG.last_sent->uin));
+            q += 2;
+        }
+        else
+            q++;
+    }
+    s_cat (&rl_exp, p);
+    rl_tab_state = 0;
+    rl_goto (0);
+    rl_lineexpand (rl_exp.txt);
+}
+
 /*** read line input processor ***/
 
 /*
@@ -1516,6 +1590,8 @@ str_t ReadLine (UBYTE newbyte)
                 case 32:             /*   = SPACE */
                     if (rl_tab_state > 0)
                         rl_tab_accept ();
+                    else
+                        rl_checkautoexpand ();
                     rl_insert (' ');
                     break;
                 case 127:            /* DEL */
