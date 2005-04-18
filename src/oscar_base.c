@@ -310,9 +310,7 @@ void FlapCliIdent (Connection *conn)
         rl_print (i18n (2063, "You need to save your password in your ~/.micq/micqrc file.\n"));
 #else
         rl_printf ("%s ", i18n (1063, "Enter password:"));
-        Echo_Off ();
         pwd = UtilIOReadline (stdin);
-        Echo_On ();
         conn->passwd = strdup (pwd ? ConvFrom (pwd, prG->enc_loc)->txt : "");
 #endif
     }

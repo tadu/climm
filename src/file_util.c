@@ -104,7 +104,9 @@ void Initialize_RC_File ()
     rl_print (i18n (1794, "If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.\n"));
     rl_printf ("%s ", i18n (1618, "UIN:"));
     fflush (stdout);
+    ReadLineTtyUnset ();
     line = UtilIOReadline (stdin);
+    ReadLineTtySet ();
     tmpuin = 0;
     if (line)
         sscanf (line->txt, "%ld", &tmpuin);
@@ -119,9 +121,7 @@ void Initialize_RC_File ()
     {
         rl_printf ("%s ", i18n (1795, "Password:"));
         fflush (stdout);
-        Echo_Off ();
         line = UtilIOReadline (stdin);
-        Echo_On ();
         if (!line)
             continue;
         rl_print ("\n");
@@ -131,10 +131,8 @@ void Initialize_RC_File ()
         rl_print (i18n (1783, "To prevent typos, please enter your password again.\n"));
         rl_printf ("%s ", i18n (1795, "Password:"));
         fflush (stdout);
-        Echo_Off ();
         pwd = strdup (line->txt);
         line = UtilIOReadline (stdin);
-        Echo_On ();
         if (!line)
             continue;
         rl_print ("\n");
@@ -155,6 +153,7 @@ void Initialize_RC_File ()
     rl_print (i18n (1784, "If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n"));
     rl_printf ("%s ", i18n (1094, "SOCKS5 server:"));
     fflush (stdout);
+    ReadLineTtyUnset ();
     line = UtilIOReadline (stdin);
     if (line && line->len)
     {
@@ -201,6 +200,7 @@ void Initialize_RC_File ()
         }
     }
     rl_print ("\n");
+    ReadLineTtySet ();
 
     if (!uin)
     {

@@ -36,9 +36,7 @@ Event *ConnectionInitServerV5 (Connection *conn)
     {
         strc_t pwd;
         rl_printf ("%s ", i18n (1063, "Enter password:"));
-        Echo_Off ();
         pwd = UtilIOReadline (stdin);
-        Echo_On ();
         conn->passwd = strdup (pwd ? pwd->txt : "");
     }
     QueueEnqueueData (conn, /* FIXME: */ 0, 0, time (NULL), NULL, 0, NULL, &CallBackServerInitV5);
