@@ -269,7 +269,7 @@ static void IMRosterAdddown (Event *event)
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
     Connection *serv = event->conn;
-    ContactGroup *cg;
+    ContactGroup *cg, *tcg;
     Contact *cont;
     int cnt_groups = 0, cnt_ignored = 0, cnt_hidden = 0, cnt_intimate = 0, cnt_normal = 0;
     
@@ -281,8 +281,8 @@ static void IMRosterAdddown (Event *event)
         cg = IMRosterCheckGroup (serv, rg);
         if (!cg)
         {
-            rl_printf ("## %d %s\n", rg->id, rg->name);
-            cg = ContactGroupC (serv, rg->id, rg->name);
+            rl_printf ("## %d %s\n", rg->tag, rg->name);
+            cg = ContactGroupC (serv, rg->tag, rg->name);
             OptSetVal (&cg->copts, CO_ISSBL, 1);
             cnt_groups++;
         }
@@ -299,13 +299,20 @@ static void IMRosterAdddown (Event *event)
     for (rc = roster->ignore; rc; rc = rc->next)
     {
         cont = IMRosterCheckCont (serv, rc);
-        rg = IMRosterGroup (roster, rc->tag);
         if (cont && !cont->group)
         {
             ContactCreate (serv, cont);
             ContactAdd (cg, cont);
             OptSetVal (&cont->copts, CO_IGNORE, 1);
             cnt_ignored++;
+        }
+        rg = IMRosterGroup (roster, rc->tag);
+        if (rg)
+            tcg = IMRosterCheckGroup (serv, rg);
+        if (tcg && cont->group == serv->contacts)
+        {
+            ContactAdd (tcg, cont);
+            cont->group = tcg;
         }
         if (cont)
         {
@@ -321,7 +328,6 @@ static void IMRosterAdddown (Event *event)
     for (rc = roster->invisible; rc; rc = rc->next)
     {
         cont = IMRosterCheckCont (serv, rc);
-        rg = IMRosterGroup (roster, rc->tag);
         if (cont && !cont->group)
         {
             ContactCreate (serv, cont);
@@ -329,6 +335,14 @@ static void IMRosterAdddown (Event *event)
             OptSetVal (&cont->copts, CO_HIDEFROM, 1);
             OptSetVal (&cont->copts, CO_INTIMATE, 0);
             cnt_hidden++;
+        }
+        rg = IMRosterGroup (roster, rc->tag);
+        if (rg)
+            tcg = IMRosterCheckGroup (serv, rg);
+        if (tcg && cont->group == serv->contacts)
+        {
+            ContactAdd (tcg, cont);
+            cont->group = tcg;
         }
         if (cont)
         {
@@ -344,7 +358,6 @@ static void IMRosterAdddown (Event *event)
     for (rc = roster->normal; rc; rc = rc->next)
     {
         cont = IMRosterCheckCont (serv, rc);
-        rg = IMRosterGroup (roster, rc->tag);
         if (cont && !cont->group)
         {
             ContactCreate (serv, cont);
@@ -352,6 +365,14 @@ static void IMRosterAdddown (Event *event)
             OptSetVal (&cont->copts, CO_HIDEFROM, 0);
             OptSetVal (&cont->copts, CO_INTIMATE, 0);
             cnt_normal++;
+        }
+        rg = IMRosterGroup (roster, rc->tag);
+        if (rg)
+            tcg = IMRosterCheckGroup (serv, rg);
+        if (tcg && cont->group == serv->contacts)
+        {
+            ContactAdd (tcg, cont);
+            cont->group = tcg;
         }
         if (cont)
         {
@@ -367,7 +388,6 @@ static void IMRosterAdddown (Event *event)
     for (rc = roster->visible; rc; rc = rc->next)
     {
         cont = IMRosterCheckCont (serv, rc);
-        rg = IMRosterGroup (roster, rc->tag);
         if (cont && !cont->group)
         {
             ContactCreate (serv, cont);
@@ -375,6 +395,14 @@ static void IMRosterAdddown (Event *event)
             OptSetVal (&cont->copts, CO_HIDEFROM, 0);
             OptSetVal (&cont->copts, CO_INTIMATE, 1);
             cnt_intimate++;
+        }
+        rg = IMRosterGroup (roster, rc->tag);
+        if (rg)
+            tcg = IMRosterCheckGroup (serv, rg);
+        if (tcg && cont->group == serv->contacts)
+        {
+            ContactAdd (tcg, cont);
+            cont->group = tcg;
         }
         if (cont)
         {
