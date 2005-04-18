@@ -100,7 +100,6 @@ static ContactGroup *IMRosterCheckGroup (Connection *serv, RosterEntry *rg)
         tcg->id = 0;
     }
     cg->id = rg->tag;
-
     return cg;
 }
 
@@ -264,14 +263,84 @@ static void IMRosterShow (Event *event)
                cnt_groups, cnt_ignored + cnt_hidden + cnt_intimate + cnt_normal, cnt_ignored, cnt_hidden, cnt_intimate);
 }
 
+static void IMRosterDownCont (Connection *serv, Roster *roster, ContactGroup *cg, RosterEntry *rc, int *pcnt, int *pmod, char force, UDWORD flag)
+{
+    ContactGroup *tcg = NULL;
+    Contact *cont;
+    RosterEntry *rg;
+    char mod = 0;
+    char cnt = 0;
+    
+    rg = IMRosterGroup (roster, rc->tag);
+    cont = IMRosterCheckCont (serv, rc);
+
+    rl_printf ("  %s%-25s%s %s%15s%s %s%s%s\n",
+        COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
+        COLCONTACT, rc->name, COLNONE,
+        COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
+
+    if (!cont)
+        return;
+
+    if (!cont->group)
+    {
+        ContactCreate (serv, cont);
+        ContactAdd (cg, cont);
+        OptSetVal (&cont->copts, CO_IGNORE,   flag == CO_IGNORE);
+        OptSetVal (&cont->copts, CO_HIDEFROM, flag == CO_HIDEFROM);
+        OptSetVal (&cont->copts, CO_INTIMATE, flag == CO_INTIMATE);
+        mod = cnt = 1;
+        (*pcnt)++;
+    }
+    else if (force)
+    {
+        if (ContactPrefVal (cont, CO_LOCAL))
+        {
+            OptSetVal (&cont->copts, CO_LOCAL,    0);
+            mod = 1;
+        }
+        if (ContactPrefVal (cont, CO_IGNORE) != (flag == CO_IGNORE))
+        {
+            OptSetVal (&cont->copts, CO_IGNORE,   flag == CO_IGNORE);
+            mod = 1;
+        }
+        if (ContactPrefVal (cont, CO_HIDEFROM) != (flag == CO_HIDEFROM))
+        {
+            OptSetVal (&cont->copts, CO_HIDEFROM, flag == CO_HIDEFROM);
+            mod = 1;
+        }
+        if (ContactPrefVal (cont, CO_INTIMATE) != (flag == CO_INTIMATE))
+        {
+            OptSetVal (&cont->copts, CO_INTIMATE, flag == CO_INTIMATE);
+            mod = 1;
+        }
+    }
+    if (rg)
+        tcg = IMRosterCheckGroup (serv, rg);
+    if (tcg && !ContactHas (tcg, cont) && (force || cont->group == serv->contacts))
+    {
+        ContactAdd (tcg, cont);
+        cont->group = tcg;
+        mod = 1;
+    }
+    ContactAddAlias (cont, rc->name);
+    if (mod || (rc->nick && strcmp (rc->nick, rc->name) && cont != ContactFind (serv->contacts, 0, cont->uin, rc->nick)))
+    {
+        ContactAddAlias (cont, rc->nick);
+        mod = 1;
+    }
+    if (mod && !cnt)
+        (*pmod)++;
+}
+
 static void IMRosterAdddown (Event *event)
 {
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
     Connection *serv = event->conn;
-    ContactGroup *cg, *tcg;
-    Contact *cont;
+    ContactGroup *cg;
     int cnt_groups = 0, cnt_ignored = 0, cnt_hidden = 0, cnt_intimate = 0, cnt_normal = 0;
+    int mod_groups = 0, mod_ignored = 0, mod_hidden = 0, mod_intimate = 0, mod_normal = 0;
     
     if (!roster)
         return;
@@ -286,139 +355,86 @@ static void IMRosterAdddown (Event *event)
             OptSetVal (&cg->copts, CO_ISSBL, 1);
             cnt_groups++;
         }
-        if (cg && strcmp (rg->name, cg->name))
+        else if (cg && strcmp (rg->name, cg->name))
         {
             s_repl (&cg->name, rg->name);
             rl_printf ("##> %s\n", cg->name);
-            cnt_groups++;
+            mod_groups++;
         }
     }
     cg = ContactGroupC (NULL, 0, "");
 
     rl_printf (i18n (2471, "Ignored contacts:\n"));
     for (rc = roster->ignore; rc; rc = rc->next)
-    {
-        cont = IMRosterCheckCont (serv, rc);
-        if (cont && !cont->group)
-        {
-            ContactCreate (serv, cont);
-            ContactAdd (cg, cont);
-            OptSetVal (&cont->copts, CO_IGNORE, 1);
-            cnt_ignored++;
-        }
-        rg = IMRosterGroup (roster, rc->tag);
-        if (rg)
-            tcg = IMRosterCheckGroup (serv, rg);
-        if (tcg && cont->group == serv->contacts)
-        {
-            ContactAdd (tcg, cont);
-            cont->group = tcg;
-        }
-        if (cont)
-        {
-            ContactAddAlias (cont, rc->nick);
-            ContactAddAlias (cont, rc->name);
-        }
-        rl_printf ("  %s%-25s%s %s%15s%s %s%s%s\n",
-            COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
-            COLCONTACT, rc->name, COLNONE,
-            COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
-    }
+        IMRosterDownCont (serv, roster, cg, rc, &cnt_ignored, &mod_ignored, FALSE, CO_IGNORE);
     rl_printf (i18n (2472, "Hidden-from contacts:\n"));
     for (rc = roster->invisible; rc; rc = rc->next)
-    {
-        cont = IMRosterCheckCont (serv, rc);
-        if (cont && !cont->group)
-        {
-            ContactCreate (serv, cont);
-            ContactAdd (cg, cont);
-            OptSetVal (&cont->copts, CO_HIDEFROM, 1);
-            OptSetVal (&cont->copts, CO_INTIMATE, 0);
-            cnt_hidden++;
-        }
-        rg = IMRosterGroup (roster, rc->tag);
-        if (rg)
-            tcg = IMRosterCheckGroup (serv, rg);
-        if (tcg && cont->group == serv->contacts)
-        {
-            ContactAdd (tcg, cont);
-            cont->group = tcg;
-        }
-        if (cont)
-        {
-            ContactAddAlias (cont, rc->nick);
-            ContactAddAlias (cont, rc->name);
-        }
-        rl_printf ("  %s%-25s%s %s%15s%s %s%s%s\n",
-            COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
-            COLCONTACT, rc->name, COLNONE,
-            COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
-    }
+        IMRosterDownCont (serv, roster, cg, rc, &cnt_hidden, &mod_hidden, FALSE, CO_HIDEFROM);
     rl_printf (i18n (2473, "Normal contacts:\n"));
     for (rc = roster->normal; rc; rc = rc->next)
-    {
-        cont = IMRosterCheckCont (serv, rc);
-        if (cont && !cont->group)
-        {
-            ContactCreate (serv, cont);
-            ContactAdd (cg, cont);
-            OptSetVal (&cont->copts, CO_HIDEFROM, 0);
-            OptSetVal (&cont->copts, CO_INTIMATE, 0);
-            cnt_normal++;
-        }
-        rg = IMRosterGroup (roster, rc->tag);
-        if (rg)
-            tcg = IMRosterCheckGroup (serv, rg);
-        if (tcg && cont->group == serv->contacts)
-        {
-            ContactAdd (tcg, cont);
-            cont->group = tcg;
-        }
-        if (cont)
-        {
-            ContactAddAlias (cont, rc->nick);
-            ContactAddAlias (cont, rc->name);
-        }
-        rl_printf ("  %s%-25s%s %s%15s%s %s%s%s\n",
-            COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
-            COLCONTACT, rc->name, COLNONE,
-            COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
-    }
+        IMRosterDownCont (serv, roster, cg, rc, &cnt_normal, &mod_normal, FALSE, 0);
     rl_printf (i18n (2474, "Intimate contacts:\n"));
     for (rc = roster->visible; rc; rc = rc->next)
-    {
-        cont = IMRosterCheckCont (serv, rc);
-        if (cont && !cont->group)
-        {
-            ContactCreate (serv, cont);
-            ContactAdd (cg, cont);
-            OptSetVal (&cont->copts, CO_HIDEFROM, 0);
-            OptSetVal (&cont->copts, CO_INTIMATE, 1);
-            cnt_intimate++;
-        }
-        rg = IMRosterGroup (roster, rc->tag);
-        if (rg)
-            tcg = IMRosterCheckGroup (serv, rg);
-        if (tcg && cont->group == serv->contacts)
-        {
-            ContactAdd (tcg, cont);
-            cont->group = tcg;
-        }
-        if (cont)
-        {
-            ContactAddAlias (cont, rc->nick);
-            ContactAddAlias (cont, rc->name);
-        }
-        rl_printf ("  %s%-25s%s %s%15s%s %s%s%s\n",
-            COLCONTACT, rg && rg->name ? rg->name : "", COLNONE,
-            COLCONTACT, rc->name, COLNONE,
-            COLCONTACT, rc->nick ? rc->nick : "", COLNONE);
-    }
+        IMRosterDownCont (serv, roster, cg, rc, &cnt_intimate, &mod_intimate, FALSE, CO_INTIMATE);
     if (ContactIndex (cg, 0))
         SnacCliAddcontact (serv, NULL, cg);
     IMRosterCancel (event);
     rl_printf (i18n (2476, "Downloaded %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n"),
                cnt_groups, cnt_ignored + cnt_hidden + cnt_intimate + cnt_normal, cnt_ignored, cnt_hidden, cnt_intimate);
+    rl_printf (i18n (2578, "Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n"),
+               mod_groups, mod_ignored + mod_hidden + mod_intimate + mod_normal, mod_ignored, mod_hidden, mod_intimate);
+}
+
+static void IMRosterOverwritedown (Event *event)
+{
+    Roster *roster = event->data;
+    RosterEntry *rg, *rc;
+    Connection *serv = event->conn;
+    ContactGroup *cg;
+    int cnt_groups = 0, cnt_ignored = 0, cnt_hidden = 0, cnt_intimate = 0, cnt_normal = 0;
+    int mod_groups = 0, mod_ignored = 0, mod_hidden = 0, mod_intimate = 0, mod_normal = 0;
+    
+    if (!roster)
+        return;
+
+    for (rg = roster->groups; rg; rg = rg->next)
+    {
+        cg = IMRosterCheckGroup (serv, rg);
+        if (!cg)
+        {
+            rl_printf ("## %d %s\n", rg->tag, rg->name);
+            cg = ContactGroupC (serv, rg->tag, rg->name);
+            OptSetVal (&cg->copts, CO_ISSBL, 1);
+            cnt_groups++;
+        }
+        else if (strcmp (rg->name, cg->name))
+        {
+            s_repl (&cg->name, rg->name);
+            rl_printf ("##> %s\n", cg->name);
+            mod_groups++;
+        }
+    }
+    cg = ContactGroupC (NULL, 0, "");
+
+    rl_printf (i18n (2471, "Ignored contacts:\n"));
+    for (rc = roster->ignore; rc; rc = rc->next)
+        IMRosterDownCont (serv, roster, cg, rc, &cnt_ignored, &mod_ignored, TRUE, CO_IGNORE);
+    rl_printf (i18n (2472, "Hidden-from contacts:\n"));
+    for (rc = roster->invisible; rc; rc = rc->next)
+        IMRosterDownCont (serv, roster, cg, rc, &cnt_hidden, &mod_hidden, TRUE, CO_HIDEFROM);
+    rl_printf (i18n (2473, "Normal contacts:\n"));
+    for (rc = roster->normal; rc; rc = rc->next)
+        IMRosterDownCont (serv, roster, cg, rc, &cnt_intimate, &mod_intimate, TRUE, 0);
+    rl_printf (i18n (2474, "Intimate contacts:\n"));
+    for (rc = roster->visible; rc; rc = rc->next)
+        IMRosterDownCont (serv, roster, cg, rc, &cnt_normal, &mod_normal, TRUE, CO_INTIMATE);
+    if (ContactIndex (cg, 0))
+        SnacCliAddcontact (serv, NULL, cg);
+    IMRosterCancel (event);
+    rl_printf (i18n (2476, "Downloaded %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n"),
+               cnt_groups, cnt_ignored + cnt_hidden + cnt_intimate + cnt_normal, cnt_ignored, cnt_hidden, cnt_intimate);
+    rl_printf (i18n (2578, "Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n"),
+               mod_groups, mod_ignored + mod_hidden + mod_intimate + mod_normal, mod_ignored, mod_hidden, mod_intimate);
 }
 
 static void IMRosterAddup (Event *event)
@@ -646,6 +662,9 @@ UBYTE IMRoster (Connection *serv, int mode)
     switch (mode)
     {
         case IMROSTER_IMPORT:
+            QueueEnqueueData2 (serv, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
+                               900, NULL, IMRosterOverwritedown, IMRosterCancel);
+            break;
         case IMROSTER_DOWNLOAD:
             QueueEnqueueData2 (serv, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
                                900, NULL, IMRosterAdddown, IMRosterCancel);
