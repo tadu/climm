@@ -42,6 +42,7 @@
 #include "oscar_base.h"
 #include "connection.h"
 #include "util_parse.h"
+#include "util_rl.h"
 
 /****/
 
