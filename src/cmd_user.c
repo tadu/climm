@@ -1693,7 +1693,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
 
     for (alias = cont->alias; alias && (data & 2); alias = alias->more)
     {
-        rl_printf ("%s%s+      %s%*ld", COLSERVER, ul, COLNONE, (int)__lenuin, cont->uin);
+        rl_printf ("%s%s+       %s%*ld", COLSERVER, ul, COLNONE, (int)__lenuin, cont->uin);
         rl_printf ("%s%s %s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
                   COLSERVER, ul, COLCONTACT, ul, (int)__lennick + s_delta (alias->alias), alias->alias,
                   COLNONE, ul, COLQUOTE, ul, (int)__lenstat + 2 + s_delta (stat), stat,
@@ -4039,10 +4039,10 @@ static JUMP_F(CmdUserContact)
         rl_print (i18n (2103, "contact show    Show server based contact list.\n"));
         rl_print (i18n (2104, "contact diff    Show server based contacts not on local contact list.\n"));
         rl_print (i18n (2321, "contact add     Add server based contact list to local contact list.\n"));
-        rl_print (i18n (2576, "contact delete  Add server based contact list entry.\n"));
-/*        rl_print (i18n (2105, "contact import  Import server based contact list as local contact list.\n"));
-        rl_print (i18n (2322, "contact sync    Import server based contact list if appropriate.\n"));
-        rl_print (i18n (2323, "contact export  Export local contact list to server based list.\n")); */
+        rl_print (i18n (2576, "contact delete  Delete server based contact list entry.\n"));
+        rl_print (i18n (2105, "contact import  Import server based contact list as local contact list.\n"));
+/*        rl_print (i18n (2322, "contact sync    Import server based contact list if appropriate.\n"));
+        rl_print (i18n (2323, "contact export  Export local contact list to server based list.\n"));*/
         rl_print (i18n (2324, "contact upload  Add local contacts to server based contact list.\n"));
     }
     return 0;
