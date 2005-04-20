@@ -2506,7 +2506,7 @@ static JUMP_F(CmdUserOpt)
             res = par->txt;
             if (flag == CO_ENCODINGSTR)
             {
-                UWORD enc = ConvEnc (par->txt) & ~ENC_FAUTO;
+                UWORD enc = ConvEnc (par->txt) & ~ENC_FLAGS;
                 OptSetVal (copts, CO_ENCODING, enc);
                 res = ConvEncName (enc);
             }

@@ -293,13 +293,15 @@ UBYTE ConvEnc (const char *enc)
                 iconv_check (nr);
             if (conv_encs[nr].ito != (iconv_t)(-1) && conv_encs[nr].iof != (iconv_t)(-1))
                 return nr;
-            return ENC_FAUTO | nr;
+            return ENC_FERR | nr;
 #endif
             if (conv_encs[nr].fof && conv_encs[nr].fto)
                 return nr;
             break;
         }
     
+    if (nr & ENC_FLAGS)
+        return ENC_FERR;
     if (nr == conv_nr - 1)
     {
         enc_t *newc = realloc (conv_encs, sizeof (enc_t) * (conv_nr + 8));
@@ -321,7 +323,7 @@ UBYTE ConvEnc (const char *enc)
         return nr;
 #endif
     conv_error = nr;
-    return ENC_FAUTO | nr;
+    return ENC_FERR | nr;
 }
 
 /*
@@ -329,9 +331,9 @@ UBYTE ConvEnc (const char *enc)
  */
 const char *ConvEncName (UBYTE enc)
 {
-    if ((enc & ~ENC_FAUTO) > conv_nr)
+    if ((enc & ~ENC_FLAGS) > conv_nr)
         return "<auto/undefined>";
-    return conv_encs[enc & ~ENC_FAUTO].enca;
+    return conv_encs[enc & ~ENC_FLAGS].enca;
 }
 
 const char *ConvCrush0xFE (const char *in)
@@ -427,7 +429,7 @@ UDWORD ConvGetUTF8 (strc_t in, int *off)
 
 strc_t ConvFrom (strc_t text, UBYTE enc)
 {
-    enc &= ~ENC_FAUTO;
+    enc &= ~ENC_FLAGS;
 #if HAVE_ICONV
     if ((enc < conv_nr) && !conv_encs[enc].iof)
         iconv_check (enc);
@@ -483,7 +485,7 @@ strc_t ConvToSplit (const char *text, UBYTE enc)
 strc_t ConvToLen (const char *ctext, UBYTE enc, size_t len)
 {
     str_s text;
-    enc &= ~ENC_FAUTO;
+    enc &= ~ENC_FLAGS;
 #if HAVE_ICONV
     if ((enc < conv_nr) && !conv_encs[enc].ito)
         iconv_check (enc);

@@ -298,11 +298,11 @@ static void Init (int argc, char *argv[])
     i = i18nOpen (prG->locale);
 
     if (prG->enc_loc == ENC_AUTO)
-        prG->enc_loc = ENC_FAUTO | ENC_ASCII;
+        prG->enc_loc = ENC_FGUESS | ENC_ASCII;
     
     if (!OptGetVal (&prG->copts, CO_ENCODING, &res))
     {
-        switch (prG->enc_loc & ~ENC_FAUTO)
+        switch (ENC (enc_loc))
         {
             case ENC_EUC:     OptSetVal (&prG->copts, CO_ENCODING, ENC_SJIS); break;
             case ENC_SJIS:    OptSetVal (&prG->copts, CO_ENCODING, ENC_SJIS); break;

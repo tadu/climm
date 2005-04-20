@@ -177,7 +177,7 @@ int OptImport (Opt *opts, const char *args)
         }
         else if (flag == CO_ENCODINGSTR)
         {
-            UWORD enc = ConvEnc (par->txt) & ~ENC_FAUTO;
+            UWORD enc = ConvEnc (par->txt) & ~ENC_FLAGS;
             OptSetVal (opts, CO_ENCODING, enc);
             OptSetStr (opts, CO_ENCODINGSTR, ConvEncName (enc));
         }

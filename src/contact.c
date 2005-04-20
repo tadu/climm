@@ -813,9 +813,9 @@ BOOL ContactMetaLoad (Contact *cont)
             if (!(par = s_parse (&line)))
                 return FALSE;
             enc = ConvEnc (par->txt);
-            if (enc & ENC_FAUTO && (enc ^ prG->enc_loc) & ~ENC_FAUTO)
+            if (enc & ENC_FERR && (enc ^ prG->enc_loc) & ~ENC_FLAGS)
                 return FALSE;
-            enc &= ~ENC_FAUTO;
+            enc &= ~ENC_FLAGS;
         }
         else if (!enc)
             return FALSE;

@@ -40,7 +40,10 @@ strc_t      ConvToLen      (const char *in, UBYTE enc, size_t len);
 #define CHAR_INCOMPLETE    '_'
 #define CHAR_BROKEN        '*'
 
-#define ENC_FAUTO   0x80
+#define ENC_FLAGS   0xc0
+#define ENC_FLC     0x40
+#define ENC_FGUESS  0x80
+#define ENC_FERR    0x80
 #define ENC_AUTO    0xff
 
 #define ENC_ASCII   0x00
@@ -55,6 +58,6 @@ strc_t      ConvToLen      (const char *in, UBYTE enc, size_t len);
 #define ENC_SJIS    0x09  /* Windows Shift-JIS */
 #define ENC_WCHART  0x0a
 
-#define ENC(enc_x) (prG->enc_x & ~ENC_FAUTO)
+#define ENC(enc_x) (prG->enc_x & ~ENC_FLAGS)
 
 #endif /* MICQ_UTIL_CONV */

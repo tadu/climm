@@ -142,11 +142,11 @@ void i18nInit (const char *arg)
     prG->locale = newl;
 
 #if HAVE_NL_LANGINFO && defined (CODESET)
-    if (prG->enc_loc == ENC_AUTO && !prG->locale_broken)
+    if (prG->enc_loc & ENC_FGUESS && !prG->locale_broken)
     {
         const char *encnli = nl_langinfo (CODESET);
         if (encnli)
-            prG->enc_loc = ConvEnc (encnli);
+            prG->enc_loc = ENC_FLC | ConvEnc (encnli);
     }
 #endif
 }
@@ -169,8 +169,8 @@ int i18nOpen (const char *loc)
     {
         i18nClose ();
         s_repl (&prG->locale, "C");
-        if (prG->enc_loc & ENC_FAUTO)
-            prG->enc_loc = ENC_FAUTO | ENC_ASCII;
+        if (prG->enc_loc & ENC_FLAGS)
+            prG->enc_loc = ENC_FGUESS | ENC_ASCII;
         return 0;
     }
     
@@ -185,7 +185,7 @@ int i18nOpen (const char *loc)
         loc += 5;
     }
 
-    if (prG->enc_loc & ENC_FAUTO)
+    if (prG->enc_loc & ENC_FGUESS)
         prG->enc_loc = ENC_AUTO;
 
     if (*loc == '/')
@@ -204,7 +204,7 @@ int i18nOpen (const char *loc)
         if ((p = strrchr (floc, '@')))
         {
             if (prG->enc_loc == ENC_AUTO && !strcasecmp (p, "@euro"))
-                prG->enc_loc = ENC_FAUTO | ENC_LATIN9;
+                prG->enc_loc = ENC_FGUESS | ENC_LATIN9;
             *p = '\0';
         }
         if ((p = strrchr (floc, '.')))
@@ -212,9 +212,9 @@ int i18nOpen (const char *loc)
             if (prG->enc_loc == ENC_AUTO)
             {
                 if (!strncasecmp (p, ".KOI", 3))
-                    prG->enc_loc = ENC_FAUTO | ENC_KOI8;
+                    prG->enc_loc = ENC_FGUESS | ENC_KOI8;
                 else
-                    prG->enc_loc = ENC_FAUTO | ConvEnc (p + 1);
+                    prG->enc_loc = ENC_FGUESS | ConvEnc (p + 1);
             }
             *p = '\0';
         }
@@ -249,7 +249,7 @@ int i18nOpen (const char *loc)
 
         s_free (floc);
         if (prG->enc_loc == ENC_AUTO)
-            prG->enc_loc = ENC_FAUTO | ENC_ASCII;
+            prG->enc_loc = ENC_FGUESS | ENC_ASCII;
     }
 
     return j ? j : -1;
@@ -281,14 +281,14 @@ static int i18nAdd (FILE *i18nf, int debug, int *res)
             enc = ConvEnc (p + 1);
             if (prG->enc_loc == ENC_AUTO)
             {
-                prG->enc_loc = ENC_FAUTO | enc;
+                prG->enc_loc = ENC_FGUESS | enc;
                 thisenc = 1;
             }
         }
         else if (i == 8) /* i18n (1008, "US-ASCII") */
         {
             if (prG->enc_loc == ENC_AUTO || thisenc)
-                prG->enc_loc = ENC_FAUTO | ConvEnc (p + 1);
+                prG->enc_loc = ENC_FGUESS | ConvEnc (p + 1);
         }
 
         if (p == line->txt || i < 0 || i >= i18nSLOTS || i18nStrings[i])
