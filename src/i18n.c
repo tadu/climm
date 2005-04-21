@@ -64,21 +64,23 @@ void i18nInit (const char *arg)
     const char *earg = arg;
     char *newl;
 
-    if (!arg || !*arg || !strcasecmp (arg, "C") || !strcasecmp (arg, "POSIX"))
+    if (arg && !*arg)
         arg = NULL;
     prG->locale_broken = FALSE;
 
 #if HAVE_SETLOCALE && defined(LC_MESSAGES)
     if (!setlocale (LC_ALL, arg ? arg : ""))
-        if (!arg || !setlocale (LC_ALL, "C"))
-            prG->locale_broken = TRUE;
+    {
+        setlocale (LC_ALL, "C");
+        prG->locale_broken = TRUE;
+    }
     if (!arg)
     {
         arg = setlocale (LC_MESSAGES, NULL);
         if (arg)
         {
 #if HAVE_NL_LANGINFO && defined (CODESET)
-            if (!*arg)
+            if (!*arg) /* if nl_langinfo() exists we assume setlocale() to be more than a dummy */
 #else
             if (!*arg || !strcasecmp (arg, "C") || !strcasecmp (arg, "POSIX"))
 #endif
@@ -97,34 +99,19 @@ void i18nInit (const char *arg)
         else
             prG->locale_broken = TRUE;
     }
+#else
+    prG->locale_broken = TRUE;
 #endif
 
     if (!earg)
     {
         earg = getenv ("LC_ALL");
-        if (earg)
-        {
-            if (!prG->locale_orig)
-                s_repl (&prG->locale_orig, earg);
-        }
         if (!earg)
-        {
             earg = getenv ("LC_MESSAGES");
-            if (earg)
-            {
-                if (!prG->locale_orig)
-                    s_repl (&prG->locale_orig, earg);
-            }
-            if (!earg)
-            {
-                earg = getenv ("LANG");
-                if (earg)
-                {
-                    if (!prG->locale_orig)
-                        s_repl (&prG->locale_orig, earg);
-                }
-            }
-        }
+        if (!earg)
+            earg = getenv ("LANG");
+        if (earg && !prG->locale_orig)
+            s_repl (&prG->locale_orig, earg);
         if (earg && !prG->locale_full)
             s_repl (&prG->locale_full, earg);
         if (!earg)
@@ -168,7 +155,8 @@ int i18nOpen (const char *loc)
     if (!strcmp (loc, "en_US.US-ASCII") || !strcmp (loc, "C") || !strcmp (loc, "C"))
     {
         i18nClose ();
-        s_repl (&prG->locale, "C");
+        i18nInit ("C");
+        /* if encoding was fixed in the micqrc file, never change it */
         if (prG->enc_loc & ENC_FLAGS)
             prG->enc_loc = ENC_FGUESS | ENC_ASCII;
         return 0;
