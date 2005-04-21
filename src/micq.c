@@ -302,14 +302,21 @@ static void Init (int argc, char *argv[])
     
     if (!OptGetVal (&prG->copts, CO_ENCODING, &res))
     {
+        UBYTE enc;
         switch (ENC (enc_loc))
         {
-            case ENC_EUC:     OptSetVal (&prG->copts, CO_ENCODING, ENC_SJIS); break;
-            case ENC_SJIS:    OptSetVal (&prG->copts, CO_ENCODING, ENC_SJIS); break;
-            case ENC_KOI8:    OptSetVal (&prG->copts, CO_ENCODING, ENC_WIN1251); break;
-            case ENC_WIN1251: OptSetVal (&prG->copts, CO_ENCODING, ENC_WIN1251); break;
-            default:          OptSetVal (&prG->copts, CO_ENCODING, ENC_LATIN1);
+            case ENC_EUC:
+            case ENC_SJIS:
+                enc = ENC_SJIS;
+                break;
+            case ENC_KOI8:
+            case ENC_WIN1251:
+                enc = ENC_WIN1251;
+                break;
+            default:          enc = ENC_LATIN1;
         }
+        OptSetVal (&prG->copts, CO_ENCODING, enc);
+        OptSetStr (&prG->copts, CO_ENCODINGSTR, ConvEncName (enc));
     }
     
     if (arg_c)
