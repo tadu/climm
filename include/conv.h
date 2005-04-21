@@ -13,20 +13,20 @@ const char *ConvUTF8       (UDWORD codepoint);
 UDWORD      ConvGetUTF8    (strc_t in, int *off);
 const char *ConvCrush0xFE  (const char *in);
 #define     Conv0xFE       (char)0xfe
-BOOL        ConvFits           (const char *in, UBYTE enc);
+BOOL        ConvFits       (const char *in, UBYTE enc);
 
-#define     ConvIsUTF8(t)      ConvFits (t, ENC_UTF8)
-#define     c_out_for(t,c,mt)  (CONT_UTF8 (c,mt) ? t : c_out_to_split (t,c))
-#define     c_out(t)           (ConvTo        (t, ContactPrefVal (NULL, CO_ENCODING))->txt)
-#define     c_out_to(t,c)      (ConvTo        (t, ContactPrefVal ((c), CO_ENCODING))->txt)
+#define     ConvIsUTF8(t)       ConvFits (t, ENC_UTF8)
+#define     c_out_for(t,c,mt)   (CONT_UTF8 (c,mt) ? t : c_out_to_split (t,c))
+#define     c_out(t)            c_out_to(t,NULL)
+#define     c_out_to(t,c)       (ConvTo        (t, ContactPrefVal ((c), CO_ENCODING))->txt)
 #define     c_out_to_split(t,c) (ConvToSplit   (t, ContactPrefVal ((c), CO_ENCODING))->txt)
-#define     ConvFromServ(t)    (ConvFrom      (t, ContactPrefVal (NULL, CO_ENCODING))->txt)
-#define     c_in_to_split(t,c) (ConvFromSplit (t, ContactPrefVal ((c), CO_ENCODING))->txt)
-#define     ConvFromCont(t,c)  (ConvFrom      (t, ContactPrefVal ((c), CO_ENCODING))->txt)
-#define     c_strlen(t)        (ENC(enc_loc) == ENC_UTF8 ? s_strlen (t) : strlen (t))
-#define     c_offset(t,o)      (ENC(enc_loc) == ENC_UTF8 ? s_offset (t, o) : (o))
-#define     c_delta(t)         (int)(ENC(enc_loc) == ENC_UTF8 ? strlen (t) - s_strlen (t) : 0)
-#define     s_delta(t)         (int)strlen (t) - (int)s_strlen (t)
+#define     ConvFromServ(t)     (ConvIsUTF8 ((t)->txt) ? ConvFrom (t, ENC_UTF8)->txt : ConvFromCont (t, NULL))
+#define     c_in_to_split(t,c)  (ConvFromSplit (t, ContactPrefVal ((c), CO_ENCODING))->txt)
+#define     ConvFromCont(t,c)   (ConvFrom      (t, ContactPrefVal ((c), CO_ENCODING))->txt)
+#define     c_strlen(t)         (ENC(enc_loc) == ENC_UTF8 ? s_strlen (t) : strlen (t))
+#define     c_offset(t,o)       (ENC(enc_loc) == ENC_UTF8 ? s_offset (t, o) : (o))
+#define     c_delta(t)          (int)(ENC(enc_loc) == ENC_UTF8 ? strlen (t) - s_strlen (t) : 0)
+#define     s_delta(t)          (int)strlen (t) - (int)s_strlen (t)
 
 const char *ConvTranslit (const char *orig, const char *trans);
 
