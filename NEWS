@@ -24,3 +24,4 @@
                       peek/peek2 command, command line options to start commands in mICQ, reworked online help
                       and man pages, UTF-8 input handling, lots of fixes (and probably new bugs ;)
 2005-02-27: 0.5.0.1: bug fixes and translation updates, peek reliable again
+2005-04-2x: 0.5.0.2: bug fixes, contact list handling improvements, auto-expanding aliases "a" and "r"

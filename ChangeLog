@@ -1,8 +1,47 @@
 -*- coding: utf-8 -*-
 
+2005-04-16 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* re-set temporary away messages on manual status change
+	* ru micq.7 update by Seva Gluschenko
+	* implement auto-expanding aliases
+	* implement contact delete
+	* import new contacts into correct group
+	* revert tty settings for most UtilIOReadline(stdin) calls
+	* get rid of no-op Echo_On, Echo_Off macros
+	* re-work and implement contact import to always modify group and flags
+	* refactor encoding flags a bit to fix encoding always hardcoded in micqrc
+	* also set CO_ENCODINGSTR when guessing CO_ENCODING so it is shown and saved
+	* assume contact list to be UTF-8 if it is valif UTF-8
+	* further code clean-up in i18n (hope it doesn't break anything)
+	* set locale-broken flag properly if setlocale fails
+
+2005-04-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* keep old version of micqrc/status file
+	* fix little memory leak
+	* ru micq.1 update by Seva Gluschenko
+	* fix last command to display all remembered messages
+	* fix display of group ids
+	* only print auto-response-message-sent-messages
+	  when user wants to see status changes
+	* fix busy loop in GnuTLS code
+	* send temporary away messages also for explicit requests for them
+
+2005-03-31 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* remove useless copying of input line;
+	  avoids input line stripped to 1023 characters
+	* hide repeated messages in log
+
+2005-03-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix segfault of ^Y if there is nothing to yank
+	* correctly split messages at 0xFE where required
+	* merge changes suggested by Hans Fuchs into micq.info file
+	* new ReadLinePrintWidth() function to left-align text to given width
+	* use in ss command
+	* correctly reset tabbing on ^U
 
 2005-02-28 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* Try to fix incomplete file transfer
+	* 0.5.0.1
 
 2005-02-26 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* fix handling of server's response to type-1/type-4 messages
