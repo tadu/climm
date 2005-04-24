@@ -3304,6 +3304,8 @@ static JUMP_F(CmdUserHistory)
     {
         fposLen = msgMin;
         fposArray = (long *) malloc (fposLen * sizeof (long));
+        if (!fposArray)
+            msgMin = 0;
     }
 
     /*
