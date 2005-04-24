@@ -1207,3 +1207,6 @@
 2573:The user is probably offline.\n
 2574:%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n
 2575:Error writing to file (%lu bytes written out of %u).\n
+2576:contact delete  Delete server based contact list entry.\n
+2577:SBL ids:
+2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n

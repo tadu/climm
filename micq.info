@@ -1,9 +1,8 @@
 Package: micq
-Version: 0.5.0.1
+Version: 0.5.0.2
 Revision: 1
 ConfigureParams: --mandir='$(prefix)/share/man' --enable-ssl --enable-tcl CFLAGS=-O3
 Source: http://www.micq.org/source/micq-%v.tgz
-Source-MD5: 48e73cc7163953aece85d76da9d8c029
 Depends: libiconv, tcltk-shlibs, gnutls-shlibs
 BuildDepends: libiconv-dev, tcltk-dev
 DocFiles: README COPYING COPYING-GPLv2 AUTHORS NEWS TODO ChangeLog doc/README.i18n doc/README.logformat
