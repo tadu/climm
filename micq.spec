@@ -31,7 +31,7 @@ Authors: Matthew D. Smith (deceased)
          Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 
 %changelog
-* Sun Apr xx 2005 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+* Sun Apr 24 2005 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream release 0.5.0.2
 
 * Sun Feb 17 2005 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
