@@ -1,5 +1,5 @@
 # $Id$ français (French)
-#  EN: __.i18n,v 1.76 2005/02/11 22:21:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:fr
 1002:fr_FR
@@ -572,9 +572,9 @@
 1622:Mettre ces changements en vigueur (OUI ou NON) ?
 #-#1623:Packet doublé %04X\n
 #+#1623:Doubled packet %04X\n
-#1623:Double packet %04x.\n
 #-#1632:\nConnexion instable. Quittant....
 #+#1632:\nConnection unstable. Exiting....
+#1623:Double packet %04x.\n
 #1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:\nNuméro du packet %d\n
@@ -616,12 +616,12 @@
 #+#1666:Unignored %s.
 #-#1667:Ignorant %s !\n
 #+#1667:Ignoring %s.
+#-#1673:  Le port est: %d\n
+#+#1673:The port is %d.\n
 #1666:Unignored %s.\n
 #1667:Ignoring %s.\n
 #1670:Normal visible to %s now.\n
 #1671:Always visible to %s now.\n
-#-#1673:  Le port est: %d\n
-#+#1673:The port is %d.\n
 1675:Ligne inconnue:
 #-#1678:Veuillez entrez une URL.\n
 #+#1678:Need URL please.\n
@@ -653,13 +653,13 @@
 #1714:Seeking men
 1715:mICQ
 1716:Aucun
-#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
-#1719:Shows how long mICQ has been running and some statistics.
-#1721:Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message.
 #-#1741:Il n'y a rien à répondre.\n
 #+#1741:Must receive a message first\n
 #-#1742:Vous n'avez pas encore écrit un message.\n
 #+#1742:Must write one message first\n
+#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
+#1719:Shows how long mICQ has been running and some statistics.
+#1721:Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message.
 #1741:Must receive a message first.\n
 #1742:Must write a message first.\n
 1743:Keep-Alive
@@ -669,13 +669,13 @@
 1747:Liste de contacts visibles
 #-#1754:Demande de l'information
 #+#1754: Note: You need to 'save' to write new contact list to disc.\n
-#1754:Note: You need to 'save' to write new contact list to disc.\n
-#1755:has added you to their contact list.\n
 #-#1762:Ack !!!!!!  %d\n
 #+#1762:Your new UIN is: %d.\n
-#1762:Your new UIN is: %ld.\n
 #-#1765:%s a cet UIN %d.
 #+#1765:%s has UIN %d.
+#1754:Note: You need to 'save' to write new contact list to disc.\n
+#1755:has added you to their contact list.\n
+#1762:Your new UIN is: %ld.\n
 #1766:Changing status to away/not available after idling %s%ld%s seconds.\n
 1767:Changement automatique de l'état absent à non disponible.
 #-#1770:Renvoie votre message a un nouvel UIN.
@@ -1069,7 +1069,6 @@
 #2122:Note: You need to 'save' to write new password to disc.\n
 #2123:%sSyntax error%s: Too few arguments: %s\n
 #2124:%sSyntax error%s: Not an integer: %s\n
-#2126:is offline, message queued on server.\n
 2128: Déscription: %s%s%s\n
 2129: URL:         %s%s%s\n
 2131:Composant un message pour %s%s%s:\n
@@ -1116,7 +1115,7 @@
 #2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
 #2162:Receiving file %s (%s) with %ld bytes as %s.\n
 #2163:Sending file %ld at offset %ld.\n
-2164:Erreur lors de l'ecriture sur le fichier.\n
+2164.Erreur lors de l'ecriture sur le fichier.\n
 #-#2165:Le correspondant a envoyé plus de bytes (%d) que la longueur du fichier (%d).\n
 #+#2165:The peer sent more bytes (%d) than file length (%d).\n
 #2165:The peer sent more bytes (%ld) than the file length (%ld).\n
@@ -1490,3 +1489,9 @@
 #2570:Continuing chat with %s%s%s:\n
 #2571:"%s" <%s> emailed you a message [%s]: %s\n
 #2572:"%s" <%s> sent you a web message [%s]: %s\n
+#2573:The user is probably offline.\n
+#2574:%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n
+#2575:Error writing to file (%lu bytes written out of %u).\n
+#2576:contact delete  Delete server based contact list entry.\n
+#2577:SBL ids:
+#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n

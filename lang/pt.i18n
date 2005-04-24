@@ -1,5 +1,5 @@
 # $Id$ Português (Brazillian)
-#  EN: __.i18n,v 1.76 2005/02/11 22:21:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:pt
 1002:pt_BR
@@ -833,7 +833,7 @@
 2122:Nota: Você precisa salvar ('save') para gravar a nova senha no disco.\n
 2123:%sErro de sintaxe%s: Poucos argumentos: %s\n
 2124:%sErro de sintaxe%s: Não é um inteiro: %s\n
-2126:está desconectado, mensagem acumulada no servidor.\n
+2126.está desconectado, mensagem acumulada no servidor.\n
 2128: Descrição: %s%s%s\n
 2129:         URL: %s%s%s\n
 2131:Compondo mensagem para %s%s%s:\n
@@ -860,7 +860,7 @@
 2161:Recebendo %ld arquivos totalizando %ld bytes na velocidade %lx de %s.\n
 2162:Recebendo arquivo %s (%s) com %ld bytes como %s.\n
 2163:Enviando arquivo %ld na equivalência %ld.\n
-2164:Erro escrevendo arquivo.\n
+2164.Erro escrevendo arquivo.\n
 2165:O ponto enviou mais bytes (%ld) que o tamanho do arquivo (%ld).\n
 2166:Recepção de arquivo finalizada.\n
 2167:Erro - pacote desconhecido.\n
@@ -1189,8 +1189,7 @@
 2552:Mostra o estado atual de todos em sua lista de contatos, incluindo aqueles de outra forma ocultos.
 2553:Mostra com detalhes o estado atual de todos em sua lista de contatos, incluindo aqueles de outra forma ocultos.
 2554:Mostra o estado atual de todos em sua lista de contatos, ordenados por grupos de contatos, incluindo aqueles de outra forma ocultos.
-2554:Mostra com detalhes o estado atual de todos em sua lista de contatos, ordenados por grupos de contatos, incluindo aqueles de outra forma ocultos.
-#2555:Displays verbosely the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+2555:Mostra com detalhes o estado atual de todos em sua lista de contatos, ordenados por grupos de contatos, incluindo aqueles de outra forma ocultos.
 2556:Adiciona contato, apelido, or contact to group.
 2557:Remove apelido, ou contato de grupo ou lista de contatos.
 2558:Ajusta ou mostra opções para um contato.\n
@@ -1208,3 +1207,9 @@
 2570:Continuando chat com %s%s%s:\n
 2571:"%s" <%s> enviou por email a você uma mensagem [%s]: %s\n
 2572:"%s" <%s> enviou a você uma mensagem web [%s]: %s\n
+#2573:The user is probably offline.\n
+#2574:%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n
+#2575:Error writing to file (%lu bytes written out of %u).\n
+#2576:contact delete  Delete server based contact list entry.\n
+#2577:SBL ids:
+#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n

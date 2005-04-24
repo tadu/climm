@@ -1,5 +1,5 @@
 # $Id$
-#  EN: __.i18n,v 1.76 2005/02/11 22:21:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:sr
 1002:sr_YU
@@ -520,9 +520,9 @@
 1622:Да ли желите да ове измене буду примењене? (ДА/НЕ)
 #-#1623:Дуплиран пакет %04X\n
 #+#1623:Doubled packet %04X\n
-#1623:Double packet %04x.\n
 #-#1632:\n^GВеза нестабилна. Излазак.... 
 #+#1632:\nConnection unstable. Exiting....
+#1623:Double packet %04x.\n
 #1632:\nConnection unstable. Exiting....
 1634:у реду.\n
 1637:Није могуће спајање socket-а (зглоба) са слободним портом\n
@@ -886,7 +886,7 @@
 #+#2124:%sSyntax error%s: Not an integer: '%s'\n
 #2123:%sSyntax error%s: Too few arguments: %s\n
 #2124:%sSyntax error%s: Not an integer: %s\n
-2126:је ван везе, порука на чекању на серверу.\n
+2126.је ван везе, порука на чекању на серверу.\n
 2128:        Опис: %s%s%s\n
 2129:         URL: %s%s%s\n
 2131:Састављање поруке за %s%s%s:\n
@@ -919,7 +919,7 @@
 #2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
 2162:Примање фајла %s (%s) од %ld бајтова као %s.\n
 2163:Слање фајла %ld са офсетом %ld.\n
-2164:Грешка током писања у фајл.\n
+2164.Грешка током писања у фајл.\n
 #-#2165:Друга страна је послала више бајтова (%ld) него што је величина фајла (%ld).\n
 #+#2165:The peer sent more bytes (%ld) than file length (%ld).\n
 #2165:The peer sent more bytes (%ld) than the file length (%ld).\n
@@ -1299,3 +1299,9 @@
 #2570:Continuing chat with %s%s%s:\n
 #2571:"%s" <%s> emailed you a message [%s]: %s\n
 #2572:"%s" <%s> sent you a web message [%s]: %s\n
+#2573:The user is probably offline.\n
+#2574:%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n
+#2575:Error writing to file (%lu bytes written out of %u).\n
+#2576:contact delete  Delete server based contact list entry.\n
+#2577:SBL ids:
+#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n

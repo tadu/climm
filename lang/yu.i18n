@@ -1,5 +1,5 @@
 # $Id$ (Serbocroatian)
-#  EN: __.i18n,v 1.76 2005/02/11 22:21:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
 #-#1010:User is Away [Auto-Message]
 #1000:UTF-8
 #1001:<lang>
@@ -35,17 +35,17 @@
 #-#1032: - Instant Message
 #-#1033: - Instant " SERVCOL "Mass" NOCOL " Message
 #-#1035: changed status to 
-#1029:Please enter YES or NO!
-#1030:logged off.
-#1032:debug: double packet #%04lx type %04x (%s)\n
-#1033:Incoming v8 server packet:
-#1034:Maximum number of tries reached. Giving up.
 #-#1037:Poruka poslate pre nego $to je dostignuta maksimalna duzina poruke\n
 #+#1037:Message sent before last line buffer is full\n
 #-#1038:Poruka je opozvana\n
 #+#1038:Message canceled\n
 #-#1039:!\n
 #-#1040:Micq> 
+#1029:Please enter YES or NO!
+#1030:logged off.
+#1032:debug: double packet #%04lx type %04x (%s)\n
+#1033:Incoming v8 server packet:
+#1034:Maximum number of tries reached. Giving up.
 #1038:Message canceled.\n
 #1039:The server claims we're not connected.\n
 1043:Svi korisnici pronadjeni.
@@ -504,6 +504,22 @@
 #-#1538:Enter new year of birth (4 digits): 
 #-#1539:Enter new month of birth: 
 #-#1540:Enter new day of birth: 
+#-#1542:Enter other email address: 
+#-#1543:Enter old email address: 
+#-#1544:Enter new city: 
+#-#1545:Enter new state: 
+#-#1546:Enter new phone number: 
+#-#1547:Enter new fax number: 
+#-#1548:Enter new street address: 
+#-#1549:Enter new cellular number: 
+#-#1550:Enter new zip code (must be numeric): 
+#-#1551:Enter your country's phone ID number: 
+#-#1552:Enter your time zone (+/- 0-12): 
+#-#1553:Unesite Va$ nadimak : 
+#-#1554:Unesite Va$e ime : 
+#-#1555:Unesite Va$e prezime : 
+#-#1556:Unesite va$ novi e-mail : 
+#-#1557:Da li zelite da korisnici zahtevaju od vas autorizaciju ? : 
 #1451:local  IP:
 #1452:Status:
 #1453:TCP version:
@@ -586,22 +602,6 @@
 #1538:Enter new year of birth (4 digits):
 #1539:Enter new month of birth:
 #1540:Enter new day of birth:
-#-#1542:Enter other email address: 
-#-#1543:Enter old email address: 
-#-#1544:Enter new city: 
-#-#1545:Enter new state: 
-#-#1546:Enter new phone number: 
-#-#1547:Enter new fax number: 
-#-#1548:Enter new street address: 
-#-#1549:Enter new cellular number: 
-#-#1550:Enter new zip code (must be numeric): 
-#-#1551:Enter your country's phone ID number: 
-#-#1552:Enter your time zone (+/- 0-12): 
-#-#1553:Unesite Va$ nadimak : 
-#-#1554:Unesite Va$e ime : 
-#-#1555:Unesite Va$e prezime : 
-#-#1556:Unesite va$ novi e-mail : 
-#-#1557:Da li zelite da korisnici zahtevaju od vas autorizaciju ? : 
 #1544:Enter new city:
 #1545:Enter new state:
 #1546:Enter new phone number:
@@ -964,7 +964,6 @@
 #2122:Note: You need to 'save' to write new password to disc.\n
 #2123:%sSyntax error%s: Too few arguments: %s\n
 #2124:%sSyntax error%s: Not an integer: %s\n
-#2126:is offline, message queued on server.\n
 #2128: Description: %s%s%s\n
 #2129:         URL: %s%s%s\n
 #2131:Composing message to %s%s%s:\n
@@ -991,7 +990,6 @@
 #2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
 #2162:Receiving file %s (%s) with %ld bytes as %s.\n
 #2163:Sending file %ld at offset %ld.\n
-#2164:Error writing to file.\n
 #2165:The peer sent more bytes (%ld) than the file length (%ld).\n
 #2166:Finished receiving file.\n
 #2167:Error - unknown packet.\n
@@ -1338,3 +1336,9 @@
 #2570:Continuing chat with %s%s%s:\n
 #2571:"%s" <%s> emailed you a message [%s]: %s\n
 #2572:"%s" <%s> sent you a web message [%s]: %s\n
+#2573:The user is probably offline.\n
+#2574:%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n
+#2575:Error writing to file (%lu bytes written out of %u).\n
+#2576:contact delete  Delete server based contact list entry.\n
+#2577:SBL ids:
+#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n

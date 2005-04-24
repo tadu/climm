@@ -1,5 +1,5 @@
 # $Id$ Slovak (Slovak)
-#  EN: __.i18n,v 1.76 2005/02/11 22:21:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:sk
 1002:sk_SK
@@ -515,7 +515,7 @@
 1622:Chcete aplikovať tieto nastavenia? (YES/NO)
 1623:Zdvojený paket %04x\n
 1632:\nNestabilné spojenie. Končím....
-1633:\nSpojenie nestabilné. Končím....
+1633.\nSpojenie nestabilné. Končím....
 1634:v poriadku.\n
 1637:Nemôžem prideliť socket voľnému portu\n
 1638:Nemôžem vytvoriť socket
@@ -834,7 +834,7 @@
 2122:Poznámka: Musíte použiť 'save' pre uloženia nového hesla na disk.\n
 2123:%sSyntax error%s: Príliš málo parametrov: %s\n
 2124:%sSyntax error%s: Nie je celé číslo: %s\n
-2126:je offline, správa čakána serveri.\n
+2126.je offline, správa čakána serveri.\n
 2128:       Popis: %s%s%s\n
 2129:         URL: %s%s%s\n
 2131:Písanie správy pre %s%s%s:\n
@@ -861,7 +861,7 @@
 2161:Prijímam %ld súborov s celkovou veľkosťou %ld bajtov rýchlosťou %lx od %s.\n
 2162:Prijímam súbor %s (%s) s dĺžkou %ld bajtov ako %s.\n
 2163:Sending file %ld at offset %ld.\n
-2164:Chyba pri zápise súboru.\n
+2164.Chyba pri zápise súboru.\n
 2165:Peer poslal viac bajtov (%ld) ako je dĺžka súboru (%ld).\n
 2166:Príjem súboru dokončený.\n
 2167:Chyba - neznámy paket.\n
@@ -1210,3 +1210,9 @@
 2570:Pokračovanie v rozhovore s %s%s%s:\n
 #2571:"%s" <%s> emailed you a message [%s]: %s\n
 #2572:"%s" <%s> sent you a web message [%s]: %s\n
+#2573:The user is probably offline.\n
+#2574:%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n
+#2575:Error writing to file (%lu bytes written out of %u).\n
+#2576:contact delete  Delete server based contact list entry.\n
+#2577:SBL ids:
+#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n

@@ -1,5 +1,5 @@
 # $Id$ English (English)
-#  EN: __.i18n,v 1.78 2005/03/10 18:52:44 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:en
 1002:en_US
@@ -1210,8 +1210,10 @@
 2573:The user is probably offline.\n
 2574:%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n
 2575:Error writing to file (%lu bytes written out of %u).\n
-#2999:last
 # Those are the funny messages. Substract 2000 to get the normal message.
+#2576:contact delete  Delete server based contact list entry.\n
+#2577:SBL ids:
+#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
 3082:But hey, let's just poke the server again... [try %d out of %d]\n
 3612:No Mirabilis client was maimed, hacked, tortured, sodomized or otherwise harmed in the making of this utility.\n
 3682:These people are being sociable today:\n

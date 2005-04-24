@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.78 2005/03/10 18:52:44 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -1220,6 +1220,8 @@
 2573:Der Benutzer ist wahrscheinlich nicht verbunden.\n
 2574:%sFreigegeben unter Version 2 der GNU General Public License (%sGPL v2%s).\n
 2575:Fehler beim Schreiben in die Datei (%lu Bytes von %u geschrieben).\n
-#2999:unused
+2576:contact delete  Lösche Kontakte aus der Server-seitigen Kontaktliste.\n
+#2577:SBL ids:
+2578:%d Kontaktgruppen geändert, dabei insgesamt %d Kontakte, %d ignoriert, %d versteckt, %d sichtbar.\n
 # Those are the funny messages. Substract 2000 to get the normal message.
 3620:Du hast zu viele Freunde, wie wär's mit mehr RL?

@@ -1,5 +1,5 @@
 # $Id$ <Japanese in Japanese> (Japanese)
-#  EN: __.i18n,v 1.76 2005/02/11 22:21:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:ja
 1002:ja_JP
@@ -520,9 +520,9 @@
 1622:これらの変更を反映させますか? (yes or no)
 #-#1623:重複したパケット %04X\n
 #+#1623:Doubled packet %04X\n
-#1623:Double packet %04x.\n
 #-#1632:\n接続が不安定です。終了します...
 #+#1632:\nConnection unstable. Exiting....
+#1623:Double packet %04x.\n
 #1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:空きポートが見つからないので、ソケット接続を行うことができません\n
@@ -886,7 +886,7 @@
 #+#2124:%sSyntax error%s: Not an integer: '%s'\n
 #2123:%sSyntax error%s: Too few arguments: %s\n
 #2124:%sSyntax error%s: Not an integer: %s\n
-2126:はオフラインです。メッセージはサーバに保存されます。\n
+2126.はオフラインです。メッセージはサーバに保存されます。\n
 2128:      説明: %s%s%s\n
 2129:       URL: %s%s%s\n
 2131:%s%s%s へのメッセージを書いています:\n
@@ -919,7 +919,7 @@
 #2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
 2162:%s (%s) をサイズ %ld バイトで %s として受信します。\n
 2163:ファイル %ld をオフセットは %ld で送信します。\n
-2164:ファイルへ書き込む際にエラーが発生しました。\n
+2164.ファイルへ書き込む際にエラーが発生しました。\n
 #-#2165:ピア接続先の送信データ (%ld バイト)はファイルの長さ (%ld) よりも長かったです。\n
 #+#2165:The peer sent more bytes (%ld) than file length (%ld).\n
 #2165:The peer sent more bytes (%ld) than the file length (%ld).\n
@@ -1314,3 +1314,9 @@
 #2570:Continuing chat with %s%s%s:\n
 #2571:"%s" <%s> emailed you a message [%s]: %s\n
 #2572:"%s" <%s> sent you a web message [%s]: %s\n
+#2573:The user is probably offline.\n
+#2574:%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n
+#2575:Error writing to file (%lu bytes written out of %u).\n
+#2576:contact delete  Delete server based contact list entry.\n
+#2577:SBL ids:
+#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n

@@ -1,5 +1,5 @@
 # $Id$
-#  EN: __.i18n,v 1.76 2005/02/11 22:21:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:de
 1002:de_CH
@@ -593,10 +593,10 @@
 1622:Möchtisch die Änderige anwände? (Iu/Nei)
 #-#1623:Dopplets Päckli %04X.\n
 #+#1623:Doubled packet %04X\n
-#1623:Double packet %04x.\n
 #-#1632:\nVerbindig inschtabil. Beände...
 #+#1632:\nConnection unstable. Exiting....
 #-#1634:OK\n
+#1623:Double packet %04x.\n
 #1632:\nConnection unstable. Exiting....
 #1634:ok.\n
 1637:Cha der Socket zu kem freie Port verbinde\n
@@ -644,12 +644,12 @@
 #+#1670:Normal visible to %s now.
 #-#1671:Für %s jtz immer sichtbar.
 #+#1671:Always visible to %s now.
+#-#1673:, der Port isch %d.\n
+#-#1674:, der Port isch unbekannt.\n
 #1666:Unignored %s.\n
 #1667:Ignoring %s.\n
 #1670:Normal visible to %s now.\n
 #1671:Always visible to %s now.\n
-#-#1673:, der Port isch %d.\n
-#-#1674:, der Port isch unbekannt.\n
 1675:Ignoriere d Zile:
 #-#1678:I bruche e URL.\n
 #+#1678:Need URL please.\n
@@ -707,11 +707,11 @@
 1755:hat di zu sinere Kontaktlischte derzueta.\n
 #-#1762:Dini nöii Usernummere isch: %d.\n
 #+#1762:Your new UIN is: %d.\n
-#1762:Your new UIN is: %ld.\n
 #-#1765:%s het d Usernummere %d.
 #+#1765:%s has UIN %d.
 #-#1766:Outomatischi Schautig für ned ume / wit wäg nach %s%d%s Sekunde.\n
 #+#1766:Changing status to away resp. not available after idling %s%d%s seconds.\n
+#1762:Your new UIN is: %ld.\n
 #1766:Changing status to away/not available after idling %s%ld%s seconds.\n
 1767:Schautet di outomatische Abwäseheitsschautig a oder ab oder setzt ds Timeout.
 #-#1770:Sändet die letschti Nachricht a ne nöie User.
@@ -1098,7 +1098,6 @@
 #2122:Note: You need to 'save' to write new password to disc.\n
 #2123:%sSyntax error%s: Too few arguments: %s\n
 #2124:%sSyntax error%s: Not an integer: %s\n
-#2126:is offline, message queued on server.\n
 2128: Beschriebig: %s%s%s\n
 2129:         URL: %s%s%s\n
 2131:Schribe e Nachricht a %s%s%s:\n
@@ -1125,7 +1124,6 @@
 #2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
 #2162:Receiving file %s (%s) with %ld bytes as %s.\n
 #2163:Sending file %ld at offset %ld.\n
-#2164:Error writing to file.\n
 #2165:The peer sent more bytes (%ld) than the file length (%ld).\n
 #2166:Finished receiving file.\n
 #2167:Error - unknown packet.\n
@@ -1472,3 +1470,9 @@
 #2570:Continuing chat with %s%s%s:\n
 #2571:"%s" <%s> emailed you a message [%s]: %s\n
 #2572:"%s" <%s> sent you a web message [%s]: %s\n
+#2573:The user is probably offline.\n
+#2574:%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n
+#2575:Error writing to file (%lu bytes written out of %u).\n
+#2576:contact delete  Delete server based contact list entry.\n
+#2577:SBL ids:
+#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
