@@ -217,6 +217,9 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         rref = &roster->generic;
         switch (re->type)
         {
+            case 0: /* normal contact */
+                rref = &roster->normal;
+                break;
             case 1: /* group */
                 if (re->tag || re->id)
                     rref = &roster->groups;
@@ -230,13 +233,10 @@ JUMP_SNAC_F(SnacSrvReplyroster)
             case 14: /* ignore */
                 rref = &roster->ignore;
                 break;
-            case 0: /* normal contact */
-                rref = &roster->normal;
-                break;
+            case 15: /* wierd */
             case 17: /* wierd */
-                SnacCliRosterentrydelete (serv, re);
-                OscarRosterEntryD (re);
-                continue;
+            case 20: /* LastUpdateDate */
+                break;
             case 19: /* ImportTime */
                 j = TLVGet (re->tlv, 212);
                 if (j != (UWORD)-1 && re->tlv[j].str.len == 4)
