@@ -1608,9 +1608,10 @@ int PrefWriteConfFile (void)
     fprintf (rcf, "# This file was generated on %s\n", ctime (&t));
 
     fprintf (rcf, "encoding file UTF-8 # do not modify\n");
-    fprintf (rcf, "#Local character encodings: auto, ISO-8859-1, KOI8-u, ...\n");
+    fprintf (rcf, "# Local character encodings: auto, ISO-8859-1, KOI8-u, ...\n");
+    fprintf (rcf, "# Setting this explicitly will render mICQ unable to determine character widths.\n");
     fprintf (rcf, "%sencoding local %s%s\n",
-             prG->enc_loc & ENC_FLAGS ? "#" : "", s_quote (ConvEncName (prG->enc_loc)),
+             prG->enc_loc & ENC_FLAGS ? "# " : "", s_quote (ConvEncName (prG->enc_loc)),
              prG->enc_loc & ENC_FLAGS ? "" : " # please set your locale correctly instead");
     fprintf (rcf, "format 2\n\n");
 

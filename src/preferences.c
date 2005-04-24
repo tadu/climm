@@ -46,6 +46,7 @@
 #include "file_util.h"
 #include "preferences.h"
 #include "util_ui.h"
+#include "conv.h"
 #include "contact.h"
 
 static FILE *PrefOpenRC (Preferences *pref);
@@ -214,6 +215,9 @@ BOOL PrefLoad (Preferences *pref)
             pref->flags &= ~FLAG_AUTOFINGER;
         case 1:
             OptSetVal (&pref->copts, CO_REVEALTIME, 600);
+            if (0)
+        case 2:
+            pref->enc_loc = ENC_AUTO;
         case AUTOUPDATE_CURRENT:
         default:
             pref->autoupdate = AUTOUPDATE_CURRENT;
