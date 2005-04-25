@@ -295,7 +295,7 @@ static void Init (int argc, char *argv[])
     
     loaded = arg_h ? 0 : PrefLoad (prG);
     prG->verbose &= ~0x80000000UL;
-    i = i18nOpen (prG->locale);
+    i = i18nOpen (NULL);
 
     if (prG->enc_loc == ENC_AUTO)
         prG->enc_loc = ENC_FGUESS | ENC_ASCII;

@@ -146,19 +146,25 @@ void i18nInit (const char *arg)
 /*
  * Opens and reads the localization file defined by parameter.
  */
-int i18nOpen (const char *loc)
+int i18nOpen (const char *ploc)
 {
     int j = 0, debug = 0, res = 1;
+    const char *loc;
     char *floc = NULL, *p;
     FILE *i18nf;
+    
+    loc = ploc ? ploc : prG->locale_full;
 
     if (!strcmp (loc, "en_US.US-ASCII") || !strcmp (loc, "C") || !strcmp (loc, "C"))
     {
         i18nClose ();
-        i18nInit ("C");
-        /* if encoding was fixed in the micqrc file, never change it */
-        if (prG->enc_loc & ENC_FLAGS)
-            prG->enc_loc = ENC_FGUESS | ENC_ASCII;
+        if (ploc)
+        {
+            i18nInit ("C");
+            /* if encoding was fixed in the micqrc file, never change it */
+            if (prG->enc_loc & ENC_FLAGS)
+                prG->enc_loc = ENC_FGUESS | ENC_ASCII;
+        }
         return 0;
     }
     
@@ -183,10 +189,16 @@ int i18nOpen (const char *loc)
         const char *encs;
 
         if (!strcasecmp (loc, "!") || !strcasecmp (loc, "auto") || !strcasecmp (loc, "default"))
+        {
+            s_repl (prG->locale_full, NULL);
+            i18nInit (NULL);
             loc = prG->locale_full;
+            ploc = NULL;
+        }
 
-        i18nInit (loc);
         i18nClose ();
+        if (ploc)
+            i18nInit (loc);
         
         floc = strdup (prG->locale);
         if ((p = strrchr (floc, '@')))
