@@ -647,13 +647,13 @@ static void rl_analyze_ucs (wint_tt ucs, const char **display, UWORD *columns)
         *columns = 1;
 #if HAVE_WCWIDTH
     else if (!prG->locale_broken && (width = rl_wcwidth (ucs, *display)) != -1)
-        *columns = width;
+        *columns = 256 | width;
 #else
     else if (ucs >= 160) /* no way I'll hard-code double-width or combining marks here */
-        *columns = 1;
+        *columns = 257;
 #endif
     else if (prG->locale_broken && !strcmp (ConvFrom (ConvTo (utf, ENC(enc_loc)), ENC(enc_loc))->txt, utf))
-        *columns = 1;
+        *columns = 257;
     else if (!(ucs & 0xffff0000)) /* more control code, or unknown */
     {
         *display = s_sprintf ("%s\\u%c%c%c%c%s", COLINVCHAR,
@@ -696,8 +696,8 @@ strc_t ReadLineAnalyzeWidth (const char *text, UWORD *width)
     {
         ucs = ConvGetUTF8 (&in, &off);
         rl_analyze_ucs (ucs, &dis, &twidth);
-        swidth += twidth;
-        s_cat (&str, dis);
+        swidth += twidth & 0xff;
+        s_cat (&str, twidth & 0x100 ? ConvUTF8 (ucs) : dis);
     }
     *width = swidth;
     return &str;
@@ -724,7 +724,7 @@ static void rl_insert (wint_tt ucs)
     UWORD columns;
 
     rl_analyze_ucs (ucs, &display, &columns);
-    rl_insert_basic (ucs, display, strlen (display), columns);
+    rl_insert_basic (ucs, display, strlen (display), columns & 0xff);
     if (columns && ((rl_ucscol.len > rl_ucspos) || !((rl_prompt_len + rl_colpos) % rl_columns)))
         rl_recheck (FALSE);
 }
@@ -1056,7 +1056,7 @@ static void rl_tab_accept (void)
     {
         wint_tt ucs = ConvGetUTF8 (&str, &off);
         rl_analyze_ucs (ucs, &display, &columns);
-        rl_insert_basic (ucs, display, strlen (display), columns);
+        rl_insert_basic (ucs, display, strlen (display), columns & 0xff);
     }
     rl_tab_state = 0;
     rl_recheck (TRUE);
@@ -1083,7 +1083,7 @@ static void rl_tab_cancel (void)
     {
         wint_tt ucs = ConvGetUTF8 (&str, &off);
         rl_analyze_ucs (ucs, &display, &columns);
-        rl_insert_basic (ucs, display, strlen (display), columns);
+        rl_insert_basic (ucs, display, strlen (display), columns & 0xff);
     }
     rl_tab_state = 0;
     rl_recheck (TRUE);
@@ -1168,7 +1168,7 @@ static void rl_key_tab (void)
         wint_tt ucs = ConvGetUTF8 (&str, &off);
         rl_analyze_ucs (ucs, &display, &columns);
         rl_insert_basic (ucs, s_sprintf ("%s%s%s", rl_colon.txt, display, rl_coloff.txt),
-                         strlen (display) + rl_colon.len + rl_coloff.len, columns);
+                         strlen (display) + rl_colon.len + rl_coloff.len, columns & 0xff);
         rl_tab_len++;
     }
     rl_left (rl_tab_len - rl_tab_common);
@@ -1212,7 +1212,7 @@ static void rl_key_shifttab (void)
         wint_tt ucs = ConvGetUTF8 (&str, &off);
         rl_analyze_ucs (ucs, &display, &columns);
         rl_insert_basic (ucs, s_sprintf ("%s%s%s", rl_colon.txt, display, rl_coloff.txt),
-                         strlen (display) + rl_colon.len + rl_coloff.len, columns);
+                         strlen (display) + rl_colon.len + rl_coloff.len, columns & 0xff);
         rl_tab_len++;
     }
     rl_left (rl_tab_len - rl_tab_common);
