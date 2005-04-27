@@ -1,26 +1,23 @@
 #!/bin/sh
-# $Id$
-# Example script - ~/.micq/event
-# Do not use unmodified.
 
 UPDATE=""
 
 MSGUPD="\\
 ##############################################################################
-#                  Automatic upgrade notice:                                 #
-#            Get mICQ 0.5 from http://www.micq.org/!                         #
-#                                                                            #
-# If you aren't interested in mICQ anymore, reply with \"unsubscribe\"         #
-# and I won't bother you again.                                              #
+#                  Automatic upgrade notice:
+#            Get mICQ 0.5.0.2 from http://www.micq.org/!
+# 
+#       If you aren't interested in mICQ anymore, please reply with
+#              \"unsubscribe\" and I won't bother you again.
 ##############################################################################
 ."
 MSGSUB="Subscribed $2 to mICQ update notification service."
 MSGUNS="Removed $2 from update notification service."
-MSGLAT="Latest version of mICQ is: mICQ 0.5."
+MSGLAT="Latest version of mICQ is: mICQ 0.5.0.2."
 MSGHELP="\\
 ### subscribe
 ###   Subscribe to the mICQ update notification service. If a new version of
-###   mICQ is release and you're seen online, you'll receive a message.
+###   mICQ is released and you're seen online, you'll receive a message.
 ### unsubscribe
 ###   Unsubscribe from the mICQ update notification service. This will also
 ###   remove you from my contact list.
@@ -30,7 +27,7 @@ MSGHELP="\\
 MSGHILF="\\
 ### subscribe
 ###   Den mICQ-Aktualisierungs-Hinweisdienst abonnieren. Wenn eine neue
-###   Version von mICQ herausgegen wird, bekommt man dann eine Nachricht,
+###   Version von mICQ herausgeben wird, bekommt man dann eine Nachricht,
 ###   sobald man gesehen wird.
 ### unsubscribe
 ###   Den mICQ-Aktualisierungs-Hinweisdienst abbestellen. Dies wird einen
@@ -40,10 +37,10 @@ MSGHILF="\\
 ."
 MSGHELO="\\
 (EN) Welcome to my ICQ answering machine, and probably welcome to mICQ as well.
-### Don't ask me who I am - use your own brain to figure it out. Feel free to
-### ask question about mICQ, but don't try to abuse me as a man page reader.
 ### You can subscribe to the mICQ update notification service with \"subscribe\",
 ### or issue the following commands: help subscribe unsubscribe check.
+### Don't ask me who I am - use your own brain to figure it out. Feel free to
+### ask question about mICQ, but don't try to abuse me as a man page reader.
 (DE) Willkommen zu meinem ICQ-Anrufbeantworter, und Willkommen zu mICQ.
 ### Ich verstehe diese Kommandos: hilfe subscribe unsubscribe check.
 ."
@@ -54,53 +51,73 @@ case "$1-$2-$3-$4-$5-$6-$7-$8" in
    *-*--*-beep-*-*)
      xkbbell ;;
    *-*-*-*-msg-*-hilfe-*)
-     echo "msg notab $2 $MSGHILF" >> $HOME/.micq/scripting
+     echo "msg notab $2 $MSGHILF" >> $HOME/.micq/scripting &
      ;;
    *-*-*-*-msg-*-help-*)
-     echo "msg notab $2 $MSGHELP" >> $HOME/.micq/scripting
+     echo "msg notab $2 $MSGHELP" >> $HOME/.micq/scripting &
      ;;
    *-*-*-*-msg-*-unsubscribe-*)
      touch "$HOME/.micq/blacklist/$2"
-     rm "$HOME/.micq/subscriber/$2"
-     echo "rem $2 m:$2" >> $HOME/.micq/scripting
-     echo "rem $2 new:$2" >> $HOME/.micq/scripting
-     echo "msg notab $2 $MSGUNS" >> $HOME/.micq/scripting
+     rm -f "$HOME/.micq/subscriber/$2"
+     (
+      echo "rem $2 m:$2"
+      echo "rem $2 new:$2"
+      echo "msg notab $2 $MSGUNS"
+     ) >> $HOME/.micq/scripting &
      ;;
    *-*-*-*-msg-*-subscribe-*)
-     rm "$HOME/.micq/blacklist/$2"
+     rm -f "$HOME/.micq/blacklist/$2"
      touch "$HOME/.micq/subscriber/$2"
-     echo "add $2 m:$2" >> $HOME/.micq/scripting
-     echo "rem $2 new:$2" >> $HOME/.micq/scripting
-     echo "msg notab $2 $MSGSUB" >> $HOME/.micq/scripting
+     (
+      echo "add $2 m:$2"
+      echo "rem $2 new:$2"
+      echo "msg notab $2 $MSGSUB"
+     ) >> $HOME/.micq/scripting &
      ;;
    *-*-*-*-msg-*-check-*)
      if [ -f "$HOME/.micq/subscriber/$2" ]
      then
-       echo "msg notab $2 $MSGLAT $MSGSUB" >> $HOME/.micq/scripting
+       echo "msg notab $2 $MSGLAT $MSGSUB" >> $HOME/.micq/scripting &
      else
-       echo "msg notab $2 $MSGLAT $MSGUNS" >> $HOME/.micq/scripting
+       echo "msg notab $2 $MSGLAT $MSGUNS" >> $HOME/.micq/scripting &
      fi
+     ;;
+   *-*-m:*-*-msg-*-*Zone*Labs*message*blocked*not*on*$2*contact*list*)
+     # idiot
+     touch "$HOME/.micq/blacklist/$2"
+     (
+       echo "rem $2"
+       echo "msg notab $2 Removed from contact list."
+     ) >> $HOME/.micq/scripting &
      ;;
    *-*-m:*-*-msg-*-contact?remove?$2*)
      touch "$HOME/.micq/blacklist/$2"
-     echo "rem $2" >> $HOME/.micq/scripting
-     echo "msg notab $2 Removed from contact list." >> $HOME/.micq/scripting
+     (
+       echo "rem $2"
+       echo "msg notab $2 Removed from contact list."
+     ) >> $HOME/.micq/scripting &
      ;;
    *-*-$2-*-msg-*)
-     echo "add $2 new:$2" >> $HOME/.micq/scripting
-     echo "msg notab $2 $MSGHELO" >> $HOME/.micq/scripting
+     [ $2 -ge 1000 ] && (
+      echo "add $2 new:$2" >> $HOME/.micq/scripting
+      sleep 1
+      echo "msg notab $2 $MSGHELO" >> $HOME/.micq/scripting
+     ) &
      ;;
-   *-*-*-*-on-*-mICQ\ 0.5)
-     UPDATE=0.5 ;;
+   *-*-*-*-on-*-mICQ\ 0.4.*)
+     UPDATE=0.5.0.2 ;;
+   *-*-*-*-on-*-mICQ\ 0.5.0.[01])
+     UPDATE=0.5.0.2 ;;
+   *-*-*-*-on-*-mICQ\ 0.5.0.2)
+     UPDATE= ;;
    *-*-m:*-*-on-*-mICQ*)
      UPDATE= ;;
    *-*-m:*-*-on-*-*)
-     UPDATE=0.5 ;;
+     UPDATE=0.5.0.2 ;;
 esac
 
 if [ -n "$UPDATE" -a ! -f "$HOME/.micq/update-$UPDATE/$2" -a ! -f "$HOME/.micq/blacklist/$2" ]
 then
-  touch "$HOME/.micq/update-0.5/$2"
-  echo "msg notab $2 $MSGUPD" >> $HOME/.micq/scripting
+  touch "$HOME/.micq/update-$UPDATE/$2"
+  echo "msg notab $2 $MSGUPD" >> $HOME/.micq/scripting &
 fi
-
