@@ -1,5 +1,19 @@
 -*- coding: utf-8 -*-
 
+2005-04-27 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix: i18nInit() was called twice, second time with LC_MESSAGE
+	  (thus, LC_CTYPE was effectively ignored)
+	* fix aligning for non-UTF-8 locales (only question marks
+	  in non-latin non-UTF-8 locales in finger output)
+	* 0.5.0.3
+
+2005-04-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* auto-update: forget accidently set explicit local character encoding
+	* fix segfault on h <nick> 99999999999 - just display all messages
+	* hide unknown roster types 15 and 20
+	* print normal contacts first
+	* 0.5.0.2
+
 2005-04-16 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* re-set temporary away messages on manual status change
 	* ru micq.7 update by Seva Gluschenko

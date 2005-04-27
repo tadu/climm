@@ -25,3 +25,4 @@
                       and man pages, UTF-8 input handling, lots of fixes (and probably new bugs ;)
 2005-02-27: 0.5.0.1: bug fixes and translation updates, peek reliable again
 2005-04-24: 0.5.0.2: bug fixes, contact list handling improvements, auto-expanding aliases "a" and "r"
+2005-04-27: 0.5.0.3: fix two bugs introduced in last version
