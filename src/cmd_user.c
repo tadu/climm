@@ -722,7 +722,7 @@ static JUMP_F(CmdUserHelp)
         else if (!strcasecmp (par->txt, "accept"))
             CMD_USER_HELP  ("accept", "= accept file");
         else if (!strcasecmp (par->txt, "contact"))
-            CMD_USER_HELP  ("contact [show|diff|download|upload]", i18n (2306, "Request server side contact list and show all or new contacts or import."));
+            CMD_USER_HELP  ("contact [show|diff|download|import|upload|delete]", i18n (2306, "Request server side contact list and show all or new contacts or import."));
         else if (!strcasecmp (par->txt, "peek"))
             CMD_USER_HELP  ("peek <contacts>", i18n (2183, "Check all <contacts> whether they are offline or invisible."));
         else if (!strcasecmp (par->txt, "peek <contacts>"))
