@@ -190,7 +190,7 @@ int i18nOpen (const char *ploc)
 
         if (!strcasecmp (loc, "!") || !strcasecmp (loc, "auto") || !strcasecmp (loc, "default"))
         {
-            s_repl (prG->locale_full, NULL);
+            s_repl (&prG->locale_full, NULL);
             i18nInit (NULL);
             loc = prG->locale_full;
             ploc = NULL;
