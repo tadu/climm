@@ -110,12 +110,12 @@ void i18nInit (const char *arg)
             earg = getenv ("LC_MESSAGES");
         if (!earg)
             earg = getenv ("LANG");
+        if (!earg)
+            earg = "C";
         if (earg && !prG->locale_orig)
             s_repl (&prG->locale_orig, earg);
         if (earg && !prG->locale_full)
             s_repl (&prG->locale_full, earg);
-        if (!earg)
-            earg = "C";
         if (strchr (earg, '.') && arg && !strchr (arg, '.'))
         {
             arg = earg;
@@ -155,7 +155,7 @@ int i18nOpen (const char *ploc)
     
     loc = ploc ? ploc : prG->locale_full;
 
-    if (!strcmp (loc, "en_US.US-ASCII") || !strcmp (loc, "C") || !strcmp (loc, "C"))
+    if (!loc || !strcmp (loc, "en_US.US-ASCII") || !strcmp (loc, "C"))
     {
         i18nClose ();
         if (ploc)
