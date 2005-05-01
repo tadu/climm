@@ -1590,7 +1590,7 @@ str_t ReadLine (UBYTE newbyte)
                 case 32:             /*   = SPACE */
                     if (rl_tab_state > 0)
                         rl_tab_accept ();
-                    else
+                    else if (rl_tab_state == 0)
                         rl_checkautoexpand ();
                     rl_insert (' ');
                     break;
