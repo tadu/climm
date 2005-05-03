@@ -681,13 +681,15 @@ UWORD ContactIDGet (Contact *cont, UWORD type)
     while (!id->id)
     {
         Contact *c;
+        UWORD newid;
         int i;
 
-        id->id = 16 + rand() % 0x7fef;
+        newid = 16 + rand() % 0x7fef;
         for (i = 0; (c = ContactIndex (NULL, i)); i++)
             for (idt = c->ids; idt; idt = idt->next)
                 if (idt->id == id->id)
                     id->id = 0;
+        id->id = newid;
     }
     id->tag = 0;
     id->issbl = 0;
