@@ -265,7 +265,7 @@ static Contact *ContactC (UWORD id, UDWORD uin, const char *nick DEBUGPARAM)
         return NULL;
 
     cont->uin = uin;
-    cont->id = id;
+    cont->ids = NULL;
     cont->status = STATUS_OFFLINE;
     
     s_repl (&cont->nick, nick ? nick : s_sprintf ("%ld", uin));
@@ -354,15 +354,22 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
         for (i = 0; i < tmp->used; i++)
         {
             cont = tmp->contacts[i];
-            if ((!uin  || uin == cont->uin) &&
-                (!id   || id == cont->id))
+            if (uin && uin != cont->uin)
+                continue;
+            if (id)
             {
-                if (!nick || !strcmp (nick, cont->nick))
-                    return cont;
-                for (ca = cont->alias; ca; ca = ca->more)
-                    if (!strcmp (nick, ca->alias))
-                        return cont;
+                ContactIDs *ids;
+                for (ids = cont->ids; ids; ids = ids->next)
+                    if (ids->id == id)
+                        break;
+                if (!ids)
+                    continue;
             }
+            if (!nick || !strcmp (nick, cont->nick))
+                return cont;
+            for (ca = cont->alias; ca; ca = ca->more)
+                if (!strcmp (nick, ca->alias))
+                    return cont;
         }
     }
     return NULL;
@@ -377,7 +384,7 @@ void ContactCreate (Connection *serv, Contact *cont DEBUGPARAM)
     ContactRem (CONTACTGROUP_NONCONTACTS, cont);
     ContactAdd (serv->contacts, cont);
     cont->group = serv->contacts;
-    Debug (DEB_CONTACT, "accc  #%d %ld '%s' %p in %p", cont->id, cont->uin, cont->nick, cont, serv->contacts);
+    Debug (DEB_CONTACT, "accc  #%d %ld '%s' %p in %p", 0, cont->uin, cont->nick, cont, serv->contacts);
 }
 
 
@@ -440,6 +447,7 @@ void ContactD (Contact *cont DEBUGPARAM)
 {
     ContactAlias *ca, *cao;
     ContactGroup *cg;
+    ContactIDs *ids, *tids;
     int i;
 
     for (ca = cont->alias; ca; ca = cao)
@@ -449,7 +457,12 @@ void ContactD (Contact *cont DEBUGPARAM)
         free (ca);
     }
     
-    cont->id = 0;
+    for (ids = cont->ids; ids; ids = tids)
+    {
+        tids = ids->next;
+        free (ids);
+    }
+    cont->ids = NULL;
     cont->alias = NULL;
     s_repl (&cont->nick, s_sprintf ("%ld", cont->uin));
     
@@ -457,7 +470,7 @@ void ContactD (Contact *cont DEBUGPARAM)
         ContactRem (cg, cont);
     ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
     cont->group = NULL;
-    Debug (DEB_CONTACT, "del   #%d %ld %p", cont->id, cont->uin, cont);
+    Debug (DEB_CONTACT, "del   #%d %ld %p", 0, cont->uin, cont);
 }
 
 
@@ -486,7 +499,7 @@ BOOL ContactAdd (ContactGroup *group, Contact *cont DEBUGPARAM)
         group = group->more;
     }
     group->contacts[group->used++] = cont;
-    Debug (DEB_CONTACT, "add   #%d %ld '%s' %p to %p", cont->id, cont->uin, cont->nick, cont, orig);
+    Debug (DEB_CONTACT, "add   #%d %ld '%s' %p to %p", 0, cont->uin, cont->nick, cont, orig);
     return TRUE;
 }
 
@@ -544,7 +557,7 @@ BOOL ContactRem (ContactGroup *group, Contact *cont DEBUGPARAM)
                     group->contacts[i] = group->contacts[--group->used];
                     group->contacts[group->used] = NULL;
                 }
-                Debug (DEB_CONTACT, "rem   #%d %ld '%s' %p to %p", cont->id, cont->uin, cont->nick, cont, orig);
+                Debug (DEB_CONTACT, "rem   #%d %ld '%s' %p to %p", 0, cont->uin, cont->nick, cont, orig);
                 return TRUE;
             }
         group = group->more;
@@ -591,7 +604,7 @@ BOOL ContactAddAlias (Contact *cont, const char *nick DEBUGPARAM)
         return FALSE;
     }
     *caref = ca;
-    Debug (DEB_CONTACT, "addal #%d %ld '%s' A'%s'", cont->id, cont->uin, cont->nick, nick);
+    Debug (DEB_CONTACT, "addal #%d %ld '%s' A'%s'", 0, cont->uin, cont->nick, nick);
     return TRUE;
 }
 
@@ -619,7 +632,7 @@ BOOL ContactRemAlias (Contact *cont, const char *nick DEBUGPARAM)
             nn = strdup ("");
         free (cont->nick);
         cont->nick = nn;
-        Debug (DEB_CONTACT, "remal #%d %ld N'%s' '%s'", cont->id, cont->uin, cont->nick, nick);
+        Debug (DEB_CONTACT, "remal #%d %ld N'%s' '%s'", 0, cont->uin, cont->nick, nick);
         return TRUE;
     }
 
@@ -630,7 +643,7 @@ BOOL ContactRemAlias (Contact *cont, const char *nick DEBUGPARAM)
             ca = *caref;
             *caref = (*caref)->more;
             free (ca);
-            Debug (DEB_CONTACT, "remal #%d %ld '%s' X'%s'", cont->id, cont->uin, cont->nick, nick);
+            Debug (DEB_CONTACT, "remal #%d %ld '%s' X'%s'", 0, cont->uin, cont->nick, nick);
             return TRUE;
         }
 
@@ -638,21 +651,70 @@ BOOL ContactRemAlias (Contact *cont, const char *nick DEBUGPARAM)
 }
 
 /*
- * Returns the contact id, if necessary create one
+ * Returns the contact id for flag, if necessary create one
  */
-UWORD ContactID (Contact *cont)
+ContactIDs *ContactID (Contact *cont, UWORD type)
 {
-    while (!cont->id)
+    ContactIDs **ids;
+    ContactIDs *id;
+    
+    for (ids = &cont->ids; *ids; ids = &((*ids)->next))
+        if ((*ids)->type == type)
+            break;
+    
+    if (!(id = *ids))
+    {
+        id = *ids = calloc (1, sizeof (ContactIDs));
+        id->type = type;
+    }
+    return id;
+}
+
+/*
+ * Returns the contact id for type, if necessary create one
+ */
+UWORD ContactIDGet (Contact *cont, UWORD type)
+{
+    ContactIDs *id, *idt;
+
+    id = ContactID (cont, type);    
+    while (!id->id)
     {
         Contact *c;
         int i;
 
-        cont->id = 16 + rand() % 0x7fef;
+        id->id = 16 + rand() % 0x7fef;
         for (i = 0; (c = ContactIndex (NULL, i)); i++)
-            if (c->id == cont->id && c != cont)
-                cont->id = 0;
+            for (idt = c->ids; idt; idt = idt->next)
+                if (idt->id == id->id)
+                    id->id = 0;
     }
-    return cont->id;
+    id->tag = 0;
+    id->issbl = 0;
+    return id->id;
+}
+
+/*
+ * Set the contact id for type, if necessary create one
+ */
+void ContactIDSet (Contact *cont, UWORD type, UWORD id, UWORD tag)
+{
+    ContactIDs *idp, *idt;
+    Contact *c;
+    int i;
+    
+    idp = ContactID (cont, type);
+    for (i = 0; (c = ContactIndex (NULL, i)); i++)
+        for (idt = c->ids; idt; idt = idt->next)
+            if (idt->id == id)
+            {
+                idt->id = 0;
+                idt->tag = 0;
+                idt->issbl = 0;
+            }
+    idp->id = id;
+    idp->tag = tag;
+    idp->issbl = 1;
 }
 
 /*
@@ -673,7 +735,6 @@ BOOL ContactMetaSave (Contact *cont)
     fprintf (f, "encoding UTF-8\n"); 
     fprintf (f, "format 1\n\n");
     fprintf (f, "b_uin      %ld\n", cont->uin);
-    fprintf (f, "b_id       %d\n", cont->id);
     fprintf (f, "b_nick     %s\n", s_quote (cont->nick));
     if (cont->meta_about)
         fprintf (f, "b_about    %s\n", s_quote (cont->meta_about));
@@ -822,7 +883,7 @@ BOOL ContactMetaLoad (Contact *cont)
         else if (!strncmp (cmd, "b_", 2))
         {
             if      (!strcmp (cmd, "b_uin"))   { if (s_parseint (&line, &i) && i != cont->uin) return FALSE; }
-            else if (!strcmp (cmd, "b_id"))    { if (s_parseint (&line, &i)) cont->id = i; }
+            else if (!strcmp (cmd, "b_id"))    { s_parseint (&line, &i); /* deprecated */ }
             else if (!strcmp (cmd, "b_nick"))  { s_parse (&line); /* ignore for now */ }
             else if (!strcmp (cmd, "b_alias")) { s_parse (&line); /* deprecated */ }
             else if (!strcmp (cmd, "b_enc"))   { s_parse (&line); /* deprecated */ }

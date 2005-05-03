@@ -58,7 +58,7 @@ static RosterEntry *IMRosterGroup (Roster *roster, UWORD id)
 
 static Contact *IMRosterCheckCont (Connection *serv, RosterEntry *rc)
 {
-    Contact *cont, *tcont;
+    Contact *cont;
     
     if (!serv || !rc)
         return NULL;
@@ -68,14 +68,7 @@ static Contact *IMRosterCheckCont (Connection *serv, RosterEntry *rc)
         return NULL;
 
     OptSetVal (&cont->copts, CO_ISSBL, 1);
-    cont->id = 0;
-    if ((tcont = ContactFind (serv->contacts, rc->id, cont->uin, NULL)))
-    {
-        OptSetVal (&cont->copts, CO_ISSBL, 0);
-        tcont->id = 0;
-    }
-    cont->id = rc->id;
-    cont->tag = rc->tag;
+    ContactIDSet (cont, rc->type, rc->id, rc->tag);
     return cont;
 }
 
@@ -115,27 +108,27 @@ static void IMRosterDoDelete (Event *event)
     if (roster->delname)
     {
         for (re = roster->groups; re; re = re->next)
-            if (re->name == roster->delname)
+            if (!strcmp (re->name, roster->delname))
                 SnacCliRosterentrydelete (serv, re);
 
         for (re = roster->ignore; re; re = re->next)
-            if (re->name == roster->delname)
+            if (!strcmp (re->name, roster->delname))
                 SnacCliRosterentrydelete (serv, re);
 
         for (re = roster->invisible; re; re = re->next)
-            if (re->name == roster->delname)
+            if (!strcmp (re->name, roster->delname))
                 SnacCliRosterentrydelete (serv, re);
 
         for (re = roster->visible; re; re = re->next)
-            if (re->name == roster->delname)
+            if (!strcmp (re->name, roster->delname))
                 SnacCliRosterentrydelete (serv, re);
 
         for (re = roster->normal; re; re = re->next)
-            if (re->name == roster->delname)
+            if (!strcmp (re->name, roster->delname))
                 SnacCliRosterentrydelete (serv, re);
 
         for (re = roster->generic; re; re = re->next)
-            if (re->name == roster->delname)
+            if (!strcmp (re->name, roster->delname))
                 SnacCliRosterentrydelete (serv, re);
     }
     else
@@ -548,7 +541,7 @@ static void IMRosterDiff (Event *event)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        if (cont && !cont->group)
+        if (!cont || !cont->group || (!ContactPrefVal (cont, CO_IGNORE) && ContactPrefVal (cont, CO_WANTSBL)))
         {
             rl_printf (i18n (2480, "Server: Group %s Contact %s (#%d) <ignored>\n"),
                        rg && rg->name ? rg->name : "?", rc->nick ? rc->nick : rc->name, rc->id);
@@ -559,7 +552,7 @@ static void IMRosterDiff (Event *event)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        if (cont && !cont->group)
+        if (!cont || !cont->group || (!ContactPrefVal (cont, CO_HIDEFROM) && ContactPrefVal (cont, CO_WANTSBL)))
         {
             rl_printf (i18n (2481, "Server: Group %s Contact %s (#%d) <hidefrom>\n"),
                        rg && rg->name ? rg->name : "?", rc->nick ? rc->nick : rc->name, rc->id);
@@ -571,14 +564,14 @@ static void IMRosterDiff (Event *event)
                        rg && rg->name ? rg->name : "?", rc->name, rc->nick ? rc->nick : rc->name, rc->id);
             rl_printf (i18n (2483, "Local:  Group %s Contact %s/%s (#%d)\n"),
                        cont->group == serv->contacts ? "(none)" : cont->group->name,
-                       s_sprintf ("%ld", cont->uin), cont->nick, cont->id);
+                       s_sprintf ("%ld", cont->uin), cont->nick, 0);
         }
     }
     for (rc = roster->normal; rc; rc = rc->next)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        if (cont && !cont->group)
+        if (!cont || !cont->group)
         {
             rl_printf (i18n (2484, "Server: Group %s Contact %s (#%d)\n"),
                        rg && rg->name ? rg->name : "?", rc->nick ? rc->nick : rc->name, rc->id);
@@ -590,7 +583,7 @@ static void IMRosterDiff (Event *event)
                        rg && rg->name ? rg->name : "?", rc->name, rc->nick ? rc->nick : rc->name, rc->id);
             rl_printf (i18n (2486, "Local:  Group %s Contact %s/%s (#%d) <%s>\n"),
                        cont->group == serv->contacts ? "(none)" : cont->group->name,
-                       s_sprintf ("%ld", cont->uin), cont->nick, cont->id,
+                       s_sprintf ("%ld", cont->uin), cont->nick, 0,
                        ContactPrefVal (cont, CO_HIDEFROM) ? i18n (2487, "hidefrom") : i18n (2488, "intimate"));
         }
     }
@@ -610,22 +603,37 @@ static void IMRosterDiff (Event *event)
                        rg && rg->name ? rg->name : "?", rc->name, rc->nick ? rc->nick : rc->name, rc->id);
             rl_printf (i18n (2483, "Local:  Group %s Contact %s/%s (#%d)\n"),
                        cont->group == serv->contacts ? "(none)" : cont->group->name,
-                       s_sprintf ("%ld", cont->uin), cont->nick, cont->id);
+                       s_sprintf ("%ld", cont->uin), cont->nick, 0);
         }
     }
 
     for (i = 0; (cont = ContactIndex (serv->contacts, i)); i++)    
-        if (!ContactPrefVal (cont, CO_ISSBL))
-            if (!ContactPrefVal (cont, CO_IGNORE) && ContactPrefVal (cont, CO_WANTSBL))
-            {
-                cnt_more++;
+        if (ContactPrefVal (cont, CO_WANTSBL))
+        {
+            if (ContactPrefVal (cont, CO_HIDEFROM) && !ContactID (cont, ROSTER_TYPE_INVISIBLE)->issbl)
                 rl_printf (i18n (2486, "Local:  Group %s Contact %s/%s (#%d) <%s>\n"),
                            cont->group == serv->contacts ? "(none)" : cont->group->name,
-                           s_sprintf ("%ld", cont->uin), cont->nick, cont->id,
-                           ContactPrefVal (cont, CO_HIDEFROM) ? i18n (2487, "hidefrom") :
-                           ContactPrefVal (cont, CO_INTIMATE) ? i18n (2488, "intimate")
-                                                              : i18n (2490, "normal"));
-            }
+                           s_sprintf ("%ld", cont->uin), cont->nick, ContactIDGet (cont, ROSTER_TYPE_INVISIBLE),
+                           i18n (2487, "hidefrom"));
+            else if (ContactPrefVal (cont, CO_INTIMATE) && !ContactID (cont, ROSTER_TYPE_VISIBLE)->issbl)
+                rl_printf (i18n (2486, "Local:  Group %s Contact %s/%s (#%d) <%s>\n"),
+                           cont->group == serv->contacts ? "(none)" : cont->group->name,
+                           s_sprintf ("%ld", cont->uin), cont->nick, ContactIDGet (cont, ROSTER_TYPE_VISIBLE),
+                           i18n (2488, "intimate"));
+            else if (ContactPrefVal (cont, CO_IGNORE) && !ContactID (cont, ROSTER_TYPE_IGNORE)->issbl)
+                rl_printf (i18n (2486, "Local:  Group %s Contact %s/%s (#%d) <%s>\n"),
+                           cont->group == serv->contacts ? "(none)" : cont->group->name,
+                           s_sprintf ("%ld", cont->uin), cont->nick, ContactIDGet (cont, ROSTER_TYPE_IGNORE),
+                           i18n (2580, "ignore"));
+            else if (!ContactID (cont, ROSTER_TYPE_NORMAL)->issbl || !ContactPrefVal (cont, CO_ISSBL))
+                rl_printf (i18n (2486, "Local:  Group %s Contact %s/%s (#%d) <%s>\n"),
+                           cont->group == serv->contacts ? "(none)" : cont->group->name,
+                           s_sprintf ("%ld", cont->uin), cont->nick, ContactIDGet (cont, ROSTER_TYPE_IGNORE),
+                           i18n (2490, "normal"));
+            else
+                cnt_more--;
+            cnt_more++;
+        }
 
     IMRosterCancel (event);
     rl_printf (i18n (2491, "Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n"),

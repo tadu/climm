@@ -1210,3 +1210,5 @@
 2576:contact delete  Delete server based contact list entry.\n
 2577:SBL ids:
 2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+2579:contact delid   Delete server based contact list entry (experts only).\n
+2580:ignore

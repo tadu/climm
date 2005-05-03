@@ -4,6 +4,18 @@
 
 #include "oscar_tlv.h"
 
+#define ROSTER_TYPE_NORMAL     0
+#define ROSTER_TYPE_GROUP      1
+#define ROSTER_TYPE_VISIBLE    2
+#define ROSTER_TYPE_INVISIBLE  3
+#define ROSTER_TYPE_VISIBILITY 4
+#define ROSTER_TYPE_ICQTIC     9
+#define ROSTER_TYPE_IGNORE    14
+#define ROSTER_TYPE_LASTUPD   15
+#define ROSTER_TYPE_WIERD17   17
+#define ROSTER_TYPE_IMPORTT   19
+#define ROSTER_TYPE_WIERD20   20
+
 jump_snac_f SnacSrvReplylists, SnacSrvReplyroster, SnacSrvUpdateack,
     SnacSrvRosterok, SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvAddedyou;
 

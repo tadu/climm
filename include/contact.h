@@ -11,6 +11,7 @@ typedef struct ContactMetaMore_s     MetaMore;
 typedef struct ContactMetaObsolete_s MetaObsolete;
 typedef struct ContactDC_s           ContactDC;
 typedef struct ContactMeta_s         ContactMeta;
+typedef struct ContactIDs_s          ContactIDs;
 
 struct ContactMetaGeneral_s
 {
@@ -79,6 +80,15 @@ struct ContactMeta_s
     char *text;
 };
 
+struct ContactIDs_s
+{
+    ContactIDs *next;
+    UWORD type;
+    UWORD id;
+    UWORD tag;
+    UWORD issbl;
+};
+
 struct Contact_s
 {
     ContactGroup *group;
@@ -88,9 +98,9 @@ struct Contact_s
     UDWORD oldflags;
     Opt copts;
     UDWORD caps[2];
-    UWORD  id;
-    UWORD  tag;
     UBYTE  v1, v2, v3, v4;
+    
+    ContactIDs *ids;
 
     char  *version;
     char  *last_message;
@@ -144,7 +154,9 @@ BOOL          ContactRemAlias     (Contact *cont, const char *nick DEBUGPARAM);
 #define ContactAddAlias(c,n)       ContactAddAlias(c,n DEBUGARGS)
 #define ContactRemAlias(c,n)       ContactRemAlias(c,n DEBUGARGS)
 
-UWORD         ContactID           (Contact *cont);
+ContactIDs   *ContactID           (Contact *cont, UWORD type);
+UWORD         ContactIDGet        (Contact *cont, UWORD type);
+void          ContactIDSet        (Contact *cont, UWORD type, UWORD id, UWORD tag);
 void          ContactSetCap       (Contact *cont, Cap *cap);
 void          ContactSetVersion   (Contact *cont);
 

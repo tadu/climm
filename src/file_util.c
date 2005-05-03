@@ -1522,7 +1522,7 @@ int PrefWriteStatusFile (void)
             if (cont->group && cont->group->serv == ss)
             {
                 ContactAlias *alias;
-                fprintf (stf, "entry %d %10ld %s", cont->id, cont->uin, s_quote (cont->nick));
+                fprintf (stf, "entry %d %10ld %s", 0, cont->uin, s_quote (cont->nick));
                 for (alias = cont->alias; alias; alias = alias->more)
                     fprintf (stf, " %s", s_quote (alias->alias));
                 fprintf (stf, "\n%s", OptString (&cont->copts));

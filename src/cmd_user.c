@@ -1760,8 +1760,15 @@ static JUMP_F(CmdUserStatusDetail)
                 free (t1);
                 free (t2);
             }
-            if (cont->id)
-                rl_printf ("    %s %u %u %u\n", i18n (2577, "SBL ids:"), cont->id, cont->tag, cont->group ? cont->group->id : 0);
+            if (cont->ids)
+            {
+                ContactIDs *ids;
+                rl_printf ("    %s %u", i18n (2577, "SBL ids:"), cont->group ? cont->group->id : 0);
+                for (ids = cont->ids; ids; ids = ids->next)
+                    rl_printf (", %u: %u / %u / %u", ids->type, ids->id, ids->tag, ids->issbl);
+                rl_printf ("\n");
+                
+            }
             if (cont->group && cont->group != conn->contacts && cont->group->name)
                 rl_printf ("    %s %s \n", i18n (2536, "Group:"), cont->group->name);
             for (j = id = 0; id < CAP_MAX; id++)
@@ -4006,18 +4013,12 @@ static JUMP_F(CmdUserContact)
         else if (!strcasecmp (par->txt, "delete"))
         {
             ContactGroup *cg;
-            Contact *cont;
             const char *name;
             
             if ((cg = s_parsecg (&args, conn)))
             {
                 if (cg->id)
                     IMDeleteID (conn, cg->id, 0, NULL);
-            }
-            else if ((cont = s_parsenick (&args, conn)))
-            {
-                if (cont->id && (cont->tag || (cont->group && cont->group->id)))
-                    IMDeleteID (conn, cont->tag ? cont->tag : cont->group->id, cont->id, NULL);
             }
             else if ((name = s_parserem (&args)))
             {
@@ -4046,6 +4047,7 @@ static JUMP_F(CmdUserContact)
 /*        rl_print (i18n (2322, "contact sync    Import server based contact list if appropriate.\n"));
         rl_print (i18n (2323, "contact export  Export local contact list to server based list.\n"));*/
         rl_print (i18n (2324, "contact upload  Add local contacts to server based contact list.\n"));
+        rl_print (i18n (2579, "contact delid   Delete server based contact list entry (experts only).\n"));
     }
     return 0;
 }

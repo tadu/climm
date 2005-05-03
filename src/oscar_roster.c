@@ -217,39 +217,39 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         rref = &roster->generic;
         switch (re->type)
         {
-            case 0: /* normal contact */
+            case ROSTER_TYPE_NORMAL:
                 rref = &roster->normal;
                 break;
-            case 1: /* group */
+            case ROSTER_TYPE_GROUP:
                 if (re->tag || re->id)
                     rref = &roster->groups;
                 break;
-            case 2: /* visible */
+            case ROSTER_TYPE_VISIBLE:
                 rref = &roster->visible;
                 break;
-            case 3: /* invisible */
+            case ROSTER_TYPE_INVISIBLE:
                 rref = &roster->invisible;
                 break;
-            case 14: /* ignore */
+            case ROSTER_TYPE_IGNORE:
                 rref = &roster->ignore;
                 break;
-            case 15: /* wierd */
-            case 17: /* wierd */
-            case 20: /* LastUpdateDate */
+            case ROSTER_TYPE_LASTUPD: /* LastUpdateDate */
+            case ROSTER_TYPE_WIERD17: /* wierd */
+            case ROSTER_TYPE_WIERD20: /* wierd */
                 break;
-            case 19: /* ImportTime */
+            case ROSTER_TYPE_IMPORTT: /* ImportTime */
                 j = TLVGet (re->tlv, 212);
                 if (j != (UWORD)-1 && re->tlv[j].str.len == 4)
                     roster->import = re->tlv[j].nr;
                 else
                     rl_printf ("#Bogus ImportTime item: %d: %s %d %d.\n", re->type, re->name, re->tag, re->id);
                 break;
-            case 9: /* ICQTIC */
+            case ROSTER_TYPE_ICQTIC:
                 j = TLVGet (re->tlv, 205);
                 if (j != (UWORD)-1)
                     s_repl (&roster->ICQTIC, re->tlv[j].str.txt);
                 break;
-            case 4: /* visibility */
+            case ROSTER_TYPE_VISIBILITY:
                 break;
             default:
                 rl_printf ("#Unknown type %d: %s %d %d.\n", re->type, re->name, re->tag, re->id);
@@ -265,10 +265,10 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         {
             time_t now = time (NULL);
             UDWORD da = now;
-            SnacCliRosterentryadd (serv, "ImportTime", 0, 1, 19, 212, &da, 4);
+            SnacCliRosterentryadd (serv, "ImportTime", 0, 1, ROSTER_TYPE_IMPORTT, 212, &da, 4);
         }
         if (!roster->ICQTIC)
-            SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, 9, 205, "3608,0,0,0,60,null", 18);
+            SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, ROSTER_TYPE_ICQTIC, 205, "3608,0,0,0,60,null", 18);
         event2->callback (event2);
         if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
         {
@@ -289,12 +289,23 @@ JUMP_SNAC_F(SnacSrvReplyroster)
 /*
  * CLI_ADDBUDDY - SNAC(13,8)
  */
+
+static void SnacCliRosterbulkone (Connection *serv, Contact *cont, Packet *pak, UWORD type)
+{
+    PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
+    PacketWriteB2       (pak, 0);
+    PacketWriteB2       (pak, ContactIDGet (cont, type));
+    PacketWriteB2       (pak, type);
+    PacketWriteBLen     (pak);
+    PacketWriteBLenDone (pak);
+    QueueEnqueueData (serv, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
+}
+
 void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs)
 {
     Packet *pak;
     Contact *cont;
     ContactGroup *cg;
-    UWORD type;
     int i;
     
     for (i = 0; (cont = ContactIndex (cs, i)); i++)
@@ -319,19 +330,12 @@ void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs)
             SnacSend (serv, pak);
             pak = SnacC (serv, 19, 8, 0, 0);
         }
-        
-        if (ContactPrefVal (cont, CO_HIDEFROM))
-            type = 3;
-        else if (ContactPrefVal (cont, CO_INTIMATE))
-            type = 2;
-        else
-            type = 0;
 
-/*        SnacCliGrantauth (serv, cont);  */
+        
         PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
         PacketWriteB2       (pak, ContactGroupID (cg));
-        PacketWriteB2       (pak, ContactID (cont));
-        PacketWriteB2       (pak, type);
+        PacketWriteB2       (pak, ContactIDGet (cont, ROSTER_TYPE_NORMAL));
+        PacketWriteB2       (pak, ROSTER_TYPE_NORMAL);
         PacketWriteBLen     (pak);
         PacketWriteTLVStr   (pak, 305, cont->nick);
         if (cont->oldflags & CONT_REQAUTH)
@@ -341,8 +345,23 @@ void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs)
         }
         PacketWriteBLenDone (pak);
         QueueEnqueueData (serv, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
-    }
 
+        if (ContactPrefVal (cont, CO_HIDEFROM))
+        {
+            i++;
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
+        }
+        if (ContactPrefVal (cont, CO_INTIMATE))
+        {
+            i++;
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_VISIBLE);
+        }
+        if (ContactPrefVal (cont, CO_IGNORE))
+        {
+            i++;
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
+        }
+    }
     SnacSend (serv, pak);
     SnacCliAddend (serv);
 }
@@ -359,21 +378,23 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
         UWORD type = 0;
         
         if (!ContactGroupPrefVal (cg, CO_ISSBL))
+        {
             SnacCliRosteradd (serv, cg, NULL);
+            OptSetVal (&cg->copts, CO_ISSBL, 1);
+        }
         
+        SnacCliAddstart (serv);
+
         if (ContactPrefVal (cont, CO_HIDEFROM))
             type = 3;
         else if (ContactPrefVal (cont, CO_INTIMATE))
             type = 2;
 
-/*        SnacCliGrantauth (serv, cont);  */
-
-        SnacCliAddstart (serv);
         
         pak = SnacC (serv, 19, 8, 0, 0);
         PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
         PacketWriteB2       (pak, ContactGroupID (cg));
-        PacketWriteB2       (pak, ContactID (cont));
+        PacketWriteB2       (pak, ContactIDGet (cont, ROSTER_TYPE_NORMAL));
         PacketWriteB2       (pak, type);
         PacketWriteBLen     (pak);
         PacketWriteTLVStr   (pak, 305, cont->nick);
@@ -384,6 +405,13 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
         }
         PacketWriteBLenDone (pak);
         QueueEnqueueData (serv, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
+
+        if (ContactPrefVal (cont, CO_HIDEFROM))
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
+        if (ContactPrefVal (cont, CO_INTIMATE))
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_VISIBLE);
+        if (ContactPrefVal (cont, CO_IGNORE))
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
 
         SnacSend (serv, pak);
         SnacCliAddend (serv);
@@ -439,11 +467,18 @@ void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont)
 
         PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
         PacketWriteB2       (pak, ContactGroupID (cg));
-        PacketWriteB2       (pak, ContactID (cont));
+        PacketWriteB2       (pak, ContactIDGet (cont, ROSTER_TYPE_NORMAL));
         PacketWriteB2       (pak, type);
         PacketWriteBLen     (pak);
         PacketWriteTLVStr   (pak, 305, cont->nick);
         PacketWriteBLenDone (pak);
+
+        if (ContactPrefVal (cont, CO_HIDEFROM))
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
+        if (ContactPrefVal (cont, CO_INTIMATE))
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_VISIBLE);
+        if (ContactPrefVal (cont, CO_IGNORE))
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
     }
     else
     {
@@ -454,7 +489,7 @@ void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont)
         PacketWriteBLen     (pak);
         PacketWriteTLV      (pak, 200);
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            PacketWriteB2   (pak, ContactID (cont));
+            PacketWriteB2   (pak, ContactIDGet (cont, ROSTER_TYPE_NORMAL));
         PacketWriteTLVDone  (pak);
         PacketWriteBLenDone (pak);
     }
@@ -495,10 +530,17 @@ void SnacCliRosterdelete (Connection *serv, ContactGroup *cg, Contact *cont)
     {
         PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
         PacketWriteB2       (pak, ContactGroupID (cg));
-        PacketWriteB2       (pak, ContactID (cont));
+        PacketWriteB2       (pak, ContactIDGet (cont, ROSTER_TYPE_NORMAL));
         PacketWriteB2       (pak, 0);
         PacketWriteBLen     (pak);
         PacketWriteBLenDone (pak);
+
+        if (ContactPrefVal (cont, CO_HIDEFROM))
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
+        if (ContactPrefVal (cont, CO_INTIMATE))
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_VISIBLE);
+        if (ContactPrefVal (cont, CO_IGNORE))
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
     }
     else
     {
@@ -576,8 +618,6 @@ JUMP_SNAC_F(SnacSrvUpdateack)
             case 3:
                 if (cont)
                 {
-                    cont->id = 0;
-                    cont->tag = 0;
                     rl_printf (i18n (2566, "Contact upload for %s%s%s failed, already on server.\n"),
                                COLCONTACT, s_quote (cont->nick), COLNONE);
                 }
@@ -648,10 +688,10 @@ JUMP_SNAC_F(SnacSrvRosterok)
     {
         time_t now = time (NULL);
         UDWORD da = now;
-        SnacCliRosterentryadd (serv, "ImportTime", 0, 1, 19, 212, &da, 4);
+        SnacCliRosterentryadd (serv, "ImportTime", 0, 1, ROSTER_TYPE_IMPORTT, 212, &da, 4);
     }
     if (!roster->ICQTIC)
-        SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, 9, 205, "3608,0,0,0,60,null", 18);
+        SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, ROSTER_TYPE_ICQTIC, 205, "3608,0,0,0,60,null", 18);
     event2->callback (event2);
     if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
     {
