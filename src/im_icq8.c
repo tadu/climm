@@ -658,11 +658,16 @@ UBYTE IMDeleteID (Connection *conn, int tag, int id, const char *name)
 UBYTE IMRoster (Connection *serv, int mode)
 {
     ContactGroup *cg;
+    ContactIDs *ids;
     Contact *cont;
     int i;
     
     for (i = 0, cg = serv->contacts; (cont = ContactIndex (cg, i)); i++)
+    {
         OptSetVal(&cont->copts, CO_ISSBL, 0);
+        for (ids = cont->ids; ids; ids = ids->next)
+            ids->issbl = 0;
+    }
     for (i = 0; (cg = ContactGroupIndex (i)); i++)
         if (cg->serv == serv)
             OptSetVal (&cg->copts, CO_ISSBL, 0);

@@ -359,7 +359,7 @@ void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs)
         if (ContactPrefVal (cont, CO_IGNORE))
         {
             i++;
-            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_IGNORE);
         }
     }
     SnacSend (serv, pak);
@@ -411,7 +411,7 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
         if (ContactPrefVal (cont, CO_INTIMATE))
             SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_VISIBLE);
         if (ContactPrefVal (cont, CO_IGNORE))
-            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_IGNORE);
 
         SnacSend (serv, pak);
         SnacCliAddend (serv);
@@ -422,7 +422,7 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
         PacketWriteStrB     (pak, cg->name);
         PacketWriteB2       (pak, ContactGroupID (cg));
         PacketWriteB2       (pak, 0);
-        PacketWriteB2       (pak, 1);
+        PacketWriteB2       (pak, ROSTER_TYPE_GROUP);
         PacketWriteBLen     (pak);
         PacketWriteBLenDone (pak);
         SnacSend (serv, pak);
@@ -478,14 +478,14 @@ void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont)
         if (ContactPrefVal (cont, CO_INTIMATE))
             SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_VISIBLE);
         if (ContactPrefVal (cont, CO_IGNORE))
-            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
+            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_IGNORE);
     }
     else
     {
         PacketWriteStrB     (pak, cg->name);
         PacketWriteB2       (pak, ContactGroupID (cg));
         PacketWriteB2       (pak, 0);
-        PacketWriteB2       (pak, 1);
+        PacketWriteB2       (pak, ROSTER_TYPE_GROUP);
         PacketWriteBLen     (pak);
         PacketWriteTLV      (pak, 200);
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
@@ -520,37 +520,55 @@ void SnacCliSetvisibility (Connection *serv)
 /*
  * CLI_ROSTERDELETE - SNAC(13,a)
  */
-void SnacCliRosterdelete (Connection *serv, ContactGroup *cg, Contact *cont)
+void SnacCliRosterdeletegroup (Connection *serv, ContactGroup *cg)
 {
     Packet *pak;
 
+    if (!cg->id)
+        return;
+
     SnacCliAddstart (serv);
     pak = SnacC (serv, 19, 10, 0, 0);
-    if (cont)
+    PacketWriteStrB     (pak, cg->name);
+    PacketWriteB2       (pak, ContactGroupID (cg));
+    PacketWriteB2       (pak, 0);
+    PacketWriteB2       (pak, ROSTER_TYPE_GROUP);
+    PacketWriteBLen     (pak);
+    PacketWriteBLenDone (pak);
+    SnacSend (serv, pak);
+    SnacCliAddend (serv);
+}
+
+/*
+ * CLI_ROSTERDELETE - SNAC(13,a)
+ */
+void SnacCliRosterdeletecontact (Connection *serv, Contact *cont)
+{
+    Packet *pak;
+    ContactIDs *ids;
+    
+    if (!cont->ids)
+        return;
+    
+    SnacCliAddstart (serv);
+    pak = SnacC (serv, 19, 10, 0, 0);
+
+    if ((ids = ContactID (cont, ROSTER_TYPE_NORMAL)) && ids->issbl)
     {
         PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
-        PacketWriteB2       (pak, ContactGroupID (cg));
-        PacketWriteB2       (pak, ContactIDGet (cont, ROSTER_TYPE_NORMAL));
-        PacketWriteB2       (pak, 0);
+        PacketWriteB2       (pak, ids->tag);
+        PacketWriteB2       (pak, ids->id);
+        PacketWriteB2       (pak, ROSTER_TYPE_NORMAL);
         PacketWriteBLen     (pak);
         PacketWriteBLenDone (pak);
+    }
+    if ((ids = ContactID (cont, ROSTER_TYPE_INVISIBLE)) && ids->issbl)
+        SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
+    if ((ids = ContactID (cont, ROSTER_TYPE_VISIBLE)) && ids->issbl)
+        SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_VISIBLE);
+    if ((ids = ContactID (cont, ROSTER_TYPE_IGNORE)) && ids->issbl)
+        SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_IGNORE);
 
-        if (ContactPrefVal (cont, CO_HIDEFROM))
-            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
-        if (ContactPrefVal (cont, CO_INTIMATE))
-            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_VISIBLE);
-        if (ContactPrefVal (cont, CO_IGNORE))
-            SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
-    }
-    else
-    {
-        PacketWriteStrB     (pak, cg->name);
-        PacketWriteB2       (pak, ContactGroupID (cg));
-        PacketWriteB2       (pak, 0);
-        PacketWriteB2       (pak, 1);
-        PacketWriteBLen     (pak);
-        PacketWriteBLenDone (pak);
-    }
     SnacSend (serv, pak);
     SnacCliAddend (serv);
 }

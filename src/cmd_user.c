@@ -4013,17 +4013,15 @@ static JUMP_F(CmdUserContact)
         else if (!strcasecmp (par->txt, "delete"))
         {
             ContactGroup *cg;
+            Contact *cont;
             const char *name;
             
             if ((cg = s_parsecg (&args, conn)))
-            {
-                if (cg->id)
-                    IMDeleteID (conn, cg->id, 0, NULL);
-            }
+                SnacCliRosterdeletegroup (conn, cg);
+            else if ((cont = s_parsenick (&args, conn)))
+                SnacCliRosterdeletecontact (conn, cont);
             else if ((name = s_parserem (&args)))
-            {
                 IMDeleteID (conn, 0, 0, name);
-            }
             return 0;
         }
         else if (!strcasecmp (par->txt, "delid"))
