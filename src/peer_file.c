@@ -462,7 +462,9 @@ void PeerFileDispatch (Connection *fpeer)
                 ReadLinePromptReset ();
                 rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
                 rl_print  (i18n (2166, "Finished receiving file.\n"));
+#if HAVE_FSYNC
                 fsync (fpeer->assoc->sok);
+#endif
                 close (fpeer->assoc->sok);
                 fpeer->assoc->sok = -1;
             }
