@@ -186,7 +186,7 @@ void ConvInit (void)
         size_t inl = 2, outl = 10;
         char inb[10], outb[10], *outp = outb;
         ICONV_CONST char *inp = inb;
-        strcpy (inp, "\xfc.\xc0\xaf");
+        strcpy (inb, "\xfc.\xc0\xaf");
         if (iconv (conv_encs[ENC_UTF8].ito, &inp, &inl, &outp, &outl) != (size_t)-1)
             conv_encs[ENC_UTF8].fto = conv_encs[ENC_UTF8].fof = NULL;
         else

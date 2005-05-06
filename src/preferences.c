@@ -48,6 +48,7 @@
 #include "util_ui.h"
 #include "conv.h"
 #include "contact.h"
+#include "os.h"
 
 static FILE *PrefOpenRC (Preferences *pref);
 
@@ -80,7 +81,7 @@ const char *PrefDefUserDirReal (Preferences *pref)
 {
     if (!pref->defaultbasedir)
     {
-        char *home;
+        const char *home;
 #if HAVE_GETPWUID && HAVE_GETUID
         struct passwd *pwd = getpwuid (getuid ());
 #endif
@@ -91,7 +92,7 @@ const char *PrefDefUserDirReal (Preferences *pref)
         home = getenv ("HOME");
 #if HAVE_GETPWUID && HAVE_GETUID
         if ((!home || !*home) && pwd && pwd->pw_dir)
-        home = pwd->pw_dir;
+            home = pwd->pw_dir;
 #endif
 #if defined(_WIN32) || (defined(__CYGWIN__) && defined(_X86_))
         if (!home || !*home)
