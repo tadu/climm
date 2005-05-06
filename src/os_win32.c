@@ -276,3 +276,84 @@ int os_DetectLockedWorkstation()
     g_iDetectResult[0] = iResult;
     return g_iDetectResult[1];
 }
+
+
+static const char *os_packagesubdir (const char *sub)
+{
+    const char *key = "Software\\mICQ";
+    char *result = NULL;
+    HKEY reg_key = NULL;
+    DWORD type;
+    DWORD nbytes = 0;
+    
+    if (RegOpenKeyEx (HKEY_CURRENT_USER, key, 0, 
+                      KEY_QUERY_VALUE, &reg_key) == ERROR_SUCCESS)
+    {
+        if (!RegQueryValueEx (reg_key, "InstallationDirectory", 0,
+                              &type, NULL, &nbytes) == ERROR_SUCCESS
+            || type != REG_SZ)
+        {
+             RegCloseKey (reg_key);
+             reg_key = NULL;
+        }
+    }
+    if (!reg_key && RegOpenKeyEx (HKEY_LOCAL_MACHINE, key, 0,
+                                  KEY_QUERY_VALUE, &reg_key) == ERROR_SUCCESS)
+    {
+        if (!RegQueryValueEx (reg_key, "InstallationDirectory", 0,
+                              &type, NULL, &nbytes) == ERROR_SUCCESS
+            || type != REG_SZ)
+        {
+            RegCloseKey (reg_key);
+            reg_key = NULL;
+        }
+    }
+    if (!reg_key)
+    {
+        char *p;
+        
+        result = malloc (MAX_PATH + 1 + strlen (sub));
+        if (!GetModuleFileName (NULL, result, MAX_PATH))
+        {
+            free (result);
+            return NULL;
+        }
+
+        if ((p = strrchr (result, '\\')) != NULL)
+            *p = '\0';
+
+        p = strrchr (result, '\\');
+        if (p && !strcasecmp (p + 1, "bin"))
+            *p = '\0';
+        nbytes = strlen (result);
+        result[nbytes++] = '\\';
+    }
+    else
+    {
+        result = malloc (nbytes + 1 + strlen (sub));
+        if (!result)
+            return NULL;
+        
+        RegQueryValueEx (reg_key, "InstallationDirectory", 0,
+                         &type, result, &nbytes);
+        RegCloseKey (reg_key);
+    }
+    strcpy (result + nbytes, sub);
+    return result;
+}
+
+const char *os_packagedatadir (void)
+{
+    static const char *datadir = NULL;
+    if (!datadir)
+        datadir = os_packagesubdir ("share");
+    return datadir ? datadir : "C:\\mICQ";
+}
+
+const char *os_packagehomedir (void)
+{
+    static const char *homedir = NULL;
+    if (!homedir)
+        homedir = os_packagesubdir ("etc");
+    return homedir ? homedir : "C:\\mICQ";
+}

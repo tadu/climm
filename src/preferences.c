@@ -80,21 +80,32 @@ const char *PrefDefUserDirReal (Preferences *pref)
 {
     if (!pref->defaultbasedir)
     {
-        char *home, *path;
-        
-        path = _OS_PREFPATH;
+        char *home;
+#if HAVE_GETPWUID && HAVE_GETUID
+        struct passwd *pwd = getpwuid (getuid ());
+#endif
+#if defined(_WIN32) || (defined(__CYGWIN__) && defined(_X86_))
+        home = getenv ("USERPROFILE");
+        if (!home || !*home)
+#endif
         home = getenv ("HOME");
-        if (home || !path)
-        {
-            if (!home)
-                home = "";
-            if (*home && home[strlen (home) - 1] != _OS_PATHSEP)
-                pref->defaultbasedir = strdup (s_sprintf ("%s%c.micq%c", home, _OS_PATHSEP, _OS_PATHSEP));
-            else
-                pref->defaultbasedir = strdup (s_sprintf ("%s.micq%c", home, _OS_PATHSEP));
-        }
+#if HAVE_GETPWUID && HAVE_GETUID
+        if ((!home || !*home) && pwd && pwd->pw_dir)
+        home = pwd->pw_dir;
+#endif
+#if defined(_WIN32) || (defined(__CYGWIN__) && defined(_X86_))
+        if (!home || !*home)
+            home = os_packagehomedir ();
+#endif
+        if (!home || !*home)
+            home = _OS_PREFPATH;
+
+        if (!home || !*home)
+            pref->defaultbasedir = strdup (".micq" _OS_PATHSEPSTR);
+        else if (home[strlen (home) - 1] != _OS_PATHSEP)
+            pref->defaultbasedir = strdup (s_sprintf ("%s%c.micq%c", home, _OS_PATHSEP, _OS_PATHSEP));
         else
-            pref->defaultbasedir = strdup (path);
+            pref->defaultbasedir = strdup (s_sprintf ("%s.micq%c", home, _OS_PATHSEP));
     }
     return pref->defaultbasedir;
 }
@@ -257,7 +268,7 @@ const char *PrefSetColorScheme (UBYTE scheme)
         case 4:
             return "colornone none "           "colorserver red "
                    "colorclient green "        "colormessage \"blue bold\" "
-                 "colorcontact \"magenta bold\" colorsent \"magenta bold\" "
+                   "colorcontact \"magenta bold\" colorsent \"magenta bold\" "
                    "colorack \"green bold\" "  "colorerror \"red bold\" "
                    "colorincoming \"cyan bold\" colordebug yellow "
                    "colorquote blue "          "colorinvchar \"red bold\"";

@@ -19,10 +19,14 @@
  *       bit 16:  init mode active (please ignore this)
  */
 int os_DetectLockedWorkstation();
+const char *os_packagedatadir (void);
+const char *os_packagehomedir (void);
 
 #else /* !_WIN32 && (!__CYGWIN__ || !_X86) */
 
 #define os_DetectLockedWorkstation() -1
+#define os_packagedatadir() PKGDATADIR
+
 
 #endif /* !_WIN32 && (!__CYGWIN__ || !_X86) */
 

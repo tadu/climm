@@ -323,7 +323,7 @@ AC_CHECK_FUNCS([mkdir atexit strcasecmp strchr memchr strdup strncasecmp strpbrk
                [AC_MSG_ERROR([Required function $ac_func missing. Sorry.])])
 AC_CHECK_FUNCS([localtime_r timegm timelocal memcmp uname fcntl strchr strtok_r \
                 symlink chmod tcgetattr gettimeofday setlocale select sigprocmask])
-AC_CHECK_FUNCS([memset wcwidth iswalnum iswspace nl_langinfo atoll ])
+AC_CHECK_FUNCS([memset wcwidth iswalnum iswspace nl_langinfo atoll getpwuid getuid])
 
 if test "x$ac_cv_func_timegm" != xyes; then
     AC_LIBOBJ(timegm)

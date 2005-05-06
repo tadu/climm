@@ -39,6 +39,7 @@
 #include "util_io.h"
 #include "preferences.h"
 #include "conv.h"
+#include "os.h"
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
@@ -238,13 +239,13 @@ int i18nOpen (const char *ploc)
             i18nTry (s_sprintf ("%si18n" _OS_PATHSEPSTR "%.*s.i18n", PrefDefUserDir (prG), (int)(strchr (floc, '_') - floc), floc));
         }
 
-        i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%s.%s.i18n", PKGDATADIR, floc, encs));
-        i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%s.i18n", PKGDATADIR, floc));
+        i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%s.%s.i18n", os_packagedatadir (), floc, encs));
+        i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%s.i18n", os_packagedatadir (), floc));
 
         if (strchr (floc, '_'))
         {
-            i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%.*s.%s.i18n", PKGDATADIR, (int)(strchr (floc, '_') - floc), floc, encs));
-            i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%.*s.i18n", PKGDATADIR, (int)(strchr (floc, '_') - floc), floc));
+            i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%.*s.%s.i18n", os_packagedatadir (), (int)(strchr (floc, '_') - floc), floc, encs));
+            i18nTry (s_sprintf ("%s" _OS_PATHSEPSTR "%.*s.i18n", os_packagedatadir (), (int)(strchr (floc, '_') - floc), floc));
         }
 
         s_free (floc);
