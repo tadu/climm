@@ -2,7 +2,7 @@
 
 bin_PROGRAMS = micq
 
-AM_CFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include @LIBICONV@
+AM_CFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include
 
 micq_SOURCES = conv.c file_util.c icq_response.c micq.c \
        server.c util.c util_opts.c util_ui.c mreadline.c \
@@ -14,7 +14,7 @@ micq_SOURCES = conv.c file_util.c icq_response.c micq.c \
        oscar_bos.c oscar_roster.c oscar_oldicq.c oscar_register.c  \
        remote.c os.c util_tcl.c util_ssl.c im_icq8.c buildmark.c
 
-micq_LDADD = @LIBOBJS@
+micq_LDADD = @LIBOBJS@ @LIBICONV@
 $(micq_SOURCES): @LIBOBJS@
 
 snprintf.o: snprintf.c
