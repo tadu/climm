@@ -43,6 +43,9 @@
 #if HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
 #endif
+#if HAVE_PWD_H
+#include <pwd.h>
+#endif
 #include "file_util.h"
 #include "preferences.h"
 #include "util_ui.h"
