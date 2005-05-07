@@ -355,5 +355,5 @@ const char *os_packagehomedir (void)
     static const char *homedir = NULL;
     if (!homedir)
         homedir = os_packagesubdir ("etc");
-    return homedir ? homedir : "C:\\mICQ";
+    return homedir;
 }
