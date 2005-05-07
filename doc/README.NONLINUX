@@ -1,23 +1,53 @@
 
-Windows:
-  The binary was created by cross-compiling with the Debian-packaged
-  mingw-cross compiler version mingw32(3.2.1.20021201.3-1),
-  mingw32-binutils(2.13.90.20030111.1-1), mingw32-runtime(2.3-1).
-  ./configure was called as follows:
+HPUX:
+  Please use GNU libiconv. Otherwise, if even ISO-8859-1 won't work,
+  try --disable-iconv.
+
+Windows (MingW):
+  The binary was created by cross-compiling with the 
+  mingw-cross compiler packaged by Debian:
+ 
+  ii  mingw32                 3.4.2.20040916.1-2      Minimalist GNU win32 (cross) compiler
+  ii  mingw32-binutils        2.15.94-20050118.1-1    Minimalist GNU win32 (cross) binutils
+  ii  mingw32-runtime         3.7-1                   Minimalist GNU win32 (cross) runtime
   
-  ./configure --host=i586-mingw32msvc CFLAGS=-O4 --datadir=C:\\Windows\\Programme\\mICQ\\\0
+  Additionally, libiconv was installed from a W32 Gimp Gtk installer,
+  packaged as follows:
+
+  ii  mingw32-libiconv        0.0-1                   iconv for cross-compiling with mingw32 (runtime)
+  ii  mingw32-libiconv-dev    0.0-1                   iconv for cross-compiling with mingw32 (developer)
+
+  It was configured as follows:
+
+  ./configure --host=i586-mingw32msvc --build=i686-pc-linux-gnu CFLAGS=-O4 --disable-ssl --disable-tcl
   
   The binary was stripped afterwards.
   
-  Note: this binary is HIGHLY EXPERIMENTAL.
-  It does, unfortunately, not run under WINE.
+  NOTE since 0.5.0.3+ for previous users:
+  * the micqrc file is now taken from %USERPROFILE% (if defined), %HOME% (if defined),
+    {HKEY_CURRENT_USER\Software\mICQ\InstallationDirectory}\etc (if key is set),
+    {HKEY_LOCAL_MACHINE\Software\mICQ\InstallationDirectory}\etc (if key is set),
+    the directory etc under the directory where micq.exe is located (if w32 gives this info),
+    or C:\mICQ\etc\.
 
-  The following features do not work in Windows:
-  * only buildin iconv() support (no system iconv() available)
+  NOTE:
+  * This binary is still HIGHLY EXPERIMENTAL.
+  * It does, unfortunately, not run under WINE.
+  * Use %LC_ALL% or -i option to set locale to e.g. de.CP437
+  * load ANSI.SYS; see http://www.o2post.com/kuban/ansi/ansi.htm
+
+  The following features do not work:
   * no remote-control via a FIFO (no FIFOs on this platform)
   * the socket is not(!) non-blocking - help is needed here
-  * the registry is not used to search for profile and system files - help is needed as well
 
+Windows (Cygwin):
+  You need a Cygwin installation with libiconv and openssl.
+  
+  NOTE for previous users:
+  * see Windows (MingW)
+
+  The following features do not work:
+  * no remote-control via a FIFO (no FIFOs on this platform)
 
 Playstation 2 / Linux:
   The binary was contributed by J. Grant. Here's a note he wants to have displayed:
@@ -36,8 +66,9 @@ AmigaOS:
     - if you want to code an AREXX port instead, let me know
 
 BeOS:
-  TBD
+  The last mICQ build is quite outdated. If you want to create a newer,
+  feel free to contribute.
 
 MacOS X:
-  This binary was contributed by Hans Fuchs.
+  You need a Fink environment; see http://fink.sourceforge.net/ for details.
 
