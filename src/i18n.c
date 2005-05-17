@@ -75,34 +75,29 @@ void i18nInit (const char *arg)
         setlocale (LC_ALL, "C");
         prG->locale_broken = TRUE;
     }
-    if (!arg)
+    arg = setlocale (LC_MESSAGES, NULL);
+    if (arg)
     {
-        arg = setlocale (LC_MESSAGES, NULL);
-        if (arg)
-        {
 #if HAVE_NL_LANGINFO && defined (CODESET)
-            if (!*arg) /* if nl_langinfo() exists we assume setlocale() to be more than a dummy */
+        if (!*arg) /* if nl_langinfo() exists we assume setlocale() to be more than a dummy */
 #else
-            if (!*arg || !strcasecmp (arg, "C") || !strcasecmp (arg, "POSIX"))
+        if (!*arg || !strcasecmp (arg, "C") || !strcasecmp (arg, "POSIX"))
 #endif
-            {
-                prG->locale_broken = TRUE;
-                arg = NULL;
-            }
-            else
-            {
-                if (!prG->locale_orig)
-                    s_repl (&prG->locale_orig, arg);
-            }
-            if (!prG->locale_full)
-                s_repl (&prG->locale_full, arg);
+        {
+            prG->locale_broken = TRUE;
+            arg = NULL;
         }
         else
-            prG->locale_broken = TRUE;
+        {
+            if (!prG->locale_orig)
+                s_repl (&prG->locale_orig, arg);
+        }
+        if (!prG->locale_full)
+            s_repl (&prG->locale_full, arg);
     }
-#else
-    prG->locale_broken = TRUE;
+else
 #endif
+        prG->locale_broken = TRUE;
 
     if (!earg)
     {
