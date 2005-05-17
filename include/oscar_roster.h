@@ -9,12 +9,31 @@
 #define ROSTER_TYPE_VISIBLE    2
 #define ROSTER_TYPE_INVISIBLE  3
 #define ROSTER_TYPE_VISIBILITY 4
+#define ROSTER_TYPE_PRESENCE   5
 #define ROSTER_TYPE_ICQTIC     9
 #define ROSTER_TYPE_IGNORE    14
 #define ROSTER_TYPE_LASTUPD   15
+#define ROSTER_TYPE_NONCONT   16
 #define ROSTER_TYPE_WIERD17   17
 #define ROSTER_TYPE_IMPORTT   19
-#define ROSTER_TYPE_WIERD20   20
+#define ROSTER_TYPE_ICON      20
+
+#define TLV_REQAUTH    102
+#define TLV_GROUPITEMS 200
+#define TLV_UNKNIDLE   201
+#define TLV_PRIVACY    202
+#define TLV_VISIBILITY 203
+#define TLV_ALLOWIDLE  204
+#define TLV_ICQTIC     205
+#define TLV_IMPORT     212
+#define TLV_ICON       213
+#define TLV_NICK       305
+#define TLV_LOCALMAIL  311
+#define TLV_LOCALSMS   314
+#define TLV_LOCALCOMM  316
+#define TLV_LOCALACT   317
+#define TLV_LOCALSOUND 318
+#define TLV_LASTUPD    325
 
 jump_snac_f SnacSrvReplylists, SnacSrvReplyroster, SnacSrvUpdateack,
     SnacSrvRosterok, SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvAddedyou;
