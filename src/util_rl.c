@@ -82,7 +82,14 @@
 
 #undef DEBUG_RL
 
-/* We'd like to use win_t and wchar_t to store the input line,
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define ANSI_CLEAR ""
+#else
+#define ANSI_CLEAR ESC "[J"
+#endif
+
+
+/* We'd like to use wint_t and wchar_t to store the input line,
    however not all C implementations store the unicode codepoint
    in wint_t/wchar_t, which kills the possibility to enter an
    arbitrary codepoint into the line. Thus, we end up using UDWORDS instead. */
@@ -444,7 +451,7 @@ static int rl_getcolumns ()
 void ReadLineClrScr ()
 {
 #ifdef ANSI_TERM
-    printf (ESC "[H" ESC "[J");
+    printf (ESC "[H" ANSI_CLEAR);
 #else
     printf ("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 #endif
@@ -561,7 +568,7 @@ static void rl_recheck (BOOL clear)
 #ifdef ANSI_TERM
     s_cat (&rl_operate, " \b");
     if (clear)
-        s_cat (&rl_operate, ESC "[J");
+        s_cat (&rl_operate, ANSI_CLEAR);
 #else
     s_cat (&rl_operate, "     \b\b\b\b\b");
 #endif
@@ -1443,10 +1450,13 @@ static void rl_checkautoexpand (void)
     static str_s rl_exp = { NULL, 0, 0 };
     char *p, *q;
     
+    if (!rl_bytepos)
+        return;
+    
     rl_linecompress (&rl_temp, 0, -1);
         
     for (e = rl_ae; e; e = e->next)
-        if (!strcmp (rl_temp.txt, e->command))
+        if (!strncmp (rl_temp.txt, e->command, rl_bytepos) && strlen (e->command) == rl_bytepos)
             break;
 
     if (!e)
@@ -1472,6 +1482,11 @@ static void rl_checkautoexpand (void)
             q++;
     }
     s_cat (&rl_exp, p);
+    if (rl_temp.txt[rl_bytepos])
+    {
+        s_cat (&rl_exp, " ");
+        s_cat (&rl_exp, rl_temp.txt + rl_bytepos);
+    }
     rl_tab_state = 0;
     rl_goto (0);
     rl_lineexpand (rl_exp.txt);
@@ -1804,7 +1819,7 @@ void ReadLinePrompt ()
     {
         s_catc (&rl_operate, '\r');
 #ifdef ANSI_TERM
-        s_cat (&rl_operate, ESC "[J");
+        s_cat (&rl_operate, ANSI_CLEAR);
 #endif
         rl_prompt_stat = 0;
     }
@@ -1839,7 +1854,7 @@ void ReadLinePromptHide ()
     rl_goto (0);
     s_catc (&rl_operate, '\r');
 #ifdef ANSI_TERM
-    s_cat (&rl_operate, ESC "[J");
+    s_cat (&rl_operate, ANSI_CLEAR);
 #endif
     printf ("%s", rl_operate.txt);
     rl_prompt_stat = 0;

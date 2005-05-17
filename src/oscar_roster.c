@@ -207,7 +207,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         
         re->name = strdup (ConvFromServ (cname));
 
-        j = TLVGet (re->tlv, 305);
+        j = TLVGet (re->tlv, TLV_NICK);
         assert (j < 200 || j == (UWORD)-1);
         if (j != (UWORD)-1 && re->tlv[j].str.len)
             re->nick = strdup (ConvFromServ (&re->tlv[j].str));
@@ -218,9 +218,18 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         switch (re->type)
         {
             case ROSTER_TYPE_NORMAL:
+                /* TLV_REQAUTH */
+                /* TLV_NICK */
+                /* TLV_LOCALMAIL */
+                /* TLV_LOCALSMS */
+                /* TLV_LOCALCOMM */
+                /* TLV_LOCALACT */
+                /* TLV_LOCALSOUND */
+                /* TLV_LASTUPD */
                 rref = &roster->normal;
                 break;
             case ROSTER_TYPE_GROUP:
+                /* TLV_GROUPITEMS */
                 if (re->tag || re->id)
                     rref = &roster->groups;
                 break;
@@ -235,21 +244,28 @@ JUMP_SNAC_F(SnacSrvReplyroster)
                 break;
             case ROSTER_TYPE_LASTUPD: /* LastUpdateDate */
             case ROSTER_TYPE_WIERD17: /* wierd */
-            case ROSTER_TYPE_WIERD20: /* wierd */
+            case ROSTER_TYPE_ICON: /* buddy icon */
+                /* TLV_ICON */
                 break;
             case ROSTER_TYPE_IMPORTT: /* ImportTime */
-                j = TLVGet (re->tlv, 212);
+                j = TLVGet (re->tlv, TLV_IMPORT);
                 if (j != (UWORD)-1 && re->tlv[j].str.len == 4)
                     roster->import = re->tlv[j].nr;
                 else
                     rl_printf ("#Bogus ImportTime item: %d: %s %d %d.\n", re->type, re->name, re->tag, re->id);
                 break;
             case ROSTER_TYPE_ICQTIC:
-                j = TLVGet (re->tlv, 205);
+                j = TLVGet (re->tlv, TLV_ICQTIC);
                 if (j != (UWORD)-1)
                     s_repl (&roster->ICQTIC, re->tlv[j].str.txt);
                 break;
             case ROSTER_TYPE_VISIBILITY:
+            case ROSTER_TYPE_PRESENCE:
+            case ROSTER_TYPE_NONCONT:
+                /* TLV_UNKNIDLE   */
+                /* TLV_PRIVACY    */
+                /* TLV_VISIBILITY */
+                /* TLV_ALLOWIDLE  */
                 break;
             default:
                 rl_printf ("#Unknown type %d: %s %d %d.\n", re->type, re->name, re->tag, re->id);
@@ -265,10 +281,10 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         {
             time_t now = time (NULL);
             UDWORD da = now;
-            SnacCliRosterentryadd (serv, "ImportTime", 0, 1, ROSTER_TYPE_IMPORTT, 212, &da, 4);
+            SnacCliRosterentryadd (serv, "ImportTime", 0, 1, ROSTER_TYPE_IMPORTT, TLV_IMPORT, &da, 4);
         }
         if (!roster->ICQTIC)
-            SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, ROSTER_TYPE_ICQTIC, 205, "3608,0,0,0,60,null", 18);
+            SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, ROSTER_TYPE_ICQTIC, TLV_ICQTIC, "3608,0,0,0,60,null", 18);
         event2->callback (event2);
         if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
         {
@@ -310,7 +326,7 @@ void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs)
     
     for (i = 0; (cont = ContactIndex (cs, i)); i++)
     {
-        if (cont->group && !ContactGroupPrefVal (cont->group, CO_ISSBL))
+        if (cont->group && cont->group->serv && !ContactGroupPrefVal (cont->group, CO_ISSBL))
         {
             SnacCliRosteradd (serv, cont->group, NULL);
             OptSetVal (&cont->group->copts, CO_ISSBL, 1);
@@ -337,10 +353,10 @@ void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs)
         PacketWriteB2       (pak, ContactIDGet (cont, ROSTER_TYPE_NORMAL));
         PacketWriteB2       (pak, ROSTER_TYPE_NORMAL);
         PacketWriteBLen     (pak);
-        PacketWriteTLVStr   (pak, 305, cont->nick);
+        PacketWriteTLVStr   (pak, TLV_NICK, cont->nick);
         if (cont->oldflags & CONT_REQAUTH)
         {
-            PacketWriteTLV     (pak, 102);
+            PacketWriteTLV     (pak, TLV_REQAUTH);
             PacketWriteTLVDone (pak);
         }
         PacketWriteBLenDone (pak);
@@ -397,10 +413,10 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
         PacketWriteB2       (pak, ContactIDGet (cont, ROSTER_TYPE_NORMAL));
         PacketWriteB2       (pak, type);
         PacketWriteBLen     (pak);
-        PacketWriteTLVStr   (pak, 305, cont->nick);
+        PacketWriteTLVStr   (pak, TLV_NICK, cont->nick);
         if (cont->oldflags & CONT_REQAUTH)
         {
-            PacketWriteTLV     (pak, 102);
+            PacketWriteTLV     (pak, TLV_REQAUTH);
             PacketWriteTLVDone (pak);
         }
         PacketWriteBLenDone (pak);
@@ -470,7 +486,7 @@ void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont)
         PacketWriteB2       (pak, ContactIDGet (cont, ROSTER_TYPE_NORMAL));
         PacketWriteB2       (pak, type);
         PacketWriteBLen     (pak);
-        PacketWriteTLVStr   (pak, 305, cont->nick);
+        PacketWriteTLVStr   (pak, TLV_NICK, cont->nick);
         PacketWriteBLenDone (pak);
 
         if (ContactPrefVal (cont, CO_HIDEFROM))
@@ -487,7 +503,7 @@ void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont)
         PacketWriteB2       (pak, 0);
         PacketWriteB2       (pak, ROSTER_TYPE_GROUP);
         PacketWriteBLen     (pak);
-        PacketWriteTLV      (pak, 200);
+        PacketWriteTLV      (pak, TLV_GROUPITEMS);
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
             PacketWriteB2   (pak, ContactIDGet (cont, ROSTER_TYPE_NORMAL));
         PacketWriteTLVDone  (pak);
@@ -510,7 +526,7 @@ void SnacCliSetvisibility (Connection *serv)
     PacketWriteB2       (pak, 4);
     PacketWriteBLen     (pak);
     PacketWriteB2       (pak, 5);
-    PacketWriteTLV      (pak, 202);
+    PacketWriteTLV      (pak, TLV_PRIVACY);
     PacketWrite1        (pak, 4);
     PacketWriteTLVDone  (pak);
     PacketWriteBLenDone (pak);
@@ -706,10 +722,10 @@ JUMP_SNAC_F(SnacSrvRosterok)
     {
         time_t now = time (NULL);
         UDWORD da = now;
-        SnacCliRosterentryadd (serv, "ImportTime", 0, 1, ROSTER_TYPE_IMPORTT, 212, &da, 4);
+        SnacCliRosterentryadd (serv, "ImportTime", 0, 1, ROSTER_TYPE_IMPORTT, TLV_IMPORT, &da, 4);
     }
     if (!roster->ICQTIC)
-        SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, ROSTER_TYPE_ICQTIC, 205, "3608,0,0,0,60,null", 18);
+        SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, ROSTER_TYPE_ICQTIC, TLV_ICQTIC, "3608,0,0,0,60,null", 18);
     event2->callback (event2);
     if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
     {
