@@ -143,6 +143,16 @@ static BOOL iconv_check (UBYTE enc)
 }
 #endif
 
+#if HAVE_ICONV
+static inline void iconv_reset (iconv_t cd)
+{
+    size_t sunos57_sucks_inl = 0, sunos57_sucks_outl = 0;
+    char *sunos57_sucks_outb = NULL;
+    /* SunOS 5.7 segfaults if anything other than inb is NULL */
+    iconv (cd, NULL, &sunos57_sucks_inl, &sunos57_sucks_outb, &sunos57_sucks_outl);
+}
+#endif
+
 /*
  * Initialize encoding table.
  */
@@ -192,7 +202,7 @@ void ConvInit (void)
         else
         {
             inp = inb + 2;
-            iconv (conv_encs[ENC_UTF8].ito, NULL, NULL, NULL, NULL);
+            iconv_reset (conv_encs[ENC_UTF8].ito);
             if ((iconv (conv_encs[ENC_UTF8].ito, &inp, &inl, &outp, &outl) != (size_t)-1) && *outp != '/')
                 conv_encs[ENC_UTF8].fto = conv_encs[ENC_UTF8].fof = NULL;
         }
@@ -547,7 +557,7 @@ static strc_t iconv_from_iconv (strc_t text, UBYTE enc)
     in = (ICONV_CONST char *) text->txt;
     inleft = text->len;
 
-    iconv (conv_encs[enc].iof, NULL, NULL, NULL, NULL);
+    iconv_reset (conv_encs[enc].iof);
     while (iconv (conv_encs[enc].iof, &in, &inleft, &out, &outleft) == (size_t)(-1))
     {
         UDWORD rc = errno;
@@ -569,7 +579,7 @@ static strc_t iconv_from_iconv (strc_t text, UBYTE enc)
         }
         out = str.txt + str.len;
         outleft = str.max - str.len - 2;
-        iconv (conv_encs[enc].ito, NULL, NULL, NULL, NULL);
+        iconv_reset (conv_encs[enc].iof);
     }
     *out = '\0';
     str.len = out - str.txt;
@@ -590,7 +600,7 @@ static strc_t iconv_to_iconv (strc_t text, UBYTE enc)
     in = (ICONV_CONST char *) text->txt;
     inleft = text->len;
 
-    iconv (conv_encs[enc].ito, NULL, NULL, NULL, NULL);
+    iconv_reset (conv_encs[enc].ito);
     while (iconv (conv_encs[enc].ito, &in, &inleft, &out, &outleft) == (size_t)(-1))
     {
         UDWORD rc = errno;
@@ -603,7 +613,7 @@ static strc_t iconv_to_iconv (strc_t text, UBYTE enc)
             char inc = CHAR_INCOMPLETE;
             ICONV_CONST char *in = &inc;
             size_t inleft = 1;
-            iconv (conv_encs[enc].ito, NULL, NULL, NULL, NULL);
+            iconv_reset (conv_encs[enc].ito);
             iconv (conv_encs[enc].ito, &in, &inleft, &out, &outleft);
             str.len = out - str.txt;
             str.txt[str.len] = '\0';
@@ -614,16 +624,16 @@ static strc_t iconv_to_iconv (strc_t text, UBYTE enc)
             char inc = CHAR_NOT_AVAILABLE;
             ICONV_CONST char *inn = &inc;
             size_t innleft = 1;
-            iconv (conv_encs[enc].ito, NULL, NULL, NULL, NULL);
+            iconv_reset (conv_encs[enc].ito);
             iconv (conv_encs[enc].ito, &inn, &innleft, &out, &outleft);
             in++;
             inleft--;
-            iconv (conv_encs[enc].ito, NULL, NULL, NULL, NULL);
+            iconv_reset (conv_encs[enc].ito);
             continue;
         }
         out = str.txt + str.len;
         outleft = str.max - str.len - 2;
-        iconv (conv_encs[enc].ito, NULL, NULL, NULL, NULL);
+        iconv_reset (conv_encs[enc].ito);
     }
     *out = '\0';
     str.len = out - str.txt;
