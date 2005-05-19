@@ -1583,6 +1583,8 @@ str_t ReadLine (UBYTE newbyte)
                 case '\r':
                 case '\n':
                     rl_tab_accept ();
+                    if (rl_tab_state == 0)
+                        rl_checkautoexpand ();
                     rl_key_end ();
                     rl_historyadd ();
                     break;
