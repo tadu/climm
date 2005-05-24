@@ -29,6 +29,7 @@
 #include "buildmark.h"
 #include "util_ui.h"
 #include "file_util.h"
+#include "util_alias.h"
 #include "tabs.h"
 #include "contact.h"
 #include "tcp.h"
@@ -898,12 +899,15 @@ int Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "alias"))
                 {
+                    char autoexpand = FALSE;
+                    if (s_parsekey (&args, "autoexpand"))
+                        autoexpand = TRUE;
                     PrefParse (tmp);
                     tmp = strdup (s_quote (tmp));
                     PrefParse (tmp2);
                     tmp2 = strdup (tmp2);
 
-                    CmdUser (cmd = strdup (s_sprintf ("\\alias %s %s", tmp, tmp2)));
+                    CmdUser (cmd = strdup (s_sprintf ("\\alias %s%s %s", autoexpand ? "autoexpand " : "", tmp, tmp2)));
                     
                     free (cmd);
                     free (tmp);
@@ -1722,11 +1726,11 @@ int PrefWriteConfFile (void)
     fprintf (rcf, "# The aliases.\n");
     fprintf (rcf, "[Strings]\n");
     {
-        alias_t *node;
-        for (node = CmdUserAliases (); node; node = node->next)
+        const alias_t *node;
+        for (node = AliasList (); node; node = node->next)
         {
-            fprintf (rcf, "alias %s", s_quote (node->name));
-            fprintf (rcf, " %s\n", s_quote (node->expansion));
+            fprintf (rcf, "alias %s%s", node->autoexpand ? "autoexpand " : "", s_quote (node->command));
+            fprintf (rcf, " %s\n", s_quote (node->replace));
         }
     }
     fprintf (rcf, "\n");

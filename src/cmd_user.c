@@ -3,7 +3,6 @@
  *
  * Copyright: This file may be distributed under version 2 of the GPL licence.
  *
- * alias stuff GPL >= v2 Copyright Per Olofsson
  * history & find command Copyright Sebastian Felis
  *
  * $Id$
@@ -49,6 +48,7 @@
 #include "server.h"
 #include "util_tcl.h"
 #include "util_ssl.h"
+#include "util_alias.h"
 
 #define MAX_STR_BUF 256                 /* buffer length for history */
 #define DEFAULT_HISTORY_COUNT 10        /* count of last messages of history */
@@ -78,10 +78,6 @@ static jump_f CmdUserListQueue;
 #endif
     
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag);
-
-static alias_t *CmdUserLookupAlias (const char *name);
-static alias_t *CmdUserSetAlias (const char *name, const char *expansion);
-static int CmdUserRemoveAlias (const char *name);
 
 /* 1 = do not apply idle stuff next time           v
    2 = count this line as being idle               v */
@@ -205,8 +201,6 @@ static jump_t jump[] = {
     { NULL, NULL, 0, 0 }
 };
 
-static alias_t *aliases = NULL;
-
 static Connection *conn = NULL;
 
 /* Have an opened server connection ready. */
@@ -237,89 +231,6 @@ jump_t *CmdUserLookup (const char *cmd)
         if (!strcasecmp (cmd, j->name))
             return j;
     return NULL;
-}
-
-/*
- * Returns the alias list.
- */
-alias_t *CmdUserAliases (void)
-{
-    return aliases;
-}
-
-/*
- * Looks up an alias.
- */
-static alias_t *CmdUserLookupAlias (const char *name)
-{
-    alias_t *node;
-
-    for (node = aliases; node; node = node->next)
-        if (!strcasecmp (name, node->name))
-            break;
-
-    return node;
-}
-
-/*
- * Sets an alias.
- */
-static alias_t *CmdUserSetAlias (const char *name, const char *expansion)
-{
-    alias_t *alias;
-
-    alias = CmdUserLookupAlias (name);
-
-    if (!alias)
-    {
-        alias = calloc (1, sizeof (alias_t));
-        
-        if (aliases)
-        {
-            alias_t *node;
-            
-            for (node = aliases; node->next; node = node->next)
-                ;
-
-            node->next = alias;
-        }
-        else
-            aliases = alias;
-    }
-
-    s_repl (&alias->name, name);
-    s_repl (&alias->expansion, expansion);
-
-    return alias;
-}
-
-/*
- * Removes an alias.
- */
-static int CmdUserRemoveAlias (const char *name)
-{
-    alias_t *node, *prev_node = NULL;
-
-    for (node = aliases; node; node = node->next)
-    {
-        if (!strcasecmp (name, node->name))
-            break;
-        prev_node = node;
-    }
-
-    if (node)
-    {
-        if (prev_node)
-            prev_node->next = node->next;
-        else
-            aliases = node->next;
-        free (node->name);
-        free (node->expansion);
-        free (node);
-        return TRUE;
-    }
-    else
-        return FALSE;
 }
 
 /*
@@ -1200,15 +1111,18 @@ static JUMP_F(CmdUserAuto)
 static JUMP_F(CmdUserAlias)
 {
     strc_t name;
-    char *exp = NULL, *nname;
+    char *exp = NULL;
+    char autoexpand = FALSE;
+    const alias_t *node;
 
+    if (s_parsekey (&args, "autoexpand"))
+        autoexpand = TRUE;
+    
     if (!(name = s_parse_s (&args, " \t\r\n=")))
     {
-        alias_t *node;
-
-        for (node = aliases; node; node = node->next)
-            rl_printf ("alias %s %s\n", node->name, node->expansion);
-        
+        for (node = AliasList (); node; node = node->next)
+            rl_printf ("alias %s%s %s\n", node->autoexpand ? "autoexpand " : "",
+                node->command, node->replace);
         return 0;
     }
     
@@ -1221,24 +1135,19 @@ static JUMP_F(CmdUserAlias)
     if (*args == '=')
         args++;
     
-    nname = strdup (name->txt);
-    
     if ((exp = s_parserem (&args)))
-        CmdUserSetAlias (nname, exp);
+        AliasAdd (name->txt, exp, autoexpand);
     else
     {
-        alias_t *node;
-
-        for (node = aliases; node; node = node->next)
-            if (!strcasecmp (node->name, nname))
+        for (node = AliasList (); node; node = node->next)
+            if (!strcasecmp (node->command, name->txt))
             {
-                rl_printf ("alias %s %s\n", node->name, node->expansion);
-                free (nname);
+                rl_printf ("alias %s%s %s\n", node->autoexpand ? "autoexpand " : "",
+                    node->command, node->replace);
                 return 0;
             }
         rl_print (i18n (2297, "Alias to what?\n"));
     }
-    free (nname);
     return 0;
 }
 
@@ -1252,7 +1161,7 @@ static JUMP_F(CmdUserUnalias)
 
     if (!(par = s_parse (&args)))
         rl_print (i18n (2298, "Remove which alias?\n"));
-    else if (!CmdUserRemoveAlias (par->txt))
+    else if (!AliasRemove (par->txt))
         rl_print (i18n (2299, "Alias doesn't exist.\n"));
     
     return 0;
@@ -4661,54 +4570,6 @@ void CmdUserInput (strc_t line)
     CmdUserProcess (line->txt, &uiG.idle_val, &uiG.idle_flag);
 }
 
-/*
- * Process an alias.
- */
-static int CmdUserProcessAlias (const char *cmd, const char *argsd,
-                                time_t *idle_val, UBYTE *idle_flag)
-{
-    alias_t *alias;
-    static int recurs_level = 0;
-
-    if (recurs_level > 10)
-    {
-        rl_print (i18n (2302, "Too many levels of alias expansion; probably an infinite loop.\n"));
-        return TRUE;
-    }
-    
-    alias = CmdUserLookupAlias (cmd);
-
-    if (alias)
-    {
-        char *cmdline = malloc (strlen (alias->expansion)
-                                + strlen (argsd) + 2);
-
-        if (strstr (alias->expansion, "%s"))
-        {
-            char *exp, *ptr;
-
-            exp = strdup (alias->expansion);
-            ptr = strstr (exp, "%s");
-            *ptr = '\0';
-            
-            cmdline = strdup (s_sprintf ("%s%s%s", exp, argsd, ptr + 2));
-            free (exp);
-        }
-        else
-            cmdline = strdup (s_sprintf ("%s %s", alias->expansion, argsd));
-
-        recurs_level++;
-        CmdUserProcess (cmdline, idle_val, idle_flag);
-        recurs_level--;
-        
-        free (cmdline);
-
-        return TRUE;
-    }
-    else
-        return FALSE;
-}
-
 static UBYTE isinterrupted = 0;
 
 void CmdUserInterrupt (void)
@@ -4722,7 +4583,7 @@ void CmdUserInterrupt (void)
 static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
 {
     char *cmd = NULL;
-    const char *args;
+    const char *args, *argst;
     strc_t par;
 
     static jump_f *sticky = (jump_f *)NULL;
@@ -4751,7 +4612,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
     else
     {
         args = command;
-        if (args[0] != 0)
+        if (*args)
         {
             if ('!' == args[0])
             {
@@ -4769,6 +4630,8 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                     ReadLinePromptReset ();
                 return;
             }
+            argst = AliasExpand (args, 0, 0);
+            args = argst ? argst : args;
             if (!(par = s_parse (&args)))
             {
                 if (!command)
@@ -4781,7 +4644,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
              * to accept IRC like commands starting with a /
              * or talker like commands starting with a .
              * or whatever */
-            if (strchr ("/.", *cmd))
+            if (strchr ("/.\\", *cmd))
                 cmd++;
 
             if (!*cmd)
@@ -4805,10 +4668,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                 cmd = strdup (cmd);
                 argsd = strdup (args);
 
-                if (*cmd != '\\' &&
-                    CmdUserProcessAlias (cmd, *argsd ? argsd + 1 : "", &idle_save, idle_flag))
-                    ;
-                else if ((j = CmdUserLookup (*cmd == '\\' ? cmd + 1 : cmd)))
+                if ((j = CmdUserLookup (cmd)))
                 {
                     if (j->unidle == 2)
                         *idle_val = idle_save;

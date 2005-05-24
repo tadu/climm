@@ -31,6 +31,7 @@
 
 #include "micq.h"
 #include "util_rl.h"
+#include "util_alias.h"
 #include "tabs.h"
 #include "conv.h"
 #include "contact.h"
@@ -138,7 +139,7 @@ static void rl_key_end (void);
 static void rl_key_cut (void);
 static void rl_key_kill (void);
 static void rl_linecompress (str_t line, UDWORD from, UDWORD to);
-static void rl_lineexpand (char *hist);
+static void rl_lineexpand (const char *hist);
 static void rl_historyback (void);
 static void rl_historyforward (void);
 static void rl_historyadd (void);
@@ -180,14 +181,6 @@ static str_s  rl_prompt   = { NULL, 0, 0 };
 static UWORD  rl_prompt_len = 0;
 static int    rl_prompt_stat = 0;
 static time_t rl_prompt_time = 0;
-
-typedef struct rl_autoexpandv_s {
-  struct rl_autoexpandv_s *next;
-  char *command;
-  char *replace;
-} rl_autoexpandv_t;
-      
-static rl_autoexpandv_t *rl_ae = NULL;
 
 /*
  * Initialize read line code
@@ -844,7 +837,7 @@ static void rl_linecompress (str_t line, UDWORD from, UDWORD to)
 /*
  * Expand given UTF8 string into (and replace) editing line
  */
-static void rl_lineexpand (char *hist)
+static void rl_lineexpand (const char *hist)
 {
     str_s str = { NULL, 0, 0 };
     int off;
@@ -855,7 +848,7 @@ static void rl_lineexpand (char *hist)
     s_init (&rl_display, "", 0);
     rl_colpos = rl_ucspos = rl_bytepos = 0;
     
-    str.txt = hist;
+    str.txt = (char *) hist;
     str.len = strlen (str.txt);
     for (off = 0; off < str.len; )
         rl_insert (ConvGetUTF8 (&str, &off));
@@ -1420,76 +1413,21 @@ static void rl_key_kill (void)
 
 /*** read line auto expander ***/
 
-const rl_autoexpand_t *ReadLineListAutoExpand (void)
-{
-    return (const rl_autoexpand_t *) rl_ae;
-}
-
-void ReadLineAutoExpand (const char *command, const char *replace)
-{
-    rl_autoexpandv_t *e;
-    
-    for (e = rl_ae; e; e = e->next)
-    {
-        if (!strcmp (command, e->command))
-        {
-            s_repl (&e->replace, replace);
-            return;
-        }
-    }
-    e = malloc (sizeof (rl_autoexpandv_t));
-    e->next = rl_ae;
-    e->command = strdup (command);
-    e->replace = strdup (replace);
-    rl_ae = e;
-}
-
 static void rl_checkautoexpand (void)
 {
-    rl_autoexpandv_t *e;
-    static str_s rl_exp = { NULL, 0, 0 };
-    char *p, *q;
+    const char *replacement;
     
     if (!rl_bytepos)
         return;
     
     rl_linecompress (&rl_temp, 0, -1);
-        
-    for (e = rl_ae; e; e = e->next)
-        if (!strncmp (rl_temp.txt, e->command, rl_bytepos) && strlen (e->command) == rl_bytepos)
-            break;
-
-    if (!e)
+    replacement = AliasExpand (rl_temp.txt, rl_bytepos, TRUE);
+    if (!replacement)
         return;
     
-    s_init (&rl_exp, "", 0);
-    for (p = e->replace; *p && (q = strchr (p, '%')); p = q)
-    {
-        s_catn (&rl_exp, p, q - p);
-        if (q[1] == 'r')
-        {
-            if (uiG.last_rcvd)
-                s_cat (&rl_exp, uiG.last_rcvd->nick ? uiG.last_rcvd->nick : s_sprintf ("%lu", uiG.last_rcvd->uin));
-            q += 2;
-        }
-        else if (q[1] == 'a')
-        {
-            if (uiG.last_sent)
-                s_cat (&rl_exp, uiG.last_sent->nick ? uiG.last_sent->nick : s_sprintf ("%lu", uiG.last_sent->uin));
-            q += 2;
-        }
-        else
-            q++;
-    }
-    s_cat (&rl_exp, p);
-    if (rl_temp.txt[rl_bytepos])
-    {
-        s_cat (&rl_exp, " ");
-        s_cat (&rl_exp, rl_temp.txt + rl_bytepos);
-    }
     rl_tab_state = 0;
     rl_goto (0);
-    rl_lineexpand (rl_exp.txt);
+    rl_lineexpand (replacement);
 }
 
 /*** read line input processor ***/

@@ -47,6 +47,7 @@
 #include "oldicq_client.h"
 #include "util_tcl.h"
 #include "util_ssl.h"
+#include "util_alias.h"
 #include "os.h"
 
 #define MICQ_ICON_1 "   " GREEN "_" SGR0 "     "
@@ -290,8 +291,8 @@ static void Init (int argc, char *argv[])
     i18nInit (arg_i);
     PreferencesInit (prG);
     ReadLineInit ();
-    ReadLineAutoExpand ("r", "msg %r");
-    ReadLineAutoExpand ("a", "msg %a");
+    AliasAdd ("r", "msg %r %s", TRUE);
+    AliasAdd ("a", "msg %a %s", TRUE);
     
     loaded = arg_h ? 0 : PrefLoad (prG);
     prG->verbose &= ~0x80000000UL;
