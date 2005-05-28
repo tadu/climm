@@ -1121,8 +1121,8 @@ static JUMP_F(CmdUserAlias)
     if (!(name = s_parse_s (&args, " \t\r\n=")))
     {
         for (node = AliasList (); node; node = node->next)
-            rl_printf ("alias %s%s %s\n", node->autoexpand ? "autoexpand " : "",
-                node->command, node->replace);
+            rl_printf ("alias %s%s %s\n", node->autoexpand ? "autoexpand " : "           ",
+                s_cquote (node->command, COLQUOTE), node->replace);
         return 0;
     }
     
@@ -1142,8 +1142,8 @@ static JUMP_F(CmdUserAlias)
         for (node = AliasList (); node; node = node->next)
             if (!strcasecmp (node->command, name->txt))
             {
-                rl_printf ("alias %s%s %s\n", node->autoexpand ? "autoexpand " : "",
-                    node->command, node->replace);
+                rl_printf ("alias %s%s %s\n", node->autoexpand ? "autoexpand " : "           ",
+                    s_cquote (node->command, COLQUOTE), node->replace);
                 return 0;
             }
         rl_print (i18n (2297, "Alias to what?\n"));

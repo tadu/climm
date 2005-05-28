@@ -907,7 +907,9 @@ int Read_RC_File (FILE *rcf)
                     PrefParse (tmp2);
                     tmp2 = strdup (tmp2);
 
-                    CmdUser (cmd = strdup (s_sprintf ("\\alias %s%s %s", autoexpand ? "autoexpand " : "", tmp, tmp2)));
+                    CmdUser (cmd = strdup (s_sprintf ("\\alias %s%s%s%s %s",
+                        autoexpand ? "autoexpand " : "",
+                        *tmp == '"' ? "" : "\"", tmp, *tmp == '"' ? "" : "\"", tmp2)));
                     
                     free (cmd);
                     free (tmp);
@@ -1729,7 +1731,9 @@ int PrefWriteConfFile (void)
         const alias_t *node;
         for (node = AliasList (); node; node = node->next)
         {
-            fprintf (rcf, "alias %s%s", node->autoexpand ? "auto " : "", s_quote (node->command));
+            const char *tmp = s_quote (node->command);
+            fprintf (rcf, "alias %s%s%s%s", node->autoexpand ? "autoexpand " : "",
+                *tmp == '"' ? "" : "\"", tmp, *tmp == '"' ? "" : "\"");
             fprintf (rcf, " %s\n", s_quote (node->replace));
         }
     }
