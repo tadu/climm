@@ -900,7 +900,7 @@ int Read_RC_File (FILE *rcf)
                 else if (!strcasecmp (cmd, "alias"))
                 {
                     char autoexpand = FALSE;
-                    if (s_parsekey (&args, "autoexpand"))
+                    if (s_parsekey (&args, "auto") || s_parsekey (&args, "autoexpand"))
                         autoexpand = TRUE;
                     PrefParse (tmp);
                     tmp = strdup (s_quote (tmp));
@@ -1729,7 +1729,7 @@ int PrefWriteConfFile (void)
         const alias_t *node;
         for (node = AliasList (); node; node = node->next)
         {
-            fprintf (rcf, "alias %s%s", node->autoexpand ? "autoexpand " : "", s_quote (node->command));
+            fprintf (rcf, "alias %s%s", node->autoexpand ? "auto " : "", s_quote (node->command));
             fprintf (rcf, " %s\n", s_quote (node->replace));
         }
     }

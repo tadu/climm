@@ -291,8 +291,8 @@ static void Init (int argc, char *argv[])
     i18nInit (arg_i);
     PreferencesInit (prG);
     ReadLineInit ();
-    AliasAdd ("r", "msg %r %s", TRUE);
-    AliasAdd ("a", "msg %a %s", TRUE);
+    AliasAdd ("r", "msg %r", TRUE); /*"*/
+    AliasAdd ("a", "msg %a", TRUE);
     
     loaded = arg_h ? 0 : PrefLoad (prG);
     prG->verbose &= ~0x80000000UL;

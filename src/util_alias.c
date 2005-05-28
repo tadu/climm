@@ -126,7 +126,7 @@ const char *AliasExpand (const char *string, UDWORD bytepos, char autoexpand)
         if ((p = strchr (string, ' ')))
             bytepos = p - string;
         else
-            return NULL;
+            bytepos = strlen (string);
     }
     
     for (e = al_ae; e; e = e->next)
@@ -165,7 +165,8 @@ const char *AliasExpand (const char *string, UDWORD bytepos, char autoexpand)
     s_cat (&al_exp, p);
     if (!found_s && string[bytepos])
     {
-        s_cat (&al_exp, " ");
+        if (string[bytepos] != ' ')
+            s_catc (&al_exp, ' ');
         s_cat (&al_exp, string + bytepos);
     }
     return al_recurse (al_exp.txt, autoexpand);

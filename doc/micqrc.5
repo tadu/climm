@@ -447,16 +447,39 @@ Note: this option is obsolete, use
 .I alias
 instead.
 .TP
-.BI alias \ <alias>\ <expansion>
+.BI alias\ [auto[expand]] \ <alias>\ <expansion>
 Define an alias named
 .I alias
 which is substituted with
 .IR expansion .
-If the string %s is present in
+If the
+.I auto
+or
+.I autoexpand
+keyword is given, the expansion also happens when the space key
+or the return key is pressed directly after the alias.
+If the string
+.B %s
+is present in
 .IR expansion ,
-it is replaced with the given arguments when the alias is invoked,
+each occurence is replaced with the given arguments when the alias is invoked,
 otherwise they will be appended.
-New for 0.4.10.
+If the string
+.B %r
+is present in
+.IR expansion ,
+each occurence is replaced by the nick name or, if the nick is not
+available, the UIN, of the contact that sent the last message to you,
+or the empty string if there is none.
+If the string
+.B %a
+is present in
+.IR expansion ,
+each occurence is replaced by the nick name or, if the nick is not
+available, the UIN, of the contact that you sent the last message to,
+or the empty string if there is none.
+.br
+New for 0.4.10. Auto-expanding aliases new for 0.5.0.4.
 .SH GROUP
 The
 .B Group

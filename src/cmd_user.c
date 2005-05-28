@@ -1115,7 +1115,7 @@ static JUMP_F(CmdUserAlias)
     char autoexpand = FALSE;
     const alias_t *node;
 
-    if (s_parsekey (&args, "autoexpand"))
+    if (s_parsekey (&args, "autoexpand") || s_parsekey (&args, "auto"))
         autoexpand = TRUE;
     
     if (!(name = s_parse_s (&args, " \t\r\n=")))

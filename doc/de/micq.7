@@ -81,15 +81,13 @@ Einstellung ab.
 .TP
 .BI a \ [<Nachricht>]
 Schickt eine Nachricht zur gleichen Person wie die letzte Nachricht.
-Siehe 
-.B msg
-f\(:ur weitere Details.
+Auto-expandierendes Alias f\(:ur
+.BR msg\ %a .
 .TP
 .BI r \ [<Nachricht>]
 Antwortet auf die zuletzt empfangene Nachricht.
-Siehe 
-.B msg
-f\(:ur weitere Details.
+Auto-expandierendes Alias f\(:ur
+.BR msg\ %r .
 .TP
 .BI url \ <Kontakte>\ <URL>\ <Nachricht>
 Schickt eine
@@ -595,18 +593,52 @@ oder schaltet dies an (\fBon\fR) (mit der letzten verwendeten Zeit) oder ab (\fB
 Eine Zeit von 0 schaltet dies ebenfalls ab. Ist kein Argument gegeben,
 zeigt es die aktuelle Einstellung an.
 .TP
-.BI alias \ [<Alias>\ <Erweiterung>]
-Erzeugt ein neues Alias mit dem Namen
+.BI alias\ [auto[expand]] \ [<Alias>\ <Erweiterung>]
+Erzeuge ein neues Alias mit dem Namen
 .IR Alias ,
 das durch
 .IR Erweiterung
 ersetzt wird.
-Listet alle Aliase auf, wenn keine Parameter angegeben sind.
-Wenn die Zeichenkette %s in der
+Wird kein
+.I Alias
+angegeben, dann liste alle Aliase auf.
+Wird keine
 .I Erweiterung
-vorhanden ist, wird sie durch die beim Aufruf des Alias angegebenen Argumente ersetzt,
+angegeben, dann liste das bestehende
+.I Alias
+auf.
+Anderfalls erzeuge ein neues
+.IR Alias .
+Ist das Schl\(:usselwort
+.I auto
+oder
+.I autoexpand
+angegeben, dann erzeuge ein auto-expandierendes Alias, d.h. ein
+Alias, das sofort expandiert wird, wenn die Leertaste oder die
+Eingabetaste direkt nach dem Alias eingegeben wird.
+.br
+Wenn die Zeichenkette
+.B %s
+in der
+.I Erweiterung
+vorhanden ist, wird jedes Auftreten durch die beim Aufruf des Alias angegebenen Argumente ersetzt,
 andernfalls werden diese an das Ende angeh\(:angt.
-Neu seit 0.4.10.
+Wenn die Zeichenkette
+.B %r
+in der
+.I Erweiterung
+vorhanden ist, wird jedes Auftreten ersetzt durch den Spitznamen, falls vorhanden, oder die UIN des
+Kontaktes ersetzt, von dem die letzte Nachricht empfangen wurde, oder durch die leere
+Zeichenkette, falls es noch keinen solchen gibt.
+Wenn die Zeichenkette
+.B %a
+in der
+.I Erweiterung
+vorhanden ist, wird jedes Auftreten ersetzt durch den Spitznamen, falls vorhanden, oder die UIN des
+Kontaktes ersetzt, an den die letzte Nachricht gesendet wurde, oder durch die leere
+Zeichenkette, falls es noch keinen solchen gibt.
+.br
+Neu seit 0.4.10. Auto-expandierende Aliase neu seit 0.5.0.4.
 .TP
 .BI unalias \ <Alias>
 L\(:osche den Alias mit dem Namen

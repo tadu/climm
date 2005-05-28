@@ -473,17 +473,44 @@ Hinweis: Diese Option ist veraltet, benutze
 .I alias
 stattdessen.
 .TP
-.BI alias \ <alias>\ <expansion>
+.BI alias\ [auto[expand]] \ <alias>\ <expansion>
 Erzeugt einen neuen Alias
 .IR alias ,
 also einen Befehl, der bei Verwendung durch
 .IR expansion
-ersetzt wird. Enth\(:alt
+ersetzt wird.
+Wenn das Schl\(:usselwort
+.I auto
+oder
+.I autoexpand
+angegeben ist, wird die Expansion bereits dann passieren,
+wenn die Leertaste oder die Eingabetaste direkt hinter
+dem Alias gedr\(:uckt wird.
+Enth\(:alt
 .IR expansion
-die Zeichenkette %s, so wird diese durch die beim Aufruf des Aliases
+die Zeichenkette
+.BR %s ,
+so wird jedes Auftreten durch die beim Aufruf des Aliases
 angegebenen Parameter ersetzt, andernfalls werden diese an das Ende
 angef\(:ugt.
-Neu seit 0.4.10.
+Enth\(:alt
+.IR expansion
+die Zeichenkette
+.BR %r ,
+so wird jedes Auftreten durch den Spitznamen, oder, falls nicht
+vorhanden, die UIN, des Kontaktes ersetzt, von dem die letzte Nachricht
+empfangen wurde, oder die leere Zeichenkette, falls es noch keinen
+solchen gibt.
+Enth\(:alt
+.IR expansion
+die Zeichenkette
+.BR %a ,
+so wird jedes Auftreten durch den Spitznamen, oder, falls nicht
+vorhanden, die UIN, des Kontaktes ersetzt, an dem die letzte Nachricht
+gesendet wurde, oder die leere Zeichenkette, falls es noch keinen
+solchen gibt.
+.br
+Neu seit 0.4.10. Auto-expandierende Aliase neu seit 0.5.0.4.
 .SH KONTAKTGRUPPEN - group
 Dieser Abschnitt beschreibt eine Kontaktgruppe und kann beliebig
 wiederholt werden. Dieser Abschnitt wird f\(:ur Format 2 in der Datei

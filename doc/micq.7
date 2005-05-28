@@ -77,14 +77,14 @@ so successful transmission of non\-USASCII\-characters relies on correct
 configuration and heuristics.
 .TP
 .BI a \ [<message>]
-Send a message to the last person you sent a message to.  See
-.B msg
-for more details.
+Send a message to the last person you sent a message to.
+Auto-expanding alias for
+.BR msg\ %a .
 .TP
 .BI r \ [<message>]
-Reply to last message received. See
-.B msg
-for more details.
+Reply to last message received.
+Auto-expanding alias for
+.BR msg\ %r .
 .TP
 .BI url \ <contacts>\ <url>\ <message>
 Send a
@@ -570,17 +570,49 @@ saving the current used auto away time. A timeout of 0 is equivalent to
 .IR off .
 If no argument is given, the current setting is displayed.
 .TP
-.BI alias \ [<alias>\ <expansion>]
+.BI alias\ [auto[expand]] \ [<alias>\ [<expansion>]]
 Make a new alias named
 .I alias
 which is substituted with
 .IR expansion .
-If no arguments are given, all current aliases are listed. If the
-string %s is present in
+If no
+.I alias
+is given, list all current aliases.
+If no
+.I expansion
+is given, list the current
+.IR alias .
+Otherwise, create a new alias.
+If the
+.I auto
+or
+.I autoexpand
+keyword is given, the new alias is auto-expanding, that is, it
+is immediately expanded when the space or return key is pressed
+directly after entering the alias.
+.br
+If the string
+.B %s
+is present in
 .IR expansion ,
-it is replaced with the given arguments when the alias is invoked,
+each occurence is replaced with the given arguments when the alias is invoked,
 otherwise they will be appended. 
-New for 0.4.10.
+If the string
+.B %r
+is present in
+.IR expansion ,
+each occurence is replaced by the nick name or, if the nick is not
+available, the UIN, of the contact that sent the last message to you,
+or the empty string if there is none.
+If the string
+.B %a
+is present in
+.IR expansion ,
+each occurence is replaced by the nick name or, if the nick is not
+available, the UIN, of the contact that you sent the last message to,
+or the empty string if there is none.
+.br
+New for 0.4.10. Auto-expanding aliases new for 0.5.0.4.
 .TP
 .BI unalias \ <alias>
 Delete the alias named
