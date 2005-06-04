@@ -13,7 +13,6 @@ BSD Licence. He never had a real Licence, but i got this:
 | debian.
 | 
 | -- MAtt
-
 I got this cite from the debian-package maintainer from micq.
 
 Beginning from 0.4.7 all the Code is released as BSD-ish Licence - when not
@@ -23,14 +22,14 @@ Kuhlmann and released under version 2 of the GPL.
 Beginning with 0.4.9 all code is released under version 2 of the GPL license.
 If you need code that's BSD, go back to 0.4.8.
 
-In addition, as a special exception permission is granted to link the
-code of this release of mICQ with the OpenSSL project's "OpenSSL"
+Beginning with 0.4.12, as a special exception permission is granted to link
+the code of this release of mICQ with the OpenSSL project's "OpenSSL"
 library, and distribute the linked executables.  You must obey the GNU
-General Public License in all respects for all of the code used other
-than "OpenSSL".  If you modify this file, you may extend this exception
-to your version of the file, but you are not obligated to do so.  If you
-do not wish to do so, delete this exception statement from your version
-of this file.
+General Public License, version 2, in all respects for all of the code used
+other than "OpenSSL".  If you modify this file, you may extend this
+exception to your version of the file, but you are not obligated to do so. 
+If you do not wish to do so, delete this exception statement from your
+version of this file.
 
-No-one from the micq Project is in any way affiliated with Mirabilis or AOL.
+No-one from the mICQ project is in any way affiliated with Mirabilis or AOL.
 We get neither money nor any hints from them.

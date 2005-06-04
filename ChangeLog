@@ -1,5 +1,31 @@
 -*- coding: utf-8 -*-
 
+2005-06-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix peek once more
+	* 0.5.0.4
+
+2005-05-17 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* don't output ESC [ J on MingW port
+	* auto-expand even if line is not empty
+	* define a few more known TLVs
+	* fix -i
+	* work-around segfault bug in SunOS 5.7 iconv()
+	* re-set the right iconv state
+	* auto-expand also on return
+	* remove old aliases code;
+	* use my auto-expanding-capable code in util_alias.[ch]
+
+2005-05-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix segfault when all LC_* are unset and setlocale() is unavailable
+	* disallow auto expansion when tabbing is disallowed
+	* experimental roster code
+	* improve contact delete
+	* try to do a better job at guessing w32 user's home directory
+	* fix cross-compiling; check for fsync()
+	* correctly set linker flag for iconv
+	* incluce pwd.h
+	* os_packagehomedir() may return NULL
+
 2005-04-27 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* fix: i18nInit() was called twice, second time with LC_MESSAGE
 	  (thus, LC_CTYPE was effectively ignored)
