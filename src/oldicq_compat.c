@@ -444,11 +444,12 @@ void Recv_Message (Connection *conn, Packet *pak)
     if (len == ctext->len + 1 && ConvIsUTF8 (ctext->txt))
         text = ConvFrom (ctext, ENC_UTF8)->txt;
     else if (len == ctext->len + 10 || len == strlen (ctext->txt) + 2)
-        text = c_in_to_split (ctext, cont); /* work around bug in Miranda < 0.3.1 */
+        /* work around bug in Miranda < 0.3.1 */
+        text = type == MSG_NORM ? ConvFromCont (ctext, cont) : c_in_to_split (ctext, cont);
     else if (len != ctext->len + 1 && type == MSG_NORM && len & 1)
         text = ConvFrom (ctext, ENC_UCS2BE)->txt;
     else
-        text = c_in_to_split (ctext, cont);
+        text = type == MSG_NORM ? ConvFromCont (ctext, cont) : c_in_to_split (ctext, cont);
 
     uiG.last_rcvd = cont;
     IMSrvMsg (cont, conn, timegm (&stamp),
