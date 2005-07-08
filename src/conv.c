@@ -458,7 +458,6 @@ strc_t ConvFromSplit (strc_t text, UBYTE enc)
     
     s_init (&str, "", 100);
     tstr.txt = (char *)text->txt;
-    tstr.len = text->len;
     tstr.max = 0;
     while ((p = memchr (tstr.txt, '\xfe', tlen)))
     {
@@ -468,6 +467,7 @@ strc_t ConvFromSplit (strc_t text, UBYTE enc)
         tstr.txt += tstr.len + 1;
         tlen     -= tstr.len + 1;
     }
+    tstr.len = tlen;
     s_cat (&str, ConvFrom (&tstr, enc)->txt);
     return &str;
 }
