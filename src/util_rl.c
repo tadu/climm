@@ -1809,7 +1809,7 @@ void ReadLinePromptSet (const char *prompt)
 {
     rl_prompt_time = time (NULL);
     s_init (&rl_prompt, COLSERVER, 0);
-    s_cat  (&rl_prompt, ConvTo (prompt, ENC(enc_loc))->txt);
+    s_cat  (&rl_prompt, prompt);
     s_cat  (&rl_prompt, COLNONE);
     s_catc (&rl_prompt, ' ');
     if (rl_prompt_stat != 0)
