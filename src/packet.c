@@ -80,22 +80,18 @@ static Cap caps[CAP_MAX] =
     { CAP_KOPETE,      12, "Kopete ICQ  \x00\x00\x00\x00",      "CAP_KOPETE",      NULL },
     { CAP_IMSECURE,    12, "IMsecureCphr\x00\x00\x00\x00",      "CAP_IMSECURE",    NULL },
     { CAP_ARQ,          9, "&RQinside\x00\x00\x00\x00\x00\x00\x00", "CAP_ARQ",     NULL },
-    { CAP_UTF8ii,      16, cap_aim "\x4e" cap_mid "\x82\x22\x44\x45\x53\x54ii", "CAP_UTF8ii", NULL },
+    { CAP_MIRANDA,     12, "MirandaM\x00\x04\x00\x01\x00\x00\x00\x00", "CAP_MIRANDA", NULL },
+    { CAP_UTF8ii,      16, cap_aim "\x4e" cap_mid "\x82\x22\x44\x45\x53\x54ii", "CAP_UTF82", NULL },
     { CAP_AIM_INTER,   16, cap_aim "\x4d" cap_mid cap_id,       "CAP_AIM_INTER",   NULL },
     { CAP_WIERD1,      16, "\x17\x8c\x2d\x9b\xda\xa5\x45\xbb\x8d\xdb\xf3\xbd\xbd\x53\xa1\x0a", "CAP_WIERD1", NULL },
     { CAP_WIERD2,      16, "\x1a\x09\x3c\x6c\xd7\xfd\x4e\xc5\x9d\x51\xa6\x47\x4e\x34\xf5\xa0", "CAP_WIERD2", NULL },
     { CAP_WIERD3,      16, "\x67\x36\x15\x15\x61\x2d\x4c\x07\x8f\x3d\xbd\xe6\x40\x8e\xa0\x41", "CAP_WIERD3", NULL },
     { CAP_WIERD4,      16, "\xe3\x62\xc1\xe9\x12\x1a\x4b\x94\xa6\x26\x7a\x74\xde\x24\x27\x0d", "CAP_WIERD4", NULL },
     { CAP_WIERD5,      16, "\xb9\x97\x08\xb5\x3a\x92\x42\x02\xb0\x69\xf1\xe7\x57\xbb\x2e\x17", "CAP_WIERD5", NULL },
+    { CAP_WIERD6,      16, "\x09\x46\x13\x4c\x4c\x7f\x11\xd1\x82\x22\x44\x45\x53\x54\x00\x00", "CAP_WIERD6", NULL },
+    { CAP_WIERD7,      16, "\xb6\x07\x43\x78\xf5\x0c\x4a\xc7\x90\x92\x59\x38\x50\x2d\x05\x91", "CAP_WIERD7", NULL },
     { CAP_11,          16, "\x01\x01\x01\x01\x01\x01\x19\x04\x4a\x16\xed\x79\x2c\xb1\x71\x01", "CAP_11", NULL },
     { CAP_12,          16, "\x02\x02\x02\x02\x02\x02\xb3\xf8\x53\x44\x7f\x0d\x2d\x83\xbd\x76", "CAP_12", NULL },  
-    
-    
-    /* CAP_UNK_37: 01 01 01 01 01 01 19 04  4a 16 ed 79 2c b1 71 01  "........ J.íy,±q." IMsecure?
-    // CAP_UNK_38: 02 02 02 02 02 02 b3 f8  53 44 7f 0d 2d 83 bd 76  "......³ø SD..-.½v" IMsecure?
-    // CAP_UNK_39: b6 07 43 78 f5 0c 4a c7  90 92 59 38 50 2d 05 91  "¶.Cxõ.JÇ ..Y8P-.." ICQ Lite
-    // CAP_UNK_40: 80 53 7d e2 a4 67 4a 76  b3 54 6d fd 07 5f 5e c6  ".S}â¤gJv ³Tmý._^Æ" ICQ Lite
-    */
 
     { 0, 0, NULL, NULL, NULL }
 };

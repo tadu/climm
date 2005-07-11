@@ -1104,7 +1104,8 @@ void ContactSetCap (Contact *cont, Cap *cap)
         }
     }
     else if (cap->var && (cap->id == CAP_MICQ || cap->id == CAP_SIMNEW
-                       || cap->id == CAP_KOPETE || cap->id == CAP_LICQNEW))
+                       || cap->id == CAP_KOPETE || cap->id == CAP_LICQNEW
+                       || cap->id == CAP_MIRANDA))
     {
         cont->v1 = cap->var[12];
         cont->v2 = cap->var[13];
@@ -1132,12 +1133,45 @@ void ContactSetVersion (Contact *cont)
     
     ver = dc->id1 & 0xffff;
     
-    if (!HAS_CAP (cont->caps, CAP_SIM) && !HAS_CAP (cont->caps, CAP_MICQ)
-        && !HAS_CAP (cont->caps, CAP_SIMNEW) && !HAS_CAP (cont->caps, CAP_KOPETE)
-        && !HAS_CAP (cont->caps, CAP_LICQNEW))
-        cont->v1 = cont->v2 = cont->v3 = cont->v4 = 0;
-
-    if ((dc->id1 & 0xff7f0000UL) == BUILD_LICQ && ver > 1000)
+    if (HAS_CAP (cont->caps, CAP_MICQ))
+    {
+        new = "mICQ";
+        OptSetVal (&cont->copts, CO_TIMEMICQ, time (NULL));
+        if (cont->v1 & 0x80)
+            tail = " cvs";
+        cont->v1 &= ~0x80;
+    }
+    else if (HAS_CAP (cont->caps, CAP_SIMNEW))
+        new = "SIM";
+    else if (HAS_CAP (cont->caps, CAP_LICQNEW))
+    {
+        new = "licq";
+        if (cont->v2 / 100 == cont->v1)
+            cont->v2 %= 100; /* bug in licq 1.3.0 */
+        if (cont->v4 == 1)
+            tail = "/SSL";
+    }
+    else if (HAS_CAP (cont->caps, CAP_KOPETE))
+        new = "Kopete";
+    else if (HAS_CAP (cont->caps, CAP_MIRANDA))
+    {
+        new = "Miranda";
+        if (((cont->v1 << 24) | (cont->v2 << 16) | (cont->v3 << 8) | cont->v4) <= 0x00010202 && dc->version >= 8)
+            dc->version = 7;
+        if (cont->v1 & 0x80)
+            tail = " cvs";
+        cont->v1 &= ~0x80;
+    }
+    else if (HAS_CAP (cont->caps, CAP_SIM))
+    {
+        if (cont->v1 || cont->v2)
+            new = "SIM";
+        else
+            new = "Kopete";
+    }
+    else if ((cont->v1 = cont->v2 = cont->v3 = cont->v4 = 0))
+        new = "err";
+    else if ((dc->id1 & 0xff7f0000UL) == BUILD_LICQ && ver > 1000)
     {
         new = "licq";
         if (dc->id1 & BUILD_SSL)
@@ -1241,30 +1275,6 @@ void ContactSetVersion (Contact *cont)
         new = "Trillian";
     else if (HAS_CAP (cont->caps, CAP_LICQ))
         new = "licq";
-    else if (HAS_CAP (cont->caps, CAP_SIM))
-    {
-        if (cont->v1 || cont->v2)
-            new = "SIM";
-        else
-            new = "Kopete";
-    }
-    else if (HAS_CAP (cont->caps, CAP_MICQ))
-    {
-        new = "mICQ";
-        OptSetVal (&cont->copts, CO_TIMEMICQ, time (NULL));
-    }
-    else if (HAS_CAP (cont->caps, CAP_SIMNEW))
-        new = "SIM";
-    else if (HAS_CAP (cont->caps, CAP_LICQNEW))
-    {
-        new = "licq";
-        if (cont->v2 / 100 == cont->v1)
-            cont->v2 %= 100; /* bug in licq 1.3.0 */
-        if (cont->v4 == 1)
-            tail = "/SSL";
-    }
-    else if (HAS_CAP (cont->caps, CAP_KOPETE))
-        new = "Kopete";
     else if (dc->id1 == dc->id2 && dc->id2 == dc->id3 && dc->id1 == -1)
         new = "vICQ/GAIM(?)";
     else if (dc->version == 7 && HAS_CAP (cont->caps, CAP_TYPING))
