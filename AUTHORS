@@ -39,8 +39,12 @@ Contributors:
 
 Current Translators:
 
-	None. Feel free to volunteer.
+	Tomáš Bambas		<conyx__at__seznam.cz>
+	    czech (cs_CZ) translation 0.5.0.4
 
+	Seva Gluschenko		<gvs__at__demos.net>
+	    updated russian (ru) translation to 0.4.10
+	
 Former Translators:
 
 	Nikola Lecic		<lecicc__at__ptt.yu>
@@ -68,9 +72,6 @@ Former Translators:
 	
 	Fabio KaLiF		<f.venturi__at__email.it>
 	    italian (it.i18n) translation
-	
-	Seva Gluschenko		<gvs__at__demos.net>
-	    updated russian (ru) translation to 0.4.10
 	
 	L. Budi Handoko		<handoko__at__riset.dinus.ac.id>
 	    indonesian (id.i18n) translation to 0.4.10
