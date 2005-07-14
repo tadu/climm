@@ -25,7 +25,11 @@ const char *os_packagehomedir (void);
 #else /* !_WIN32 && (!__CYGWIN__ || !_X86) */
 
 #define os_DetectLockedWorkstation() -1
+#if ENABLE_BINRELOC
+#define os_packagedatadir() BR_DATADIR ("micq")
+#else
 #define os_packagedatadir() PKGDATADIR
+#endif
 
 
 #endif /* !_WIN32 && (!__CYGWIN__ || !_X86) */

@@ -91,6 +91,8 @@ typedef struct Extra_s        Extra;
 #include <strings.h>
 #endif
 
+#include "autopackage_prefix.h"
+
 #if ENABLE_DEBUG && HAVE_VARIADIC_MACRO
 #define DEBUGARGS    , __FILE__, __LINE__
 #define DEBUGPARAM   , const char *debugfile, int debugline

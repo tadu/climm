@@ -42,6 +42,7 @@ AC_ARG_ENABLE([ssl], AC_HELP_STRING([--disable-ssl], [disable SSL encryption]),
               ac_arg_use_ssl=$enableval, ac_arg_use_ssl=auto)
 AC_ARG_ENABLE([ssl], AC_HELP_STRING([[[[--enable-ssl=gnutls,openssl]]]], [choose SSL library]))
 
+rk_BINRELOC
 
 # Checks for libraries.
 AC_CHECK_FUNCS([inet_ntoa getpeername])
