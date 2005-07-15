@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=mICQ
+GenericName=Text based ICQ client
+GenericName[de]=Text-basiertes ICQ-Programm
+Comment=Text/line based ICQ client for advances users
+Comment[de]=Zeilenbasiertes ICQ-Programm für fortgeschrittene Benutzer
+Icon=micq.xpm
+Exec=micq
+Terminal=true
+Categories=Network/Instant Messaging
