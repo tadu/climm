@@ -68,10 +68,10 @@ AC_DEFUN([rk_BINRELOC],
 
 		if test "x$br_cv_binreloc_threads" = "xyes"; then
 			BINRELOC_LIBS="-lpthread"
-			AC_DEFINE(BR_PTHREAD,1,[Include pthread support for binary relocation?])
+			AC_DEFINE(BR_PTHREADS,1,[Include pthread support for binary relocation?])
 		else
 			BINRELOC_CFLAGS="$BINRELOC_CFLAGS -DBR_PTHREADS=0"
-			AC_DEFINE(BR_PTHREAD,0,[Include pthread support for binary relocation?])
+			AC_DEFINE(BR_PTHREADS,0,[Include pthread support for binary relocation?])
 		fi
 	fi
 	AC_SUBST(BINRELOC_CFLAGS)

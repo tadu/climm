@@ -30,11 +30,6 @@
 	#include "config.h"
 #endif
 
-#ifndef BR_PTHREADS
-	/* Change 1 to 0 if you don't want pthread support */
-	#define BR_PTHREADS 1
-#endif /* BR_PTHREADS */
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
