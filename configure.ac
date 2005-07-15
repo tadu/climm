@@ -42,7 +42,8 @@ AC_ARG_ENABLE([ssl], AC_HELP_STRING([--disable-ssl], [disable SSL encryption]),
               ac_arg_use_ssl=$enableval, ac_arg_use_ssl=auto)
 AC_ARG_ENABLE([ssl], AC_HELP_STRING([[[[--enable-ssl=gnutls,openssl]]]], [choose SSL library]))
 
-rk_BINRELOC
+AC_ARG_ENABLE([autopackage], AC_HELP_STRING([--enable-autopackage], [enable autopackage generation]),
+              ac_arg_use_autopackage=$enableval, ac_arg_use_autopackage=no)
 
 # Checks for libraries.
 AC_CHECK_FUNCS([inet_ntoa getpeername])
@@ -77,6 +78,9 @@ if test "x$ac_arg_use_dc" != "xno"; then
                                           LIBS="$temp_LIBS"])
       fi
     fi
+    if test "x$ac_use_ssl$ac_arg_use_autopackage" = xopensslyes; then
+      AC_MSG_FAILURE([cannot use OpenSSL with autopackage])
+    fi
     if test "x$ac_use_ssl" = "xno"; then
       case "$ac_arg_use_ssl" in
         gnutls)  AC_MSG_FAILURE([cannot find GnuTLS library]) ;;
@@ -93,10 +97,18 @@ fi
 
 if test "x$ac_arg_use_tcl" != "xno"; then
   ac_use_tcl=no
-  AC_CHECK_HEADERS([tcl8.4/tcl.h tcl8.3/tcl.h tcl.h], [ac_use_tcl=yes
-                                                       break])
-  if test "x$ac_use_tcl" = "xyes"; then
-    AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4 tcl8.3], [ac_use_tcl=yes], [ac_use_tcl=no])
+  if test "x$ac_arg_use_autopackage" = xyes; then
+    AC_CHECK_HEADERS([tcl8.4/tcl.h tcl.h], [ac_use_tcl=yes
+                                            break])
+    if test "x$ac_use_tcl" = "xyes"; then
+      AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4], [ac_use_tcl=yes], [ac_use_tcl=no])
+    fi
+  else
+    AC_CHECK_HEADERS([tcl8.4/tcl.h tcl8.3/tcl.h tcl.h], [ac_use_tcl=yes
+                                                         break])
+    if test "x$ac_use_tcl" = "xyes"; then
+      AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4 tcl8.3], [ac_use_tcl=yes], [ac_use_tcl=no])
+    fi
   fi
   if test "x$ac_usl_tcl$ac_arg_use_tcl" = "xnoyes"; then
     AC_MSG_FAILURE([cannot find a suitable Tcl interpreter library])
@@ -473,6 +485,22 @@ fi
 
 if test "x$MICQ_EXTRAVERSION" != "x"; then
     AC_DEFINE_UNQUOTED(EXTRAVERSION,"$MICQ_EXTRAVERSION",[Extra version information like the distribution used])
+fi
+
+if test "x$ac_arg_use_autopackage" = xyes; then
+    enable_binreloc=auto
+    rk_BINRELOC
+    if test "x$br_cv_binreloc" = xyes; then
+        AC_CHECK_PROGS(RELAYTOOL, relaytool, :)
+        old_LIBS=$LIBS
+        LIBS=
+        AC_SEARCH_LIBS([dlopen], [dl])
+        LIBS="$old_LIBS $LIBS"
+        if test "x$RELAYTOOL" != x:; then
+            LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls' $LIBS"'`'
+            AC_DEFINE(ENABLE_AUTOPACKAGE,1,[Use autopackage to check libraries at run time])
+        fi
+    fi
 fi
 
 AC_CONFIG_FILES([src/Makefile Makefile lang/Makefile doc/Makefile])

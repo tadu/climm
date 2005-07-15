@@ -1,0 +1,64 @@
+# -*-shell-script-*-
+
+[Meta]
+SoftwareVersion: @VERSION@
+RootName: @micq.org/micq:$SOFTWAREVERSION
+DisplayName: mICQ Text based ICQ client
+DisplayName[de]: mICQ Text-basiertes ICQ-Programm
+ShortName: mICQ
+Maintainer: Ruediger Kuhlmann <micq@ruediger-kuhlmann.de>
+Packager: Ruediger Kuhlmann <micq@ruediger-kuhlmann.de>
+Summary: Text/line based ICQ client for advances users
+Summary[de]: Zeilenbasiertes ICQ-Programm für fortgeschrittene Benutzer
+URL: http://www.micq.org/
+License: GNU General Public License, Version 2
+AutopackageTarget: 1.0
+
+[Description]
+mICQ is a portable, small, yet powerful console based ICQ client. It
+supports password changing, auto-away, creation of new accounts, searching,
+file transfer, acknowledged messages, SMS, client identification, logging,
+scripting, transcoding, multi-UIN usage and other features that makes it a
+very complete yet simple internationalized client supporting the current
+ICQ v8 protocol.
+.
+It has leading support for (ICQ2002+/ICQ Lite/ICQ2go) unicode encoded
+messages unreached by other ICQ clones.
+.
+A lot of other ICQ clients are based in spirit on mICQ, nevertheless
+mICQ is still _the_ console based ICQ client.
+
+[BuildPrepare]
+prepareBuild --enable-autopackage --enable-iconvrepl
+mkdir -p "$build_root/doc" "$build_root/data"
+for f in $(< $source_dir/debian/docs) ChangeLog; do
+  cp "$source_dir/$f" "$build_root/doc"
+done
+cp "$source_dir/doc/micq.desktop" "$build_root/data"
+cp "$source_dir/doc/micq.xpm" "$build_root/data"
+cp "$source_dir/doc/micq@48x48.png" "$build_root/data"
+cp "$source_dir/doc/micq@32x32.png" "$build_root/data"
+cp "$source_dir/doc/micq@16x16.png" "$build_root/data"
+
+[BuildUnprepare]
+unprepareBuild
+
+[Imports]
+echo '*' | import
+
+[Prepare]
+recommendAtLeast @gnutls.org/gnutls:11
+
+[Install]
+installExe bin/*
+copyFiles share/micq/*.i18n "$PREFIX/share/micq"
+copyFiles doc/* "$PREFIX/share/doc/micq"
+installIcon data/micq.xpm
+installIcon data/micq@16x16.png
+installIcon data/micq@32x32.png
+installIcon data/micq@48x48.png
+installDesktop "Network/Instant Messaging" data/micq.desktop
+copyFiles man/* "$PREFIX/man"
+                                        
+[Uninstall]
+uninstallFromLog
