@@ -21,9 +21,6 @@ Contributors:
         Michel Oosterhof        <micheloo__at__xs4all.nl>
             initial auto{conf,make} support
 
-        Per Olofsson            <pelle__at__dsv.su.se>
-            alias support (GPL >= v2)
-	
         Lutz Rossa              <rossa__at__hmi.de>
             win32 screensaver/lock detection
 
@@ -43,8 +40,16 @@ Current Translators:
 	    czech (cs_CZ) translation 0.5.0.4
 
 	Seva Gluschenko		<gvs__at__demos.net>
-	    updated russian (ru) translation to 0.4.10
+	    updated russian (ru) translation to 0.5.0.4
 	
+	Leonardo Rosa		<leorosa@feq.unicamp.br>
+	    portuguese/brazil (pt) translation 0.5
+	    updated portuguese man pages to 0.4.10
+	    portuguese web page
+	    
+	Ján Staník
+	    slovak (sk) translation 0.5
+
 Former Translators:
 
 	Nikola Lecic		<lecicc__at__ptt.yu>
@@ -53,11 +58,6 @@ Former Translators:
 	
 	Alonso Andres
 	    portuguese/brazil (pt) translation 0.4.10
-
-	Leonardo Rosa		<leorosa@feq.unicamp.br>
-	    portuguese/brazil (pt) translation 0.4.10
-	    updated portuguese man pages to 0.4.10
-	    portuguese web page
 
 	Artem Sokolov		<sokolov__at__ukr.net>
 	    ukrainian (uk.i18n) translation 0.4.10
@@ -112,3 +112,10 @@ Former Translators:
 
 	Benjamin Michotte <binny__at__baby-linux.net>
 	    (update) french translation
+
+
+
+
+
+
+

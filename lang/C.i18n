@@ -952,7 +952,6 @@
 2299:Alias doesn't exist.\n
 2300:Set an alias or list current aliases.
 2301:Delete an alias.
-2302:Too many levels of alias expansion; probably an infinite loop.\n
 2303:Invalid character 0x%x in alias name.\n
 2304:Get automatic reply from all <contacts> for current status, away, not available, do not disturb, occupied, or free for chat.
 2305:Handle meta data of contacts.
@@ -1212,3 +1211,5 @@
 2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
 2579:contact delid   Delete server based contact list entry (experts only).\n
 2580:ignore
+2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
+2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
