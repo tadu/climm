@@ -8,5 +8,6 @@ Comment=Text/line based ICQ client for advances users
 Comment[de]=Zeilenbasiertes ICQ-Programm für fortgeschrittene Benutzer
 Icon=micq.xpm
 Exec=micq
-Terminal=true
+Terminal=1
+TerminalOptions=
 Categories=Network/Instant Messaging
