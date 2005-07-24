@@ -390,11 +390,12 @@ void ContactCreate (Connection *serv, Contact *cont DEBUGPARAM)
 
 /*
  * Finds a contact on a contact group, possibly creating it
+ * Id will be made unique in the given group
  */
 #undef ContactFindCreate
 Contact *ContactFindCreate (ContactGroup *group, UWORD id, UDWORD uin, const char *nick DEBUGPARAM)
 {
-    Contact *cont;
+    Contact *cont, *cont2;
     
     if (!group && !cnt_groups)
         ContactGroupInit ();
@@ -402,15 +403,31 @@ Contact *ContactFindCreate (ContactGroup *group, UWORD id, UDWORD uin, const cha
     assert (id || uin);
     assert (group);
 
-    if ((cont = ContactFind (group, id, uin, NULL)))
+    if ((cont = ContactFind (group, 0, uin, NULL)))
     {
+        if (id)
+        {
+            cont->id = 0;
+            cont2 = ContactFind (group, id, 0, NULL);
+            if (cont2)
+                cont2->id = 0;
+            cont->id = id;
+        }
         if (nick)
             ContactAddAlias (cont, nick);
         return cont;
     }
     
-    if ((cont = ContactFind (CONTACTGROUP_NONCONTACTS, id, uin, NULL)))
+    if ((cont = ContactFind (CONTACTGROUP_NONCONTACTS, 0, uin, NULL)))
     {
+        if (id)
+        {
+            cont->id = 0;
+            cont2 = ContactFind (CONTACTGROUP_NONCONTACTS, id, 0, NULL);
+            if (cont2)
+                cont2->id = 0;
+            cont->id = id;
+        }
         if (!nick)
             return cont;
         ContactRem (CONTACTGROUP_NONCONTACTS, cont);
