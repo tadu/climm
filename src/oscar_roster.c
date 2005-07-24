@@ -569,7 +569,7 @@ void SnacCliRosterdeletecontact (Connection *serv, Contact *cont)
     SnacCliAddstart (serv);
     pak = SnacC (serv, 19, 10, 0, 0);
 
-    if ((ids = ContactID (cont, ROSTER_TYPE_NORMAL)) && ids->issbl)
+    if ((ids = ContactIDHas (cont, ROSTER_TYPE_NORMAL)) && ids->issbl)
     {
         PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
         PacketWriteB2       (pak, ids->tag);
@@ -578,11 +578,11 @@ void SnacCliRosterdeletecontact (Connection *serv, Contact *cont)
         PacketWriteBLen     (pak);
         PacketWriteBLenDone (pak);
     }
-    if ((ids = ContactID (cont, ROSTER_TYPE_INVISIBLE)) && ids->issbl)
+    if ((ids = ContactIDHas (cont, ROSTER_TYPE_INVISIBLE)) && ids->issbl)
         SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_INVISIBLE);
-    if ((ids = ContactID (cont, ROSTER_TYPE_VISIBLE)) && ids->issbl)
+    if ((ids = ContactIDHas (cont, ROSTER_TYPE_VISIBLE)) && ids->issbl)
         SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_VISIBLE);
-    if ((ids = ContactID (cont, ROSTER_TYPE_IGNORE)) && ids->issbl)
+    if ((ids = ContactIDHas (cont, ROSTER_TYPE_IGNORE)) && ids->issbl)
         SnacCliRosterbulkone (serv, cont, pak, ROSTER_TYPE_IGNORE);
 
     SnacSend (serv, pak);

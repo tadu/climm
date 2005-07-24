@@ -155,6 +155,7 @@ BOOL          ContactRemAlias     (Contact *cont, const char *nick DEBUGPARAM);
 #define ContactRemAlias(c,n)       ContactRemAlias(c,n DEBUGARGS)
 
 ContactIDs   *ContactID           (Contact *cont, UWORD type);
+ContactIDs   *ContactIDHas        (Contact *cont, UWORD type);
 UWORD         ContactIDGet        (Contact *cont, UWORD type);
 void          ContactIDSet        (Contact *cont, UWORD type, UWORD id, UWORD tag);
 void          ContactSetCap       (Contact *cont, Cap *cap);

@@ -651,7 +651,21 @@ BOOL ContactRemAlias (Contact *cont, const char *nick DEBUGPARAM)
 }
 
 /*
- * Returns the contact id for flag, if necessary create one
+ * Returns the contact id for type, if available
+ */
+ContactIDs *ContactIDHas (Contact *cont, UWORD type)
+{
+    ContactIDs *ids;
+    
+    for (ids = cont->ids; ids; ids = ids->next)
+        if (ids->type == type)
+            return ids;
+    
+    return NULL;
+}
+
+/*
+ * Returns the contact id for type, if necessary create one
  */
 ContactIDs *ContactID (Contact *cont, UWORD type)
 {
