@@ -390,29 +390,20 @@ void ContactCreate (Connection *serv, Contact *cont DEBUGPARAM)
 
 /*
  * Finds a contact on a contact group, possibly creating it
- * Id will be made unique in the given group
  */
 #undef ContactFindCreate
-Contact *ContactFindCreate (ContactGroup *group, UWORD id, UDWORD uin, const char *nick DEBUGPARAM)
+Contact *ContactFindCreate (ContactGroup *group, UDWORD uin, const char *nick DEBUGPARAM)
 {
     Contact *cont, *cont2;
     
     if (!group && !cnt_groups)
         ContactGroupInit ();
 
-    assert (id || uin);
+    assert (uin);
     assert (group);
 
     if ((cont = ContactFind (group, 0, uin, NULL)))
     {
-        if (id)
-        {
-            cont->id = 0;
-            cont2 = ContactFind (group, id, 0, NULL);
-            if (cont2)
-                cont2->id = 0;
-            cont->id = id;
-        }
         if (nick)
             ContactAddAlias (cont, nick);
         return cont;
@@ -420,37 +411,29 @@ Contact *ContactFindCreate (ContactGroup *group, UWORD id, UDWORD uin, const cha
     
     if ((cont = ContactFind (CONTACTGROUP_NONCONTACTS, 0, uin, NULL)))
     {
-        if (id)
-        {
-            cont->id = 0;
-            cont2 = ContactFind (CONTACTGROUP_NONCONTACTS, id, 0, NULL);
-            if (cont2)
-                cont2->id = 0;
-            cont->id = id;
-        }
         if (!nick)
             return cont;
         ContactRem (CONTACTGROUP_NONCONTACTS, cont);
         ContactAdd (group, cont);
         cont->group = group;
         s_repl (&cont->nick, nick);
-        Debug (DEB_CONTACT, "act   #%d %ld '%s' %p in %p", id, uin, nick, cont, group);
+        Debug (DEB_CONTACT, "act   %ld '%s' %p in %p", uin, nick, cont, group);
         return cont;
     }
     
-    if (!(cont = ContactC (id, uin, nick DEBUGFOR)))
+    if (!(cont = ContactC (0, uin, nick DEBUGFOR)))
         return NULL;
 
     if (nick)
     {
         ContactAdd (group, cont);
         cont->group = group;
-        Debug (DEB_CONTACT, "act   #%d %ld '%s' %p", id, uin, nick, cont);
+        Debug (DEB_CONTACT, "act   %ld '%s' %p", uin, nick, cont);
     }
     else
     {
         ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
-        Debug (DEB_CONTACT, "temp  #%d %ld %p", id, uin, cont);
+        Debug (DEB_CONTACT, "temp  %ld %p", uin, cont);
     }
 
     return cont;

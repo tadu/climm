@@ -77,8 +77,8 @@ Connection *PrefNewConnection (UDWORD uin, const char *passwd)
 
     conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
     OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
-    cont = ContactFindCreate (conn->contacts, 0, 82274703, "mICQ");
-    ContactFindCreate (conn->contacts, 0, 82274703, "Tadu");
+    cont = ContactFindCreate (conn->contacts, 82274703, "mICQ");
+    ContactFindCreate (conn->contacts, 82274703, "Tadu");
     OptSetStr (&cont->copts, CO_COLORINCOMING, OptC2S ("red bold"));
     OptSetStr (&cont->copts, CO_COLORMESSAGE, OptC2S ("red bold"));
     rl_printf (i18n (2381, "I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n"));
@@ -211,8 +211,8 @@ void Initialize_RC_File ()
         conn->open = &ConnectionInitServer;
         conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
         OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
-        cont = ContactFindCreate (conn->contacts, 0, 82274703, "mICQ");
-        ContactFindCreate (conn->contacts, 0, 82274703, "Tadu");
+        cont = ContactFindCreate (conn->contacts, 82274703, "mICQ");
+        ContactFindCreate (conn->contacts, 82274703, "Tadu");
         OptSetStr (&cont->copts, CO_COLORINCOMING, OptC2S ("red bold"));
         OptSetStr (&cont->copts, CO_COLORMESSAGE, OptC2S ("red bold"));
     }
@@ -871,7 +871,7 @@ int Read_RC_File (FILE *rcf)
                             break;
                     if (!tconn)
                         break;
-                    if (!(cont = ContactFindCreate (tconn->contacts, 0, uin, cmd)))
+                    if (!(cont = ContactFindCreate (tconn->contacts, uin, cmd)))
                     {
                         rl_printf ("%s%s%s %s\n", COLERROR, i18n (1619, "Warning:"), COLNONE,
                                  i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
@@ -1089,7 +1089,7 @@ int Read_RC_File (FILE *rcf)
                     PrefParseInt (i);
                     PrefParseInt (uin);
                     
-                    cont = ContactFindCreate (cg->serv->contacts, i, uin, s_sprintf ("%ld", uin));
+                    cont = ContactFindCreate (cg->serv->contacts, uin, s_sprintf ("%ld", uin));
                     if (cont && cg != cg->serv->contacts)
                         ContactAdd (cg, cont);
                 }
@@ -1145,7 +1145,7 @@ int Read_RC_File (FILE *rcf)
         {
             conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin));
             for (i = 0; (cont = ContactIndex (NULL, i)); i++)
-                ContactFindCreate (cg, 0, cont->uin, cont->nick);
+                ContactFindCreate (cg, cont->uin, cont->nick);
             dep = 21;
         }
     }
@@ -1323,7 +1323,7 @@ void PrefReadStat (FILE *stf)
                     }
                     
                     if (format == 1)
-                        cont = ContactFindCreate (cg->serv->contacts, i, uin, s_sprintf ("%ld", uin));
+                        cont = ContactFindCreate (cg->serv->contacts, uin, s_sprintf ("%ld", uin));
                     else
                         cont = ContactFind (cg->serv->contacts, 0, uin, NULL);
                     
@@ -1419,7 +1419,7 @@ void PrefReadStat (FILE *stf)
                     PrefParseInt (uin);
                     PrefParse (cmd);
                     
-                    cont = ContactFindCreate (conn->contacts, id, uin, cmd);
+                    cont = ContactFindCreate (conn->contacts, uin, cmd);
                     if (!cont)
                         ERROR;
                     

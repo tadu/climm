@@ -2692,7 +2692,7 @@ static JUMP_F(CmdUserAdd)
             {
                 if (!cont->group)
                 {
-                    ContactFindCreate (conn->contacts, 0, cont->uin, s_sprintf ("%ld", cont->uin));
+                    ContactFindCreate (conn->contacts, cont->uin, s_sprintf ("%ld", cont->uin));
                     if (conn->type == TYPE_SERVER)
                         SnacCliAddcontact (conn, cont, NULL);
                     else
@@ -2751,7 +2751,7 @@ static JUMP_F(CmdUserAdd)
             rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
             if (c_strlen (cmd) > (UDWORD)uiG.nick_len)
                 uiG.nick_len = c_strlen (cmd);
-            ContactFindCreate (conn->contacts, 0, cont->uin, cmd);
+            ContactFindCreate (conn->contacts, cont->uin, cmd);
             if (conn->type == TYPE_SERVER)
                 SnacCliAddcontact (conn, cont, NULL);
             else
@@ -2767,7 +2767,7 @@ static JUMP_F(CmdUserAdd)
                          cont2->nick, cont2->uin);
             else
             {
-                if (!(cont2 = ContactFindCreate (conn->contacts, 0, cont->uin, cmd)))
+                if (!(cont2 = ContactFindCreate (conn->contacts, cont->uin, cmd)))
                     rl_print (i18n (2118, "Out of memory.\n"));
                 else
                 {
