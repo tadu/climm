@@ -51,6 +51,7 @@
 static Cap caps[CAP_MAX] =
 {
     { CAP_NONE,        16, cap_none cap_none,                   "CAP_NONE",        NULL },
+    /* AIM capabilities */
     { CAP_AIM_VOICE,   16, cap_aim "\x41" cap_mid cap_id,       "CAP_AIM_VOICE",   NULL },
     { CAP_AIM_SFILE,   16, cap_aim "\x43" cap_mid cap_id,       "CAP_AIM_SFILE",   NULL },
     { CAP_ISICQ,       16, cap_aim "\x44" cap_mid cap_id,       "CAP_ISICQ",       NULL },
@@ -61,13 +62,18 @@ static Cap caps[CAP_MAX] =
     { CAP_SRVRELAY,    16, cap_aim "\x49" cap_mid cap_id,       "CAP_SRVRELAY",    NULL },
     { CAP_AIM_GAMES,   16, cap_aim "\x4a" cap_mid cap_id,       "CAP_AIM_GAMES",   NULL },
     { CAP_AIM_SBUD,    16, cap_aim "\x4b" cap_mid cap_id,       "CAP_AIM_SBUD",    NULL },
+    { CAP_AIM_INTER,   16, cap_aim "\x4d" cap_mid cap_id,       "CAP_AIM_INTER",   NULL },
+    { CAP_AVATAR,      16, cap_aim "\x4c" cap_mid cap_id,       "CAP_AVATAOR",     NULL },
     { CAP_UTF8,        16, cap_aim "\x4e" cap_mid cap_id,       "CAP_UTF8",        NULL },
+    /* ICQ capabilities */
     { CAP_RTFMSGS,     16, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x92", "CAP_RTFMSGS",     NULL },
     { CAP_IS_2001,     16, "\x2e\x7a\x64\x75\xfa\xdf\x4d\xc8\x88\x6f\xea\x35\x95\xfd\xb6\xdf", "CAP_IS_2001",     NULL },
     { CAP_STR_2001,    16, "\xa0\xe9\x3f\x37" cap_mstr cap_str, "CAP_STR_2001",    NULL },
     { CAP_STR_2002,    16, "\x10\xcf\x40\xd1" cap_mstr cap_str, "CAP_STR_2002",    NULL },
     { CAP_AIM_CHAT,    16, "\x74\x8f\x24\x20\x62\x87\x11\xd1" cap_id,                          "CAP_AIM_CHAT",    NULL },
     { CAP_TYPING,      16, "\x56\x3f\xc8\x09\x0b\x6f\x41\xbd\x9f\x79\x42\x26\x09\xdf\xa2\xf3", "CAP_TYPING",      NULL },
+    { CAP_XTRAZ,       16, "\x1a\x09\x3c\x6c\xd7\xfd\x4e\xc5\x9d\x51\xa6\x47\x4e\x34\xf5\xa0", "CAP_XTRAZ", NULL },
+    /* client detection capabilities */
     { CAP_TRILL_CRYPT, 16, "\xf2\xe7\xc7\xf4\xfe\xad\x4d\xfb\xb2\x35\x36\x79\x8b\xdf\x00\x00", "CAP_TRILL_CRYPT", NULL },
     { CAP_TRILL_2,     16, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x09", "CAP_TRILL_2",     NULL },
     { CAP_LICQ,        16, "\x09\x49\x13\x49" cap_mid cap_id,   "CAP_LICQ",        NULL },
@@ -80,15 +86,15 @@ static Cap caps[CAP_MAX] =
     { CAP_KOPETE,      12, "Kopete ICQ  \x00\x00\x00\x00",      "CAP_KOPETE",      NULL },
     { CAP_IMSECURE,    12, "IMsecureCphr\x00\x00\x00\x00",      "CAP_IMSECURE",    NULL },
     { CAP_ARQ,          9, "&RQinside\x00\x00\x00\x00\x00\x00\x00", "CAP_ARQ",     NULL },
-    { CAP_MIRANDA,     12, "MirandaM\x00\x04\x00\x01\x00\x00\x00\x00", "CAP_MIRANDA", NULL },
+    { CAP_MIRANDA,      8, "MirandaM\x00\x00\x00\x00\x00\x00\x00\x00", "CAP_MIRANDA", NULL },
+    { CAP_QIP,         16, "\x56\x3f\xc8\x09\x0b\x6f\x41QIP 2005a", "CAP_QIP",     NULL },
+    { CAP_IM2,         16, "\x74\xed\xc3\x36\x44\xdf\x48\x5b\x8b\x1c\x67\x1a\x1f\x86\x09\x9f", "CAP_IM2", NULL },
+    /* Unknown capabilities */
     { CAP_UTF8ii,      16, cap_aim "\x4e" cap_mid "\x82\x22\x44\x45\x53\x54ii", "CAP_UTF82", NULL },
-    { CAP_AIM_INTER,   16, cap_aim "\x4d" cap_mid cap_id,       "CAP_AIM_INTER",   NULL },
     { CAP_WIERD1,      16, "\x17\x8c\x2d\x9b\xda\xa5\x45\xbb\x8d\xdb\xf3\xbd\xbd\x53\xa1\x0a", "CAP_WIERD1", NULL },
-    { CAP_WIERD2,      16, "\x1a\x09\x3c\x6c\xd7\xfd\x4e\xc5\x9d\x51\xa6\x47\x4e\x34\xf5\xa0", "CAP_WIERD2", NULL },
     { CAP_WIERD3,      16, "\x67\x36\x15\x15\x61\x2d\x4c\x07\x8f\x3d\xbd\xe6\x40\x8e\xa0\x41", "CAP_WIERD3", NULL },
     { CAP_WIERD4,      16, "\xe3\x62\xc1\xe9\x12\x1a\x4b\x94\xa6\x26\x7a\x74\xde\x24\x27\x0d", "CAP_WIERD4", NULL },
     { CAP_WIERD5,      16, "\xb9\x97\x08\xb5\x3a\x92\x42\x02\xb0\x69\xf1\xe7\x57\xbb\x2e\x17", "CAP_WIERD5", NULL },
-    { CAP_WIERD6,      16, "\x09\x46\x13\x4c\x4c\x7f\x11\xd1\x82\x22\x44\x45\x53\x54\x00\x00", "CAP_WIERD6", NULL },
     { CAP_WIERD7,      16, "\xb6\x07\x43\x78\xf5\x0c\x4a\xc7\x90\x92\x59\x38\x50\x2d\x05\x91", "CAP_WIERD7", NULL },
     { CAP_11,          16, "\x01\x01\x01\x01\x01\x01\x19\x04\x4a\x16\xed\x79\x2c\xb1\x71\x01", "CAP_11", NULL },
     { CAP_12,          16, "\x02\x02\x02\x02\x02\x02\xb3\xf8\x53\x44\x7f\x0d\x2d\x83\xbd\x76", "CAP_12", NULL },  

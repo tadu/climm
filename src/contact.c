@@ -53,33 +53,6 @@ static int            cnt_count = 0;
 #define CONTACTGROUP_GLOBAL      (cnt_groups[0])
 #define CONTACTGROUP_NONCONTACTS (cnt_groups[1])
 
-#define BUILD_MIRANDA  0xffffffffUL
-#define BUILD_MOBICQ   0xfffffffeUL
-#define BUILD_STRICQ   0xffffff8fUL
-#define BUILD_YSM      0xffffffabUL
-#define BUILD_ARQ      0xffffff7fUL
-#define BUILD_VICQ     0x04031980UL
-#define BUILD_ALICQ    0xffffffbeUL
-
-#define BUILD_LICQ     0x7d000000UL
-#define BUILD_SSL      0x00800000UL
-
-#define BUILD_TRILLIAN_ID1  0x3b75ac09UL
-#define BUILD_TRILLIAN_ID2  0x3bae70b6UL
-#define BUILD_TRILLIAN_ID3  0x3b744adbUL
-
-#define BUILD_LIBICQ2K_ID1  0x3aa773eeUL
-#define BUILD_LIBICQ2K_ID2  0x3aa66380UL
-#define BUILD_LIBICQ2K_ID3  0x3a877a42UL
-
-#define BUILD_KXICQ_ID1     0x3b4c4c0cUL
-#define BUILD_KXICQ_ID2     0UL
-#define BUILD_KXICQ_ID3     0x3b7248edUL
-
-#define BUILD_KXICQ2_ID1    0x3aa773eeUL
-#define BUILD_KXICQ2_ID2    0x3aa66380UL
-#define BUILD_KXICQ2_ID3    0x3a877a42UL
-
 /*
  * Initializes the contact group table.
  */
@@ -394,7 +367,7 @@ void ContactCreate (Connection *serv, Contact *cont DEBUGPARAM)
 #undef ContactFindCreate
 Contact *ContactFindCreate (ContactGroup *group, UDWORD uin, const char *nick DEBUGPARAM)
 {
-    Contact *cont, *cont2;
+    Contact *cont;
     
     if (!group && !cnt_groups)
         ContactGroupInit ();
@@ -1118,13 +1091,26 @@ void ContactSetCap (Contact *cont, Cap *cap)
         }
     }
     else if (cap->var && (cap->id == CAP_MICQ || cap->id == CAP_SIMNEW
-                       || cap->id == CAP_KOPETE || cap->id == CAP_LICQNEW
-                       || cap->id == CAP_MIRANDA))
+                       || cap->id == CAP_KOPETE || cap->id == CAP_LICQNEW))
     {
         cont->v1 = cap->var[12];
         cont->v2 = cap->var[13];
         cont->v3 = cap->var[14];
         cont->v4 = cap->var[15];
+    }
+    else if (cap->var && (cap->id == CAP_MIRANDA))
+    {
+        cont->v1 = cap->var[8];
+        cont->v2 = cap->var[9];
+        cont->v3 = cap->var[10];
+        cont->v4 = cap->var[11];
+    }
+    else if (cap->var && (cap->id == CAP_ARQ))
+    {
+        cont->v1 = cap->var[9];
+        cont->v2 = cap->var[10];
+        cont->v3 = cap->var[11];
+        cont->v4 = cap->var[12];
     }
     SET_CAP (cont->caps, cap->id);
 }
@@ -1132,6 +1118,25 @@ void ContactSetCap (Contact *cont, Cap *cap)
 /*
  * Guess the contacts client from time stamps.
  */
+#define BUILD_LICQ     0x7d000000UL
+#define BUILD_SSL      0x00800000UL
+
+#define BUILD_TRILLIAN_ID1  0x3b75ac09UL
+#define BUILD_TRILLIAN_ID2  0x3bae70b6UL
+#define BUILD_TRILLIAN_ID3  0x3b744adbUL
+
+#define BUILD_LIBICQ2K_ID1  0x3aa773eeUL
+#define BUILD_LIBICQ2K_ID2  0x3aa66380UL
+#define BUILD_LIBICQ2K_ID3  0x3a877a42UL
+
+#define BUILD_KXICQ_ID1     0x3b4c4c0cUL
+#define BUILD_KXICQ_ID2     0UL
+#define BUILD_KXICQ_ID3     0x3b7248edUL
+
+#define BUILD_KXICQ2_ID1    0x3aa773eeUL
+#define BUILD_KXICQ2_ID2    0x3aa66380UL
+#define BUILD_KXICQ2_ID3    0x3a877a42UL
+
 void ContactSetVersion (Contact *cont)
 {
     char buf[100];
@@ -1156,7 +1161,13 @@ void ContactSetVersion (Contact *cont)
         cont->v1 &= ~0x80;
     }
     else if (HAS_CAP (cont->caps, CAP_SIMNEW))
+    {
         new = "SIM";
+        if (cont->v4 & 0x80)
+            tail = "/w32";
+        else if (cont->v4 & 0x40)
+            tail = "/OSX";
+    }
     else if (HAS_CAP (cont->caps, CAP_LICQNEW))
     {
         new = "licq";
@@ -1183,8 +1194,27 @@ void ContactSetVersion (Contact *cont)
         else
             new = "Kopete";
     }
+    else if (HAS_CAP (cont->caps, CAP_ARQ))
+        new = "&RQ";
     else if ((cont->v1 = cont->v2 = cont->v3 = cont->v4 = 0))
-        new = "err";
+        assert (0);
+    else if (HAS_CAP (cont->caps, CAP_TRILL_CRYPT | CAP_TRILL_2))
+    {
+        if (HAS_CAP (cont->caps, CAP_RTFMSGS))
+            new = "Trillian v3";
+        else
+            new = "Trillian";
+    }
+    else if (HAS_CAP (cont->caps, CAP_LICQ))
+        new = "licq";
+    else if (HAS_CAP (cont->caps, CAP_MACICQ))
+        new = "ICQ for Mac";
+    else if (HAS_CAP (cont->caps, CAP_KXICQ))
+        new = "KXicq2";
+    else if (HAS_CAP (cont->caps, CAP_IM2))
+        new = "IM2";
+    else if (HAS_CAP (cont->caps, CAP_QIP))
+        new = "QIP";
     else if ((dc->id1 & 0xff7f0000UL) == BUILD_LICQ && ver > 1000)
     {
         new = "licq";
@@ -1195,19 +1225,6 @@ void ContactSetVersion (Contact *cont)
         cont->v3 = ver % 10;
         cont->v4 = 0;
     }
-#ifdef WIP
-    else if ((dc->id1 & 0xff7f0000UL) == BUILD_MICQ || (dc->id1 & 0xff7f0000UL) == BUILD_LICQ)
-    {
-        new = "mICQ";
-        cont->v1 = ver / 10000;
-        cont->v2 = (ver / 100) % 100;
-        cont->v3 = (ver / 10) % 10;
-        cont->v4 = ver % 10;
-        if (ver >= 489 && dc->id2)
-            dc->id1 = BUILD_MICQ;
-    }
-#endif
-
     else if ((dc->id1 & 0xffff0000UL) == 0xffff0000UL)
     {
         cont->v1 = (dc->id2 & 0x7f000000) >> 24;
@@ -1216,17 +1233,24 @@ void ContactSetVersion (Contact *cont)
         cont->v4 =  dc->id2 &       0xff;
         switch ((UDWORD)dc->id1)
         {
-            case BUILD_MIRANDA:
-                if (dc->id2 <= 0x00010202 && dc->version >= 8)
-                    dc->version = 7;
-                new = "Miranda";
-                if (dc->id2 & 0x80000000)
-                    tail = " cvs";
+            case 0xffffffffUL:
+                if (((UDWORD)dc->id2) == 0xffffffffUL)
+                    new = "Gaim";
+                else if (!dc->id2 && dc->version == 7)
+                    new = "WebICQ";
+                else
+                {
+                    if (dc->id2 <= 0x00010202 && dc->version >= 8)
+                        dc->version = 7;
+                    new = "Miranda";
+                    if (dc->id2 & 0x80000000)
+                        tail = " cvs";
+                }
                 break;
-            case BUILD_MOBICQ:
+            case 0xfffffffeUL:
                 new = "MobICQ";
                 break;
-            case BUILD_STRICQ:
+            case 0xffffff8fUL:
                 new = "StrICQ";
                 break;
             case BUILD_MICQ:
@@ -1235,15 +1259,15 @@ void ContactSetVersion (Contact *cont)
                 if (dc->id2 & 0x80000000)
                     tail = " cvs";
                 break;
-            case BUILD_YSM:
+            case 0xffffffabUL:
                 new = "YSM";
                 if ((cont->v1 | cont->v2 | cont->v3 | cont->v4) & 0x80)
                     cont->v1 = cont->v2 = cont->v3 = cont->v4 = 0;
                 break;
-            case BUILD_ARQ:
+            case 0xffffff7fUL:
                 new = "&RQ";
                 break;
-            case BUILD_ALICQ:
+            case 0xffffffbeUL:
                 new = "alicq";
                 break;
             default:
@@ -1251,7 +1275,7 @@ void ContactSetVersion (Contact *cont)
                 new = buf;
         }
     }
-    else if (dc->id1 == BUILD_VICQ)
+    else if (dc->id1 == 0x04031980UL)
     {
         cont->v1 = 0;
         cont->v2 = 43;
@@ -1271,7 +1295,12 @@ void ContactSetVersion (Contact *cont)
              dc->id2 == BUILD_LIBICQ2K_ID2 &&
              dc->id3 == BUILD_LIBICQ2K_ID3)
     {
-        new = "libicq2000";
+        if (HAS_CAP (cont->caps, CAP_RTFMSGS))
+            new = "centericq";
+        else if (HAS_CAP (cont->caps, CAP_UTF8))
+            new = "IcyJuice";
+        else
+            new = "libicq2000";
     }
     else if (dc->id1 == BUILD_KXICQ_ID1 &&
              dc->id2 == BUILD_KXICQ_ID2 &&
@@ -1285,39 +1314,57 @@ void ContactSetVersion (Contact *cont)
     {
         new = "KXicq2 > 0.7.6";
     }
-    else if (HAS_CAP (cont->caps, CAP_TRILL_CRYPT | CAP_TRILL_2))
-        new = "Trillian";
-    else if (HAS_CAP (cont->caps, CAP_LICQ))
-        new = "licq";
+    else if (dc->id1 == 0x3FF19BEBUL &&
+             dc->id2 == 0x3FF19BEBUL)
+        new = "IM2";
     else if (dc->id1 == dc->id2 && dc->id2 == dc->id3 && dc->id1 == -1)
         new = "vICQ/GAIM(?)";
+    else if (dc->version == 7 && HAS_CAP (cont->caps, CAP_RTFMSGS))
+        new = "GnomeICU";
+    else if (dc->version == 7 && HAS_CAP (cont->caps, CAP_SRVRELAY))
+        new = "ICQ 2000";
     else if (dc->version == 7 && HAS_CAP (cont->caps, CAP_TYPING))
-        new = "ICQ2go";
-    else if (dc->version == 9 && HAS_CAP (cont->caps, CAP_TYPING))
+        new = "ICQ2go (Java)";
+    else if (dc->version == 8 && HAS_CAP (cont->caps, CAP_STR_2002) && HAS_CAP (cont->caps, CAP_UTF8))
+        new = "ICQ 2002";
+    else if (dc->version == 8 && HAS_CAP (cont->caps, CAP_STR_2001) && HAS_CAP (cont->caps, CAP_IS_2001) && !dc->id1 && !dc->id2 && !dc->id3)
+        new = "ICQ for Pocket PC";
+    else if (dc->version == 8 && HAS_CAP (cont->caps, CAP_STR_2001) && HAS_CAP (cont->caps, CAP_IS_2001))
+        new = "ICQ 2001";
+    else if (dc->version == 8 && HAS_CAP (cont->caps, CAP_SRVRELAY) && HAS_CAP (cont->caps, CAP_RTFMSGS))
+        new = "ICQ 2002/2003a";
+    else if (dc->version == 8 && HAS_CAP (cont->caps, CAP_UTF8) && HAS_CAP (cont->caps, CAP_RTFMSGS))
+        new = "ICQ 2002/2003a";
+    else if (dc->version == 9 && HAS_CAP (cont->caps, CAP_TYPING) && HAS_CAP (cont->caps, CAP_XTRAZ) && HAS_CAP (cont->caps, CAP_AIM_SFILE))
+        new = "ICQ5";
+    else if (dc->version == 9 && HAS_CAP (cont->caps, CAP_TYPING) && HAS_CAP (cont->caps, CAP_XTRAZ))
         new = "ICQ Lite";
     else if (dc->version == 10 && HAS_CAP (cont->caps, CAP_STR_2002) && HAS_CAP (cont->caps, CAP_UTF8))
-        new = "ICQ 2003";
-    else if (HAS_CAP (cont->caps, CAP_STR_2002) && HAS_CAP (cont->caps, CAP_UTF8))
-        new = "ICQ 2002";
-    else if (HAS_CAP (cont->caps, CAP_STR_2001) && HAS_CAP (cont->caps, CAP_IS_2001))
-        new = "ICQ 2001";
-    else if (HAS_CAP (cont->caps, CAP_MACICQ))
-        new = "ICQ for Mac";
-    else if (HAS_CAP (cont->caps, CAP_KXICQ))
-        new = "KXicq2";
+        new = "ICQ 2003b";
+    else if (dc->version == 10 && HAS_CAP (cont->caps, CAP_STR_2002) && HAS_CAP (cont->caps, CAP_RTFMSGS))
+        new = "ICQ 2003b";
+    else if (dc->version == 10 && HAS_CAP (cont->caps, CAP_UTF8))
+        new = "ICQ 2003b (?)";
+    else if (dc->version == 10 && HAS_CAP (cont->caps, CAP_RTFMSGS))
+        new = "ICQ 2003b (?)";
+    else if (dc->version == 10)
+    {
+        CLR_CAP (cont->caps, CAP_SRVRELAY);
+        new = "QNext";
+    }
     else if (HAS_CAP (cont->caps, CAP_AIM_SFILE) && HAS_CAP(cont->caps, CAP_AIM_IMIMAGE)
           && HAS_CAP (cont->caps, CAP_AIM_BUDICON) && HAS_CAP(cont->caps, CAP_UTF8))
         new = "GAIM (ICQ) (?)";
+    else if (dc->version == 9 && HAS_CAP (cont->caps, CAP_TYPING))
+        new = "ICQ Lite (?)";
     else if (dc->version == 8 && HAS_CAP (cont->caps, CAP_UTF8))
         new = "ICQ 2002 (?)";
     else if (dc->version == 8 && HAS_CAP (cont->caps, CAP_IS_2001))
         new = "ICQ 2001 (?)";
+    else if (dc->version == 7)
+        new = "ICQ2go (?)";
     else if (HAS_CAP (cont->caps, CAP_AIM_CHAT))
         new = "AIM(?)";
-    else if (dc->version == 7 && !HAS_CAP (cont->caps, CAP_RTFMSGS))
-        new = "ICQ 2000 (?)";
-    else if (dc->version == 10 && HAS_CAP (cont->caps, CAP_UTF8))
-        new = "ICQ 2003 (?)";
     else if (!dc->version && HAS_CAP (cont->caps, CAP_UTF8))
         new = "ICQ 2002 (?)";
     else if (!dc->version && HAS_CAP (cont->caps, CAP_IS_2001))
@@ -1326,6 +1373,16 @@ void ContactSetVersion (Contact *cont)
         new = "AIM(?)";
     else if (!dc->version && !HAS_CAP (cont->caps, CAP_RTFMSGS))
         new = "ICQ 2000 (?)";
+    else if (dc->version == 8)
+        new = "ICQ 2001 (?)";
+    else if (dc->version == 9)
+        new = "ICQ Lite (??)";
+    else if (dc->version == 6)
+        new = "ICQ99";
+    else if (dc->version == 4)
+        new = "ICQ98";
+    else
+        new = "??";
     
     if (new)
     {
