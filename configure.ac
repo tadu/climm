@@ -22,6 +22,7 @@ AC_DEFINE(MICQ_VERSION,VERSION,[mICQ's current version])
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_RANLIB
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_SYS_LARGEFILE
@@ -36,6 +37,8 @@ AC_ARG_ENABLE([iconvrepl], AC_HELP_STRING([--enable-iconvrepl], [compile in icon
               ac_arg_use_iconvrepl=$enableval, ac_arg_use_iconvrepl=no)
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
+AC_ARG_ENABLE([msn], AC_HELP_STRING([--enable-msn], [enable MSN chat network (not fully implemented)]),
+              ac_arg_use_msn=$enableval, ac_arg_use_msn=auto)
 AC_ARG_ENABLE([tcl], AC_HELP_STRING([--disable-tcl], [disable Tcl scripting]),
               ac_arg_use_tcl=$enableval, ac_arg_use_tcl=auto)
 AC_ARG_ENABLE([ssl], AC_HELP_STRING([--disable-ssl], [disable SSL encryption]),
@@ -275,6 +278,22 @@ else
   ac_arg_use_remote=none
 fi
 
+AC_LANG([C++])
+AC_PROG_CXX
+if test "x$ac_arg_use_msn" = "xyes"; then
+  AC_SUBST(LIBMSN, "libmicqmsn.a", [Static lib to link if MSN is enabled])
+  AC_SUBST(L_LIBMSN, "-L. -lmicqmsn", [Static lib link option to link if MSN is enabled])
+  AC_DEFINE(ENABLE_MSN, 1, [Enable MSN chat network using libmsn])
+  AC_CHECK_HEADERS(sstream,,
+    [AC_CHECK_HEADERS(strstream,,
+        AC_MSG_ERROR([Your libstdc++ doesn't have the sstream or strstream classes]))])
+else
+  ac_arg_use_msn=no
+fi
+AC_LANG([C])
+
+AC_MSG_CHECKING([whether to enable MSN chat network (not fully implemented)])
+AC_MSG_RESULT([$ac_arg_use_msn])
 AC_MSG_CHECKING([whether to enable peer to peer connections])
 AC_MSG_RESULT([$ac_arg_use_dc])
 AC_MSG_CHECKING([whether to enable remote control FIFO])
@@ -457,7 +476,6 @@ else
 fi  
 
 # Optimize.
-
 AC_CACHE_CHECK(checking for variadic macro support, ac_cv_macro_variadic,
   [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#define variadic(a,...) printf (a "bla" , ## __VA_ARGS__) ]],
       [[variadic ("bla\n");                      /* note space before comma ^ to avoid gcc-2.05 bug */
@@ -501,6 +519,8 @@ if test "x$ac_arg_use_autopackage" = xyes; then
             AC_DEFINE(ENABLE_AUTOPACKAGE,1,[Use autopackage to check libraries at run time])
         fi
     fi
+else
+    AC_SUBST(BINRELOC_LIBS,[ ])
 fi
 
 AC_CONFIG_FILES([src/Makefile Makefile lang/Makefile doc/Makefile])

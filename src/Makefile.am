@@ -15,8 +15,12 @@ micq_SOURCES = autopackage_prefix.c conv.c file_util.c icq_response.c micq.c \
        oscar_bos.c oscar_roster.c oscar_oldicq.c oscar_register.c  \
        remote.c os.c util_tcl.c util_ssl.c im_icq8.c buildmark.c
 
-micq_LDADD = @LIBOBJS@ @LIBICONV@ @BINRELOC_LIBS@
-$(micq_SOURCES): @LIBOBJS@
+EXTRA_LIBRARIES = libmicqmsn.a
+noinst_LIBRARIES = @LIBMSN@
+libmicqmsn_a_SOURCES = msn_base.cpp
+
+micq_LDADD = @LIBOBJS@ @LIBICONV@ @BINRELOC_LIBS@ @L_LIBMSN@
+$(micq_SOURCES): @LIBOBJS@ @LIBMSN@
 
 snprintf.o: snprintf.c
 snprintf.c: snprintf.h
