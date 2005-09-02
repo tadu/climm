@@ -54,6 +54,7 @@ static void SnacCallbackType2Ack (Event *event);
 static void SnacCallbackType2 (Event *event);
 static void SnacCallbackIgnore (Event *event);
 
+#define PEEK_REFID 0x0dedbeef
 
 /*
  * SRV_ICBMERR - SNAC(4,1)
@@ -63,7 +64,7 @@ JUMP_SNAC_F(SnacSrvIcbmerr)
     Connection *serv = event->conn;
     UWORD err = PacketReadB2 (event->pak);
 
-    if ((event->pak->ref & 0xffff) == 0x1771 && (err == 0xe || err == 4 || err == 9))
+    if ((event->pak->ref == PEEK_REFID) && (err == 0xe || err == 4 || err == 9))
     {
         if (err == 0xe || err == 9)
             rl_print (i18n (2017, "The user is online, but possibly invisible.\n"));
@@ -407,9 +408,8 @@ UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Opt *opt)
     if (opt_type == MSG_GET_PEEK)
     {
         peek = 1;
-        opt_type = MSG_GET_AWAY;
+        opt_type = MSG_GET_AWAY | MSGF_GETAUTO;
     }
-    
     
     if (!cont || !(peek || (opt_type & 0xff) == MSG_GET_VER || opt_force ||
         (HAS_CAP (cont->caps, CAP_SRVRELAY) && HAS_CAP (cont->caps, CAP_ISICQ))))
@@ -432,7 +432,7 @@ UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Opt *opt)
     
     OptSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_TYPE2);
 
-    pak = SnacC (serv, 4, 6, 0, peek ? 0x1771 : 0);
+    pak = SnacC (serv, 4, 6, 0, peek ? PEEK_REFID : 0);
     PacketWriteB4 (pak, mtime);
     PacketWriteB4 (pak, mid);
     PacketWriteB2 (pak, 2);
@@ -781,7 +781,7 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
             break;
         case 2: /* msg was received by server */
             event2 = QueueDequeue (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref);
-            if ((pak->ref & 0xffff) == 0x1771)
+            if (pak->ref == PEEK_REFID)
             {
                 rl_print (i18n (2573, "The user is probably offline.\n"));
                 return;
