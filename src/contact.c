@@ -1376,7 +1376,7 @@ void ContactSetVersion (Contact *cont)
     else if (dc->version == 8)
         new = "ICQ 2001 (?)";
     else if (dc->version == 9)
-        new = "ICQ Lite (??)";
+        new = "ICQ Lite (""?""?)";
     else if (dc->version == 6)
         new = "ICQ99";
     else if (dc->version == 4)
