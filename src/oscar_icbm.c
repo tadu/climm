@@ -245,8 +245,9 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
             remenc = ContactPrefVal (cont, CO_ENCODING);
             
             if (cont->status != STATUS_OFFLINE &&
-                HAS_CAP (cont->caps, CAP_UTF8) && cont->dc && cont->dc->version >= 7
-                && !(cont->dc->id1 == (time_t)0xffffff42 && (cont->dc->id2 & 0x7fffffff) < (time_t)0x00040a03)) /* exclude old mICQ */
+                HAS_CAP (cont->caps, CAP_UTF8) &&
+                !(cont->dc && cont->dc->id1 == (time_t)0xffffff42 &&
+                  (cont->dc->id2 & 0x7fffffff) < (time_t)0x00040c00)) /* exclude old mICQ */
             {
                 enc = ENC_UCS2BE;
                 icqenc = 2;
