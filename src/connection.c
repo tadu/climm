@@ -301,6 +301,10 @@ void ConnectionD (Connection *conn DEBUGPARAM)
 const char *ConnectionType (Connection *conn)
 {
     switch (conn->type) {
+        case TYPE_MSN_SERVER:
+            return i18n (9999, "msn server");
+        case TYPE_MSN_CHAT:
+            return i18n (9999, "msn chat");
         case TYPE_SERVER:
             return i18n (1889, "server");
         case TYPE_SERVER_OLD:

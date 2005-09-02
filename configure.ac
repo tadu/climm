@@ -282,7 +282,7 @@ AC_LANG([C++])
 AC_PROG_CXX
 if test "x$ac_arg_use_msn" = "xyes"; then
   AC_SUBST(LIBMSN, "libmicqmsn.a", [Static lib to link if MSN is enabled])
-  AC_SUBST(L_LIBMSN, "-L. -lmicqmsn", [Static lib link option to link if MSN is enabled])
+  AC_SUBST(L_LIBMSN, "-L. -lmicqmsn -lmsn -lstdc++", [Static lib link option to link if MSN is enabled])
   AC_DEFINE(ENABLE_MSN, 1, [Enable MSN chat network using libmsn])
   AC_CHECK_HEADERS(sstream,,
     [AC_CHECK_HEADERS(strstream,,

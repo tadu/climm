@@ -44,6 +44,7 @@
 #include "connection.h"
 #include "util_parse.h"
 #include "util_rl.h"
+#include "msn_base.h"
 
 /****/
 
@@ -940,6 +941,8 @@ int Read_RC_File (FILE *rcf)
                         conn->type = TYPE_SERVER;
                     else if (!strcasecmp (cmd, "icq5"))
                         conn->type = TYPE_SERVER_OLD;
+                    else if (!strcasecmp (cmd, "msn"))
+                        conn->type = TYPE_MSN_SERVER;
                     else if (!strcasecmp (cmd, "peer"))
                     {
                         conn->type = TYPE_MSGLISTEN;
@@ -1030,6 +1033,7 @@ int Read_RC_File (FILE *rcf)
                         
                         if      (!strncmp (cg->name + 9, "icq5-", 5)) type = TYPE_SERVER_OLD;
                         else if (!strncmp (cg->name + 9, "icq8-", 5)) type = TYPE_SERVER;
+                        else if (!strncmp (cg->name + 9, "msn-", 4))  type = TYPE_MSN_SERVER;
                         
                         if (type)
                         {
@@ -1068,6 +1072,7 @@ int Read_RC_File (FILE *rcf)
                     PrefParse (tmp);
                     if      (!strcasecmp (tmp, "icq5")) type = TYPE_SERVER_OLD;
                     else if (!strcasecmp (tmp, "icq8")) type = TYPE_SERVER;
+                    else if (!strcasecmp (tmp, "msn"))  type = TYPE_MSN_SERVER;
                     else
                         ERROR;
                     
@@ -1125,6 +1130,11 @@ int Read_RC_File (FILE *rcf)
             case TYPE_SERVER_OLD:
                 conn->open = &ConnectionInitServerV5;
                 break;
+#ifdef ENABLE_MSN
+            case TYPE_MSN_SERVER:
+                conn->open = &ConnectionInitMSNServer;
+                break;
+#endif
 #ifdef ENABLE_PEER2PEER
             case TYPE_MSGLISTEN:
                 conn->open = &ConnectionInitPeer;
@@ -1143,7 +1153,7 @@ int Read_RC_File (FILE *rcf)
         }
         if (format < 2 && !conn->contacts && conn->type & TYPEF_SERVER)
         {
-            conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin));
+            conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : conn->type == TYPE_SERVER_OLD ? "icq5" : "msn", conn->uin));
             for (i = 0; (cont = ContactIndex (NULL, i)); i++)
                 ContactFindCreate (cg, cont->uin, cont->nick);
             dep = 21;
@@ -1262,6 +1272,7 @@ void PrefReadStat (FILE *stf)
                         
                         if      (!strncmp (cg->name + 9, "icq5-", 5)) type = TYPE_SERVER_OLD;
                         else if (!strncmp (cg->name + 9, "icq8-", 5)) type = TYPE_SERVER;
+                        else if (!strncmp (cg->name + 9, "msn-", 4))  type = TYPE_MSN_SERVER;
                         else
                             break;
                         
@@ -1296,6 +1307,7 @@ void PrefReadStat (FILE *stf)
                     PrefParse (cmd);
                     if      (!strcasecmp (cmd, "icq5")) type = TYPE_SERVER_OLD;
                     else if (!strcasecmp (cmd, "icq8")) type = TYPE_SERVER;
+                    else if (!strcasecmp (cmd, "msn"))  type = TYPE_MSN_SERVER;
                     else
                         ERROR;
                     
@@ -1396,6 +1408,7 @@ void PrefReadStat (FILE *stf)
                     PrefParse (cmd);
                     if      (!strcasecmp (cmd, "icq5")) type = TYPE_SERVER_OLD;
                     else if (!strcasecmp (cmd, "icq8")) type = TYPE_SERVER;
+                    else if (!strcasecmp (cmd, "msn"))  type = TYPE_MSN_SERVER;
                     else
                         ERROR;
                     
@@ -1405,7 +1418,7 @@ void PrefReadStat (FILE *stf)
                         ERROR;
                     if (!conn->contacts)
                     {
-                        conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin));
+                        conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : conn->type == TYPE_SERVER_OLD ? "icq5" : "msn", conn->uin));
                         OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
                         conn->contacts->serv = conn;
                     }
@@ -1450,7 +1463,7 @@ void PrefReadStat (FILE *stf)
         {
             if (!conn->contacts)
             {
-                conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : "icq5", conn->uin));
+                conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", conn->type == TYPE_SERVER ? "icq8" : conn->type == TYPE_SERVER_OLD ? "icq5" : "msn", conn->uin));
                 OptSetVal (&cg->copts, CO_IGNORE, 0);
                 dep = 21;
             }
@@ -1516,11 +1529,11 @@ int PrefWriteStatusFile (void)
     {
         if (!ss->flags || !ss->uin)
             continue;
-        if (ss->type != TYPE_SERVER && ss->type != TYPE_SERVER_OLD)
+        if (ss->type != TYPE_SERVER && ss->type != TYPE_SERVER_OLD && ss->type != TYPE_MSN_SERVER)
             continue;
 
         fprintf (stf, "[Contacts]\n");
-        fprintf (stf, "server %s %ld\n", ss->type == TYPE_SERVER ? "icq8" : "icq5", ss->uin);
+        fprintf (stf, "server %s %ld\n", ss->type == TYPE_SERVER ? "icq8" : ss->type == TYPE_SERVER_OLD ? "icq5" : "msn", ss->uin);
         fprintf (stf, "%s\n", OptString (&ss->contacts->copts));
 
         for (i = 0; (cont = ContactIndex (0, i)); i++)
@@ -1544,7 +1557,8 @@ int PrefWriteStatusFile (void)
             continue;
 
         fprintf (stf, "\n[Group]\n");
-        fprintf (stf, "server %s %ld\n", cg->serv->type == TYPE_SERVER ? "icq8" : "icq5", cg->serv->uin);
+        fprintf (stf, "server %s %ld\n", cg->serv->type == TYPE_SERVER ? "icq8" : 
+                                         cg->serv->type == TYPE_SERVER_OLD ? "icq5" : "msn", cg->serv->uin);
         fprintf (stf, "label %s\n", s_quote (cg->name));
         fprintf (stf, "id %d\n", cg->id);
         fprintf (stf, "%s", OptString (&cg->copts));
@@ -1634,6 +1648,7 @@ int PrefWriteConfFile (void)
         fprintf (rcf, "[Connection]\n");
         fprintf (rcf, "type %s%s\n",  ss->type == TYPE_SERVER     ? "icq8" :
                                       ss->type == TYPE_SERVER_OLD ? "icq5" :
+                                      ss->type == TYPE_MSN_SERVER ? "msn"  :
                                       ss->type == TYPE_MSGLISTEN  ? "peer" : "remote",
                                       ss->flags & CONN_AUTOLOGIN ? " auto" : "");
         fprintf (rcf, "version %d\n", ss->version);
