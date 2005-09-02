@@ -577,7 +577,7 @@ static JUMP_F(CmdUserHelp)
             CMD_USER_HELP  ("auto <status> <message>", i18n (1425, "Sets the message to send as an auto reply for the status."));
         }
         else if (!strcasecmp (par->txt, "alias"))
-            CMD_USER_HELP  ("alias [<alias> [<expansion>]]", i18n (2300, "Set an alias or list current aliases."));
+            CMD_USER_HELP  ("alias [auto[expand]] [<alias> [<expansion>]]", i18n (2300, "Set an alias or list current aliases."));
         else if (!strcasecmp (par->txt, "unalias"))
             CMD_USER_HELP  ("unalias <alias>", i18n (2301, "Delete an alias."));
         else if (!strcasecmp (par->txt, "lang"))
@@ -1674,7 +1674,7 @@ static JUMP_F(CmdUserStatusDetail)
                 ContactIDs *ids;
                 rl_printf ("    %s %u", i18n (2577, "SBL ids:"), cont->group ? cont->group->id : 0);
                 for (ids = cont->ids; ids; ids = ids->next)
-                    rl_printf (", %u: %u / %u / %u", ids->type, ids->id, ids->tag, ids->issbl);
+                    rl_printf (", %u: %u/%u/%u", ids->type, ids->id, ids->tag, ids->issbl);
                 rl_printf ("\n");
                 
             }
@@ -4546,7 +4546,11 @@ void CmdUserCallbackTodo (Event *event)
         tconn = conn;
         conn = event->conn;
         while ((par = s_parse (&args)))
-            CmdUser (par->txt);
+        {
+            char *cmd = strdup (par->txt);
+            CmdUser (cmd);
+            s_free (cmd);
+        }
         conn = tconn;
     }
     EventD (event);
