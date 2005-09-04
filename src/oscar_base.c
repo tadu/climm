@@ -610,6 +610,7 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
         new->pref_passwd  = strdup (pass);
         new->flags |= CONN_AUTOLOGIN;
     }
+    s_repl (&new->screen, "0");
     new->server = strdup (new->pref_server);
     new->port = new->pref_port;
     new->passwd = strdup (pass);

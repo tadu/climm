@@ -93,6 +93,7 @@ struct Contact_s
 {
     ContactGroup *group;
     char  *nick;
+    char  *screen;
     UDWORD uin;
     UDWORD status;
     UDWORD oldflags;

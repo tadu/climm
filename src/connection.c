@@ -114,6 +114,7 @@ Connection *ConnectionClone (Connection *conn, UWORD type DEBUGPARAM)
     child->parent = conn;
     child->cont   = conn->cont;
     child->flags  = 0;
+    child->screen = strdup (conn->screen ? conn->screen : "child");
     
     Debug (DEB_CONNECT, "<=*= %p (%s) clone from %p (%s)", child, ConnectionType (child), conn, ConnectionType (conn));
 

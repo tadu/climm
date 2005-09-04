@@ -67,6 +67,7 @@ Connection *PrefNewConnection (UDWORD uin, const char *passwd)
     conn->pref_status = STATUS_ONLINE;
     conn->version = 8;
     conn->uin = uin;
+    s_repl (&conn->screen, s_sprintf ("%lu", uin));
 #ifdef __BEOS__
     conn->pref_passwd = passwd ? strdup (passwd) : NULL;
 #endif
@@ -998,6 +999,12 @@ int Read_RC_File (FILE *rcf)
                 {
                     PrefParseInt (i);
                     conn->uin = i;
+                    s_repl (&conn->screen, s_sprintf ("%lu", i));
+                }
+                else if (!strcasecmp (cmd, "screen"))
+                {
+                    PrefParse (tmp);
+                    s_repl (&conn->screen, tmp);
                 }
                 else if (!strcasecmp (cmd, "password"))
                 {
@@ -1529,7 +1536,7 @@ int PrefWriteStatusFile (void)
     {
         if (!ss->flags || !ss->uin)
             continue;
-        if (ss->type != TYPE_SERVER && ss->type != TYPE_SERVER_OLD && ss->type != TYPE_MSN_SERVER)
+        if (ss->type != TYPE_SERVER && ss->type != TYPE_SERVER_OLD)
             continue;
 
         fprintf (stf, "[Contacts]\n");
@@ -1641,6 +1648,7 @@ int PrefWriteConfFile (void)
             continue;
         if ((!ss->uin && ss->type == TYPE_SERVER)
             || (ss->type != TYPE_SERVER && ss->type != TYPE_SERVER_OLD
+                && ss->type != TYPE_MSN_SERVER
                 && ss->type != TYPE_MSGLISTEN && ss->type != TYPE_REMOTE)
             || (ss->type == TYPE_MSGLISTEN && ss->parent && !ss->parent->uin))
             continue;

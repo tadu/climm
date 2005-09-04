@@ -242,6 +242,7 @@ static Contact *ContactC (UWORD id, UDWORD uin, const char *nick DEBUGPARAM)
     cont->status = STATUS_OFFLINE;
     
     s_repl (&cont->nick, nick ? nick : s_sprintf ("%ld", uin));
+    s_repl (&cont->screen, nick ? nick : s_sprintf ("%ld", uin));
 
     Debug (DEB_CONTACT, "new   #%d %ld '%s' %p", id, uin, nick, cont);
     ContactAdd (CONTACTGROUP_GLOBAL, cont);

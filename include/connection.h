@@ -30,6 +30,7 @@ struct Connection_s
     UBYTE     flags;          /* connection flags                         */
     UBYTE     version;        /* protocol version in this session         */
     UDWORD    uin;            /* the uin of this server connection        */
+    char     *screen;
     UDWORD    pref_status;
     char     *pref_server;
     UDWORD    pref_port;
