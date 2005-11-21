@@ -54,6 +54,7 @@ struct OptEntry_s OptList[] = {
   { "logmess",       CO_LOGMESS       },
   { "showonoff",     CO_SHOWONOFF     },
   { "showchange",    CO_SHOWCHANGE    },
+  { "autoauto",      CO_AUTOAUTO      },
   { "hideack",       CO_HIDEACK       },
   { "wantsbl",       CO_WANTSBL       },
   { "obeysbl",       CO_OBEYSBL       },

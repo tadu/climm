@@ -77,6 +77,21 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
             cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
             cont->dc->type);
     }
+
+    if (ContactPrefVal (cont, CO_AUTOAUTO))
+    {
+        int cdata = 0;
+
+        if      (cont->status  & STATUSF_DND)    cdata = MSGF_GETAUTO | MSG_GET_DND;
+        else if (cont->status  & STATUSF_OCC)    cdata = MSGF_GETAUTO | MSG_GET_OCC;
+        else if (cont->status  & STATUSF_NA)     cdata = MSGF_GETAUTO | MSG_GET_NA;
+        else if (cont->status  & STATUSF_AWAY)   cdata = MSGF_GETAUTO | MSG_GET_AWAY;
+        else if (cont->status  & STATUSF_FFC)    cdata = MSGF_GETAUTO | MSG_GET_FFC;
+
+        if (cdata)
+            IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, cdata, CO_MSGTEXT, "\xff", CO_FORCE, 1, 0));
+    }
+
     TCLEvent (cont, "status", s_status (status));
 }
 

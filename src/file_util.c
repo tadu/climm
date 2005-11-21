@@ -255,6 +255,7 @@ void Initialize_RC_File ()
     OptSetVal (&prG->copts, CO_LOGCHANGE,  1);
     OptSetVal (&prG->copts, CO_SHOWONOFF,  1);
     OptSetVal (&prG->copts, CO_SHOWCHANGE, 1);
+    OptSetVal (&prG->copts, CO_AUTOAUTO,   0);
     OptSetVal (&prG->copts, CO_WANTSBL,    1);
     OptSetVal (&prG->copts, CO_REVEALTIME, 600);
 

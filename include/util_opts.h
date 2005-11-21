@@ -73,6 +73,7 @@ extern struct OptEntry_s OptList[];
 #define CO_LOCAL         (COF_BOOL    | CO_CONTACT | 0x004002UL) /* do not request status changes for this */
 #define CO_HIDEACK       (COF_BOOL    | CO_CONTACT | 0x010002UL) /* hide when message acknowledge arrives  */
 #define CO_TALKEDTO      (COF_BOOL    | CO_CONTACT | 0x040002UL) /* sent a msg to this contact yet         */
+#define CO_AUTOAUTO      (COF_BOOL    | CO_CONTACT | 0x100002UL) /* autogetauto on status change */
 
 #define CO_WEBAWARE      (COF_BOOL    | CO_GROUP   | 0x000103UL) /* this connection is webaware           */
 #define CO_HIDEIP        (COF_BOOL    | CO_GROUP   | 0x000403UL) /* this connection hides its LAN ip      */
