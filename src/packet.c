@@ -68,8 +68,8 @@ static Cap caps[CAP_MAX] =
     /* ICQ capabilities */
     { CAP_RTFMSGS,     16, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x92", "CAP_RTFMSGS",     NULL },
     { CAP_IS_2001,     16, "\x2e\x7a\x64\x75\xfa\xdf\x4d\xc8\x88\x6f\xea\x35\x95\xfd\xb6\xdf", "CAP_IS_2001",     NULL },
-    { CAP_STR_2001,    16, "\xa0\xe9\x3f\x37" cap_mstr cap_str, "CAP_STR_2001",    NULL },
-    { CAP_STR_2002,    16, "\x10\xcf\x40\xd1" cap_mstr cap_str, "CAP_STR_2002",    NULL },
+    { CAP_STR_2001,    16, "\xa0\xe9\x3f\x37" cap_mstr cap_str, "CAP_STR_2001",    NULL }, /* PSIG_INFO_PLUGIN_s   PMSG_QUERY_INFO_s */
+    { CAP_STR_2002,    16, "\x10\xcf\x40\xd1" cap_mstr cap_str, "CAP_STR_2002",    NULL }, /* PSIG_STATUS_PLUGIN_s PMSG_QUERY_STATUS_s */
     { CAP_AIM_CHAT,    16, "\x74\x8f\x24\x20\x62\x87\x11\xd1" cap_id,                          "CAP_AIM_CHAT",    NULL },
     { CAP_TYPING,      16, "\x56\x3f\xc8\x09\x0b\x6f\x41\xbd\x9f\x79\x42\x26\x09\xdf\xa2\xf3", "CAP_TYPING",      NULL },
     { CAP_XTRAZ,       16, "\x1a\x09\x3c\x6c\xd7\xfd\x4e\xc5\x9d\x51\xa6\x47\x4e\x34\xf5\xa0", "CAP_XTRAZ", NULL },
@@ -296,6 +296,19 @@ void PacketWriteLNTS (Packet *pak, const char *data)
     PacketWrite1 (pak, 0);
 }
 
+void PacketWriteLNTS2 (Packet *pak, str_t text)
+{
+    int len = text ? text->len : 0;
+    char *data = text ? text->txt : "";
+
+    assert (pak);
+    assert (pak->wpos + 3 + len < PacketMaxData);
+    
+    PacketWrite2 (pak, len + 1);
+    PacketWriteData (pak, data, len);
+    PacketWrite1 (pak, 0);
+}
+
 void PacketWriteDLStr (Packet *pak, const char *data)
 {
     data = data ? data : "";
@@ -324,7 +337,7 @@ void PacketWriteCont (Packet *pak, Contact *cont)
 {
     const char *str;
     
-    str = s_sprintf ("%ld", cont->uin);
+    str = cont->screen ? cont->screen : s_sprintf ("%ld", cont->uin);
     PacketWrite1 (pak, strlen (str));
     PacketWriteData (pak, str, strlen (str));
 }

@@ -82,6 +82,8 @@ typedef struct Preferences_s  Preferences;
 typedef struct Cap_s          Cap;
 typedef struct Extra_s        Extra;
 
+typedef void MSN_Handle;
+
 #include "datatype.h"
 #include <stdlib.h>
 #ifdef HAVE_STRING_H

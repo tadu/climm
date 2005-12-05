@@ -638,7 +638,13 @@ int main (int argc, char *argv[])
             if (conn->sok < 0 || !conn->dispatch
                 || !UtilIOSelectIs (conn->sok, READFDS | WRITEFDS | EXCEPTFDS))
                 continue;
-            conn->dispatch (conn);
+            if (conn->dispatch)
+                conn->dispatch (conn);
+            else
+            {
+                printf ("FIXME: avoid spinning.\n");
+                conn->connect &= ~(CONNECT_SELECT_R | CONNECT_SELECT_W | CONNECT_SELECT_X);
+            }
         }
 
         QueueRun ();

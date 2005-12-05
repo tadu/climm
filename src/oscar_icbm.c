@@ -54,7 +54,7 @@ static void SnacCallbackType2Ack (Event *event);
 static void SnacCallbackType2 (Event *event);
 static void SnacCallbackIgnore (Event *event);
 
-#define PEEK_REFID 0x0dedbeef
+#define PEEK_REFID 0x3d1db11f
 
 /*
  * SRV_ICBMERR - SNAC(4,1)
@@ -447,6 +447,7 @@ UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Opt *opt)
      PacketWriteCapID   (pak, peek ? CAP_NONE : CAP_SRVRELAY);
      PacketWriteTLV2    (pak, 10, 1);
      PacketWriteB4      (pak, 0x000f0000); /* empty TLV(15) */
+     if (!peek) {
      PacketWriteTLV     (pak, 10001);
       PacketWriteLen     (pak);
        PacketWrite2       (pak, serv->assoc && serv->assoc->connect & CONNECT_OK
@@ -455,16 +456,33 @@ UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Opt *opt)
        PacketWrite2       (pak, 0);
        PacketWrite4       (pak, 3);
        PacketWrite1       (pak, 0);
-       PacketWrite2       (pak, serv->our_seq_dc);
+       PacketWrite2       (pak, peek ? 0 : serv->our_seq_dc);
       PacketWriteLenDone (pak);
-      SrvMsgAdvanced     (pak, serv->our_seq_dc, opt_type, serv->status, cont->status, -1, c_out_for (opt_text, cont, opt_type));
-      PacketWrite4       (pak, TCP_COL_FG);
-      PacketWrite4       (pak, TCP_COL_BG);
-      if (CONT_UTF8 (cont, opt_type))
-          PacketWriteDLStr     (pak, CAP_GID_UTF8);
+      if (peek)
+      {
+          PacketWriteLen    (pak);
+           PacketWrite2      (pak, serv->our_seq_dc);       /* sequence number */
+           PacketWrite4      (pak, 0);
+           PacketWrite4      (pak, 0);
+           PacketWrite4      (pak, 0);
+          PacketWriteLenDone (pak);
+          PacketWrite2      (pak, MSG_GET_DND | MSGF_GETAUTO);    /* message type    */
+          PacketWrite2      (pak, 0);     /* status          */
+          PacketWrite2      (pak, 0);      /* flags           */
+          PacketWrite2      (pak, 0x7fff);
+          PacketWrite1      (pak, 0);
+      }
+      else
+      {
+          SrvMsgAdvanced     (pak, serv->our_seq_dc, opt_type, serv->status, cont->status, -1, c_out_for (opt_text, cont, opt_type));
+          PacketWrite4       (pak, TCP_COL_FG);
+          PacketWrite4       (pak, TCP_COL_BG);
+          if (CONT_UTF8 (cont, opt_type))
+              PacketWriteDLStr     (pak, CAP_GID_UTF8);
+      }
      PacketWriteTLVDone (pak);
+     }
     PacketWriteTLVDone (pak);
-    PacketWriteB4      (pak, 0x00030000); /* empty TLV(3) */
     
     if (peek)
     {    
@@ -474,6 +492,7 @@ UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Opt *opt)
     }
     else
     {
+        PacketWriteB4      (pak, 0x00030000); /* empty TLV(3) */
         QueueEnqueueData (serv, QUEUE_TYPE2_RESEND, serv->our_seq_dc,
                           time (NULL), pak, cont, opt, &SnacCallbackType2);
     }

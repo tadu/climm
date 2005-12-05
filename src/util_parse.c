@@ -138,6 +138,14 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
     }
     p = *input;
 
+    if (serv->type == TYPE_MSN_SERVER && !strncasecmp (p, "MSN:", 4))
+    {
+        p += 4;
+        t = s_parse (&p);
+        *input = p;
+        return t ? ContactFindCreate (serv->contacts, 0, t->txt) : NULL;
+    }
+
     if (strchr ("0123456789", *p))
     {
         l = 0;

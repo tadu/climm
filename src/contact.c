@@ -230,7 +230,7 @@ Contact *ContactIndex (ContactGroup *group, int i)
     return group->contacts[i];
 }
 
-static Contact *ContactC (UWORD id, UDWORD uin, const char *nick DEBUGPARAM)
+static Contact *ContactC (Connection *serv, UDWORD uin, const char *nick DEBUGPARAM)
 {
     Contact *cont;
 
@@ -242,9 +242,9 @@ static Contact *ContactC (UWORD id, UDWORD uin, const char *nick DEBUGPARAM)
     cont->status = STATUS_OFFLINE;
     
     s_repl (&cont->nick, nick ? nick : s_sprintf ("%ld", uin));
-    s_repl (&cont->screen, nick ? nick : s_sprintf ("%ld", uin));
+    s_repl (&cont->screen, nick && serv->type != TYPE_SERVER ? nick : s_sprintf ("%ld", uin));
 
-    Debug (DEB_CONTACT, "new   #%d %ld '%s' %p", id, uin, nick, cont);
+    Debug (DEB_CONTACT, "new  %p %ld '%s' '%s' %p", cont, uin, cont->screen, cont->nick, cont);
     ContactAdd (CONTACTGROUP_GLOBAL, cont);
     return cont;
 }
@@ -253,21 +253,21 @@ static Contact *ContactC (UWORD id, UDWORD uin, const char *nick DEBUGPARAM)
  * Finds a contact for a connection
  */
 #undef ContactScreen
-Contact *ContactScreen (Connection *conn, const char *screen DEBUGPARAM)
+Contact *ContactScreen (Connection *serv, const char *screen DEBUGPARAM)
 {
     Contact *cont;
     UDWORD uin = atoi (screen);
     
-    if (!conn || !conn->contacts || !uin)
+    if (!serv || !serv->contacts || !uin)
         return NULL;
 
     if (!cnt_groups)
         ContactGroupInit ();
 
-    if (uin && (cont = ContactFind (conn->contacts, 0, uin, NULL)))
+    if (uin && (cont = ContactFind (serv->contacts, 0, uin, NULL)))
         return cont;
     
-    if ((cont = ContactFind (conn->contacts, 0, uin, screen)))
+    if ((cont = ContactFind (serv->contacts, 0, uin, screen)))
         return cont;
     
     if (uin && (cont = ContactFind (CONTACTGROUP_NONCONTACTS, 0, uin, NULL)))
@@ -276,7 +276,7 @@ Contact *ContactScreen (Connection *conn, const char *screen DEBUGPARAM)
     if ((cont = ContactFind (CONTACTGROUP_NONCONTACTS, 0, uin, screen)))
         return cont;
 
-    if (!(cont = ContactC (0, uin, screen DEBUGFOR)))
+    if (!(cont = ContactC (serv, uin, screen DEBUGFOR)))
         return NULL;
 
     ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
@@ -287,23 +287,23 @@ Contact *ContactScreen (Connection *conn, const char *screen DEBUGPARAM)
  * Finds a contact for a connection
  */
 #undef ContactUIN
-Contact *ContactUIN (Connection *conn, UDWORD uin DEBUGPARAM)
+Contact *ContactUIN (Connection *serv, UDWORD uin DEBUGPARAM)
 {
     Contact *cont;
     
-    if (!conn || !conn->contacts || !uin)
+    if (!serv || !serv->contacts || !uin)
         return NULL;
 
     if (!cnt_groups)
         ContactGroupInit ();
 
-    if ((cont = ContactFind (conn->contacts, 0, uin, NULL)))
+    if ((cont = ContactFind (serv->contacts, 0, uin, NULL)))
         return cont;
     
     if ((cont = ContactFind (CONTACTGROUP_NONCONTACTS, 0, uin, NULL)))
         return cont;
 
-    if (!(cont = ContactC (0, uin, NULL DEBUGFOR)))
+    if (!(cont = ContactC (serv, uin, NULL DEBUGFOR)))
         return NULL;
 
     ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
@@ -339,7 +339,7 @@ Contact *ContactFind (ContactGroup *group, UWORD id, UDWORD uin, const char *nic
                 if (!ids)
                     continue;
             }
-            if (!nick || !strcmp (nick, cont->nick))
+            if (!nick || !strcmp (nick, cont->screen) || !strcmp (nick, cont->nick))
                 return cont;
             for (ca = cont->alias; ca; ca = ca->more)
                 if (!strcmp (nick, ca->alias))
@@ -373,7 +373,7 @@ Contact *ContactFindCreate (ContactGroup *group, UDWORD uin, const char *nick DE
     if (!group && !cnt_groups)
         ContactGroupInit ();
 
-    assert (uin);
+    assert (uin || (group->serv->type != TYPE_SERVER));
     assert (group);
 
     if ((cont = ContactFind (group, 0, uin, NULL)))
@@ -395,7 +395,7 @@ Contact *ContactFindCreate (ContactGroup *group, UDWORD uin, const char *nick DE
         return cont;
     }
     
-    if (!(cont = ContactC (0, uin, nick DEBUGFOR)))
+    if (!(cont = ContactC (group->serv, uin, nick DEBUGFOR)))
         return NULL;
 
     if (nick)

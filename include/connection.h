@@ -106,6 +106,7 @@ Connection    *ConnectionFind    (UWORD type, const Contact *cont, const Connect
 Connection    *ConnectionFindUIN (UWORD type, UDWORD uin);
 UDWORD         ConnectionFindNr  (Connection *conn);
 const char    *ConnectionType    (Connection *conn);
+const char    *ConnectionServerType (Connection *conn);
 val_t          ConnectionPrefVal (Connection *conn, UDWORD flag);
 
 #define ConnectionC(t)       ConnectionC (t DEBUGARGS)
@@ -141,7 +142,7 @@ val_t          ConnectionPrefVal (Connection *conn, UDWORD flag);
 #define TYPEF_ANY_CHAT    256  /* " && for chat          */
 #define TYPEF_FILE        512  /* any file io            */
 #define TYPEF_REMOTE     1024  /* remote control (socket)*/
-#define TYPEF_MSN_SRV    2048  /* MSN: server connection */
+#define TYPEF_MSN        2048  /* MSN: connection        */
 #define TYPEF_MSN_CHAT   4096  /* MSN: chat connection   */
 
 /* any conn->type may be only any of those values:
@@ -157,8 +158,9 @@ val_t          ConnectionPrefVal (Connection *conn, UDWORD flag);
 #define TYPE_CHATDIRECT   (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_DIRECT)
 #define TYPE_FILE         TYPEF_FILE
 #define TYPE_REMOTE       TYPEF_REMOTE
-#define TYPE_MSN_SERVER   (TYPEF_ANY_SERVER | TYPEF_MSN_SRV)
-#define TYPE_MSN_CHAT     (TYPEF_ANY_SERVER | TYPEF_MSN_CHAT)
+#define TYPE_MSN_TEMP     TYPEF_MSN
+#define TYPE_MSN_SERVER   (TYPEF_ANY_SERVER | TYPEF_MSN)
+#define TYPE_MSN_CHAT     (TYPEF_ANY_SERVER | TYPEF_MSN | TYPEF_MSN_CHAT)
 
 #define ASSERT_ANY_SERVER(s)  (assert (s), assert ((s)->type & TYPEF_ANY_SERVER))
 #define ASSERT_SERVER(s)      (assert (s), assert ((s)->type == TYPE_SERVER))

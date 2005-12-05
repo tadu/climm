@@ -302,6 +302,8 @@ void ConnectionD (Connection *conn DEBUGPARAM)
 const char *ConnectionType (Connection *conn)
 {
     switch (conn->type) {
+        case TYPE_MSN_TEMP:
+            return i18n (9999, "msn temp");
         case TYPE_MSN_SERVER:
             return i18n (9999, "msn server");
         case TYPE_MSN_CHAT:
@@ -324,6 +326,24 @@ const char *ConnectionType (Connection *conn)
             return i18n (2225, "scripting");
         default:
             return i18n (1745, "unknown");
+    }
+}
+
+const char *ConnectionServerType (Connection *conn)
+{
+    switch (conn->type) {
+        case TYPE_MSN_SERVER:
+            return "msn";
+        case TYPE_SERVER:
+            return "icq8";
+        case TYPE_SERVER_OLD:
+            return "icq5";
+        case TYPE_MSGLISTEN:
+            return "peer";
+        case TYPE_REMOTE:
+            return "remote";
+        default:
+            return "unknown";
     }
 }
 

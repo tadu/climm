@@ -69,6 +69,7 @@ void        PacketWriteCapID  (      Packet *pak,           UBYTE id);
 void        PacketWriteData   (      Packet *pak,           const char *data, UWORD len);
 void        PacketWriteStr    (      Packet *pak,           const char *data);
 void        PacketWriteLNTS   (      Packet *pak,           const char *data);
+void        PacketWriteLNTS2  (      Packet *pak,           str_t data);
 void        PacketWriteDLStr  (      Packet *pak,           const char *data);
 void        PacketWriteLLNTS  (      Packet *pak,           const char *data);
 void        PacketWriteCont   (      Packet *pak, Contact *cont);
