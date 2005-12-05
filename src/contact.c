@@ -1199,7 +1199,7 @@ void ContactSetVersion (Contact *cont)
         new = "&RQ";
     else if ((cont->v1 = cont->v2 = cont->v3 = cont->v4 = 0))
         assert (0);
-    else if (HAS_CAP (cont->caps, CAP_TRILL_CRYPT | CAP_TRILL_2))
+    else if (HAS_CAP (cont->caps, CAP_TRILL_CRYPT) || HAS_CAP (cont->cap, CAP_TRILL_2))
     {
         if (HAS_CAP (cont->caps, CAP_RTFMSGS))
             new = "Trillian v3";
