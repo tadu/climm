@@ -2761,10 +2761,10 @@ static JUMP_F(CmdUserAdd)
         {
             if ((cont2 = ContactFind (conn->contacts, 0, cont->uin, cmd)))
                 rl_printf (i18n (2146, "'%s' is already an alias for '%s' (%ld).\n"),
-                         cont2->nick, cont->nick, cont->uin);
+                         cmd, cont->nick, cont->uin);
             else if ((cont2 = ContactFind (conn->contacts, 0, 0, cmd)))
                 rl_printf (i18n (2147, "'%s' (%ld) is already used as a nick.\n"),
-                         cont2->nick, cont2->uin);
+                         cmd, cont2->uin);
             else
             {
                 if (!(cont2 = ContactFindCreate (conn->contacts, cont->uin, cmd)))
@@ -2772,7 +2772,7 @@ static JUMP_F(CmdUserAdd)
                 else
                 {
                     rl_printf (i18n (2148, "Added '%s' as an alias for '%s' (%ld).\n"),
-                             cont2->nick, cont->nick, cont->uin);
+                             cmd, cont->nick, cont->uin);
                     rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
                 }
             }
