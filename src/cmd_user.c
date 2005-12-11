@@ -30,6 +30,7 @@
 #include "oscar_service.h"
 #include "oscar_contact.h"
 #include "oscar_icbm.h"
+#include "oscar_location.h"
 #include "oscar_bos.h"
 #include "oscar_roster.h"
 #include "oscar_oldicq.h"
@@ -780,7 +781,7 @@ static JUMP_F(CmdUserPeek)
     
     if ((cg = s_parselistrem (&args, conn)))
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            SnacCliSendmsg2 (conn, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_GET_PEEK, CO_MSGTEXT, "", 0));
+            SnacCliRequserinfo (conn, cont, 2);
     return 0;
 }
 

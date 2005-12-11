@@ -34,7 +34,25 @@
 #include "oscar_base.h"
 #include "oscar_snac.h"
 #include "oscar_location.h"
+#include "conv.h"
+#include "contact.h"
 #include "packet.h"
+
+#define PEEK_REFID 0x1eadbeef
+
+/*
+ * SRV_LOCATIONERR - SNAC(2,1)
+ */
+JUMP_SNAC_F(SnacSrvLocationerr)
+{
+    UWORD err = PacketReadB2 (event->pak);
+
+    if (err == 4)
+        rl_print (i18n (2022, "The user is offline.\n"));
+    else if (err != 0xd)
+        rl_printf (i18n (2583, "Location error: %d.\n"), err);
+}
+
 
 /*
  * CLI_REQLOCATION - SNAC(2,2)
@@ -67,3 +85,32 @@ void SnacCliSetuserinfo (Connection *serv)
     PacketWriteTLVDone (pak);
     SnacSend (serv, pak);
 }
+
+/*
+ * SRV_USERINFO - SNAC(2,5)
+ */
+JUMP_SNAC_F(SnacSrvUserinfo)
+{
+    Connection *serv = event->conn;
+    Contact *cont = PacketReadCont (event->pak, serv);
+        
+    if (event->pak->ref == PEEK_REFID)
+    {
+        rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+        rl_print (i18n (2017, "The user is online, but possibly invisible.\n"));
+    }
+}
+
+/*
+ * CLI_REQUSERINFO - SNAC(2,5)
+ */
+void SnacCliRequserinfo (Connection *serv, Contact *victim, UWORD type)
+{
+    Packet *pak;
+    
+    pak = SnacC (serv, 2, 5, 0, PEEK_REFID);
+    PacketWriteB2 (pak, type);
+    PacketWriteCont (pak, victim);
+    SnacSend (serv, pak);
+}
+
