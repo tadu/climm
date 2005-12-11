@@ -175,6 +175,7 @@ static jump_t jump[] = {
     { &CmdUserPass,          "pass",         0,   0 },
     { &CmdUserSMS,           "sms",          0,   0 },
     { &CmdUserPeek,          "peek",         0,   0 },
+    { &CmdUserPeek,          "peekall",      0,   1 },
     { &CmdUserGetAuto,       "peek2",        0,   MSGF_GETAUTO | MSG_GET_AWAY },
     { &CmdUserAsSession,     "as",           0,   0 },
     { &CmdUserContact,       "contact",      0,   0 },
@@ -375,7 +376,7 @@ static JUMP_F(CmdUserHelp)
         "verbose, clear, sound, autoaway, auto, alias, unalias, lang, uptime, set, opt, optcontact, optgroup, optconnection, optglobal, save, q = quit = exit, x, !", NULL },
       { _i18n (2171, "Advanced"), "advanced",
         _i18n (2172, "Advanced commands."),
-        "meta, conn, peer, file, accept, contact, peek, peek2, as",
+        "meta, conn, peer, file, accept, contact, peek, peek2, peekall, as",
         _i18n (2314, "These are advanced commands. Be sure to have read the manual pages for complete information.\n") },
 #ifdef ENABLE_TCL
       { _i18n (2342, "Scripting"), "scripting",
@@ -636,9 +637,11 @@ static JUMP_F(CmdUserHelp)
         else if (!strcasecmp (par->txt, "contact"))
             CMD_USER_HELP  ("contact [show|diff|download|import|upload|delete]", i18n (2306, "Request server side contact list and show all or new contacts or import."));
         else if (!strcasecmp (par->txt, "peek"))
-            CMD_USER_HELP  ("peek <contacts>", i18n (2183, "Check all <contacts> whether they are offline or invisible."));
-        else if (!strcasecmp (par->txt, "peek <contacts>"))
-            CMD_USER_HELP  ("file", "= getauto away <contacts>");
+            CMD_USER_HELP  ("peek [all] [<contacts>]", i18n (2183, "Check all <contacts> whether they are offline or invisible."));
+        else if (!strcasecmp (par->txt, "peek2"))
+            CMD_USER_HELP  ("peek2 [<contacts>]", "= getauto away <contacts>");
+        else if (!strcasecmp (par->txt, "peekall"))
+            CMD_USER_HELP  ("peekall [<contacts>]", "= peek all <contacts>");
         else if (!strcasecmp (par->txt, "as"))
             CMD_USER_HELP  ("as <nr|uin> <cmd>", i18n (2562, "Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection."));
 #ifdef ENABLE_TCL
@@ -782,6 +785,16 @@ static JUMP_F(CmdUserPeek)
     if ((cg = s_parselistrem (&args, conn)))
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
             SnacCliRequserinfo (conn, cont, 2);
+    
+    if (data || s_parsekey (&args, "all"))
+        for (i = 0, cg = conn->contacts; (cont = ContactIndex (cg, i)); i++)
+            if (ContactPrefVal (cont, CO_PEEKME))
+                SnacCliRequserinfo (conn, cont, -1);
+
+    if ((cg = s_parselistrem (&args, conn)))
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            SnacCliRequserinfo (conn, cont, 2);
+    
     return 0;
 }
 

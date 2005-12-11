@@ -1,5 +1,5 @@
 .\" $Id$ -*- nroff -*-
-.\"  EN: micq.7,v 1.44
+.\"  EN: micq.7,v 1.49
 .TH MICQ 7 mICQ DE
 .SH NAME
 .B mICQ
@@ -877,6 +877,11 @@ unbest\(:atigte Nachrichten erneut versendet werden.
 .BI wantsbl \ An/Aus\ Kontakt
 Gibt an, ob dieser Kontakt auf die Server-seitige Kontaktliste soll.
 .TP
+.BI peekme \ boolean\ contact
+Gibt an, ob dieser Kontakt \(:uberpr\(:uft werden soll, wenn der Befehl
+.BR peek\ all \ bzw. \ peekall
+verwendet wird.
+.TP
 .BI shadow \ An/Aus\ Kontakt
 Gibt an, ob dieser Kontakt in der kontaktliste nicht angezeigt werden
 soll, wenn nicht eines der auf v endenden Kommandos verwendet wird.
@@ -1152,16 +1157,31 @@ L\(:ad nur die Kontakte hoch, die die Kontaktoption
 gesetzt haben. Um alle Kontakte hochzuladen, kann man die global mit
 .I optglobal wantsbl on
 setzen.
+.TP
+.B download
+Lade Kontakte von der server-seitigen Kontaktliste herunter,
+aber vermeide es, bestehende lokale Kontakte zu ver\(:andern.
+.TP
+.B import
+Lade Kontakte von der server-seitigen Kontaktliste herunter,
+wobei bestehende lokale Kontakte ver\(:andert werden.
 .RE
 .TP
-.BI peek \ <Kontakte>
+.BI peek \ [<Kontakte>]\ [all]\ [<Kontakte>]
 \(:Uberpr\(:uft, ob die
 .I Kontakte
-tats\(:achlich verbunden sind oder nicht. Dies mi\(ssbraucht einen Fehler im ICQ-Protokoll, um
-dies herauszu\(finden; es kann nur herausgefunden werden, ob verbunden oder nicht.
+tats\(:achlich verbunden sind oder nicht.
+Wird das Schl\(:usselwort
+.B all
+mit angegeben, werden auch alle Kontakte \(:uberpr\(:uft,
+die die Option
+.B peekme
+effektiv gesetzt haben.
 .br
 .B Hinweis:
-Dieser Befehl hat nur noch in den seltensten F\(:allen den gew\(:unschten Effekt.
+Dies mi\(ssbraucht einen Fehler im ICQ-Protokoll, um dies herauszu\(finden,
+und kann deshalb jederzeit aufh\(:oren, zu funktionieren.
+Es kann nur herausgefunden werden, ob verbunden oder nicht.
 .TP
 .BI peek2 \ <Kontakte>
 Eingebaute Abk\(:urzung f\(:ur
@@ -1172,6 +1192,10 @@ mancher ICQ-Programme zu erkennen, aber dieser Versuch
 kann vom ICQ-Programm des anderen Benutzers erkannt werden.
 mICQ ab Version 0.5 kann hiermit nicht entdeckt werden,
 und wird auch derlei Versuche anderer ICQ-Programme erkennen.
+.TP
+.BI peekall \ [<Kontakte>]
+Eingebaute Abk\(:urzung f\(:ur
+.BR peek\ <Kontakte>\ all .
 .TP
 .BI as \ <nr|uin>\ <cmd>
 F\(:uhre den mICQ-Befehl
