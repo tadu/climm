@@ -183,7 +183,7 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
 void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, const char *text)
 {
     static int rc;
-    char *mytext, *mynick, *myscript, *tmp, *myagent;
+    char *mytext, *mynick, *myscript, *tmp, *myagent, *mygroup;
     const char *mytype, *cmd;
 
     mytext = strdup (text ? text : "");
@@ -192,6 +192,7 @@ void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, c
     mytype = (type == 1 ? "msg" : type == 2 ? "on" : type == 3 ? "off" : 
               type == 4 ? "beep" : type == 5 ? "status" : "other");
     myscript = strdup (s_realpath (script));
+    mygroup =  strdup (cont && cont->group && cont->group->name ? cont->group->name : "");
 
     for (tmp = mytext; *tmp; tmp++)
         if (*tmp == '\'' || *tmp == '\\')
@@ -202,9 +203,12 @@ void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, c
     for (tmp = myagent; *tmp; tmp++)
         if (*tmp == '\'' || *tmp == '\\')
             *tmp = '"';
+    for (tmp = mygroup; *tmp; tmp++)
+        if (*tmp == '\'' || *tmp == '\\')
+            *tmp = '"';
 
-    cmd = s_sprintf ("%s icq %ld '%s' global %s %ld '%s' '%s'",
-                     myscript, cont ? cont->uin : 0, mynick, mytype, msgtype, mytext, myagent);
+    cmd = s_sprintf ("%s icq %ld '%s' '%s' %s %ld '%s' '%s'",
+                     myscript, cont ? cont->uin : 0, mynick, mygroup, mytype, msgtype, mytext, myagent);
 
     rc = system (cmd);
     if (rc)
