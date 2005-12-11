@@ -93,7 +93,7 @@ const char *PrefDefUserDirReal (Preferences *pref)
         if (!home || !*home)
 #endif
         home = getenv ("HOME");
-#if HAVE_GETPWUID && HAVE_GETUID
+#if HAVE_GETPWUID && HAVE_GETUID && !__AMIGA__
         if ((!home || !*home) && pwd && pwd->pw_dir)
             home = pwd->pw_dir;
 #endif
