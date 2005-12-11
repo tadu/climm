@@ -356,6 +356,7 @@ const char *s_time (time_t *stamp)
     struct tm now;
     struct tm *thetime;
     static char tbuf[40];
+    str_s str = { NULL, 0, 0 };
     time_t nowsec;
 
 #ifdef HAVE_GETTIMEOFDAY
@@ -374,9 +375,9 @@ const char *s_time (time_t *stamp)
 
     thetime = (!stamp || *stamp == NOW) ? &now : localtime (stamp);
 
-    strftime(tbuf, sizeof (tbuf), thetime->tm_year == now.tm_year 
+    strftime (tbuf, sizeof (tbuf), thetime->tm_year == now.tm_year 
         && thetime->tm_mon == now.tm_mon && thetime->tm_mday == now.tm_mday
-        ? "%H:%M:%S" : "%a %b %d %H:%M:%S %Y", thetime);
+        ? "%H:%M:%S" : "%a %b %d %H:%M:%S %Y", thetime); /*"*/
 
     if (prG->verbose > 7)
         snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),
@@ -385,7 +386,9 @@ const char *s_time (time_t *stamp)
         snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),
                   ".%.03ld", !stamp || *stamp == NOW ? p.tv_usec / 1000 : 0);
     
-    return tbuf;
+    str.txt = tbuf;
+    str.len = strlen (tbuf);
+    return ConvFrom (&str, prG->enc_loc)->txt;
 }
 
 /*
