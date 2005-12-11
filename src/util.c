@@ -192,7 +192,7 @@ void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, c
     mytype = (type == 1 ? "msg" : type == 2 ? "on" : type == 3 ? "off" : 
               type == 4 ? "beep" : type == 5 ? "status" : "other");
     myscript = strdup (s_realpath (script));
-    mygroup =  strdup (cont && cont->group && cont->group->name ? cont->group->name : "");
+    mygroup =  strdup (cont && cont->group && cont->group->name ? cont->group->name : "global");
 
     for (tmp = mytext; *tmp; tmp++)
         if (*tmp == '\'' || *tmp == '\\')
