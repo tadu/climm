@@ -1,5 +1,51 @@
 -*- coding: utf-8 -*-
 
+2005-12-11 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* AmigaOS: don't get home directory from system as that is fake anyway
+	* have to transcode date strings as they're locale specific
+	* fix peek by implementing more of the location service family commands
+	* Apply patch from Kim Krecht: peekall command, peekme option.
+
+2005-12-05 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* more MSN changes...
+	* apply patch from Анатолий Бородин to fix glitch on contact add
+	* apply patch from d binderman to fix capability check
+	* another missing MSN change
+
+2005-11-21 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* apply patch from Kim Krecht's: new autoauto option (Goman nasai for
+	  the wrong attribution in the cvs log...)
+
+2005-09-02 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* fix corner case in rl code that causes trouble for xterm/console
+	* remove accidently created trigraphs
+	* fix -C
+	* fix peek: change reference id, set get auto flag
+	* add autoconf/make magic for MSN
+	* remove safety check for version 7 for CAP_UTF8 as GAIM is
+	  version 0 and no client should set CAP_UTF8 if it can't handle it
+	* add reading and saving new msn connection type
+	* add screen field to contact and connection
+
+2005-07-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* make ContactFindCreate() more conservative about contact ids
+	* get rid of id parameter in ContactFindCreate() alltogether
+	* allow to get contact id without creating one
+	* update client detection; some info taken from Miranda
+
+2005-07-08 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+	* conv.c: fix breakage due to wrong string length used
+	* fix some more 0xfe issues
+	* fix prompt locale conversion
+	* add cs.i18n, update ru.i18n
+	* update capabilities list
+	* add binreloc support
+	* add autopackage library availability checks
+	* adapt binreloc.m4 to sane defaults
+	* Makefile: clean up stub sources
+	* add desktop file
+	* finish autopackage support
+
 2005-06-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 	* fix peek once more
 	* 0.5.0.4
