@@ -788,7 +788,7 @@ static JUMP_F(CmdUserPeek)
     
     if (data || s_parsekey (&args, "all"))
         for (i = 0, cg = conn->contacts; (cont = ContactIndex (cg, i)); i++)
-            if (ContactPrefVal (cont, CO_PEEKME))
+            if (ContactPrefVal (cont, CO_PEEKME) && (cont->status == STATUS_OFFLINE))
                 SnacCliRequserinfo (conn, cont, -1);
 
     if ((cg = s_parselistrem (&args, conn)))
