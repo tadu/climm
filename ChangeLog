@@ -1,22 +1,23 @@
 -*- coding: utf-8 -*-
 
-2005-12-11 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-12-11 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* AmigaOS: don't get home directory from system as that is fake anyway
 	* have to transcode date strings as they're locale specific
 	* fix peek by implementing more of the location service family commands
-	* Apply patch from Kim Krecht: peekall command, peekme option.
+	* apply patch from Kim Krecht: peekall command, peekme option.
+	* apply patch from Tobias Lieber: add group name to the event script parameters
 
-2005-12-05 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-12-05 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* more MSN changes...
 	* apply patch from Анатолий Бородин to fix glitch on contact add
 	* apply patch from d binderman to fix capability check
 	* another missing MSN change
 
-2005-11-21 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-11-21 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* apply patch from Kim Krecht's: new autoauto option (Goman nasai for
 	  the wrong attribution in the cvs log...)
 
-2005-09-02 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-09-02 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix corner case in rl code that causes trouble for xterm/console
 	* remove accidently created trigraphs
 	* fix -C
@@ -27,13 +28,13 @@
 	* add reading and saving new msn connection type
 	* add screen field to contact and connection
 
-2005-07-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-07-24 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* make ContactFindCreate() more conservative about contact ids
 	* get rid of id parameter in ContactFindCreate() alltogether
 	* allow to get contact id without creating one
 	* update client detection; some info taken from Miranda
 
-2005-07-08 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-07-08 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* conv.c: fix breakage due to wrong string length used
 	* fix some more 0xfe issues
 	* fix prompt locale conversion
@@ -46,11 +47,11 @@
 	* add desktop file
 	* finish autopackage support
 
-2005-06-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-06-04 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix peek once more
 	* 0.5.0.4
 
-2005-05-17 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-05-17 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* don't output ESC [ J on MingW port
 	* auto-expand even if line is not empty
 	* define a few more known TLVs
@@ -61,7 +62,7 @@
 	* remove old aliases code;
 	* use my auto-expanding-capable code in util_alias.[ch]
 
-2005-05-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-05-01 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix segfault when all LC_* are unset and setlocale() is unavailable
 	* disallow auto expansion when tabbing is disallowed
 	* experimental roster code
@@ -72,21 +73,21 @@
 	* incluce pwd.h
 	* os_packagehomedir() may return NULL
 
-2005-04-27 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-04-27 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix: i18nInit() was called twice, second time with LC_MESSAGE
 	  (thus, LC_CTYPE was effectively ignored)
 	* fix aligning for non-UTF-8 locales (only question marks
 	  in non-latin non-UTF-8 locales in finger output)
 	* 0.5.0.3
 
-2005-04-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-04-24 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* auto-update: forget accidently set explicit local character encoding
 	* fix segfault on h <nick> 99999999999 - just display all messages
 	* hide unknown roster types 15 and 20
 	* print normal contacts first
 	* 0.5.0.2
 
-2005-04-16 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-04-16 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* re-set temporary away messages on manual status change
 	* ru micq.7 update by Seva Gluschenko
 	* implement auto-expanding aliases
@@ -101,7 +102,7 @@
 	* further code clean-up in i18n (hope it doesn't break anything)
 	* set locale-broken flag properly if setlocale fails
 
-2005-04-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-04-07 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* keep old version of micqrc/status file
 	* fix little memory leak
 	* ru micq.1 update by Seva Gluschenko
@@ -112,12 +113,12 @@
 	* fix busy loop in GnuTLS code
 	* send temporary away messages also for explicit requests for them
 
-2005-03-31 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-03-31 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* remove useless copying of input line;
 	  avoids input line stripped to 1023 characters
 	* hide repeated messages in log
 
-2005-03-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-03-07 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix segfault of ^Y if there is nothing to yank
 	* correctly split messages at 0xFE where required
 	* merge changes suggested by Hans Fuchs into micq.info file
@@ -125,11 +126,11 @@
 	* use in ss command
 	* correctly reset tabbing on ^U
 
-2005-02-28 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-02-28 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Try to fix incomplete file transfer
 	* 0.5.0.1
 
-2005-02-26 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-02-26 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix handling of server's response to type-1/type-4 messages
 	* recognize BOS and SERVICE familiy errors and ignore them
 	* clear CAP_UTF8 on Trillian, as it doesn't actually understands it
@@ -138,7 +139,7 @@
 	* do not close(-1)
 	* some file transfer fixes, avoid segfault
 
-2005-02-17 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-02-17 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* identify new versions of licq as SSL capable
 	* fix OpenSSL connections
 	* remove iso8859_*, use ISO8859* without any - (HPUX)
@@ -152,11 +153,11 @@
 	* make time to reveal invisibility to receivers of
 	  messages configurable, new default 10 min
 
-2005-02-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-02-14 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* update sk.i18n
 	* 0.5
 
-2005-02-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-02-01 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* add parameter to quit command
 	* add 'verbose sane' for typical verbosity
 	* add peek2 command, alias for getauto away
@@ -179,12 +180,12 @@
 	* add big fat warning to reference version in .i18n file
 	* fix email/web pager messages
 
-2005-01-25 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-01-25 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix a few translation strings
 	* fix %s order
 	* add a few new capabilities
 
-2005-01-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2005-01-04 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix capability array overflow, now allow 63
 	* update sk.i18n
 	* assume setlocale() to be working correctly if nl_charset() exists
@@ -201,7 +202,7 @@
 	* try to fix HPUX iconv
 	* fix a few compiler warnings
 
-2004-12-16 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-12-16 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* compile fixes in OpenSSL code
 	* fix missing @LIBICONV@
 	* ru.i18n update by _Iww_
@@ -217,34 +218,34 @@
 	* show tag and id if verbose
 	* add notab keyword to msg command to suppress addition to tab list
 
-2004-12-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-12-04 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* use different option for loading the sbl
 	* fix uninitialized variable on cmd_user.c
 	* #define timelocal mktime if it doesn't exist
 
-2004-11-09 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-11-09 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix double-free found by Ralf Kutschenreiter
 	* ru man page update
 
-2004-10-23 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-10-23 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* a bit more syntax in util_syntax.c
 	* add OpenSSL exemption to licence
 
-2004-09-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-09-07 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* another attempt at fixing -s
 	* check-in missing update
 
-2004-08-28 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-08-28 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* improve help command (rtc)
 
-2004-08-17 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-08-17 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix missing break
 	* add undocumented 'contact delid' command to delete server
 	  side contact list items
 	* re-add missing sr.i18n
 	* renumber strings due to changed format string
 
-2004-08-10 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-08-10 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* make ESC DEL delete last word
 	* try to fix parameters once more
 	* send correct ADDEND
@@ -255,7 +256,7 @@
 	* add ICQTIC if missing, fix missing ADDSTART/ADDEND
 	* fix authorization required contacts
 
-2004-08-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-08-01 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* option 'local' for non-contacts
 	* send correct type to server when uploading contactst
 	* try to update group on server as well
@@ -264,7 +265,7 @@
 	* add sk.i18n from Ján Stanik
 	* add missing include in util_tcl.c
 
-2004-07-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-07-24 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* re-implement roster code, now does allow to upload contacts
 	* implement roster diff
 	* try to handle contact groups correctly, less output
@@ -283,17 +284,17 @@
 	* try to fix contact group handling in roster code
 	* add 'shadow' option to not display contact(s| groups) unless specificially mentioned
 
-2004-07-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-07-14 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* make optional arguments for status changes the temporary away-message,
 	  which is not saved
 	* fix wrong #ifdef spotted by Roman
 
-2004-07-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-07-04 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix segfault
 	* separate contacts from different server connections
 	* update spec once more
 
-2004-06-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-06-24 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* disallow tabbing when not in default prompt
 	* remove backslash handling on final arguments upon popular demand
 	* copy updated .spec
@@ -301,14 +302,14 @@
 	  has been changed and a command requests input)
 	* corrected (hopefully) tabbing, add time stamps to tabs command
 
-2004-06-16 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-06-16 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* know about family 34
 	* fix segfault at setup
 	* Tcl fixes from Roman
 	* fix segfault found by Roman
 	* apply OpenSSL patch
 
-2004-03-11 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-03-11 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* apply Sebastian Felis' historyd command patch
 	* indent URL messages properly
 	* fix tabbing logic errors
@@ -317,12 +318,12 @@
 	* fix parsing of broken micqrc
 	* try to fix client detection on 64bit platforms
 
-2004-01-17 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-01-17 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* detect ICQ2003(b)
 	* allow UTF-8 for non-normal messages
 	* improve 'last'-history by saving outgoing messages as well
 
-2004-01-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2004-01-15 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* change malloc()ed size as suggested by Sebastian Felis
 	* apply Sebastian Felis' history dump and search patch
 	* make message splitting correct
@@ -331,7 +332,7 @@
 	* adapt "conn login" help string
 	* add large file test
 
-2003-11-26 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-11-26 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* detect new Kopete capability
 	* opens current instead of first connection if no number is given
 	* interpret number as UIN for conn login if there is no connection
@@ -340,7 +341,7 @@
 	  status is <last status>" when offline
 	* fix indentation once more
 
-2003-10-20 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-10-20 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix compilation under --disable-peer2peer
 	* fix QNX compilation, remove #includes that are already done in micq.h
 	* fix contact group mess
@@ -371,7 +372,7 @@
 	* fix command execution when no UIN is given on the command line
 	* fix segfault (thanks rtc)
 
-2003-10-06 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-10-06 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* more SSL/Tcl compile fixes
 	* add zh_TW.i18n from stable
 	* show online since time for online contacts, last seen time for
@@ -426,20 +427,20 @@
 	* cache C.i18n versions in i18n-template
 	* fix contact list downloading
 
-2003-09-23 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-09-23 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
         * fix Tcl (broken call backs)
         * fix SSL (man page, no more connection failed on unanswered SSL request)
         * fix alias expansion when no argument is given
 
-2003-09-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-09-22 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* backport file transfer fixes from stable
 	* handle ^W (delete-word-backward)
 
-2003-09-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-09-15 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix rl_uca_st() macro
 	* add fallback if locale is broken
 
-2003-09-03 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-09-03 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* implement double-width character support
 	* fix line breaking bugs exposed by the former
 	* fix SIGWINCH handling
@@ -448,7 +449,7 @@
 	* implement backwards tabbing via ESC [ Z (shift tab)
 	* fix conversion fallback for WCHAR_T
 
-2003-09-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-09-01 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* add convenience macros s_wordquote, s_msgquote (both for s_mquote) and
 	  s_qquote (for s_cquote), and use s_*quote to make sure all incoming/server
 	  data is decontaminated from control sequences
@@ -461,7 +462,7 @@
 	* activate v8 (versus v7) authorization packets
 	* fix failed assertion due to wrong check for server type
 
-2003-08-29 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-08-29 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix registration of new UINs
 	* also create p2p listener
 	* guard more code with #ifdef PEER2PEER
@@ -475,7 +476,7 @@
 	* replace fHexDump() by call to PacketDump()
 	* fix login sequence, don't send CliRosterAck (fixes invisible)
 
-2003-08-18 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-08-18 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* replace some UDWORD uin by Contact *cont members
 	* on the way rename PacketWriteUIN() to PacketWriteCont(),
 	  make PacketReadUIN() return screen name and PacketReadCont() a contact *
@@ -497,7 +498,7 @@
 	* make sure cursor really wraps to new line
 	* improve tab handling: expire outgoing to incoming tabbed contacts after 5 mins
 
-2003-08-16 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-08-16 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* remove obsolete tab micqrc option
 	* remove obsolete alter name member in user command table
 	* remove obsolete CmdUserLookupName()
@@ -513,7 +514,7 @@
 	* fix direct connection sending
 	* fix another infinite loop in tab handling
 
-2003-08-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-08-15 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	** complete rewrite of line editing code:
 	* new: util_rl.c, util_rl.h with ReadLineInit() - initialize code;
 	  ReadLineTtyUnset(), ReadLineTtySet() - set terminal options for mICQ and undo;
@@ -534,7 +535,7 @@
 	  characters of arbitrary cell width
 	* lots of new static rl_*() functions; lots of calling name fixes
 
-2003-08-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-08-15 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* make util_str.h a default include
 	* new: s_catn() - append n bytes, s_insn() - insert n bytes,
 	  s_insc() - insert one byte, s_delc() - delete on byte, s_deln() - delete n bytes
@@ -543,17 +544,17 @@
 	  sequence and unavailable character if possible
 	* change tab handling to have two lists, for incoming and outgoing used contacts
 
-2003-08-11 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-08-11 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* remove obsolete commands: w-old, e-old, msg-old, alter
 	* remove obsolete code, don't write compatibility section in micqrc anymore
 	* remove unmaintained, unsecure non-WORD_WRAP code
 	* fix another stupid type-1 bug
 
-2003-08-09 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+2003-08-09 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(stable-0-4-10)
 	* fix those freakin' \x## parsing
 	* add zh_TW translation from Kenneth Chan
 
-2003-08-09 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-08-09 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix COLMESSAGE abuse by introducing COLQUOTE for quotes/options
 	* optimize color handling and get rid of CX* macros
 	* actually use the contact's settings for incoming/ack/message color
@@ -574,7 +575,7 @@
 	* re-implement and fix CmdUserStatusWide(), remove obsolete MAX_CONTACTS #define
 	* a few contact management and CmdUserStatusDetail() fixes/changes
 
-2003-08-08 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-08-08 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix \x## decoding; quote empty string as "" in s_cquote
 	* keep color through line breaks
 	* use nl_langinfo() from langinfo.h
@@ -595,7 +596,7 @@
 	* work-around for even more buggy iconv() implementation
 	  (those that return de_DE with iso-8859-1 when de_DE.UTF-8 was requested, but unknown)
 
-2003-08-05 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-08-05 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* change iconv() configure test - check the correct name of the standard encodings at runtime
 	* allow fallbacks for standard encodings to be compiled in depending on iconv() or all by demand
 	* re-implement iconv() fallbacks as seperate function each and compile only the needed ones
@@ -617,10 +618,10 @@
 	* new s_mquote(): ^-encoding control characters (except maybe \n), skip \r and trailing \n, add color
 	* use s_cquote()/s_mquote() in some places, in particular for displaying contact meta data
 
-2003-04-08 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(stable-0-4-10)
+2003-04-08 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(stable-0-4-10)
 	* update it.i18n 
 
-2003-04-08 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-04-08 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* src/contactopts.c, include/contactopt.h: new file to cope with contact options,
 	  which can be flags or strings; currently intimate,hidefrom,ignore,auto*
 	* use them in contacts, contact groups and globally
@@ -641,19 +642,19 @@
 	  'quiet', 'quiet complete', 'color *' into contact options
 	* don't hide unset webaware/hideip/dcauth/dccont options anymore
 
-2003-07-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-07-22 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(+stable-0-4-10)
 	* fix mem leak, fix handling of failed malloc()
 	* fix handling if uname()/gethostname() fails
 	* fix crash if too many tlvs
 	* these bugs were reportet by Robert Lemmon
 
-2003-07-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-07-04 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(+stable-0-4-10)
 	* update Japanese ja.UTF-8.i18n
 	* fix sound command, mark auto replies as such, add missing translations
 	* update  de.i18n en.i18n
 	* fix i18n-template to use stable branch only
 
-2003-07-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-07-04 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* using UTF-8 internally is now mandatory
 	* str_t-ify PacketCreate(), fix incorrect text termination
 	* use macros ContactPref(),ContactPrefSet() to access contact flags
@@ -670,7 +671,7 @@
 	* fix options saving for contact groups
 	* new user command opt to set/clear/undef contact options
 
-2003-05-29 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-05-29 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* apply str_t string type patch
 	* fix: contact list loading; fix setup wizard; fix compile warnings (+stable-0-4-10)
 	* use str_t everywhere where possible
@@ -680,7 +681,7 @@
 	* fix buildmark format string
 	* fix auto-away for Windows (stable)
 	
-2003-05-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-05-14 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(+stable-0-4-10)
 	* add UCS-2BE, drop CP1257 from list of required encodings
 	* fix verbosity getting set to 0x8000
 	* test for UCS-2BE as well
@@ -694,7 +695,7 @@
 	* don't show status as offline for auto-responses
 	* don't double-unquote the input line
 
-2003-05-13 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-05-13 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(+stable-0-4-10)
 	* activate code using new strings: better display of used locale, add one missing help text
 	* remove unused beos.[ch]
 	* compile fix for ConvFits()
@@ -732,7 +733,7 @@
 	* fix iconv() configure check (s/none/buildin)
 	* release as 0.4.10.3
 
-2003-04-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-04-22 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(+stable-0-4-10)
 	* fix sending to DND and OCC, fix embedded status
 	* fix pixmap location
 	* fix assertion
@@ -765,10 +766,10 @@
 	* add ru@fun
 	* add cp-1257 for type-1
 
-2003-03-11 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-03-11 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* add first traces of contact list upload, still unusable
 
-2003-03-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-03-07 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(+stable-0-4-10)
 	* fix endless resend stuff
 	* ignore empty nick names on contact list import
 	* fix documentation glitches in man pages
@@ -783,7 +784,7 @@
 	* fix embedded status
 	* RELEASE as 0.4.10.2
 
-2003-02-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-02-24 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(+stable-0-4-10)
 	* debian sync
 	* special-case around Kopete as well
 	* Debian maintainer saw the light, so removing Debian blurb
@@ -794,7 +795,7 @@
 	* fix quoting issues with " in nick names, aliases, alters, ...
 	* add pt translation
 
-2003-02-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-02-14 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(+stable-0-4-10)
 	* fix set tabs command
 	* fix buildmark
 	* fix status code length (allows workaround for webaware)
@@ -815,13 +816,13 @@
 	* be more safe when using v5
 	* hide winsock2.h and conio.h from Cygwin
 
-2003-01-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-01-24 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(+stable-0-4-10)
 	* recognize kxICQ
 	* fix reception of mass messages
 	* fix building for builddir != srcdir
 	* RELEASE as 0.4.10.1
 
-2003-01-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-01-22 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(+stable-0-4-10)
 	* fix remgroup command
 	* fix url/msg order
 	* fix typos (thanks, David Krause)
@@ -829,7 +830,7 @@
 	* remove usage of sprintf
 	* add serbian web pages
 
-2003-01-19 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-01-19 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(+stable-0-4-10)
 	* fix tab handling for real
 	* fix segfault when UTF-8 is enabled, but not used
 	* update ja_JP.UTF-8.i18n, ro.i18n
@@ -838,7 +839,7 @@
 	* add sr (serbian) man pages
 	* move IP/port info to util_ui.c, drop dupe UIN display
 
-2003-01-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-01-15 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(+stable-0-4-10)
 	* fix auto-away prompt string (wasn't always cleared)
 	* fix stupid typo
 	* fix __attribute__ stuff for real
@@ -859,14 +860,14 @@
 	* add transcoded ja_JP.i18n and sr_YU.i18n
 	* update ja_JP.UTF-8.i18n, uk.i18n, de.i18n, AUTHORS
 
-2003-01-09 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-01-09 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(+stable-0-4-10)
 	* add pt_BR micq.7
 	* fix compiler warnings (unused variables, UBYTE != char)
 	* update *.i18n files (use branch release number)
 	* don't use ^U for Unicode input, it's the kill character
 	  (ESC u still works)
 
-2003-01-08 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>(+stable-0-4-10)
+2003-01-08 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>(+stable-0-4-10)
         * fix buggy setlocale()s (workaround)
         * fix missing character recoding in tab completion
         * fix rand segfault
@@ -876,7 +877,7 @@
         * fix freaking SIM/Kopete detection
         * suppress instant message error
 
-2003-01-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-01-07 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix configure test for FIFO (test with O_NOBLOCK as used in util_io.c)
 	* fix file group length reported in file transfer request
 	* fix a/r tab deny
@@ -898,7 +899,7 @@
 	** Release 0.4.10
 	**
 
-2003-01-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2003-01-04 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* expand extra parameters
 	* deny tabs on r and a commands
 	* compile-time configured LAN IP hiding
@@ -913,7 +914,7 @@
 	* rename silence to silent upon now3d's request
 	* change mICQ logo again
 
-2002-12-25 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-12-25 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* add ukrainian man pages
 	* add alias quit, exit for q; file for peer file
 	* new command getauto to fetch auto messages, replaces peer auto|away|na|dnd|occ|ffc
@@ -936,7 +937,7 @@
 	* fix adding of temporary users with aliases
 	* (preliminarily) implement splitting of overlong type-1 messages
 
-2002-12-20 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-12-20 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* new stuff:
 	- add autosaving of micqrc and meta data
 	- new QueueDequeue2(): search for seq and/or uin
@@ -978,7 +979,7 @@
 	- fix wrong sender printed
 	- fix scrolling for incoming messages
 
-2002-12-02 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-12-02 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* new stuff:
 	- add contact groups
 	- add rtc's log converter, log util and log format readme
@@ -1019,7 +1020,7 @@
 	- fix ENC_* #defines
 	- fix possible zero TCP version
 
-2002-11-13 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-11-13 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* new stuff:
 	- add ^C handler (initial patch from kaolin)
 	- add type-2 message sending
@@ -1079,7 +1080,7 @@
 	- fix type-2 acknowledge
 	- fix length of dc cookie
 
-2002-11-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-11-01 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* new stuff:
 	- add FIFO socket remote control
 	- add remembering of contact meta data
@@ -1144,7 +1145,7 @@
 	- fix some i18n numbering
 	- fix segfaults in tcp.c
 
-2002-10-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-10-22 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Last minute fixes for 0.4.9.4:
 	- always ack type-2
 	- fix sound preferences
@@ -1202,7 +1203,7 @@
 	        capabilities table, as you can see from the #defines used.
 	- fix check for unknown capability
 
-2002-10-03 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-10-03 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* add error message for missing file reception directory
 	* web page: add blurb for misconfigured browsers
 	* final translation updates
@@ -1213,7 +1214,7 @@
 	* display 0x46 meta result (just output the text)
 	* 0.4.9.4 released
 
-2002-09-30 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-09-30 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* add tel code for Moldava
 	* debian merge
 	* fix & improve file transfer
@@ -1252,7 +1253,7 @@
 	  implement capabilities in packet library and use
 	* ContactSetVersion(): new, was UtilUISetVersion()
 
-2002-09-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-09-22 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix file send transfer corruption
 	* UtilUIParseNick(): return the 'real' Contact* as well
 	* Get_Port(): obsolete
@@ -1263,7 +1264,7 @@
 	* allow connections to be closed
 	* f,finger: new alias for info
 
-2002-09-19 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-09-19 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* use version from build.i18n to tag *.i18n files
 	* don't physically drop old translations anymore automatically
 	* UtilUIParse* fixes, # as comment-character
@@ -1280,41 +1281,41 @@
 	* auth add
 	* Do_Msg() rewrite
 
-2002-09-09 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-09-09 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Change translations not to contain ESC characters.
 	* add pt_BR micq.1
 	* update ro.i18n
 	* add memmove() replacement function
 
-2002-09-06 Peter Backes <rtc@gmx.de>
+2002-09-06 Peter Backes <rtc __at__ gmx __dot__ de>
 	* Well-defined logging format.
 	* Message handling cleanup.
 
-2002-09-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-09-04 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* util_ui.c: UtilUIParse{,Int,Nick,Remainder}: new, quote
 	  arguments with " or \, detects intelligent nick names intelligently.
 	* cmd_user.c: use UtilUIParse*.
 	* src/Makefile.am: fix bogus snprintf.[ch] links.
 	* TODO, Changelog: update.
 
-2002-09-04 Peter Backes <rtc@gmx.de>
+2002-09-04 Peter Backes <rtc __at__ gmx __dot__ de>
 	* Changed some remaining code to use the packet handling library
 	  instead of structure aliasing.
 
-2002-09-03 Tobias Bengtsson <tobbe@tobbe.nu>
+2002-09-03 Tobias Bengtsson <tobbe __at__ tobbe __dot__ nu>
 	* remove code duplication
 	* improve wide display
 
-2002-09-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-09-01 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* add web page to CVS
 	* rewrote table based layout to a CSS based layout
 	* do lots of update work for several languages
 
-2002-08-27 Alberto Bertogli <albertogli@telpin.com.ar>
+2002-08-27 Alberto Bertogli <albertogli __at__ telpin __dot__ com __dot__ ar>
 	* update Spanish (es) translation and man pages
 	* add Spanish (es) web page
 
-2002-08-27 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-08-27 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Fix last-minute bugs (contact download crash)
 	* Fix get status from correct session
 	* Fix history symlinks
@@ -1323,7 +1324,7 @@
 	* de, en, ru i18n update
 	* more status flags for direct connections displayed
 
-2002-08-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-08-24 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* unify packet.c code: read strings now always need free()
 	* forget about mc.ukeer.de or micq.ukeeer.de and use www.micq.org
 	* many more assertions, better debug display, debug sessions
@@ -1340,7 +1341,7 @@
 	* adding Trillian bugaround: set connectivity properly (see micqrc.5)
 	* 0.4.9.3
 
-2002-08-17 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-08-17 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* auto-extend TLV array
 	* add French man pages
 	* convert French man pages to an-old macros
@@ -1357,12 +1358,12 @@
 	* restrict CONT_ALIAS handlich to contact.c, ignore dupe aliases
 	* add ~-expansion to logplace
 
-2002-08-10 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-08-10 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* convert man pages to an-old macros (for conversion to HTML)
 	* move packet read position pointer even for broken data
 	* fix segfault for overlong url messages
 
-2002-08-08 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-08-08 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* replace struct Event by Event, dito for struct Queue
 	* remove queue argument to message queue functions
 	* add symbolic names to queue types while debugging
@@ -1373,7 +1374,7 @@
 	* actually restrict select timeout to time difference to next event
 	* WIP: first file transfer happened today
 
-2002-08-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-08-01 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* More verbosity flags.
 	* add auto_ffc (semi-auto) response
 	* implement command to request auto responses
@@ -1383,7 +1384,7 @@
 	* update man pages for new commands
 	* show timestamps as hex for client detection when verbose
 
-2002-07-22 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-07-22 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* detect sizeof() of types (for 64bit systems)
 	* document tab completion option
 	* don't auto-away on listening connections
@@ -1395,29 +1396,29 @@
 	* free file descriptor for micqrc after read
 	* free sent packets
 
-2002-06-26 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-06-26 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix SOCKS5 authorization
 	* document resend command, let it take arbitrarily many arguments
 	* change behaviour of autoaway command
 	* hopefully fix reconnect loops this time
 	* rework verbose: setting verbose won't give any debug messages
 
-2002-06<24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-06<24 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix auto-away
 	* be more verbose if saving fails
 	* #define DATADIR instead of PREFIX "/share/micq/"
 	* set CONNECT_FAIL more often to avoid reconnect loops
 
-2002-06-12 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-06-12 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* compile fixes
 	* recognize YSM
 	* actually install man pages
 
-2002-06-10 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
-	* es translation by Alberto  Bertogli (albertogli@telpin.com.ar)
+2002-06-10 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* es translation by Alberto  Bertogli (albertogli __at__ telpin __dot__ com __dot__ ar)
 	* lower requirement for gethostbyname() for BeOS
 
-2002-06-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-06-04 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Fix Russian/Japanese.
 	* Close log file descriptor (thanks, Alberto  Bertogli)
 	* Automatic responses.
@@ -1429,18 +1430,18 @@
 	* status codes <-> status flags cleanup
 	* sync and update man page and run-time help texts
 	* de_DE
-	* fr_FR translation by Guillaume Coqueblin <esquimo_2ooo@caramail.com>
+	* fr_FR translation by Guillaume Coqueblin <esquimo_2ooo __at__ caramail __dot__ com>
 	* use v8 for p2p for wizard
 	* 0.4.9
 
-2002-05-25 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-05-25 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* tcp.c: s/TYPE_PEER/TYPE_LISTEN; get rid of assert()s; mem leaks;
 	  timeout fixes; more #define cleanup; more gracious on changed
 	  connection status data and more quiet; ACK types;
 	  short: just fixes.
 	* ru.i18n update by "Pest".
 
-2002-05-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-05-15 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Debian merges.
 	* change version information to be more like other ICQ clones.
 	* debug: save all packets.
@@ -1457,7 +1458,7 @@
 	* now recognizing: StrICQ.
 	* Honoring hermit.
 
-2002-05-10 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-05-10 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* SMS sending implemented
 	* Password changing implemented
 	* hopefully working Russian/Japanese conversion
@@ -1465,14 +1466,14 @@
 	* ANSI_TERM now does what ANSI_COLOR was before; ANSI_COLOR
 	  is always on, use runtime option to switch off
 
-2002-05-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-05-07 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Introduce a lot of missing #defines for the META handling.
 	* Implement random chat group setting and requesting.
 
-2002-05-06 Peter Backes <rtc@gmx.de>
+2002-05-06 Peter Backes <rtc __at__ gmx __dot__ de>
 	* Implement contact flags differently.
 
-2002-05-06 Peter Backes <rtc@helen.PLASMA.Xg8.DE>
+2002-05-06 Peter Backes <rtc __at__ helen __dot__ PLASMA __dot__ Xg8 __dot__ DE>
 	* Add status (quite raw, hexadecimal) to online messages in the logfile.
 	* Further cleanup of icq_response.c, reducing code size.
 	* Completed personal info searching.
@@ -1483,7 +1484,7 @@
 	
 	* do not display status change for temporary contacts (rk)
 
-2002-05-03 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-05-03 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* add & use new functions to write LLNTS, TLV and length markers.
 	* recognize MirandaICQ version number
 	* implement white page search; amend "search" syntax, so that
@@ -1494,11 +1495,11 @@
 	* implement general/other/about change.
 	* fix "wide" command (Peter Backes)
 
-2002-05-02 Peter Stuge <stuge@cdy.org>
+2002-05-02 Peter Stuge <stuge __at__ cdy __dot__ org>
 	* SNAC(13,19) SNAC(13,1b): authorization requests and grants
 	* remove / from Nicknames for logfile.
 
-2002-05-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-05-01 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* more ui fixes: status change msg, "r" command
 	* packet.c cleanup for...
 	* search/metainfo patch (Peter Backes)
@@ -1508,7 +1509,7 @@
 	* fix tcp message types
 	* allow UIN_DELIM characters in UIN (except for the last character)!
 
-2002-04-30 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-04-30 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Some logging/output cleanup (Peter Backes)
 	* Implemented SRV_ADDEDYOU handling (Peter Backes)
 	* Small improvements to non-ANSI_COLOR part of mreadline (Peter Backes)
@@ -1519,7 +1520,7 @@
 	* SOCKS5 support.
 	* Part 1 of info request (Peter Backes)
 
-2002-04-27 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-04-27 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Fix insert-char-deletes-2-other-chars-bug (switched arguments)
 	* Implement SNAC(9,5) SNAC(9,6) SNAC(9,7) SNAC(9,8) (visible/
 	  invisible lists add/remove) and SNAC(3,5) (contact remove)
@@ -1530,7 +1531,7 @@
 	* Fix compiler warnings.
 	* Fix packet statistics (somewhat).
 
-2002-04-25 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-04-25 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Rewrite mreadline.c: use new M_pos() in util_ui.h to get cursor
 	  position (prompt length) in new R_goto() to set cursor to given
 	  position by first stepping back as many lines as needed
@@ -1543,11 +1544,11 @@
 	* no overlapping strcpy (Peter Backes)
 	* implement request/receive/ack offline messages
 
-2002-04-16 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-04-16 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* mention GPL-2 in COPYING
 	* UtilUIUserOnline, UtilUIUserOffline - notify another user's status change
 	* implement SRV_RECVMSG for type 1 messages following patch from
-	  Peter Backes <rtc@helen.PLASMA.Xg8.DE>
+	  Peter Backes <rtc __at__ helen __dot__ PLASMA __dot__ Xg8 __dot__ DE>
 	* don't crash on online/offline message for non-contacts
 	* add missing output on server sent messages
 	* some tcp fixes: unknown nicks were treated as UIN -1;
@@ -1557,32 +1558,32 @@
 	* fix crash in ExecScript()
 	* prompt redraw fixes
 
-2002-04-05 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-04-05 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Fix remember password (thanks Pavel Roskin).
 	* update debian/ to be more like in the real Debian package.
 	* Fix Debian#113805 (US reported as US Virgin Islands)
 	* Quickfix for scroll/prompt bug
 
-2002-04-03 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-04-03 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Really check in i18n changes.
 	* Fix off-by-one in packet.c.
 	* Fix "tcp off <nick>".
 
-2002-04-03 Pavel Roskin <proski@gnu.org>
+2002-04-03 Pavel Roskin <proski __at__ gnu __dot__ org>
 	* Include <string.h> when needed.
 	* Comment extra text after #endif
 	* Fix missing newlines at the end of file.
 	* Set -Wall for gcc only.
 	* Use AM_CFLAGS is src/Makefile.am instead of overwriting CFLAGS.
 
-2002-03-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-03-07 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Adopt tcp stuff to use connection that can be listed using conn.
 	* With this, make tcp event-driven - no DOS by simply connecting,
 	  sending "0xffff" as packet length and then waiting forever
 	* Moved some common code to util_io.c.
 	* Fix huge bugs regarding entering passwords.
 
-2002-03-05 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-03-05 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* All files now have a Copyright mark; change files by me to GPL.
 	* Rewrote TLV handling.
 	* CmdUser* functions now find their connection * theirselves;
@@ -1596,7 +1597,7 @@
 	* get rid of more compatibility cruft
 	* add debian packaging stuff
 
-2002-03-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-03-04 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Fix packet position pointer size. Oooops!
 	* Implement more packet reading/writing: big endian, v8-style
 	  strings, TLVs. Have destructor for packets.
@@ -1606,14 +1607,14 @@
 	  0.4.8 to convert config files; you may need to create ~/.micq/.
 	* Implement v8. Can log in, nothing more.
 
-2002-03-02 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-03-02 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix ~/.micq/ creation
 
-2002-02-15 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-02-15 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* update man pages.
 	* Bump to version 0.4.8.
 
-2002-02-10 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-02-10 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix verbose command line buglet
 	* new: session.c for connection management. TCP still (ab)uses
 	  the server (UDP) session^h^h^h^h^h^h^hconnection.
@@ -1622,13 +1623,13 @@
 	  idea is to have a v5 and a v8 connection at the same time till
 	  the latter is usable.
 
-2002-02-06 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-02-06 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* finish big rename by moving stuff from session.h to uiG;
 	  realized that session is the wrong name...
 	* reset reconnect_count on successful login
 	* fix typo in last release
 
-2002-02-06 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-02-06 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* new: util_io.c for all IO related stuff (that what SOCK* did);
 	  there's still stuff around that belongs there
 	* removed: sendmsg.c
@@ -1638,7 +1639,7 @@
 	* more stuff in packet.c for reading; should be sufficient now
 	* log TCP messages, too
 
-2002-02-05 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2002-02-05 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* new: packet.c for functions creating a packet;
 	  got rid of *_2_Chars() completely; Chars_2_* deprecated
 	* new: cmd_pkt_cmd_v5.c implementing all server bound packets,
@@ -1651,7 +1652,7 @@
 	* Made more parameters const.
 	* Save Packet * in Queue instead of UBYTE *.
 
-2001-12-18 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-12-18 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Change mselect.c to also do select()ing on exceptfds; use
 	  M_Add_xsocket() to add. I'm not sure if we need it, but anyway.
 	* Get rid of 99% R_{re,un}draw() - basically just have a pair
@@ -1665,7 +1666,7 @@
 	  when failed. Correctly dequeues first TCP message now.
 	* Fix creating wrong log directories.
 
-2001-12-14 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-12-14 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Change mselect.c to also do select()ing on writefds; use
 	  M_Add_wsocket() to add.
 	* Let msg_queue.c sort the queue by exp_time; fix long-standing
@@ -1678,7 +1679,7 @@
 	  add supplementary "tcp <open|close>" command
 	* Ignore trailing newlines on incoming messages
 
-2001-12-11 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-12-11 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Recognize and display licq's version numbers. Define a way
 	  for micq's version numbers.
 	* Display incoming tcp messages differently than server messages
@@ -1689,9 +1690,9 @@
 	* Print tcp connections even if nonverbose, since it may freeze
 	  till a network timeout occurs, which can be minutes.
 	* Remove tcp socket when connect fails (cures segfault)
-	* Fix segfault reported by Jeremy Hall <jhall@UU.NET>.
+	* Fix segfault reported by Jeremy Hall <jhall __at__ UU __dot__ NET>.
 
-2001-12-06 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-12-06 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Moved tcp packet defs to icq_tcp.h.
 	* Revamped Logging: now have LogLevel (>0 = on, &2 = omit on/off)
 	  and LogPlace (and no local stored path); log to dir iff
@@ -1712,7 +1713,7 @@
 	  are taken as absolut i18n file path names.
 	* tcp.c is i18n'ed now. What about patches that apply cleanly?
 
-2001-11-29 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-11-29 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Move sent message output to icq_sendmsg_srv and Send_TCP_Msg
 	  to have different output for TCP messages.
 	* Rewrote Login() a little, rename login packet fields now known,
@@ -1729,33 +1730,33 @@
 	* Add TCP packet dumps.
 	* TCP should work now, though it's scrolling a lot.
 
-2001-11-27 Jake Lau <Jake.Lau@compaq.com>
+2001-11-27 Jake Lau <Jake.Lau __at__ compaq __dot__ com>
 	* Fix non-TCP compilation. Add note when TCP enabled.
 
-2001-11-20 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-11-20 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Include James' partial TCP implementation. Kinda experimental -
 	  enable with TCP_COMM in micqconfig.h.
 	* Fix Hex_Dump() output. Indent ingoing & outgoing packets; show
 	  them if verbosity & 4.
 	* Let -v accept a verbosity (without space after -v).
 
-2001-11-01 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-11-01 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Fix M_strcpy in src/file_utils.c.
 	* Use hstrerror() to print diagnostics if hostname lookup fails.
 	* Correct one ntohs() to htons().
-	* Everything suggested by Michel Oosterhof <micheloo@xs4all.nl>.
+	* Everything suggested by Michel Oosterhof <micheloo __at__ xs4all __dot__ nl>.
 	* Complain if adding a user fails.
 	* Break out protocol defs into include/icq_v[245].h.
 
-2001-09-20 Kaolin Fire <cognosco@tentacle.net>
+2001-09-20 Kaolin Fire <cognosco __at__ tentacle __dot__ net>
 	* added "s" command -- display your current online status
 	* added "resend" command -- resend your last message to a new UIN
 
-2001-09-19 Kaolin Fire <cognosco@tentacle.net>
+2001-09-19 Kaolin Fire <cognosco __at__ tentacle __dot__ net>
 	* added command autoaway to set the auto away timeout.
 	* fix alter.
 
-2001-09-19 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-09-19 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* rewrote CmdUserStatusWide to also do ewide, as proposed
 	  by Sander Smeenk <ssmeenk@cistron.nl>.
 	* merge CmdStatus(E|W), now called CmdStatusShort, rename
@@ -1764,12 +1765,12 @@
 	* prefer user defined command names.
 	* update man page for r, sound, soundonline, soundoffline, autoaway.
 
-2001-09-13 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-09-13 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix delete.
 	* fix line length in wide for LANG != C.
 	* fix about.
 
-2001-09-07 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-09-07 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Fix "search" commands.
 	* Add target UIN to "info" output.
 	* check terminfo keycodes last when processing input.
@@ -1778,13 +1779,13 @@
 	* Implement SoundExec in util.c for script execution.
 	* free memory used for script execution.
 
-2001-08-12 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-08-12 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Fix saving alter'ed commands.
 
-2001-08-12 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-08-12 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* small fixes (\a, last check-in only src/, _POSIX_VDISABLE)
 
-2001-08-11 Georgi Kuzmanov <georgi@cs.man.ac.uk>
+2001-08-11 Georgi Kuzmanov <georgi __at__ cs __dot__ man __dot__ ac __dot__ uk>
 	* Big stuff-all-globals-into-a-struct-patch: one for preferences (uiG),
 	  session (ssG) and socks5 (s5G).
 	* This patch is big.
@@ -1793,14 +1794,14 @@
 2001-08-02 Sander Smeenk <ssmeenk@debian.org>
 	* Added support for SoundOnline & SoundOffline events
 
-2001-06-27 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-06-27 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Tiny fix for double prompts printed when replying.
 
-2001-06-25 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-06-25 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Core dump fixes. Lots of 'em.
 	* lang/*.i18n: regenerate, update en_fun, de.
 
-2001-06-25 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-06-25 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Add bright red color COLERR.
 	* New functions CmdUserLookup, CmdUserLookupName.
 	* Use them to replace <whatever>_cmd strings.
@@ -1811,7 +1812,7 @@
 	  option to it.
 	* Don't have problems with empty auto response strings.
 
-2001-06-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-06-24 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* rename ui.(c|h) as cmd_user.(c|h) and rename all user functions
 	  as CmdUser<something>, turn some commands into explicit functions,
 	  create a jump table containing all those functions and their
@@ -1821,16 +1822,16 @@
 	  call last function again). Since "alter"ed command names are
 	  in the jump table, they don't work yet. (=> alter is broken).
 
-2001-06-20 Benjamin Michotte <binny@baby-linux.net>
+2001-06-20 Benjamin Michotte <binny __at__ baby-linux __dot__ net>
 	* lang/fr.i18n: update.
 
-2001-06-17 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-06-17 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Get rid of UNIX and FUNNY_MSGS.
 	* Move #include <time.h> to micq.h and protect <sys/time.h>.
 	* Catch SIGTSTOP and SIKCONT to restore/prepare terminal.
 	* Fix terminal restore on reconnect.
 
-2001-06-15 James Morrison <ja2morrison@student.math.uwaterloo.ca>, rk
+2001-06-15 James Morrison <ja2morrison __at__ student __dot__ math __dot__ uwaterloo __dot__ ca>, rk
 	* src/ui.c:
 	  help patch from James Morrison, but \t and \n moved to format
 	  string, and indenting used.
@@ -1840,15 +1841,15 @@
 	  Regenerated; white space changes of this and earlier check ins
 	  merged into some *.i18n files.
 
-2001-06-12 James Morrison <ja2morrison@student.math.uwaterloo.ca>
+2001-06-12 James Morrison <ja2morrison __at__ student __dot__ math __dot__ uwaterloo __dot__ ca>
 	* src/ui.c: Add help for trans, wide, tabs
 	* doc/micq.7, doc/micqrc.5: new.
 	* README: add info to run ./prepare.
 
-2001-06-12 Björn Hansson <hansson@netera.se>
+2001-06-12 Björn Hansson <hansson __at__ netera __dot__ se>
 	* lang/se.i18n: update.
 
-2001-06-11 Keith Kelley <kkelley@locallink.net>
+2001-06-11 Keith Kelley <kkelley __at__ locallink __dot__ net>
 	* src/icq_response.c, include/micq.h:
 	  New understood packets META_SRV_WP_FOUND, META_SRV_WP_LAST_USER.
 	* src/sendmsg.c, include/sendmsg.h:
@@ -1857,39 +1858,39 @@
 	  New function Wp_Search() for th UI part of the search, bound
 	  to new command "wpsearch".
 
-2001-05-31 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-05-31 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* src/ui.c:
 	  Fixed togvis, togig based on patch by Sander Smeenk
 	* lang/*: Regenerate.
 	* lang/i18n-template: Fixed stupid harmless bug.
 	* src/util.c: Clean up UIN2Contact().
 
-2001-05-31 Michel Oosterhof <micheloo@xs4all.nl>
+2001-05-31 Michel Oosterhof <micheloo __at__ xs4all __dot__ nl>
 	* src/file_utils.c, include/file_utils.h:
 	  Fix termination of wrong string with '\0', use HAVE_UNISTD_H
 	  instead of UNIX, tighten Set_rcfile parameter to const.
 
-2001-05-24 Dmitri Lukyanov <ldv@sdsl-64-7-10-170.dsl.iad.megapath.net>
+2001-05-24 Dmitri Lukyanov <ldv __at__ sdsl-64-7-10-170 __dot__ dsl __dot__ iad __dot__ megapath __dot__ net>
 	* lang/ru.i18n: Update language/country name translations again.
 
-2001-05-23 Björn Hansson <hansson@netera.se>
+2001-05-23 Björn Hansson <hansson __at__ netera __dot__se>
 	* lang/se.i18n: update.
 
-2001-05-23 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-05-23 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	+ configure.in: prefer *-2.50 for autoconf, autoheader.
 	* configure.in: complain if necessary functions are missing.
 	* prepare: added to create generated files.
 	* Makefile.am: add cvsclean target.
 	* .cvsignore, */.cvsignore: added.
 
-2001-05-23 Michel Oosterhof <micheloo@xs4all.nl>
+2001-05-23 Michel Oosterhof <micheloo __at__ xs4all __dot__ nl>
 	* add support for autoconf/automake
 	* src/*.c: Add cvs tag
 
-2001-05-20 Dmitri Lukyanov <ldv@sdsl-64-7-10-170.dsl.iad.megapath.net>
+2001-05-20 Dmitri Lukyanov <ldv __at__ sdsl-64-7-10-170 __dot__ dsl __dot__ iad __dot__ megapath __dot__ net>
 	* lang/ru.i18n: Update language/country name translations.
 
-2001-05-12 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-05-12 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* lang/i18n-*: Mark changed translation strings.
 	* lang/*.i18n: Regenerate, update de.i18n.
 	* src/*: Fix lots of plenking and get as much formatting
@@ -1900,13 +1901,13 @@
 	  changes he entered.
 	* include/buildmark.h: Upped pl.
 
-2001-05-04 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-05-04 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* src/util_ui.c: Fix output glitch.
 
-2001-05-02 Rico Glöckner <mc@ukeer.de>
+2001-05-02 Rico Glöckner <mc __at__ ukeer __dot__ de>
 	* fixed tiny Input bug
 
-2001-04-27 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-04-27 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Makefile, src/Makefile: Fixes.
 	* include/micq.h, include/color.h:
 	  Move color #defines to color.h, add #defines for COL*, which
@@ -1925,7 +1926,7 @@
 	  Enlarge array for more i18n strings. Add debug option to also
 	  print string numbers.
 
-2001-04-26 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-04-26 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Makefile, src/Makefile, src/i18n.c, src/server.c,
 	  include/config.h:
 	  Adapt from Debian changes (by maintainer Sander Smeenk
@@ -1936,7 +1937,7 @@
 	* lang/i18n-extract, lang/i18n-number, lang/i18n-template:
 	  New scripts to number, extract and copy string to be translated.
 	* src/file_util.c, src/ui.c:
-	  Patch to modify sound command from Shane Wegner <shane@cm.nu>,
+	  Patch to modify sound command from Shane Wegner <shane __at__ cm __dot__ nu>,
 	  modified for i18n.
 	* src/micq.c:
 	  Timestamp for auto status change.
@@ -1944,7 +1945,7 @@
 	  New "trans" function. Info about translation, loads new
 	  translation, print given or all translation texts.
 	  
-2001-04-23 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-04-23 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* include/*.h, src/*.c:
 	  Finish moving prototypes to individual files. Make functions
 	  static that are supposed to.
@@ -1958,7 +1959,7 @@
 	  Overwrite rc file on save. Allow spaces before UINs in rc file.
 	  Align on output.
 
-2001-04-18 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-04-18 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* include/*.h, src/*.c:
 	  Rename DWORD, WORD, BYTE, S_DWORD, S_WORD, S_BYTE, INT32, INT16,
 	  INT8, U_INT32, U_INT16, U_INT8 to UDWORD, UWORD, UBYTE, SDWORD,
@@ -1983,11 +1984,11 @@
 	* src/mreadline.c:
 	  Fix tab handling. Fix ^k.
 
-2001-04-18 Rico "mc" Glöckner <mc@verdinet.de>
+2001-04-18 Rico "mc" Glöckner <mc __at__ verdinet __dot__ de>
 	* added Makefile for lang/
 	* AUTHORS file complemented
 
-2001-04-17 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-04-17 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* include/*.h, src/*.c:
 	  Move prototypes to proper place. Remove lang.h.
 	  Add necessary #includes.
@@ -2009,7 +2010,7 @@
 	* src/util_ui.c:
 	  Add M_fdopen() to wrap the open() call.
 
-2001-04-13 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-04-13 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* include/micq.h, src/msg_queue.c, src/server.c, src/util.c:
 	  ICQ# with 9 digits start showing up, so use 10 instead of 8 digits
 	  for UIN/nick. Thus, rename Print_UIN_Name_8 to Print_UIN_Name_10.
@@ -2032,7 +2033,7 @@
 	* src/file_util.c, src/micq.c, src/server.c, src/util_ui.c:
 	  Minor cleanups.
 
-2001-03-24 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-03-24 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* src/server.c: Send login message 2 only once.
 	* include/config.h: Add #defines MSGSENTSTR, MSGACKSTR, MSGRECSTR
 	  for the strings denoting a sent, acknowledged resp. received
@@ -2045,11 +2046,11 @@
 	  anymore.
 	* include/micq.h: Upped version to 0.4.6p2.
 
-2001-03-24 Huub Reuver <theanaloguekid@tak.dhis.org>
+2001-03-24 Huub Reuver <theanaloguekid __at__ tak __dot__ dhis __dot__ org>
 	* src/file_util.c: Changed order of included files to cure
 	  warnings on FreeBSD.
 
-2001-03-23 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-03-23 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* src/file_util.c, src/micq.c, include/micq.h: Add config option
 	  "Del_is_Del" tied to global BOOL del_is_bs, (default TRUE).
 	* src/mreadline.c: Put backspace and delete processing into
@@ -2064,7 +2065,7 @@
 	* include/ui.h, src/ui.c, src/util_ui.c: Change prompt to contain
 	  last used UIN's name, if last_uin_prompt is set.
 
-2001-03-23 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+2001-03-23 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* src/mselect.c: Zero fd set on failure of select() (e.g. caused
 	  by interruption by SIGWINCH), which could freeze micq till a
 	  server input.
@@ -2082,9 +2083,9 @@
 	  Do not segfault if $HOME is unset.
 
 Feb 11, 2001
-mc - changed Language Behaviour (Patch submitted by l@kondara.org) 
-mc - ignoring non-alphanumerical chars before command (euro@hq.alert.sk)
-mc - ignoring spaces at the end of a nick (euro@hq.alert.sk)
+mc - changed Language Behaviour (Patch submitted by l __at__ kondara __dot__ org) 
+mc - ignoring non-alphanumerical chars before command (euro __at__ hq __dot__ alert __dot__ sk)
+mc - ignoring spaces at the end of a nick (euro __at__ hq __dot__ alert __dot__ sk)
 
 Jan 20, 2001
 mc - cleaned up code into subdirs 
