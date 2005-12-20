@@ -48,6 +48,7 @@
 #endif
 #include "file_util.h"
 #include "preferences.h"
+#include "connection.h"
 #include "util_ui.h"
 #include "conv.h"
 #include "contact.h"
@@ -199,6 +200,7 @@ static FILE *PrefOpenStat (Preferences *pref)
 BOOL PrefLoad (Preferences *pref)
 {
     FILE *rcf, *stf;
+    Connection *conn;
     Contact *cont;
     int i;
     BOOL ok = TRUE;
@@ -233,6 +235,13 @@ BOOL PrefLoad (Preferences *pref)
             if (0)
         case 2:
             pref->enc_loc = ENC_AUTO;
+        case 3:
+            for (i = 0; (conn = ConnectionNr (i)); i++)
+            {
+                cont = ContactFind (conn->contacts, 0, 82274703, NULL);
+                if (cont)
+                    OptSetVal (&cont->copts, CO_WANTSBL, 0);
+            }
         case AUTOUPDATE_CURRENT:
         default:
             pref->autoupdate = AUTOUPDATE_CURRENT;

@@ -90,6 +90,9 @@ void SrvCallBackFlap (Event *event)
             FlapChannel4 (conn, event->pak);
             break;
         case 5: /* Ping */
+            if (PacketReadLeft (event->pak))
+                FlapPrint (event->pak);
+            break;
         default:
             rl_printf (i18n (1884, "FLAP with unknown channel %ld received.\n"), event->pak->cmd);
     }
