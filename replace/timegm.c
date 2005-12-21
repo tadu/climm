@@ -57,15 +57,16 @@ time_t portable_timegm (struct tm *tm)
 #if HAVE_TIMEZONE
     stamp = *tm;
     stamp.tm_sec -= timezone;
+    stamp.tm_isdst = 0;
 #elif HAVE_TM_GMTOFF
     time_t now = time (NULL);
     unsigned long s;
     stamp = *localtime (&now);
     s = -stamp.tm_gmtoff;
-    *stamp = *tm;
+    stamp = *tm;
     stamp.tm_sec += s;
 #else
-    *stamp = *tm;    
+    stamp = *tm;    
 #endif
     return mktime (&stamp);
 }
