@@ -169,7 +169,7 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
         opt = OptSetVals (NULL, CO_MSGTEXT, opt_files, 0);
         if (!OptGetStr (event->wait->opt, CO_REFUSE, &txt))
             txt = "";
-        IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_REJING, txt, opt);
+        IMIntMsg (cont, serv, NOW, STATUS_ICQOFFLINE, INT_FILE_REJING, txt, opt);
         return FALSE;
     }
     ASSERT_FILELISTEN (flist);
@@ -187,7 +187,7 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     fpeer->reconnect = &TCPDispatchReconn;
 
     opt = OptSetVals (NULL, CO_BYTES, opt_bytes, CO_MSGTEXT, opt_files, 0);
-    IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_FILE_ACKING, "", opt);
+    IMIntMsg (cont, serv, NOW, STATUS_ICQOFFLINE, INT_FILE_ACKING, "", opt);
     
     return TRUE;
 }

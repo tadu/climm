@@ -80,7 +80,7 @@ static void Idle_Check (Connection *conn)
     if (~conn->type & TYPEF_ANY_SERVER)
         return;
 
-    if ((conn->status & (STATUSF_DND | STATUSF_OCC | STATUSF_FFC))
+    if ((conn->status & (STATUSF_ICQDND | STATUSF_ICQOCC | STATUSF_ICQFFC))
         || !(conn->connect & CONNECT_OK))
     {
         uiG.idle_val = 0;
@@ -101,23 +101,23 @@ static void Idle_Check (Connection *conn)
             switch (saver)
             {
                 case 0: /* no screen saver, not locked */
-                    if (!(conn->status & (STATUSF_AWAY | STATUSF_NA)))
+                    if (!(conn->status & (STATUSF_ICQAWAY | STATUSF_ICQNA)))
                         return;
-                    new = (conn->status & STATUSF_INV) | STATUS_ONLINE;
+                    new = (conn->status & STATUSF_ICQINV) | STATUS_ICQONLINE;
                     uiG.idle_flag = 0;
                     break;
                 case 2: /* locked workstation */
                 case 3:
-                    if (conn->status & STATUS_NA)
+                    if (conn->status & STATUS_ICQNA)
                         return;
-                    new = (conn->status & STATUSF_INV) | STATUS_NA;
+                    new = (conn->status & STATUSF_ICQINV) | STATUS_ICQNA;
                     uiG.idle_msgs = 0;
                     uiG.idle_flag = 1;
                     break;
                 case 1: /* screen saver only */
-                    if ((conn->status & (STATUSF_AWAY | STATUSF_NA)) == STATUS_AWAY)
+                    if ((conn->status & (STATUSF_ICQAWAY | STATUSF_ICQNA)) == STATUS_ICQAWAY)
                         return;
-                    new = (conn->status & STATUSF_INV) | STATUS_AWAY;
+                    new = (conn->status & STATUSF_ICQINV) | STATUS_ICQAWAY;
                     uiG.idle_msgs = 0;
                     uiG.idle_flag = 1;
                     break;
@@ -138,30 +138,30 @@ static void Idle_Check (Connection *conn)
 
     if (uiG.idle_flag & 2)
     {
-        if (conn->status & STATUSF_NA)
+        if (conn->status & STATUSF_ICQNA)
         {
             if (delta < prG->away_time || !prG->away_time)
             {
-                new = (conn->status & STATUSF_INV) | STATUS_ONLINE;
+                new = (conn->status & STATUSF_ICQINV) | STATUS_ICQONLINE;
                 uiG.idle_flag = 0;
                 uiG.idle_val = 0;
             }
         }
-        else if (conn->status & STATUSF_AWAY)
+        else if (conn->status & STATUSF_ICQAWAY)
         {
             if (delta >= 2 * prG->away_time)
-                new = (conn->status & STATUSF_INV) | STATUS_NA;
+                new = (conn->status & STATUSF_ICQINV) | STATUS_ICQNA;
             else if (delta < prG->away_time || !prG->away_time)
             {
-                new = (conn->status & STATUSF_INV) | STATUS_ONLINE;
+                new = (conn->status & STATUSF_ICQINV) | STATUS_ICQONLINE;
                 uiG.idle_flag = 0;
                 uiG.idle_val = 0;
             }
         }
     }
-    else if (!uiG.idle_flag && delta >= prG->away_time && !(conn->status & (STATUSF_AWAY | STATUSF_NA)))
+    else if (!uiG.idle_flag && delta >= prG->away_time && !(conn->status & (STATUSF_ICQAWAY | STATUSF_ICQNA)))
     {
-        new = (conn->status & STATUSF_INV) | STATUS_AWAY;
+        new = (conn->status & STATUSF_ICQINV) | STATUS_ICQAWAY;
         uiG.idle_flag = 2;
         uiG.idle_msgs = 0;
     }
@@ -492,7 +492,7 @@ static void Init (int argc, char *argv[])
                     conn->status = arg_ss;
                 if (arg_p)
                     s_repl (&conn->passwd, arg_p);
-                if ((!arg_s || arg_ss != STATUS_OFFLINE) && (loginevent = conn->open (conn)))
+                if ((!arg_s || arg_ss != STATUS_ICQOFFLINE) && (loginevent = conn->open (conn)))
                     QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
                                      OptSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                      &CmdUserCallbackTodo);
@@ -503,7 +503,7 @@ static void Init (int argc, char *argv[])
                 arg_u = NULL;
             arg_p = arg_s = NULL;
             s_init (&arg_C, "", 0);
-            arg_ss = STATUS_ONLINE;
+            arg_ss = STATUS_ICQONLINE;
             conn = NULL;
         }
         else if (!strcmp (targv[i], "-p") || !strcmp (targv[i], "--passwd"))
@@ -513,19 +513,19 @@ static void Init (int argc, char *argv[])
             if ((arg_s = targv[++i]))
             {
                 if (!strncmp (arg_s, "inv", 3))
-                    arg_ss = STATUS_INV;
+                    arg_ss = STATUS_ICQINV;
                 else if (!strcmp (arg_s, "dnd"))
-                    arg_ss = STATUS_DND;
+                    arg_ss = STATUS_ICQDND;
                 else if (!strcmp (arg_s, "occ"))
-                    arg_ss = STATUS_OCC;
+                    arg_ss = STATUS_ICQOCC;
                 else if (!strcmp (arg_s, "na"))
-                    arg_ss = STATUS_NA;
+                    arg_ss = STATUS_ICQNA;
                 else if (!strcmp (arg_s, "away"))
-                    arg_ss = STATUS_AWAY;
+                    arg_ss = STATUS_ICQAWAY;
                 else if (!strcmp (arg_s, "ffc"))
-                    arg_ss = STATUS_FFC;
+                    arg_ss = STATUS_ICQFFC;
                 else if (!strncmp (arg_s, "off", 3))
-                    arg_ss = STATUS_OFFLINE;
+                    arg_ss = STATUS_ICQOFFLINE;
                 else
                     arg_ss = atoll (arg_s);
             }
@@ -544,7 +544,7 @@ static void Init (int argc, char *argv[])
             {
                 if (conn->type & TYPEF_ANY_SERVER)
                 {
-                    if (conn->status != STATUS_OFFLINE && (loginevent = conn->open (conn)))
+                    if (conn->status != STATUS_ICQOFFLINE && (loginevent = conn->open (conn)))
                          QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
                                           OptSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                           &CmdUserCallbackTodo);

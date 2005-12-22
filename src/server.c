@@ -34,7 +34,7 @@ static void CallbackTogvis (Event *event)
 {
     if (!event)
         return;
-    if (!event->cont || !event->conn || ContactPrefVal (event->cont, CO_INTIMATE) || !(event->conn->status & STATUSF_INV))
+    if (!event->cont || !event->conn || ContactPrefVal (event->cont, CO_INTIMATE) || !(event->conn->status & STATUSF_ICQINV))
     {
         EventD (event);
         return;
@@ -58,7 +58,7 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Opt *opt)
     if (!OptGetVal (opt, CO_MSGTRANS, &opt_trans))
         OptSetVal (opt, CO_MSGTRANS, opt_trans = CV_MSGTRANS_ANY);
     
-    putlog (conn, NOW, cont, STATUS_ONLINE, 
+    putlog (conn, NOW, cont, STATUS_ICQONLINE, 
             opt_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, opt_type, opt_text);
 
     return IMCliReMsg (conn, cont, opt);
@@ -81,7 +81,7 @@ UBYTE IMCliReMsg (Connection *conn, Contact *cont, Opt *opt)
     if (!OptGetVal (opt, CO_MSGTRANS, &opt_trans))
         OptSetVal (opt, CO_MSGTRANS, opt_trans = CV_MSGTRANS_ANY);
     
-    if ((conn->status & STATUSF_INV)  && !ContactPrefVal (cont, CO_INTIMATE)
+    if ((conn->status & STATUSF_ICQINV)  && !ContactPrefVal (cont, CO_INTIMATE)
         && !(opt_type & MSGF_GETAUTO) && !ContactPrefVal (cont, CO_HIDEFROM)
         && (reveal_time = ContactPrefVal (cont, CO_REVEALTIME)))
     {

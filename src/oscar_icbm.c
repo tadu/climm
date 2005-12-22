@@ -169,7 +169,7 @@ JUMP_SNAC_F(SnacSrvAckmsg)
         const char *opt_text;
         if (OptGetStr (event->opt, CO_MSGTEXT, &opt_text));
         {
-            IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_TYPE2, opt_text, NULL);
+            IMIntMsg (cont, serv, NOW, STATUS_ICQOFFLINE, INT_MSGACK_TYPE2, opt_text, NULL);
             if ((~cont->oldflags & CONT_SEENAUTO) && strlen (text) && strcmp (text, opt_text))
             {
                 IMSrvMsg (cont, serv, NOW, OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8,
@@ -244,7 +244,7 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
             
             remenc = ContactPrefVal (cont, CO_ENCODING);
             
-            if (cont->status != STATUS_OFFLINE &&
+            if (cont->status != STATUS_ICQOFFLINE &&
                 HAS_CAP (cont->caps, CAP_UTF8) &&
                 !(cont->dc && cont->dc->id1 == (time_t)0xffffff42 &&
                   (cont->dc->id2 & 0x7fffffff) < (time_t)0x00040c00)) /* exclude old mICQ */
@@ -364,7 +364,7 @@ static void SnacCallbackType2 (Event *event)
         if (serv->connect & CONNECT_OK)
         {
             if (event->attempts > 1)
-                IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGTRY_TYPE2,
+                IMIntMsg (cont, serv, NOW, STATUS_ICQOFFLINE, INT_MSGTRY_TYPE2,
                           opt_text, NULL);
             SnacSend (serv, PacketClone (pak));
             event->attempts++;
@@ -792,12 +792,12 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
         case 1:
             event2 = QueueDequeue (serv, QUEUE_TYPE1_RESEND_ACK, pak->ref);
             if (event2 && OptGetStr (event2->opt, CO_MSGTEXT, &text))
-                IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
+                IMIntMsg (cont, serv, NOW, STATUS_ICQOFFLINE, INT_MSGACK_V8, text, NULL);
             break;
         case 4:
             event2 = QueueDequeue (serv, QUEUE_TYPE4_RESEND_ACK, pak->ref);
             if (event2 && OptGetStr (event2->opt, CO_MSGTEXT, &text))
-                IMIntMsg (cont, serv, NOW, STATUS_OFFLINE, INT_MSGACK_V8, text, NULL);
+                IMIntMsg (cont, serv, NOW, STATUS_ICQOFFLINE, INT_MSGACK_V8, text, NULL);
             break;
         case 2: /* msg was received by server */
             event2 = QueueDequeue (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref);
@@ -816,22 +816,22 @@ void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, UWORD status,
                      UDWORD deststatus, UWORD flags, const char *msg)
 {
     if (msgtype == MSG_SSL_OPEN)       status = 0;
-    else if (status == (UWORD)STATUS_OFFLINE) /* keep */ ;
-    else if (status & STATUSF_DND)     status = STATUSF_DND  | (status & STATUSF_INV);
-    else if (status & STATUSF_OCC)     status = STATUSF_OCC  | (status & STATUSF_INV);
-    else if (status & STATUSF_NA)      status = STATUSF_NA   | (status & STATUSF_INV);
-    else if (status & STATUSF_AWAY)    status = STATUSF_AWAY | (status & STATUSF_INV);
-    else if (status & STATUSF_FFC)     status = STATUSF_FFC  | (status & STATUSF_INV);
-    else                               status &= STATUSF_INV;
+    else if (status == (UWORD)STATUS_ICQOFFLINE) /* keep */ ;
+    else if (status & STATUSF_ICQDND)     status = STATUSF_ICQDND  | (status & STATUSF_ICQINV);
+    else if (status & STATUSF_ICQOCC)     status = STATUSF_ICQOCC  | (status & STATUSF_ICQINV);
+    else if (status & STATUSF_ICQNA)      status = STATUSF_ICQNA   | (status & STATUSF_ICQINV);
+    else if (status & STATUSF_ICQAWAY)    status = STATUSF_ICQAWAY | (status & STATUSF_ICQINV);
+    else if (status & STATUSF_ICQFFC)     status = STATUSF_ICQFFC  | (status & STATUSF_ICQINV);
+    else                                  status &= STATUSF_ICQINV;
     
     if      (flags != (UWORD)-1)           /* keep */ ;
-    else if (deststatus == (UWORD)STATUS_OFFLINE) /* keep */ ;
-    else if (deststatus & STATUSF_DND)     flags = TCP_MSGF_CLIST;
-    else if (deststatus & STATUSF_OCC)     flags = TCP_MSGF_CLIST;
-    else if (deststatus & STATUSF_NA)      flags = TCP_MSGF_1;
-    else if (deststatus & STATUSF_AWAY)    flags = TCP_MSGF_1;
-    else if (deststatus & STATUSF_FFC)     flags = TCP_MSGF_LIST | TCP_MSGF_1;
-    else                                   flags = TCP_MSGF_LIST | TCP_MSGF_1;
+    else if (deststatus == (UWORD)STATUS_ICQOFFLINE) /* keep */ ;
+    else if (deststatus & STATUSF_ICQDND)     flags = TCP_MSGF_CLIST;
+    else if (deststatus & STATUSF_ICQOCC)     flags = TCP_MSGF_CLIST;
+    else if (deststatus & STATUSF_ICQNA)      flags = TCP_MSGF_1;
+    else if (deststatus & STATUSF_ICQAWAY)    flags = TCP_MSGF_1;
+    else if (deststatus & STATUSF_ICQFFC)     flags = TCP_MSGF_LIST | TCP_MSGF_1;
+    else                                      flags = TCP_MSGF_LIST | TCP_MSGF_1;
 
     PacketWriteLen    (pak);
      PacketWrite2      (pak, seq);       /* sequence number */
@@ -942,29 +942,29 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     
     accept = FALSE;
 
-    if      (serv->status & STATUSF_DND)
+    if      (serv->status & STATUSF_ICQDND)
         ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTODND))  && *tauto ? tauto : ContactPrefStr (cont, CO_AUTODND);
-    else if (serv->status & STATUSF_OCC)
+    else if (serv->status & STATUSF_ICQOCC)
         ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTOOCC))  && *tauto ? tauto : ContactPrefStr (cont, CO_AUTOOCC);
-    else if (serv->status & STATUSF_NA)
+    else if (serv->status & STATUSF_ICQNA)
         ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTONA))   && *tauto ? tauto : ContactPrefStr (cont, CO_AUTONA);
-    else if (serv->status & STATUSF_AWAY)
+    else if (serv->status & STATUSF_ICQAWAY)
         ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTOAWAY)) && *tauto ? tauto : ContactPrefStr (cont, CO_AUTOAWAY);
     else
         ack_msg = "";
 
-/*  if (serv->status & STATUSF_DND)  ack_status  = pri & 4 ? TCP_ACK_ONLINE : TCP_ACK_DND; else
+/*  if (serv->status & STATUSF_ICQDND)  ack_status  = pri & 4 ? TCP_ACK_ONLINE : TCP_ACK_DND; else
  *
  * Don't refuse until we have sensible preferences for that
  */
-    if (serv->status & STATUSF_DND)  ack_status  = TCP_ACK_ONLINE; else
-    if (serv->status & STATUSF_OCC)  ack_status  = TCP_ACK_ONLINE; else
-    if (serv->status & STATUSF_NA)   ack_status  = TCP_ACK_NA;     else
-    if (serv->status & STATUSF_AWAY) ack_status  = TCP_ACK_AWAY;
-    else                             ack_status  = TCP_ACK_ONLINE;
+    if (serv->status & STATUSF_ICQDND)  ack_status  = TCP_ACK_ONLINE; else
+    if (serv->status & STATUSF_ICQOCC)  ack_status  = TCP_ACK_ONLINE; else
+    if (serv->status & STATUSF_ICQNA)   ack_status  = TCP_ACK_NA;     else
+    if (serv->status & STATUSF_ICQAWAY) ack_status  = TCP_ACK_AWAY;
+    else                                ack_status  = TCP_ACK_ONLINE;
 
     ack_flags = 0;
-    if (serv->status & STATUSF_INV)  ack_flags |= TCP_MSGF_INV;
+    if (serv->status & STATUSF_ICQINV)  ack_flags |= TCP_MSGF_INV;
 
     switch (msgtype & ~MSGF_MASS)
     {

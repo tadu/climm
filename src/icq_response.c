@@ -31,7 +31,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     if (status == cont->status)
         return;
     
-    if (status == STATUS_OFFLINE)
+    if (status == STATUS_ICQOFFLINE)
     {
         IMOffline (cont, conn);
         return;
@@ -43,11 +43,11 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     cont->status = status;
     cont->oldflags &= ~CONT_SEENAUTO;
     
-    putlog (conn, NOW, cont, status, old != STATUS_OFFLINE ? LOG_CHANGE : LOG_ONLINE, 0xFFFF, "");
+    putlog (conn, NOW, cont, status, old != STATUS_ICQOFFLINE ? LOG_CHANGE : LOG_ONLINE, 0xFFFF, "");
  
     if (!cont->group || ContactPrefVal (cont, CO_IGNORE)
-        || (!ContactPrefVal (cont, CO_SHOWONOFF)  && old == STATUS_OFFLINE)
-        || (!ContactPrefVal (cont, CO_SHOWCHANGE) && old != STATUS_OFFLINE)
+        || (!ContactPrefVal (cont, CO_SHOWONOFF)  && old == STATUS_ICQOFFLINE)
+        || (!ContactPrefVal (cont, CO_SHOWCHANGE) && old != STATUS_ICQOFFLINE)
         || (~conn->connect & CONNECT_OK))
         return;
     
@@ -65,7 +65,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     rl_printf (~old ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status));
     if (cont->version && !~old)
         rl_printf (" [%s]", cont->version);
-    if ((status & STATUSF_BIRTH) && (!(old & STATUSF_BIRTH) || !~old))
+    if ((status & STATUSF_ICQBIRTH) && (!(old & STATUSF_ICQBIRTH) || !~old))
         rl_printf (" (%s)", i18n (2033, "born today"));
     rl_print (".\n");
 
@@ -82,11 +82,11 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     {
         int cdata = 0;
 
-        if      (cont->status  & STATUSF_DND)    cdata = MSGF_GETAUTO | MSG_GET_DND;
-        else if (cont->status  & STATUSF_OCC)    cdata = MSGF_GETAUTO | MSG_GET_OCC;
-        else if (cont->status  & STATUSF_NA)     cdata = MSGF_GETAUTO | MSG_GET_NA;
-        else if (cont->status  & STATUSF_AWAY)   cdata = MSGF_GETAUTO | MSG_GET_AWAY;
-        else if (cont->status  & STATUSF_FFC)    cdata = MSGF_GETAUTO | MSG_GET_FFC;
+        if      (cont->status  & STATUSF_ICQDND)    cdata = MSGF_GETAUTO | MSG_GET_DND;
+        else if (cont->status  & STATUSF_ICQOCC)    cdata = MSGF_GETAUTO | MSG_GET_OCC;
+        else if (cont->status  & STATUSF_ICQNA)     cdata = MSGF_GETAUTO | MSG_GET_NA;
+        else if (cont->status  & STATUSF_ICQAWAY)   cdata = MSGF_GETAUTO | MSG_GET_AWAY;
+        else if (cont->status  & STATUSF_ICQFFC)    cdata = MSGF_GETAUTO | MSG_GET_FFC;
 
         if (cdata)
             IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, cdata, CO_MSGTEXT, "\xff", CO_FORCE, 1, 0));
@@ -105,14 +105,14 @@ void IMOffline (Contact *cont, Connection *conn)
     if (!cont)
         return;
     
-    if (cont->status == STATUS_OFFLINE)
+    if (cont->status == STATUS_ICQOFFLINE)
         return;
 
-    putlog (conn, NOW, cont, STATUS_OFFLINE, LOG_OFFLINE, 0xFFFF, "");
+    putlog (conn, NOW, cont, STATUS_ICQOFFLINE, LOG_OFFLINE, 0xFFFF, "");
 
     OptSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
     old = cont->status;
-    cont->status = STATUS_OFFLINE;
+    cont->status = STATUS_ICQOFFLINE;
 
     if (!cont->group || ContactPrefVal (cont, CO_IGNORE) || !ContactPrefVal (cont, CO_SHOWONOFF))
         return;
@@ -217,7 +217,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, in
 
     if (line)
     {
-        if (tstatus != STATUS_OFFLINE && (!cont || cont->status == STATUS_OFFLINE || !cont->group))
+        if (tstatus != STATUS_ICQOFFLINE && (!cont || cont->status == STATUS_ICQOFFLINE || !cont->group))
             rl_printf ("(%s) ", s_status (tstatus));
         
         rl_printf ("%s ", s_time (&stamp));
@@ -338,7 +338,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
            (opt_origin == CV_ORIGIN_v8) ? MSGTYPE2RECSTR : MSGICQRECSTR;
 
     putlog (conn, stamp, cont,
-        OptGetVal (opt, CO_STATUS, &opt_status) ? opt_status : STATUS_OFFLINE, 
+        OptGetVal (opt, CO_STATUS, &opt_status) ? opt_status : STATUS_ICQOFFLINE, 
         (opt_type == MSG_AUTH_ADDED) ? LOG_ADDED : LOG_RECVD, opt_type,
         cdata);
     

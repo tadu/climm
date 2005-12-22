@@ -139,13 +139,13 @@ static jump_t jump[] = {
     { &CmdUserSoundOffline,  "soundoffline", 2,   0 },
     { &CmdUserAutoaway,      "autoaway",     2,   0 },
     { &CmdUserChange,        "change",       1,  -1 },
-    { &CmdUserChange,        "online",       1, STATUS_ONLINE },
-    { &CmdUserChange,        "away",         1, STATUS_AWAY },
-    { &CmdUserChange,        "na",           1, STATUS_NA   },
-    { &CmdUserChange,        "occ",          1, STATUS_OCC  },
-    { &CmdUserChange,        "dnd",          1, STATUS_DND  },
-    { &CmdUserChange,        "ffc",          1, STATUS_FFC  },
-    { &CmdUserChange,        "inv",          1, STATUS_INV  },
+    { &CmdUserChange,        "online",       1, STATUS_ICQONLINE },
+    { &CmdUserChange,        "away",         1, STATUS_ICQAWAY },
+    { &CmdUserChange,        "na",           1, STATUS_ICQNA   },
+    { &CmdUserChange,        "occ",          1, STATUS_ICQOCC  },
+    { &CmdUserChange,        "dnd",          1, STATUS_ICQDND  },
+    { &CmdUserChange,        "ffc",          1, STATUS_ICQFFC  },
+    { &CmdUserChange,        "inv",          1, STATUS_ICQINV  },
     { &CmdUserClear,         "clear",        2,   0 },
     { &CmdUserTogIgnore,     "togig",        0,   0 },
     { &CmdUserTogVisible,    "togvis",       0,   0 },
@@ -248,13 +248,13 @@ static JUMP_F(CmdUserChange)
         if (!s_parseint (&args, &data))
         {
             rl_print (i18n (1703, "Status modes:\n"));
-            rl_printf ("  %-20s %d\n", i18n (1921, "Online"),         STATUS_ONLINE);
-            rl_printf ("  %-20s %d\n", i18n (1923, "Away"),           STATUS_AWAY);
-            rl_printf ("  %-20s %d\n", i18n (1922, "Do not disturb"), STATUS_DND);
-            rl_printf ("  %-20s %d\n", i18n (1924, "Not Available"),  STATUS_NA);
-            rl_printf ("  %-20s %d\n", i18n (1927, "Free for chat"),  STATUS_FFC);
-            rl_printf ("  %-20s %d\n", i18n (1925, "Occupied"),       STATUS_OCC);
-            rl_printf ("  %-20s %d\n", i18n (1926, "Invisible"),      STATUS_INV);
+            rl_printf ("  %-20s %d\n", i18n (1921, "Online"),         STATUS_ICQONLINE);
+            rl_printf ("  %-20s %d\n", i18n (1923, "Away"),           STATUS_ICQAWAY);
+            rl_printf ("  %-20s %d\n", i18n (1922, "Do not disturb"), STATUS_ICQDND);
+            rl_printf ("  %-20s %d\n", i18n (1924, "Not Available"),  STATUS_ICQNA);
+            rl_printf ("  %-20s %d\n", i18n (1927, "Free for chat"),  STATUS_ICQFFC);
+            rl_printf ("  %-20s %d\n", i18n (1925, "Occupied"),       STATUS_ICQOCC);
+            rl_printf ("  %-20s %d\n", i18n (1926, "Invisible"),      STATUS_ICQINV);
             return 0;
         }
     }
@@ -269,12 +269,12 @@ static JUMP_F(CmdUserChange)
     if (!(arg1 = s_parserem (&args)))
         arg1 = "";
 
-    if      (data & STATUSF_DND)  OptSetStr (&prG->copts, CO_TAUTODND,  arg1);
-    else if (data & STATUSF_OCC)  OptSetStr (&prG->copts, CO_TAUTOOCC,  arg1);
-    else if (data & STATUSF_NA)   OptSetStr (&prG->copts, CO_TAUTONA,   arg1);
-    else if (data & STATUSF_AWAY) OptSetStr (&prG->copts, CO_TAUTOAWAY, arg1);
-    else if (data & STATUSF_FFC)  OptSetStr (&prG->copts, CO_TAUTOFFC,  arg1);
-    else if (data & STATUSF_INV)  OptSetStr (&prG->copts, CO_TAUTOINV,  arg1);
+    if      (data & STATUSF_ICQDND)  OptSetStr (&prG->copts, CO_TAUTODND,  arg1);
+    else if (data & STATUSF_ICQOCC)  OptSetStr (&prG->copts, CO_TAUTOOCC,  arg1);
+    else if (data & STATUSF_ICQNA)   OptSetStr (&prG->copts, CO_TAUTONA,   arg1);
+    else if (data & STATUSF_ICQAWAY) OptSetStr (&prG->copts, CO_TAUTOAWAY, arg1);
+    else if (data & STATUSF_ICQFFC)  OptSetStr (&prG->copts, CO_TAUTOFFC,  arg1);
+    else if (data & STATUSF_ICQINV)  OptSetStr (&prG->copts, CO_TAUTOINV,  arg1);
 
     if (~conn->connect & CONNECT_OK)
         conn->status = data;
@@ -788,7 +788,7 @@ static JUMP_F(CmdUserPeek)
     
     if (data || s_parsekey (&args, "all"))
         for (i = 0, cg = conn->contacts; (cont = ContactIndex (cg, i)); i++)
-            if (ContactPrefVal (cont, CO_PEEKME) && (cont->status == STATUS_OFFLINE))
+            if (ContactPrefVal (cont, CO_PEEKME) && (cont->status == STATUS_ICQOFFLINE))
                 SnacCliRequserinfo (conn, cont, -1);
 
     if ((cg = s_parselistrem (&args, conn)))
@@ -913,12 +913,12 @@ static JUMP_F(CmdUserGetAuto)
             one = 1;
             if (!(cdata = data))
             {
-                if      (cont->status == STATUS_OFFLINE) continue;
-                else if (cont->status  & STATUSF_DND)    cdata = MSGF_GETAUTO | MSG_GET_DND;
-                else if (cont->status  & STATUSF_OCC)    cdata = MSGF_GETAUTO | MSG_GET_OCC;
-                else if (cont->status  & STATUSF_NA)     cdata = MSGF_GETAUTO | MSG_GET_NA;
-                else if (cont->status  & STATUSF_AWAY)   cdata = MSGF_GETAUTO | MSG_GET_AWAY;
-                else if (cont->status  & STATUSF_FFC)    cdata = MSGF_GETAUTO | MSG_GET_FFC;
+                if      (cont->status == STATUS_ICQOFFLINE) continue;
+                else if (cont->status  & STATUSF_ICQDND)    cdata = MSGF_GETAUTO | MSG_GET_DND;
+                else if (cont->status  & STATUSF_ICQOCC)    cdata = MSGF_GETAUTO | MSG_GET_OCC;
+                else if (cont->status  & STATUSF_ICQNA)     cdata = MSGF_GETAUTO | MSG_GET_NA;
+                else if (cont->status  & STATUSF_ICQAWAY)   cdata = MSGF_GETAUTO | MSG_GET_AWAY;
+                else if (cont->status  & STATUSF_ICQFFC)    cdata = MSGF_GETAUTO | MSG_GET_FFC;
                 else continue;
             }
             IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, cdata, CO_MSGTEXT, "\xff", CO_FORCE, 1, 0));
@@ -1482,14 +1482,14 @@ static UDWORD __status (Contact *cont)
 {
     if (ContactPrefVal (cont, CO_IGNORE))   return 0xfffffffe;
     if (!cont->group)                       return 0xfffffffe;
-    if (cont->status == STATUS_OFFLINE)     return STATUS_OFFLINE;
-    if (cont->status  & STATUSF_BIRTH)      return STATUSF_BIRTH;
-    if (cont->status  & STATUSF_DND)        return STATUS_DND;
-    if (cont->status  & STATUSF_OCC)        return STATUS_OCC;
-    if (cont->status  & STATUSF_NA)         return STATUS_NA;
-    if (cont->status  & STATUSF_AWAY)       return STATUS_AWAY;
-    if (cont->status  & STATUSF_FFC)        return STATUS_FFC;
-    return STATUS_ONLINE;
+    if (cont->status == STATUS_ICQOFFLINE)     return STATUS_ICQOFFLINE;
+    if (cont->status  & STATUSF_ICQBIRTH)   return STATUSF_ICQBIRTH;
+    if (cont->status  & STATUSF_ICQDND)     return STATUS_ICQDND;
+    if (cont->status  & STATUSF_ICQOCC)     return STATUS_ICQOCC;
+    if (cont->status  & STATUSF_ICQNA)      return STATUS_ICQNA;
+    if (cont->status  & STATUSF_ICQAWAY)    return STATUS_ICQAWAY;
+    if (cont->status  & STATUSF_ICQFFC)     return STATUS_ICQFFC;
+    return STATUS_ICQONLINE;
 }
 
 static UDWORD __tuin, __lenuin, __lennick, __lenstat, __lenid, __totallen, __l;
@@ -1551,7 +1551,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
     if (prG->verbose && cont->dc)
         ver2 = strdup (s_sprintf (" <%08x:%08x:%08x>", (unsigned int)cont->dc->id1,
                                    (unsigned int)cont->dc->id2, (unsigned int)cont->dc->id3));
-    if (!OptGetVal (&cont->copts, cont->status == STATUS_OFFLINE ? CO_TIMESEEN : CO_TIMEONLINE, &tseen))
+    if (!OptGetVal (&cont->copts, cont->status == STATUS_ICQOFFLINE ? CO_TIMESEEN : CO_TIMEONLINE, &tseen))
         tseen = (time_t)-1;
 #ifdef WIP
     if (!OptGetVal (&cont->copts, CO_TIMEMICQ, &tmicq))
@@ -1644,8 +1644,8 @@ static JUMP_F(CmdUserStatusDetail)
     ContactGroup *cg = NULL, *tcg = NULL;
     Contact *cont = NULL;
     int i, j, k;
-    UDWORD stati[] = { 0xfffffffe, STATUS_OFFLINE, STATUS_DND,    STATUS_OCC, STATUS_NA,
-                                   STATUS_AWAY,    STATUS_ONLINE, STATUS_FFC, STATUSF_BIRTH };
+    UDWORD stati[] = { 0xfffffffe, STATUS_ICQOFFLINE, STATUS_ICQDND,    STATUS_ICQOCC, STATUS_ICQNA,
+                                   STATUS_ICQAWAY,    STATUS_ICQONLINE, STATUS_ICQFFC, STATUSF_ICQBIRTH };
     ANYCONN;
 
     if (!data)
@@ -1971,7 +1971,7 @@ static JUMP_F(CmdUserStatusWide)
 
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
-        if (cont->status == STATUS_OFFLINE)
+        if (cont->status == STATUS_ICQOFFLINE)
         {
             if (data)
             {
@@ -2027,7 +2027,7 @@ static JUMP_F(CmdUserStatusWide)
     for (i = 0; (cont = ContactIndex (cgon, i)); i++)
     {
         char ind = s_status (cont->status)[0];
-        if ((cont->status & 0xffff) == STATUS_ONLINE)
+        if ((cont->status & 0xffff) == STATUS_ICQONLINE)
             ind = ' ';
 
         if (!(i % columns))
@@ -2574,7 +2574,7 @@ static JUMP_F(CmdUserTogInvis)
                 OptSetVal (&cont->copts, CO_HIDEFROM, 0);
                 if (conn->type == TYPE_SERVER)
                 {
-                    if (!(conn->status & STATUSF_INV))
+                    if (!(conn->status & STATUSF_ICQINV))
                         SnacCliReminvis (conn, cont);
                 }
                 else
@@ -2589,7 +2589,7 @@ static JUMP_F(CmdUserTogInvis)
                 if (conn->type == TYPE_SERVER)
                 {
                     SnacCliAddinvis (conn, cont);
-                    if (i || (conn->status & STATUSF_INV))
+                    if (i || (conn->status & STATUSF_ICQINV))
                         SnacCliSetstatus (conn, conn->status, 3);
                 }
                 else
@@ -2629,7 +2629,7 @@ static JUMP_F(CmdUserTogVisible)
                 OptSetVal (&cont->copts, CO_INTIMATE, 0);
                 if (conn->type == TYPE_SERVER)
                 {
-                    if (conn->status & STATUSF_INV)
+                    if (conn->status & STATUSF_ICQINV)
                         SnacCliRemvisible (conn, cont);
                 }
                 else
@@ -2644,7 +2644,7 @@ static JUMP_F(CmdUserTogVisible)
                 if (conn->type == TYPE_SERVER)
                 {
                     SnacCliAddvisible (conn, cont);
-                    if (i || !(conn->status & STATUSF_INV))
+                    if (i || !(conn->status & STATUSF_ICQINV))
                         SnacCliSetstatus (conn, conn->status, 3);
                 }
                 else
@@ -3988,7 +3988,7 @@ static JUMP_F(CmdUserQuit)
     if (arg1)
     {
         for (i = 0; (cont = ContactIndex (NULL, i)); i++)
-            if (cont->group && cont->group->serv && cont->status != STATUS_OFFLINE && ContactPrefVal (cont, CO_TALKEDTO))
+            if (cont->group && cont->group->serv && cont->status != STATUS_ICQOFFLINE && ContactPrefVal (cont, CO_TALKEDTO))
                 IMCliMsg (cont->group->serv, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, arg1, 0));
     }
 

@@ -398,7 +398,7 @@ Event *ConnectionInitServer (Connection *conn)
     conn->reconnect= &SrvCallBackReconn;
     conn->close    = &FlapCliGoodbye;
     s_repl (&conn->server, conn->pref_server);
-    if (conn->status == STATUS_OFFLINE)
+    if (conn->status == STATUS_ICQOFFLINE)
         conn->status = conn->pref_status;
     
     if ((event = QueueDequeue2 (conn, QUEUE_DEP_OSCARLOGIN, 0, NULL)))
@@ -452,7 +452,7 @@ static void SrvCallBackReconn (Connection *conn)
         EventD (event);
     }
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
-        cont->status = STATUS_OFFLINE;
+        cont->status = STATUS_ICQOFFLINE;
 }
 
 static void SrvCallBackDoReconn (Event *event)
@@ -598,7 +598,7 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
         new->flags   = conn->flags & ~CONN_CONFIGURED;
         new->version = conn->version;
         new->uin     = 0;
-        new->pref_status  = STATUS_ONLINE;
+        new->pref_status  = STATUS_ICQONLINE;
         new->pref_server  = strdup (conn->pref_server);
         new->pref_port    = conn->pref_port;
         new->pref_passwd  = strdup (pass);
@@ -607,7 +607,7 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
     {
         new->version = 8;
         new->uin     = 0;
-        new->pref_status  = STATUS_ONLINE;
+        new->pref_status  = STATUS_ICQONLINE;
         new->pref_server  = strdup ("login.icq.com");
         new->pref_port    = 5190;
         new->pref_passwd  = strdup (pass);

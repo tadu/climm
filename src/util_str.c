@@ -318,23 +318,23 @@ const char *s_status (UDWORD status)
 {
     static char buf[200];
     
-    if (status == STATUS_OFFLINE)
+    if (status == STATUS_ICQOFFLINE)
         return i18n (1969, "offline");
  
-    if (status & STATUSF_INV)
+    if (status & STATUSF_ICQINV)
         snprintf (buf, sizeof (buf), "%s-", i18n (1975, "invisible"));
     else
         buf[0] = '\0';
     
-    if (status & STATUSF_DND)
+    if (status & STATUSF_ICQDND)
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1971, "do not disturb"));
-    else if (status & STATUSF_OCC)
+    else if (status & STATUSF_ICQOCC)
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1973, "occupied"));
-    else if (status & STATUSF_NA)
+    else if (status & STATUSF_ICQNA)
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1974, "not available"));
-    else if (status & STATUSF_AWAY)
+    else if (status & STATUSF_ICQAWAY)
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1972, "away"));
-    else if (status & STATUSF_FFC)
+    else if (status & STATUSF_ICQFFC)
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1976, "free for chat"));
     else if (buf[0])
         buf[strlen (buf) - 1] = '\0';

@@ -23,30 +23,30 @@ void Auto_Reply (Connection *conn, Contact *cont)
     if (!(prG->flags & FLAG_AUTOREPLY) || !cont)
         return;
 
-          if (conn->status & STATUSF_DND)
+          if (conn->status & STATUSF_ICQDND)
          temp = ContactPrefStr (cont, CO_TAUTODND);
-     else if (conn->status & STATUSF_OCC)
+     else if (conn->status & STATUSF_ICQOCC)
          temp = ContactPrefStr (cont, CO_TAUTOOCC);
-     else if (conn->status & STATUSF_NA)
+     else if (conn->status & STATUSF_ICQNA)
          temp = ContactPrefStr (cont, CO_TAUTONA);
-     else if (conn->status & STATUSF_AWAY)
+     else if (conn->status & STATUSF_ICQAWAY)
          temp = ContactPrefStr (cont, CO_TAUTOAWAY);
-     else if (conn->status & STATUSF_INV)
+     else if (conn->status & STATUSF_ICQINV)
          temp = ContactPrefStr (cont, CO_TAUTOINV);
      else
          return;
     
     if (!temp || !*temp)
     {
-              if (conn->status & STATUSF_DND)
+              if (conn->status & STATUSF_ICQDND)
              temp = ContactPrefStr (cont, CO_AUTODND);
-         else if (conn->status & STATUSF_OCC)
+         else if (conn->status & STATUSF_ICQOCC)
              temp = ContactPrefStr (cont, CO_AUTOOCC);
-         else if (conn->status & STATUSF_NA)
+         else if (conn->status & STATUSF_ICQNA)
              temp = ContactPrefStr (cont, CO_AUTONA);
-         else if (conn->status & STATUSF_AWAY)
+         else if (conn->status & STATUSF_ICQAWAY)
              temp = ContactPrefStr (cont, CO_AUTOAWAY);
-         else if (conn->status & STATUSF_INV)
+         else if (conn->status & STATUSF_ICQINV)
              temp = ContactPrefStr (cont, CO_AUTOINV);
     }
 

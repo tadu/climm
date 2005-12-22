@@ -205,7 +205,7 @@ JUMP_SNAC_F(SnacServerpause)
 #endif
     ConnectionInitServer(serv);
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
-        cont->status = STATUS_OFFLINE;
+        cont->status = STATUS_ICQOFFLINE;
 }
 
 /*
@@ -330,14 +330,14 @@ void SnacCliSetstatus (Connection *serv, UDWORD status, UWORD action)
     Packet *pak;
     
     if (ConnectionPrefVal (serv, CO_WEBAWARE))
-        status |= STATUSF_WEBAWARE;
+        status |= STATUSF_ICQWEBAWARE;
     if (ConnectionPrefVal (serv, CO_DCAUTH))
-        status |= STATUSF_DC_AUTH;
+        status |= STATUSF_ICQDC_AUTH;
     if (ConnectionPrefVal (serv, CO_DCCONT))
-        status |= STATUSF_DC_CONT;
+        status |= STATUSF_ICQDC_CONT;
     
     pak = SnacC (serv, 1, 0x1e, 0, 0);
-    if ((action & 1) && (status & STATUSF_INV))
+    if ((action & 1) && (status & STATUSF_ICQINV))
         SnacCliAddvisible (serv, 0);
     if (action & 1)
         PacketWriteTLV4 (pak, 6, status);
@@ -371,7 +371,7 @@ void SnacCliSetstatus (Connection *serv, UDWORD status, UWORD action)
         PacketWriteTLV2 (pak, 8, 0);
     }
     SnacSend (serv, pak);
-    if ((action & 1) && (~status & STATUSF_INV))
+    if ((action & 1) && (~status & STATUSF_ICQINV))
         SnacCliAddinvis (serv, 0);
 }
 
