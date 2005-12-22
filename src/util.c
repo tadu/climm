@@ -217,4 +217,6 @@ void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, c
     free (mynick);
     free (mytext);
     free (myscript);
+    free (mygroup);
+    free (myagent);
 }
