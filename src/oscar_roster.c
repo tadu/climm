@@ -327,10 +327,7 @@ void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs)
     for (i = 0; (cont = ContactIndex (cs, i)); i++)
     {
         if (cont->group && cont->group->serv && !ContactGroupPrefVal (cont->group, CO_ISSBL))
-        {
             SnacCliRosteradd (serv, cont->group, NULL);
-            OptSetVal (&cont->group->copts, CO_ISSBL, 1);
-        }
     }
     
     SnacCliAddstart (serv);
@@ -394,10 +391,7 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
         UWORD type = 0;
         
         if (!ContactGroupPrefVal (cg, CO_ISSBL))
-        {
             SnacCliRosteradd (serv, cg, NULL);
-            OptSetVal (&cg->copts, CO_ISSBL, 1);
-        }
         
         SnacCliAddstart (serv);
 
@@ -442,6 +436,7 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
         PacketWriteBLen     (pak);
         PacketWriteBLenDone (pak);
         SnacSend (serv, pak);
+        OptSetVal (&cg->copts, CO_ISSBL, 1);
     }
 }
 
