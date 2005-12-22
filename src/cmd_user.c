@@ -2816,21 +2816,32 @@ static JUMP_F(CmdUserRemove)
     int i;
     OPENCONN;
     
-    if (data != 1 && !(cg = s_parsecg (&args, conn)) && data == 2)
+    if (s_parsekey (&args, "all"))
+        all = 1;
+    
+    if (data != 1)
+        cg = s_parsecg (&args, conn);
+    
+    if (!cg && (data == 2))
     {
         rl_print (i18n (2240, "No contact group given.\n"));
         return 0;
     }
 
-    if (s_parsekey (&args, "all"))
-        all = 2;
-    else if (cg && data == 2)
-        all = 1;
-    
-    if (all && cg && cg->serv->contacts != cg)
+    if (all && cg && cg->serv->contacts == cg)
         return 0;
+    
+    if (all && cg)
+    {
+        while ((cont = ContactIndex (cg, 0)))
+        {
+            if (ContactRem (cg, cont) && data != 2)
+                rl_printf (i18n (2243, "Removed contact '%s' from group '%s'.\n"),
+                    cont->nick, cg->name);
+        }
+    }
 
-    if ((acg = s_parselistrem (&args, conn)))
+    else if ((acg = s_parselistrem (&args, conn)))
     {
         for (i = 0; (cont = ContactIndex (acg, i)); i++)
         {
@@ -2876,6 +2887,8 @@ static JUMP_F(CmdUserRemove)
         }
         rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     }
+    if (all && (data == 2))
+        ContactGroupD (cg);
     return 0;
 }
 
