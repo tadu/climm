@@ -90,7 +90,7 @@ void SrvCallBackFlap (Event *event)
             FlapChannel4 (conn, event->pak);
             break;
         case 5: /* Ping */
-            if (PacketReadLeft (event->pak))
+            if (PacketReadB4 (event->pak) || PacketReadLeft (event->pak))
                 FlapPrint (event->pak);
             break;
         default:
