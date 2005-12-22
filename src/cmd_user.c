@@ -1538,8 +1538,10 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
     char *stat, *ver = NULL, *ver2 = NULL;
     const char *ul = "";
     time_t tseen;
+    val_t vseen;
 #ifdef WIP
     time_t tmicq;
+    val_t vmicq;
 #endif
     char tbuf[100];
     
@@ -1551,11 +1553,13 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
     if (prG->verbose && cont->dc)
         ver2 = strdup (s_sprintf (" <%08x:%08x:%08x>", (unsigned int)cont->dc->id1,
                                    (unsigned int)cont->dc->id2, (unsigned int)cont->dc->id3));
-    if (!OptGetVal (&cont->copts, cont->status == STATUS_ICQOFFLINE ? CO_TIMESEEN : CO_TIMEONLINE, &tseen))
-        tseen = (time_t)-1;
+    if (!OptGetVal (&cont->copts, cont->status == STATUS_ICQOFFLINE ? CO_TIMESEEN : CO_TIMEONLINE, &vseen))
+        vseen = -1;
+    tseen = vseen;
 #ifdef WIP
-    if (!OptGetVal (&cont->copts, CO_TIMEMICQ, &tmicq))
-        tmicq = (time_t)-1;
+    if (!OptGetVal (&cont->copts, CO_TIMEMICQ, &vmicq))
+        vmicq = -1;
+    tmicq = vmicq;
 #endif
 
     if (tseen != (time_t)-1 && data & 2)
