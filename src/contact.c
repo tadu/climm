@@ -531,6 +531,13 @@ BOOL ContactRem (ContactGroup *group, Contact *cont DEBUGPARAM)
                     group->contacts[i] = group->contacts[--group->used];
                     group->contacts[group->used] = NULL;
                 }
+                if (cont->group == orig && orig)
+                {
+                    if (cont->group->serv)
+                        cont->group = cont->group->serv->contacts;
+                    else
+                        cont->group = NULL;
+                }
                 Debug (DEB_CONTACT, "rem   #%d %ld '%s' %p to %p", 0, cont->uin, cont->nick, cont, orig);
                 return TRUE;
             }
