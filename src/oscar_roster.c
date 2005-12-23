@@ -617,11 +617,13 @@ JUMP_SNAC_F(SnacSrvUpdateack)
     Event *event2;
     UWORD err;
     
-    while (PacketReadLeft (event->pak))
+    if (PacketReadLeft (event->pak))
     {
+        err = PacketReadB2 (event->pak);
+        SnacSrvUpdateack (event);
+
         event2 = QueueDequeue (serv, QUEUE_CHANGE_ROSTER, event->pak->ref);
         cont = event2 ? event2->cont : NULL;
-        err = PacketReadB2 (event->pak);
         
         switch (err)
         {
