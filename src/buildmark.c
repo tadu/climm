@@ -92,6 +92,12 @@
 #define EXTRAVERSION EXTRAVERSION_DEF " hand compiled"
 #endif
 
+#ifdef ENABLE_AUTOPACKAGE
+#define EV_AP "AP "
+#else
+#define EV_AP
+#endif
+
 #ifdef ENABLE_PEER2PEER
 #define EV_P2P "P2P "
 #else
@@ -110,7 +116,7 @@
 #define EV_SSL
 #endif
 
-#define EV EV_SSL EV_TCL EV_P2P
+#define EV EV_AP EV_SSL EV_TCL EV_P2P
 
 const UDWORD BuildPlatformID = BUILD_PLATFORM;
 

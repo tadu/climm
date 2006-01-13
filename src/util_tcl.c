@@ -53,6 +53,7 @@
 static Tcl_Interp *tinterp;
 static tcl_hook_p tcl_events = NULL;
 static tcl_hook_p tcl_msgs = NULL;
+static char tcl_inited = 0;
 
 static str_s buf = { NULL, 0, 0 };
 
@@ -276,7 +277,7 @@ void TCLEvent (Contact *cont, const char *type, const char *data)
 {
     const char *result;
     
-    if (tcl_events)
+    if (tcl_inited && tcl_events)
     {
         char *cdata = strdup (data);
         Tcl_ResetResult (tinterp);
@@ -294,6 +295,9 @@ void TCLMessage (Contact *from, const char *text)
     tcl_hook_p generic = NULL;
     char *uin = NULL;
     const char *result;
+
+    if (!tcl_inited)
+        return;
 
     if (from)
         uin = strdup (s_sprintf ("%lu", from->uin));
@@ -369,6 +373,7 @@ void TCLInit ()
 
     tcl_events = NULL;
     tcl_msgs = NULL;
+    tcl_inited = 1;
 
     /* execute start scripts defined in rc file */
     pref = prG->tclscript;
@@ -393,6 +398,12 @@ void TCLInit ()
 JUMP_F (CmdUserTclScript)
 {
     int result;
+    
+    if (!tcl_inited)
+    {
+        rl_printf (i18n (2582, "Install the Tcl 8.4 library and enjoy scripting in mICQ!\n"));
+        return 0;
+    }
 
     Tcl_ResetResult (tinterp);
     result = data ? Tcl_Eval (tinterp, args + 1) : Tcl_EvalFile (tinterp, args + 1);
