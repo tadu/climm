@@ -194,6 +194,13 @@ void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, c
     myscript = strdup (s_realpath (script));
     mygroup =  strdup (cont && cont->group && cont->group->name ? cont->group->name : "global");
 
+#if HAVE_SETENV
+    setenv ("MICQ_TEXT", mytext, 1);
+    setenv ("MICQ_NICK", mynick, 1);
+    setenv ("MICQ_AGENT", myagent, 1);
+    setenv ("MICQ_GROUP", mygroup, 1);
+#endif
+
     for (tmp = mytext; *tmp; tmp++)
         if (*tmp == '\'' || *tmp == '\\')
             *tmp = '"';
