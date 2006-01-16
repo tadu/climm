@@ -28,6 +28,23 @@ messages unreached by other ICQ clones.
 A lot of other ICQ clients are based in spirit on mICQ, nevertheless
 mICQ is still _the_ console based ICQ client.
 
+[Description:de]
+mICQ ist ein portables, kleines, aber dennoch leistungsfähiges
+Eingabezeilen-basierter ICQ-Programm. Es unterstützt
+das Ändern des Paßwortes, automatische Abwesenheit, Erzeugung von
+neuen Konstos, Suche, Dateiübertragung, bestätigte Nachrichten,
+SMS, das Erkennen von anderen ICQ-Programmen, Loggen, Skripten,
+Transkodieren, mehrere Kontos, und andere Eigenschaften, die es
+zu einem ziemlich vollständigen, aber einfachen internationalisierten
+ICQ-Programm mit Unterstützung für das aktuelle ICQ-Protokoll Version 8
+machen.
+.
+Es ist führend bei Unicode-Nachrichten (wie ICQ2002+/ICQ Lite/ICQ2go)
+und darin von anderen unoffiziellen ICQ-Programmen unerreicht.
+.
+Einige andere ICQ-Programme basieren im Geiste auf mICQ, dennoch
+ist mICQ immernoch _das_ textbasierte ICQ-Programm schlechthin.
+
 [BuildPrepare]
 prepareBuild --enable-autopackage --enable-iconvrepl
 mkdir -p "$build_root/doc" "$build_root/data"

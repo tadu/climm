@@ -1,5 +1,25 @@
 -*- coding: utf-8 -*-
 
+2006-01-15 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix tcl for autopackage
+	* export some environment variables in addition to parameters
+	  for event script
+	* prepare for 0.5.1.
+
+2005-12-20 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* autoupdate: un-set wantsbl flag on me
+	* fix bugs in timegm.c pointed out by rtc
+	* fix typo as pointed out by rtc
+	* fix mem leaks in util.c
+	* change #defines in micq.h to be ICQ-specific
+	* fix signedness warnings
+	* allow 4 zero-bytes in keep-alive flap
+	* make sure contact's group is not the group it was just removed from
+	* make sure group is marked as issbl after trying to add it
+	* fix rem[group] all to do what's documented
+	* fix order of packet processing (fixes display order of contact upload errors)
+	* some more syntax updates
+
 2005-12-11 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* AmigaOS: don't get home directory from system as that is fake anyway
 	* have to transcode date strings as they're locale specific
@@ -14,7 +34,7 @@
 	* another missing MSN change
 
 2005-11-21 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
-	* apply patch from Kim Krecht's: new autoauto option (Goman nasai for
+	* apply patch from Kim Krecht's: new autoauto option (Gomen nasai for
 	  the wrong attribution in the cvs log...)
 
 2005-09-02 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
