@@ -1213,3 +1213,7 @@
 2580:ignore
 2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
 2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
+2583:Location error: %d.\n
+2584:msn temp
+2585:msn server
+2586:msn chat

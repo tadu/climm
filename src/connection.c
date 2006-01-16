@@ -303,11 +303,11 @@ const char *ConnectionType (Connection *conn)
 {
     switch (conn->type) {
         case TYPE_MSN_TEMP:
-            return i18n (9999, "msn temp");
+            return i18n (2584, "msn temp");
         case TYPE_MSN_SERVER:
-            return i18n (9999, "msn server");
+            return i18n (2585, "msn server");
         case TYPE_MSN_CHAT:
-            return i18n (9999, "msn chat");
+            return i18n (2586, "msn chat");
         case TYPE_SERVER:
             return i18n (1889, "server");
         case TYPE_SERVER_OLD:
