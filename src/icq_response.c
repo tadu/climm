@@ -167,8 +167,8 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, in
         t++;
       if (*t)
       {
-        size_t l = strlen (t);
-        if (strcasecmp (t + l - 7, "</font>"))
+        size_t l = strlen (++t);
+        if (!strcasecmp (t + l - 7, "</font>"))
           t[l - 7] = 0;
         my_text = t;
       }
@@ -328,7 +328,7 @@ void HistShow (Contact *cont)
 void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
 {
     const char *tmp, *tmp2, *tmp3, *tmp4, *tmp5, *tmp6;
-    char *cdata;
+    char *cdata, *cdata_deleteme;
     const char *opt_text, *carr;
     UDWORD opt_type, opt_origin, opt_status, opt_bytes, opt_ref, j;
     int i;
@@ -341,9 +341,10 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
 
     if (!OptGetStr (opt, CO_MSGTEXT, &opt_text))
         opt_text = "";
-    cdata = strdup (opt_text);
+    cdata = cdata_deleteme = strdup (opt_text);
     while (*cdata && strchr ("\n\r", cdata[strlen (cdata) - 1]))
         cdata[strlen (cdata) - 1] = '\0';
+
     if (!OptGetVal (opt, CO_MSGTYPE, &opt_type))
         opt_type = MSG_NORM;
     if (!OptGetVal (opt, CO_ORIGIN, &opt_origin))
@@ -360,6 +361,20 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
         (opt_type == MSG_AUTH_ADDED) ? LOG_ADDED : LOG_RECVD, opt_type,
         cdata);
     
+    if (!strncasecmp (cdata, "<font ", 6))
+    {
+      char *t = cdata;
+      while (*t && *t != '>')
+        t++;
+      if (*t)
+      {
+        size_t l = strlen (++t);
+        if (!strcasecmp (t + l - 7, "</font>"))
+          t[l - 7] = 0;
+        cdata = t;
+      }
+    }
+
     if (ContactPrefVal (cont, CO_IGNORE))
     {
         free (cdata);
@@ -580,6 +595,6 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
             break;
         }
     }
-    free (cdata);
+    free (cdata_deleteme);
     OptD (opt);
 }
