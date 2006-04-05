@@ -121,7 +121,7 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
     UDWORD count[3];
     UDWORD nr, len, val, i, mem1, mem2, oldrpos, clev = -1;
     const char *f, *l, *last;
-    char *sub, lev, *tmp;
+    char *sub = NULL, lev, *tmp;
     
     assert (pak);
     assert (syntax);

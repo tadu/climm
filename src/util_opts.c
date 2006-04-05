@@ -217,7 +217,7 @@ const char *OptString (const Opt *opts)
 {
     static str_s str;
     int i, flag;
-    val_t val;
+    val_t val = 0;
     
     s_init (&str, "", 100);
     
@@ -254,7 +254,7 @@ const char *OptString (const Opt *opts)
 #undef OptGetStr
 BOOL OptGetStr (const Opt *opt, UDWORD flag, const char **res DEBUGPARAM)
 {
-    val_t val;
+    val_t val = 0;
 
     assert (flag & (COF_STRING | COF_COLOR));
 
