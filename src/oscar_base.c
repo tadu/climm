@@ -220,7 +220,7 @@ void FlapSave (Packet *pak, BOOL in)
 {
     FILE *logf;
     UDWORD oldrpos = pak->rpos;
-    char buf[200];
+    char buf[200], *d;
     
     snprintf (buf, sizeof (buf), "%sdebug", PrefUserDir (prG));
     mkdir (buf, 0700);
@@ -241,7 +241,8 @@ void FlapSave (Packet *pak, BOOL in)
                  PacketReadAtB2 (pak, 10), PacketReadAtB4 (pak, 12));
         pak->rpos = 16;
     }
-    fprintf (logf, PacketDump (pak, "", "", ""));
+    fprintf (logf, "%s", d = PacketDump (pak, "", "", ""));
+    free (d);
     pak->rpos = oldrpos;
     fclose (logf);
 }
