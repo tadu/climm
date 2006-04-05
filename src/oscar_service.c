@@ -258,7 +258,8 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     
     if (~serv->connect & CONNECT_OK)
     {
-        SnacCliSetrandom (serv, prG->chat);
+        if (prG->chat > 0)
+            SnacCliSetrandom (serv, prG->chat);
         serv->connect = CONNECT_OK | CONNECT_SELECT_R;
         QueueEnqueueData (serv, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
                           NULL, event->cont, NULL, &SrvCallBackKeepalive);
