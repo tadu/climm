@@ -86,7 +86,7 @@ const char *PrefDefUserDirReal (Preferences *pref)
     if (!pref->defaultbasedir)
     {
         const char *home;
-#if HAVE_GETPWUID && HAVE_GETUID
+#if HAVE_GETPWUID && HAVE_GETUID && !__AMIGA__
         struct passwd *pwd = getpwuid (getuid ());
 #endif
 #if defined(_WIN32) || (defined(__CYGWIN__) && defined(_X86_))
