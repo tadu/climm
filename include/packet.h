@@ -45,9 +45,9 @@ typedef enum {
 
 #define CAP_GID_UTF8    "{0946134E-4C7F-11D1-8222-444553540000}"
 
-#define HAS_CAP(caps,cap) (((caps)[cap / 32]) & (1UL << (cap % 32)))
-#define SET_CAP(caps,cap) ((caps)[cap / 32]) |= (1UL << (cap % 32))
-#define CLR_CAP(caps,cap) ((caps)[cap / 32]) &= ~(1UL << (cap % 32))
+#define HAS_CAP(caps,cap) (((caps)[(cap) / 32]) & (1UL << ((cap) % 32)))
+#define SET_CAP(caps,cap) ((caps)[(cap) / 32]) |= (1UL << ((cap) % 32))
+#define CLR_CAP(caps,cap) ((caps)[(cap) / 32]) &= ~(1UL << ((cap) % 32))
 
 Packet *PacketC        (DEBUG0PARAM);
 Packet *PacketCreate   (str_t str DEBUGPARAM);
