@@ -16,6 +16,25 @@
 #include "oscar_oldicq.h"
 #include "util_ui.h"
 
+#define META_SRV_GEN_UPDATE     100
+#define META_SRV_OTHER_UPDATE   120
+#define META_SRV_ABOUT_UPDATE   130
+#define META_SRV_SMS_OK         150
+#define META_SRV_PASS_UPDATE    170
+#define META_SRV_GEN            200
+#define META_SRV_WORK           210
+#define META_SRV_MORE           220
+#define META_SRV_ABOUT          230
+#define META_SRV_INTEREST       240
+#define META_SRV_BACKGROUND     250
+#define META_SRV_MOREEMAIL      235
+#define META_SRV_INFO           260
+#define META_SRV_UNKNOWN_270    270
+#define META_SRV_WP_FOUND       420
+#define META_SRV_WP_LAST_USER   430
+#define META_SRV_RANDOM         870
+#define META_SRV_RANDOM_UPDATE  880
+
 void Auto_Reply (Connection *conn, Contact *cont)
 {
     const char *temp;
@@ -245,6 +264,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             break;
         case META_SRV_MOREEMAIL:
             ContactMetaD (cont->meta_email);
+            cont->meta_email = NULL;
             if ((i = PacketRead1 (pak)))
             {
                 for (j = 0; j < i; j++)

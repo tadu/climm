@@ -4310,15 +4310,13 @@ static JUMP_F(CmdUserUpdate)
         case 302:
             s_repl (&user->last, args);
             s_repl (&user->email, NULL);
+            ContactMetaD (cont->meta_email);
+            cont->meta_email = NULL;
             ReadLinePromptSet (i18n (1556, "Enter your new email address:"));
             return ++status;
         case 303:
-            if (!user->email && args)
-            {
+            if (!user->email && args && *args)
                 user->email = strdup (args);
-                ContactMetaD (cont->meta_email);
-                cont->meta_email = NULL;
-            }
             else if (args && *args)
                 ContactMetaAdd (&cont->meta_email, 0, args);
             else
@@ -4384,6 +4382,7 @@ static JUMP_F(CmdUserUpdate)
                 return status;
             }
             user->webaware = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
+#if 0
             ReadLinePromptSet (i18n (1857, "Do you want to hide your IP from other contacts? (YES/NO)"));
             return ++status;
         case 317:
@@ -4394,6 +4393,9 @@ static JUMP_F(CmdUserUpdate)
                 return status;
             }
             user->hideip = strcasecmp (args, i18n (1027, "YES")) ? FALSE : TRUE;
+#else
+            ++status;
+#endif
             ReadLinePromptSet (i18n (1622, "Do you want to apply these changes? (YES/NO)"));
             return ++status;
         case 318:

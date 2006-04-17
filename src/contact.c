@@ -752,8 +752,7 @@ BOOL ContactMetaSave (Contact *cont)
         fprintf (f, "g_country  %u\n", mg->country);
         fprintf (f, "g_tz       %d\n", mg->tz);
         fprintf (f, "g_flags    %u\n", (mg->auth ? 1 : 0)
-                                    + (mg->webaware ? 2 : 0)
-                                    + (mg->hideip ? 4 : 0));
+                                    + (mg->webaware ? 2 : 0));
     }
     if (cont->meta_work)
     {
@@ -909,7 +908,6 @@ BOOL ContactMetaLoad (Contact *cont)
             {
                 mg->auth     = i & 1 ? 1 : 0;
                 mg->webaware = i & 2 ? 1 : 0;
-                mg->hideip   = i & 4 ? 1 : 0;
             }}
         }
         else if (!strncmp (cmd, "w_", 2))

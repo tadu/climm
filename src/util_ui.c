@@ -163,13 +163,13 @@ void UtilUIDisplayMeta (Contact *cont)
                         mg->webaware == 2 ? i18n (1888, "not webaware") :
                                             s_sprintf ("%d", mg->webaware));
     }
+
+#if 0
     /* FIXME Needs to be flagged if this is set, otherwise it's output as zero
      * which is surely not correct in all cases.
      */
-    if (mg && 0)
-    {
-        rl_printf ("%s %s%d%s\n", al (i18n (2238, "Hide IP:")), COLQUOTE, mg->hideip, COLNONE);
-    }
+    i18n (2238, "Hide IP:")
+#endif
     if ((ml = cont->meta_email))
     {
         rl_printf ("%s%s%s\n", COLSERVER, i18n (1942, "Additional Email addresses:"), COLNONE);

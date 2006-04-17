@@ -38,7 +38,7 @@
 #define c_pin(x) ConvFrom (x, ENC_LATIN1)->txt
 
 static const char *syntable[] = {
-    "s1x1s",   "Wt[8W]",
+    "s1x1s",   "WT[8W]",
     "s1x2s",   "W-",
     "s1x3s",   "W-",
     "s1x4s",   "W-",
@@ -47,49 +47,49 @@ static const char *syntable[] = {
     "s1x8s",   "W-",
     "s1x10s",  "",
     "s1x14s",  "",
-    "s1x15s",  "uWWt[12gp2p]-",
-    "s1x19s",  "Wt-",
+    "s1x15s",  "uWWT[12gp2p]-",
+    "s1x19s",  "WT-",
     "s1x23s",  "D-",
     "s1x24s",  "D-",
-    "s1x30s",  "t[12gp2p]-",
-    "s2x1s",   "Wt[8W]",
-    "s2x3s",   "t-",
-    "s2x4s",   "t[5C-]-",
+    "s1x30s",  "T[12gp2p]-",
+    "s2x1s",   "WT[8W]",
+    "s2x3s",   "T-",
+    "s2x4s",   "T[5C-]-",
     "s2x5s",   "Wu",
-    "s2x6s",   "uWW{t[1D][6D][12gp2p][10D][15D][3D][5D]}t[1][2][3][4][5C-]-",
+    "s2x6s",   "uWW{T[1D][6D][12gp2p][10D][15D][3D][5D]}T[1][2][3][4][5C-]-",
     "s3x1s",   "WWu-",
     "s3x2s",   "",
-    "s3x3s",   "t-",
+    "s3x3s",   "T-",
     "s3x4s",   "u-",
     "s3x5s",   "u-",
     "s3x10s",  "u-",
-    "s3x11s",  "uWWt[13C-][12gp2p]-",
-    "s3x12s",  "uDt-",
+    "s3x11s",  "uWWT[13C-][12gp2p]-",
+    "s3x12s",  "uDT-",
     "s4x1s",   "W",
     "s4x2s",   "W-",
     "s4x4s",   "",
     "s4x5s",   "W-",
-    "s4x6s",   "DDW[1ut[2t[257WW]-]-][2ut[5WDDCt[10001(wCwdbw)wwdddwwwLDDS]-]-][4ut[5DWL]-]",
-    "s4x7s",   "DDW[1uWWt[2t[257WW]-]-][2uWWt[5WDDCt[10001(wCwdbw)wwdddwwwLDDS]-]-][4uWWt[5DWL]-]",
+    "s4x6s",   "DDW[1uT[2T[257WW]-]-][2uT[5WDDCT[10001(wCwdbw)wwdddwwwLDDS]-]-][4uT[5DWL]-]",
+    "s4x7s",   "DDW[1uWWT[2T[257WW]-]-][2uWWT[5WDDCT[10001(wCwdbw)wwdddwwwLDDS]-]-][4uWWT[5DWL]-]",
     "s4x11s",  "DDwuW(wCwdbw)wwdddwwwLDD",
     "s4x12s",  "DDwu",
     "s9x2s",   "",
-    "s9x3s",   "t-",
+    "s9x3s",   "T-",
     "s9x5s",   "u-",
     "s9x6s",   "u-",
     "s9x7s",   "u-",
     "s9x8s",   "u-",
     "s11x2s",  "W",
     "s19x2s",  "",
-    "s19x3s",  "t-",
+    "s19x3s",  "T-",
     "s19x4s",  "",
     "s19x5s",  "DW",
     "s19x6s",  "bWgs19x6cs",
-    "s19x6cs", "BWWW<t-)gs19x6cs",
+    "s19x6cs", "BWWW<T-)gs19x6cs",
     "s19x7s",  "",
-    "s19x8s",  "BWWW<t-)gs19x8s",
-    "s19x9s",  "BWWW<t-)gs19x9s",
-    "s19x10s", "uWWWWt-",
+    "s19x8s",  "BWWW<T-)gs19x8s",
+    "s19x9s",  "BWWW<T-)gs19x9s",
+    "s19x10s", "uWWWWT-",
     "s19x14s", "W-",
     "s19x15s", "DW",
     "s19x17s", "",
@@ -99,12 +99,15 @@ static const char *syntable[] = {
     "s19x25s", "uB",
     "s19x27s", "ubBW",
     "s19x28s", "u",
-    "s21x1s",  "Wt-",
-    "s21x2s",  "t[1wdww]-",
-    "s21x3s",  "t[1wdw,w.[2010w,b.[270bwLb]][65dwbbbbwL]]-",
-    "s23x1s",  "Wt[33DdWDDDD]-",
-    "s23x4s",  "t[1DDDDDDDDDDLDDW]-",
-    "s23x5s",  "t-",
+    "s21x1s",  "WT-",
+    "s21x2s",  "T[1wdw,w.[2000gs21x2m]]-",
+    "s21x2m",  "w[1030L][1232d][3130gmsall]",
+    "msall",   "t[600L]-",
+    "s21x3s",  "T[1wdw,w.[2010gs21x3m][65dwbbbbwL]]-",
+    "s21x3m",  "w,b.[270bwLb]"
+    "s23x1s",  "WT[33DdWDDDD]-",
+    "s23x4s",  "T[1DDDDDDDDDDLDDW]-",
+    "s23x5s",  "T-",
     "p2p",     "DDbWDWWWWDDDW",
     "peer",    "b[1bw][2gpeemsg][3dddddddd][255wwdwddDDbddddS]",
     "peemsg",  "dwwwdddw,wwL.[1DDS][26ggreet]",
@@ -221,7 +224,7 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
                 if (!i)
                     continue;
                 break;
-            case 't':
+            case 'T':
                 nr  = PacketReadAtB2 (pak, pak->rpos);
                 len = PacketReadAtB2 (pak, pak->rpos + 2);
                 if (pak->len < pak->rpos + len + 4) break;
@@ -282,6 +285,71 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
                 {
                     s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 4));
                     s_catf (&str, " %sTLV (%2lx)%s\n", coldebug, nr, colnone);
+                    s_cat  (&str, s_ind (s_dump (pak->data + pak->rpos + 4, len)));
+                }
+                pak->rpos += len + 4;
+                continue;
+            case 't': /* brain dead */
+                nr  = PacketReadAt2 (pak, pak->rpos);
+                len = PacketReadAt2 (pak, pak->rpos + 2);
+                if (pak->len < pak->rpos + len + 4) break;
+                sub = NULL;
+                for (f++; *f == '['; )
+                {
+                    char *t = NULL;
+                    for (val = 0, f++; strchr ("0123456789", *f); f++)
+                        val = 10 * val + *f - '0';
+                    if (nr == val)
+                        sub = t = strdup (f);
+                    for (lev = 1; *f && lev; f++)
+                    {
+                        if (strchr ("<[]", *f))
+                            lev += (*f == ']' ? -1 : 1);
+                        t++;
+                    }
+                    if (nr == val)
+                    {
+                        *t = '\0';
+                        if (t != sub)
+                            *--t = '\0';
+                    }
+                }
+                f--;
+                    
+                if (len == 2)
+                {
+                    val = PacketReadAt2 (pak, pak->rpos + 4);
+                    s_cat  (&str, s_dumpnd (pak->data + pak->rpos, len + 4));
+                    s_catf (&str, " %stlv (%2lx) 0x%04lx = %05lu%s\n", coldebug, nr, val, val, colnone);
+                }
+                else if (len == 4)
+                {
+                    val = PacketReadAt4 (pak, pak->rpos + 4);
+                    s_cat  (&str, s_dumpnd (pak->data + pak->rpos, len + 4));
+                    s_catf (&str, " %stlv (%2lx) 0x%08lx = %010lu%s\n", coldebug, nr, val, val, colnone);
+                }
+                else if (sub)
+                {
+                    Packet *p;
+                    str_s tt = { 0, 0, 0 };
+                    
+                    tt.txt = (char *)pak->data + pak->rpos + 4;
+                    tt.len = len;
+                    p = PacketCreate (&tt);
+                    
+                    s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 4));
+                    s_catf (&str, " %stlv (%2lx) \"%s\"%s\n", coldebug, nr, sub, colnone);
+                    s_cat  (&str, s_ind (tmp = PacketDump (p, sub, coldebug, colnone)));
+                    
+                    PacketD (p);
+                    p = NULL;
+                    free (sub);
+                    free (tmp);
+                }
+                else
+                {
+                    s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 4));
+                    s_catf (&str, " %stlv (%2lx)%s\n", coldebug, nr, colnone);
                     s_cat  (&str, s_ind (s_dump (pak->data + pak->rpos + 4, len)));
                 }
                 pak->rpos += len + 4;

@@ -13,22 +13,44 @@ typedef struct
     BOOL online;
 } MetaWP;
 
-#define META_SET_GENERAL_INFO_v5 1001
-#define META_SET_GENERAL_INFO    1002
-#define META_SET_WORK_INFO       1011 /* */
-#define META_SET_MORE_INFO       1021
-#define META_SET_ABOUT_INFO      1030
-#define META_INFO_SECURE         1060 /* ?? */
-#define META_SET_PASS            1070
-#define META_REQ_INFO_v5         1200
-#define META_REQ_INFO            1232
-#define META_SEARCH_WP           1331
-#define META_SEARCH_PERSINFO     1375
-#define META_SEARCH_EMAIL        1395
-#define META_SEARCH_RANDOM       1870
-#define META_SET_RANDOM          1880
-#define META_SET_WEB_PRESENCE    2000 /* */
-#define META_SEND_SMS            5250
+typedef enum {
+  META_SET_GENERAL_INFO_v5 = 1001,
+  META_SET_GENERAL_INFO    = 1002,
+  META_SET_WORK_INFO       = 1011,
+  META_SET_MORE_INFO       = 1021,
+  META_SET_ABOUT_INFO      = 1030,
+  META_SET_EXT_EMAIL       = 1035,
+  META_SET_INTERESTS       = 1040,
+  META_SET_AFFILIATIONS    = 1050,
+  META_INFO_SECURE         = 1060,
+  META_SET_PASS            = 1070,
+  META_SET_HPCAT           = 1090,
+  META_REQ_INFO_v5         = 1200,
+  META_REQ_INFO_FULL       = 1202,
+  META_REQ_INFO_SHORT      = 1210,
+  META_UNREGISTER          = 1220,
+  META_REQ_INFO            = 1232,
+  META_SEARCH_DETAIL_P     = 1301,
+  META_SEARCH_UIN_P        = 1311,
+  META_SEARCH_EMAIL_P      = 1321,
+  META_SEARCH_WP           = 1331,
+  META_SEARCH_DETAIL_WC    = 1341,
+  META_SEARCH_EMAIL_WC     = 1351,
+  META_SEARCH_WP_WC        = 1361,
+  META_SEARCH_PERSINFO     = 1375,
+  META_SEARCH_UIN_TLV      = 1385,
+  META_SEARCH_EMAIL        = 1395,
+  META_SEARCH_RANDOM       = 1870,
+  META_SET_RANDOM          = 1880,
+  META_SET_WEB_PRESENCE    = 2000,
+  META_GET_XML             = 2200,
+  META_SEND_REG_STATS      = 2725,
+  META_SEND_SHORTCUT       = 2735,
+  META_SAVE_INFO           = 3130,
+  META_SEND_SMS            = 5250,
+  META_SPAM_REPORT         = 8200
+} meta_cmd;
+
 
 void Auto_Reply (Connection *conn, Contact *cont);
 #define IREP_HASAUTHFLAG 1
