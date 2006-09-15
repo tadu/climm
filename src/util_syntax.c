@@ -103,8 +103,16 @@ static const char *syntable[] = {
     "s21x2s",  "T[1wdw,w.[2000gs21x2m]]-",
     "s21x2m",  "w[1030L][1232d][3130gmsall]",
     "msall",   "t[600L]-",
-    "s21x3s",  "T[1wdw,w.[2010gs21x3m][65dwbbbbwL]]-",
-    "s21x3m",  "w,b.[270bwLb]"
+    "s21x3s",  "T[1wdw,w.[2010gs21x3m.][65dwbbbbwL]]-",
+    "s21x3m.", "w,b.gs21x3m%d",
+    "s21x3m200",  "LLLLLLLLLLLwbbw",
+    "s21x3m210",  "LLLLLLwLLLwL",
+    "s21x3m220",  "wbLwbbbbbwLLww",
+    "s21x3m230",  "L",
+    "s21x3m235",  "b{bL}",
+    "s21x3m240",  "b{wL}",
+    "s21x3m250",  "b{wL}b{wL}",
+    "s21x3m270",  "bwLb",
     "s23x1s",  "WT[33DdWDDDD]-",
     "s23x4s",  "T[1DDDDDDDDDDLDDW]-",
     "s23x5s",  "T-",
@@ -214,13 +222,16 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
                 nr = mem2;
                 continue;
             case 'g':
+                {
+                const char *form = s_sprintf (f + 1, nr);
                 for (i = 0; syntable[i]; i += 2)
-                    if (!strncmp (syntable[i], f + 1, strlen (syntable[i])))
+                    if (!strncmp (syntable[i], form, strlen (syntable[i])))
                     {
                         l = f = syntable[i + 1] - 1;
                         i = 0;
                         break;
                     }
+                }
                 if (!i)
                     continue;
                 break;
