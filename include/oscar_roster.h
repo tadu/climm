@@ -18,23 +18,6 @@
 #define ROSTER_TYPE_IMPORTT   19
 #define ROSTER_TYPE_ICON      20
 
-#define TLV_REQAUTH    102
-#define TLV_GROUPITEMS 200
-#define TLV_UNKNIDLE   201
-#define TLV_PRIVACY    202
-#define TLV_VISIBILITY 203
-#define TLV_ALLOWIDLE  204
-#define TLV_ICQTIC     205
-#define TLV_IMPORT     212
-#define TLV_ICON       213
-#define TLV_NICK       305
-#define TLV_LOCALMAIL  311
-#define TLV_LOCALSMS   314
-#define TLV_LOCALCOMM  316
-#define TLV_LOCALACT   317
-#define TLV_LOCALSOUND 318
-#define TLV_LASTUPD    325
-
 jump_snac_f SnacSrvReplylists, SnacSrvReplyroster, SnacSrvUpdateack,
     SnacSrvRosterok, SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvAddedyou;
 
@@ -75,6 +58,7 @@ void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs);
 void SnacCliRosterentryadd (Connection *serv, const char *name, UWORD tag, UWORD id, UWORD type, UWORD tlv, void *data, UWORD len);
 void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont);
 void SnacCliSetvisibility (Connection *serv);
+void SnacCliSetlastupdate (Connection *serv);
 void SnacCliRosterdeletegroup (Connection *serv, ContactGroup *cg);
 void SnacCliRosterdeletecontact (Connection *serv, Contact *cont);
 void SnacCliRosterentrydelete (Connection *serv, RosterEntry *entry);

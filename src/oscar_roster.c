@@ -51,6 +51,23 @@
 #include "util_ui.h"
 #include "icq_response.h"
 
+#define TLV_REQAUTH    102
+#define TLV_GROUPITEMS 200
+#define TLV_UNKNIDLE   201
+#define TLV_PRIVACY    202
+#define TLV_VISIBILITY 203
+#define TLV_ALLOWIDLE  204
+#define TLV_ICQTIC     205
+#define TLV_IMPORT     212
+#define TLV_ICON       213
+#define TLV_NICK       305
+#define TLV_LOCALMAIL  311
+#define TLV_LOCALSMS   314
+#define TLV_LOCALCOMM  316
+#define TLV_LOCALACT   317
+#define TLV_LOCALSOUND 318
+#define TLV_LASTUPD    325
+
 Roster *OscarRosterC (void)
 {
     return calloc (sizeof (Roster), 1);
@@ -225,7 +242,6 @@ JUMP_SNAC_F(SnacSrvReplyroster)
                 /* TLV_LOCALCOMM */
                 /* TLV_LOCALACT */
                 /* TLV_LOCALSOUND */
-                /* TLV_LASTUPD */
                 rref = &roster->normal;
                 break;
             case ROSTER_TYPE_GROUP:
@@ -243,6 +259,8 @@ JUMP_SNAC_F(SnacSrvReplyroster)
                 rref = &roster->ignore;
                 break;
             case ROSTER_TYPE_LASTUPD: /* LastUpdateDate */
+                /* TLV_LASTUPD */
+                break;
             case ROSTER_TYPE_WIERD17: /* wierd */
             case ROSTER_TYPE_ICON: /* buddy icon */
                 /* TLV_ICON */
@@ -520,9 +538,29 @@ void SnacCliSetvisibility (Connection *serv)
     PacketWriteB2       (pak, 0x4242);
     PacketWriteB2       (pak, 4);
     PacketWriteBLen     (pak);
-    PacketWriteB2       (pak, 5);
+//    PacketWriteB2       (pak, 5);
     PacketWriteTLV      (pak, TLV_PRIVACY);
     PacketWrite1        (pak, 4);
+    PacketWriteTLVDone  (pak);
+    PacketWriteBLenDone (pak);
+    SnacSend (serv, pak);
+}
+
+/*
+ * CLI_ROSTERUPDATE - SNAC(13,9)
+ */
+void SnacCliSetlastupdate (Connection *serv)
+{
+    Packet *pak;
+    
+    pak = SnacC (serv, 19, 9, 0, 0);
+    PacketWriteStrB     (pak, "LastUpdateDate");
+    PacketWriteB2       (pak, 0);
+    PacketWriteB2       (pak, 0x4141);
+    PacketWriteB2       (pak, ROSTER_TYPE_LASTUPD);
+    PacketWriteBLen     (pak);
+    PacketWriteTLV      (pak, TLV_LASTUPD);
+    PacketWrite4        (pak, time (NULL));
     PacketWriteTLVDone  (pak);
     PacketWriteBLenDone (pak);
     SnacSend (serv, pak);

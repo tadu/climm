@@ -323,7 +323,7 @@ void FlapCliIdent (Connection *conn)
     PacketWriteB4 (pak, CLI_HELLO);
     PacketWriteTLVStr  (pak, 1, s_sprintf ("%ld", conn->uin));
     PacketWriteTLVData (pak, 2, f = _encryptpw (conn->passwd), strlen (conn->passwd));
-    PacketWriteTLVStr  (pak, 3, "ICQ Inc. - Product of ICQ (TM).2002a.5.37.1.3728.85");
+    PacketWriteTLVStr  (pak, 3, "ICQ Inc. - Product of ICQ (TM).2003b.5.37.1.3728.85");
     PacketWriteTLV2    (pak, 22, 266);
     PacketWriteTLV2    (pak, 23, FLAP_VER_MAJOR);
     PacketWriteTLV2    (pak, 24, FLAP_VER_MINOR);
@@ -331,7 +331,7 @@ void FlapCliIdent (Connection *conn)
     PacketWriteTLV2    (pak, 26, FLAP_VER_BUILD);
     PacketWriteTLV4    (pak, 20, FLAP_VER_SUBBUILD);
     PacketWriteTLVStr  (pak, 15, "de");  /* en */
-    PacketWriteTLVStr  (pak, 14, "de");  /* en */
+    PacketWriteTLVStr  (pak, 14, "DE");  /* en */
     FlapSend (conn, pak);
     free (f);
 }

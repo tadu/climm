@@ -35,6 +35,7 @@
 #include "oscar_tlv.h"
 #include "oscar_snac.h"
 #include "oscar_oldicq.h"
+#include "oscar_roster.h"
 #include "packet.h"
 #include "contact.h"
 #include "connection.h"
@@ -96,7 +97,6 @@ static void SnacMetaSend (Connection *serv, Packet *pak);
 #define META_TAG_WRK_URL     730
 
 #define META_TAG_AUTHREQ     760 /* B (yes, 760, NOT 780) */
-
 #define META_TAG_WEBAWARE    780 /* B */
 
 #define META_TAG_TZ          790 /* SB */
@@ -268,9 +268,13 @@ void SnacCliMetasetgeneral (Connection *serv, Contact *cont)
         PacketWriteMetaLNTS (pak, META_TAG_HOME_STREET, c_out (cont->meta_general->street));
         PacketWriteMetaLNTS (pak, META_TAG_HOME_CELL, c_out (cont->meta_general->cellular));
         PacketWriteMeta4    (pak, META_TAG_HOME_ZIP, atoi (cont->meta_general->zip));
+
         PacketWriteMeta2    (pak, META_TAG_HOME_CTRY, cont->meta_general->country);
+        PacketWriteMeta2    (pak, 835, 0);
+        PacketWriteMeta4    (pak, 621, 0);
         PacketWriteMeta1    (pak, META_TAG_TZ, -cont->meta_general->tz/2);
-        PacketWriteMeta1    (pak, META_TAG_WEBAWARE, !cont->meta_general->webaware);
+
+        PacketWriteMeta1    (pak, META_TAG_WEBAWARE, cont->meta_general->webaware);
         PacketWriteMeta1    (pak, META_TAG_AUTHREQ, !cont->meta_general->auth);
     }
     else
@@ -336,6 +340,7 @@ void SnacCliMetasetgeneral (Connection *serv, Contact *cont)
 
 #endif
     SnacMetaSend    (serv, pak);
+    SnacCliSetlastupdate (serv);
 }
 
 /*
