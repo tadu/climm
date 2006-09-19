@@ -258,7 +258,7 @@ TCL_COMMAND (TCL_command_micq)
                 TCL_VOLATILE);
             return TCL_ERROR;
         }
-        cont = ContactFind (tconn->contacts, 0, uin, NULL);
+        cont = ContactFindUIN (tconn->contacts, uin);
         if (cont)
             Tcl_SetResult (tinterp, cont->nick, TCL_VOLATILE);
     }

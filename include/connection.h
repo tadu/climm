@@ -104,9 +104,11 @@ void           ConnectionD       (Connection *conn DEBUGPARAM);
 Connection    *ConnectionNr      (int i);
 Connection    *ConnectionFind    (UWORD type, const Contact *cont, const Connection *parent);
 Connection    *ConnectionFindUIN (UWORD type, UDWORD uin);
+Connection    *ConnectionFindScreen (UWORD type, const char *screen);
 UDWORD         ConnectionFindNr  (Connection *conn);
 const char    *ConnectionType    (Connection *conn);
-const char    *ConnectionServerType (Connection *conn);
+const char    *ConnectionServerType  (UWORD type);
+UWORD          ConnectionServerNType (const char *type, char del);
 val_t          ConnectionPrefVal (Connection *conn, UDWORD flag);
 
 #define ConnectionC(t)       ConnectionC (t DEBUGARGS)

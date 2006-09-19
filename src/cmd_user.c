@@ -1749,7 +1749,7 @@ static JUMP_F(CmdUserStatusDetail)
     {
         if (conn)
         {
-            rl_printf ("%s %s%10lu%s ", s_now, COLCONTACT, conn->uin, COLNONE);
+            rl_printf ("%s %s%s%s ", s_now, COLCONTACT, conn->screen, COLNONE);
             if (~conn->connect & CONNECT_OK)
                 rl_printf (i18n (2405, "Your status is %s (%s).\n"),
                     i18n (1969, "offline"), s_status (conn->status));
@@ -2777,10 +2777,10 @@ static JUMP_F(CmdUserAdd)
         }
         else
         {
-            if ((cont2 = ContactFind (conn->contacts, 0, cont->uin, cmd)))
+            if ((cont2 = ContactFind (conn->contacts, cont->uin, cmd)))
                 rl_printf (i18n (2146, "'%s' is already an alias for '%s' (%ld).\n"),
                          cmd, cont->nick, cont->uin);
-            else if ((cont2 = ContactFind (conn->contacts, 0, 0, cmd)))
+            else if ((cont2 = ContactFind (conn->contacts, 0, cmd)))
                 rl_printf (i18n (2147, "'%s' (%ld) is already used as a nick.\n"),
                          cmd, cont2->uin);
             else
@@ -3836,11 +3836,11 @@ static JUMP_F(CmdUserConn)
                 if (ConnectionFindNr (conn))
                     nr = ConnectionFindNr (conn) + 1;
                 else
-                    nr = 1 + ConnectionFindNr (ConnectionFind (TYPEF_SERVER, NULL, 0));
+                    nr = 1 + ConnectionFindNr (ConnectionFind (TYPEF_ANY_SERVER, NULL, 0));
             }
 
             connl = ConnectionNr (nr - 1);
-            if (!connl && !(connl = ConnectionFindUIN (TYPEF_SERVER, nr)))
+            if (!connl && !(connl = ConnectionFindUIN (TYPEF_ANY_SERVER, nr)))
             {
                 rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
                 return 0;
@@ -3862,12 +3862,12 @@ static JUMP_F(CmdUserConn)
                 nr = ConnectionFindNr (conn) + 1;
 
             connl = ConnectionNr (nr - 1);
-            if (!connl && !(connl = ConnectionFindUIN (TYPEF_SERVER, nr)))
+            if (!connl && !(connl = ConnectionFindUIN (TYPEF_ANY_SERVER, nr)))
             {
                 rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
                 return 0;
             }
-            if (~connl->type & TYPEF_SERVER)
+            if (~connl->type & TYPEF_ANY_SERVER)
             {
                 rl_printf (i18n (2098, "Connection %ld is not a server connection.\n"), nr);
                 return 0;
@@ -4034,13 +4034,13 @@ static JUMP_F(CmdUserAsSession)
     }
 
     tmpconn = ConnectionNr (nr - 1);
-    if (!tmpconn && !(tmpconn = ConnectionFindUIN (TYPEF_SERVER, nr)))
+    if (!tmpconn && !(tmpconn = ConnectionFindUIN (TYPEF_ANY_SERVER, nr)))
     {
         if (!quiet)
             rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
         return 0;
     }
-    if (~tmpconn->type & TYPEF_SERVER)
+    if (~tmpconn->type & TYPEF_ANY_SERVER)
     {
         if (!quiet)
             rl_printf (i18n (2098, "Connection %ld is not a server connection.\n"), nr);

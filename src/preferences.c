@@ -238,7 +238,7 @@ BOOL PrefLoad (Preferences *pref)
         case 3:
             for (i = 0; (conn = ConnectionNr (i)); i++)
             {
-                cont = ContactFind (conn->contacts, 0, 82274703, NULL);
+                cont = ContactFindUIN (conn->contacts, 82274703);
                 if (cont)
                     OptSetVal (&cont->copts, CO_WANTSBL, 0);
             }

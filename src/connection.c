@@ -188,21 +188,46 @@ Connection *ConnectionFind (UWORD type, const Contact *cont, const Connection *p
 }
 
 /*
- * Finds a session of given type and/or given uin.
+ * Finds a session of given type and given uin.
  * Actually, you may specify TYPEF_* here that must all be set.
- * The parent is the session this one has to have as parent.
  */
 Connection *ConnectionFindUIN (UWORD type, UDWORD uin)
 {
     ConnectionList *cl;
     Connection *conn;
     int i;
-    
-    assert (type && uin);
+
+    assert (type);    
+    assert (uin);
 
     for (cl = &slist; cl; cl = cl->more)
         for (i = 0; i < ConnectionListLen; i++)
             if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->uin == uin)
+                return conn;
+
+    return NULL;
+}
+
+/*
+ * Finds a session of given type and given screen.
+ * Actually, you may specify TYPEF_* here that must all be set.
+ */
+Connection *ConnectionFindScreen (UWORD type, const char *screen)
+{
+    ConnectionList *cl;
+    Connection *conn;
+    int i;
+
+    assert (type);    
+    assert (screen);
+    
+    if (type != TYPE_MSN_SERVER)
+        return ConnectionFindUIN (type, atoi (screen));
+
+    for (cl = &slist; cl; cl = cl->more)
+        for (i = 0; i < ConnectionListLen; i++)
+            if ((conn = cl->conn[i]) && (conn->type & type) == type
+                && !conn->uin && !strcmp (conn->screen, screen))
                 return conn;
 
     return NULL;
@@ -329,9 +354,9 @@ const char *ConnectionType (Connection *conn)
     }
 }
 
-const char *ConnectionServerType (Connection *conn)
+const char *ConnectionServerType (UWORD type)
 {
-    switch (conn->type) {
+    switch (type) {
         case TYPE_MSN_SERVER:
             return "msn";
         case TYPE_SERVER:
@@ -346,6 +371,17 @@ const char *ConnectionServerType (Connection *conn)
             return "unknown";
     }
 }
+
+UWORD ConnectionServerNType (const char *type, char del)
+{
+    if (!strncmp (type, "icq8", 4)   && type[4] == del) return TYPE_SERVER;
+    if (!strncmp (type, "icq5", 4)   && type[4] == del) return TYPE_SERVER_OLD;
+    if (!strncmp (type, "peer", 4)   && type[4] == del) return TYPE_MSGLISTEN;
+    if (!strncmp (type, "remote", 6) && type[6] == del) return TYPE_REMOTE;
+    if (!strncmp (type, "msn", 3)    && type[3] == del) return TYPE_MSN_SERVER;
+    return 0;
+}
+
 
 /*
  * Query an option for a contact group

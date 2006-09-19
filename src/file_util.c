@@ -860,7 +860,7 @@ int Read_RC_File (FILE *rcf)
                     if (~tconn->type & TYPEF_ANY_SERVER)
                         continue;
 
-                    if ((cont = ContactFind (tconn->contacts, 0, uin, NULL)))
+                    if ((cont = ContactFindUIN (tconn->contacts, uin)))
                     {
                         j = 1;
                         ContactAddAlias (cont, cmd);
@@ -940,15 +940,11 @@ int Read_RC_File (FILE *rcf)
                                ? TYPE_SERVER : TYPE_SERVER_OLD) : conn->type);
                         dep = 20;
                     }
-                    else if (!strcasecmp (cmd, "icq8"))
-                        conn->type = TYPE_SERVER;
-                    else if (!strcasecmp (cmd, "icq5"))
-                        conn->type = TYPE_SERVER_OLD;
-                    else if (!strcasecmp (cmd, "msn"))
-                        conn->type = TYPE_MSN_SERVER;
-                    else if (!strcasecmp (cmd, "peer"))
+                    else if (!(conn->type = ConnectionServerNType (cmd, 0)))
+                        ERROR;
+                    
+                    if (conn->type == TYPE_MSGLISTEN)
                     {
-                        conn->type = TYPE_MSGLISTEN;
                         conn->pref_status = TCP_OK_FLAG;
                         if (oldconn->type == TYPE_SERVER || oldconn->type == TYPE_SERVER_OLD)
                         {
@@ -963,10 +959,6 @@ int Read_RC_File (FILE *rcf)
                             section = -1;
                         }
                     }
-                    else if (!strcasecmp (cmd, "remote"))
-                        conn->type = TYPE_REMOTE;
-                    else
-                        ERROR;
 
                     if ((par = s_parse (&args)))
                     {
@@ -1032,23 +1024,17 @@ int Read_RC_File (FILE *rcf)
                 PrefParse (cmd);
                 if (!strcasecmp (cmd, "label") && !cg->used)
                 {
-                    Connection *conn;
+                    Connection *conn = NULL;
                     PrefParse (tmp);
                     s_repl (&cg->name, tmp);
                     if (!strncmp (cg->name, "contacts-", 9))
                     {
-                        UWORD type = 0;
-                        UDWORD uin = 0;
-                        
-                        if      (!strncmp (cg->name + 9, "icq5-", 5)) type = TYPE_SERVER_OLD;
-                        else if (!strncmp (cg->name + 9, "icq8-", 5)) type = TYPE_SERVER;
-                        else if (!strncmp (cg->name + 9, "msn-", 4))  type = TYPE_MSN_SERVER;
-                        
-                        if (type)
+                        UWORD type;
+                        if ((type = ConnectionServerNType (cg->name + 9, '-')))
                         {
-                            uin = atoi (cg->name + 14);
-                        
-                            if ((conn = ConnectionFindUIN (type, uin)))
+                            int len = strlen (ConnectionServerType (type));
+                            conn = ConnectionFindScreen (type, cg->name + len + 10);
+                            if (conn)
                             {
                                 if (conn->contacts && conn->contacts != cg) /* Duplicate! */
                                 {
@@ -1075,19 +1061,15 @@ int Read_RC_File (FILE *rcf)
                 else if (!strcasecmp (cmd, "server") && !cg->used)
                 {
                     Connection *conn;
-                    UWORD type = 0;
-                    UDWORD uin = 0;
+                    UWORD type;
                     
                     PrefParse (tmp);
-                    if      (!strcasecmp (tmp, "icq5")) type = TYPE_SERVER_OLD;
-                    else if (!strcasecmp (tmp, "icq8")) type = TYPE_SERVER;
-                    else if (!strcasecmp (tmp, "msn"))  type = TYPE_MSN_SERVER;
-                    else
+                    if (!(type = ConnectionServerNType (tmp, 0)))
                         ERROR;
                     
-                    PrefParseInt (uin);
+                    PrefParse (tmp);
                     
-                    if ((conn = ConnectionFindUIN (type, uin)))
+                    if ((conn = ConnectionFindScreen (type, tmp)))
                         cg->serv = conn;
                 }
                 else if (!cg->serv)
@@ -1162,7 +1144,7 @@ int Read_RC_File (FILE *rcf)
         }
         if (format < 2 && !conn->contacts && conn->type & TYPEF_SERVER)
         {
-            conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", ConnectionServerType (conn), conn->uin));
+            conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", ConnectionServerType (conn->type), conn->uin));
             for (i = 0; (cont = ContactIndex (NULL, i)); i++)
                 ContactFindCreate (cg, cont->uin, cont->nick);
             dep = 21;
@@ -1276,17 +1258,13 @@ void PrefReadStat (FILE *stf)
                     s_repl (&cg->name, cmd);
                     if (!strncmp (cg->name, "contacts-", 9))
                     {
-                        UWORD type = 0;
-                        UDWORD uin = 0;
+                        UWORD type;
                         
-                        if      (!strncmp (cg->name + 9, "icq5-", 5)) type = TYPE_SERVER_OLD;
-                        else if (!strncmp (cg->name + 9, "icq8-", 5)) type = TYPE_SERVER;
-                        else if (!strncmp (cg->name + 9, "msn-", 4))  type = TYPE_MSN_SERVER;
-                        else
+                        if (!(type = ConnectionServerNType (cg->name + 9, '-')))
                             break;
-                        
-                        uin = atoi (cg->name + 14);
-                        if ((conn = ConnectionFindUIN (type, uin)))
+
+                        int len = strlen (ConnectionServerType (type));
+                        if ((conn = ConnectionFindScreen (type, cg->name + 10 + len)))
                         {
                             if (conn->contacts && conn->contacts != cg)
                             {
@@ -1310,18 +1288,14 @@ void PrefReadStat (FILE *stf)
                 }
                 else if (!strcasecmp (cmd, "server") && !cg->used)
                 {
-                    UWORD type = 0;
-                    UDWORD uin = 0;
+                    UWORD type;
                     
                     PrefParse (cmd);
-                    if      (!strcasecmp (cmd, "icq5")) type = TYPE_SERVER_OLD;
-                    else if (!strcasecmp (cmd, "icq8")) type = TYPE_SERVER;
-                    else if (!strcasecmp (cmd, "msn"))  type = TYPE_MSN_SERVER;
-                    else
+                    if (!(type = ConnectionServerNType (cmd, 0)))
                         ERROR;
                     
-                    PrefParseInt (uin);
-                    if ((conn = ConnectionFindUIN (type, uin)))
+                    PrefParse (cmd);
+                    if ((conn = ConnectionFindScreen (type, cmd)))
                         cg->serv = conn;
                 }
                 else if (!strcasecmp (cmd, "options"))
@@ -1346,7 +1320,7 @@ void PrefReadStat (FILE *stf)
                     if (format == 1)
                         cont = ContactFindCreate (cg->serv->contacts, uin, s_sprintf ("%ld", uin));
                     else
-                        cont = ContactFind (cg->serv->contacts, 0, uin, NULL);
+                        cont = ContactFindUIN (cg->serv->contacts, uin);
                     
                     if (!cont)
                     {
@@ -1383,7 +1357,7 @@ void PrefReadStat (FILE *stf)
                     for (i = uinconts = 0; (conn = ConnectionNr (i)); i++)
                     {
                         if (conn->type & TYPEF_ANY_SERVER && conn->contacts && uinconts < 20
-                            && (cont = ContactFind (conn->contacts, 0, uin, NULL)))
+                            && (cont = ContactFindUIN (conn->contacts, uin)))
                         {
                             uincont[uinconts++] = cont;
                             ContactAddAlias (cont, cmd);
@@ -1411,23 +1385,19 @@ void PrefReadStat (FILE *stf)
                 PrefParse (cmd);
                 if (!strcasecmp (cmd, "server"))
                 {
-                    UWORD type = 0;
-                    UDWORD uin = 0;
+                    UWORD type;
                     
                     PrefParse (cmd);
-                    if      (!strcasecmp (cmd, "icq5")) type = TYPE_SERVER_OLD;
-                    else if (!strcasecmp (cmd, "icq8")) type = TYPE_SERVER;
-                    else if (!strcasecmp (cmd, "msn"))  type = TYPE_MSN_SERVER;
-                    else
+                    if (!(type = ConnectionServerNType (cmd, 0)))
                         ERROR;
-                    
-                    PrefParseInt (uin);
+
+                    PrefParse (cmd);
+                    if (!(conn = ConnectionFindScreen (type, cmd)))
+                        ERROR;
                     cont = NULL;
-                    if (!(conn = ConnectionFindUIN (type, uin)))
-                        ERROR;
                     if (!conn->contacts)
                     {
-                        conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", ConnectionServerType (conn), conn->uin));
+                        conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%s", ConnectionServerType (conn->type), conn->screen));
                         OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
                         conn->contacts->serv = conn;
                     }
@@ -1468,11 +1438,11 @@ void PrefReadStat (FILE *stf)
     
     for (i = 0; (conn = ConnectionNr (i)); i++)
     {
-        if (conn->type & TYPEF_SERVER || conn->type == TYPE_MSN_SERVER)
+        if (conn->type & TYPEF_ANY_SERVER)
         {
             if (!conn->contacts)
             {
-                conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", ConnectionServerType (conn), conn->uin));
+                conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%s", ConnectionServerType (conn->type), conn->screen));
                 OptSetVal (&cg->copts, CO_IGNORE, 0);
                 dep = 21;
             }
@@ -1538,11 +1508,11 @@ int PrefWriteStatusFile (void)
     {
         if (!ss->flags || !ss->uin)
             continue;
-        if (ss->type != TYPE_SERVER && ss->type != TYPE_SERVER_OLD)
+        if (~ss->type & TYPEF_ANY_SERVER)
             continue;
 
         fprintf (stf, "[Contacts]\n");
-        fprintf (stf, "server %s %ld\n", ConnectionServerType (ss), ss->uin);
+        fprintf (stf, "server %s %s\n", ConnectionServerType (ss->type), ss->screen);
         fprintf (stf, "%s\n", OptString (&ss->contacts->copts));
 
         for (i = 0; (cont = ContactIndex (0, i)); i++)
@@ -1566,7 +1536,7 @@ int PrefWriteStatusFile (void)
             continue;
 
         fprintf (stf, "\n[Group]\n");
-        fprintf (stf, "server %s %ld\n", ConnectionServerType (cg->serv), cg->serv->uin);
+        fprintf (stf, "server %s %ld\n", ConnectionServerType (cg->serv->type), cg->serv->uin);
         fprintf (stf, "label %s\n", s_quote (cg->name));
         fprintf (stf, "id %d\n", cg->id);
         fprintf (stf, "%s", OptString (&cg->copts));
@@ -1647,20 +1617,20 @@ int PrefWriteConfFile (void)
     {
         if (!ss->flags)
             continue;
-        if ((!ss->uin && ss->type == TYPE_SERVER)
-            || (ss->type != TYPE_SERVER && ss->type != TYPE_SERVER_OLD
-                && ss->type != TYPE_MSN_SERVER
-                && ss->type != TYPE_MSGLISTEN && ss->type != TYPE_REMOTE)
-            || (ss->type == TYPE_MSGLISTEN && ss->parent && !ss->parent->uin))
+        if (!strcmp (ConnectionServerType (ss->type), "unknown"))
+            continue;
+        if (!ss->uin)
+            continue;
+        if (ss->type == TYPE_MSGLISTEN && ss->parent && !ss->parent->uin)
             continue;
 
         fprintf (rcf, "[Connection]\n");
-        fprintf (rcf, "type %s%s\n",  ConnectionServerType (ss),
+        fprintf (rcf, "type %s%s\n",  ConnectionServerType (ss->type),
                                       ss->flags & CONN_AUTOLOGIN ? " auto" : "");
         fprintf (rcf, "version %d\n", ss->version);
         if (ss->pref_server)
             fprintf (rcf, "server %s\n",   s_quote (ss->pref_server));
-        if (ss->pref_port)
+        if (ss->pref_port && ss->pref_port != -1)
             fprintf (rcf, "port %ld\n",    ss->pref_port);
         if (ss->uin)
             fprintf (rcf, "uin %ld\n",     ss->uin);
