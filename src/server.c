@@ -26,6 +26,7 @@
 #include "tcp.h"
 #include "packet.h"
 #include "conv.h"
+#include "jabber_base.h"
 
 static void CallbackMeta (Event *event);
 static void CallbackTogvis (Event *event);
@@ -117,6 +118,10 @@ UBYTE IMCliReMsg (Connection *conn, Contact *cont, Opt *opt)
             OptD (opt);
             return RET_OK;
         }
+    if (opt_trans & CV_MSGTRANS_JABBER)
+        if (conn->connect & CONNECT_OK && conn->type == TYPE_JABBER_SERVER)
+            if (RET_IS_OK (ret = JabberSendmsg (conn, cont, opt_text, opt_type)))
+                return ret;
     OptD (opt);
     return RET_FAIL;
 }

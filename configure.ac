@@ -14,6 +14,7 @@ AC_CHECK_PROG(AUTOMAKE, automake-1.9, automake-1.9)
 AC_CHECK_PROG(ACLOCAL, aclocal-1.9, aclocal-1.9)
 AC_CHECK_PROG(AUTOHEADER, autoheader, autoheader)
 AC_CHECK_PROG(AUTOCONF, autoconf, autoconf)
+PKG_PROG_PKG_CONFIG
 
 AM_INIT_AUTOMAKE(1.9)
 AM_MAINTAINER_MODE
@@ -37,7 +38,9 @@ AC_ARG_ENABLE([iconvrepl], AC_HELP_STRING([--enable-iconvrepl], [compile in icon
               ac_arg_use_iconvrepl=$enableval, ac_arg_use_iconvrepl=no)
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
-AC_ARG_ENABLE([msn], AC_HELP_STRING([--enable-msn], [enable MSN chat network (not fully implemented)]),
+AC_ARG_ENABLE([jabber], AC_HELP_STRING([--enable-jabber], [enable Jabber chat network (EXPERIMENTAL INCOMPLETE)]),
+              ac_arg_use_jabber=$enableval, ac_arg_use_jabber=no)
+AC_ARG_ENABLE([msn], AC_HELP_STRING([--enable-msn], [enable MSN chat network (EXPERIMENTAL INCOMPLETE)]),
               ac_arg_use_msn=$enableval, ac_arg_use_msn=auto)
 AC_ARG_ENABLE([tcl], AC_HELP_STRING([--disable-tcl], [disable Tcl scripting]),
               ac_arg_use_tcl=$enableval, ac_arg_use_tcl=auto)
@@ -292,16 +295,15 @@ else
 fi
 AC_LANG([C])
 
-AC_MSG_CHECKING([whether to enable MSN chat network (not fully implemented)])
-AC_MSG_RESULT([$ac_arg_use_msn])
-AC_MSG_CHECKING([whether to enable peer to peer connections])
-AC_MSG_RESULT([$ac_arg_use_dc])
-AC_MSG_CHECKING([whether to enable remote control FIFO])
-AC_MSG_RESULT([$ac_arg_use_remote])
-AC_MSG_CHECKING([whether to enable Tcl scripting])
-AC_MSG_RESULT([$ac_arg_use_tcl])
-AC_MSG_CHECKING([whether to enable SSL/TLS support])
-AC_MSG_RESULT([$ac_arg_use_ssl])
+if test "x$ac_arg_use_jabber" != "xno"; then
+  PKG_CHECK_MODULES(JABBER, gloox, ac_arg_use_jabber=yes, ac_arg_use_jabber=no)
+  if test "x$ac_arg_use_jabber$ac_arg_use_ssl" = "xyesgnutls"; then
+    AC_SUBST(LIBJABBER, "libmicqjabber.a", [Static lib to link if Jabber is enabled])
+    AC_SUBST(L_LIBJABBER, "-L. -lmicqjabber", [Static lib link option to link if Jabber is enabled])
+    AC_DEFINE(ENABLE_JABBER, 1, [Enable Jabber chat network using libgloox])
+    LIBS="$LIBS $JABBER_LIBS"
+  fi
+fi
 
 if test "x$ac_arg_use_dc" = "xyes"; then
   AC_DEFINE(ENABLE_PEER2PEER, 1, [Whether to enable peer to peer connections])
@@ -478,7 +480,7 @@ fi
 # Optimize.
 AC_CACHE_CHECK(checking for variadic macro support, ac_cv_macro_variadic,
   [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#define variadic(a,...) printf (a "bla" , ## __VA_ARGS__) ]],
-      [[variadic ("bla\n");                      /* note space before comma ^ to avoid gcc-2.05 bug */
+      [[variadic ("bla\n");                      /* note space before comma ^ to avoid gcc-2.95 bug */
         variadic ("bla%sbla\n", "bla");]])],
     [ac_cv_macro_variadic=yes],
     [ac_cv_macro_variadic=no])])
@@ -515,13 +517,27 @@ if test "x$ac_arg_use_autopackage" = xyes; then
         AC_SEARCH_LIBS([dlopen], [dl])
         LIBS="$old_LIBS $LIBS"
         if test "x$RELAYTOOL" != x:; then
-            LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls' $LIBS"'`'
+            LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gloox' $LIBS"'`'
             AC_DEFINE(ENABLE_AUTOPACKAGE,1,[Use autopackage to check libraries at run time])
         fi
     fi
 else
     AC_SUBST(BINRELOC_LIBS,[ ])
 fi
+
+AC_MSG_CHECKING([whether to enable Jabber chat network (EXPERIMENTAL INCOMPLETE)])
+AC_MSG_RESULT([$ac_arg_use_jabber])
+AC_MSG_CHECKING([whether to enable MSN chat network (EXPERIMENTAL INCOMPLETE)])
+AC_MSG_RESULT([$ac_arg_use_msn])
+AC_MSG_CHECKING([whether to enable peer to peer connections])
+AC_MSG_RESULT([$ac_arg_use_dc])
+AC_MSG_CHECKING([whether to enable remote control FIFO])
+AC_MSG_RESULT([$ac_arg_use_remote])
+AC_MSG_CHECKING([whether to enable Tcl scripting])
+AC_MSG_RESULT([$ac_arg_use_tcl])
+AC_MSG_CHECKING([whether to enable SSL/TLS support])
+AC_MSG_RESULT([$ac_arg_use_ssl])
+
 
 AC_CONFIG_FILES([src/Makefile Makefile lang/Makefile doc/Makefile])
 AC_OUTPUT

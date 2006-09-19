@@ -116,7 +116,8 @@ Connection *ConnectionClone (Connection *conn, UWORD type DEBUGPARAM)
     child->flags  = 0;
     child->screen = strdup (conn->screen ? conn->screen : "child");
     
-    Debug (DEB_CONNECT, "<=*= %p (%s) clone from %p (%s)", child, ConnectionType (child), conn, ConnectionType (conn));
+    Debug (DEB_CONNECT, "<=*= %p (%s) clone from %p (%s)",
+        child, ConnectionType (child), conn, ConnectionType (conn));
 
     return child;
 }
@@ -327,6 +328,8 @@ void ConnectionD (Connection *conn DEBUGPARAM)
 const char *ConnectionType (Connection *conn)
 {
     switch (conn->type) {
+        case TYPE_JABBER_SERVER:
+            return i18n (9999, "jabber");
         case TYPE_MSN_TEMP:
             return i18n (2584, "msn temp");
         case TYPE_MSN_SERVER:
@@ -357,6 +360,8 @@ const char *ConnectionType (Connection *conn)
 const char *ConnectionServerType (UWORD type)
 {
     switch (type) {
+        case TYPE_JABBER_SERVER:
+            return "jabber";
         case TYPE_MSN_SERVER:
             return "msn";
         case TYPE_SERVER:
@@ -379,6 +384,7 @@ UWORD ConnectionServerNType (const char *type, char del)
     if (!strncmp (type, "peer", 4)   && type[4] == del) return TYPE_MSGLISTEN;
     if (!strncmp (type, "remote", 6) && type[6] == del) return TYPE_REMOTE;
     if (!strncmp (type, "msn", 3)    && type[3] == del) return TYPE_MSN_SERVER;
+    if (!strncmp (type, "jabber", 6) && type[6] == del) return TYPE_JABBER_SERVER;
     return 0;
 }
 

@@ -146,6 +146,14 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
         return t ? ContactFindCreate (serv->contacts, 0, t->txt) : NULL;
     }
 
+    if (serv->type == TYPE_JABBER_SERVER && !strncasecmp (p, "JABBER:", 7))
+    {
+        p += 7;
+        t = s_parse (&p);
+        *input = p;
+        return t ? ContactFindCreate (serv->contacts, 0, t->txt) : NULL;
+    }
+
     if (strchr ("0123456789", *p))
     {
         l = 0;

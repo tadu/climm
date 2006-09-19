@@ -140,10 +140,11 @@ extern struct OptEntry_s OptList[];
 #define CV_ORIGIN_dc  1
 #define CV_ORIGIN_ssl 16
 
-#define CV_MSGTRANS_DC     1
-#define CV_MSGTRANS_TYPE2  2
-#define CV_MSGTRANS_ICQv8  4
-#define CV_MSGTRANS_ICQv5  8
-#define CV_MSGTRANS_ANY   15
+#define CV_MSGTRANS_DC      1
+#define CV_MSGTRANS_TYPE2   2
+#define CV_MSGTRANS_ICQv8   4
+#define CV_MSGTRANS_ICQv5   8
+#define CV_MSGTRANS_JABBER 16
+#define CV_MSGTRANS_ANY    31
 
 #endif

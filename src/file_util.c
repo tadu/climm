@@ -45,6 +45,7 @@
 #include "util_parse.h"
 #include "util_rl.h"
 #include "msn_base.h"
+#include "jabber_base.h"
 
 /****/
 
@@ -1124,6 +1125,11 @@ int Read_RC_File (FILE *rcf)
 #ifdef ENABLE_MSN
             case TYPE_MSN_SERVER:
                 conn->open = &ConnectionInitMSNServer;
+                break;
+#endif
+#ifdef ENABLE_JABBER
+            case TYPE_JABBER_SERVER:
+                conn->open = &ConnectionInitJabberServer;
                 break;
 #endif
 #ifdef ENABLE_PEER2PEER
