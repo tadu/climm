@@ -1506,9 +1506,11 @@ int PrefWriteStatusFile (void)
     fprintf (stf, "\n# The contact list section.\n");
     for (k = 0; (ss = ConnectionNr (k)); k++)
     {
-        if (!ss->flags || !ss->uin)
+        if (!ss->flags)
             continue;
         if (~ss->type & TYPEF_ANY_SERVER)
+            continue;
+        if (!ss->uin && (ss->type & TYPEF_HAVEUIN))
             continue;
 
         fprintf (stf, "[Contacts]\n");
@@ -1619,7 +1621,7 @@ int PrefWriteConfFile (void)
             continue;
         if (!strcmp (ConnectionServerType (ss->type), "unknown"))
             continue;
-        if (!ss->uin)
+        if (!ss->uin && (ss->type & TYPEF_HAVEUIN))
             continue;
         if (ss->type == TYPE_MSGLISTEN && ss->parent && !ss->parent->uin)
             continue;
@@ -1632,9 +1634,9 @@ int PrefWriteConfFile (void)
             fprintf (rcf, "server %s\n",   s_quote (ss->pref_server));
         if (ss->pref_port && ss->pref_port != -1)
             fprintf (rcf, "port %ld\n",    ss->pref_port);
-        if (ss->uin)
+        if ((ss->type & TYPEF_HAVEUIN) && ss->uin)
             fprintf (rcf, "uin %ld\n",     ss->uin);
-        if (ss->screen && ss->type == TYPE_MSN_SERVER)
+        if ((~ss->type & TYPEF_HAVEUIN) && ss->screen)
             fprintf (rcf, "screen %s\n",   s_quote (ss->screen));
         if (ss->pref_passwd)
             fprintf (rcf, "password %s\n", s_quote (ss->pref_passwd));

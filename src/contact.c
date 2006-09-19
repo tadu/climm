@@ -242,7 +242,7 @@ static Contact *ContactC (Connection *serv, UDWORD uin, const char *nick DEBUGPA
     cont->status = STATUS_ICQOFFLINE;
     
     s_repl (&cont->nick, nick ? nick : s_sprintf ("%ld", uin));
-    s_repl (&cont->screen, nick && serv->type != TYPE_SERVER ? nick : s_sprintf ("%ld", uin));
+    s_repl (&cont->screen, nick && ~serv->type & TYPEF_HAVEUIN ? nick : s_sprintf ("%ld", uin));
 
     Debug (DEB_CONTACT, "new  %p %ld '%s' '%s' %p", cont, uin, cont->screen, cont->nick, cont);
     ContactAdd (CONTACTGROUP_GLOBAL, cont);
@@ -265,7 +265,7 @@ Contact *ContactScreen (Connection *serv, const char *screen DEBUGPARAM)
         ContactGroupInit ();
     
     uin = atoi (screen);
-    if (uin)
+    if (uin && serv->type & TYPEF_HAVEUIN)
     {
         if ((cont = ContactFindUIN (serv->contacts, uin)))
             return cont;
@@ -345,7 +345,7 @@ Contact *ContactFind (ContactGroup *group, UDWORD uin, const char *nick)
 }
 
 /*
- * Finds a contact on a contact group by UIN
+ * Finds a contact on a contact group by screen name
  */
 Contact *ContactFindUIN (ContactGroup *group, UDWORD uin)
 {

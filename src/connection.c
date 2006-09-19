@@ -221,7 +221,7 @@ Connection *ConnectionFindScreen (UWORD type, const char *screen)
     assert (type);    
     assert (screen);
     
-    if (type != TYPE_MSN_SERVER)
+    if (type & TYPEF_HAVEUIN)
         return ConnectionFindUIN (type, atoi (screen));
 
     for (cl = &slist; cl; cl = cl->more)
