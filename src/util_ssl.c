@@ -327,7 +327,10 @@ int ssl_connect (Connection *conn, BOOL is_client DEBUGPARAM)
     gnutls_set_default_priority (conn->ssl);
     gnutls_kx_set_priority (conn->ssl, kx_prio);
 
-    ret = gnutls_credentials_set (conn->ssl, GNUTLS_CRD_ANON, is_client ? client_cred : server_cred);
+    if (is_client)
+        ret = gnutls_credentials_set (conn->ssl, GNUTLS_CRD_ANON, client_cred);
+    else
+        ret = gnutls_credentials_set (conn->ssl, GNUTLS_CRD_ANON, server_cred);
     if (ret)
         TCLEvent (cont, "ssl", "failed key");
 
