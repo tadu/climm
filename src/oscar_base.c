@@ -399,7 +399,7 @@ Event *ConnectionInitServer (Connection *conn)
     conn->reconnect= &SrvCallBackReconn;
     conn->close    = &FlapCliGoodbye;
     s_repl (&conn->server, conn->pref_server);
-    if (conn->status == STATUS_ICQOFFLINE)
+    if (conn->status == ims_offline)
         conn->status = conn->pref_status;
     
     if ((event = QueueDequeue2 (conn, QUEUE_DEP_OSCARLOGIN, 0, NULL)))
@@ -453,7 +453,7 @@ static void SrvCallBackReconn (Connection *conn)
         EventD (event);
     }
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
-        cont->status = STATUS_ICQOFFLINE;
+        cont->status = ims_offline;
 }
 
 static void SrvCallBackDoReconn (Event *event)

@@ -1498,7 +1498,7 @@ static void TCPCallBackResend (Event *event)
         if (peer->connect & CONNECT_OK)
         {
             if (event->attempts > 1)
-                IMIntMsg (cont, peer->parent->parent, NOW, STATUS_ICQOFFLINE, INT_MSGTRY_DC, opt_text, NULL);
+                IMIntMsg (cont, peer->parent->parent, NOW, ims_offline, INT_MSGTRY_DC, opt_text, NULL);
 
             if (event->attempts < 2)
                 PeerPacketSend (peer, pak);
@@ -1622,7 +1622,7 @@ static void TCPCallBackReceive (Event *event)
             {
                 case MSG_NORM:
                 case MSG_URL:
-                    IMIntMsg (cont, peer, NOW, STATUS_ICQOFFLINE, opt_origin == CV_ORIGIN_dc ? INT_MSGACK_DC : INT_MSGACK_SSL, opt_text, NULL);
+                    IMIntMsg (cont, peer, NOW, ims_offline, opt_origin == CV_ORIGIN_dc ? INT_MSGACK_DC : INT_MSGACK_SSL, opt_text, NULL);
                     if (~cont->oldflags & CONT_SEENAUTO && strlen (tmp) && strcmp (tmp, opt_text))
                     {
                         IMSrvMsg (cont, serv, NOW, OptSetVals (NULL, CO_ORIGIN, opt_origin, CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, tmp, 0));

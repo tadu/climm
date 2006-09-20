@@ -239,7 +239,7 @@ static Contact *ContactC (Connection *serv, UDWORD uin, const char *nick DEBUGPA
 
     cont->uin = uin;
     cont->ids = NULL;
-    cont->status = STATUS_ICQOFFLINE;
+    cont->status = ims_offline;
     
     s_repl (&cont->nick, nick ? nick : s_sprintf ("%ld", uin));
     s_repl (&cont->screen, nick && ~serv->type & TYPEF_HAVEUIN ? nick : s_sprintf ("%ld", uin));

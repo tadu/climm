@@ -205,7 +205,7 @@ JUMP_SNAC_F(SnacServerpause)
 #endif
     ConnectionInitServer(serv);
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
-        cont->status = STATUS_ICQOFFLINE;
+        cont->status = ims_offline;
 }
 
 /*

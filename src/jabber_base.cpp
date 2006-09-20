@@ -164,7 +164,7 @@ static Contact *SomeOnlineRessourceExcept (Connection *conn, Contact *full, Cont
     int i;
     
     for (i = 0; (c = ContactIndex (conn->contacts, i)); i++)
-        if (c != full && c != bare && c->status != STATUS_ICQOFFLINE
+        if (c != full && c != bare && c->status != ims_offline
             && !strncasecmp (c->screen, bare->screen, strlen (bare->screen)))
             return c;
     return NULL;

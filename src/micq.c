@@ -75,7 +75,8 @@ static void Idle_Check (Connection *conn)
 {
     int saver = -1;
     time_t now;
-    UDWORD delta, new = 0xffffffffL;
+    UDWORD delta;
+    UDWORD new = ims_offline;
 
     if (~conn->type & TYPEF_ANY_SERVER)
         return;
@@ -125,12 +126,12 @@ static void Idle_Check (Connection *conn)
 
             uiG.idle_val = 0;
             delta = 0;
-            if (new == 0xffffffffL || new == conn->status)
+            if (new == ims_offline || new == conn->status)
                 return;
         }
     }
 
-    if (!prG->away_time && !uiG.idle_flag && new == 0xffffffffL)
+    if (!prG->away_time && !uiG.idle_flag && new == ims_offline)
         return;
 
     if (!uiG.idle_val)
@@ -165,7 +166,7 @@ static void Idle_Check (Connection *conn)
         uiG.idle_flag = 2;
         uiG.idle_msgs = 0;
     }
-    if (new != 0xffffffffL && new != conn->status)
+    if (new != ims_offline && new != conn->status)
     {
         if (conn->type == TYPE_SERVER)
             SnacCliSetstatus (conn, new, 1);
@@ -492,7 +493,7 @@ static void Init (int argc, char *argv[])
                     conn->status = arg_ss;
                 if (arg_p)
                     s_repl (&conn->passwd, arg_p);
-                if ((!arg_s || arg_ss != STATUS_ICQOFFLINE) && (loginevent = conn->open (conn)))
+                if ((!arg_s || arg_ss != ims_offline) && (loginevent = conn->open (conn)))
                     QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
                                      OptSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                      &CmdUserCallbackTodo);
@@ -525,7 +526,7 @@ static void Init (int argc, char *argv[])
                 else if (!strcmp (arg_s, "ffc"))
                     arg_ss = STATUS_ICQFFC;
                 else if (!strncmp (arg_s, "off", 3))
-                    arg_ss = STATUS_ICQOFFLINE;
+                    arg_ss = ims_offline;
                 else
                     arg_ss = atoll (arg_s);
             }
@@ -544,7 +545,7 @@ static void Init (int argc, char *argv[])
             {
                 if (conn->type & TYPEF_ANY_SERVER)
                 {
-                    if (conn->status != STATUS_ICQOFFLINE && (loginevent = conn->open (conn)))
+                    if (conn->status != ims_offline && (loginevent = conn->open (conn)))
                          QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
                                           OptSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                           &CmdUserCallbackTodo);

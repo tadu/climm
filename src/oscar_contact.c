@@ -205,7 +205,7 @@ JUMP_SNAC_F(SnacSrvUseronline)
             cont->dc->ip_loc = ip;
     }
     /* TLV 1, d, f, 2, 3 ignored */
-    if (!~cont->status)
+    if (cont->status == ims_offline)
         memset (cont->caps, 0, sizeof (cont->caps));
 
     if (tlv[13].str.len)

@@ -942,7 +942,7 @@ static const Contact *rl_tab_getnext (strc_t common)
                 rl_tab_state++;
             case 2:
                 while ((cont = ContactIndex (NULL, rl_tab_index++)))
-                    if (cont->status != STATUS_ICQOFFLINE && !TabHas (cont))
+                    if (cont->status != ims_offline && !TabHas (cont))
                     {
                         if (!strncasecmp (cont->nick, common->txt, common->len))
                             return cont;
@@ -955,7 +955,7 @@ static const Contact *rl_tab_getnext (strc_t common)
                 rl_tab_state++;
             case 3:
                 while ((cont = ContactIndex (NULL, rl_tab_index++)))
-                    if (cont->status == STATUS_ICQOFFLINE && !TabHas (cont))
+                    if (cont->status == ims_offline && !TabHas (cont))
                     {
                         if (!strncasecmp (cont->nick, common->txt, common->len))
                             return cont;
@@ -989,7 +989,7 @@ static const Contact *rl_tab_getprev (strc_t common)
         {
             case 3:
                 while (rl_tab_index && (cont = ContactIndex (NULL, --rl_tab_index)))
-                    if (cont->status == STATUS_ICQOFFLINE && !TabHas (cont))
+                    if (cont->status == ims_offline && !TabHas (cont))
                     {
                         rl_tab_index++;
                         if (!strncasecmp (cont->nick, common->txt, common->len))
@@ -1005,7 +1005,7 @@ static const Contact *rl_tab_getprev (strc_t common)
                 rl_tab_state--;
             case 2:
                 while (rl_tab_index && (cont = ContactIndex (NULL, --rl_tab_index)))
-                    if (cont->status != STATUS_ICQOFFLINE && !TabHas (cont))
+                    if (cont->status != ims_offline && !TabHas (cont))
                     {
                         rl_tab_index++;
                         if (!strncasecmp (cont->nick, common->txt, common->len))

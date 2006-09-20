@@ -31,7 +31,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     if (status == cont->status)
         return;
     
-    if (status == STATUS_ICQOFFLINE)
+    if (status == ims_offline)
     {
         IMOffline (cont, conn);
         return;
@@ -43,11 +43,11 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     cont->status = status;
     cont->oldflags &= ~CONT_SEENAUTO;
     
-    putlog (conn, NOW, cont, status, old != STATUS_ICQOFFLINE ? LOG_CHANGE : LOG_ONLINE, 0xFFFF, "");
+    putlog (conn, NOW, cont, status, old != ims_offline ? LOG_CHANGE : LOG_ONLINE, 0xFFFF, "");
  
     if (!cont->group || ContactPrefVal (cont, CO_IGNORE)
-        || (!ContactPrefVal (cont, CO_SHOWONOFF)  && old == STATUS_ICQOFFLINE)
-        || (!ContactPrefVal (cont, CO_SHOWCHANGE) && old != STATUS_ICQOFFLINE)
+        || (!ContactPrefVal (cont, CO_SHOWONOFF)  && old == ims_offline)
+        || (!ContactPrefVal (cont, CO_SHOWCHANGE) && old != ims_offline)
         || (~conn->connect & CONNECT_OK))
         return;
     
@@ -59,17 +59,17 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
     }
 
     if (prG->event_cmd && *prG->event_cmd)
-        EventExec (cont, prG->event_cmd, !~old ? 2 : 5, status, NULL);
+        EventExec (cont, prG->event_cmd, old == ims_offline ? 2 : 5, status, NULL);
 
     rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-    rl_printf (~old ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status));
-    if (cont->version && !~old)
+    rl_printf (old != ims_offline ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status));
+    if (cont->version && old == ims_offline)
         rl_printf (" [%s]", cont->version);
-    if ((status & STATUSF_ICQBIRTH) && (!(old & STATUSF_ICQBIRTH) || !~old))
+    if ((status & STATUSF_ICQBIRTH) && (!(old & STATUSF_ICQBIRTH) || old == ims_offline))
         rl_printf (" (%s)", i18n (2033, "born today"));
     rl_print (".\n");
 
-    if (prG->verbose && !~old && cont->dc)
+    if (prG->verbose && old == ims_offline && cont->dc)
     {
         rl_printf ("    %s %s / ", i18n (1642, "IP:"), s_ip (cont->dc->ip_rem));
         rl_printf ("%s:%ld    %s %d    %s (%d)\n", s_ip (cont->dc->ip_loc),
@@ -105,14 +105,14 @@ void IMOffline (Contact *cont, Connection *conn)
     if (!cont)
         return;
     
-    if (cont->status == STATUS_ICQOFFLINE)
+    if (cont->status == ims_offline)
         return;
 
-    putlog (conn, NOW, cont, STATUS_ICQOFFLINE, LOG_OFFLINE, 0xFFFF, "");
+    putlog (conn, NOW, cont, ims_offline, LOG_OFFLINE, 0xFFFF, "");
 
     OptSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
     old = cont->status;
-    cont->status = STATUS_ICQOFFLINE;
+    cont->status = ims_offline;
 
     if (!cont->group || ContactPrefVal (cont, CO_IGNORE) || !ContactPrefVal (cont, CO_SHOWONOFF))
         return;
@@ -233,7 +233,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, in
 
     if (line)
     {
-        if (tstatus != STATUS_ICQOFFLINE && (!cont || cont->status == STATUS_ICQOFFLINE || !cont->group))
+        if (tstatus != ims_offline && (!cont || cont->status == ims_offline || !cont->group))
             rl_printf ("(%s) ", s_status (tstatus));
         
         rl_printf ("%s ", s_time (&stamp));
@@ -356,10 +356,14 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
 #endif
            (opt_origin == CV_ORIGIN_v8) ? MSGTYPE2RECSTR : MSGICQRECSTR;
 
-    putlog (conn, stamp, cont,
-        OptGetVal (opt, CO_STATUS, &opt_status) ? opt_status : STATUS_ICQOFFLINE, 
-        (opt_type == MSG_AUTH_ADDED) ? LOG_ADDED : LOG_RECVD, opt_type,
-        cdata);
+    if (OptGetVal (opt, CO_STATUS, &opt_status))
+        putlog (conn, stamp, cont, opt_status,
+            (opt_type == MSG_AUTH_ADDED) ? LOG_ADDED : LOG_RECVD, opt_type,
+            cdata);
+    else
+        putlog (conn, stamp, cont, ims_offline,
+            (opt_type == MSG_AUTH_ADDED) ? LOG_ADDED : LOG_RECVD, opt_type,
+            cdata);
     
     if (!strncasecmp (cdata, "<font ", 6))
     {

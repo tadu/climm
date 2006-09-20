@@ -138,7 +138,7 @@ static jump_t jump[] = {
     { &CmdUserSoundOnline,   "soundonline",  2,   0 },
     { &CmdUserSoundOffline,  "soundoffline", 2,   0 },
     { &CmdUserAutoaway,      "autoaway",     2,   0 },
-    { &CmdUserChange,        "change",       1,  -1 },
+    { &CmdUserChange,        "change",       1, ims_offline },
     { &CmdUserChange,        "online",       1, STATUS_ICQONLINE },
     { &CmdUserChange,        "away",         1, STATUS_ICQAWAY },
     { &CmdUserChange,        "na",           1, STATUS_ICQNA   },
@@ -788,7 +788,7 @@ static JUMP_F(CmdUserPeek)
     
     if (data || s_parsekey (&args, "all"))
         for (i = 0, cg = conn->contacts; (cont = ContactIndex (cg, i)); i++)
-            if (ContactPrefVal (cont, CO_PEEKME) && (cont->status == STATUS_ICQOFFLINE))
+            if (ContactPrefVal (cont, CO_PEEKME) && (cont->status == ims_offline))
                 SnacCliRequserinfo (conn, cont, -1);
 
     if ((cg = s_parselistrem (&args, conn)))
@@ -913,7 +913,7 @@ static JUMP_F(CmdUserGetAuto)
             one = 1;
             if (!(cdata = data))
             {
-                if      (cont->status == STATUS_ICQOFFLINE) continue;
+                if      (cont->status == ims_offline) continue;
                 else if (cont->status  & STATUSF_ICQDND)    cdata = MSGF_GETAUTO | MSG_GET_DND;
                 else if (cont->status  & STATUSF_ICQOCC)    cdata = MSGF_GETAUTO | MSG_GET_OCC;
                 else if (cont->status  & STATUSF_ICQNA)     cdata = MSGF_GETAUTO | MSG_GET_NA;
@@ -1482,7 +1482,7 @@ static UDWORD __status (Contact *cont)
 {
     if (ContactPrefVal (cont, CO_IGNORE))   return 0xfffffffe;
     if (!cont->group)                       return 0xfffffffe;
-    if (cont->status == STATUS_ICQOFFLINE)     return STATUS_ICQOFFLINE;
+    if (cont->status == ims_offline)         return STATUS_ICQOFFLINE;
     if (cont->status  & STATUSF_ICQBIRTH)   return STATUSF_ICQBIRTH;
     if (cont->status  & STATUSF_ICQDND)     return STATUS_ICQDND;
     if (cont->status  & STATUSF_ICQOCC)     return STATUS_ICQOCC;
@@ -1553,7 +1553,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
     if (prG->verbose && cont->dc)
         ver2 = strdup (s_sprintf (" <%08x:%08x:%08x>", (unsigned int)cont->dc->id1,
                                    (unsigned int)cont->dc->id2, (unsigned int)cont->dc->id3));
-    if (!OptGetVal (&cont->copts, cont->status == STATUS_ICQOFFLINE ? CO_TIMESEEN : CO_TIMEONLINE, &vseen))
+    if (!OptGetVal (&cont->copts, cont->status == ims_offline ? CO_TIMESEEN : CO_TIMEONLINE, &vseen))
         vseen = -1;
     tseen = vseen;
 #ifdef WIP
@@ -1975,7 +1975,7 @@ static JUMP_F(CmdUserStatusWide)
 
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
-        if (cont->status == STATUS_ICQOFFLINE)
+        if (cont->status == ims_offline)
         {
             if (data)
             {
@@ -4005,7 +4005,7 @@ static JUMP_F(CmdUserQuit)
     if (arg1)
     {
         for (i = 0; (cont = ContactIndex (NULL, i)); i++)
-            if (cont->group && cont->group->serv && cont->status != STATUS_ICQOFFLINE && ContactPrefVal (cont, CO_TALKEDTO))
+            if (cont->group && cont->group->serv && cont->status != ims_offline && ContactPrefVal (cont, CO_TALKEDTO))
                 IMCliMsg (cont->group->serv, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, arg1, 0));
     }
 

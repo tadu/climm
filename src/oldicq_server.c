@@ -540,7 +540,7 @@ static JUMP_SRV_F (CmdPktSrvAck)
         if (!(cont = ContactUIN (conn, PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM))))
             return;
 
-        IMIntMsg (cont, conn, NOW, STATUS_ICQOFFLINE, INT_MSGACK_V5,
+        IMIntMsg (cont, conn, NOW, ims_offline, INT_MSGACK_V5,
                   c_in_to_split (PacketReadAtL2Str (event->pak, 30, NULL), cont), NULL);
     }
     

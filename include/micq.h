@@ -159,6 +159,8 @@ typedef void MSN_Handle;
 #define STATUS_ICQFFC         STATUSF_ICQFFC
 #define STATUS_ICQONLINE     0x00000000
 
+#define ims_offline STATUS_ICQOFFLINE
+
 #define MSGF_MASS         0x8000
 #define MSGF_GETAUTO      0x0300
 

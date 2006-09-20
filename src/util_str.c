@@ -318,7 +318,7 @@ const char *s_status (UDWORD status)
 {
     static char buf[200];
     
-    if (status == STATUS_ICQOFFLINE)
+    if (status == ims_offline)
         return i18n (1969, "offline");
  
     if (status & STATUSF_ICQINV)

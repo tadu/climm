@@ -88,7 +88,7 @@ Connection *ConnectionC (UWORD type DEBUGPARAM)
     
     conn->our_local_ip   = 0x7f000001;
     conn->our_outside_ip = 0x7f000001;
-    conn->status = STATUS_ICQOFFLINE;
+    conn->status = ims_offline;
     conn->sok = -1;
     conn->type = type;
     conn->flags = CONN_CONFIGURED;
