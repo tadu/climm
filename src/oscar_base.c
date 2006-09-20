@@ -629,17 +629,17 @@ status_t OscarToStatus   (UWORD status)
     if (status == (UWORD)STATUS_ICQOFFLINE)
         return ims_offline;
     if (status & STATUSF_ICQINV)
-        tmp |= ims_inv;
+        tmp = ContactSetInv (ims_inv, tmp);
     if (status & STATUSF_ICQDND)
-        return tmp | ims_dnd;
+        return ContactSetInv (tmp, ims_dnd);
     if (status & STATUSF_ICQOCC)
-        return tmp | ims_occ;
+        return ContactSetInv (tmp, ims_occ);
     if (status & STATUSF_ICQNA)
-        return tmp | ims_na;
+        return ContactSetInv (tmp, ims_na);
     if (status & STATUSF_ICQAWAY)
-        return tmp | ims_away;
+        return ContactSetInv (tmp, ims_away);
     if (status & STATUSF_ICQFFC)
-        return tmp | ims_ffc;
+        return ContactSetInv (tmp, ims_ffc);
     return tmp;
 }
 

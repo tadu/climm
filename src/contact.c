@@ -1466,6 +1466,15 @@ void ContactSetVersion (Contact *cont)
     }
     else
         buf[0] = '\0';
-
     s_repl (&cont->version, strlen (buf) ? buf : NULL);
+}
+
+status_t ContactSetInv (status_t inv, status_t status)
+{
+    return (inv & ims_inv) | (status & ~ims_inv);
+}
+
+BOOL ContactIsInv (status_t inv)
+{
+    return (inv & ims_inv && inv != ims_offline) ? TRUE : FALSE;
 }

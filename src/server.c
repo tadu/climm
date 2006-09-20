@@ -35,7 +35,8 @@ static void CallbackTogvis (Event *event)
 {
     if (!event)
         return;
-    if (!event->cont || !event->conn || ContactPrefVal (event->cont, CO_INTIMATE) || !(event->conn->status & STATUSF_ICQINV))
+    if (!event->cont || !event->conn || ContactPrefVal (event->cont, CO_INTIMATE)
+        || !ContactIsInv (event->conn->status))
     {
         EventD (event);
         return;
@@ -82,7 +83,7 @@ UBYTE IMCliReMsg (Connection *conn, Contact *cont, Opt *opt)
     if (!OptGetVal (opt, CO_MSGTRANS, &opt_trans))
         OptSetVal (opt, CO_MSGTRANS, opt_trans = CV_MSGTRANS_ANY);
     
-    if ((conn->status & STATUSF_ICQINV)  && !ContactPrefVal (cont, CO_INTIMATE)
+    if (ContactIsInv (conn->status)  && !ContactPrefVal (cont, CO_INTIMATE)
         && !(opt_type & MSGF_GETAUTO) && !ContactPrefVal (cont, CO_HIDEFROM)
         && (reveal_time = ContactPrefVal (cont, CO_REVEALTIME)))
     {

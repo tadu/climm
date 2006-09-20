@@ -174,6 +174,9 @@ val_t         ContactGroupPrefVal (ContactGroup *cg, UDWORD flag);
 const char   *ContactPrefStr      (Contact *cont, UDWORD flag);
 val_t         ContactPrefVal      (Contact *cont, UDWORD flag);
 
+status_t      ContactSetInv       (status_t inv, status_t status);
+BOOL          ContactIsInv        (status_t inv);
+
 #define CONTACT_GENERAL(cont)  ((cont)->meta_general  ? (cont)->meta_general  : ((cont)->meta_general  = calloc (1, sizeof (MetaGeneral))))
 #define CONTACT_WORK(cont)     ((cont)->meta_work     ? (cont)->meta_work     : ((cont)->meta_work     = calloc (1, sizeof (MetaWork))))
 #define CONTACT_MORE(cont)     ((cont)->meta_more     ? (cont)->meta_more     : ((cont)->meta_more     = calloc (1, sizeof (MetaMore))))

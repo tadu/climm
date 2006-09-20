@@ -321,7 +321,7 @@ const char *s_status (status_t status)
     if (status == ims_offline)
         return i18n (1969, "offline");
  
-    if (status & STATUSF_ICQINV)
+    if (ContactIsInv (status))
         snprintf (buf, sizeof (buf), "%s-", i18n (1975, "invisible"));
     else
         buf[0] = '\0';

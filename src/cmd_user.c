@@ -241,6 +241,8 @@ jump_t *CmdUserLookup (const char *cmd)
 static JUMP_F(CmdUserChange)
 {
     char *arg1 = NULL;
+    status_t noinv;
+    status_t sdata = data;
     ANYCONN;
 
     if (data + 1 == 0)
@@ -258,6 +260,7 @@ static JUMP_F(CmdUserChange)
             return 0;
         }
     }
+    noinv = ContactSetInv (ims_online, sdata);
 
     OptSetStr (&prG->copts, CO_TAUTODND,  NULL);
     OptSetStr (&prG->copts, CO_TAUTOOCC,  NULL);
@@ -269,20 +272,20 @@ static JUMP_F(CmdUserChange)
     if (!(arg1 = s_parserem (&args)))
         arg1 = "";
 
-    if      (data & STATUSF_ICQDND)  OptSetStr (&prG->copts, CO_TAUTODND,  arg1);
-    else if (data & STATUSF_ICQOCC)  OptSetStr (&prG->copts, CO_TAUTOOCC,  arg1);
-    else if (data & STATUSF_ICQNA)   OptSetStr (&prG->copts, CO_TAUTONA,   arg1);
-    else if (data & STATUSF_ICQAWAY) OptSetStr (&prG->copts, CO_TAUTOAWAY, arg1);
-    else if (data & STATUSF_ICQFFC)  OptSetStr (&prG->copts, CO_TAUTOFFC,  arg1);
-    else if (data & STATUSF_ICQINV)  OptSetStr (&prG->copts, CO_TAUTOINV,  arg1);
+    if      (noinv & STATUSF_ICQDND)  OptSetStr (&prG->copts, CO_TAUTODND,  arg1);
+    else if (noinv & STATUSF_ICQOCC)  OptSetStr (&prG->copts, CO_TAUTOOCC,  arg1);
+    else if (noinv & STATUSF_ICQNA)   OptSetStr (&prG->copts, CO_TAUTONA,   arg1);
+    else if (noinv & STATUSF_ICQAWAY) OptSetStr (&prG->copts, CO_TAUTOAWAY, arg1);
+    else if (noinv & STATUSF_ICQFFC)  OptSetStr (&prG->copts, CO_TAUTOFFC,  arg1);
+    else if (sdata & STATUSF_ICQINV)  OptSetStr (&prG->copts, CO_TAUTOINV,  arg1);
 
     if (~conn->connect & CONNECT_OK)
-        conn->status = data;
+        conn->status = sdata;
     else if (conn->type == TYPE_SERVER)
-        SnacCliSetstatus (conn, data, 1);
+        SnacCliSetstatus (conn, sdata, 1);
     else
     {
-        CmdPktCmdStatusChange (conn, data);
+        CmdPktCmdStatusChange (conn, sdata);
         rl_printf ("%s %s\n", s_now, s_status (conn->status));
     }
     return 0;
@@ -913,12 +916,13 @@ static JUMP_F(CmdUserGetAuto)
             one = 1;
             if (!(cdata = data))
             {
+                status_t noinv = ContactSetInv (ims_online, cont->status);
                 if      (cont->status == ims_offline) continue;
-                else if (cont->status  & STATUSF_ICQDND)    cdata = MSGF_GETAUTO | MSG_GET_DND;
-                else if (cont->status  & STATUSF_ICQOCC)    cdata = MSGF_GETAUTO | MSG_GET_OCC;
-                else if (cont->status  & STATUSF_ICQNA)     cdata = MSGF_GETAUTO | MSG_GET_NA;
-                else if (cont->status  & STATUSF_ICQAWAY)   cdata = MSGF_GETAUTO | MSG_GET_AWAY;
-                else if (cont->status  & STATUSF_ICQFFC)    cdata = MSGF_GETAUTO | MSG_GET_FFC;
+                else if (noinv & STATUSF_ICQDND)  cdata = MSGF_GETAUTO | MSG_GET_DND;
+                else if (noinv & STATUSF_ICQOCC)  cdata = MSGF_GETAUTO | MSG_GET_OCC;
+                else if (noinv & STATUSF_ICQNA)   cdata = MSGF_GETAUTO | MSG_GET_NA;
+                else if (noinv & STATUSF_ICQAWAY) cdata = MSGF_GETAUTO | MSG_GET_AWAY;
+                else if (noinv & STATUSF_ICQFFC)  cdata = MSGF_GETAUTO | MSG_GET_FFC;
                 else continue;
             }
             IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, cdata, CO_MSGTEXT, "\xff", CO_FORCE, 1, 0));
@@ -1480,15 +1484,16 @@ static JUMP_F(CmdUserVerbose)
 
 static UDWORD __status (Contact *cont)
 {
+    status_t noinv = ContactSetInv (ims_online, cont->status);
     if (ContactPrefVal (cont, CO_IGNORE))   return 0xfffffffe;
     if (!cont->group)                       return 0xfffffffe;
-    if (cont->status == ims_offline)         return STATUS_ICQOFFLINE;
+    if (cont->status == ims_offline)        return STATUS_ICQOFFLINE;
     if (cont->status  & STATUSF_ICQBIRTH)   return STATUSF_ICQBIRTH;
-    if (cont->status  & STATUSF_ICQDND)     return STATUS_ICQDND;
-    if (cont->status  & STATUSF_ICQOCC)     return STATUS_ICQOCC;
-    if (cont->status  & STATUSF_ICQNA)      return STATUS_ICQNA;
-    if (cont->status  & STATUSF_ICQAWAY)    return STATUS_ICQAWAY;
-    if (cont->status  & STATUSF_ICQFFC)     return STATUS_ICQFFC;
+    if (noinv & STATUSF_ICQDND)     return STATUS_ICQDND;
+    if (noinv & STATUSF_ICQOCC)     return STATUS_ICQOCC;
+    if (noinv & STATUSF_ICQNA)      return STATUS_ICQNA;
+    if (noinv & STATUSF_ICQAWAY)    return STATUS_ICQAWAY;
+    if (noinv & STATUSF_ICQFFC)     return STATUS_ICQFFC;
     return STATUS_ICQONLINE;
 }
 
@@ -2578,7 +2583,7 @@ static JUMP_F(CmdUserTogInvis)
                 OptSetVal (&cont->copts, CO_HIDEFROM, 0);
                 if (conn->type == TYPE_SERVER)
                 {
-                    if (!(conn->status & STATUSF_ICQINV))
+                    if (!ContactIsInv (conn->status))
                         SnacCliReminvis (conn, cont);
                 }
                 else
@@ -2593,7 +2598,7 @@ static JUMP_F(CmdUserTogInvis)
                 if (conn->type == TYPE_SERVER)
                 {
                     SnacCliAddinvis (conn, cont);
-                    if (i || (conn->status & STATUSF_ICQINV))
+                    if (i || ContactIsInv (conn->status))
                         SnacCliSetstatus (conn, conn->status, 3);
                 }
                 else
@@ -2633,7 +2638,7 @@ static JUMP_F(CmdUserTogVisible)
                 OptSetVal (&cont->copts, CO_INTIMATE, 0);
                 if (conn->type == TYPE_SERVER)
                 {
-                    if (conn->status & STATUSF_ICQINV)
+                    if (ContactIsInv (conn->status))
                         SnacCliRemvisible (conn, cont);
                 }
                 else
@@ -2648,7 +2653,7 @@ static JUMP_F(CmdUserTogVisible)
                 if (conn->type == TYPE_SERVER)
                 {
                     SnacCliAddvisible (conn, cont);
-                    if (i || !(conn->status & STATUSF_ICQINV))
+                    if (i || !ContactIsInv (conn->status))
                         SnacCliSetstatus (conn, conn->status, 3);
                 }
                 else

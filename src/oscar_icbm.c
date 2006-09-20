@@ -815,23 +815,22 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
 void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, status_t status,
                      status_t deststatus, UWORD flags, const char *msg)
 {
-    if (msgtype == MSG_SSL_OPEN)       status = 0;
-    else if (status == (UWORD)ims_offline) /* keep */ ;
-    else if (status & STATUSF_ICQDND)     status = STATUSF_ICQDND  | (status & STATUSF_ICQINV);
-    else if (status & STATUSF_ICQOCC)     status = STATUSF_ICQOCC  | (status & STATUSF_ICQINV);
-    else if (status & STATUSF_ICQNA)      status = STATUSF_ICQNA   | (status & STATUSF_ICQINV);
-    else if (status & STATUSF_ICQAWAY)    status = STATUSF_ICQAWAY | (status & STATUSF_ICQINV);
-    else if (status & STATUSF_ICQFFC)     status = STATUSF_ICQFFC  | (status & STATUSF_ICQINV);
-    else                                  status &= STATUSF_ICQINV;
+    status_t dstatus;
+
+    if (msgtype == MSG_SSL_OPEN)
+        status = ims_online;
+    else
+        status &= 0xffffUL;
     
-    if      (flags != (UWORD)-1)           /* keep */ ;
+    dstatus = ContactSetInv (ims_online, deststatus & 0xffffUL);
+    if      (flags != (UWORD)-1)       /* keep */ ;
     else if (deststatus == ims_offline) /* keep */ ;
-    else if (deststatus & STATUSF_ICQDND)     flags = TCP_MSGF_CLIST;
-    else if (deststatus & STATUSF_ICQOCC)     flags = TCP_MSGF_CLIST;
-    else if (deststatus & STATUSF_ICQNA)      flags = TCP_MSGF_1;
-    else if (deststatus & STATUSF_ICQAWAY)    flags = TCP_MSGF_1;
-    else if (deststatus & STATUSF_ICQFFC)     flags = TCP_MSGF_LIST | TCP_MSGF_1;
-    else                                      flags = TCP_MSGF_LIST | TCP_MSGF_1;
+    else if (dstatus == ims_dnd)     flags = TCP_MSGF_CLIST;
+    else if (dstatus == ims_occ)     flags = TCP_MSGF_CLIST;
+    else if (dstatus == ims_na)      flags = TCP_MSGF_1;
+    else if (dstatus == ims_away)    flags = TCP_MSGF_1;
+    else if (dstatus == ims_ffc)     flags = TCP_MSGF_LIST | TCP_MSGF_1;
+    else                             flags = TCP_MSGF_LIST | TCP_MSGF_1;
 
     PacketWriteLen    (pak);
      PacketWrite2      (pak, seq);       /* sequence number */
@@ -920,6 +919,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     UDWORD tmp, cmd, flen;
     UWORD unk, seq, msgtype, unk2, pri;
     UWORD ack_flags, ack_status, accept;
+    status_t noinv;
 
     unk     = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, unk);
     seq     = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, seq);
@@ -943,13 +943,14 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     
     accept = FALSE;
 
-    if      (serv->status & STATUSF_ICQDND)
+    noinv = ContactSetInv (ims_online, serv->status & 0xffffUL);
+    if      (noinv == ims_dnd)
         ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTODND))  && *tauto ? tauto : ContactPrefStr (cont, CO_AUTODND);
-    else if (serv->status & STATUSF_ICQOCC)
+    else if (noinv == ims_occ)
         ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTOOCC))  && *tauto ? tauto : ContactPrefStr (cont, CO_AUTOOCC);
-    else if (serv->status & STATUSF_ICQNA)
+    else if (noinv == ims_na)
         ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTONA))   && *tauto ? tauto : ContactPrefStr (cont, CO_AUTONA);
-    else if (serv->status & STATUSF_ICQAWAY)
+    else if (noinv == ims_away)
         ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTOAWAY)) && *tauto ? tauto : ContactPrefStr (cont, CO_AUTOAWAY);
     else
         ack_msg = "";
@@ -958,14 +959,14 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
  *
  * Don't refuse until we have sensible preferences for that
  */
-    if (serv->status & STATUSF_ICQDND)  ack_status  = TCP_ACK_ONLINE; else
-    if (serv->status & STATUSF_ICQOCC)  ack_status  = TCP_ACK_ONLINE; else
-    if (serv->status & STATUSF_ICQNA)   ack_status  = TCP_ACK_NA;     else
-    if (serv->status & STATUSF_ICQAWAY) ack_status  = TCP_ACK_AWAY;
-    else                                ack_status  = TCP_ACK_ONLINE;
+    if (noinv == ims_dnd)  ack_status  = TCP_ACK_ONLINE; else
+    if (noinv == ims_occ)  ack_status  = TCP_ACK_ONLINE; else
+    if (noinv == ims_na)   ack_status  = TCP_ACK_NA;     else
+    if (noinv == ims_away) ack_status  = TCP_ACK_AWAY;
+    else                   ack_status  = TCP_ACK_ONLINE;
 
     ack_flags = 0;
-    if (serv->status & STATUSF_ICQINV)  ack_flags |= TCP_MSGF_INV;
+    if (ContactIsInv (serv->status))  ack_flags |= TCP_MSGF_INV;
 
     switch (msgtype & ~MSGF_MASS)
     {

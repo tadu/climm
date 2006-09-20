@@ -77,12 +77,12 @@ static void Idle_Check (Connection *conn)
     int saver = -1;
     time_t now;
     UDWORD delta;
-    UDWORD new = ims_offline;
+    status_t new = ims_offline, noinv = ContactSetInv (ims_online, conn->status);
 
     if (~conn->type & TYPEF_ANY_SERVER)
         return;
 
-    if ((conn->status & (STATUSF_ICQDND | STATUSF_ICQOCC | STATUSF_ICQFFC))
+    if ((noinv & (STATUSF_ICQDND | STATUSF_ICQOCC | STATUSF_ICQFFC))
         || !(conn->connect & CONNECT_OK))
     {
         uiG.idle_val = 0;
@@ -103,23 +103,23 @@ static void Idle_Check (Connection *conn)
             switch (saver)
             {
                 case 0: /* no screen saver, not locked */
-                    if (!(conn->status & (STATUSF_ICQAWAY | STATUSF_ICQNA)))
+                    if (!(noinv & (STATUSF_ICQAWAY | STATUSF_ICQNA)))
                         return;
-                    new = (conn->status & STATUSF_ICQINV) | STATUS_ICQONLINE;
+                    new = ContactSetInv (conn->status, ims_online);
                     uiG.idle_flag = 0;
                     break;
                 case 2: /* locked workstation */
                 case 3:
-                    if (conn->status & STATUS_ICQNA)
+                    if (noinv & STATUS_ICQNA)
                         return;
-                    new = (conn->status & STATUSF_ICQINV) | STATUS_ICQNA;
+                    new = ContactSetInv (conn->status, ims_na);
                     uiG.idle_msgs = 0;
                     uiG.idle_flag = 1;
                     break;
                 case 1: /* screen saver only */
-                    if ((conn->status & (STATUSF_ICQAWAY | STATUSF_ICQNA)) == STATUS_ICQAWAY)
+                    if ((noinv & (STATUSF_ICQAWAY | STATUSF_ICQNA)) == STATUS_ICQAWAY)
                         return;
-                    new = (conn->status & STATUSF_ICQINV) | STATUS_ICQAWAY;
+                    new = ContactSetInv (conn->status, ims_away);
                     uiG.idle_msgs = 0;
                     uiG.idle_flag = 1;
                     break;
@@ -140,30 +140,30 @@ static void Idle_Check (Connection *conn)
 
     if (uiG.idle_flag & 2)
     {
-        if (conn->status & STATUSF_ICQNA)
+        if (noinv & STATUSF_ICQNA)
         {
             if (delta < prG->away_time || !prG->away_time)
             {
-                new = (conn->status & STATUSF_ICQINV) | STATUS_ICQONLINE;
+                new = ContactSetInv (conn->status, ims_online);
                 uiG.idle_flag = 0;
                 uiG.idle_val = 0;
             }
         }
-        else if (conn->status & STATUSF_ICQAWAY)
+        else if (noinv & STATUSF_ICQAWAY)
         {
             if (delta >= 2 * prG->away_time)
-                new = (conn->status & STATUSF_ICQINV) | STATUS_ICQNA;
+                new = ContactSetInv (conn->status, ims_na);
             else if (delta < prG->away_time || !prG->away_time)
             {
-                new = (conn->status & STATUSF_ICQINV) | STATUS_ICQONLINE;
+                new = ContactSetInv (conn->status, ims_online);
                 uiG.idle_flag = 0;
                 uiG.idle_val = 0;
             }
         }
     }
-    else if (!uiG.idle_flag && delta >= prG->away_time && !(conn->status & (STATUSF_ICQAWAY | STATUSF_ICQNA)))
+    else if (!uiG.idle_flag && delta >= prG->away_time && !(noinv & (STATUSF_ICQAWAY | STATUSF_ICQNA)))
     {
-        new = (conn->status & STATUSF_ICQINV) | STATUS_ICQAWAY;
+        new = ContactSetInv (conn->status, ims_away);
         uiG.idle_flag = 2;
         uiG.idle_msgs = 0;
     }
