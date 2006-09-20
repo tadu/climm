@@ -353,14 +353,14 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             cont->dc->id2     = PacketRead4 (pak);
             cont->dc->id3     = PacketRead4 (pak);
             ContactSetVersion (cont);
-            IMOnline (cont, conn, OscarToStatus (status));
+            IMOnline (cont, conn, IcqToStatus (status), IcqToFlags (status), status);
             break;
         case SRV_STATUS_UPDATE:
             uin = PacketRead4 (pak);
             if ((cont = ContactUIN (conn, uin)))
             {
                 status = PacketRead4 (pak);
-                IMOnline (cont, conn, OscarToStatus (status));
+                IMOnline (cont, conn, IcqToStatus (status), IcqToFlags (status), status);
             }
             break;
         case SRV_GO_AWAY:
@@ -416,7 +416,9 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             status            = PacketRead4  (pak);
             cont->dc->version = PacketRead2  (pak);
             
-            cont->status = OscarToStatus (status);
+            cont->status = IcqToStatus (status);
+            cont->flags = IcqToFlags (status);
+            cont->nativestatus = status;
 
             rl_printf ("%-15s %lu\n", i18n (1440, "Random User:"), cont->uin);
             rl_printf ("%-15s %s:%lu\n", i18n (1441, "remote IP:"), 
@@ -424,7 +426,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             rl_printf ("%-15s %s\n", i18n (1451, "local  IP:"),  s_ip (cont->dc->ip_loc));
             rl_printf ("%-15s %s\n", i18n (1454, "Connection:"), cont->dc->type == 4
                       ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
-            rl_printf ("%-15s %s\n", i18n (1452, "Status:"), s_status (cont->status));
+            rl_printf ("%-15s %s\n", i18n (1452, "Status:"), s_status (cont->status, cont->nativestatus));
             rl_printf ("%-15s %d\n", i18n (1453, "TCP version:"), cont->dc->version);
         
             CmdPktCmdMetaReqInfo (conn, cont);

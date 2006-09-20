@@ -35,6 +35,8 @@
 #include "oscar_tlv.h"
 #include "oscar_snac.h"
 #include "oscar_contact.h"
+#include "oscar_service.h"
+#include "oldicq_compat.h"
 #include "packet.h"
 #include "contact.h"
 #include "connection.h"
@@ -221,7 +223,7 @@ JUMP_SNAC_F(SnacSrvUseronline)
     OptSetVal (&cont->copts, CO_TIMEONLINE, time (NULL) - tlv[15].nr);
     ContactSetVersion (cont);
     ostat = tlv[6].str.len ? tlv[6].nr : 0;
-    IMOnline (cont, serv, OscarToStatus (ostat));
+    IMOnline (cont, serv, IcqToStatus (ostat), IcqToFlags (ostat), ostat);
     TLVD (tlv);
 }
 

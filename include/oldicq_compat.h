@@ -60,4 +60,9 @@ void Recv_Message (Connection *conn, Packet *pak);
 void Display_Info_Reply (Contact *cont, Packet *pak, UBYTE flags);
 void Display_Ext_Info_Reply (Connection *conn, Packet *pak);
 
+status_t     IcqToStatus   (UDWORD status);
+UDWORD       IcqFromStatus (status_t status);
+statusflag_t IcqToFlags    (UDWORD status);
+UDWORD       IcqFromFlags  (statusflag_t flags);
+
 #endif

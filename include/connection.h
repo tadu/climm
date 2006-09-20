@@ -38,6 +38,7 @@ struct Connection_s
 
     Contact  *cont;           /* the user this connection is for          */
     status_t  status;         /* own status                               */
+    UDWORD    nativestatus;   /* own ICQ extended status                  */
     char     *server;         /* the remote server name                   */
     UDWORD    port;           /* the port the server is listening on      */
     char     *passwd;         /* the password for this user               */

@@ -815,22 +815,18 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
 void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, status_t status,
                      status_t deststatus, UWORD flags, const char *msg)
 {
-    status_t dstatus;
-
     if (msgtype == MSG_SSL_OPEN)
         status = ims_online;
-    else
-        status &= 0xffffUL;
     
-    dstatus = ContactSetInv (ims_online, deststatus & 0xffffUL);
-    if      (flags != (UWORD)-1)       /* keep */ ;
+    deststatus = ContactSetInv (ims_online, deststatus);
+    if      (flags != (UWORD)-1)        /* keep */ ;
     else if (deststatus == ims_offline) /* keep */ ;
-    else if (dstatus == ims_dnd)     flags = TCP_MSGF_CLIST;
-    else if (dstatus == ims_occ)     flags = TCP_MSGF_CLIST;
-    else if (dstatus == ims_na)      flags = TCP_MSGF_1;
-    else if (dstatus == ims_away)    flags = TCP_MSGF_1;
-    else if (dstatus == ims_ffc)     flags = TCP_MSGF_LIST | TCP_MSGF_1;
-    else                             flags = TCP_MSGF_LIST | TCP_MSGF_1;
+    else if (deststatus == ims_dnd)     flags = TCP_MSGF_CLIST;
+    else if (deststatus == ims_occ)     flags = TCP_MSGF_CLIST;
+    else if (deststatus == ims_na)      flags = TCP_MSGF_1;
+    else if (deststatus == ims_away)    flags = TCP_MSGF_1;
+    else if (deststatus == ims_ffc)     flags = TCP_MSGF_LIST | TCP_MSGF_1;
+    else                                flags = TCP_MSGF_LIST | TCP_MSGF_1;
 
     PacketWriteLen    (pak);
      PacketWrite2      (pak, seq);       /* sequence number */
@@ -839,7 +835,7 @@ void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, status_t status,
      PacketWrite4      (pak, 0);
     PacketWriteLenDone (pak);
     PacketWrite2      (pak, msgtype);    /* message type    */
-    PacketWrite2      (pak, OscarFromStatus (status));
+    PacketWrite2      (pak, IcqFromStatus (status));
                                          /* status          */
     PacketWrite2      (pak, flags);      /* flags           */
     PacketWriteLNTS   (pak, msg);        /* the message     */
@@ -943,7 +939,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     
     accept = FALSE;
 
-    noinv = ContactSetInv (ims_online, serv->status & 0xffffUL);
+    noinv = ContactSetInv (ims_online, serv->status);
     if      (noinv == ims_dnd)
         ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTODND))  && *tauto ? tauto : ContactPrefStr (cont, CO_AUTODND);
     else if (noinv == ims_occ)
@@ -955,8 +951,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     else
         ack_msg = "";
 
-/*  if (serv->status & STATUSF_ICQDND)  ack_status  = pri & 4 ? TCP_ACK_ONLINE : TCP_ACK_DND; else
- *
+/*
  * Don't refuse until we have sensible preferences for that
  */
     if (noinv == ims_dnd)  ack_status  = TCP_ACK_ONLINE; else

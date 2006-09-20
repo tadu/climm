@@ -77,13 +77,13 @@ static void Idle_Check (Connection *conn)
     int saver = -1;
     time_t now;
     UDWORD delta;
-    status_t new = ims_offline, noinv = ContactSetInv (ims_online, conn->status);
+    status_t news = ims_offline, noinv = ContactSetInv (ims_online, conn->status);
 
     if (~conn->type & TYPEF_ANY_SERVER)
         return;
 
-    if ((noinv & (STATUSF_ICQDND | STATUSF_ICQOCC | STATUSF_ICQFFC))
-        || !(conn->connect & CONNECT_OK))
+    if ((noinv == ims_dnd || noinv == ims_occ || noinv == ims_ffc)
+        || ~conn->connect & CONNECT_OK)
     {
         uiG.idle_val = 0;
         return;
@@ -103,23 +103,23 @@ static void Idle_Check (Connection *conn)
             switch (saver)
             {
                 case 0: /* no screen saver, not locked */
-                    if (!(noinv & (STATUSF_ICQAWAY | STATUSF_ICQNA)))
+                    if (noinv != ims_dnd && noinv != ims_occ && noinv != ims_na && noinv != ims_away)
                         return;
-                    new = ContactSetInv (conn->status, ims_online);
+                    news = ContactSetInv (conn->status, ims_online);
                     uiG.idle_flag = 0;
                     break;
                 case 2: /* locked workstation */
                 case 3:
-                    if (noinv & STATUS_ICQNA)
+                    if (noinv == ims_na)
                         return;
-                    new = ContactSetInv (conn->status, ims_na);
+                    news = ContactSetInv (conn->status, ims_na);
                     uiG.idle_msgs = 0;
                     uiG.idle_flag = 1;
                     break;
                 case 1: /* screen saver only */
-                    if ((noinv & (STATUSF_ICQAWAY | STATUSF_ICQNA)) == STATUS_ICQAWAY)
+                    if (noinv == ims_away || noinv == ims_occ || noinv == ims_dnd)
                         return;
-                    new = ContactSetInv (conn->status, ims_away);
+                    news = ContactSetInv (conn->status, ims_away);
                     uiG.idle_msgs = 0;
                     uiG.idle_flag = 1;
                     break;
@@ -127,12 +127,12 @@ static void Idle_Check (Connection *conn)
 
             uiG.idle_val = 0;
             delta = 0;
-            if (new == ims_offline || new == conn->status)
+            if (news == ims_offline || news == conn->status)
                 return;
         }
     }
 
-    if (!prG->away_time && !uiG.idle_flag && new == ims_offline)
+    if (!prG->away_time && !uiG.idle_flag && news == ims_offline)
         return;
 
     if (!uiG.idle_val)
@@ -140,42 +140,43 @@ static void Idle_Check (Connection *conn)
 
     if (uiG.idle_flag & 2)
     {
-        if (noinv & STATUSF_ICQNA)
+        if (noinv == ims_na)
         {
             if (delta < prG->away_time || !prG->away_time)
             {
-                new = ContactSetInv (conn->status, ims_online);
+                news = ContactSetInv (conn->status, ims_online);
                 uiG.idle_flag = 0;
                 uiG.idle_val = 0;
             }
         }
-        else if (noinv & STATUSF_ICQAWAY)
+        else if (noinv == ims_away || noinv == ims_occ || noinv == ims_dnd)
         {
             if (delta >= 2 * prG->away_time)
-                new = ContactSetInv (conn->status, ims_na);
+                news = ContactSetInv (conn->status, ims_na);
             else if (delta < prG->away_time || !prG->away_time)
             {
-                new = ContactSetInv (conn->status, ims_online);
+                news = ContactSetInv (conn->status, ims_online);
                 uiG.idle_flag = 0;
                 uiG.idle_val = 0;
             }
         }
     }
-    else if (!uiG.idle_flag && delta >= prG->away_time && !(noinv & (STATUSF_ICQAWAY | STATUSF_ICQNA)))
+    else if (!uiG.idle_flag && delta >= prG->away_time && noinv != ims_dnd
+             && noinv != ims_occ && noinv != ims_na && noinv != ims_away)
     {
-        new = ContactSetInv (conn->status, ims_away);
+        news = ContactSetInv (conn->status, ims_away);
         uiG.idle_flag = 2;
         uiG.idle_msgs = 0;
     }
-    if (new != ims_offline && new != conn->status)
+    if (news != ims_offline && news != conn->status)
     {
         if (conn->type == TYPE_SERVER)
-            SnacCliSetstatus (conn, new, 1);
-        else
-            CmdPktCmdStatusChange (conn, new);
-        conn->status = new;
+            SnacCliSetstatus (conn, news, 1);
+        else if (conn->type == TYPE_SERVER_OLD)
+            CmdPktCmdStatusChange (conn, news);
+        conn->status = news;
         rl_printf ("%s ", s_now);
-        rl_printf (i18n (1064, "Automatically changed status to %s.\n"), s_status (new));
+        rl_printf (i18n (1064, "Automatically changed status to %s.\n"), s_status (news, 0));
     }
     return;
 }
@@ -506,7 +507,7 @@ static void Init (int argc, char *argv[])
                 arg_u = NULL;
             arg_p = arg_s = NULL;
             s_init (&arg_C, "", 0);
-            arg_ss = STATUS_ICQONLINE;
+            arg_ss = ims_online;
             conn = NULL;
         }
         else if (!strcmp (targv[i], "-p") || !strcmp (targv[i], "--passwd"))
@@ -516,7 +517,7 @@ static void Init (int argc, char *argv[])
             if ((arg_s = targv[++i]))
             {
                 if (!ContactStatus (&arg_s, &arg_ss))
-                    arg_ss = OscarToStatus (atoll (arg_s));
+                    arg_ss = IcqToStatus (atoll (arg_s));
             }
         }
         else

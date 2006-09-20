@@ -248,11 +248,12 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     if (tlv[6].str.len)
     {
         ostat = tlv[6].nr;
-        status = OscarToStatus (ostat);
+        status = IcqToStatus (ostat);
         if (status != serv->status)
         {
             serv->status = status;
-            rl_printf ("%s %s\n", s_now, s_status (serv->status));
+            serv->nativestatus = ostat;
+            rl_printf ("%s %s\n", s_now, s_status (serv->status, ostat));
         }
     }
     /* TLV 1 c f 2 3 ignored */
@@ -331,17 +332,20 @@ JUMP_SNAC_F(SnacSrvFamilies2)
 void SnacCliSetstatus (Connection *serv, status_t status, UWORD action)
 {
     Packet *pak;
-    UDWORD ostat = OscarFromStatus (status);
+    UDWORD ostat = IcqFromStatus (status);
+    statusflag_t flags = imf_none;
     
     if (ConnectionPrefVal (serv, CO_WEBAWARE))
-        ostat |= STATUSF_ICQWEBAWARE;
+        flags |= imf_web;
     if (ConnectionPrefVal (serv, CO_DCAUTH))
-        ostat |= STATUSF_ICQDC_AUTH;
+        flags |= imf_dcauth;
     if (ConnectionPrefVal (serv, CO_DCCONT))
-        ostat |= STATUSF_ICQDC_CONT;
+        flags |= imf_dccont;
+    
+    ostat |= IcqFromFlags (flags);
     
     pak = SnacC (serv, 1, 0x1e, 0, 0);
-    if ((action & 1) && (ostat & STATUSF_ICQINV))
+    if ((action & 1) && (status & ims_inv))
         SnacCliAddvisible (serv, 0);
     if (action & 1)
         PacketWriteTLV4 (pak, 6, ostat);
@@ -375,7 +379,6 @@ void SnacCliSetstatus (Connection *serv, status_t status, UWORD action)
         PacketWriteTLV2 (pak, 8, 0);
     }
     SnacSend (serv, pak);
-    if ((action & 1) && (~ostat & STATUSF_ICQINV))
+    if ((action & 1) && (~status & ims_inv))
         SnacCliAddinvis (serv, 0);
 }
-

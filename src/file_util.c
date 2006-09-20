@@ -41,6 +41,7 @@
 #include "util_io.h"
 #include "remote.h"
 #include "oscar_base.h"
+#include "oldicq_compat.h"
 #include "connection.h"
 #include "util_parse.h"
 #include "util_rl.h"
@@ -65,7 +66,7 @@ Connection *PrefNewConnection (UDWORD uin, const char *passwd)
     conn->flags |= CONN_AUTOLOGIN;
     conn->pref_server = strdup ("login.icq.com");
     conn->pref_port = 5190;
-    conn->pref_status = STATUS_ICQONLINE;
+    conn->pref_status = ims_online;
     conn->version = 8;
     conn->uin = uin;
     s_repl (&conn->screen, s_sprintf ("%lu", uin));
@@ -76,7 +77,7 @@ Connection *PrefNewConnection (UDWORD uin, const char *passwd)
     conn->server  = strdup ("login.icq.com");
     conn->port    = 5190;
     conn->passwd  = passwd ? strdup (passwd) : NULL;
-    conn->status = STATUS_ICQONLINE;
+    conn->status = ims_online;
 
     conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
     OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
@@ -245,7 +246,7 @@ void Initialize_RC_File ()
     prG->logplace  = strdup ("history" _OS_PATHSEPSTR);
     prG->chat      = 49;
     prG->autoupdate = AUTOUPDATE_CURRENT;
-    prG->status = STATUS_ICQONLINE;
+    prG->status = ims_online;
     prG->flags = FLAG_DELBS | FLAG_AUTOSAVE;
 #ifdef ANSI_TERM
     prG->flags |= FLAG_COLOR;
@@ -1011,7 +1012,7 @@ int Read_RC_File (FILE *rcf)
                     if (!ContactStatus (&args, &conn->pref_status))
                     {
                         PrefParseInt (i);
-                        conn->pref_status = OscarToStatus (i);
+                        conn->pref_status = IcqToStatus (i);
                     }
                 }
                 else

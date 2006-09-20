@@ -1493,7 +1493,7 @@ BOOL ContactStatus (const char **args, status_t *stat)
 
 const char *ContactStatusStr (status_t status)
 {
-    switch (status & 0xffffUL)
+    switch (status)
     {
         case ims_offline:   return "offline";
         case ims_online:    return "online";

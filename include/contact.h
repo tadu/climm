@@ -96,6 +96,8 @@ struct Contact_s
     char  *screen;
     UDWORD uin;
     status_t status;
+    statusflag_t flags;
+    UDWORD nativestatus;
     UDWORD oldflags;
     Opt copts;
     UDWORD caps[2];

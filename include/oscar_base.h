@@ -27,7 +27,4 @@ void    FlapSave (Packet *pak, BOOL in);
 Event *ConnectionInitServer (Connection *serv);
 Connection *SrvRegisterUIN (Connection *serv, const char *pass);
 
-status_t OscarToStatus   (UWORD status);
-UDWORD   OscarFromStatus (status_t status);
-
-#endif /* MICQ_ICQV8_FLAP_H */
+#endif

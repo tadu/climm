@@ -26,7 +26,7 @@
  * Log the event provided to the log with a time stamp.
  */
 int putlog (Connection *conn, time_t stamp, Contact *cont, 
-            status_t status, enum logtype level, UWORD type, const char *log)
+            status_t status, UDWORD nativestatus, enum logtype level, UWORD type, const char *log)
 {
     char buffer[LOG_MAX_PATH + 1];                   /* path to the logfile */
 #if HAVE_SYMLINK
@@ -83,22 +83,26 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     
     switch (conn->type)
     {
-        case TYPE_SERVER_OLD:
-            s_catf (&t, "[icq5:%lu]!%s %s %s%s%s[icq5:%lu+%lX]", 
-                conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, OscarFromStatus (status));
+        case TYPE_MSN_SERVER:
+        case TYPE_JABBER_SERVER:
+            s_catf (&t, "[%s:%s]!%s %s %s%s%s[%s:%s+%lX %s]",
+                ConnectionServerType (conn->type), conn->screen, username, indic, pos, cont->screen, pos,
+                ConnectionServerType (conn->type), cont->screen, nativestatus, ContactStatusStr (status));
             break;
+        case TYPE_SERVER_OLD:
         case TYPE_SERVER:
-            s_catf (&t, "[icq8:%lu]!%s %s %s%s%s[icq8:%lu+%lX]", 
-                conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, OscarFromStatus (status));
+            s_catf (&t, "[%s:%lu]!%s %s %s%s%s[%s:%lu+%lX %s]", 
+                ConnectionServerType (conn->type), conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, 
+                ConnectionServerType (conn->type), cont->uin, nativestatus, ContactStatusStr (status));
             break;
         case TYPE_MSGLISTEN:
         case TYPE_MSGDIRECT:
-            s_catf (&t, "%s %s %s%s%s[tcp:%lu+%lX]",
-                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, OscarFromStatus (status));
+            s_catf (&t, "%s %s %s%s%s[tcp:%lu+%lX %s]",
+                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, nativestatus, ContactStatusStr (status));
             break;
         default:
-            s_catf (&t, "%s %s %s%s%s[tcp:%lu+%lX]",
-                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, OscarFromStatus (status));
+            s_catf (&t, "%s %s %s%s%s[tcp:%lu+%lX %s]",
+                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, nativestatus, ContactStatusStr (status));
             break;
     }
 
@@ -181,7 +185,7 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
 /*
  * Executes a program and feeds some shell-proof information data into it
  */
-void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, const char *text)
+void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype, status_t status, const char *text)
 {
     static int rc;
     char *mytext, *mynick, *myscript, *tmp, *myagent, *mygroup;
@@ -190,8 +194,8 @@ void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, c
     mytext = strdup (text ? text : "");
     mynick = strdup (cont ? cont->nick : "");
     myagent = strdup (cont && cont->version ? cont->version : "");
-    mytype = (type == 1 ? "msg" : type == 2 ? "on" : type == 3 ? "off" : 
-              type == 4 ? "beep" : type == 5 ? "status" : "other");
+    mytype = (type == ev_msg ? "msg" : type == ev_on ? "on" : type == ev_off ? "off" : 
+              type == ev_beep ? "beep" : type == ev_status ? "status" : "other");
     myscript = strdup (s_realpath (script));
     mygroup =  strdup (cont && cont->group && cont->group->name ? cont->group->name : "global");
 
@@ -200,6 +204,8 @@ void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, c
     setenv ("MICQ_NICK", mynick, 1);
     setenv ("MICQ_AGENT", myagent, 1);
     setenv ("MICQ_GROUP", mygroup, 1);
+    setenv ("MICQ_TYPE", mytype, 1);
+    setenv ("MICQ_STATUS", ContactStatusStr (status), 1);
 #endif
 
     for (tmp = mytext; *tmp; tmp++)
@@ -215,8 +221,8 @@ void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, c
         if (*tmp == '\'' || *tmp == '\\')
             *tmp = '"';
 
-    cmd = s_sprintf ("%s icq %ld '%s' '%s' %s %ld '%s' '%s'",
-                     myscript, cont ? cont->uin : 0, mynick, mygroup, mytype, msgtype, mytext, myagent);
+    cmd = s_sprintf ("%s icq %ld '%s' '%s' %s %ld '%s' '%s' '%s'",
+                     myscript, cont ? cont->uin : 0, mynick, mygroup, mytype, msgtype, mytext, myagent, ContactStatusStr (status));
 
     rc = system (cmd);
     if (rc)

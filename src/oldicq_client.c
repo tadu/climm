@@ -37,7 +37,6 @@
 #include "oldicq_compat.h"
 #include "oldicq_client.h"
 #include "oldicq_util.h"
-#include "oscar_base.h"
 #include "preferences.h"
 #include "util.h"
 #include "conv.h"
@@ -128,7 +127,7 @@ void CmdPktCmdLogin (Connection *conn)
     PacketWrite4 (pak, conn->our_local_ip);
     PacketWrite1 (pak, conn->assoc && conn->assoc->connect & CONNECT_OK ?
                        conn->assoc->status : 0);         /* 1=firewall | 2=proxy | 4=tcp */
-    PacketWrite4 (pak, OscarFromStatus (prG->status));
+    PacketWrite4 (pak, IcqFromStatus (prG->status));
     PacketWrite2 (pak, conn->assoc && conn->assoc->connect & CONNECT_OK ?
                        conn->assoc->version : 0);
     PacketWrite2 (pak, 0);
@@ -310,7 +309,7 @@ void CmdPktCmdExtInfoReq (Connection *conn, Contact *cont)
 void CmdPktCmdStatusChange (Connection *conn, status_t status)
 {
     Packet *pak = PacketCv5 (conn, CMD_STATUS_CHANGE);
-    PacketWrite4 (pak, OscarFromStatus (status));
+    PacketWrite4 (pak, IcqFromStatus (status));
     PacketEnqueuev5 (pak, conn);
 
     conn->status = status;

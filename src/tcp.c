@@ -253,7 +253,7 @@ void TCPDispatchMain (Connection *list)
                 list->connect &= ~CONNECT_SELECT_W; /* & ~CONNECT_SELECT_X; */
                 if (list->type == TYPE_MSGLISTEN && list->parent && list->parent->type == TYPE_SERVER
                     && (list->parent->connect & CONNECT_OK))
-                    SnacCliSetstatus (list->parent, 0, 2);
+                    SnacCliSetstatus (list->parent, ims_online, 2);
                 break;
             case 2:
                 list->connect = 0;
@@ -1566,7 +1566,9 @@ static void TCPCallBackReceive (Event *event)
     strc_t ctmp, ctext, cname, creason;
     char *tmp, *text, *name;
     UWORD cmd, type, seq, port /*, unk*/;
-    UDWORD /*len,*/ status /*, flags, xtmp1, xtmp2, xtmp3*/;
+  /*  UDWORD len, flags, xtmp1, xtmp2, xtmp3; */
+    status_t status;
+    UDWORD ostat;
     const char *opt_text;
     UDWORD opt_origin, opt_type;
     
@@ -1597,7 +1599,8 @@ static void TCPCallBackReceive (Event *event)
             /*xtmp2*/PacketRead4 (pak);
             /*xtmp3*/PacketRead4 (pak);
             type   = PacketRead2 (pak);
-            status = PacketRead2 (pak);
+            ostat  = PacketRead2 (pak);
+            status = IcqToStatus (ostat);
             /*flags*/PacketRead2 (pak);
             ctmp   = PacketReadL2Str (pak, NULL);
             
@@ -1638,12 +1641,12 @@ static void TCPCallBackReceive (Event *event)
                 case MSGF_GETAUTO | MSG_GET_FFC:
                 case MSGF_GETAUTO | MSG_GET_VER:
                     IMSrvMsg (cont, serv, NOW, OptSetVals (NULL, CO_ORIGIN, opt_origin, CO_MSGTYPE, opt_type,
-                              CO_MSGTEXT, tmp, CO_STATUS, status & ~MSGF_GETAUTO, 0));
+                              CO_MSGTEXT, tmp, CO_STATUS, IcqToStatus (ostat & ~MSGF_GETAUTO), 0));
                     break;
 
                 case MSG_FILE:
                     port = PacketReadB2 (pak);
-                    if (PeerFileAccept (peer, status, port))
+                    if (PeerFileAccept (peer, ostat, port))
                         IMIntMsg (cont, serv, NOW, status, INT_FILE_ACKED, tmp,
                           OptSetVals (NULL, CO_PORT, port, CO_MSGTEXT, opt_text, 0));
                     else
@@ -1655,7 +1658,7 @@ static void TCPCallBackReceive (Event *event)
                  * MSG_SSL_CLOSE is not handled here.
                  */
                 case MSG_SSL_OPEN:
-                    if (!status && !strcmp (tmp, "1"))
+                    if (!ostat && !strcmp (tmp, "1"))
                         ssl_connect (peer, 1);
                     else
                     {
@@ -1693,7 +1696,7 @@ static void TCPCallBackReceive (Event *event)
                     switch (cmd)
                     {
                         case 0x0029:
-                            if (PeerFileAccept (peer, status, port))
+                            if (PeerFileAccept (peer, ostat, port))
                                 IMIntMsg (cont, serv, NOW, status, INT_FILE_ACKED, tmp,
                                     OptSetVals (NULL, CO_PORT, port, CO_MSGTEXT, opt_text, 0));
                             else

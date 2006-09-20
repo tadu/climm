@@ -60,7 +60,7 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Opt *opt)
     if (!OptGetVal (opt, CO_MSGTRANS, &opt_trans))
         OptSetVal (opt, CO_MSGTRANS, opt_trans = CV_MSGTRANS_ANY);
     
-    putlog (conn, NOW, cont, ims_online,
+    putlog (conn, NOW, cont, ims_online, 0,
             opt_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, opt_type, opt_text);
 
     return IMCliReMsg (conn, cont, opt);

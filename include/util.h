@@ -3,9 +3,18 @@
 #ifndef MICQ_UTIL_H
 #define MICQ_UTIL_H
 
-int putlog (Connection *conn, time_t stamp, Contact *cont, 
-            status_t status, enum logtype level, UWORD type, const char *str);
+typedef enum {
+   ev_msg    = 1, /* a message has arrived */
+   ev_on     = 2, /* a contact went online */
+   ev_off    = 3, /* a contact went offline */
+   ev_beep   = 4, /* a beep should be generated */
+   ev_status = 5, /* a contact changed status */
+   ev_other       /* anything else */
+} evtype_t;
 
-void EventExec (Contact *cont, const char *script, UBYTE type, UDWORD msgtype, const char *text);
+int putlog (Connection *conn, time_t stamp, Contact *cont, 
+            status_t status, UDWORD nativestatus, enum logtype level, UWORD type, const char *str);
+
+void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype, status_t status, const char *text);
 
 #endif /* MICQ_UTIL_H */

@@ -206,10 +206,10 @@ void MICQJabber::handlePresence (gloox::Stanza *s)
                 IMOffline (contb, m_conn);
             break;
         case gloox::StanzaPresenceAvailable:
-            IMOnline (contf, m_conn, status);
+            IMOnline (contf, m_conn, status, imf_none, 0);
             tcg = contb->group;
             contb->group = NULL;
-            IMOnline (contb, m_conn, status);
+            IMOnline (contb, m_conn, status, imf_none, 0);
             contb->group = tcg;
             break;
         case gloox::StanzaPresenceProbe:

@@ -3,7 +3,7 @@
 
 #include "micq.h"
 #include "icq_response.h"
-#include "oscar_base.h"
+#include "oldicq_compat.h"
 #include "util_rl.h"
 #include "tabs.h"
 #include "contact.h"
@@ -21,15 +21,17 @@
 /*
  * Inform that a user went online
  */
-void IMOnline (Contact *cont, Connection *conn, status_t status)
+void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t flags, UDWORD nativestatus)
 {
     Event *egevent;
     status_t old;
+    statusflag_t oldf;
+    UDWORD old2;
 
     if (!cont)
         return;
 
-    if (status == cont->status)
+    if (status == cont->status && flags == cont->flags)
         return;
     
     if (status == ims_offline)
@@ -41,10 +43,15 @@ void IMOnline (Contact *cont, Connection *conn, status_t status)
     OptSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
 
     old = cont->status;
+    oldf = cont->flags;
+    old2 = cont->nativestatus;
+    
     cont->status = status;
+    cont->flags = flags;
+    cont->nativestatus = nativestatus;
     cont->oldflags &= ~CONT_SEENAUTO;
     
-    putlog (conn, NOW, cont, status, old != ims_offline ? LOG_CHANGE : LOG_ONLINE, 0xFFFF, "");
+    putlog (conn, NOW, cont, status, nativestatus, old != ims_offline ? LOG_CHANGE : LOG_ONLINE, 0xFFFF, "");
  
     if (!cont->group || ContactPrefVal (cont, CO_IGNORE)
         || (!ContactPrefVal (cont, CO_SHOWONOFF)  && old == ims_offline)
@@ -60,13 +67,13 @@ void IMOnline (Contact *cont, Connection *conn, status_t status)
     }
 
     if (prG->event_cmd && *prG->event_cmd)
-        EventExec (cont, prG->event_cmd, old == ims_offline ? 2 : 5, status, NULL);
+        EventExec (cont, prG->event_cmd, old == ims_offline ? ev_on : ev_status, nativestatus, status, NULL);
 
     rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-    rl_printf (old != ims_offline ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status));
+    rl_printf (old != ims_offline ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status, nativestatus));
     if (cont->version && old == ims_offline)
         rl_printf (" [%s]", cont->version);
-    if ((status & STATUSF_ICQBIRTH) && (!(old & STATUSF_ICQBIRTH) || old == ims_offline))
+    if ((flags & imf_birth) && ((~oldf & imf_birth) || old == ims_offline))
         rl_printf (" (%s)", i18n (2033, "born today"));
     rl_print (".\n");
 
@@ -81,19 +88,23 @@ void IMOnline (Contact *cont, Connection *conn, status_t status)
 
     if (ContactPrefVal (cont, CO_AUTOAUTO))
     {
-        int cdata = 0;
+        int cdata;
 
-        if      (cont->status  & STATUSF_ICQDND)    cdata = MSGF_GETAUTO | MSG_GET_DND;
-        else if (cont->status  & STATUSF_ICQOCC)    cdata = MSGF_GETAUTO | MSG_GET_OCC;
-        else if (cont->status  & STATUSF_ICQNA)     cdata = MSGF_GETAUTO | MSG_GET_NA;
-        else if (cont->status  & STATUSF_ICQAWAY)   cdata = MSGF_GETAUTO | MSG_GET_AWAY;
-        else if (cont->status  & STATUSF_ICQFFC)    cdata = MSGF_GETAUTO | MSG_GET_FFC;
+        switch (ContactSetInv (ims_online, cont->status))
+        {
+            case ims_dnd:  cdata = MSGF_GETAUTO | MSG_GET_DND;
+            case ims_occ:  cdata = MSGF_GETAUTO | MSG_GET_OCC;
+            case ims_na:   cdata = MSGF_GETAUTO | MSG_GET_NA;
+            case ims_away: cdata = MSGF_GETAUTO | MSG_GET_AWAY;
+            case ims_ffc:  cdata = MSGF_GETAUTO | MSG_GET_FFC;
+            default:       cdata = 0;
+        }
 
         if (cdata)
             IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, cdata, CO_MSGTEXT, "\xff", CO_FORCE, 1, 0));
     }
 
-    TCLEvent (cont, "status", s_status (status));
+    TCLEvent (cont, "status", s_status (status, nativestatus));
 }
 
 /*
@@ -109,7 +120,7 @@ void IMOffline (Contact *cont, Connection *conn)
     if (cont->status == ims_offline)
         return;
 
-    putlog (conn, NOW, cont, ims_offline, LOG_OFFLINE, 0xFFFF, "");
+    putlog (conn, NOW, cont, ims_offline, -1, LOG_OFFLINE, 0xFFFF, "");
 
     OptSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
     old = cont->status;
@@ -119,7 +130,7 @@ void IMOffline (Contact *cont, Connection *conn)
         return;
 
     if (prG->event_cmd && *prG->event_cmd)
-        EventExec (cont, prG->event_cmd, 3, old, NULL);
+        EventExec (cont, prG->event_cmd, ev_off, cont->nativestatus, old, NULL);
  
     rl_printf ("%s %s%*s%s %s\n",
              s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick,
@@ -235,7 +246,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, 
     if (line)
     {
         if (tstatus != ims_offline && (!cont || cont->status == ims_offline || !cont->group))
-            rl_printf ("(%s) ", s_status (tstatus));
+            rl_printf ("(%s) ", s_status (tstatus, 0));
         
         rl_printf ("%s ", s_time (&stamp));
         if (cont)
@@ -359,11 +370,11 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
            (opt_origin == CV_ORIGIN_v8) ? MSGTYPE2RECSTR : MSGICQRECSTR;
 
     if (OptGetVal (opt, CO_STATUS, &opt_t_status))
-        putlog (conn, stamp, cont, OscarToStatus (opt_t_status),
+        putlog (conn, stamp, cont, IcqToStatus (opt_t_status), opt_t_status,
             (opt_type == MSG_AUTH_ADDED) ? LOG_ADDED : LOG_RECVD, opt_type,
             cdata);
     else
-        putlog (conn, stamp, cont, ims_offline,
+        putlog (conn, stamp, cont, ims_offline, -1,
             (opt_type == MSG_AUTH_ADDED) ? LOG_ADDED : LOG_RECVD, opt_type,
             cdata);
     
@@ -410,14 +421,14 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
 
 #ifdef MSGEXEC
     if (prG->event_cmd && *prG->event_cmd)
-        EventExec (cont, prG->event_cmd, 1, opt_type, opt_text);
+        EventExec (cont, prG->event_cmd, ev_msg, opt_type, cont->status, opt_text);
 #endif
     if (uiG.nick_len < 4)
         uiG.nick_len = 4;
     rl_printf ("\a%s %s%*s%s ", s_time (&stamp), COLINCOMING, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
     
-    if (OptGetVal (opt, CO_STATUS, &opt_t_status) && (!cont || cont->status != OscarToStatus (opt_t_status) || !cont->group))
-        rl_printf ("(%s) ", s_status (OscarToStatus (opt_t_status)));
+    if (OptGetVal (opt, CO_STATUS, &opt_t_status) && (!cont || cont->status != IcqToStatus (opt_t_status) || !cont->group))
+        rl_printf ("(%s) ", s_status (IcqToStatus (opt_t_status), opt_t_status));
 
     if (prG->verbose > 1)
         rl_printf ("<%ld> ", opt_type);

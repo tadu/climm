@@ -137,43 +137,40 @@ typedef void MSN_Handle;
 #include "icq_v5.h"
 #include "icq_tcp.h"
 
-/* test in this order */
-#define STATUSF_ICQINV       0x00000100
-#define STATUSF_ICQDND       0x00000002
-#define STATUSF_ICQOCC       0x00000010
-#define STATUSF_ICQNA        0x00000004
-#define STATUSF_ICQAWAY      0x00000001
-#define STATUSF_ICQFFC       0x00000020
-#define STATUSF_ICQBIRTH     0x00080000
-#define STATUSF_ICQWEBAWARE  0x00010000
-#define STATUSF_ICQIP        0x00020000
-#define STATUSF_ICQDC_AUTH   0x10000000
-#define STATUSF_ICQDC_CONT   0x20000000
+typedef enum {
+  ims_online   = 0,
+  ims_away     = 1,
+  ims_dnd      = 2,
+  ims_na       = 4,
+  ims_occ      = 16,
+  ims_ffc      = 32,
+  ims_inv      = 256,
+  ims_inv_ffc  = ims_inv + ims_ffc,
+  ims_inv_away = ims_inv + ims_away,
+  ims_inv_na   = ims_inv + ims_na,
+  ims_inv_occ  = ims_inv + ims_occ,
+  ims_inv_dnd  = ims_inv + ims_dnd,
+  ims_offline  = -1
+} status_t;
 
-#define STATUS_ICQOFFLINE    0xffffffff
-#define STATUS_ICQINV         STATUSF_ICQINV
-#define STATUS_ICQDND        (STATUSF_ICQDND | STATUSF_ICQOCC | STATUSF_ICQAWAY)
-#define STATUS_ICQOCC        (STATUSF_ICQOCC | STATUSF_ICQAWAY)
-#define STATUS_ICQNA         (STATUSF_ICQNA  | STATUSF_ICQAWAY)
-#define STATUS_ICQAWAY        STATUSF_ICQAWAY
-#define STATUS_ICQFFC         STATUSF_ICQFFC
-#define STATUS_ICQONLINE     0x00000000
-
-#define ims_offline STATUS_ICQOFFLINE
-#define ims_online   STATUS_ICQONLINE
-#define ims_ffc      STATUS_ICQFFC
-#define ims_away     STATUS_ICQAWAY
-#define ims_na       STATUS_ICQNA
-#define ims_occ      STATUS_ICQOCC
-#define ims_dnd      STATUS_ICQDND
-#define ims_inv      STATUS_ICQINV
-#define ims_inv_ffc  (STATUS_ICQINV | STATUS_ICQFFC)
-#define ims_inv_away (STATUS_ICQINV | STATUS_ICQAWAY)
-#define ims_inv_na   (STATUS_ICQINV | STATUS_ICQNA)
-#define ims_inv_occ  (STATUS_ICQINV | STATUS_ICQOCC)
-#define ims_inv_dnd  (STATUS_ICQINV | STATUS_ICQDND)
-
-typedef UDWORD status_t;
+typedef enum {
+  imf_none   = 0,
+  imf_birth  = 1,
+  imf_web    = 2,
+  imf_dcauth = 4,
+  imf_dccont = 8,
+  imf_bw     = 3,
+  imf_ab     = 5,
+  imf_aw     = 6,
+  imf_awb    = 7,
+  imf_cb     = 9,
+  imf_cw     = 10,
+  imf_cwb    = 11,
+  imf_ca     = 12,
+  imf_cab    = 13,
+  imf_caw    = 14,
+  imf_cawb   = 15
+} statusflag_t;
 
 #define MSGF_MASS         0x8000
 #define MSGF_GETAUTO      0x0300

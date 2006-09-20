@@ -599,7 +599,7 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
         new->flags   = conn->flags & ~CONN_CONFIGURED;
         new->version = conn->version;
         new->uin     = 0;
-        new->pref_status  = STATUS_ICQONLINE;
+        new->pref_status  = ims_online;
         new->pref_server  = strdup (conn->pref_server);
         new->pref_port    = conn->pref_port;
         new->pref_passwd  = strdup (pass);
@@ -608,7 +608,7 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
     {
         new->version = 8;
         new->uin     = 0;
-        new->pref_status  = STATUS_ICQONLINE;
+        new->pref_status  = ims_online;
         new->pref_server  = strdup ("login.icq.com");
         new->pref_port    = 5190;
         new->pref_passwd  = strdup (pass);
@@ -622,45 +622,3 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
     return new;
 }
 
-status_t OscarToStatus   (UWORD status)
-{
-    status_t tmp = status & 0xffff0000UL;
-
-    if (status == (UWORD)STATUS_ICQOFFLINE)
-        return ims_offline;
-    if (status & STATUSF_ICQINV)
-        tmp = ContactSetInv (ims_inv, tmp);
-    if (status & STATUSF_ICQDND)
-        return ContactSetInv (tmp, ims_dnd);
-    if (status & STATUSF_ICQOCC)
-        return ContactSetInv (tmp, ims_occ);
-    if (status & STATUSF_ICQNA)
-        return ContactSetInv (tmp, ims_na);
-    if (status & STATUSF_ICQAWAY)
-        return ContactSetInv (tmp, ims_away);
-    if (status & STATUSF_ICQFFC)
-        return ContactSetInv (tmp, ims_ffc);
-    return tmp;
-}
-
-UDWORD    OscarFromStatus (status_t status)
-{
-    switch (status)
-    {
-        case ims_offline:  return STATUS_ICQOFFLINE;
-        case ims_online:   return STATUS_ICQONLINE;
-        case ims_inv:      return STATUS_ICQINV;
-        case ims_ffc:      return STATUS_ICQFFC;
-        case ims_away:     return STATUS_ICQAWAY;
-        case ims_na:       return STATUS_ICQNA;
-        case ims_occ:      return STATUS_ICQOCC;
-        case ims_dnd:      return STATUS_ICQDND;
-        case ims_inv_ffc:  return STATUS_ICQFFC  | STATUSF_ICQINV;
-        case ims_inv_away: return STATUS_ICQAWAY | STATUSF_ICQINV;
-        case ims_inv_na:   return STATUS_ICQNA   | STATUSF_ICQINV;
-        case ims_inv_occ:  return STATUS_ICQOCC  | STATUSF_ICQINV;
-        case ims_inv_dnd:  return STATUS_ICQDND  | STATUSF_ICQINV;
-        default:           return status;
-    }
-    assert (0);
-}

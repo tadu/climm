@@ -245,7 +245,7 @@ void rl_print (const char *org)
                 break;
             case '\a':
                 if (prG->sound == SFLAG_EVENT && prG->event_cmd && *prG->event_cmd)
-                    EventExec (NULL, prG->event_cmd, 4, 0, NULL);
+                    EventExec (NULL, prG->event_cmd, ev_beep, 0, ims_online, NULL);
                 else if (prG->sound == SFLAG_BEEP)
                     printf ("\a");
                 break;

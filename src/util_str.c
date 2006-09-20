@@ -314,7 +314,7 @@ const char *s_ip (UDWORD ip)
 /*
  * Return a static string describing the status.
  */
-const char *s_status (status_t status)
+const char *s_status (status_t status, UDWORD nativestatus)
 {
     static char buf[200];
     
@@ -326,15 +326,17 @@ const char *s_status (status_t status)
     else
         buf[0] = '\0';
     
-    if (status & STATUSF_ICQDND)
+    status = ContactSetInv (ims_online, status);
+    
+    if (status == ims_dnd)
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1971, "do not disturb"));
-    else if (status & STATUSF_ICQOCC)
+    else if (status == ims_occ)
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1973, "occupied"));
-    else if (status & STATUSF_ICQNA)
+    else if (status == ims_na)
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1974, "not available"));
-    else if (status & STATUSF_ICQAWAY)
+    else if (status == ims_away)
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1972, "away"));
-    else if (status & STATUSF_ICQFFC)
+    else if (status == ims_ffc)
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1976, "free for chat"));
     else if (buf[0])
         buf[strlen (buf) - 1] = '\0';
@@ -342,7 +344,7 @@ const char *s_status (status_t status)
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1970, "online"));
     
     if (prG->verbose)
-        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), " %08lx", status);
+        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), " %08lx", nativestatus);
     
     return buf;
 }

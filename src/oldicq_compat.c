@@ -3,6 +3,7 @@
  */
 
 #include "micq.h"
+#include <assert.h>
 #include "oldicq_compat.h"
 #include "contact.h"
 #include "connection.h"
@@ -35,38 +36,57 @@
 #define META_SRV_RANDOM         870
 #define META_SRV_RANDOM_UPDATE  880
 
+/* test in this order */
+#define STATUSF_ICQINV       0x00000100
+#define STATUSF_ICQDND       0x00000002
+#define STATUSF_ICQOCC       0x00000010
+#define STATUSF_ICQNA        0x00000004
+#define STATUSF_ICQAWAY      0x00000001
+#define STATUSF_ICQFFC       0x00000020
+
+#define STATUS_ICQOFFLINE    0xffffffff
+#define STATUS_ICQINV         STATUSF_ICQINV
+#define STATUS_ICQDND        (STATUSF_ICQDND | STATUSF_ICQOCC | STATUSF_ICQAWAY)
+#define STATUS_ICQOCC        (STATUSF_ICQOCC | STATUSF_ICQAWAY)
+#define STATUS_ICQNA         (STATUSF_ICQNA  | STATUSF_ICQAWAY)
+#define STATUS_ICQAWAY        STATUSF_ICQAWAY
+#define STATUS_ICQFFC         STATUSF_ICQFFC
+#define STATUS_ICQONLINE     0x00000000
+
+
 void Auto_Reply (Connection *conn, Contact *cont)
 {
     const char *temp;
+    status_t noinv = ContactSetInv (ims_online, cont->status);
 
     if (!(prG->flags & FLAG_AUTOREPLY) || !cont)
         return;
 
-          if (conn->status & STATUSF_ICQDND)
-         temp = ContactPrefStr (cont, CO_TAUTODND);
-     else if (conn->status & STATUSF_ICQOCC)
-         temp = ContactPrefStr (cont, CO_TAUTOOCC);
-     else if (conn->status & STATUSF_ICQNA)
-         temp = ContactPrefStr (cont, CO_TAUTONA);
-     else if (conn->status & STATUSF_ICQAWAY)
-         temp = ContactPrefStr (cont, CO_TAUTOAWAY);
-     else if (conn->status & STATUSF_ICQINV)
-         temp = ContactPrefStr (cont, CO_TAUTOINV);
-     else
-         return;
+    if      (noinv == ims_dnd)
+        temp = ContactPrefStr (cont, CO_TAUTODND);
+    else if (noinv == ims_occ)
+        temp = ContactPrefStr (cont, CO_TAUTOOCC);
+    else if (noinv == ims_na)
+        temp = ContactPrefStr (cont, CO_TAUTONA);
+    else if (noinv == ims_away)
+        temp = ContactPrefStr (cont, CO_TAUTOAWAY);
+    else if (ContactIsInv (cont->status))
+        temp = ContactPrefStr (cont, CO_TAUTOINV);
+    else
+        return;
     
     if (!temp || !*temp)
     {
-              if (conn->status & STATUSF_ICQDND)
-             temp = ContactPrefStr (cont, CO_AUTODND);
-         else if (conn->status & STATUSF_ICQOCC)
-             temp = ContactPrefStr (cont, CO_AUTOOCC);
-         else if (conn->status & STATUSF_ICQNA)
-             temp = ContactPrefStr (cont, CO_AUTONA);
-         else if (conn->status & STATUSF_ICQAWAY)
-             temp = ContactPrefStr (cont, CO_AUTOAWAY);
-         else if (conn->status & STATUSF_ICQINV)
-             temp = ContactPrefStr (cont, CO_AUTOINV);
+        if      (noinv == ims_dnd)
+            temp = ContactPrefStr (cont, CO_AUTODND);
+        else if (noinv == ims_occ)
+            temp = ContactPrefStr (cont, CO_AUTOOCC);
+        else if (noinv == ims_na)
+            temp = ContactPrefStr (cont, CO_AUTONA);
+        else if (noinv == ims_away)
+            temp = ContactPrefStr (cont, CO_AUTOAWAY);
+        else if (ContactIsInv (conn->status))
+            temp = ContactPrefStr (cont, CO_AUTOINV);
     }
 
     IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, temp, 0));
@@ -474,4 +494,80 @@ void Recv_Message (Connection *conn, Packet *pak)
     uiG.last_rcvd = cont;
     IMSrvMsg (cont, conn, timegm (&stamp),
               OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5, CO_MSGTYPE, type, CO_MSGTEXT, text, 0));
+}
+
+status_t IcqToStatus (UDWORD status)
+{
+    status_t tmp = ims_online;
+
+    if (status == (UWORD)STATUS_ICQOFFLINE)
+        return ims_offline;
+    if (status & STATUSF_ICQINV)
+        tmp = ContactSetInv (ims_inv, tmp);
+    if (status & STATUSF_ICQDND)
+        return ContactSetInv (tmp, ims_dnd);
+    if (status & STATUSF_ICQOCC)
+        return ContactSetInv (tmp, ims_occ);
+    if (status & STATUSF_ICQNA)
+        return ContactSetInv (tmp, ims_na);
+    if (status & STATUSF_ICQAWAY)
+        return ContactSetInv (tmp, ims_away);
+    if (status & STATUSF_ICQFFC)
+        return ContactSetInv (tmp, ims_ffc);
+    return tmp;
+}
+
+UDWORD IcqFromStatus (status_t status)
+{
+    switch (status)
+    {
+        case ims_offline:  return STATUS_ICQOFFLINE;
+        case ims_online:   return STATUS_ICQONLINE;
+        case ims_inv:      return STATUS_ICQINV;
+        case ims_ffc:      return STATUS_ICQFFC;
+        case ims_away:     return STATUS_ICQAWAY;
+        case ims_na:       return STATUS_ICQNA;
+        case ims_occ:      return STATUS_ICQOCC;
+        case ims_dnd:      return STATUS_ICQDND;
+        case ims_inv_ffc:  return STATUS_ICQFFC  | STATUSF_ICQINV;
+        case ims_inv_away: return STATUS_ICQAWAY | STATUSF_ICQINV;
+        case ims_inv_na:   return STATUS_ICQNA   | STATUSF_ICQINV;
+        case ims_inv_occ:  return STATUS_ICQOCC  | STATUSF_ICQINV;
+        case ims_inv_dnd:  return STATUS_ICQDND  | STATUSF_ICQINV;
+    }
+    assert (0);
+}
+
+#define STATUSF_ICQBIRTH     0x00080000
+#define STATUSF_ICQWEBAWARE  0x00010000
+#define STATUSF_ICQIP        0x00020000
+#define STATUSF_ICQDC_AUTH   0x10000000
+#define STATUSF_ICQDC_CONT   0x20000000
+
+statusflag_t IcqToFlags (UDWORD status)
+{
+    statusflag_t flags = imf_none;
+    if (status & STATUSF_ICQBIRTH)
+        flags |= imf_birth;
+    if (status & STATUSF_ICQWEBAWARE)
+        flags |= imf_web;
+    if (status & STATUSF_ICQDC_AUTH)
+        flags |= imf_dcauth;
+    if (status & STATUSF_ICQDC_CONT)
+        flags |= imf_dccont;
+    return flags;
+}
+
+UDWORD IcqFromFlags (statusflag_t flags)
+{
+    UDWORD status = 0;
+    if (flags & imf_birth)
+        status |= STATUSF_ICQBIRTH;
+    if (flags & imf_web)
+        status |= STATUSF_ICQWEBAWARE;
+    if (flags & imf_dcauth)
+        status |= STATUSF_ICQDC_AUTH;
+    if (flags & imf_dccont)
+        status |= STATUSF_ICQDC_CONT;
+    return status;
 }
