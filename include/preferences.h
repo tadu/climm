@@ -25,7 +25,7 @@ struct Preferences_s
 
     UDWORD verbose;     /* verbosity to use on startup */
     UWORD  sound;       /* how to beep */
-    UDWORD status;      /* status to use when logging in */
+    status_t status;    /* status to use when logging in */
     UWORD  screen;      /* manual maximum screen width; 0 = auto */
     UDWORD flags;       /* flags for output */
     UDWORD away_time;   /* time after which to be away automatically; 0 = disable */

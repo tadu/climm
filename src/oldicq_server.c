@@ -20,6 +20,7 @@
 #include "contact.h"
 #include "util_io.h"
 #include "util_syntax.h"
+#include "oscar_base.h"
 #include "conv.h"
 #include <assert.h>
 
@@ -352,12 +353,15 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             cont->dc->id2     = PacketRead4 (pak);
             cont->dc->id3     = PacketRead4 (pak);
             ContactSetVersion (cont);
-            IMOnline (cont, conn, status);
+            IMOnline (cont, conn, OscarToStatus (status));
             break;
         case SRV_STATUS_UPDATE:
             uin = PacketRead4 (pak);
             if ((cont = ContactUIN (conn, uin)))
-                IMOnline (cont, conn, PacketRead4 (pak));
+            {
+                status = PacketRead4 (pak);
+                IMOnline (cont, conn, OscarToStatus (status));
+            }
             break;
         case SRV_GO_AWAY:
         case SRV_NOT_CONNECTED:
@@ -409,8 +413,10 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             cont->dc->port    = PacketRead4  (pak);
             cont->dc->ip_loc  = PacketReadB4 (pak);
             cont->dc->type    = PacketRead1  (pak);
-            cont->status      = PacketRead4  (pak);
+            status            = PacketRead4  (pak);
             cont->dc->version = PacketRead2  (pak);
+            
+            cont->status = OscarToStatus (status);
 
             rl_printf ("%-15s %lu\n", i18n (1440, "Random User:"), cont->uin);
             rl_printf ("%-15s %s:%lu\n", i18n (1441, "remote IP:"), 

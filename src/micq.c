@@ -48,6 +48,7 @@
 #include "util_tcl.h"
 #include "util_ssl.h"
 #include "util_alias.h"
+#include "oscar_base.h"
 #include "os.h"
 
 #define MICQ_ICON_1 "   " GREEN "_" SGR0 "     "
@@ -190,7 +191,8 @@ static void Init (int argc, char *argv[])
     Connection *conn;
     Event *loginevent = NULL;
     const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b, *arg_s, *arg_u, *arg_p;
-    UDWORD loaded, uingiven = 0, arg_h = 0, arg_vv = 0, arg_c = 0, arg_ss = 0;
+    UDWORD loaded, uingiven = 0, arg_h = 0, arg_vv = 0, arg_c = 0;
+    status_t arg_ss = ims_offline;
     str_s arg_C = { NULL, 0, 0 };
     val_t res;
     UBYTE save_conv_error;
@@ -528,7 +530,7 @@ static void Init (int argc, char *argv[])
                 else if (!strncmp (arg_s, "off", 3))
                     arg_ss = ims_offline;
                 else
-                    arg_ss = atoll (arg_s);
+                    arg_ss = OscarToStatus (atoll (arg_s));
             }
         }
         else

@@ -30,6 +30,7 @@
 #include "oscar_snac.h"
 #include "oscar_service.h"
 #include "oscar_icbm.h"
+#include "oscar_base.h"
 
 #include <unistd.h>
 #include <assert.h>

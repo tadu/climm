@@ -7,7 +7,7 @@ jump_snac_f SnacSrvServiceerr, SnacSrvFamilies, SnacSrvRates, SnacSrvRateexceede
 
 void SnacCliReady (Connection *serv);
 void SnacCliFamilies (Connection *serv);
-void SnacCliSetstatus (Connection *serv, UDWORD status, UWORD action);
+void SnacCliSetstatus (Connection *serv, status_t status, UWORD action);
 
 #define SnacCliRatesrequest(serv) SnacSend (serv, SnacC (serv, 1, 6, 0, 0))
 #define SnacCliReqinfo(serv)      SnacSend (serv, SnacC (serv, 1, 14, 0, 0))

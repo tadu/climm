@@ -139,13 +139,13 @@ static jump_t jump[] = {
     { &CmdUserSoundOffline,  "soundoffline", 2,   0 },
     { &CmdUserAutoaway,      "autoaway",     2,   0 },
     { &CmdUserChange,        "change",       1, ims_offline },
-    { &CmdUserChange,        "online",       1, STATUS_ICQONLINE },
-    { &CmdUserChange,        "away",         1, STATUS_ICQAWAY },
-    { &CmdUserChange,        "na",           1, STATUS_ICQNA   },
-    { &CmdUserChange,        "occ",          1, STATUS_ICQOCC  },
-    { &CmdUserChange,        "dnd",          1, STATUS_ICQDND  },
-    { &CmdUserChange,        "ffc",          1, STATUS_ICQFFC  },
-    { &CmdUserChange,        "inv",          1, STATUS_ICQINV  },
+    { &CmdUserChange,        "online",       1, ims_online  },
+    { &CmdUserChange,        "away",         1, ims_away    },
+    { &CmdUserChange,        "na",           1, ims_na      },
+    { &CmdUserChange,        "occ",          1, ims_occ     },
+    { &CmdUserChange,        "dnd",          1, ims_dnd     },
+    { &CmdUserChange,        "ffc",          1, ims_ffc     },
+    { &CmdUserChange,        "inv",          1, ims_inv     },
     { &CmdUserClear,         "clear",        2,   0 },
     { &CmdUserTogIgnore,     "togig",        0,   0 },
     { &CmdUserTogVisible,    "togvis",       0,   0 },
@@ -248,13 +248,13 @@ static JUMP_F(CmdUserChange)
         if (!s_parseint (&args, &data))
         {
             rl_print (i18n (1703, "Status modes:\n"));
-            rl_printf ("  %-20s %d\n", i18n (1921, "Online"),         STATUS_ICQONLINE);
-            rl_printf ("  %-20s %d\n", i18n (1923, "Away"),           STATUS_ICQAWAY);
-            rl_printf ("  %-20s %d\n", i18n (1922, "Do not disturb"), STATUS_ICQDND);
-            rl_printf ("  %-20s %d\n", i18n (1924, "Not Available"),  STATUS_ICQNA);
-            rl_printf ("  %-20s %d\n", i18n (1927, "Free for chat"),  STATUS_ICQFFC);
-            rl_printf ("  %-20s %d\n", i18n (1925, "Occupied"),       STATUS_ICQOCC);
-            rl_printf ("  %-20s %d\n", i18n (1926, "Invisible"),      STATUS_ICQINV);
+            rl_printf ("  %-20s %d\n", i18n (1921, "Online"),         ims_online);
+            rl_printf ("  %-20s %d\n", i18n (1923, "Away"),           ims_away);
+            rl_printf ("  %-20s %d\n", i18n (1922, "Do not disturb"), ims_dnd);
+            rl_printf ("  %-20s %d\n", i18n (1924, "Not Available"),  ims_na);
+            rl_printf ("  %-20s %d\n", i18n (1927, "Free for chat"),  ims_ffc);
+            rl_printf ("  %-20s %d\n", i18n (1925, "Occupied"),       ims_occ);
+            rl_printf ("  %-20s %d\n", i18n (1926, "Invisible"),      ims_inv);
             return 0;
         }
     }
@@ -2031,7 +2031,7 @@ static JUMP_F(CmdUserStatusWide)
     for (i = 0; (cont = ContactIndex (cgon, i)); i++)
     {
         char ind = s_status (cont->status)[0];
-        if ((cont->status & 0xffff) == STATUS_ICQONLINE)
+        if ((cont->status & 0xffff) == ims_online)
             ind = ' ';
 
         if (!(i % columns))

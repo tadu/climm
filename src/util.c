@@ -10,6 +10,7 @@
 #include "contact.h"
 #include "connection.h"
 #include "preferences.h"
+#include "oscar_base.h"
 #include "conv.h"
 #include <assert.h>
 #include <errno.h>
@@ -25,7 +26,7 @@
  * Log the event provided to the log with a time stamp.
  */
 int putlog (Connection *conn, time_t stamp, Contact *cont, 
-            UDWORD status, enum logtype level, UWORD type, const char *log)
+            status_t status, enum logtype level, UWORD type, const char *log)
 {
     char buffer[LOG_MAX_PATH + 1];                   /* path to the logfile */
 #if HAVE_SYMLINK
@@ -84,20 +85,20 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     {
         case TYPE_SERVER_OLD:
             s_catf (&t, "[icq5:%lu]!%s %s %s%s%s[icq5:%lu+%lX]", 
-                conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, status);
+                conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, OscarFromStatus (status));
             break;
         case TYPE_SERVER:
             s_catf (&t, "[icq8:%lu]!%s %s %s%s%s[icq8:%lu+%lX]", 
-                conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, status);
+                conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, OscarFromStatus (status));
             break;
         case TYPE_MSGLISTEN:
         case TYPE_MSGDIRECT:
             s_catf (&t, "%s %s %s%s%s[tcp:%lu+%lX]",
-                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, status);
+                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, OscarFromStatus (status));
             break;
         default:
             s_catf (&t, "%s %s %s%s%s[tcp:%lu+%lX]",
-                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, status);
+                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, OscarFromStatus (status));
             break;
     }
 

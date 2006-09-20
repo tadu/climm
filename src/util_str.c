@@ -314,7 +314,7 @@ const char *s_ip (UDWORD ip)
 /*
  * Return a static string describing the status.
  */
-const char *s_status (UDWORD status)
+const char *s_status (status_t status)
 {
     static char buf[200];
     

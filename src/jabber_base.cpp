@@ -174,7 +174,7 @@ void MICQJabber::handlePresence (gloox::Stanza *s)
 {
     ContactGroup *tcg;
     Contact *contb, *contf, *c;
-    UDWORD status;
+    status_t status;
 
     assert (s);
     assert (s->type() == gloox::StanzaPresence);
@@ -185,11 +185,11 @@ void MICQJabber::handlePresence (gloox::Stanza *s)
     {
         default:
         case gloox::PresenceUnknown:
-        case gloox::PresenceAvailable: status = STATUS_ICQONLINE; break;
-        case gloox::PresenceChat:      status = STATUS_ICQFFC;    break;
-        case gloox::PresenceAway:      status = STATUS_ICQAWAY;   break;
-        case gloox::PresenceDnd:       status = STATUS_ICQDND;    break;
-        case gloox::PresenceXa:        status = STATUS_ICQNA;
+        case gloox::PresenceAvailable: status = ims_online; break;
+        case gloox::PresenceChat:      status = ims_ffc;    break;
+        case gloox::PresenceAway:      status = ims_away;   break;
+        case gloox::PresenceDnd:       status = ims_dnd;    break;
+        case gloox::PresenceXa:        status = ims_na;
     }
     
     switch (s->subtype())

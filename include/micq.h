@@ -160,6 +160,20 @@ typedef void MSN_Handle;
 #define STATUS_ICQONLINE     0x00000000
 
 #define ims_offline STATUS_ICQOFFLINE
+#define ims_online   STATUS_ICQONLINE
+#define ims_ffc      STATUS_ICQFFC
+#define ims_away     STATUS_ICQAWAY
+#define ims_na       STATUS_ICQNA
+#define ims_occ      STATUS_ICQOCC
+#define ims_dnd      STATUS_ICQDND
+#define ims_inv      STATUS_ICQINV
+#define ims_inv_ffc  (STATUS_ICQINV | STATUS_ICQFFC)
+#define ims_inv_away (STATUS_ICQINV | STATUS_ICQAWAY)
+#define ims_inv_na   (STATUS_ICQINV | STATUS_ICQNA)
+#define ims_inv_occ  (STATUS_ICQINV | STATUS_ICQOCC)
+#define ims_inv_dnd  (STATUS_ICQINV | STATUS_ICQDND)
+
+typedef UDWORD status_t;
 
 #define MSGF_MASS         0x8000
 #define MSGF_GETAUTO      0x0300

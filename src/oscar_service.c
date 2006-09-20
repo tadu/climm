@@ -225,7 +225,8 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     Contact *cont;
     Packet *pak;
     TLV *tlv;
-    UDWORD status;
+    UDWORD ostat;
+    status_t status;
     
     pak = event->pak;
     cont = PacketReadCont (pak, serv);
@@ -246,7 +247,8 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     }
     if (tlv[6].str.len)
     {
-        status = tlv[6].nr;
+        ostat = tlv[6].nr;
+        status = OscarToStatus (ostat);
         if (status != serv->status)
         {
             serv->status = status;
@@ -326,22 +328,23 @@ JUMP_SNAC_F(SnacSrvFamilies2)
  *
  * action: 1 = send status 2 = send connection info (3 = both)
  */
-void SnacCliSetstatus (Connection *serv, UDWORD status, UWORD action)
+void SnacCliSetstatus (Connection *serv, status_t status, UWORD action)
 {
     Packet *pak;
+    UDWORD ostat = OscarFromStatus (status);
     
     if (ConnectionPrefVal (serv, CO_WEBAWARE))
-        status |= STATUSF_ICQWEBAWARE;
+        ostat |= STATUSF_ICQWEBAWARE;
     if (ConnectionPrefVal (serv, CO_DCAUTH))
-        status |= STATUSF_ICQDC_AUTH;
+        ostat |= STATUSF_ICQDC_AUTH;
     if (ConnectionPrefVal (serv, CO_DCCONT))
-        status |= STATUSF_ICQDC_CONT;
+        ostat |= STATUSF_ICQDC_CONT;
     
     pak = SnacC (serv, 1, 0x1e, 0, 0);
-    if ((action & 1) && (status & STATUSF_ICQINV))
+    if ((action & 1) && (ostat & STATUSF_ICQINV))
         SnacCliAddvisible (serv, 0);
     if (action & 1)
-        PacketWriteTLV4 (pak, 6, status);
+        PacketWriteTLV4 (pak, 6, ostat);
     if (action & 2)
     {
         PacketWriteB2 (pak, 0x0c); /* TLV 0C */
@@ -372,7 +375,7 @@ void SnacCliSetstatus (Connection *serv, UDWORD status, UWORD action)
         PacketWriteTLV2 (pak, 8, 0);
     }
     SnacSend (serv, pak);
-    if ((action & 1) && (~status & STATUSF_ICQINV))
+    if ((action & 1) && (~ostat & STATUSF_ICQINV))
         SnacCliAddinvis (serv, 0);
 }
 

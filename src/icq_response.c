@@ -3,6 +3,7 @@
 
 #include "micq.h"
 #include "icq_response.h"
+#include "oscar_base.h"
 #include "util_rl.h"
 #include "tabs.h"
 #include "contact.h"
@@ -20,10 +21,10 @@
 /*
  * Inform that a user went online
  */
-void IMOnline (Contact *cont, Connection *conn, UDWORD status)
+void IMOnline (Contact *cont, Connection *conn, status_t status)
 {
     Event *egevent;
-    UDWORD old;
+    status_t old;
 
     if (!cont)
         return;
@@ -100,7 +101,7 @@ void IMOnline (Contact *cont, Connection *conn, UDWORD status)
  */
 void IMOffline (Contact *cont, Connection *conn)
 {
-    UDWORD old;
+    status_t old;
 
     if (!cont)
         return;
@@ -139,7 +140,7 @@ void IMOffline (Contact *cont, Connection *conn)
 /*
  * Central entry point for protocol triggered output.
  */
-void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, UDWORD tstatus, int_msg_t type, const char *text, Opt *opt)
+void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, int_msg_t type, const char *text, Opt *opt)
 {
     const char *line, *opt_text;
     const char *col = COLCONTACT;
@@ -330,7 +331,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
     const char *tmp, *tmp2, *tmp3, *tmp4, *tmp5, *tmp6;
     char *cdata, *cdata_deleteme;
     const char *opt_text, *carr;
-    UDWORD opt_type, opt_origin, opt_status, opt_bytes, opt_ref, j;
+    UDWORD opt_type, opt_origin, opt_bytes, opt_ref, opt_t_status, j;
+
     int i;
     
     if (!cont)
@@ -356,8 +358,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
 #endif
            (opt_origin == CV_ORIGIN_v8) ? MSGTYPE2RECSTR : MSGICQRECSTR;
 
-    if (OptGetVal (opt, CO_STATUS, &opt_status))
-        putlog (conn, stamp, cont, opt_status,
+    if (OptGetVal (opt, CO_STATUS, &opt_t_status))
+        putlog (conn, stamp, cont, OscarToStatus (opt_t_status),
             (opt_type == MSG_AUTH_ADDED) ? LOG_ADDED : LOG_RECVD, opt_type,
             cdata);
     else
@@ -414,8 +416,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
         uiG.nick_len = 4;
     rl_printf ("\a%s %s%*s%s ", s_time (&stamp), COLINCOMING, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
     
-    if (OptGetVal (opt, CO_STATUS, &opt_status) && (!cont || cont->status != opt_status || !cont->group))
-        rl_printf ("(%s) ", s_status (opt_status));
+    if (OptGetVal (opt, CO_STATUS, &opt_t_status) && (!cont || cont->status != OscarToStatus (opt_t_status) || !cont->group))
+        rl_printf ("(%s) ", s_status (OscarToStatus (opt_t_status)));
 
     if (prG->verbose > 1)
         rl_printf ("<%ld> ", opt_type);

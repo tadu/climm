@@ -622,3 +622,45 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
     return new;
 }
 
+status_t OscarToStatus   (UWORD status)
+{
+    status_t tmp = status & 0xffff0000UL;
+
+    if (status == (UWORD)STATUS_ICQOFFLINE)
+        return ims_offline;
+    if (status & STATUSF_ICQINV)
+        tmp |= ims_inv;
+    if (status & STATUSF_ICQDND)
+        return tmp | ims_dnd;
+    if (status & STATUSF_ICQOCC)
+        return tmp | ims_occ;
+    if (status & STATUSF_ICQNA)
+        return tmp | ims_na;
+    if (status & STATUSF_ICQAWAY)
+        return tmp | ims_away;
+    if (status & STATUSF_ICQFFC)
+        return tmp | ims_ffc;
+    return tmp;
+}
+
+UDWORD    OscarFromStatus (status_t status)
+{
+    switch (status)
+    {
+        case ims_offline:  return STATUS_ICQOFFLINE;
+        case ims_online:   return STATUS_ICQONLINE;
+        case ims_inv:      return STATUS_ICQINV;
+        case ims_ffc:      return STATUS_ICQFFC;
+        case ims_away:     return STATUS_ICQAWAY;
+        case ims_na:       return STATUS_ICQNA;
+        case ims_occ:      return STATUS_ICQOCC;
+        case ims_dnd:      return STATUS_ICQDND;
+        case ims_inv_ffc:  return STATUS_ICQFFC  | STATUSF_ICQINV;
+        case ims_inv_away: return STATUS_ICQAWAY | STATUSF_ICQINV;
+        case ims_inv_na:   return STATUS_ICQNA   | STATUSF_ICQINV;
+        case ims_inv_occ:  return STATUS_ICQOCC  | STATUSF_ICQINV;
+        case ims_inv_dnd:  return STATUS_ICQDND  | STATUSF_ICQINV;
+        default:           return status;
+    }
+    assert (0);
+}

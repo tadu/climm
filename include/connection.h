@@ -31,13 +31,13 @@ struct Connection_s
     UBYTE     version;        /* protocol version in this session         */
     UDWORD    uin;            /* the uin of this server connection        */
     char     *screen;
-    UDWORD    pref_status;
+    status_t  pref_status;
     char     *pref_server;
     UDWORD    pref_port;
     char     *pref_passwd;
 
     Contact  *cont;           /* the user this connection is for          */
-    UDWORD    status;         /* status of uin                            */
+    status_t  status;         /* own status                               */
     char     *server;         /* the remote server name                   */
     UDWORD    port;           /* the port the server is listening on      */
     char     *passwd;         /* the password for this user               */

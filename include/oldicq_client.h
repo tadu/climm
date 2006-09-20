@@ -15,7 +15,7 @@ void   CmdPktCmdSendTextCode (Connection *conn, const char *text);
 void   CmdPktCmdAckMessages  (Connection *conn);
 void   CmdPktCmdLogin1       (Connection *conn);
 void   CmdPktCmdExtInfoReq   (Connection *conn, Contact *cont);
-void   CmdPktCmdStatusChange (Connection *conn, UDWORD status);
+void   CmdPktCmdStatusChange (Connection *conn, status_t status);
 void   CmdPktCmdUpdateInfo   (Connection *conn, const char *email, const char *nick, const char *first, const char *last, BOOL auth);
 void   CmdPktCmdRandSet      (Connection *conn, UDWORD group);
 UDWORD CmdPktCmdRandSearch   (Connection *conn, UDWORD group);

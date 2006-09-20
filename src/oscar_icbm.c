@@ -812,8 +812,8 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
         EventD (event2);
 }
 
-void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, UWORD status,
-                     UDWORD deststatus, UWORD flags, const char *msg)
+void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, status_t status,
+                     status_t deststatus, UWORD flags, const char *msg)
 {
     if (msgtype == MSG_SSL_OPEN)       status = 0;
     else if (status == (UWORD)ims_offline) /* keep */ ;
@@ -840,7 +840,8 @@ void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, UWORD status,
      PacketWrite4      (pak, 0);
     PacketWriteLenDone (pak);
     PacketWrite2      (pak, msgtype);    /* message type    */
-    PacketWrite2      (pak, status);     /* status          */
+    PacketWrite2      (pak, OscarFromStatus (status));
+                                         /* status          */
     PacketWrite2      (pak, flags);      /* flags           */
     PacketWriteLNTS   (pak, msg);        /* the message     */
 }

@@ -195,14 +195,14 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
 /*
  * Checks the file request response.
  */
-BOOL PeerFileAccept (Connection *peer, UWORD status, UDWORD port)
+BOOL PeerFileAccept (Connection *peer, UWORD ackstatus, UDWORD port)
 {
     Connection *flist, *fpeer;
     
     flist = PeerFileCreate (peer->parent->parent);
     fpeer = ConnectionFind (TYPE_FILEDIRECT, peer->cont, flist);
     
-    if (!flist || !fpeer || !port || (status == TCP_ACK_REFUSE))
+    if (!flist || !fpeer || !port || (ackstatus == TCP_ACK_REFUSE))
     {
         if (fpeer)
             TCPClose (fpeer);

@@ -95,7 +95,7 @@ struct Contact_s
     char  *nick;
     char  *screen;
     UDWORD uin;
-    UDWORD status;
+    status_t status;
     UDWORD oldflags;
     Opt copts;
     UDWORD caps[2];
