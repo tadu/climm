@@ -515,21 +515,7 @@ static void Init (int argc, char *argv[])
         {
             if ((arg_s = targv[++i]))
             {
-                if (!strncmp (arg_s, "inv", 3))
-                    arg_ss = STATUS_ICQINV;
-                else if (!strcmp (arg_s, "dnd"))
-                    arg_ss = STATUS_ICQDND;
-                else if (!strcmp (arg_s, "occ"))
-                    arg_ss = STATUS_ICQOCC;
-                else if (!strcmp (arg_s, "na"))
-                    arg_ss = STATUS_ICQNA;
-                else if (!strcmp (arg_s, "away"))
-                    arg_ss = STATUS_ICQAWAY;
-                else if (!strcmp (arg_s, "ffc"))
-                    arg_ss = STATUS_ICQFFC;
-                else if (!strncmp (arg_s, "off", 3))
-                    arg_ss = ims_offline;
-                else
+                if (!ContactStatus (&arg_s, &arg_ss))
                     arg_ss = OscarToStatus (atoll (arg_s));
             }
         }

@@ -3800,14 +3800,14 @@ static JUMP_F(CmdUserConn)
             {
                 Contact *cont = connl->cont;
 
-                rl_printf (i18n (2452, "%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n"),
+                rl_printf (i18n (2452, "%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n"),
                           i + 1, ConnectionType (connl), connl->version,
 #ifdef ENABLE_SSL
                           connl->ssl_status == SSL_STATUS_OK ? " SSL" : "",
 #else
                           "",
 #endif
-                          cont ? cont->nick : "", connl->status,
+                          cont ? cont->nick : "", ContactStatusStr (connl->status),
                           connl->server ? connl->server : s_ip (connl->ip), connl->port,
                           connl->connect & CONNECT_FAIL ? i18n (1497, "failed") :
                           connl->connect & CONNECT_OK   ? i18n (1934, "connected") :

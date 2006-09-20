@@ -174,6 +174,8 @@ val_t         ContactGroupPrefVal (ContactGroup *cg, UDWORD flag);
 const char   *ContactPrefStr      (Contact *cont, UDWORD flag);
 val_t         ContactPrefVal      (Contact *cont, UDWORD flag);
 
+BOOL          ContactStatus       (const char **args, status_t *stat);
+const char   *ContactStatusStr    (status_t status);
 status_t      ContactSetInv       (status_t inv, status_t status);
 BOOL          ContactIsInv        (status_t inv);
 

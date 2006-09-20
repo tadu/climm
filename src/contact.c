@@ -1469,6 +1469,49 @@ void ContactSetVersion (Contact *cont)
     s_repl (&cont->version, strlen (buf) ? buf : NULL);
 }
 
+BOOL ContactStatus (const char **args, status_t *stat)
+{
+    if      (s_parsekey (args, "inv"))        *stat = ims_inv;
+    else if (s_parsekey (args, "inv online")) *stat = ims_inv;
+    else if (s_parsekey (args, "inv ffc"))    *stat = ims_inv_ffc;
+    else if (s_parsekey (args, "inv away"))   *stat = ims_inv_away;
+    else if (s_parsekey (args, "inv na"))     *stat = ims_inv_na;
+    else if (s_parsekey (args, "inv occ"))    *stat = ims_inv_occ;
+    else if (s_parsekey (args, "inv dnd"))    *stat = ims_inv_dnd;
+    else if (s_parsekey (args, "online"))     *stat = ims_online;
+    else if (s_parsekey (args, "ffc"))        *stat = ims_ffc;
+    else if (s_parsekey (args, "away"))       *stat = ims_away;
+    else if (s_parsekey (args, "na"))         *stat = ims_na;
+    else if (s_parsekey (args, "occ"))        *stat = ims_occ;
+    else if (s_parsekey (args, "dnd"))        *stat = ims_dnd;
+    else if (s_parsekey (args, "offline"))    *stat = ims_offline;
+    else if (s_parsekey (args, "online"))     *stat = ims_online;
+    else
+        return FALSE;
+    return TRUE;
+}
+
+const char *ContactStatusStr (status_t status)
+{
+    switch (status & 0xffffUL)
+    {
+        case ims_offline:   return "offline";
+        case ims_online:    return "online";
+        case ims_ffc:       return "ffc";
+        case ims_away:      return "away";
+        case ims_na:        return "na";
+        case ims_occ:       return "occ";
+        case ims_dnd:       return "dnd";
+        case ims_inv:       return "inv online";
+        case ims_inv_ffc:   return "inv ffc";
+        case ims_inv_away:  return "inv away";
+        case ims_inv_na:    return "inv na";
+        case ims_inv_occ:   return "inv occ";
+        case ims_inv_dnd:   return "inv dnd";
+    }
+    assert (0);
+}
+
 status_t ContactSetInv (status_t inv, status_t status)
 {
     return (inv & ims_inv) | (status & ~ims_inv);

@@ -1008,8 +1008,11 @@ int Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "status"))
                 {
-                    PrefParseInt (i);
-                    conn->pref_status = i;
+                    if (!ContactStatus (&args, &conn->pref_status))
+                    {
+                        PrefParseInt (i);
+                        conn->pref_status = OscarToStatus (i);
+                    }
                 }
                 else
                 {
@@ -1649,7 +1652,7 @@ int PrefWriteConfFile (void)
         else if (!k)
             fprintf (rcf, "# password\n");
         if (ss->pref_status || !k)
-            fprintf (rcf, "status %ld\n",  ss->pref_status);
+            fprintf (rcf, "status %s\n",  ContactStatusStr (ss->pref_status));
         fprintf (rcf, "\n");
     }
 
