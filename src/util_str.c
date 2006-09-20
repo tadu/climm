@@ -47,6 +47,7 @@
 #include <wctype.h>
 #endif
 #include <ctype.h>
+#include <assert.h>
 #include "util_str.h"
 #include "conv.h"
 #include "contact.h"
@@ -326,23 +327,21 @@ const char *s_status (status_t status, UDWORD nativestatus)
     else
         buf[0] = '\0';
     
-    status = ContactSetInv (ims_online, status);
-    
-    if (status == ims_dnd)
-        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1971, "do not disturb"));
-    else if (status == ims_occ)
-        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1973, "occupied"));
-    else if (status == ims_na)
-        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1974, "not available"));
-    else if (status == ims_away)
-        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1972, "away"));
-    else if (status == ims_ffc)
-        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1976, "free for chat"));
-    else if (buf[0])
-        buf[strlen (buf) - 1] = '\0';
-    else
-        snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1970, "online"));
-    
+    switch (ContactClearInv (status))
+    {
+        case imr_dnd:     snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1971, "do not disturb")); break;
+        case imr_occ:     snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1973, "occupied"));       break;
+        case imr_na:      snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1974, "not available"));  break;
+        case imr_away:    snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1972, "away"));           break;
+        case imr_ffc:     snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1976, "free for chat"));  break;
+        case imr_offline: assert (0);
+        case imr_online:
+            if (buf[0])
+                buf[strlen (buf) - 1] = '\0';
+            else
+                snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), "%s", i18n (1970, "online"));
+    }
+
     if (prG->verbose)
         snprintf (buf + strlen (buf), sizeof(buf) - strlen (buf), " %08lx", nativestatus);
     

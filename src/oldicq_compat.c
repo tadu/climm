@@ -56,37 +56,40 @@
 
 void Auto_Reply (Connection *conn, Contact *cont)
 {
-    const char *temp;
-    status_t noinv = ContactSetInv (ims_online, cont->status);
+    const char *temp = NULL;
 
     if (!(prG->flags & FLAG_AUTOREPLY) || !cont)
         return;
 
-    if      (noinv == ims_dnd)
-        temp = ContactPrefStr (cont, CO_TAUTODND);
-    else if (noinv == ims_occ)
-        temp = ContactPrefStr (cont, CO_TAUTOOCC);
-    else if (noinv == ims_na)
-        temp = ContactPrefStr (cont, CO_TAUTONA);
-    else if (noinv == ims_away)
-        temp = ContactPrefStr (cont, CO_TAUTOAWAY);
-    else if (ContactIsInv (cont->status))
-        temp = ContactPrefStr (cont, CO_TAUTOINV);
-    else
-        return;
+    switch (ContactClearInv (cont->status))
+    {
+        case imr_dnd:  temp = ContactPrefStr (cont, CO_TAUTODND);  break;
+        case imr_occ:  temp = ContactPrefStr (cont, CO_TAUTOOCC);  break;
+        case imr_na:   temp = ContactPrefStr (cont, CO_TAUTONA);   break;
+        case imr_away: temp = ContactPrefStr (cont, CO_TAUTOAWAY); break;
+        case imr_ffc:  temp = ContactPrefStr (cont, CO_TAUTOFFC);  break;
+        case imr_offline: return;
+        case imr_online:
+            if (ContactIsInv (cont->status))
+                       temp = ContactPrefStr (cont, CO_TAUTOINV);
+            else
+                return;
+    }
     
     if (!temp || !*temp)
     {
-        if      (noinv == ims_dnd)
-            temp = ContactPrefStr (cont, CO_AUTODND);
-        else if (noinv == ims_occ)
-            temp = ContactPrefStr (cont, CO_AUTOOCC);
-        else if (noinv == ims_na)
-            temp = ContactPrefStr (cont, CO_AUTONA);
-        else if (noinv == ims_away)
-            temp = ContactPrefStr (cont, CO_AUTOAWAY);
-        else if (ContactIsInv (conn->status))
-            temp = ContactPrefStr (cont, CO_AUTOINV);
+        switch (ContactClearInv (cont->status))
+        {
+            case imr_dnd:  temp = ContactPrefStr (cont, CO_AUTODND);  break;
+            case imr_occ:  temp = ContactPrefStr (cont, CO_AUTOOCC);  break;
+            case imr_na:   temp = ContactPrefStr (cont, CO_AUTONA);   break;
+            case imr_away: temp = ContactPrefStr (cont, CO_AUTOAWAY); break;
+            case imr_ffc:  temp = ContactPrefStr (cont, CO_AUTOFFC);  break;
+            case imr_offline: assert (0);
+            case imr_online:
+                assert (ContactIsInv (cont->status));
+                           temp = ContactPrefStr (cont, CO_AUTOINV);
+        }
     }
 
     IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, temp, 0));
@@ -498,42 +501,36 @@ void Recv_Message (Connection *conn, Packet *pak)
 
 status_t IcqToStatus (UDWORD status)
 {
-    status_t tmp = ims_online;
-
+    status_t tmp;
+    
     if (status == (UWORD)STATUS_ICQOFFLINE)
         return ims_offline;
-    if (status & STATUSF_ICQINV)
-        tmp = ContactSetInv (ims_inv, tmp);
+    tmp = (status & STATUSF_ICQINV) ? ims_inv : ims_online;
     if (status & STATUSF_ICQDND)
-        return ContactSetInv (tmp, ims_dnd);
+        return ContactCopyInv (tmp, imr_dnd);
     if (status & STATUSF_ICQOCC)
-        return ContactSetInv (tmp, ims_occ);
+        return ContactCopyInv (tmp, imr_occ);
     if (status & STATUSF_ICQNA)
-        return ContactSetInv (tmp, ims_na);
+        return ContactCopyInv (tmp, imr_na);
     if (status & STATUSF_ICQAWAY)
-        return ContactSetInv (tmp, ims_away);
+        return ContactCopyInv (tmp, imr_away);
     if (status & STATUSF_ICQFFC)
-        return ContactSetInv (tmp, ims_ffc);
+        return ContactCopyInv (tmp, imr_ffc);
     return tmp;
 }
 
 UDWORD IcqFromStatus (status_t status)
 {
-    switch (status)
+    UDWORD isinv = ContactIsInv (status) ? STATUSF_ICQINV : 0;
+    switch (ContactClearInv (status))
     {
-        case ims_offline:  return STATUS_ICQOFFLINE;
-        case ims_online:   return STATUS_ICQONLINE;
-        case ims_inv:      return STATUS_ICQINV;
-        case ims_ffc:      return STATUS_ICQFFC;
-        case ims_away:     return STATUS_ICQAWAY;
-        case ims_na:       return STATUS_ICQNA;
-        case ims_occ:      return STATUS_ICQOCC;
-        case ims_dnd:      return STATUS_ICQDND;
-        case ims_inv_ffc:  return STATUS_ICQFFC  | STATUSF_ICQINV;
-        case ims_inv_away: return STATUS_ICQAWAY | STATUSF_ICQINV;
-        case ims_inv_na:   return STATUS_ICQNA   | STATUSF_ICQINV;
-        case ims_inv_occ:  return STATUS_ICQOCC  | STATUSF_ICQINV;
-        case ims_inv_dnd:  return STATUS_ICQDND  | STATUSF_ICQINV;
+        case imr_offline:  return STATUS_ICQOFFLINE;
+        case imr_online:   return STATUS_ICQONLINE | isinv;
+        case imr_ffc:      return STATUS_ICQFFC    | isinv;
+        case imr_away:     return STATUS_ICQAWAY   | isinv;
+        case imr_na:       return STATUS_ICQNA     | isinv;
+        case imr_occ:      return STATUS_ICQOCC    | isinv;
+        case imr_dnd:      return STATUS_ICQDND    | isinv;
     }
     assert (0);
 }

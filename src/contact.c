@@ -1511,13 +1511,3 @@ const char *ContactStatusStr (status_t status)
     }
     assert (0);
 }
-
-status_t ContactSetInv (status_t inv, status_t status)
-{
-    return (inv & ims_inv) | (status & ~ims_inv);
-}
-
-BOOL ContactIsInv (status_t inv)
-{
-    return (inv & ims_inv && inv != ims_offline) ? TRUE : FALSE;
-}

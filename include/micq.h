@@ -138,19 +138,29 @@ typedef void MSN_Handle;
 #include "icq_tcp.h"
 
 typedef enum {
+  imr_online   = 0,
+  imr_away     = 1,
+  imr_dnd      = 2,
+  imr_na       = 3,
+  imr_occ      = 4,
+  imr_ffc      = 5,
+  imr_offline  = 7
+} status_noi_t;
+
+typedef enum {
   ims_online   = 0,
   ims_away     = 1,
   ims_dnd      = 2,
-  ims_na       = 4,
-  ims_occ      = 16,
-  ims_ffc      = 32,
-  ims_inv      = 256,
+  ims_na       = 3,
+  ims_occ      = 4,
+  ims_ffc      = 5,
+  ims_offline  = 7,
+  ims_inv      = 8,
   ims_inv_ffc  = ims_inv + ims_ffc,
   ims_inv_away = ims_inv + ims_away,
   ims_inv_na   = ims_inv + ims_na,
   ims_inv_occ  = ims_inv + ims_occ,
-  ims_inv_dnd  = ims_inv + ims_dnd,
-  ims_offline  = -1
+  ims_inv_dnd  = ims_inv + ims_dnd
 } status_t;
 
 typedef enum {

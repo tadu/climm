@@ -88,16 +88,17 @@ void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t fl
 
     if (ContactPrefVal (cont, CO_AUTOAUTO))
     {
-        int cdata;
+        int cdata = 0;
 
-        switch (ContactSetInv (ims_online, cont->status))
+        switch (ContactClearInv (cont->status))
         {
-            case ims_dnd:  cdata = MSGF_GETAUTO | MSG_GET_DND;
-            case ims_occ:  cdata = MSGF_GETAUTO | MSG_GET_OCC;
-            case ims_na:   cdata = MSGF_GETAUTO | MSG_GET_NA;
-            case ims_away: cdata = MSGF_GETAUTO | MSG_GET_AWAY;
-            case ims_ffc:  cdata = MSGF_GETAUTO | MSG_GET_FFC;
-            default:       cdata = 0;
+            case imr_dnd:     cdata = MSGF_GETAUTO | MSG_GET_DND;  break;
+            case imr_occ:     cdata = MSGF_GETAUTO | MSG_GET_OCC;  break;
+            case imr_na:      cdata = MSGF_GETAUTO | MSG_GET_NA;   break;
+            case imr_away:    cdata = MSGF_GETAUTO | MSG_GET_AWAY; break;
+            case imr_ffc:     cdata = MSGF_GETAUTO | MSG_GET_FFC;  break;
+            case imr_online:
+            case imr_offline: cdata = 0;
         }
 
         if (cdata)

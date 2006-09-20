@@ -818,15 +818,19 @@ void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, status_t status,
     if (msgtype == MSG_SSL_OPEN)
         status = ims_online;
     
-    deststatus = ContactSetInv (ims_online, deststatus);
-    if      (flags != (UWORD)-1)        /* keep */ ;
-    else if (deststatus == ims_offline) /* keep */ ;
-    else if (deststatus == ims_dnd)     flags = TCP_MSGF_CLIST;
-    else if (deststatus == ims_occ)     flags = TCP_MSGF_CLIST;
-    else if (deststatus == ims_na)      flags = TCP_MSGF_1;
-    else if (deststatus == ims_away)    flags = TCP_MSGF_1;
-    else if (deststatus == ims_ffc)     flags = TCP_MSGF_LIST | TCP_MSGF_1;
-    else                                flags = TCP_MSGF_LIST | TCP_MSGF_1;
+    if (flags == (UWORD)-1)
+    {
+        switch (ContactClearInv (deststatus))
+        {
+            case imr_offline: /* keep */ break;
+            case imr_dnd:
+            case imr_occ:     flags = TCP_MSGF_CLIST; break;
+            case imr_na:
+            case imr_away:    flags = TCP_MSGF_1; break;
+            case imr_ffc:
+            case imr_online:  flags = TCP_MSGF_LIST | TCP_MSGF_1; break;
+        }
+    }
 
     PacketWriteLen    (pak);
      PacketWrite2      (pak, seq);       /* sequence number */
@@ -909,13 +913,12 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     Contact *cont = inc_event->cont;
     Opt *opt = inc_event->opt, *opt2;
     Packet *ack_pak = ack_event->pak;
-    const char *txt, *ack_msg, *tauto;
+    const char *txt, *ack_msg = NULL, *tauto;
     strc_t text, cname, ctext, reason, cctmp;
     char *name;
     UDWORD tmp, cmd, flen;
     UWORD unk, seq, msgtype, unk2, pri;
     UWORD ack_flags, ack_status, accept;
-    status_t noinv;
 
     unk     = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, unk);
     seq     = PacketRead2    (inc_pak);  PacketWrite2 (ack_pak, seq);
@@ -939,26 +942,21 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     
     accept = FALSE;
 
-    noinv = ContactSetInv (ims_online, serv->status);
-    if      (noinv == ims_dnd)
-        ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTODND))  && *tauto ? tauto : ContactPrefStr (cont, CO_AUTODND);
-    else if (noinv == ims_occ)
-        ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTOOCC))  && *tauto ? tauto : ContactPrefStr (cont, CO_AUTOOCC);
-    else if (noinv == ims_na)
-        ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTONA))   && *tauto ? tauto : ContactPrefStr (cont, CO_AUTONA);
-    else if (noinv == ims_away)
-        ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTOAWAY)) && *tauto ? tauto : ContactPrefStr (cont, CO_AUTOAWAY);
-    else
-        ack_msg = "";
-
 /*
  * Don't refuse until we have sensible preferences for that
  */
-    if (noinv == ims_dnd)  ack_status  = TCP_ACK_ONLINE; else
-    if (noinv == ims_occ)  ack_status  = TCP_ACK_ONLINE; else
-    if (noinv == ims_na)   ack_status  = TCP_ACK_NA;     else
-    if (noinv == ims_away) ack_status  = TCP_ACK_AWAY;
-    else                   ack_status  = TCP_ACK_ONLINE;
+    switch (ContactClearInv (serv->status))
+    {
+        case imr_dnd:  ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTODND))  && *tauto ?
+                       tauto : ContactPrefStr (cont, CO_AUTODND);  ack_status = TCP_ACK_ONLINE; break;
+        case imr_occ:  ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTOOCC))  && *tauto ?
+                       tauto : ContactPrefStr (cont, CO_AUTOOCC);  ack_status = TCP_ACK_ONLINE; break;
+        case imr_na:   ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTONA))   && *tauto ?
+                       tauto : ContactPrefStr (cont, CO_AUTONA);   ack_status = TCP_ACK_NA;     break;
+        case imr_away: ack_msg = (tauto = ContactPrefStr (cont, CO_TAUTOAWAY)) && *tauto ?
+                       tauto : ContactPrefStr (cont, CO_AUTOAWAY); ack_status = TCP_ACK_AWAY;   break;
+        default:       ack_status  = TCP_ACK_ONLINE;
+    }
 
     ack_flags = 0;
     if (ContactIsInv (serv->status))  ack_flags |= TCP_MSGF_INV;

@@ -241,7 +241,6 @@ jump_t *CmdUserLookup (const char *cmd)
 static JUMP_F(CmdUserChange)
 {
     char *arg1 = NULL;
-    status_t noinv;
     status_t sdata = data;
     ANYCONN;
 
@@ -261,7 +260,6 @@ static JUMP_F(CmdUserChange)
         }
         sdata = IcqToStatus (IcqFromStatus (data));
     }
-    noinv = ContactSetInv (ims_online, sdata);
 
     OptSetStr (&prG->copts, CO_TAUTODND,  NULL);
     OptSetStr (&prG->copts, CO_TAUTOOCC,  NULL);
@@ -273,12 +271,17 @@ static JUMP_F(CmdUserChange)
     if (!(arg1 = s_parserem (&args)))
         arg1 = "";
 
-    if      (noinv == ims_dnd)  OptSetStr (&prG->copts, CO_TAUTODND,  arg1);
-    else if (noinv == ims_occ)  OptSetStr (&prG->copts, CO_TAUTOOCC,  arg1);
-    else if (noinv == ims_na)   OptSetStr (&prG->copts, CO_TAUTONA,   arg1);
-    else if (noinv == ims_away) OptSetStr (&prG->copts, CO_TAUTOAWAY, arg1);
-    else if (noinv == ims_ffc)  OptSetStr (&prG->copts, CO_TAUTOFFC,  arg1);
-    else if (sdata == ims_inv)  OptSetStr (&prG->copts, CO_TAUTOINV,  arg1);
+    switch (ContactClearInv (sdata)) {
+        case imr_dnd:  OptSetStr (&prG->copts, CO_TAUTODND,  arg1); break;
+        case imr_occ:  OptSetStr (&prG->copts, CO_TAUTOOCC,  arg1); break;
+        case imr_na:   OptSetStr (&prG->copts, CO_TAUTONA,   arg1); break;
+        case imr_away: OptSetStr (&prG->copts, CO_TAUTOAWAY, arg1); break;
+        case imr_ffc:  OptSetStr (&prG->copts, CO_TAUTOFFC,  arg1); break;
+        case imr_offline: break;
+        case imr_online:
+            if (sdata == ims_inv)
+                       OptSetStr (&prG->copts, CO_TAUTOINV,  arg1); break;
+    }
 
     if (~conn->connect & CONNECT_OK)
         conn->status = sdata;
@@ -917,14 +920,16 @@ static JUMP_F(CmdUserGetAuto)
             one = 1;
             if (!(cdata = data))
             {
-                status_t noinv = ContactSetInv (ims_online, cont->status);
-                if      (cont->status == ims_offline) continue;
-                else if (noinv == ims_dnd)  cdata = MSGF_GETAUTO | MSG_GET_DND;
-                else if (noinv == ims_occ)  cdata = MSGF_GETAUTO | MSG_GET_OCC;
-                else if (noinv == ims_na)   cdata = MSGF_GETAUTO | MSG_GET_NA;
-                else if (noinv == ims_away) cdata = MSGF_GETAUTO | MSG_GET_AWAY;
-                else if (noinv == ims_ffc)  cdata = MSGF_GETAUTO | MSG_GET_FFC;
-                else continue;
+                switch (ContactClearInv (cont->status))
+                {
+                    case imr_offline: continue;
+                    case imr_dnd:     cdata = MSGF_GETAUTO | MSG_GET_DND;  break;
+                    case imr_occ:     cdata = MSGF_GETAUTO | MSG_GET_OCC;  break;
+                    case imr_na:      cdata = MSGF_GETAUTO | MSG_GET_NA;   break;
+                    case imr_away:    cdata = MSGF_GETAUTO | MSG_GET_AWAY; break;
+                    case imr_ffc:     cdata = MSGF_GETAUTO | MSG_GET_FFC;  break;
+                    default:          continue;
+                }
             }
             IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, cdata, CO_MSGTEXT, "\xff", CO_FORCE, 1, 0));
         }
@@ -1487,16 +1492,20 @@ typedef enum { ss_none, ss_off, ss_dnd, ss_occ, ss_na, ss_away, ss_on, ss_ffc, s
 
 static sortstate_t __status (Contact *cont)
 {
-    status_t noinv = ContactSetInv (ims_online, cont->status);
     if (ContactPrefVal (cont, CO_IGNORE))  return ss_none;
     if (!cont->group)                      return ss_none;
     if (cont->status == ims_offline)       return ss_off;
     if (cont->flags & imf_birth)           return ss_birth;
-    if (noinv == ims_dnd)                  return ss_dnd;
-    if (noinv == ims_occ)                  return ss_occ;
-    if (noinv == ims_na)                   return ss_na;
-    if (noinv == ims_away)                 return ss_away;
-    if (noinv == ims_ffc)                  return ss_ffc;
+    switch (ContactClearInv (cont->status))
+    {
+        case imr_dnd:    return ss_dnd;
+        case imr_occ:    return ss_occ;
+        case imr_na:     return ss_na;
+        case imr_away:   return ss_away;
+        case imr_ffc:    return ss_ffc;
+        case imr_offline:
+        case imr_online: return ss_on;
+    }
     return ss_on;
 }
 
@@ -1806,7 +1815,7 @@ static JUMP_F(CmdUserStatusDetail)
             OptSetVal (&cg->copts, CO_SHADOW, 0);
             for (i = (data & 1 ? 2 : 0); i < 9; i++)
             {
-                status = stati[i];
+                sortstate_t status = stati[i];
                 for (j = 0; (cont = ContactIndex (cg, j)); j++)
                 {
                     if (__status (cont) != status)

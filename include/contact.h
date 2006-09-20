@@ -178,8 +178,15 @@ val_t         ContactPrefVal      (Contact *cont, UDWORD flag);
 
 BOOL          ContactStatus       (const char **args, status_t *stat);
 const char   *ContactStatusStr    (status_t status);
-status_t      ContactSetInv       (status_t inv, status_t status);
-BOOL          ContactIsInv        (status_t inv);
+
+static inline status_t ContactCopyInv (status_t inv, status_noi_t status)
+{
+    if (status == imr_offline)
+        return ims_offline;
+    return (status_t)(status | (inv & ims_inv));
+}
+static inline status_noi_t ContactClearInv (status_t status) { return (status_noi_t)(status & ~ims_inv); }
+static inline BOOL ContactIsInv (status_t inv) { return (inv & ims_inv) ? TRUE : FALSE; }
 
 #define CONTACT_GENERAL(cont)  ((cont)->meta_general  ? (cont)->meta_general  : ((cont)->meta_general  = calloc (1, sizeof (MetaGeneral))))
 #define CONTACT_WORK(cont)     ((cont)->meta_work     ? (cont)->meta_work     : ((cont)->meta_work     = calloc (1, sizeof (MetaWork))))
