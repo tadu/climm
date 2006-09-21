@@ -40,6 +40,7 @@ class MICQJabber : public gloox::ConnectionListener, public gloox::MessageHandle
         virtual void  onSessionCreateError (gloox::SessionCreateError error);
         virtual bool  onTLSConnect (const gloox::CertInfo &info);
         virtual void  handleMessage (gloox::Stanza *stanza);
+        void handleMessage2(gloox::Stanza*, std::string, std::string, std::string, gloox::StanzaSubType);
         virtual void  handlePresence (gloox::Stanza *stanza);
         virtual void  handleSubscription (gloox::Stanza *stanza);
         virtual void  handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message);
@@ -125,19 +126,91 @@ bool MICQJabber::onTLSConnect (const gloox::CertInfo &info)
     return TRUE;
 }
 
+static bool DropChild (gloox::Tag *s, gloox::Tag *c)
+{
+    if (s->children().size())
+        s->setCData ("");
+    s->children().remove (c);
+    delete c;
+}
+
+static bool DropAttrib (gloox::Tag *s, const std::string &a)
+{
+    if (s->children().size())
+        s->setCData ("");
+    s->attributes().erase (a);
+}
+
+static bool DropCData (gloox::Tag *s)
+{
+    s->setCData ("");
+}
+
+static bool CheckInvalid (gloox::Tag *s)
+{
+    if (!s->attributes().size() && !s->children().size() && s->cdata().empty())
+    {
+        if (s->parent())
+            DropChild (s->parent(), s);
+        return true;
+    }
+    return false;
+}
+
+static void DropAllChilds (gloox::Tag *s, const std::string &a)
+{
+    gloox::Tag::TagList::const_iterator it;
+    for (it = s->children().begin(); it != s->children().end(); ++it)
+    {
+        if ((*it)->name() == a)
+        {
+            gloox::Tag *b = *it;
+            DropCData (b);
+            DropAttrib (b, "xml:lang");
+            if (CheckInvalid (b))
+                return (DropAllChilds (s, a));
+        }
+    }
+}
+
+void MICQJabber::handleMessage2 (gloox::Stanza *t, std::string fromf, std::string tof, std::string id, gloox::StanzaSubType subtype)
+{
+    Contact *cfrom = ContactScreen (m_conn, fromf.c_str());
+    Contact *cto = ContactScreen (m_conn, tof.c_str());
+    std::string xmlns = t->findAttribute ("xmlns");
+    std::string subtypeval = t->findAttribute ("type");
+    std::string body = t->body();
+    std::string subject = t->subject();
+    DropAttrib (t, "xmlns");
+    DropAttrib (t, "type");
+
+    IMSrvMsg (cfrom, m_conn, NOW,
+      OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, body.c_str(), 0));
+
+    DropAllChilds (t, "body");
+}
+
 void MICQJabber::handleMessage (gloox::Stanza *s)
 {
     assert (s);
     assert (s->type() == gloox::StanzaMessage);
     
-    IMSrvMsg (ContactScreen (m_conn, s->from().bare().c_str()), m_conn, NOW,
-      OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, s->body().c_str(), 0));
-    rl_printf ("handleMessage from:<%s> to:<%s> type:<%d> id:<%s> status:<%s> prio:<%d> body:<%s> subj:<%s> thread:<%s> pres:<%d> xml:<%s>\n",
-               s->from().full().c_str(), s->to().full().c_str(), s->subtype(),
-               s->id().c_str(), s->status().c_str(), s->priority(),
-               s->body().c_str(), s->subject().c_str(),
-               s->thread().c_str(), s->show(),
-               s->xml().c_str());
+    
+    std::string fromf = s->from().full();
+    std::string tof = s->to().full();
+    std::string id = s->id();
+    gloox::StanzaSubType subtype = s->subtype ();
+    
+    gloox::Stanza *t = s->clone();
+    DropAttrib (t, "from");
+    DropAttrib (t, "to");
+    DropAttrib (t, "id");
+    
+    handleMessage2 (t, fromf, tof, id, subtype);
+
+    if (!CheckInvalid (t))
+        rl_printf ("handleMessage %s\n", t->xml().c_str());
+    delete t;
 }
 
 static void GetBothContacts (const gloox::JID &j, Connection *conn, Contact **b, Contact **f)
