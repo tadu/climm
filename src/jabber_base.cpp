@@ -46,6 +46,7 @@ class MICQJabber : public gloox::ConnectionListener, public gloox::MessageHandle
         void handleJEP22a (gloox::Tag *JEP22, Contact *cfrom);
         void handleJEP22b (gloox::Tag *JEP22, std::string fromf, std::string tof, std::string id);
         void handleJEP22c (std::string fromf, std::string tof, std::string id, std::string type);
+        void handleJEP85 (gloox::Tag *t);
         virtual void  handlePresence (gloox::Stanza *stanza);
         virtual void  handleSubscription (gloox::Stanza *stanza);
         virtual void  handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message);
@@ -267,6 +268,35 @@ bool MICQJabber::handleJEP22 (gloox::Tag *t, Contact *cfrom, std::string fromf, 
     return false;
 }
 
+void MICQJabber::handleJEP85 (gloox::Tag *t)
+{
+    if (gloox::Tag *active = t->findChild ("active", "xmlns", "http://jabber.org/protocol/chatstates"))
+    {
+        DropAttrib (active, "xmlns");
+        CheckInvalid (active);
+    }
+    if (gloox::Tag *composing = t->findChild ("composing", "xmlns", "http://jabber.org/protocol/chatstates"))
+    {
+        DropAttrib (composing, "xmlns");
+        CheckInvalid (composing);
+    }
+    if (gloox::Tag *paused = t->findChild ("paused", "xmlns", "http://jabber.org/protocol/chatstates"))
+    {
+        DropAttrib (paused, "xmlns");
+        CheckInvalid (paused);
+    }
+    if (gloox::Tag *inactive = t->findChild ("inactive", "xmlns", "http://jabber.org/protocol/chatstates"))
+    {
+        DropAttrib (inactive, "xmlns");
+        CheckInvalid (inactive);
+    }
+    if (gloox::Tag *gone = t->findChild ("gone", "xmlns", "http://jabber.org/protocol/chatstates"))
+    {
+        DropAttrib (gone, "xmlns");
+        CheckInvalid (gone);
+    }
+}
+
 void MICQJabber::handleMessage2 (gloox::Stanza *t, std::string fromf, std::string tof, std::string id, gloox::StanzaSubType subtype)
 {
     Contact *cfrom = ContactScreen (m_conn, fromf.c_str());
@@ -278,6 +308,7 @@ void MICQJabber::handleMessage2 (gloox::Stanza *t, std::string fromf, std::strin
     DropAttrib (t, "xmlns");
     DropAttrib (t, "type");
 
+    handleJEP85 (t);
     if (handleJEP22 (t, cfrom, fromf, tof, id))
         return;
 
