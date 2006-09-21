@@ -6,6 +6,7 @@ extern "C" {
 #include "contact.h"
 #include "util_io.h"
 #include "icq_response.h"
+#include "util_ui.h"
 }
 
 #include <gloox/gloox.h>
@@ -264,7 +265,12 @@ void MICQJabber::handleLog (gloox::LogLevel level, gloox::LogArea area, const st
         case gloox::LogLevelWarning: lt = "warn"; break;
         case gloox::LogLevelError: lt = "error"; break;
     }
-    rl_printf ("LogJabber: %s/%s: %s\n", lt, la, message.c_str());
+    if (area == gloox::LogAreaXmlIncoming)
+        DebugH (DEB_JABBERIN, "%s/%s: %s", lt, la, message.c_str());
+    else if (area == gloox::LogAreaXmlOutgoing)
+        DebugH (DEB_JABBEROUT, "%s/%s: %s", lt, la, message.c_str());
+    else
+        DebugH (DEB_JABBEROTHER, "%s/%s: %s", lt, la, message.c_str());
 }
 
 UBYTE MICQJabber::JabberSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD type)
