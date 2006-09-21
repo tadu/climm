@@ -353,14 +353,14 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             cont->dc->id2     = PacketRead4 (pak);
             cont->dc->id3     = PacketRead4 (pak);
             ContactSetVersion (cont);
-            IMOnline (cont, conn, IcqToStatus (status), IcqToFlags (status), status);
+            IMOnline (cont, conn, IcqToStatus (status), IcqToFlags (status), status, NULL);
             break;
         case SRV_STATUS_UPDATE:
             uin = PacketRead4 (pak);
             if ((cont = ContactUIN (conn, uin)))
             {
                 status = PacketRead4 (pak);
-                IMOnline (cont, conn, IcqToStatus (status), IcqToFlags (status), status);
+                IMOnline (cont, conn, IcqToStatus (status), IcqToFlags (status), status, NULL);
             }
             break;
         case SRV_GO_AWAY:

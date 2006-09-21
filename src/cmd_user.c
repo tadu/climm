@@ -138,7 +138,7 @@ static jump_t jump[] = {
     { &CmdUserSoundOnline,   "soundonline",  2,   0 },
     { &CmdUserSoundOffline,  "soundoffline", 2,   0 },
     { &CmdUserAutoaway,      "autoaway",     2,   0 },
-    { &CmdUserChange,        "change",       1, ims_offline },
+    { &CmdUserChange,        "change",       1, -1          },
     { &CmdUserChange,        "online",       1, ims_online  },
     { &CmdUserChange,        "away",         1, ims_away    },
     { &CmdUserChange,        "na",           1, ims_na      },
@@ -258,7 +258,7 @@ static JUMP_F(CmdUserChange)
             rl_printf ("  %-20s %d\n", i18n (1926, "Invisible"),      ims_inv);
             return 0;
         }
-        sdata = IcqToStatus (IcqFromStatus (data));
+        sdata = IcqToStatus (data);
     }
 
     OptSetStr (&prG->copts, CO_TAUTODND,  NULL);
@@ -282,16 +282,8 @@ static JUMP_F(CmdUserChange)
             if (sdata == ims_inv)
                        OptSetStr (&prG->copts, CO_TAUTOINV,  arg1); break;
     }
-
-    if (~conn->connect & CONNECT_OK)
-        conn->status = sdata;
-    else if (conn->type == TYPE_SERVER)
-        SnacCliSetstatus (conn, sdata, 1);
-    else
-    {
-        CmdPktCmdStatusChange (conn, sdata);
-        rl_printf ("%s %s\n", s_now, s_status (conn->status, conn->nativestatus));
-    }
+    
+    IMSetStatus (conn, NULL, sdata, arg1);
     return 0;
 }
 

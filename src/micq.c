@@ -25,30 +25,21 @@
 #include <conio.h>
 #endif
 
-#include "util_ui.h"
 #include "file_util.h"
-#include "util.h"
 #include "util_rl.h"
 #include "conv.h"
 #include "buildmark.h"
-#include "cmd_user.h"
-#include "icq_response.h"
 #include "preferences.h"
 #include "server.h"
 #include "contact.h"
 #include "connection.h"
 #include "tcp.h"
 #include "tabs.h"
-#include "msg_queue.h"
 #include "util_io.h"
-#include "oscar_snac.h"
-#include "oscar_service.h"
 #include "oldicq_compat.h"
-#include "oldicq_client.h"
 #include "util_tcl.h"
 #include "util_ssl.h"
 #include "util_alias.h"
-#include "oscar_base.h"
 #include "os.h"
 
 #define MICQ_ICON_1 "   " GREEN "_" SGR0 "     "
@@ -171,11 +162,7 @@ static void Idle_Check (Connection *conn)
     }
     if (news != ims_offline && news != conn->status)
     {
-        if (conn->type == TYPE_SERVER)
-            SnacCliSetstatus (conn, news, 1);
-        else if (conn->type == TYPE_SERVER_OLD)
-            CmdPktCmdStatusChange (conn, news);
-        conn->status = news;
+        IMSetStatus (conn, NULL, news, i18n (9999, "Automatic status change."));
         rl_printf ("%s ", s_now);
         rl_printf (i18n (1064, "Automatically changed status to %s.\n"), s_status (news, 0));
     }

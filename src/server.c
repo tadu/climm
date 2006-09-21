@@ -26,6 +26,7 @@
 #include "tcp.h"
 #include "packet.h"
 #include "conv.h"
+#include "oscar_service.h"
 #include "jabber_base.h"
 
 static void CallbackMeta (Event *event);
@@ -170,3 +171,24 @@ static void CallbackMeta (Event *event)
         EventD (event);
     }
 }
+
+void IMSetStatus (Connection *conn, Contact *cont, status_t status, const char *msg)
+{
+    if (~conn->connect & CONNECT_OK)
+    {
+        conn->status = status;
+        conn->nativestatus = 0;
+    }
+    else if (conn->type == TYPE_SERVER)
+        SnacCliSetstatus (conn, status, 1);
+    else if (conn->type == TYPE_SERVER_OLD)
+    {
+        CmdPktCmdStatusChange (conn, status);
+        rl_printf ("%s %s\n", s_now, s_status (conn->status, conn->nativestatus));
+    }
+    else if (conn->type == TYPE_JABBER_SERVER)
+    {
+        JabberSetstatus (conn, cont, status, msg);
+    }
+}
+

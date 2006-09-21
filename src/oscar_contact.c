@@ -223,7 +223,7 @@ JUMP_SNAC_F(SnacSrvUseronline)
     OptSetVal (&cont->copts, CO_TIMEONLINE, time (NULL) - tlv[15].nr);
     ContactSetVersion (cont);
     ostat = tlv[6].str.len ? tlv[6].nr : 0;
-    IMOnline (cont, serv, IcqToStatus (ostat), IcqToFlags (ostat), ostat);
+    IMOnline (cont, serv, IcqToStatus (ostat), IcqToFlags (ostat), ostat, NULL);
     TLVD (tlv);
 }
 

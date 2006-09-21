@@ -14,7 +14,7 @@ typedef enum {
 
 void IMIntMsg  (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, int_msg_t type, const char *text, Opt *opt);
 void IMSrvMsg  (Contact *cont, Connection *conn, time_t stamp, Opt *opt);
-void IMOnline  (Contact *cont, Connection *conn, status_t status, statusflag_t flags, UDWORD nativestatus);
+void IMOnline  (Contact *cont, Connection *conn, status_t status, statusflag_t flags, UDWORD nativestatus, const char *text);
 void IMOffline (Contact *cont, Connection *conn);
 
 #define HIST_IN 1

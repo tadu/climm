@@ -44,6 +44,7 @@ class MICQJabber : public gloox::ConnectionListener, public gloox::MessageHandle
         virtual void  handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message);
         gloox::Client *getClient () { return m_client; }
         UBYTE JabberSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD type);
+        void  JabberSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg);
 };
 
 MICQJabber::MICQJabber (Connection *serv)
@@ -192,6 +193,8 @@ void MICQJabber::handlePresence (gloox::Stanza *s)
         case gloox::PresenceXa:        status = ims_na;
     }
     
+    std::string msg = s->status();
+    
     switch (s->subtype())
     {
         case gloox::StanzaPresenceUnavailable:
@@ -206,10 +209,10 @@ void MICQJabber::handlePresence (gloox::Stanza *s)
                 IMOffline (contb, m_conn);
             break;
         case gloox::StanzaPresenceAvailable:
-            IMOnline (contf, m_conn, status, imf_none, 0);
+            IMOnline (contf, m_conn, status, imf_none, 0, msg.c_str());
             tcg = contb->group;
             contb->group = NULL;
-            IMOnline (contb, m_conn, status, imf_none, 0);
+            IMOnline (contb, m_conn, status, imf_none, 0, NULL);
             contb->group = tcg;
             break;
         case gloox::StanzaPresenceProbe:
@@ -274,7 +277,31 @@ UBYTE MICQJabber::JabberSendmsg (Connection *conn, Contact *cont, const char *te
         return RET_DEFER;
     
     m_client->send (gloox::Stanza::createMessageStanza (gloox::JID (cont->screen), text));
+    return RET_OK;
 }
+
+void MICQJabber::JabberSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg)
+{
+    gloox::Presence p;
+    gloox::JID j = cont ? gloox::JID (cont->screen) : gloox::JID ();
+    
+    switch (status)
+    {
+        case ims_online:   msg = NULL;
+                           p = gloox::PresenceAvailable;   break;
+        case ims_ffc:      p = gloox::PresenceChat;        break;
+        case ims_away:     p = gloox::PresenceAway;        break;
+        case ims_occ:      status = ims_dnd;
+        case ims_dnd:      p = gloox::PresenceDnd;         break;
+        case ims_na:       p = gloox::PresenceXa;          break;
+        case ims_offline:  status = ims_inv;
+        default:           p = gloox::PresenceUnavailable; break;
+    }
+    m_client->send (gloox::Stanza::createPresenceStanza (j, msg ? msg : "", p));
+    m_conn->status = status;
+    m_conn->nativestatus = p;
+}
+
 
 Event *ConnectionInitJabberServer (Connection *serv)
 {
@@ -369,7 +396,12 @@ UBYTE JabberSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD t
 {
     MICQJabber *j = getJabberClient (serv);
     assert (j);
-    j->JabberSendmsg (serv, cont, text, type);
+    return j->JabberSendmsg (serv, cont, text, type);
 }
 
-
+void JabberSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg)
+{
+    MICQJabber *j = getJabberClient (serv);
+    assert (j);
+    j->JabberSetstatus (serv, cont, status, msg);
+}

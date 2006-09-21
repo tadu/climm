@@ -21,7 +21,7 @@
 /*
  * Inform that a user went online
  */
-void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t flags, UDWORD nativestatus)
+void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t flags, UDWORD nativestatus, const char *text)
 {
     Event *egevent;
     status_t old;
@@ -75,7 +75,10 @@ void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t fl
         rl_printf (" [%s]", cont->version);
     if ((flags & imf_birth) && ((~oldf & imf_birth) || old == ims_offline))
         rl_printf (" (%s)", i18n (2033, "born today"));
-    rl_print (".\n");
+    if (text && *text)
+        rl_printf (". %s\n", s_wordquote (text));
+    else
+        rl_print (".\n");
 
     if (prG->verbose && old == ims_offline && cont->dc)
     {
