@@ -361,7 +361,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
 {
     const char *tmp, *tmp2, *tmp3, *tmp4, *tmp5, *tmp6;
     char *cdata, *cdata_deleteme;
-    const char *opt_text, *carr;
+    const char *opt_text, *carr, *opt_subj;
     UDWORD opt_type, opt_origin, opt_bytes, opt_ref, opt_t_status, j;
 
     int i;
@@ -471,6 +471,19 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
                 rl_printf ("%c", ((cdata[j] & 0xe0) && (cdata[j] != 127)) ? cdata[j] : '.');
             rl_print ("'\n");
             break;
+
+        case MSG_NORM_SUBJ:
+            if (OptGetStr (opt, CO_SUBJECT, &opt_subj))
+            {
+                rl_printf ("%s \"%s\"\n", carr, s_wordquote (opt_subj));
+                rl_printf ("%s" COLMSGINDENT "%s\n", COLMESSAGE, cdata);
+                HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, opt_subj, HIST_IN);
+                HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, cdata, HIST_IN);
+                TCLEvent (cont, "message", s_sprintf ("{%s: %s}", opt_subj, cdata));
+                TCLMessage (cont, opt_subj);
+                TCLMessage (cont, cdata);
+                break;
+            }
 
         case MSG_NORM:
         default:

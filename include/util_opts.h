@@ -134,6 +134,7 @@ extern struct OptEntry_s OptList[];
 #define CO_FILENAME      (COF_STRING               | 0x29UL) /* a filename */
 #define CO_FILEACCEPT    (COF_NUMERIC              | 0x2aUL) /* accept a file transfer */
 #define CO_REFUSE        (COF_STRING               | 0x2bUL) /* refuse message */
+#define CO_SUBJECT       (COF_STRING               | 0x2cUL) /* message with subject */
 
 #define CV_ORIGIN_v5  8
 #define CV_ORIGIN_v8  2

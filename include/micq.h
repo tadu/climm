@@ -209,6 +209,8 @@ typedef enum {
 /* Licq extension */
 #define MSG_SSL_CLOSE     0xee
 #define MSG_SSL_OPEN      0xef
+/* Jabber */
+#define MSG_NORM_SUBJ     0x30
 
 #define INV_LIST_UPDATE         0x01
 #define VIS_LIST_UPDATE         0x02

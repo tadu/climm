@@ -281,10 +281,13 @@ void MICQJabber::handleMessage2 (gloox::Stanza *t, std::string fromf, std::strin
     if (handleJEP22 (t, cfrom, fromf, tof, id))
         return;
 
-    IMSrvMsg (cfrom, m_conn, NOW,
-      OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, body.c_str(), 0));
+    Opt *opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, body.c_str(), 0);
+    if (!subject.empty())
+        opt = OptSetVals (opt, CO_MSGTYPE, MSG_NORM_SUBJ, CO_SUBJECT, subject.c_str(), 0);
+    IMSrvMsg (cfrom, m_conn, NOW, opt);
 
     DropAllChilds (t, "body");
+    DropAllChilds (t, "subject");
 }
 
 void MICQJabber::handleMessage (gloox::Stanza *s)
