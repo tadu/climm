@@ -243,6 +243,22 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, 
             col = COLACK;
             line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", MSGICQ5ACKSTR, COLSINGLE, my_text);
             break;
+        case INT_MSGDISPL:
+            col = COLACK;
+            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", "<displayed>", COLSINGLE, my_text);
+            break;
+        case INT_MSGCOMP:
+            col = COLACK;
+            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", "<composing>", COLSINGLE, my_text);
+            break;
+        case INT_MSGNOCOMP:
+            col = COLACK;
+            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", "<no composing>", COLSINGLE, my_text);
+            break;
+        case INT_MSGOFF:
+            col = COLACK;
+            line = s_sprintf ("%s%s %s", "<offline>", COLSINGLE, my_text);
+            break;
         default:
             line = "";
     }

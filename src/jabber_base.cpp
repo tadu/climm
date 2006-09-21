@@ -31,6 +31,7 @@ class MICQJabber : public gloox::ConnectionListener, public gloox::MessageHandle
     private :
         Connection *m_conn;
         gloox::Client *m_client;
+        char *m_stamp;
     public :
                       MICQJabber (Connection *serv);
         virtual       ~MICQJabber ();
@@ -40,7 +41,11 @@ class MICQJabber : public gloox::ConnectionListener, public gloox::MessageHandle
         virtual void  onSessionCreateError (gloox::SessionCreateError error);
         virtual bool  onTLSConnect (const gloox::CertInfo &info);
         virtual void  handleMessage (gloox::Stanza *stanza);
-        void handleMessage2(gloox::Stanza*, std::string, std::string, std::string, gloox::StanzaSubType);
+        void handleMessage2 (gloox::Stanza *t, std::string fromf, std::string tof, std::string id, gloox::StanzaSubType subtype);
+        bool handleJEP22 (gloox::Tag *t, Contact *cfrom, std::string fromf, std::string tof, std::string id);
+        void handleJEP22a (gloox::Tag *JEP22, Contact *cfrom);
+        void handleJEP22b (gloox::Tag *JEP22, std::string fromf, std::string tof, std::string id);
+        void handleJEP22c (std::string fromf, std::string tof, std::string id, std::string type);
         virtual void  handlePresence (gloox::Stanza *stanza);
         virtual void  handleSubscription (gloox::Stanza *stanza);
         virtual void  handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message);
@@ -52,6 +57,9 @@ class MICQJabber : public gloox::ConnectionListener, public gloox::MessageHandle
 MICQJabber::MICQJabber (Connection *serv)
 {
     m_conn = serv;
+    m_stamp = (char *)malloc (15);
+    time_t now = time (NULL);
+    strftime (m_stamp, 15, "%Y%m%d%H%M%S", gmtime (&now));
     m_client = new gloox::Client (gloox::JID (serv->screen), serv->passwd, serv->port);
     m_client->setResource ("mICQ");
     if (serv->server)
@@ -75,6 +83,7 @@ MICQJabber::MICQJabber (Connection *serv)
 
 MICQJabber::~MICQJabber ()
 {
+    s_free (m_stamp);
 }
 
 void MICQJabber::onConnect ()
@@ -173,6 +182,91 @@ static void DropAllChilds (gloox::Tag *s, const std::string &a)
     }
 }
 
+void MICQJabber::handleJEP22a (gloox::Tag *JEP22, Contact *cfrom)
+{
+    std::string refid;
+    
+    if (gloox::Tag *tid = JEP22->findChild ("id"))
+    {
+        refid = tid->cdata();
+        DropCData (tid);
+        CheckInvalid (tid);
+    }
+    
+    if (gloox::Tag *dotag = JEP22->findChild ("delivered"))
+    {
+        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGACK_V8, "", NULL);
+        CheckInvalid (dotag);
+    }
+    else if (gloox::Tag *dotag = JEP22->findChild ("displayed"))
+    {
+        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGDISPL, "", NULL);
+        CheckInvalid (dotag);
+    }
+    else if (gloox::Tag *dotag = JEP22->findChild ("composing"))
+    {
+        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGCOMP, "", NULL);
+        CheckInvalid (dotag);
+    }
+    else if (gloox::Tag *dotag = JEP22->findChild ("offline"))
+    {
+        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGOFF, "", NULL);
+        CheckInvalid (dotag);
+    }
+    else
+        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGNOCOMP, "", NULL);
+    CheckInvalid (JEP22);
+}
+
+void MICQJabber::handleJEP22c (std::string fromf, std::string tof, std::string id, std::string type)
+{
+    gloox::Stanza *msg = gloox::Stanza::createMessageStanza (gloox::JID (fromf), "");
+    msg->addAttribute ("id", s_sprintf ("%s-%x", m_stamp, m_conn->our_seq++));
+    msg->addAttribute ("from", s_sprintf ("%s/mICQ", m_conn->screen));
+    gloox::Tag *x = new gloox::Tag (msg, "x");
+    x->addAttribute ("xmlns", "jabber:x:event");
+    new gloox::Tag (x, type);
+    new gloox::Tag (x, "id", id);
+    m_client->send (msg);
+}
+
+void MICQJabber::handleJEP22b (gloox::Tag *JEP22, std::string fromf, std::string tof, std::string id)
+{
+    if (gloox::Tag *dotag = JEP22->findChild ("delivered"))
+    {
+        handleJEP22c (fromf, tof, id, "delivered");
+        CheckInvalid (dotag);
+    }
+    if (gloox::Tag *dotag = JEP22->findChild ("displayed"))
+    {
+        handleJEP22c (fromf, tof, id, "displayed");
+        CheckInvalid (dotag);
+    }
+    if (gloox::Tag *dotag = JEP22->findChild ("composing"))
+    {
+        CheckInvalid (dotag);
+    }
+    if (gloox::Tag *dotag = JEP22->findChild ("offline"))
+    {
+        CheckInvalid (dotag);
+    }
+}
+
+bool MICQJabber::handleJEP22 (gloox::Tag *t, Contact *cfrom, std::string fromf, std::string tof, std::string id)
+{
+    if (gloox::Tag *JEP22 = t->findChild ("x", "xmlns", "jabber:x:event"))
+    {
+        DropAttrib (JEP22, "xmlns");
+        if (!t->hasChild ("body"))
+        {
+            handleJEP22a (JEP22, cfrom);
+            return true;
+        }
+        handleJEP22b (JEP22, fromf, tof, id);
+    }
+    return false;
+}
+
 void MICQJabber::handleMessage2 (gloox::Stanza *t, std::string fromf, std::string tof, std::string id, gloox::StanzaSubType subtype)
 {
     Contact *cfrom = ContactScreen (m_conn, fromf.c_str());
@@ -183,6 +277,9 @@ void MICQJabber::handleMessage2 (gloox::Stanza *t, std::string fromf, std::strin
     std::string subject = t->subject();
     DropAttrib (t, "xmlns");
     DropAttrib (t, "type");
+
+    if (handleJEP22 (t, cfrom, fromf, tof, id))
+        return;
 
     IMSrvMsg (cfrom, m_conn, NOW,
       OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, body.c_str(), 0));
@@ -354,8 +451,17 @@ UBYTE MICQJabber::JabberSendmsg (Connection *conn, Contact *cont, const char *te
         return RET_DEFER;
     if (~m_conn->connect & CONNECT_OK)
         return RET_DEFER;
-    
-    m_client->send (gloox::Stanza::createMessageStanza (gloox::JID (cont->screen), text));
+
+    gloox::Stanza *msg = gloox::Stanza::createMessageStanza (gloox::JID (cont->screen), text);    
+    msg->addAttribute ("id", s_sprintf ("%s-%x", m_stamp, m_conn->our_seq++));
+    msg->addAttribute ("from", s_sprintf ("%s/mICQ", conn->screen));
+    gloox::Tag *x = new gloox::Tag (msg, "x");
+    x->addAttribute ("xmlns", "jabber:x:event");
+    new gloox::Tag (x, "offline");
+    new gloox::Tag (x, "delivered");
+    new gloox::Tag (x, "displayed");
+    new gloox::Tag (x, "composing");
+    m_client->send (msg);
     return RET_OK;
 }
 

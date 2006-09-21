@@ -9,7 +9,8 @@ void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg, UW
 typedef enum {
   INT_FILE_ACKED, INT_FILE_REJED, INT_FILE_ACKING, INT_FILE_REJING, INT_CHAR_REJING,
   INT_MSGTRY_DC, INT_MSGTRY_TYPE2, INT_MSGTRY_V8, INT_MSGTRY_V5,
-  INT_MSGACK_DC, INT_MSGACK_SSL, INT_MSGACK_TYPE2, INT_MSGACK_V8, INT_MSGACK_V5
+  INT_MSGACK_DC, INT_MSGACK_SSL, INT_MSGACK_TYPE2, INT_MSGACK_V8, INT_MSGACK_V5,
+  INT_MSGDISPL, INT_MSGCOMP, INT_MSGNOCOMP, INT_MSGOFF
 } int_msg_t;
 
 void IMIntMsg  (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, int_msg_t type, const char *text, Opt *opt);
