@@ -313,6 +313,7 @@ void CmdPktCmdStatusChange (Connection *conn, status_t status)
     PacketEnqueuev5 (pak, conn);
 
     conn->status = status;
+    conn->nativestatus = 0;
 }
 
 /*
