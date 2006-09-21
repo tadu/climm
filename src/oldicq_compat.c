@@ -525,6 +525,7 @@ UDWORD IcqFromStatus (status_t status)
     switch (ContactClearInv (status))
     {
         case imr_offline:  return STATUS_ICQOFFLINE;
+        default:
         case imr_online:   return STATUS_ICQONLINE | isinv;
         case imr_ffc:      return STATUS_ICQFFC    | isinv;
         case imr_away:     return STATUS_ICQAWAY   | isinv;
@@ -532,7 +533,6 @@ UDWORD IcqFromStatus (status_t status)
         case imr_occ:      return STATUS_ICQOCC    | isinv;
         case imr_dnd:      return STATUS_ICQDND    | isinv;
     }
-    assert (0);
 }
 
 #define STATUSF_ICQBIRTH     0x00080000
