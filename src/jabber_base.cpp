@@ -90,8 +90,7 @@ MICQJabber::~MICQJabber ()
 void MICQJabber::onConnect ()
 {
     m_conn->connect = CONNECT_OK | CONNECT_SELECT_R;
-    rl_printf ("Tralala connected.\n");
-    m_client->send (gloox::Stanza::createPresenceStanza (gloox::JID (""), "", gloox::PresenceChat));
+//    m_client->send (gloox::Stanza::createPresenceStanza (gloox::JID (""), "", gloox::PresenceChat));
 }
 
 void MICQJabber::onDisconnect (gloox::ConnectionError e)
@@ -319,6 +318,8 @@ void MICQJabber::handleMessage2 (gloox::Stanza *t, std::string fromf, std::strin
 
     DropAllChilds (t, "body");
     DropAllChilds (t, "subject");
+    if (gloox::Tag *x = t->findChild ("x"))
+        CheckInvalid (x);
 }
 
 void MICQJabber::handleMessage (gloox::Stanza *s)
@@ -414,10 +415,10 @@ void MICQJabber::handlePresence (gloox::Stanza *s)
                 IMOffline (contb, m_conn);
             break;
         case gloox::StanzaPresenceAvailable:
-            IMOnline (contf, m_conn, status, imf_none, 0, msg.c_str());
+            IMOnline (contf, m_conn, status, imf_none, s->show(), msg.c_str());
             tcg = contb->group;
             contb->group = NULL;
-            IMOnline (contb, m_conn, status, imf_none, 0, NULL);
+            IMOnline (contb, m_conn, status, imf_none, s->show(), NULL);
             contb->group = tcg;
             break;
         case gloox::StanzaPresenceProbe:

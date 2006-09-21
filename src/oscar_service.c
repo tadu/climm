@@ -346,7 +346,7 @@ void SnacCliSetstatus (Connection *serv, status_t status, UWORD action)
     ostat |= IcqFromFlags (flags);
     
     pak = SnacC (serv, 1, 0x1e, 0, 0);
-    if ((action & 1) && (status & ims_inv))
+    if ((action & 1) && ContactIsInv (status))
         SnacCliAddvisible (serv, 0);
     if (action & 1)
         PacketWriteTLV4 (pak, 6, ostat);
@@ -380,6 +380,6 @@ void SnacCliSetstatus (Connection *serv, status_t status, UWORD action)
         PacketWriteTLV2 (pak, 8, 0);
     }
     SnacSend (serv, pak);
-    if ((action & 1) && (~status & ims_inv))
+    if ((action & 1) && !ContactIsInv (status))
         SnacCliAddinvis (serv, 0);
 }
