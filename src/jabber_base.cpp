@@ -395,6 +395,22 @@ void MICQJabber::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to,
         CheckInvalid (priority);
     }
     
+    // JEP-115
+    if (gloox::Tag *caps = s->findChild ("c", "xmlns", "http://jabber.org/protocol/caps"))
+    {
+        std::string node = caps->findAttribute ("node");
+        std::string ver = caps->findAttribute ("ver");
+        std::string ext = caps->findAttribute ("ext");
+        if (ext.empty())
+            s_repl (&contf->version, s_sprintf ("%s (%s)", node.c_str(), ver.c_str()));
+        else
+            s_repl (&contf->version, s_sprintf ("%s (%s) [%s]", node.c_str(), ver.c_str(), ext.c_str()));
+        DropAttrib (caps, "xmlns");
+        DropAttrib (caps, "ver");
+        DropAttrib (caps, "ext");
+        DropAttrib (caps, "node");
+        CheckInvalid (caps);
+    }
 
     if (s->hasAttribute ("type", "unavailable"))
     {
@@ -534,7 +550,16 @@ void MICQJabber::JabberSetstatus (Connection *serv, Contact *cont, status_t stat
         case ims_offline:  status = ims_inv;
         default:           p = gloox::PresenceUnavailable; break;
     }
-    m_client->send (gloox::Stanza::createPresenceStanza (j, msg ? msg : "", p));
+    gloox::Stanza *pres = gloox::Stanza::createPresenceStanza (j, msg ? msg : "", p);
+    if (p != gloox::PresenceUnavailable)
+    {
+        gloox::Tag *vers = new gloox::Tag (pres, "c");
+        vers->addAttribute ("xmlns", "http://jabber.org/protocol/caps");
+        vers->addAttribute ("node", "http://www.mICQ.org/jabber/caps");
+        vers->addAttribute ("vers", "0.5.2");
+        // vers->addAttribute ("ext", "ext1 ext2");
+    }
+    m_client->send (pres);
     m_conn->status = status;
     m_conn->nativestatus = p;
 }
