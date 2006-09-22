@@ -913,7 +913,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
     Contact *cont = inc_event->cont;
     Opt *opt = inc_event->opt, *opt2;
     Packet *ack_pak = ack_event->pak;
-    const char *txt, *ack_msg = NULL, *tauto;
+    const char *txt, *ack_msg = "", *tauto;
     strc_t text, cname, ctext, reason, cctmp;
     char *name;
     UDWORD tmp, cmd, flen;
