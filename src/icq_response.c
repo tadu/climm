@@ -31,7 +31,7 @@ void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t fl
     if (!cont)
         return;
 
-    if (status == cont->status && flags == cont->flags)
+    if (status == cont->status && flags == cont->flags && !text)
         return;
     
     if (status == ims_offline)
@@ -59,11 +59,12 @@ void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t fl
         || (~conn->connect & CONNECT_OK))
         return;
     
-    if ((egevent = QueueDequeue2 (conn, QUEUE_DEP_OSCARLOGIN, 0, 0)))
+    if ((egevent = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, 0)))
     {
         egevent->due = time (NULL) + 3;
         QueueEnqueue (egevent);
-        return;
+        if (!text || !*text)
+            return;
     }
 
     if (prG->event_cmd && *prG->event_cmd)

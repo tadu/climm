@@ -619,7 +619,7 @@ const char *QueueType (UDWORD type)
         case QUEUE_USERFILEACK:    return "USERFILEACK";
         case QUEUE_REQUEST_ROSTER: return "REQUEST_ROSTER";
         case QUEUE_MICQ_COMMAND:   return "MICQ_COMMAND";
-        case QUEUE_DEP_OSCARLOGIN: return "DEP_OSCARLOGIN";
+        case QUEUE_DEP_WAITLOGIN:  return "DEP_WAITLOGIN";
     }
     return s_sprintf ("%lx", type);
 }

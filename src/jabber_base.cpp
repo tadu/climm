@@ -523,9 +523,25 @@ void MICQJabber::JabberSetstatus (Connection *serv, Contact *cont, status_t stat
 }
 
 
+static void JabberCallBackTimeout (Event *event)
+{
+    Connection *conn = event->conn;
+    
+    if (!conn)
+    {
+        EventD (event);
+        return;
+    }
+    assert (conn->type == TYPE_JABBER_SERVER);
+    if (~conn->connect & CONNECT_OK)
+        rl_print ("# Jabber timeout\n");
+    EventD (event);
+}
+
 Event *ConnectionInitJabberServer (Connection *serv)
 {
     const char *sp;
+    Event *event;
     
     assert (serv->type = TYPE_JABBER_SERVER);
     
@@ -553,11 +569,22 @@ Event *ConnectionInitJabberServer (Connection *serv)
     serv->close = &JabberCallbackClose;
     serv->dispatch = &JabberCallbackDispatch;
     
+    if ((event = QueueDequeue2 (serv, QUEUE_DEP_WAITLOGIN, 0, NULL)))
+    {
+        event->attempts++;
+        event->due = time (NULL) + 10 * event->attempts + 10;
+        event->callback = &JabberCallBackTimeout;
+        QueueEnqueue (event);
+    }
+    else
+        event = QueueEnqueueData (serv, QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 5,
+                                  NULL, serv->cont, NULL, &JabberCallBackTimeout);
+
     MICQJabber *l = new MICQJabber (serv);
     serv->jabber_private = l;
     serv->connect |= CONNECT_SELECT_R;
     
-    return NULL;
+    return event;
 }
 
 static inline MICQJabber *getJabberClient (Connection *conn)

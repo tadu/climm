@@ -402,7 +402,7 @@ Event *ConnectionInitServer (Connection *conn)
     if (conn->status == ims_offline)
         conn->status = conn->pref_status;
     
-    if ((event = QueueDequeue2 (conn, QUEUE_DEP_OSCARLOGIN, 0, NULL)))
+    if ((event = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
     {
         event->attempts++;
         event->due = time (NULL) + 10 * event->attempts + 10;
@@ -410,7 +410,7 @@ Event *ConnectionInitServer (Connection *conn)
         QueueEnqueue (event);
     }
     else
-        event = QueueEnqueueData (conn, QUEUE_DEP_OSCARLOGIN, 0, time (NULL) + 12,
+        event = QueueEnqueueData (conn, QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 12,
                                   NULL, conn->cont, NULL, &SrvCallBackTimeout);
 
     rl_printf (i18n (2512, "Opening v8 connection to %s:%s%ld%s for %s%s%s... "),
@@ -432,7 +432,7 @@ static void SrvCallBackReconn (Connection *conn)
     if (!(cont = conn->cont))
         return;
     
-    if (!(event = QueueDequeue2 (conn, QUEUE_DEP_OSCARLOGIN, 0, NULL)))
+    if (!(event = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
     {
         ConnectionInitServer (conn);
         return;

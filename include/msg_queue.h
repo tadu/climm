@@ -84,7 +84,7 @@ void        QueuePrint (void);
 #define QUEUE_USERFILEACK       81
 #define QUEUE_ACKNOWLEDGE       80
 #define QUEUE_MICQ_COMMAND      11
-#define QUEUE_DEP_OSCARLOGIN    12
+#define QUEUE_DEP_WAITLOGIN     12
 #define QUEUE_CACHE_MSG         100
 
 #define QUEUE_FLAG_CONSIDERED     1 /* this event has been considered and won't

@@ -267,7 +267,7 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
         serv->connect = CONNECT_OK | CONNECT_SELECT_R;
         QueueEnqueueData (serv, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
                           NULL, event->cont, NULL, &SrvCallBackKeepalive);
-        if ((event = QueueDequeue2 (serv, QUEUE_DEP_OSCARLOGIN, 0, NULL)))
+        if ((event = QueueDequeue2 (serv, QUEUE_DEP_WAITLOGIN, 0, NULL)))
         {
             event->due = time (NULL) + 5;
             QueueEnqueue (event);
