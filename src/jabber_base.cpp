@@ -48,6 +48,7 @@ class MICQJabber : public gloox::ConnectionListener, public gloox::MessageHandle
         void handleJEP22c (std::string fromf, std::string tof, std::string id, std::string type);
         void handleJEP85 (gloox::Tag *t);
         virtual void  handlePresence (gloox::Stanza *stanza);
+        void handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, std::string msg);
         virtual void  handleSubscription (gloox::Stanza *stanza);
         virtual void  handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message);
         gloox::Client *getClient () { return m_client; }
@@ -377,64 +378,80 @@ static Contact *SomeOnlineRessourceExcept (Connection *conn, Contact *full, Cont
     return NULL;
 }
 
-void MICQJabber::handlePresence (gloox::Stanza *s)
+void MICQJabber::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, std::string msg)
 {
     ContactGroup *tcg;
     Contact *contb, *contf, *c;
     status_t status;
+    std::string pri;
+    time_t delay;
 
+    GetBothContacts (from, m_conn, &contb, &contf);
+    
+    if (gloox::Tag *priority = s->findChild ("priority"))
+    {
+        pri = priority->cdata();
+        DropCData (priority);
+        CheckInvalid (priority);
+    }
+    
+
+    if (s->hasAttribute ("type", "unavailable"))
+    {
+        status = ims_offline;
+        DropAttrib (s, "type");
+
+        c = SomeOnlineRessourceExcept (m_conn, contb, contf);
+        if (c)
+        {
+            IMOffline (contf, m_conn);
+            contb->status = c->status;
+            rl_printf ("Using %s %p %p %p.\n", c->screen, c, contb, contf);
+        }
+        else
+            IMOffline (contb, m_conn);
+    }
+    else if (gloox::Tag *show = s->findChild ("show"))
+    {
+        if      (show->cdata() == "chat")  status = ims_ffc;
+        else if (show->cdata() == "dnd")   status = ims_dnd;
+        else if (show->cdata() == "xa")    status = ims_na;
+        else if (show->cdata() == "away")  status = ims_away;
+        else
+            return;
+        DropCData (show);
+        CheckInvalid (show);
+    }
+    else
+        status = ims_online;
+    
+    IMOnline (contf, m_conn, status, imf_none, status, msg.c_str());
+    tcg = contb->group;
+    contb->group = NULL;
+    IMOnline (contb, m_conn, status, imf_none, status, NULL);
+    contb->group = tcg;
+}
+
+void MICQJabber::handlePresence (gloox::Stanza *s)
+{
     assert (s);
     assert (s->type() == gloox::StanzaPresence);
     
-    GetBothContacts (s->from(), m_conn, &contb, &contf);
-    
-    switch (s->show())
-    {
-        default:
-        case gloox::PresenceUnknown:
-        case gloox::PresenceAvailable: status = ims_online; break;
-        case gloox::PresenceChat:      status = ims_ffc;    break;
-        case gloox::PresenceAway:      status = ims_away;   break;
-        case gloox::PresenceDnd:       status = ims_dnd;    break;
-        case gloox::PresenceXa:        status = ims_na;
-    }
-    
-    std::string msg = s->status();
-    
-    switch (s->subtype())
-    {
-        case gloox::StanzaPresenceUnavailable:
-            c = SomeOnlineRessourceExcept (m_conn, contb, contf);
-            if (c)
-            {
-                IMOffline (contf, m_conn);
-                contb->status = c->status;
-                rl_printf ("Using %s %p %p %p.\n", c->screen, c, contb, contf);
-            }
-            else
-                IMOffline (contb, m_conn);
-            break;
-        case gloox::StanzaPresenceAvailable:
-            IMOnline (contf, m_conn, status, imf_none, s->show(), msg.c_str());
-            tcg = contb->group;
-            contb->group = NULL;
-            IMOnline (contb, m_conn, status, imf_none, s->show(), NULL);
-            contb->group = tcg;
-            break;
-        case gloox::StanzaPresenceProbe:
-        case gloox::StanzaPresenceError:
-            break;
-        default:
-            assert (0);
-    }
+    gloox::Stanza *t = s->clone();
+    handlePresence2 (t, s->from(), s->to(), s->status());
 
-    rl_printf ("handlePresence from:<%s> to:<%s> type:<%d> id:<%s> status:<%s> prio:<%d> body:<%s> subj:<%s> thread:<%s> pres:<%d> xml:<%s>\n",
-               s->from().full().c_str(), s->to().full().c_str(), s->subtype(),
-               s->id().c_str(), s->status().c_str(), s->priority(),
-               s->body().c_str(), s->subject().c_str(),
-               s->thread().c_str(), s->show(),
-               s->xml().c_str());
+    DropAttrib (t, "from");
+    DropAttrib (t, "to");
+    DropAttrib (t, "id");
+    if (t->hasAttribute ("xmlns", "jabber:client"))
+        DropAttrib (t, "xmlns");
+    DropAllChilds (t, "status");
+    if (!CheckInvalid (t))
+        rl_printf ("handlePresence %s\n", t->xml().c_str());
+    delete t;
 }
+
+
 
 void MICQJabber::handleSubscription (gloox::Stanza *s)
 {
