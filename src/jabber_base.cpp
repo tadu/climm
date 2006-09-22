@@ -461,6 +461,18 @@ void MICQJabber::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to,
         DropAttrib (caps, "node");
         CheckInvalid (caps);
     }
+    
+    if (gloox::Tag *vcard = s->findChild ("x", "xmlns", "vcard-temp:x:update"))
+    {
+        // %%FIXME%%
+        if (gloox::Tag *photo = vcard->findChild ("photo"))
+        {
+            DropCData (photo);
+            CheckInvalid (photo);
+        }
+        DropAttrib (vcard, "xmlns");
+        CheckInvalid (vcard);
+    }
 
     if (s->hasAttribute ("type", "unavailable"))
     {
