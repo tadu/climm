@@ -301,11 +301,9 @@ void MICQJabber::handleMessage2 (gloox::Stanza *t, std::string fromf, std::strin
 {
     Contact *cfrom = ContactScreen (m_conn, fromf.c_str());
     Contact *cto = ContactScreen (m_conn, tof.c_str());
-    std::string xmlns = t->findAttribute ("xmlns");
     std::string subtypeval = t->findAttribute ("type");
     std::string body = t->body();
     std::string subject = t->subject();
-    DropAttrib (t, "xmlns");
     DropAttrib (t, "type");
 
     handleJEP85 (t);
@@ -328,19 +326,14 @@ void MICQJabber::handleMessage (gloox::Stanza *s)
     assert (s);
     assert (s->type() == gloox::StanzaMessage);
     
-    
-    std::string fromf = s->from().full();
-    std::string tof = s->to().full();
-    std::string id = s->id();
-    gloox::StanzaSubType subtype = s->subtype ();
-    
     gloox::Stanza *t = s->clone();
+    handleMessage2 (t, s->from().full(), s->to().full(), s->id(), s->subtype ());
+
     DropAttrib (t, "from");
     DropAttrib (t, "to");
     DropAttrib (t, "id");
-    
-    handleMessage2 (t, fromf, tof, id, subtype);
-
+    if (t->hasAttribute ("xmlns", "jabber:client"))
+        DropAttrib (t, "xmlns");
     if (!CheckInvalid (t))
         rl_printf ("handleMessage %s\n", t->xml().c_str());
     delete t;
