@@ -47,6 +47,7 @@ class MICQJabber : public gloox::ConnectionListener, public gloox::MessageHandle
         void handleJEP22b (gloox::Tag *JEP22, std::string fromf, std::string tof, std::string id);
         void handleJEP22c (std::string fromf, std::string tof, std::string id, std::string type);
         void handleJEP85 (gloox::Tag *t);
+        time_t handleJEP91 (gloox::Tag *t);
         virtual void  handlePresence (gloox::Stanza *stanza);
         void handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, std::string msg);
         virtual void  handleSubscription (gloox::Stanza *stanza);
@@ -297,6 +298,58 @@ void MICQJabber::handleJEP85 (gloox::Tag *t)
     }
 }
 
+static int __SkipChar (const char **s, char c)
+{
+    if (**s == c && **s)
+        (*s)++;
+    if (**s)
+        return *((*s)++) - '0';
+    return 0;
+}
+
+static time_t ParseUTCDate (std::string str)
+{
+   const char *s = str.c_str();
+   struct tm tm;
+   tm.tm_year =  __SkipChar (&s, 0) * 1000;
+   tm.tm_year += __SkipChar (&s, 0) * 100;
+   tm.tm_year += __SkipChar (&s, 0) * 10;
+   tm.tm_year += __SkipChar (&s, 0) - 1900;
+   tm.tm_mon  =  __SkipChar (&s, '-') * 10;
+   tm.tm_mon  += __SkipChar (&s, 0) - 1;
+   tm.tm_mday =  __SkipChar (&s, '-') * 10;
+   tm.tm_mday += __SkipChar (&s, 0);
+   tm.tm_hour =  __SkipChar (&s, 'T') * 10;
+   tm.tm_hour += __SkipChar (&s, 0);
+   tm.tm_min  =  __SkipChar (&s, ':') * 10;
+   tm.tm_min  += __SkipChar (&s, 0);
+   tm.tm_sec  =  __SkipChar (&s, ':') * 10;
+   if (!*s)
+       return -1;
+   tm.tm_sec  += __SkipChar (&s, 0);
+   if (*s)
+       return -1;
+    return timegm (&tm);
+}
+
+time_t MICQJabber::handleJEP91 (gloox::Tag *t)
+{
+    time_t date = NOW;
+    if (gloox::Tag *delay = t->findChild ("x", "xmlns", "jabber:x:delay"))
+    {
+        struct tm;
+        std::string dfrom = delay->findAttribute ("from");
+        std::string stamp = delay->findAttribute ("stamp");
+        date = ParseUTCDate (stamp);
+        if (date != NOW)
+            DropAttrib (delay, "stamp");
+        DropAttrib (delay, "xmlns");
+        DropAttrib (delay, "from");
+        CheckInvalid (delay);
+    }
+    return date;
+}
+
 void MICQJabber::handleMessage2 (gloox::Stanza *t, std::string fromf, std::string tof, std::string id, gloox::StanzaSubType subtype)
 {
     Contact *cfrom = ContactScreen (m_conn, fromf.c_str());
@@ -305,15 +358,17 @@ void MICQJabber::handleMessage2 (gloox::Stanza *t, std::string fromf, std::strin
     std::string body = t->body();
     std::string subject = t->subject();
     DropAttrib (t, "type");
+    time_t delay;
 
     handleJEP85 (t);
     if (handleJEP22 (t, cfrom, fromf, tof, id))
         return;
+    delay = handleJEP91 (t);
 
     Opt *opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, body.c_str(), 0);
     if (!subject.empty())
         opt = OptSetVals (opt, CO_MSGTYPE, MSG_NORM_SUBJ, CO_SUBJECT, subject.c_str(), 0);
-    IMSrvMsg (cfrom, m_conn, NOW, opt);
+    IMSrvMsg (cfrom, m_conn, delay, opt);
 
     DropAllChilds (t, "body");
     DropAllChilds (t, "subject");
@@ -387,6 +442,8 @@ void MICQJabber::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to,
         DropCData (priority);
         CheckInvalid (priority);
     }
+    
+    delay = handleJEP91 (s);
     
     // JEP-115
     if (gloox::Tag *caps = s->findChild ("c", "xmlns", "http://jabber.org/protocol/caps"))
