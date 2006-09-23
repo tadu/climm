@@ -1467,7 +1467,7 @@ void PrefReadStat (FILE *stf)
                 dep = 21;
             }
             if (!conn->cont)
-                conn->cont = ContactUIN (conn, conn->uin);
+                conn->cont = ContactScreen (conn, conn->screen);
         }
     }
 

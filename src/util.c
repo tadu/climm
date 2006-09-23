@@ -94,11 +94,11 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
         case TYPE_MSGLISTEN:
         case TYPE_MSGDIRECT:
             s_catf (&t, "%s %s %s%s%s[tcp:%s+%lX %s]",
-                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->screen, nativestatus, ContactStatusStr (status));
+                      username, indic, pos, cont->nick, pos, cont->screen, nativestatus, ContactStatusStr (status));
             break;
         default:
             s_catf (&t, "%s %s %s%s%s[tcp:%s+%lX %s]",
-                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->screen, nativestatus, ContactStatusStr (status));
+                      username, indic, pos, cont->nick, pos, cont->screen, nativestatus, ContactStatusStr (status));
             break;
     }
 
