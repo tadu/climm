@@ -96,10 +96,10 @@ void UtilUIDisplayMeta (Contact *cont)
         return;
 
     if ((cont->updated & (UPF_GENERAL_E | UPF_GENERAL_A)) == UPF_GENERAL_E)
-        rl_printf ("%s %s%lu%s\n", i18n (1967, "More Info for"), COLSERVER, cont->uin, COLNONE);
+        rl_printf ("%s %s%s%s\n", i18n (1967, "More Info for"), COLSERVER, cont->screen, COLNONE);
     else
-        rl_printf (i18n (2236, "Information for %s%s%s (%ld):\n"),
-                  COLCONTACT, cont->nick, COLNONE, cont->uin);
+        rl_printf (i18n (9999, "Information for %s%s%s (%s):\n"),
+                  COLCONTACT, cont->nick, COLNONE, cont->screen);
     
     if ((dc = cont->dc))
     {

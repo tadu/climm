@@ -280,13 +280,13 @@ int ssl_supported (Connection *conn DEBUGPARAM)
           || HAS_CAP (cont->caps, CAP_LICQNEW)
           || (cont->dc && (cont->dc->id1 & 0xFFFF0000) == LICQ_WITHSSL)))
     {
-        Debug (DEB_SSL, "%s (%ld) is no SSL candidate", cont->nick, cont->uin);
+        Debug (DEB_SSL, "%s (%s) is no SSL candidate", cont->nick, cont->screen);
         TCLEvent (cont, "ssl", "no_candidate");
         return 0;
     }
 
     conn->ssl_status = status_save;
-    Debug (DEB_SSL, "%s (%ld) is an SSL candidate", cont->nick, cont->uin);
+    Debug (DEB_SSL, "%s (%s) is an SSL candidate", cont->nick, cont->screen);
     TCLEvent (cont, "ssl", "candidate");
     return 1;
 }

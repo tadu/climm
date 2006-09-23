@@ -1501,19 +1501,19 @@ static sortstate_t __status (Contact *cont)
     return ss_on;
 }
 
-static UDWORD __tuin, __lenuin, __lennick, __lenstat, __lenid, __totallen, __l;
+static UDWORD __lenuin, __lennick, __lenstat, __lenid, __totallen, __l;
 
 static void __initcheck (void)
 {
-    __tuin = __lenuin = __lennick = __lenstat = __lenid = __l = 0;
+    __lenuin = __lennick = __lenstat = __lenid = __l = 0;
 }
 
 static void __checkcontact (Contact *cont, UWORD data)
 {
     ContactAlias *alias;
 
-    if (cont->uin > __tuin)
-        __tuin = cont->uin;
+    if (s_strlen (cont->screen) > __lenuin)
+        __lenuin = s_strlen (cont->screen);
     if (s_strlen (cont->nick) > __lennick)
         __lennick = s_strlen (cont->nick);
     if (data & 2)
@@ -1530,8 +1530,6 @@ static void __donecheck (UWORD data)
 {
     if (__lennick > (UDWORD)uiG.nick_len)
         uiG.nick_len = __lennick;
-    while (__tuin)
-        __lenuin++, __tuin /= 10;
     __totallen = 1 + __lennick + 1 + __lenstat + 3 + __lenid + 2;
     if (prG->verbose)
         __totallen += 29;
@@ -1589,7 +1587,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
         ul = ESC "[4m";
 #endif
     if (data & 2)
-        rl_printf ("%s%s%c%c%c%2d%c%c%s%s %*ld", COLSERVER, ul,
+        rl_printf ("%s%s%c%c%c%2d%c%c%s%s %*s", COLSERVER, ul,
              !cont->group                        ? '#' : ' ',
              ContactPrefVal (cont,  CO_INTIMATE) ? '*' :
               ContactPrefVal (cont, CO_HIDEFROM) ? '-' : ' ',
@@ -1607,7 +1605,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
               peer->connect & CONNECT_MASK       ? ':' : '.' ) :
               cont->dc && cont->dc->version && cont->dc->port && ~cont->dc->port &&
               cont->dc->ip_rem && ~cont->dc->ip_rem ? '^' : ' ',
-             COLNONE, ul, (int)__lenuin, cont->uin);
+             COLNONE, ul, (int)__lenuin, cont->screen);
 
     rl_printf ("%s%s%c%s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
              COLSERVER, ul, data & 2                       ? ' ' :
@@ -1629,7 +1627,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
 
     for (alias = cont->alias; alias && (data & 2); alias = alias->more)
     {
-        rl_printf ("%s%s+       %s%*ld", COLSERVER, ul, COLNONE, (int)__lenuin, cont->uin);
+        rl_printf ("%s%s+       %s%*s", COLSERVER, ul, COLNONE, (int)__lenuin, cont->screen);
         rl_printf ("%s%s %s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
                   COLSERVER, ul, COLCONTACT, ul, (int)__lennick + s_delta (alias->alias), alias->alias,
                   COLNONE, ul, COLQUOTE, ul, (int)__lenstat + 2 + s_delta (stat), stat,
@@ -1878,19 +1876,19 @@ static JUMP_F(CmdUserStatusMeta)
                     if (ContactMetaLoad (cont))
                         UtilUIDisplayMeta (cont);
                     else
-                        rl_printf (i18n (2406, "Couldn't load meta data for %s (%ld).\n"),
-                                  s_wordquote (cont->nick), cont->uin);
+                        rl_printf (i18n (9999, "Couldn't load meta data for %s (%s).\n"),
+                                  s_wordquote (cont->nick), cont->screen);
                 }
                 break;
             case 3:
                 for (i = 0; (cont = ContactIndex (cg, i)); i++)
                 {
                     if (ContactMetaSave (cont))
-                        rl_printf (i18n (2248, "Saved meta data for '%s' (%ld).\n"),
-                                  cont->nick, cont->uin);
+                        rl_printf (i18n (9999, "Saved meta data for '%s' (%s).\n"),
+                                  cont->nick, cont->screen);
                     else
-                        rl_printf (i18n (2249, "Couldn't save meta data for '%s' (%ld).\n"),
-                                  cont->nick, cont->uin);
+                        rl_printf (i18n (9999, "Couldn't save meta data for '%s' (%s).\n"),
+                                  cont->nick, cont->screen);
                 }
                 break;
             case 4:
@@ -2026,12 +2024,12 @@ static JUMP_F(CmdUserStatusWide)
     }
 
     cont = conn->cont;
-    rl_printf ("%s%ld%s %s", COLCONTACT, cont->uin, COLNONE, COLQUOTE);
-    colleft = (rl_columns - s_strlen (i18n (1654, "Online"))) / 2 - s_strlen (s_sprintf ("%ld", cont->uin)) - 2;
+    rl_printf ("%s%s%s %s", COLCONTACT, cont->screen, COLNONE, COLQUOTE);
+    colleft = (rl_columns - s_strlen (i18n (1654, "Online"))) / 2 - s_strlen (cont->screen) - 2;
     for (i = 0; i < colleft; i++)
         rl_print ("=");
     rl_printf (" %s%s%s ", COLCLIENT, i18n (1654, "Online"), COLQUOTE);
-    i += 3 + s_strlen (i18n (1654, "Online")) + s_strlen (s_sprintf ("%ld", cont->uin));
+    i += 3 + s_strlen (i18n (1654, "Online")) + s_strlen (cont->screen);
     colright = rl_columns - i - s_strlen (s_status (conn->status, conn->nativestatus)) - 3;
     for (i = 0; i < colright; i++)
         rl_print ("=");
@@ -2718,12 +2716,12 @@ static JUMP_F(CmdUserAdd)
             {
                 if (!cont->group)
                 {
-                    ContactFindCreate (conn->contacts, cont->uin, s_sprintf ("%ld", cont->uin));
+                    ContactFindCreate (conn->contacts, cont->uin, cont->screen);
                     if (conn->type == TYPE_SERVER)
                         SnacCliAddcontact (conn, cont, NULL);
                     else
                         CmdPktCmdContactList (conn);
-                    rl_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, cont->nick);
+                    rl_printf (i18n (9999, "%s added as %s.\n"), cont->screen, cont->nick);
                 }
                 if (ContactHas (cg, cont))
                 {
@@ -2735,8 +2733,8 @@ static JUMP_F(CmdUserAdd)
                     }
                     else
                     {
-                        rl_printf (i18n (2244, "Contact group '%s' already has contact '%s' (%ld).\n"),
-                                   cg->name, cont->nick, cont->uin);
+                        rl_printf (i18n (2244, "Contact group '%s' already has contact '%s' (%s).\n"),
+                                   cg->name, cont->nick, cont->screen);
                     }
                 }
                 else if (ContactAdd (cg, cont))
@@ -2760,50 +2758,49 @@ static JUMP_F(CmdUserAdd)
         return 0;
     }
 
-    if (!(cmd = s_parserem (&args)))
+    if (!(cmd = s_parserem (&args)) || !*cmd)
     {
         rl_print (i18n (2116, "No new nick name given.\n"));
         return 0;
     }
 
-    if (cmd && *cmd)
+    i = strlen (cmd);
+    while (i > 1 && strchr (" \r\n\t", cmd[i-1]))
+        cmd[i---1] = 0;
+    if (!cont->group)
     {
-        i = strlen (cmd);
-        while (i > 1 && strchr (" \r\n\t", cmd[i-1]))
-            cmd[i---1] = 0;
-        if (!cont->group)
-        {
-            rl_printf (i18n (2117, "%ld added as %s.\n"), cont->uin, cmd);
-            rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
-            if (c_strlen (cmd) > (UDWORD)uiG.nick_len)
-                uiG.nick_len = c_strlen (cmd);
-            ContactFindCreate (conn->contacts, cont->uin, cmd);
-            if (conn->type == TYPE_SERVER)
-                SnacCliAddcontact (conn, cont, NULL);
-            else
-                CmdPktCmdContactList (conn);
-        }
+        rl_printf (i18n (9999, "%s added as %s.\n"), cont->screen, cmd);
+        rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
+        if (c_strlen (cmd) > (UDWORD)uiG.nick_len)
+            uiG.nick_len = c_strlen (cmd);
+        ContactCreate (conn, cont);
+        ContactAddAlias (cont, cmd);
+        if (conn->type == TYPE_SERVER)
+            SnacCliAddcontact (conn, cont, NULL);
+        else
+            CmdPktCmdContactList (conn);
+    }
+    else
+    {
+        if ((cont2 = ContactFind (conn->contacts, cont->uin, cmd)))
+            rl_printf (i18n (9999, "'%s' is already an alias for '%s' (%s).\n"),
+                     cmd, cont->nick, cont->screen);
+        else if ((cont2 = ContactFind (conn->contacts, 0, cmd)))
+            rl_printf (i18n (2147, "'%s' (%ld) is already used as a nick.\n"),
+                     cmd, cont2->uin);
         else
         {
-            if ((cont2 = ContactFind (conn->contacts, cont->uin, cmd)))
-                rl_printf (i18n (2146, "'%s' is already an alias for '%s' (%ld).\n"),
-                         cmd, cont->nick, cont->uin);
-            else if ((cont2 = ContactFind (conn->contacts, 0, cmd)))
-                rl_printf (i18n (2147, "'%s' (%ld) is already used as a nick.\n"),
-                         cmd, cont2->uin);
+            if (!(cont2 = ContactFindCreate (conn->contacts, cont->uin, cmd)))
+                rl_print (i18n (2118, "Out of memory.\n"));
             else
             {
-                if (!(cont2 = ContactFindCreate (conn->contacts, cont->uin, cmd)))
-                    rl_print (i18n (2118, "Out of memory.\n"));
-                else
-                {
-                    rl_printf (i18n (2148, "Added '%s' as an alias for '%s' (%ld).\n"),
-                             cmd, cont->nick, cont->uin);
-                    rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
-                }
+                rl_printf (i18n (9999, "Added '%s' as an alias for '%s' (%s).\n"),
+                         cmd, cont->nick, cont->screen);
+                rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
             }
         }
     }
+
     return 0;
 }
 
@@ -2818,7 +2815,7 @@ static JUMP_F(CmdUserRemove)
 {
     ContactGroup *cg = NULL, *acg;
     Contact *cont = NULL;
-    UDWORD uin;
+    char *screen;
     char *alias;
     UBYTE all = 0;
     int i;
@@ -2876,21 +2873,22 @@ static JUMP_F(CmdUserRemove)
                 }
 
                 alias = strdup (cont->nick);
-                uin = cont->uin;
+                screen = strdup (cont->screen);
                 
                 if (all || !cont->alias)
                 {
                     ContactD (cont);
-                    rl_printf (i18n (2150, "Removed contact '%s' (%ld).\n"),
-                              alias, uin);
+                    rl_printf (i18n (9999, "Removed contact '%s' (%s).\n"),
+                              alias, screen);
                 }
                 else
                 {
                     ContactRemAlias (cont, alias);
-                    rl_printf (i18n (2149, "Removed alias '%s' for '%s' (%ld).\n"),
-                             alias, cont->nick, uin);
+                    rl_printf (i18n (9999, "Removed alias '%s' for '%s' (%s).\n"),
+                             alias, cont->nick, screen);
                 }
-                free (alias);
+                s_free (alias);
+                s_free (screen);
             }
         }
         rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
@@ -3225,7 +3223,7 @@ static JUMP_F(CmdUserHistory)
     target += strlen (buffer);
 
     if (target[-1] == _OS_PATHSEP)
-        snprintf (target, buffer + sizeof (buffer) - target, "%lu.log", cont->uin);
+        snprintf (target, buffer + sizeof (buffer) - target, "%s.log", cont->screen);
 
     /* try to open logfile for reading (no symlink file) */
     if ((fd = open (buffer, O_RDONLY, S_IRUSR)) == -1)
@@ -3540,7 +3538,7 @@ static JUMP_F(CmdUserFind)
     target += strlen (buffer);
 
     if (target[-1] == _OS_PATHSEP)
-        snprintf (target, buffer + sizeof (buffer) - target, "%lu.log", cont->uin);
+        snprintf (target, buffer + sizeof (buffer) - target, "%s.log", cont->screen);
 
     if ((fd = open (buffer, O_RDONLY, S_IRUSR)) == -1)
     {

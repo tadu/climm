@@ -543,7 +543,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
 
 #ifdef WIP
     if (tlv[6].str.len && tlv[6].nr != cont->status)
-        rl_printf ("FIXMEWIP: status for %ld embedded in message 0x%08lx different from server status 0x%08lx.\n", cont->uin, tlv[6].nr, cont->status);
+        rl_printf ("FIXMEWIP: status for %s embedded in message 0x%08lx different from server status 0x%08lx.\n", cont->screen, tlv[6].nr, cont->status);
 #endif
 
     if (tlv[6].str.len)

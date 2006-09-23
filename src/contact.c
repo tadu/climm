@@ -230,6 +230,20 @@ Contact *ContactIndex (ContactGroup *group, int i)
     return group->contacts[i];
 }
 
+static UDWORD __isUIN (const char *screen)
+{
+    UDWORD uin = 0;
+    while (*screen)
+    {
+        if (*screen < '0' || *screen > '9')
+            return 0;
+        uin *= 10;
+        uin += *screen - '0';
+        screen++;
+    }
+    return uin;
+}
+
 static Contact *ContactC (Connection *serv, UDWORD uin, const char *nick DEBUGPARAM)
 {
     Contact *cont;
@@ -237,14 +251,23 @@ static Contact *ContactC (Connection *serv, UDWORD uin, const char *nick DEBUGPA
     if (!(cont = calloc (1, sizeof (Contact))))
         return NULL;
 
-    cont->uin = uin;
     cont->ids = NULL;
     cont->status = ims_offline;
-    
-    s_repl (&cont->nick, nick ? nick : s_sprintf ("%ld", uin));
-    s_repl (&cont->screen, nick && ~serv->type & TYPEF_HAVEUIN ? nick : s_sprintf ("%ld", uin));
 
-    Debug (DEB_CONTACT, "new  %p %ld '%s' '%s' %p", cont, uin, cont->screen, cont->nick, cont);
+    if (uin || (uin = __isUIN (nick)))
+    {
+        cont->uin = uin;
+        s_repl (&cont->screen, s_sprintf ("%ld", uin));
+    }
+    else
+    {
+        assert (nick);
+        cont->uin = 0;
+        s_repl (&cont->screen, nick);
+    }
+    s_repl (&cont->nick, nick ? nick : cont->screen);
+
+    Debug (DEB_CONTACT, "new  %p %ld '%s' '%s' %p", cont, cont->uin, cont->screen, cont->nick, cont);
     ContactAdd (CONTACTGROUP_GLOBAL, cont);
     return cont;
 }
@@ -345,7 +368,7 @@ Contact *ContactFind (ContactGroup *group, UDWORD uin, const char *nick)
 }
 
 /*
- * Finds a contact on a contact group by screen name
+ * Finds a contact on a contact group by UIN
  */
 Contact *ContactFindUIN (ContactGroup *group, UDWORD uin)
 {
@@ -415,7 +438,7 @@ void ContactCreate (Connection *serv, Contact *cont DEBUGPARAM)
     ContactRem (CONTACTGROUP_NONCONTACTS, cont);
     ContactAdd (serv->contacts, cont);
     cont->group = serv->contacts;
-    Debug (DEB_CONTACT, "accc  #%d %ld '%s' %p in %p", 0, cont->uin, cont->nick, cont, serv->contacts);
+    Debug (DEB_CONTACT, "accc  #%d %s '%s' %p in %p", 0, cont->screen, cont->nick, cont, serv->contacts);
 }
 
 
@@ -495,13 +518,13 @@ void ContactD (Contact *cont DEBUGPARAM)
     }
     cont->ids = NULL;
     cont->alias = NULL;
-    s_repl (&cont->nick, s_sprintf ("%ld", cont->uin));
+    s_repl (&cont->nick, cont->screen);
     
     for (i = 0; (cg = ContactGroupIndex (i)); i++)
         ContactRem (cg, cont);
     ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
     cont->group = NULL;
-    Debug (DEB_CONTACT, "del   #%d %ld %p", 0, cont->uin, cont);
+    Debug (DEB_CONTACT, "del   #%d %s %p", 0, cont->screen, cont);
 }
 
 
@@ -530,7 +553,7 @@ BOOL ContactAdd (ContactGroup *group, Contact *cont DEBUGPARAM)
         group = group->more;
     }
     group->contacts[group->used++] = cont;
-    Debug (DEB_CONTACT, "add   #%d %ld '%s' %p to %p", 0, cont->uin, cont->nick, cont, orig);
+    Debug (DEB_CONTACT, "add   #%d %s '%s' %p to %p", 0, cont->screen, cont->nick, cont, orig);
     return TRUE;
 }
 
@@ -595,7 +618,7 @@ BOOL ContactRem (ContactGroup *group, Contact *cont DEBUGPARAM)
                     else
                         cont->group = NULL;
                 }
-                Debug (DEB_CONTACT, "rem   #%d %ld '%s' %p to %p", 0, cont->uin, cont->nick, cont, orig);
+                Debug (DEB_CONTACT, "rem   #%d %s '%s' %p to %p", 0, cont->screen, cont->nick, cont, orig);
                 return TRUE;
             }
         group = group->more;
@@ -622,13 +645,13 @@ BOOL ContactAddAlias (Contact *cont, const char *nick DEBUGPARAM)
         if (!strcmp ((*caref)->alias, nick))
             return TRUE;
     
-    if (!strcmp (cont->nick, s_sprintf ("%ld", cont->uin)))
+    if (!strcmp (cont->nick, cont->screen))
     {
         s_repl (&cont->nick, nick);
         return TRUE;
     }
     
-    if (!strcmp (nick, s_sprintf ("%ld", cont->uin)))
+    if (!strcmp (nick, cont->screen))
         return TRUE;
     
     ca = calloc (1, sizeof (ContactAlias));
@@ -642,7 +665,7 @@ BOOL ContactAddAlias (Contact *cont, const char *nick DEBUGPARAM)
         return FALSE;
     }
     *caref = ca;
-    Debug (DEB_CONTACT, "addal #%d %ld '%s' A'%s'", 0, cont->uin, cont->nick, nick);
+    Debug (DEB_CONTACT, "addal #%d %s '%s' A'%s'", 0, cont->screen, cont->nick, nick);
     return TRUE;
 }
 
@@ -670,7 +693,7 @@ BOOL ContactRemAlias (Contact *cont, const char *nick DEBUGPARAM)
             nn = strdup ("");
         free (cont->nick);
         cont->nick = nn;
-        Debug (DEB_CONTACT, "remal #%d %ld N'%s' '%s'", 0, cont->uin, cont->nick, nick);
+        Debug (DEB_CONTACT, "remal #%d %s N'%s' '%s'", 0, cont->screen, cont->nick, nick);
         return TRUE;
     }
 
@@ -681,7 +704,7 @@ BOOL ContactRemAlias (Contact *cont, const char *nick DEBUGPARAM)
             ca = *caref;
             *caref = (*caref)->more;
             free (ca);
-            Debug (DEB_CONTACT, "remal #%d %ld '%s' X'%s'", 0, cont->uin, cont->nick, nick);
+            Debug (DEB_CONTACT, "remal #%d %s '%s' X'%s'", 0, cont->screen, cont->nick, nick);
             return TRUE;
         }
 
@@ -779,16 +802,16 @@ BOOL ContactMetaSave (Contact *cont)
     ContactMeta *m;
     FILE *f;
     
-    if (!(f = fopen (s_sprintf ("%scontacts" _OS_PATHSEPSTR "icq-%ld", PrefUserDir (prG), cont->uin), "w")))
+    if (!(f = fopen (s_sprintf ("%scontacts" _OS_PATHSEPSTR "icq-%s", PrefUserDir (prG), cont->screen), "w")))
     {
         mkdir (s_sprintf ("%scontacts", PrefUserDir (prG)), 0700);
-        if (!(f = fopen (s_sprintf ("%scontacts" _OS_PATHSEPSTR "icq-%ld", PrefUserDir (prG), cont->uin), "w")))
+        if (!(f = fopen (s_sprintf ("%scontacts" _OS_PATHSEPSTR "icq-%s", PrefUserDir (prG), cont->screen), "w")))
             return FALSE;
     }
-    fprintf (f, "#\n# Meta data for contact %ld.\n#\n\n", cont->uin);
+    fprintf (f, "#\n# Meta data for contact %s.\n#\n\n", cont->screen);
     fprintf (f, "encoding UTF-8\n"); 
     fprintf (f, "format 1\n\n");
-    fprintf (f, "b_uin      %ld\n", cont->uin);
+    fprintf (f, "b_uin      %s\n", cont->screen);
     fprintf (f, "b_nick     %s\n", s_quote (cont->nick));
     if (cont->meta_about)
         fprintf (f, "b_about    %s\n", s_quote (cont->meta_about));
@@ -900,7 +923,7 @@ BOOL ContactMetaLoad (Contact *cont)
     const char *line;
     UDWORD i;
     
-    if (!(f = fopen (s_sprintf ("%scontacts" _OS_PATHSEPSTR "icq-%ld", PrefUserDir (prG), cont->uin), "r")))
+    if (!(f = fopen (s_sprintf ("%scontacts" _OS_PATHSEPSTR "icq-%s", PrefUserDir (prG), cont->screen), "r")))
         return FALSE;
 
     cont->updated = 0;

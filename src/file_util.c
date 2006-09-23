@@ -1001,6 +1001,7 @@ int Read_RC_File (FILE *rcf)
                 {
                     PrefParse (tmp);
                     s_repl (&conn->screen, tmp);
+                    conn->uin = atoi (tmp);
                 }
                 else if (!strcasecmp (cmd, "password"))
                 {
@@ -1154,7 +1155,7 @@ int Read_RC_File (FILE *rcf)
         }
         if (format < 2 && !conn->contacts && conn->type & TYPEF_SERVER)
         {
-            conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%ld", ConnectionServerType (conn->type), conn->uin));
+            conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%s", ConnectionServerType (conn->type), conn->screen));
             for (i = 0; (cont = ContactIndex (NULL, i)); i++)
                 ContactFindCreate (cg, cont->uin, cont->nick);
             dep = 21;
@@ -1315,26 +1316,27 @@ void PrefReadStat (FILE *stf)
                 }
                 else if (cg->serv && !strcasecmp (cmd, "entry"))
                 {
-                    UDWORD uin;
-                    
                     PrefParseInt (i);
-                    PrefParseInt (uin);
+                    PrefParse (cmd);
                     
                     if (!cg->serv->contacts)
                     {
-                        cg->serv->contacts = ContactGroupC (NULL, 0, s_sprintf ("contacts-icq8-%ld", uin));
+                        cg->serv->contacts = ContactGroupC (NULL, 0, s_sprintf ("contacts-%s-%s", ConnectionServerType (cg->serv->type), cmd));
                         OptSetVal (&cg->serv->contacts->copts, CO_IGNORE, 0);
                         cg->serv->contacts->serv = cg->serv;
                     }
                     
                     if (format == 1)
-                        cont = ContactFindCreate (cg->serv->contacts, uin, s_sprintf ("%ld", uin));
+                        cont = ContactFindCreate (cg->serv->contacts, atol (cmd), s_sprintf ("%ld", atol (cmd)));
                     else
-                        cont = ContactFindUIN (cg->serv->contacts, uin);
+                    {
+                        cont = ContactScreen (cg->serv, cmd);
+                        ContactCreate (cg->serv, cont);
+                    }
                     
                     if (!cont)
                     {
-                        rl_printf ("FIXME: could not find %ld in %p / fmt %d).\n", uin, cg->serv->contacts, format);
+                        rl_printf ("FIXME: could not find %s in %p / fmt %d).\n", cmd, cg->serv->contacts, format);
                         ERROR;
                     }
 
@@ -1415,15 +1417,14 @@ void PrefReadStat (FILE *stf)
                 else if (conn && !strcasecmp (cmd, "entry"))
                 {
                     UDWORD id;
-                    UDWORD uin;
                     
                     PrefParseInt (id);
-                    PrefParseInt (uin);
                     PrefParse (cmd);
                     
-                    cont = ContactFindCreate (conn->contacts, uin, cmd);
+                    cont = ContactScreen (conn, cmd);
                     if (!cont)
                         ERROR;
+                    ContactCreate (conn, cont);
                     
                     while ((par = s_parse (&args)))
                         ContactAddAlias (cont, par->txt);
@@ -1532,7 +1533,8 @@ int PrefWriteStatusFile (void)
             if (cont->group && cont->group->serv == ss)
             {
                 ContactAlias *alias;
-                fprintf (stf, "entry %d %10ld %s", 0, cont->uin, s_quote (cont->nick));
+                fprintf (stf, "entry %d %s ", 0, s_quote (cont->screen));
+                fprintf (stf, "%s", s_quote (cont->nick));
                 for (alias = cont->alias; alias; alias = alias->more)
                     fprintf (stf, " %s", s_quote (alias->alias));
                 fprintf (stf, "\n%s", OptString (&cont->copts));
@@ -1554,7 +1556,7 @@ int PrefWriteStatusFile (void)
         fprintf (stf, "%s", OptString (&cg->copts));
 
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            fprintf (stf, "entry 0 %10ld\n", cont->uin);
+            fprintf (stf, "entry 0 %s\n", s_quote (cont->screen));
     }
 
     if (fclose (stf))

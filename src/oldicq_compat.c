@@ -373,8 +373,8 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             uin = PacketRead4 (pak);
             event->cont = cont = ContactUIN (event->conn, uin);
             wdata = PacketRead2 (pak);
-            rl_printf (i18n (2009, "Found random chat partner UIN %ld in chat group %d.\n"),
-                      cont->uin, wdata);
+            rl_printf (i18n (9999, "Found random chat partner UIN %s in chat group %d.\n"),
+                      cont->screen, wdata);
             if (!cont || !CONTACT_DC (cont))
                 break;
             if (~cont->updated & UP_INFO)

@@ -343,8 +343,8 @@ void PeerFileDispatch (Connection *fpeer)
                 struct stat finfo;
 
                 assert (ffile);
-                pos = snprintf (buf, sizeof (buf), "%sfiles" _OS_PATHSEPSTR "%ld" _OS_PATHSEPSTR,
-                                PrefUserDir (prG), cont->uin);
+                pos = snprintf (buf, sizeof (buf), "%sfiles" _OS_PATHSEPSTR "%s" _OS_PATHSEPSTR,
+                                PrefUserDir (prG), cont->screen);
                 snprintf (buf + pos, sizeof (buf) - pos, "%s", ConvFromCont (name, cont));
                 for (p = buf + pos; *p; p++)
                     if (*p == '/')
@@ -361,7 +361,7 @@ void PeerFileDispatch (Connection *fpeer)
                     if (rc == ENOENT)
                     {
                         mkdir (s_sprintf ("%sfiles", PrefUserDir (prG)), 0700);
-                        mkdir (s_sprintf ("%sfiles" _OS_PATHSEPSTR "%ld", PrefUserDir (prG), cont->uin), 0700);
+                        mkdir (s_sprintf ("%sfiles" _OS_PATHSEPSTR "%s", PrefUserDir (prG), cont->screen), 0700);
                         ffile->sok = open (buf, O_CREAT | O_WRONLY | (off ? O_APPEND : O_TRUNC), 0660);
                     }
                     if (ffile->sok == -1)

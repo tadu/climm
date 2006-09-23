@@ -335,11 +335,9 @@ void PacketWriteLLNTS (Packet *pak, const char *data)
 
 void PacketWriteCont (Packet *pak, Contact *cont)
 {
-    const char *str;
-    
-    str = cont->screen ? cont->screen : s_sprintf ("%ld", cont->uin);
-    PacketWrite1 (pak, strlen (str));
-    PacketWriteData (pak, str, strlen (str));
+    int len = strlen (cont->screen);
+    PacketWrite1 (pak, len);
+    PacketWriteData (pak, cont->screen, len);
 }
 
 void PacketWriteTLV (Packet *pak, UDWORD type)

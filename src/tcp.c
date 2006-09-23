@@ -339,7 +339,7 @@ void TCPDispatchConn (Connection *peer)
             return;
         }
         
-        DebugH (DEB_TCP, "Conn: uin %ld nick %s state %x", cont->uin, cont->nick, peer->connect);
+        DebugH (DEB_TCP, "Conn: uin %s nick %s state %x", cont->screen, cont->nick, peer->connect);
 
         switch (peer->connect & CONNECT_MASK)
         {
@@ -463,8 +463,8 @@ void TCPDispatchShake (Connection *peer)
             return;
         }
         
-        DebugH (DEB_TCP, "HS %d uin %ld nick %s state %d pak %p peer %p",
-                peer->sok, cont ? cont->uin : 0, cont ? cont->nick : "<>", peer->connect, pak, peer);
+        DebugH (DEB_TCP, "HS %d uin %s nick %s state %d pak %p peer %p",
+                peer->sok, cont ? cont->screen : 0, cont ? cont->nick : "<>", peer->connect, pak, peer);
 
         switch (peer->connect & CONNECT_MASK)
         {
@@ -831,8 +831,8 @@ static void TCPSendInitv6 (Connection *peer)
     PacketWrite4  (pak, peer->parent->port);                   /* our (other) port */
     PacketWrite4  (pak, peer->our_session);                    /* session id       */
 
-    DebugH (DEB_TCP, "HS %d uin %ld CONNECT pak %p peer %p",
-                     peer->sok, peer->cont->uin, pak, peer);
+    DebugH (DEB_TCP, "HS %d uin %s CONNECT pak %p peer %p",
+                     peer->sok, peer->cont->screen, pak, peer);
 
     PeerPacketSend (peer, pak);
     PacketD (pak);
@@ -886,8 +886,8 @@ static void TCPSendInit (Connection *peer)
     PacketWrite4  (pak, 0x00000003);
     PacketWrite4  (pak, 0);
 
-    DebugH (DEB_TCP, "HS %d uin %ld CONNECTv8 pak %p peer %p",
-            peer->sok, peer->cont->uin, pak, peer);
+    DebugH (DEB_TCP, "HS %d uin %s CONNECTv8 pak %p peer %p",
+            peer->sok, peer->cont->screen, pak, peer);
 
     PeerPacketSend (peer, pak);
     PacketD (pak);
@@ -912,8 +912,8 @@ static void TCPSendInitAck (Connection *peer)
     PacketWrite1 (pak, 0);
     PacketWrite2 (pak, 0);
 
-    DebugH (DEB_TCP, "HS %d uin %ld INITACK pak %p peer %p",
-            peer->sok, peer->cont->uin, pak, peer);
+    DebugH (DEB_TCP, "HS %d uin %s INITACK pak %p peer %p",
+            peer->sok, peer->cont->screen, pak, peer);
 
     PeerPacketSend (peer, pak);
     PacketD (pak);
@@ -942,8 +942,8 @@ static void TCPSendInit2 (Connection *peer)
     PacketWrite4 (pak, 0);
     PacketWrite4 (pak, (peer->connect & 16) ? 0 : 0x40001);
 
-    DebugH (DEB_TCP, "HS %d uin %ld INITMSG pak %p peer %p",
-            peer->sok, peer->cont->uin, pak, peer);
+    DebugH (DEB_TCP, "HS %d uin %s INITMSG pak %p peer %p",
+            peer->sok, peer->cont->screen, pak, peer);
 
     PeerPacketSend (peer, pak);
     PacketD (pak);
@@ -1025,8 +1025,8 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (iip)      cont->dc->ip_loc = iip;
         if (tcpflag)  cont->dc->type = tcpflag;
 
-        DebugH (DEB_TCP, "HS %d uin %ld nick %s init pak %p peer %p: ver %04x:%04x port %ld uin %ld SID %08lx type %x",
-                peer->sok, cont->uin, cont->nick, pak, peer, peer->version, len, port, uin, sid, peer->type);
+        DebugH (DEB_TCP, "HS %d uin %s nick %s init pak %p peer %p: ver %04x:%04x port %ld uin %ld SID %08lx type %x",
+                peer->sok, cont->screen, cont->nick, pak, peer, peer->version, len, port, uin, sid, peer->type);
 
         for (i = 0; (peer2 = ConnectionNr (i)); i++)
             if (     peer2->type == peer->type && peer2->parent == peer->parent
@@ -1269,6 +1269,8 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Opt *opt)
 
     if (!cont->dc || !cont->dc->port)
         return RET_DEFER;
+    if (!cont->uin)
+        return RET_DEFER;
     if (cont->uin == list->parent->uin || !(list->connect & CONNECT_MASK))
         return RET_DEFER;
     if (!cont->dc->ip_loc && !cont->dc->ip_rem)
@@ -1341,6 +1343,8 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     if (!count)
         return TRUE;
     if (count < 0)
+        return FALSE;
+    if (!cont->uin)
         return FALSE;
     if (!cont->dc || !cont->dc->port)
         return FALSE;
@@ -1662,7 +1666,7 @@ static void TCPCallBackReceive (Event *event)
                         ssl_connect (peer, 1);
                     else
                     {
-                        DebugH (DEB_SSL, "%s (%ld) is not SSL capable", cont->nick, cont->uin);
+                        DebugH (DEB_SSL, "%s (%s) is not SSL capable", cont->nick, cont->screen);
 #ifdef ENABLE_TCL
                         TCLEvent (cont, "ssl", "incapable");
 #endif
@@ -1714,8 +1718,8 @@ static void TCPCallBackReceive (Event *event)
 
                     /* fall through */
                 default:
-                    DebugH (DEB_TCP, "ACK %d uin %ld nick %s pak %p peer %p seq %04x",
-                                     peer->sok, cont->uin, cont->nick, oldevent->pak, peer, seq);
+                    DebugH (DEB_TCP, "ACK %d uin %s nick %s pak %p peer %p seq %04x",
+                                     peer->sok, cont->screen, cont->nick, oldevent->pak, peer, seq);
             }
             free (tmp);
             EventD (oldevent);

@@ -326,7 +326,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
 
 static void SnacCliRosterbulkone (Connection *serv, Contact *cont, Packet *pak, UWORD type)
 {
-    PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
+    PacketWriteStrB     (pak, cont->screen);
     PacketWriteB2       (pak, 0);
     PacketWriteB2       (pak, ContactIDGet (cont, type));
     PacketWriteB2       (pak, type);
@@ -363,7 +363,7 @@ void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs)
         }
 
         
-        PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
+        PacketWriteStrB     (pak, cont->screen);
         PacketWriteB2       (pak, ContactGroupID (cg));
         PacketWriteB2       (pak, ContactIDGet (cont, ROSTER_TYPE_NORMAL));
         PacketWriteB2       (pak, ROSTER_TYPE_NORMAL);
@@ -420,7 +420,7 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
 
         
         pak = SnacC (serv, 19, 8, 0, 0);
-        PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
+        PacketWriteStrB     (pak, cont->screen);
         PacketWriteB2       (pak, ContactGroupID (cg));
         PacketWriteB2       (pak, ContactIDGet (cont, ROSTER_TYPE_NORMAL));
         PacketWriteB2       (pak, type);
@@ -494,7 +494,7 @@ void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont)
         else if (ContactPrefVal (cont, CO_INTIMATE))
             type = 2;
 
-        PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
+        PacketWriteStrB     (pak, cont->screen);
         PacketWriteB2       (pak, ContactGroupID (cg));
         PacketWriteB2       (pak, ContactIDGet (cont, ROSTER_TYPE_NORMAL));
         PacketWriteB2       (pak, type);
@@ -604,7 +604,7 @@ void SnacCliRosterdeletecontact (Connection *serv, Contact *cont)
 
     if ((ids = ContactIDHas (cont, ROSTER_TYPE_NORMAL)) && ids->issbl)
     {
-        PacketWriteStrB     (pak, s_sprintf ("%ld", cont->uin));
+        PacketWriteStrB     (pak, cont->screen);
         PacketWriteB2       (pak, ids->tag);
         PacketWriteB2       (pak, ids->id);
         PacketWriteB2       (pak, ROSTER_TYPE_NORMAL);

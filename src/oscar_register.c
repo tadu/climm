@@ -118,7 +118,7 @@ JUMP_SNAC_F(SnacSrvNewuin)
         serv->flags |= CONN_AUTOLOGIN;
         serv->flags |= CONN_INITWP;
 
-        s_repl (&serv->contacts->name, s_sprintf ("contacts-icq8-%ld", cont->uin));
+        s_repl (&serv->contacts->name, s_sprintf ("contacts-icq8-%s", cont->screen));
         rl_print (i18n (1790, "Setup wizard finished. Congratulations to your new UIN!\n"));
         rl_printf ("\n%s", COLERROR);
         rl_print (i18n (2381, "I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n"));

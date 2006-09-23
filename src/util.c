@@ -85,15 +85,11 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     {
         case TYPE_MSN_SERVER:
         case TYPE_JABBER_SERVER:
-            s_catf (&t, "[%s:%s]!%s %s %s%s%s[%s:%s+%lX %s]",
-                ConnectionServerType (conn->type), conn->screen, username, indic, pos, cont->screen, pos,
-                ConnectionServerType (conn->type), cont->screen, nativestatus, ContactStatusStr (status));
-            break;
         case TYPE_SERVER_OLD:
         case TYPE_SERVER:
-            s_catf (&t, "[%s:%lu]!%s %s %s%s%s[%s:%lu+%lX %s]", 
-                ConnectionServerType (conn->type), conn->uin, username, indic, pos, cont->uin ? cont->nick : "", pos, 
-                ConnectionServerType (conn->type), cont->uin, nativestatus, ContactStatusStr (status));
+            s_catf (&t, "[%s:%s]!%s %s %s%s%s[%s:%s+%lX %s]",
+                ConnectionServerType (conn->type), conn->screen, username, indic, pos, cont->nick, pos,
+                ConnectionServerType (conn->type), cont->screen, nativestatus, ContactStatusStr (status));
             break;
         case TYPE_MSGLISTEN:
         case TYPE_MSGDIRECT:
@@ -138,7 +134,7 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
             return -1;
         }
 
-        snprintf (target, buffer + sizeof (buffer) - target, "%lu.log", cont->uin);
+        snprintf (target, buffer + sizeof (buffer) - target, "%s.log", cont->screen);
 
 #if HAVE_SYMLINK
         if (cont->uin)
@@ -221,8 +217,8 @@ void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype
         if (*tmp == '\'' || *tmp == '\\')
             *tmp = '"';
 
-    cmd = s_sprintf ("%s icq %ld '%s' '%s' %s %ld '%s' '%s' '%s'",
-                     myscript, cont ? cont->uin : 0, mynick, mygroup, mytype, msgtype, mytext, myagent, ContactStatusStr (status));
+    cmd = s_sprintf ("%s icq '%s' '%s' '%s' %s %ld '%s' '%s' '%s'",
+                     myscript, cont ? cont->screen : "", mynick, mygroup, mytype, msgtype, mytext, myagent, ContactStatusStr (status));
 
     rc = system (cmd);
     if (rc)

@@ -72,7 +72,7 @@ JUMP_SNAC_F(SnacSrvContacterr)
             if (first)
                 rl_print (", ");
             if (cont)
-                rl_printf ("%s (%ld)", cont->nick, cont->uin);
+                rl_printf ("%s (%s)", cont->nick, cont->screen);
             first = 1;
         }
         else

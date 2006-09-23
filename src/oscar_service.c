@@ -231,9 +231,9 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     pak = event->pak;
     cont = PacketReadCont (pak, serv);
     
-    if (cont->uin != serv->uin)
-        rl_printf (i18n (1907, "Warning: Server thinks our UIN is %ld, when it is %ld.\n"),
-                  cont->uin, serv->uin);
+    if (strcmp (cont->screen, serv->screen))
+        rl_printf (i18n (9999, "Warning: Server thinks our UIN is %s, when it is %s.\n"),
+                  cont->screen, serv->screen);
     PacketReadB2 (pak);
     PacketReadB2 (pak);
     tlv = TLVRead (pak, PacketReadLeft (pak));

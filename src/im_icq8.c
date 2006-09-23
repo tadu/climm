@@ -564,7 +564,7 @@ static void IMRosterDiff (Event *event)
                        rg && rg->name ? rg->name : "?", rc->name, rc->nick ? rc->nick : rc->name, rc->id);
             rl_printf (i18n (2483, "Local:  Group %s Contact %s/%s (#%d)\n"),
                        cont->group == serv->contacts ? "(none)" : cont->group->name,
-                       s_sprintf ("%ld", cont->uin), cont->nick, 0);
+                       cont->screen, cont->nick, 0);
         }
     }
     for (rc = roster->normal; rc; rc = rc->next)
@@ -583,7 +583,7 @@ static void IMRosterDiff (Event *event)
                        rg && rg->name ? rg->name : "?", rc->name, rc->nick ? rc->nick : rc->name, rc->id);
             rl_printf (i18n (2486, "Local:  Group %s Contact %s/%s (#%d) <%s>\n"),
                        cont->group == serv->contacts ? "(none)" : cont->group->name,
-                       s_sprintf ("%ld", cont->uin), cont->nick, 0,
+                       cont->screen, cont->nick, 0,
                        ContactPrefVal (cont, CO_HIDEFROM) ? i18n (2487, "hidefrom") : i18n (2488, "intimate"));
         }
     }
@@ -603,7 +603,7 @@ static void IMRosterDiff (Event *event)
                        rg && rg->name ? rg->name : "?", rc->name, rc->nick ? rc->nick : rc->name, rc->id);
             rl_printf (i18n (2483, "Local:  Group %s Contact %s/%s (#%d)\n"),
                        cont->group == serv->contacts ? "(none)" : cont->group->name,
-                       s_sprintf ("%ld", cont->uin), cont->nick, 0);
+                       cont->screen, cont->nick, 0);
         }
     }
 
@@ -613,22 +613,22 @@ static void IMRosterDiff (Event *event)
             if (ContactPrefVal (cont, CO_HIDEFROM) && !ContactID (cont, ROSTER_TYPE_INVISIBLE)->issbl)
                 rl_printf (i18n (2486, "Local:  Group %s Contact %s/%s (#%d) <%s>\n"),
                            cont->group == serv->contacts ? "(none)" : cont->group->name,
-                           s_sprintf ("%ld", cont->uin), cont->nick, ContactIDGet (cont, ROSTER_TYPE_INVISIBLE),
+                           cont->screen, cont->nick, ContactIDGet (cont, ROSTER_TYPE_INVISIBLE),
                            i18n (2487, "hidefrom"));
             else if (ContactPrefVal (cont, CO_INTIMATE) && !ContactID (cont, ROSTER_TYPE_VISIBLE)->issbl)
                 rl_printf (i18n (2486, "Local:  Group %s Contact %s/%s (#%d) <%s>\n"),
                            cont->group == serv->contacts ? "(none)" : cont->group->name,
-                           s_sprintf ("%ld", cont->uin), cont->nick, ContactIDGet (cont, ROSTER_TYPE_VISIBLE),
+                           cont->screen, cont->nick, ContactIDGet (cont, ROSTER_TYPE_VISIBLE),
                            i18n (2488, "intimate"));
             else if (ContactPrefVal (cont, CO_IGNORE) && !ContactID (cont, ROSTER_TYPE_IGNORE)->issbl)
                 rl_printf (i18n (2486, "Local:  Group %s Contact %s/%s (#%d) <%s>\n"),
                            cont->group == serv->contacts ? "(none)" : cont->group->name,
-                           s_sprintf ("%ld", cont->uin), cont->nick, ContactIDGet (cont, ROSTER_TYPE_IGNORE),
+                           cont->screen, cont->nick, ContactIDGet (cont, ROSTER_TYPE_IGNORE),
                            i18n (2580, "ignore"));
             else if (!ContactID (cont, ROSTER_TYPE_NORMAL)->issbl || !ContactPrefVal (cont, CO_ISSBL))
                 rl_printf (i18n (2486, "Local:  Group %s Contact %s/%s (#%d) <%s>\n"),
                            cont->group == serv->contacts ? "(none)" : cont->group->name,
-                           s_sprintf ("%ld", cont->uin), cont->nick, ContactIDGet (cont, ROSTER_TYPE_IGNORE),
+                           cont->screen, cont->nick, ContactIDGet (cont, ROSTER_TYPE_IGNORE),
                            i18n (2490, "normal"));
             else
                 cnt_more--;

@@ -416,7 +416,7 @@ Event *ConnectionInitServer (Connection *conn)
     rl_printf (i18n (2512, "Opening v8 connection to %s:%s%ld%s for %s%s%s... "),
               s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE, COLCONTACT,
               !cont ? i18n (2513, "new UIN") : cont->nick ? cont->nick 
-              : s_sprintf ("%ld", cont->uin), COLNONE);
+              : cont->screen, COLNONE);
 
     UtilIOConnectTCP (conn);
     return event;
