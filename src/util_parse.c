@@ -138,6 +138,16 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
     }
     p = *input;
 
+    if (serv->type == TYPE_SERVER && !strncasecmp (p, "AIM:", 4))
+    {
+        p += 4;
+        t = s_parse (&p);
+        if (!t)
+            return NULL;
+        *input = p;
+        return ContactScreen (serv, t->txt);
+    }
+
     if (serv->type == TYPE_MSN_SERVER && !strncasecmp (p, "MSN:", 4))
     {
         p += 4;
