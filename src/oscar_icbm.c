@@ -1059,7 +1059,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 return;
             }
             free (name);
-            if (PeerFileIncAccept (serv->assoc, inc_event))
+            if (serv->assoc && PeerFileIncAccept (serv->assoc, inc_event))
             {
                 PacketWrite2    (ack_pak, ack_status);
                 PacketWrite2    (ack_pak, ack_flags);
@@ -1154,7 +1154,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
 #endif
                             return;
                         }
-                        if (PeerFileIncAccept (serv->assoc, inc_event))
+                        if (serv->assoc && PeerFileIncAccept (serv->assoc, inc_event))
                         {
                             PacketWrite2    (ack_pak, ack_status);
                             PacketWrite2    (ack_pak, ack_flags);
