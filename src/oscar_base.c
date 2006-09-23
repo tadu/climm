@@ -562,21 +562,21 @@ void SrvCallBackReceive (Connection *conn)
 
 Connection *SrvRegisterUIN (Connection *conn, const char *pass)
 {
-    Connection *new;
+    Connection *news;
 #ifdef ENABLE_PEER2PEER
     Connection *newl;
 #endif
     
-    if (!(new = ConnectionC (TYPE_SERVER)))
+    if (!(news = ConnectionC (TYPE_SERVER)))
         return NULL;
 
 #ifdef ENABLE_PEER2PEER
-    if (!(newl = ConnectionClone (new, TYPE_MSGLISTEN)))
+    if (!(newl = ConnectionClone (news, TYPE_MSGLISTEN)))
     {
-        ConnectionD (new);
+        ConnectionD (news);
         return NULL;
     }
-    new->assoc = newl;
+    news->assoc = newl;
     newl->open = &ConnectionInitPeer;
     if (conn && conn->assoc)
     {
@@ -596,29 +596,29 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
     {
         assert (conn->type == TYPE_SERVER);
         
-        new->flags   = conn->flags & ~CONN_CONFIGURED;
-        new->version = conn->version;
-        new->uin     = 0;
-        new->pref_status  = ims_online;
-        new->pref_server  = strdup (conn->pref_server);
-        new->pref_port    = conn->pref_port;
-        new->pref_passwd  = strdup (pass);
+        news->flags   = conn->flags & ~CONN_CONFIGURED;
+        news->version = conn->version;
+        news->uin     = 0;
+        news->pref_status  = ims_online;
+        news->pref_server  = strdup (conn->pref_server);
+        news->pref_port    = conn->pref_port;
+        news->pref_passwd  = strdup (pass);
     }
     else
     {
-        new->version = 8;
-        new->uin     = 0;
-        new->pref_status  = ims_online;
-        new->pref_server  = strdup ("login.icq.com");
-        new->pref_port    = 5190;
-        new->pref_passwd  = strdup (pass);
-        new->flags |= CONN_AUTOLOGIN;
+        news->version = 8;
+        news->uin     = 0;
+        news->pref_status  = ims_online;
+        news->pref_server  = strdup ("login.icq.com");
+        news->pref_port    = 5190;
+        news->pref_passwd  = strdup (pass);
+        news->flags |= CONN_AUTOLOGIN;
     }
-    s_repl (&new->screen, "0");
-    new->server = strdup (new->pref_server);
-    new->port = new->pref_port;
-    new->passwd = strdup (pass);
-    new->open = &ConnectionInitServer;
-    return new;
+    s_repl (&news->screen, "");
+    news->server = strdup (news->pref_server);
+    news->port = news->pref_port;
+    news->passwd = strdup (pass);
+    news->open = &ConnectionInitServer;
+    return news;
 }
 
