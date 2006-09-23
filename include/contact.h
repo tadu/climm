@@ -135,10 +135,10 @@ Contact      *ContactIndex        (ContactGroup *group, int i);
 Contact      *ContactUIN          (Connection *serv, UDWORD uin DEBUGPARAM);
 Contact      *ContactScreen       (Connection *serv, const char *screen DEBUGPARAM);
 void          ContactCreate       (Connection *serv, Contact *cont DEBUGPARAM);
-Contact      *ContactFind         (ContactGroup *group, UDWORD uin, const char *nick);
+Contact      *ContactFind         (Connection *serv, const char *nick);
+const char   *ContactFindAlias    (Contact *cont, const char *nick);
 Contact      *ContactFindUIN      (ContactGroup *group, UDWORD uin);
 Contact      *ContactFindScreen   (ContactGroup *group, const char *screen);
-Contact      *ContactFindCreate   (ContactGroup *group, UDWORD uin, const char *nick DEBUGPARAM);
 BOOL          ContactAdd          (ContactGroup *group, Contact *cont DEBUGPARAM);
 BOOL          ContactHas          (ContactGroup *group, Contact *cont);
 BOOL          ContactRem          (ContactGroup *group, Contact *cont DEBUGPARAM);
@@ -151,7 +151,6 @@ BOOL          ContactRemAlias     (Contact *cont, const char *nick DEBUGPARAM);
 #define ContactGroupD(g)           ContactGroupD(g DEBUGARGS)
 #define ContactUIN(c,u)            ContactUIN(c,u DEBUGARGS)
 #define ContactScreen(c,s)         ContactScreen(c,s DEBUGARGS)
-#define ContactFindCreate(g,u,n)   ContactFindCreate(g,u,n DEBUGARGS)
 #define ContactCreate(g,c)         ContactCreate(g,c DEBUGARGS)
 #define ContactAdd(g,c)            ContactAdd(g,c DEBUGARGS)
 #define ContactRem(g,c)            ContactRem(g,c DEBUGARGS)

@@ -81,8 +81,11 @@ Connection *PrefNewConnection (UDWORD uin, const char *passwd)
 
     conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
     OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
-    cont = ContactFindCreate (conn->contacts, 82274703, "mICQ");
-    ContactFindCreate (conn->contacts, 82274703, "Tadu");
+    
+    cont = ContactFindUIN (conn->contacts, 82274703);
+    ContactCreate (conn, cont);
+    ContactAddAlias (cont, "mICQ");
+    ContactAddAlias (cont, "Tadu");
     OptSetStr (&cont->copts, CO_COLORINCOMING, OptC2S ("red bold"));
     OptSetStr (&cont->copts, CO_COLORMESSAGE, OptC2S ("red bold"));
     rl_printf (i18n (2381, "I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n"));
@@ -215,8 +218,11 @@ void Initialize_RC_File ()
         conn->open = &ConnectionInitServer;
         conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
         OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
-        cont = ContactFindCreate (conn->contacts, 82274703, "mICQ");
-        ContactFindCreate (conn->contacts, 82274703, "Tadu");
+
+        cont = ContactFindUIN (conn->contacts, 82274703);
+        ContactCreate (conn, cont);
+        ContactAddAlias (cont, "mICQ");
+        ContactAddAlias (cont, "Tadu");
         OptSetStr (&cont->copts, CO_COLORINCOMING, OptC2S ("red bold"));
         OptSetStr (&cont->copts, CO_COLORMESSAGE, OptC2S ("red bold"));
     }
@@ -877,13 +883,15 @@ int Read_RC_File (FILE *rcf)
                             break;
                     if (!tconn)
                         break;
-                    if (!(cont = ContactFindCreate (tconn->contacts, uin, cmd)))
+                    if (!(cont = ContactFindUIN (tconn->contacts, uin)))
                     {
                         rl_printf ("%s%s%s %s\n", COLERROR, i18n (1619, "Warning:"), COLNONE,
-                                 i18n (1620, "maximal number of contacts reached. Ask a wizard to enlarge me!"));
+                                   i18n (2118, "Out of memory.\n"));
                         section = -1;
                         break;
                     }
+                    ContactCreate (tconn, cont);
+                    ContactAddAlias (cont, cmd);
                     OptSetVal (&cont->copts, flags, 1); /* FIXME */
                 }
                 break;
@@ -1001,7 +1009,7 @@ int Read_RC_File (FILE *rcf)
                 {
                     PrefParse (tmp);
                     s_repl (&conn->screen, tmp);
-                    conn->uin = atoi (tmp);
+                    conn->uin = IcqIsUIN (tmp);
                 }
                 else if (!strcasecmp (cmd, "password"))
                 {
@@ -1091,7 +1099,9 @@ int Read_RC_File (FILE *rcf)
                     PrefParseInt (i);
                     PrefParseInt (uin);
                     
-                    cont = ContactFindCreate (cg->serv->contacts, uin, s_sprintf ("%ld", uin));
+                    if (!(cont = ContactFindUIN (cg->serv->contacts, uin)))
+                        break;
+                    ContactCreate (cg->serv, cont);
                     if (cont && cg != cg->serv->contacts)
                         ContactAdd (cg, cont);
                 }
@@ -1157,7 +1167,7 @@ int Read_RC_File (FILE *rcf)
         {
             conn->contacts = cg = ContactGroupC (conn, 0, s_sprintf ("contacts-%s-%s", ConnectionServerType (conn->type), conn->screen));
             for (i = 0; (cont = ContactIndex (NULL, i)); i++)
-                ContactFindCreate (cg, cont->uin, cont->nick);
+                ContactCreate (conn, cont);
             dep = 21;
         }
     }
@@ -1327,18 +1337,17 @@ void PrefReadStat (FILE *stf)
                     }
                     
                     if (format == 1)
-                        cont = ContactFindCreate (cg->serv->contacts, atol (cmd), s_sprintf ("%ld", atol (cmd)));
+                        cont = ContactFindUIN (cg->serv->contacts, atol (cmd));
                     else
-                    {
                         cont = ContactScreen (cg->serv, cmd);
-                        ContactCreate (cg->serv, cont);
-                    }
                     
                     if (!cont)
                     {
-                        rl_printf ("FIXME: could not find %s in %p / fmt %d).\n", cmd, cg->serv->contacts, format);
+                        rl_printf ("%s%s%s %s\n", COLERROR, i18n (1619, "Warning:"), COLNONE,
+                                   i18n (2118, "Out of memory.\n"));
                         ERROR;
                     }
+                    ContactCreate (cg->serv, cont);
 
                     if (cg != cg->serv->contacts)
                     {

@@ -37,12 +37,13 @@
 #include "micq.h"
 #include "contact.h"
 #include "connection.h"
-#include "util_ui.h"     /* for Debug() and DEB_CONTACT */
-#include "conv.h"        /* for meta data file recoding */
-#include "util_io.h"     /* for UtilIOReadline() */
-#include "packet.h"      /* for capabilities */
-#include "buildmark.h"   /* for versioning */
-#include "preferences.h" /* for BASEDIR */
+#include "util_ui.h"       /* for Debug() and DEB_CONTACT */
+#include "conv.h"          /* for meta data file recoding */
+#include "util_io.h"       /* for UtilIOReadline() */
+#include "packet.h"        /* for capabilities */
+#include "buildmark.h"     /* for versioning */
+#include "preferences.h"   /* for BASEDIR */
+#include "oldicq_compat.h" /* for IcqIsUIN */
 #include "util_parse.h"
 
 static ContactGroup **cnt_groups = NULL;
@@ -230,44 +231,46 @@ Contact *ContactIndex (ContactGroup *group, int i)
     return group->contacts[i];
 }
 
-static UDWORD __isUIN (const char *screen)
-{
-    UDWORD uin = 0;
-    while (*screen)
-    {
-        if (*screen < '0' || *screen > '9')
-            return 0;
-        uin *= 10;
-        uin += *screen - '0';
-        screen++;
-    }
-    return uin;
-}
-
-static Contact *ContactC (Connection *serv, UDWORD uin, const char *nick DEBUGPARAM)
+#undef ContactCUIN
+static Contact *ContactCUIN (Connection *serv, UDWORD uin DEBUGPARAM)
 {
     Contact *cont;
 
-    if (!(cont = calloc (1, sizeof (Contact))))
+    assert (uin);
+    cont = calloc (1, sizeof (Contact));
+    if (!cont)
+        return NULL;
+    
+    cont->ids = NULL;
+    cont->status = ims_offline;
+
+    cont->uin = uin;
+    s_repl (&cont->screen, s_sprintf ("%ld", uin));
+    s_repl (&cont->nick, cont->screen);
+
+    Debug (DEB_CONTACT, "new  %p UIN %s %p", cont, cont->screen, cont);
+    ContactAdd (CONTACTGROUP_GLOBAL, cont);
+    return cont;
+}
+
+#undef ContactCScreen
+static Contact *ContactCScreen (Connection *serv, const char *screen DEBUGPARAM);
+static Contact *ContactCScreen (Connection *serv, const char *screen DEBUGPARAM)
+{
+    Contact *cont;
+    
+    cont = calloc (1, sizeof (Contact));
+    if (!cont)
         return NULL;
 
     cont->ids = NULL;
     cont->status = ims_offline;
 
-    if (uin || (uin = __isUIN (nick)))
-    {
-        cont->uin = uin;
-        s_repl (&cont->screen, s_sprintf ("%ld", uin));
-    }
-    else
-    {
-        assert (nick);
-        cont->uin = 0;
-        s_repl (&cont->screen, nick);
-    }
-    s_repl (&cont->nick, nick ? nick : cont->screen);
+    cont->uin = 0;
+    s_repl (&cont->screen, screen);
+    s_repl (&cont->nick, cont->screen);
 
-    Debug (DEB_CONTACT, "new  %p %ld '%s' '%s' %p", cont, cont->uin, cont->screen, cont->nick, cont);
+    Debug (DEB_CONTACT, "new  %p UIN '%s' %p", cont, cont->screen, cont);
     ContactAdd (CONTACTGROUP_GLOBAL, cont);
     return cont;
 }
@@ -281,19 +284,20 @@ Contact *ContactScreen (Connection *serv, const char *screen DEBUGPARAM)
     Contact *cont;
     UDWORD uin;
     
-    if (!serv || !serv->contacts || !screen || !*screen)
+    if (!serv->contacts || !*screen)
         return NULL;
 
     if (!cnt_groups)
         ContactGroupInit ();
     
-    uin = atoi (screen);
+    uin = IcqIsUIN (screen);
     if (uin && serv->type & TYPEF_HAVEUIN)
     {
         if ((cont = ContactFindUIN (serv->contacts, uin)))
             return cont;
         if ((cont = ContactFindUIN (CONTACTGROUP_NONCONTACTS, uin)))
             return cont;
+        cont = ContactCUIN (serv, uin DEBUGFOR);
     }
     else
     {
@@ -301,11 +305,11 @@ Contact *ContactScreen (Connection *serv, const char *screen DEBUGPARAM)
             return cont;
         if ((cont = ContactFindScreen (CONTACTGROUP_NONCONTACTS, screen)))
             return cont;
+        cont = ContactCScreen (serv, screen DEBUGFOR);
     }
 
-    if (!(cont = ContactC (serv, uin, screen DEBUGFOR)))
+    if (!cont)
         return NULL;
-
     ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
     return cont;
 }
@@ -318,8 +322,8 @@ Contact *ContactUIN (Connection *serv, UDWORD uin DEBUGPARAM)
 {
     Contact *cont;
     
-    if (!serv || !serv->contacts || !uin)
-        return NULL;
+    assert (serv->contacts);
+    assert (uin);
 
     if (!cnt_groups)
         ContactGroupInit ();
@@ -330,34 +334,48 @@ Contact *ContactUIN (Connection *serv, UDWORD uin DEBUGPARAM)
     if ((cont = ContactFindUIN (CONTACTGROUP_NONCONTACTS, uin)))
         return cont;
 
-    if (!(cont = ContactC (serv, uin, NULL DEBUGFOR)))
-        return NULL;
+    cont = ContactCUIN (serv, uin DEBUGFOR);
+    if (!cont)
+        return cont;
 
     ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
     return cont;
 }
 
 /*
- * Finds a contact on a contact group
+ * Finds an alias of a contact
  */
-Contact *ContactFind (ContactGroup *group, UDWORD uin, const char *nick)
+const char *ContactFindAlias (Contact *cont, const char *nick)
+{
+    ContactAlias *ca;
+
+    if (!strcasecmp (nick, cont->screen))
+        return cont->screen;
+    if (!strcasecmp (nick, cont->nick))
+        return cont->nick;
+    for (ca = cont->alias; ca; ca = ca->more)
+        if (!strcmp (nick, ca->alias))
+            return ca->alias;
+    return NULL;
+}
+
+
+/*
+ * Finds a contact by nick
+ */
+Contact *ContactFind (Connection *serv, const char *nick)
 {
     ContactGroup *tmp;
     ContactAlias *ca;
     Contact *cont;
     int i;
     
-    if (!group && !cnt_groups)
-        ContactGroupInit ();
-
-    for (tmp = group ? group : CONTACTGROUP_GLOBAL; tmp; tmp = tmp->more)
+    for (tmp = serv->contacts; tmp; tmp = tmp->more)
     {
         for (i = 0; i < tmp->used; i++)
         {
             cont = tmp->contacts[i];
-            if (uin && uin != cont->uin)
-                continue;
-            if (!nick || !strcasecmp (nick, cont->screen) || !strcasecmp (nick, cont->nick))
+            if (!strcasecmp (nick, cont->screen) || !strcasecmp (nick, cont->nick))
                 return cont;
             for (ca = cont->alias; ca; ca = ca->more)
                 if (!strcmp (nick, ca->alias))
@@ -432,65 +450,13 @@ Contact *ContactFindScreen (ContactGroup *group, const char *screen)
 #undef ContactCreate
 void ContactCreate (Connection *serv, Contact *cont DEBUGPARAM)
 {
-    if (!serv || !cont || cont->group)
+    if (cont->group)
         return;
 
     ContactRem (CONTACTGROUP_NONCONTACTS, cont);
     ContactAdd (serv->contacts, cont);
     cont->group = serv->contacts;
     Debug (DEB_CONTACT, "accc  #%d %s '%s' %p in %p", 0, cont->screen, cont->nick, cont, serv->contacts);
-}
-
-
-/*
- * Finds a contact on a contact group, possibly creating it
- */
-#undef ContactFindCreate
-Contact *ContactFindCreate (ContactGroup *group, UDWORD uin, const char *nick DEBUGPARAM)
-{
-    Contact *cont;
-    
-    if (!group && !cnt_groups)
-        ContactGroupInit ();
-
-    assert (uin || (group->serv->type != TYPE_SERVER));
-    assert (group);
-
-    if ((cont = ContactFindUIN (group, uin)))
-    {
-        if (nick)
-            ContactAddAlias (cont, nick);
-        return cont;
-    }
-    
-    if ((cont = ContactFindUIN (CONTACTGROUP_NONCONTACTS, uin)))
-    {
-        if (!nick)
-            return cont;
-        ContactRem (CONTACTGROUP_NONCONTACTS, cont);
-        ContactAdd (group, cont);
-        cont->group = group;
-        s_repl (&cont->nick, nick);
-        Debug (DEB_CONTACT, "act   %ld '%s' %p in %p", uin, nick, cont, group);
-        return cont;
-    }
-    
-    if (!(cont = ContactC (group->serv, uin, nick DEBUGFOR)))
-        return NULL;
-
-    if (nick)
-    {
-        ContactAdd (group, cont);
-        cont->group = group;
-        Debug (DEB_CONTACT, "act   %ld '%s' %p", uin, nick, cont);
-    }
-    else
-    {
-        ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
-        Debug (DEB_CONTACT, "temp  %ld %p", uin, cont);
-    }
-
-    return cont;
 }
 
 /*
@@ -635,9 +601,6 @@ BOOL ContactAddAlias (Contact *cont, const char *nick DEBUGPARAM)
     ContactAlias **caref;
     ContactAlias *ca;
     
-    if (!nick)
-        return FALSE;
-
     if (!strcmp (cont->nick, nick))
         return TRUE;
     

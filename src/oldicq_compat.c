@@ -568,3 +568,18 @@ UDWORD IcqFromFlags (statusflag_t flags)
         status |= STATUSF_ICQDC_CONT;
     return status;
 }
+
+UDWORD IcqIsUIN (const char *screen)
+{
+    UDWORD uin = 0;
+    while (*screen)
+    {
+        if (*screen < '0' || *screen > '9')
+            return 0;
+        uin *= 10;
+        uin += *screen - '0';
+        screen++;
+    }
+    return uin;
+}
+

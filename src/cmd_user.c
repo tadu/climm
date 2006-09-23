@@ -2716,7 +2716,7 @@ static JUMP_F(CmdUserAdd)
             {
                 if (!cont->group)
                 {
-                    ContactFindCreate (conn->contacts, cont->uin, cont->screen);
+                    ContactCreate (conn, cont);
                     if (conn->type == TYPE_SERVER)
                         SnacCliAddcontact (conn, cont, NULL);
                     else
@@ -2782,22 +2782,19 @@ static JUMP_F(CmdUserAdd)
     }
     else
     {
-        if ((cont2 = ContactFind (conn->contacts, cont->uin, cmd)))
+        if (ContactFindAlias (cont, cmd))
             rl_printf (i18n (9999, "'%s' is already an alias for '%s' (%s).\n"),
                      cmd, cont->nick, cont->screen);
-        else if ((cont2 = ContactFind (conn->contacts, 0, cmd)))
-            rl_printf (i18n (2147, "'%s' (%ld) is already used as a nick.\n"),
-                     cmd, cont2->uin);
+        else if ((cont2 = ContactFind (conn, cmd)))
+            rl_printf (i18n (9999, "'%s' (%s) is already used as a nick.\n"),
+                     cmd, cont2->screen);
         else
         {
-            if (!(cont2 = ContactFindCreate (conn->contacts, cont->uin, cmd)))
-                rl_print (i18n (2118, "Out of memory.\n"));
-            else
-            {
-                rl_printf (i18n (9999, "Added '%s' as an alias for '%s' (%s).\n"),
-                         cmd, cont->nick, cont->screen);
-                rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
-            }
+            if (!ContactAddAlias (cont, cmd))
+                return 0;
+            rl_printf (i18n (9999, "Added '%s' as an alias for '%s' (%s).\n"),
+                     cmd, cont->nick, cont->screen);
+            rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
         }
     }
 

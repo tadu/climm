@@ -64,5 +64,6 @@ status_t     IcqToStatus   (UDWORD status);
 UDWORD       IcqFromStatus (status_t status);
 statusflag_t IcqToFlags    (UDWORD status);
 UDWORD       IcqFromFlags  (statusflag_t flags);
+UDWORD       IcqIsUIN      (const char *screen);
 
 #endif

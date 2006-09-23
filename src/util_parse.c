@@ -130,7 +130,7 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
     
     if ((t = s_parse_s (&p, sep)) && strncmp (t->txt, *input, t->len))
     {
-        if ((parsed = ContactFind (serv->contacts, 0, t->txt)))
+        if ((parsed = ContactFind (serv, t->txt)))
         {
             *input = p;
             return parsed;
@@ -142,16 +142,20 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
     {
         p += 4;
         t = s_parse (&p);
+        if (!t)
+            return NULL;
         *input = p;
-        return t ? ContactFindCreate (serv->contacts, 0, t->txt) : NULL;
+        return ContactScreen (serv, t->txt);
     }
 
     if (serv->type == TYPE_JABBER_SERVER && !strncasecmp (p, "JABBER:", 7))
     {
         p += 7;
         t = s_parse (&p);
+        if (!t)
+            return NULL;
         *input = p;
-        return t ? ContactFindCreate (serv->contacts, 0, t->txt) : NULL;
+        return ContactScreen (serv, t->txt);
     }
 
     if (strchr ("0123456789", *p))
