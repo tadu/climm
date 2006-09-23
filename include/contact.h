@@ -91,6 +91,7 @@ struct ContactIDs_s
 
 struct Contact_s
 {
+    Connection *serv;
     ContactGroup *group;
     char  *nick;
     char  *screen;
