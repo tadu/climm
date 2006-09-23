@@ -85,6 +85,7 @@ void SnacCliSetuserinfo (Connection *serv)
     PacketWriteCapID   (pak, CAP_ISICQ);
     PacketWriteCapID   (pak, CAP_SRVRELAY);
     PacketWriteCapID   (pak, CAP_UTF8);
+    PacketWriteCapID   (pak, CAP_AIM_INTER);
     PacketWriteCapID   (pak, CAP_MICQ);
     PacketWriteTLVDone (pak);
     SnacSend (serv, pak);
