@@ -252,7 +252,6 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
         if (status != serv->status)
         {
             serv->status = status;
-            serv->flags = IcqToFlags (ostat);
             serv->nativestatus = ostat;
             rl_printf ("%s %s\n", s_now, s_status (serv->status, ostat));
         }
