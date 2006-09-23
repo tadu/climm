@@ -122,7 +122,7 @@ JUMP_SNAC_F(SnacSrvReplylists)
         IMRoster (serv, IMROSTER_IMPORT);
         if (serv->flags & CONN_INITWP)
         {
-            Contact *cont = ContactUIN (serv, serv->uin);
+            Contact *cont = ContactScreen (serv, serv->screen);
             CONTACT_GENERAL (cont);
             CONTACT_MORE (cont);
             SnacCliMetasetabout (serv, "mICQ");

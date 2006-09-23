@@ -1559,7 +1559,7 @@ int PrefWriteStatusFile (void)
             continue;
 
         fprintf (stf, "\n[Group]\n");
-        fprintf (stf, "server %s %ld\n", ConnectionServerType (cg->serv->type), cg->serv->uin);
+        fprintf (stf, "server %s %s\n", ConnectionServerType (cg->serv->type), cg->serv->screen);
         fprintf (stf, "label %s\n", s_quote (cg->name));
         fprintf (stf, "id %d\n", cg->id);
         fprintf (stf, "%s", OptString (&cg->copts));

@@ -155,7 +155,7 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
         else
             rl_print (i18n (1896, "Server closed connection:\n"));
         rl_printf (i18n (1048, "Error code: %ld\n"), tlv[9].nr ? tlv[9].nr : tlv[8].nr);
-        if (tlv[1].str.len && (UDWORD)atoi (tlv[1].str.txt) != conn->uin)
+        if (tlv[1].str.len && strcmp (tlv[1].str.txt, conn->screen))
             rl_printf (i18n (2218, "UIN: %s\n"), tlv[1].str.txt);
         if (tlv[4].str.len)
             rl_printf (i18n (1961, "URL: %s\n"), tlv[4].str.txt);
@@ -321,7 +321,7 @@ void FlapCliIdent (Connection *conn)
     
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
-    PacketWriteTLVStr  (pak, 1, s_sprintf ("%ld", conn->uin));
+    PacketWriteTLVStr  (pak, 1, conn->screen);
     PacketWriteTLVData (pak, 2, f = _encryptpw (conn->passwd), strlen (conn->passwd));
     PacketWriteTLVStr  (pak, 3, "ICQ Inc. - Product of ICQ (TM).2003b.5.37.1.3728.85");
     PacketWriteTLV2    (pak, 22, 266);
@@ -386,7 +386,7 @@ Event *ConnectionInitServer (Connection *conn)
     Contact *cont;
     Event *event;
     
-    if (!conn->server || !*conn->server || !conn->port)
+    if (!conn->server || !*conn->server || !conn->port || !conn->uin)
         return NULL;
 
     if (conn->sok != -1)
@@ -598,7 +598,6 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
         
         news->flags   = conn->flags & ~CONN_CONFIGURED;
         news->version = conn->version;
-        news->uin     = 0;
         news->pref_status  = ims_online;
         news->pref_server  = strdup (conn->pref_server);
         news->pref_port    = conn->pref_port;
@@ -607,13 +606,13 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
     else
     {
         news->version = 8;
-        news->uin     = 0;
         news->pref_status  = ims_online;
         news->pref_server  = strdup ("login.icq.com");
         news->pref_port    = 5190;
         news->pref_passwd  = strdup (pass);
         news->flags |= CONN_AUTOLOGIN;
     }
+    news->uin = 0;
     s_repl (&news->screen, "");
     news->server = strdup (news->pref_server);
     news->port = news->pref_port;

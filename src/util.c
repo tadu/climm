@@ -93,12 +93,12 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
             break;
         case TYPE_MSGLISTEN:
         case TYPE_MSGDIRECT:
-            s_catf (&t, "%s %s %s%s%s[tcp:%lu+%lX %s]",
-                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, nativestatus, ContactStatusStr (status));
+            s_catf (&t, "%s %s %s%s%s[tcp:%s+%lX %s]",
+                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->screen, nativestatus, ContactStatusStr (status));
             break;
         default:
-            s_catf (&t, "%s %s %s%s%s[tcp:%lu+%lX %s]",
-                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->uin, nativestatus, ContactStatusStr (status));
+            s_catf (&t, "%s %s %s%s%s[tcp:%s+%lX %s]",
+                      username, indic, pos, cont->uin ? cont->nick : "", pos, cont->screen, nativestatus, ContactStatusStr (status));
             break;
     }
 
@@ -137,7 +137,6 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
         snprintf (target, buffer + sizeof (buffer) - target, "%s.log", cont->screen);
 
 #if HAVE_SYMLINK
-        if (cont->uin)
         {
             char *b = target - buffer + symbuf;
 

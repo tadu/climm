@@ -144,13 +144,13 @@ const char *AliasExpand (const char *string, UDWORD bytepos, char autoexpand)
         if (q[1] == 'r')
         {
             if (uiG.last_rcvd)
-                s_cat (&al_exp, uiG.last_rcvd->nick ? uiG.last_rcvd->nick : s_sprintf ("%lu", uiG.last_rcvd->uin));
+                s_cat (&al_exp, uiG.last_rcvd->nick);
             q += 2;
         }
         else if (q[1] == 'a')
         {
             if (uiG.last_sent)
-                s_cat (&al_exp, uiG.last_sent->nick ? uiG.last_sent->nick : s_sprintf ("%lu", uiG.last_sent->uin));
+                s_cat (&al_exp, uiG.last_sent->nick);
             q += 2;
         }
         else if (q[1] == 's')

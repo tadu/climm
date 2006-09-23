@@ -300,7 +300,7 @@ void TCLMessage (Contact *from, const char *text)
         return;
 
     if (from)
-        uin = strdup (s_sprintf ("%lu", from->uin));
+        uin = strdup (from->screen);
 
     while (hook)
     {
@@ -368,7 +368,7 @@ void TCLInit ()
 
     for (i = 0; (conn = ConnectionNr (i)); i++)
         if (conn->type & TYPEF_ANY_SERVER)
-            Tcl_SetVar (tinterp, "micq_uin", s_sprintf ("%lu", conn->uin),
+            Tcl_SetVar (tinterp, "micq_uin", conn->screen,
                         TCL_LIST_ELEMENT | TCL_APPEND_VALUE);
 
     tcl_events = NULL;

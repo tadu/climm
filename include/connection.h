@@ -107,7 +107,6 @@ Connection    *ConnectionClone   (Connection *conn, UWORD type DEBUGPARAM);
 void           ConnectionD       (Connection *conn DEBUGPARAM);
 Connection    *ConnectionNr      (int i);
 Connection    *ConnectionFind    (UWORD type, const Contact *cont, const Connection *parent);
-Connection    *ConnectionFindUIN (UWORD type, UDWORD uin);
 Connection    *ConnectionFindScreen (UWORD type, const char *screen);
 UDWORD         ConnectionFindNr  (Connection *conn);
 const char    *ConnectionType    (Connection *conn);

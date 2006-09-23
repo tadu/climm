@@ -3763,7 +3763,8 @@ static JUMP_F(CmdUserConn)
     int i;
     UDWORD nr;
     strc_t par;
-    Connection *connl;
+    Connection *connl = NULL;
+    const char *targs;
 
     if (!data)
     {
@@ -3834,50 +3835,71 @@ static JUMP_F(CmdUserConn)
             break;
             
         case 2:
-            if (!s_parseint (&args, &nr))
+            targs = args;
+            nr = 0;
+
+            if (s_parseint (&targs, &nr) && (connl = ConnectionNr (nr - 1)))
+                args = targs;
+            else if ((par = s_parse (&args)))
+            {
+                connl = ConnectionFindScreen (TYPEF_ANY_SERVER, par->txt);
+                if (!connl)
+                {
+                    if (nr)
+                        rl_printf (i18n (9999, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
+                    else
+                        rl_printf (i18n (9999, "There is no connection for UIN %s.\n"), par->txt);
+                }
+            }
+            else
             {
                 if (ConnectionFindNr (conn))
-                    nr = ConnectionFindNr (conn) + 1;
+                    connl = conn;
                 else
-                    nr = 1 + ConnectionFindNr (ConnectionFind (TYPEF_ANY_SERVER, NULL, 0));
+                    connl = ConnectionFind (TYPEF_ANY_SERVER, NULL, 0);
+                if (!connl)
+                    rl_printf (i18n (9999, "No connection selected.\n"));
             }
-
-            connl = ConnectionNr (nr - 1);
-            if (!connl && !(connl = ConnectionFindUIN (TYPEF_ANY_SERVER, nr)))
-            {
-                rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
-                return 0;
-            }
+            if (!connl)
+                break;
             if (connl->connect & CONNECT_OK)
-            {
-                rl_printf (i18n (1891, "Connection %ld is already open.\n"), nr);
-                return 0;
-            }
-            if (!connl->open)
-            {
-                rl_printf (i18n (2194, "Don't know how to open this connection type.\n"));
-                return 0;
-            }
-            connl->open (connl);
+                rl_printf (i18n (9999, "Connection for %s is already open.\n"), connl->screen);
+            else if (!connl->open)
+                rl_printf (i18n (9999, "Don't know how to open connection type %s for %s.\n"),
+                    ConnectionType (connl), connl->screen);
+            else
+                connl->open (connl);
+            break;
 
         case 3:
-            if (!s_parseint (&args, &nr))
-                nr = ConnectionFindNr (conn) + 1;
+            targs = args;
+            nr = 0;
 
-            connl = ConnectionNr (nr - 1);
-            if (!connl && !(connl = ConnectionFindUIN (TYPEF_ANY_SERVER, nr)))
+            if (s_parseint (&targs, &nr) && (connl = ConnectionNr (nr - 1)))
+                args = targs;
+            else if ((par = s_parse (&args)))
             {
-                rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
-                return 0;
+                connl = ConnectionFindScreen (TYPEF_ANY_SERVER, par->txt);
+                if (!connl)
+                {
+                    if (nr)
+                        rl_printf (i18n (9999, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
+                    else
+                        rl_printf (i18n (9999, "There is no connection for UIN %s.\n"), par->txt);
+                }
             }
+            else
+                rl_printf (i18n (9999, "No connection selected.\n"));
+            if (!connl)
+                break;
             if (~connl->type & TYPEF_ANY_SERVER)
-            {
                 rl_printf (i18n (2098, "Connection %ld is not a server connection.\n"), nr);
-                return 0;
+            else
+            {
+                conn = connl;
+                rl_printf (i18n (9999, "Selected connection %ld (version %d, UIN %s) as current connection.\n"),
+                          nr, connl->version, connl->screen);
             }
-            conn = connl;
-            rl_printf (i18n (2099, "Selected connection %ld (version %d, UIN %ld) as current connection.\n"),
-                      nr, connl->version, connl->uin);
             break;
         
         case 4:
@@ -3888,12 +3910,12 @@ static JUMP_F(CmdUserConn)
             if (!connl)
             {
                 rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
-                return 0;
+                break;
             }
             if (connl->flags & CONN_CONFIGURED)
             {
                 rl_printf (i18n (2102, "Connection %ld is a configured connection.\n"), nr);
-                return 0;
+                break;
             }
             rl_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), nr);
             ConnectionD (connl);
@@ -3905,11 +3927,8 @@ static JUMP_F(CmdUserConn)
 
             connl = ConnectionNr (nr - 1);
             if (!connl)
-            {
                 rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
-                return 0;
-            }
-            if (connl->close)
+            else if (connl->close)
             {
                 rl_printf (i18n (2185, "Closing connection %ld.\n"), nr);
                 connl->close (connl);
@@ -4023,26 +4042,42 @@ static JUMP_F(CmdUserQuit)
 static JUMP_F(CmdUserAsSession)
 {
     Connection *saveconn, *tmpconn;
-    UDWORD quiet = 0, nr;
+    UDWORD quiet = 0, nr = 0;
+    const char *targs;
+    strc_t par;
     
     saveconn = conn;
     
     if (s_parsekey (&args, "quiet"))
         quiet = 1;
 
-    if (!s_parseint (&args, &nr))
-    {
-        /* syntax error */
-        return 0;
-    }
+    targs = args;
 
-    tmpconn = ConnectionNr (nr - 1);
-    if (!tmpconn && !(tmpconn = ConnectionFindUIN (TYPEF_ANY_SERVER, nr)))
+    if (s_parseint (&targs, &nr) && (tmpconn = ConnectionNr (nr - 1)))
+        args = targs;
+    else if ((par = s_parse (&args)))
     {
-        if (!quiet)
-            rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
-        return 0;
+        tmpconn = ConnectionFindScreen (TYPEF_ANY_SERVER, par->txt);
+        if (!tmpconn && !quiet)
+        {
+            if (nr)
+                rl_printf (i18n (9999, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
+            else
+                rl_printf (i18n (9999, "There is no connection for UIN %s.\n"), par->txt);
+        }
     }
+    else
+    {
+        if (ConnectionFindNr (conn))
+            tmpconn = conn;
+        else
+            tmpconn = ConnectionFind (TYPEF_ANY_SERVER, NULL, 0);
+        if (!tmpconn && !quiet)
+            rl_printf (i18n (9999, "No connection selected.\n"));
+    }
+    if (!tmpconn)
+        return 0;
+
     if (~tmpconn->type & TYPEF_ANY_SERVER)
     {
         if (!quiet)

@@ -189,27 +189,6 @@ Connection *ConnectionFind (UWORD type, const Contact *cont, const Connection *p
 }
 
 /*
- * Finds a session of given type and given uin.
- * Actually, you may specify TYPEF_* here that must all be set.
- */
-Connection *ConnectionFindUIN (UWORD type, UDWORD uin)
-{
-    ConnectionList *cl;
-    Connection *conn;
-    int i;
-
-    assert (type);    
-    assert (uin);
-
-    for (cl = &slist; cl; cl = cl->more)
-        for (i = 0; i < ConnectionListLen; i++)
-            if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->uin == uin)
-                return conn;
-
-    return NULL;
-}
-
-/*
  * Finds a session of given type and given screen.
  * Actually, you may specify TYPEF_* here that must all be set.
  */
@@ -222,13 +201,10 @@ Connection *ConnectionFindScreen (UWORD type, const char *screen)
     assert (type);    
     assert (screen);
     
-    if (type & TYPEF_HAVEUIN)
-        return ConnectionFindUIN (type, atoi (screen));
-
     for (cl = &slist; cl; cl = cl->more)
         for (i = 0; i < ConnectionListLen; i++)
             if ((conn = cl->conn[i]) && (conn->type & type) == type
-                && !conn->uin && !strcmp (conn->screen, screen))
+                && !strcmp (conn->screen, screen))
                 return conn;
 
     return NULL;

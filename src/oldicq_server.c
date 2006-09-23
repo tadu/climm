@@ -250,7 +250,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             Meta_User (conn, cont, pak);
             break;
         case SRV_NEW_UIN:
-            rl_printf (i18n (1639, "The new UIN is %ld!\n"), cont->uin);
+            rl_printf (i18n (9999, "The new UIN is %s!\n"), cont->screen);
             break;
         case SRV_UPDATE_FAIL:
             rl_print (i18n (1640, "Failed to update info.\n"));
@@ -259,7 +259,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             rl_print (i18n (1641, "User info successfully updated.\n"));
             break;
         case SRV_LOGIN_REPLY:
-            rl_printf ("%s %s%10lu%s %s\n", s_now, COLCONTACT, cont->uin, COLNONE, i18n (1050, "Login successful!"));
+            rl_printf ("%s %s%s%s %s\n", s_now, COLCONTACT, cont->screen, COLNONE, i18n (1050, "Login successful!"));
             CmdPktCmdLogin1 (conn);
             CmdPktCmdContactList (conn);
             CmdPktCmdInvisList (conn);
@@ -420,7 +420,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             cont->flags = IcqToFlags (status);
             cont->nativestatus = status;
 
-            rl_printf ("%-15s %lu\n", i18n (1440, "Random User:"), cont->uin);
+            rl_printf ("%-15s %s\n", i18n (1440, "Random User:"), cont->screen);
             rl_printf ("%-15s %s:%lu\n", i18n (1441, "remote IP:"), 
                       s_ip (cont->dc->ip_rem), cont->dc->port);
             rl_printf ("%-15s %s\n", i18n (1451, "local  IP:"),  s_ip (cont->dc->ip_loc));

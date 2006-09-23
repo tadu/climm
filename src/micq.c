@@ -473,7 +473,7 @@ static void Init (int argc, char *argv[])
         {
             if (arg_u)
             {
-                if (!(conn = ConnectionFindUIN (TYPEF_ANY_SERVER, atoll (arg_u))) && atoll (arg_u))
+                if (!(conn = ConnectionFindScreen (TYPEF_ANY_SERVER, arg_u)) && atoll (arg_u))
                     conn = PrefNewConnection (atoll (arg_u), arg_p);
             }
             else if (!*targv[i+1])
