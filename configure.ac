@@ -296,12 +296,23 @@ fi
 AC_LANG([C])
 
 if test "x$ac_arg_use_jabber" != "xno"; then
-  PKG_CHECK_MODULES(JABBER, gloox, ac_arg_use_jabber=yes, ac_arg_use_jabber=no)
-  if test "x$ac_arg_use_jabber$ac_arg_use_ssl" = "xyesgnutls"; then
+  if test "x$ac_arg_use_ssl" != "xgnutls"; then
+    AC_MSG_CHECKING([Jabber])
+    AC_MSG_RESULT([no, GnuTLS missing])
+    ac_use_jabber=no
+  else
+    PKG_CHECK_MODULES(Jabber, gloox, ac_use_jabber=yes, ac_use_jabber=no)
+  fi
+
+  if test "x$ac_use_jabber$ac_arg_use_jabber" = "xnoyes"; then
+    AC_MSG_FAILURE([cannot find Jabber library libgloox])
+  fi
+  ac_arg_use_jabber=$ac_use_jabber;
+  if test "x$ac_arg_use_jabber" = "xyes"; then
     AC_SUBST(LIBJABBER, "libmicqjabber.a", [Static lib to link if Jabber is enabled])
     AC_SUBST(L_LIBJABBER, "-L. -lmicqjabber", [Static lib link option to link if Jabber is enabled])
     AC_DEFINE(ENABLE_JABBER, 1, [Enable Jabber chat network using libgloox])
-    LIBS="$LIBS $JABBER_LIBS"
+    LIBS="$LIBS $Jabber_LIBS"
   fi
 fi
 
