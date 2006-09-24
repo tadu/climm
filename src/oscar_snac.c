@@ -207,7 +207,7 @@ void SnacPrint (Packet *pak)
     len  = PacketReadAtB2 (pak, pak->rpos);
 
     rl_printf ("%s %sSNAC     (%x,%x) [%s] flags %x ref %lx",
-             s_dumpnd (pak->data + 6, flag & 0x8000 ? 10 + len : 10),
+             s_dumpnd (pak->data + 6, flag & 0x8000 ? 10 + len + 2 : 10),
              COLDEBUG, fam, cmd, SnacName (fam, cmd), flag, ref);
     if (flag & 0x8000)
     {
