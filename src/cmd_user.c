@@ -343,7 +343,7 @@ static JUMP_F(CmdUserRandomSet)
     {
         if (conn->type == TYPE_SERVER)
             SnacCliSetrandom (conn, arg1);
-        else
+        else if (conn->type == TYPE_SERVER_OLD)
             CmdPktCmdRandSet (conn, arg1);
     }
     return 0;
@@ -676,7 +676,7 @@ static JUMP_F(CmdUserPass)
         }
         if (conn->type == TYPE_SERVER)
             SnacCliMetasetpass (conn, arg1);
-        else
+        else if (conn->type == TYPE_SERVER_OLD)
             CmdPktCmdMetaPass (conn, arg1);
         conn->passwd = strdup (arg1);
         if (conn->pref_passwd && strlen (conn->pref_passwd))
@@ -1268,12 +1268,15 @@ static JUMP_F (CmdUserAnyMess)
     }
     else
     {
-        if (conn->type != TYPE_SERVER)
+        if (conn->type == TYPE_SERVER_OLD)
             CmdPktCmdSendMessage (conn, cont, t.txt, data >> 2);
-        else if (f != 2)
-            SnacCliSendmsg (conn, cont, t.txt, data >> 2, f);
-        else
-            SnacCliSendmsg2 (conn, cont, OptSetVals (NULL, CO_FORCE, 1, CO_MSGTYPE, data >> 2, CO_MSGTEXT, t.txt, 0));
+        else if (conn->type == TYPE_SERVER)
+        {
+            if (f != 2)
+                SnacCliSendmsg (conn, cont, t.txt, data >> 2, f);
+            else
+                SnacCliSendmsg2 (conn, cont, OptSetVals (NULL, CO_FORCE, 1, CO_MSGTYPE, data >> 2, CO_MSGTEXT, t.txt, 0));
+        }
     }
     return 0;
 }
@@ -1900,7 +1903,7 @@ static JUMP_F(CmdUserStatusMeta)
                     SnacCliMetasetmore (conn, cont);
                     SnacCliMetasetabout (conn, cont->meta_about);
                 }
-                else
+                else if (conn->type == TYPE_SERVER_OLD)
                 {
                     CmdPktCmdMetaGeneral (conn, cont);
                     CmdPktCmdMetaMore (conn, cont);
@@ -2531,7 +2534,7 @@ static JUMP_F(CmdUserRegister)
             Connection *newc = SrvRegisterUIN (conn, par->txt);
             ConnectionInitServer (newc);
         }
-        else
+        else if (conn->type == TYPE_SERVER_OLD)
             CmdPktCmdRegNewUser (conn, par->txt);     /* TODO */
     }
     else
@@ -2587,7 +2590,7 @@ static JUMP_F(CmdUserTogInvis)
                     if (!ContactIsInv (conn->status))
                         SnacCliReminvis (conn, cont);
                 }
-                else
+                else if (conn->type == TYPE_SERVER_OLD)
                     CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, FALSE);
                 rl_printf (i18n (2020, "Being visible to %s.\n"), cont->nick);
             }
@@ -2602,11 +2605,11 @@ static JUMP_F(CmdUserTogInvis)
                     if (i || ContactIsInv (conn->status))
                         SnacCliSetstatus (conn, conn->status, 3);
                 }
-                else
+                else if (conn->type == TYPE_SERVER_OLD)
                     CmdPktCmdUpdateList (conn, cont, INV_LIST_UPDATE, TRUE);
                 rl_printf (i18n (2021, "Being invisible to %s.\n"), cont->nick);
             }
-            if (conn->type != TYPE_SERVER)
+            if (conn->type == TYPE_SERVER_OLD)
             {
                 CmdPktCmdContactList (conn);
                 CmdPktCmdInvisList (conn);
@@ -2642,7 +2645,7 @@ static JUMP_F(CmdUserTogVisible)
                     if (ContactIsInv (conn->status))
                         SnacCliRemvisible (conn, cont);
                 }
-                else
+                else if (conn->type == TYPE_SERVER_OLD)
                     CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, FALSE);
                 rl_printf (i18n (1670, "Normal visible to %s now.\n"), cont->nick);
             }
@@ -2657,7 +2660,7 @@ static JUMP_F(CmdUserTogVisible)
                     if (i || !ContactIsInv (conn->status))
                         SnacCliSetstatus (conn, conn->status, 3);
                 }
-                else
+                else if (conn->type == TYPE_SERVER_OLD)
                     CmdPktCmdUpdateList (conn, cont, VIS_LIST_UPDATE, TRUE);
                 rl_printf (i18n (1671, "Always visible to %s now.\n"), cont->nick);
             }
@@ -2719,7 +2722,7 @@ static JUMP_F(CmdUserAdd)
                     ContactCreate (conn, cont);
                     if (conn->type == TYPE_SERVER)
                         SnacCliAddcontact (conn, cont, NULL);
-                    else
+                    else if (conn->type == TYPE_SERVER_OLD)
                         CmdPktCmdContactList (conn);
                     rl_printf (i18n (9999, "%s added as %s.\n"), cont->screen, cont->nick);
                 }
@@ -2777,7 +2780,7 @@ static JUMP_F(CmdUserAdd)
         ContactAddAlias (cont, cmd);
         if (conn->type == TYPE_SERVER)
             SnacCliAddcontact (conn, cont, NULL);
-        else
+        else if (conn->type == TYPE_SERVER_OLD)
             CmdPktCmdContactList (conn);
     }
     else
@@ -2865,7 +2868,7 @@ static JUMP_F(CmdUserRemove)
                 {
                     if (conn->type == TYPE_SERVER)
                         SnacCliRemcontact (conn, cont, NULL);
-                    else
+                    else if (conn->type == TYPE_SERVER_OLD)
                         CmdPktCmdContactList (conn);
                 }
 
@@ -2904,6 +2907,7 @@ static JUMP_F(CmdUserAuth)
     Contact *cont;
     int i;
     char *msg = NULL;
+    UWORD msgtype;
     OPENCONN;
 
     if (!data)
@@ -2926,59 +2930,33 @@ static JUMP_F(CmdUserAuth)
         return 0;
     if (data & 2 && !(msg = s_parserem (&args)))
         msg = NULL;
-    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+
+    switch (data)
     {
-        switch (data)
-        {
-            case 2:
-                if (!msg)         /* FIXME: let it untranslated? */
-                    msg = "Authorization refused\n";
-#if 0
-                if (conn->type == TYPE_SERVER && conn->version >= 8)
-                    SnacCliAuthorize (conn, cont, 0, msg);
-                else
-#endif
-                if (conn->type == TYPE_SERVER)
-                    SnacCliSendmsg (conn, cont, msg, MSG_AUTH_DENY, 0);
-                else
-                    CmdPktCmdSendMessage (conn, cont, msg, MSG_AUTH_DENY);
-                break;
-            case 3:
-                if (!msg)         /* FIXME: let it untranslated? */
-                    msg = "Please authorize my request and add me to your Contact List\n";
-#if 0
-                if (conn->type == TYPE_SERVER && conn->version >= 8)
-                    SnacCliReqauth (conn, cont, msg);
-                else
-#endif
-                if (conn->type == TYPE_SERVER)
-                    SnacCliSendmsg (conn, cont, msg, MSG_AUTH_REQ, 0);
-                else
-                    CmdPktCmdSendMessage (conn, cont, msg, MSG_AUTH_REQ);
-                break;
-            case 4:
-#if 0
-                if (conn->type == TYPE_SERVER && conn->version >= 8)
-                    SnacCliGrantauth (conn, cont);
-                else
-#endif
-                if (conn->type == TYPE_SERVER)
-                    SnacCliSendmsg (conn, cont, "\x03", MSG_AUTH_ADDED, 0);
-                else
-                    CmdPktCmdSendMessage (conn, cont, "\x03", MSG_AUTH_ADDED);
-                break;
-            case 5:
-#if 0
-                if (conn->type == TYPE_SERVER && conn->version >= 8)
-                    SnacCliAuthorize (conn, cont, 1, NULL);
-                else
-#endif
-                if (conn->type == TYPE_SERVER)
-                    SnacCliSendmsg (conn, cont, "\x03", MSG_AUTH_GRANT, 0);
-                else
-                    CmdPktCmdSendMessage (conn, cont, "\x03", MSG_AUTH_GRANT);
-        }
+        case 2:
+            if (!msg)         /* FIXME: let it untranslated? */
+                msg = "Authorization refused\n";
+            msgtype = MSG_AUTH_DENY;
+            break;
+        case 3:
+            if (!msg)         /* FIXME: let it untranslated? */
+                msg = "Please authorize my request and add me to your Contact List\n";
+            msgtype = MSG_AUTH_REQ;
+            break;
+        case 4:
+            if (!msg)
+                msg = "\x03";
+            msgtype = MSG_AUTH_ADDED;
+            break;
+        default:
+        case 5:
+            if (!msg)
+                msg = "\x03";
+            msgtype = MSG_AUTH_GRANT;
     }
+
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+        IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, msgtype, CO_MSGTEXT, msg, 0));
     return 0;
 }
 
@@ -4119,7 +4097,7 @@ static JUMP_F(CmdUserOldSearch)
             {
                 if (conn->type == TYPE_SERVER)
                     SnacCliSearchbymail (conn, args);
-                else
+                else if (conn->type == TYPE_SERVER_OLD)
                     CmdPktCmdSearchUser (conn, args, "", "", "");
                 
                 return 0;
@@ -4142,7 +4120,7 @@ static JUMP_F(CmdUserOldSearch)
             last = strdup ((char *) args);
             if (conn->type == TYPE_SERVER)
                 SnacCliSearchbypersinf (conn, email, nick, first, last);
-            else
+            else if (conn->type == TYPE_SERVER_OLD)
                 CmdPktCmdSearchUser (conn, email, nick, first, last);
         case -1:
             ReadLinePromptReset ();
@@ -4183,21 +4161,21 @@ static JUMP_F(CmdUserSearch)
             {
                 if (conn->type == TYPE_SERVER)
                     SnacCliSearchbypersinf (conn, NULL, NULL, arg1, par->txt);
-                else
+                else if (conn->type == TYPE_SERVER_OLD)
                     CmdPktCmdSearchUser (conn, NULL, NULL, arg1, par->txt);
             }
             else if (strchr (arg1, '@'))
             {
                 if (conn->type == TYPE_SERVER)
                     SnacCliSearchbymail (conn, arg1);
-                else
+                else if (conn->type == TYPE_SERVER_OLD)
                     CmdPktCmdSearchUser (conn, arg1, "", "", "");
             }
             else
             {
                 if (conn->type == TYPE_SERVER)
                     SnacCliSearchbypersinf (conn, NULL, arg1, NULL, NULL);
-                else
+                else if (conn->type == TYPE_SERVER_OLD)
                     CmdPktCmdSearchUser (conn, NULL, arg1, NULL, NULL);
             }
             free (arg1);
@@ -4297,7 +4275,7 @@ static JUMP_F(CmdUserSearch)
                 else
                     SnacCliSearchwp (conn, &wp);
             }
-            else
+            else if (conn->type == TYPE_SERVER_OLD)
             {
                 if (status > 250 && status <= 403)
                     CmdPktCmdSearchUser (conn, wp.email, wp.nick, wp.first, wp.last);
@@ -4448,7 +4426,7 @@ static JUMP_F(CmdUserUpdate)
             {
                 if (conn->type == TYPE_SERVER)
                     SnacCliMetasetgeneral (conn, cont);
-                else
+                else if (conn->type == TYPE_SERVER_OLD)
                     CmdPktCmdMetaGeneral (conn, cont);
             }
         case -1:
@@ -4539,7 +4517,7 @@ static JUMP_F(CmdUserOther)
             more->lang3 = temp;
             if (conn->type == TYPE_SERVER)
                 SnacCliMetasetmore (conn, cont);
-            else
+            else if (conn->type == TYPE_SERVER_OLD)
                 CmdPktCmdMetaMore (conn, cont);
         case -1:
             break;
@@ -4565,7 +4543,7 @@ static JUMP_F(CmdUserAbout)
             {
                 if (conn->type == TYPE_SERVER)
                     SnacCliMetasetabout (conn, msg);
-                else
+                else if (conn->type == TYPE_SERVER_OLD)
                     CmdPktCmdMetaAbout (conn, msg);
             }
             else if (strcmp (args, CANCEL_MSG_STR))
@@ -4581,7 +4559,7 @@ static JUMP_F(CmdUserAbout)
                 {
                     if (conn->type == TYPE_SERVER)
                         SnacCliMetasetabout (conn, msg);
-                    else
+                    else if (conn->type == TYPE_SERVER_OLD)
                         CmdPktCmdMetaAbout (conn, msg);
                 }
             }
@@ -4592,7 +4570,7 @@ static JUMP_F(CmdUserAbout)
             {
                 if (conn->type == TYPE_SERVER)
                     SnacCliMetasetabout (conn, arg);
-                else
+                else if (conn->type == TYPE_SERVER_OLD)
                     CmdPktCmdMetaAbout (conn, arg);
                 return 0;
             }

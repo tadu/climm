@@ -27,6 +27,7 @@
 #include "packet.h"
 #include "conv.h"
 #include "oscar_service.h"
+#include "oscar_roster.h"
 #include "jabber_base.h"
 
 static void CallbackMeta (Event *event);
@@ -84,7 +85,8 @@ UBYTE IMCliReMsg (Connection *conn, Contact *cont, Opt *opt)
     if (!OptGetVal (opt, CO_MSGTRANS, &opt_trans))
         OptSetVal (opt, CO_MSGTRANS, opt_trans = CV_MSGTRANS_ANY);
     
-    if (ContactIsInv (conn->status)  && !ContactPrefVal (cont, CO_INTIMATE)
+    if (conn->type == TYPE_SERVER
+        && ContactIsInv (conn->status)  && !ContactPrefVal (cont, CO_INTIMATE)
         && !(opt_type & MSGF_GETAUTO) && !ContactPrefVal (cont, CO_HIDEFROM)
         && (reveal_time = ContactPrefVal (cont, CO_REVEALTIME)))
     {
@@ -111,7 +113,10 @@ UBYTE IMCliReMsg (Connection *conn, Contact *cont, Opt *opt)
     if (opt_trans & CV_MSGTRANS_ICQv8)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER)
             if (RET_IS_OK (ret = SnacCliSendmsg (conn, cont, opt_text, opt_type, 0)))
+            {
+                OptD (opt);
                 return ret;
+            }
     OptSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_ICQv8);
     if (opt_trans & CV_MSGTRANS_ICQv5)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_SERVER_OLD)
@@ -124,8 +129,19 @@ UBYTE IMCliReMsg (Connection *conn, Contact *cont, Opt *opt)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_JABBER_SERVER)
             if (RET_IS_OK (ret = JabberSendmsg (conn, cont, opt_text, opt_type)))
                 return ret;
+    ret = RET_OK;
+    if (conn->type == TYPE_SERVER && opt_type == MSG_AUTH_DENY)
+        SnacCliAuthorize (conn, cont, 0, opt_text);
+    else if (conn->type == TYPE_SERVER && opt_type == MSG_AUTH_REQ)
+        SnacCliReqauth (conn, cont, opt_text);
+    else if (conn->type == TYPE_SERVER && opt_type == MSG_AUTH_ADDED)
+        SnacCliGrantauth (conn, cont);
+    else if (conn->type == TYPE_SERVER && opt_type == MSG_AUTH_GRANT)
+        SnacCliAuthorize (conn, cont, 1, NULL);
+    else
+        ret = RET_INPR;
     OptD (opt);
-    return RET_FAIL;
+    return ret;
 }
 
 void IMCliInfo (Connection *conn, Contact *cont, int group)

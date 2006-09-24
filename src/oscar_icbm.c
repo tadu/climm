@@ -211,6 +211,8 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
             case MSG_AUTH_GRANT:
             case MSG_AUTH_DENY:
             case MSG_AUTH_ADDED:
+                if (!cont->uin)
+                    return RET_DEFER;
                 format = 4;
                 break;
             case MSG_NORM:
