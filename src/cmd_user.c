@@ -3713,7 +3713,7 @@ static JUMP_F(CmdUserUptime)
         rl_printf ("%s%02d%s %s, ", COLQUOTE, Hours, COLNONE, i18n (1689, "hours"));
     if (Minutes != 0)
         rl_printf ("%s%02d%s %s, ", COLQUOTE, Minutes, COLNONE, i18n (1690, "minutes"));
-    rl_printf ("%s%02d%s %s.\n", COLQUOTE, Seconds, COLQUOTE, i18n (1691, "seconds"));
+    rl_printf ("%s%02d%s %s.\n", COLQUOTE, Seconds, COLNONE, i18n (1691, "seconds"));
 
     rl_print (i18n (1746, " nr type         sent/received packets/unique packets\n"));
     for (i = 0; (connl = ConnectionNr (i)); i++)
