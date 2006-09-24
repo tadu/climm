@@ -125,10 +125,12 @@ UBYTE IMCliReMsg (Connection *conn, Contact *cont, Opt *opt)
             OptD (opt);
             return RET_OK;
         }
+#if ENABLE_JABBER
     if (opt_trans & CV_MSGTRANS_JABBER)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_JABBER_SERVER)
             if (RET_IS_OK (ret = JabberSendmsg (conn, cont, opt_text, opt_type)))
                 return ret;
+#endif
     ret = RET_OK;
     if (conn->type == TYPE_SERVER && opt_type == MSG_AUTH_DENY)
         SnacCliAuthorize (conn, cont, 0, opt_text);
@@ -202,9 +204,9 @@ void IMSetStatus (Connection *conn, Contact *cont, status_t status, const char *
         CmdPktCmdStatusChange (conn, status);
         rl_printf ("%s %s\n", s_now, s_status (conn->status, conn->nativestatus));
     }
+#if ENABLE_JABBER
     else if (conn->type == TYPE_JABBER_SERVER)
-    {
         JabberSetstatus (conn, cont, status, msg);
-    }
+#endif
 }
 
