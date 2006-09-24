@@ -40,6 +40,7 @@
 #include "util_tcl.h"
 #include "util_ssl.h"
 #include "util_alias.h"
+#include "cmd_user.h"
 #include "os.h"
 
 #define MICQ_ICON_1 "   " GREEN "_" SGR0 "     "
