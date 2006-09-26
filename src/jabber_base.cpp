@@ -75,7 +75,7 @@ MICQJabber::MICQJabber (Connection *serv)
     m_client->registerSubscriptionHandler (this);
     m_client->registerPresenceHandler (this);
     m_client->logInstance ().registerLogHandler (gloox::LogLevelDebug,   gloox::LogAreaAll, this);
-    m_client->disco()->setVersion ("mICQ testing", "0.5.2");
+    m_client->disco()->setVersion ("mICQ testing", "0.5.1.90");
     m_client->disco()->setIdentity ("client", "bot");
     m_client->setAutoPresence (true);
     m_client->setInitialPriority (5);
