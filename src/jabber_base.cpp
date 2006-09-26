@@ -9,6 +9,7 @@ extern "C" {
 #include "util_ui.h"
 }
 
+#include <cassert>
 #include <gloox/gloox.h>
 #include <gloox/client.h>
 #include <gloox/connectionlistener.h>
