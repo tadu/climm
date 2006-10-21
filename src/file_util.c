@@ -1281,11 +1281,12 @@ void PrefReadStat (FILE *stf)
                     if (!strncmp (cg->name, "contacts-", 9))
                     {
                         UWORD type;
+                        int len;
                         
                         if (!(type = ConnectionServerNType (cg->name + 9, '-')))
                             break;
 
-                        int len = strlen (ConnectionServerType (type));
+                        len = strlen (ConnectionServerType (type));
                         if ((conn = ConnectionFindScreen (type, cg->name + 10 + len)))
                         {
                             if (conn->contacts && conn->contacts != cg)
