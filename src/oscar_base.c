@@ -386,13 +386,15 @@ Event *ConnectionInitServer (Connection *conn)
     Contact *cont;
     Event *event;
     
-    if (!conn->server || !*conn->server || !conn->port || !conn->uin)
+    if (!conn->server || !*conn->server || !conn->port)
+        return NULL;
+    if (!conn->uin && ~conn->flags & CONN_WIZARD)
         return NULL;
 
     if (conn->sok != -1)
         sockclose (conn->sok);
     conn->sok = -1;
-    conn->cont = cont = ContactUIN (conn, conn->uin);
+    conn->cont = cont = conn->uin ? ContactUIN (conn, conn->uin) : NULL;
     conn->our_seq  = rand () & 0x7fff;
     conn->connect  = 0;
     conn->dispatch = &SrvCallBackReceive;
@@ -588,8 +590,8 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
     {
         newl->version = 8;
         newl->status = newl->pref_status = prG->s5Use ? 2 : TCP_OK_FLAG;
-        newl->flags |= CONN_AUTOLOGIN;
     }
+    newl->flags &= ~CONN_AUTOLOGIN;
 #endif
 
     if (conn)
