@@ -82,7 +82,7 @@ Connection *PrefNewConnection (UDWORD uin, const char *passwd)
     conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
     OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
     
-    cont = ContactFindUIN (conn->contacts, 82274703);
+    cont = ContactUIN (conn, 82274703);
     ContactCreate (conn, cont);
     ContactAddAlias (cont, "mICQ");
     ContactAddAlias (cont, "Tadu");
@@ -219,7 +219,7 @@ void Initialize_RC_File ()
         conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
         OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
 
-        cont = ContactFindUIN (conn->contacts, 82274703);
+        cont = ContactUIN (conn, 82274703);
         ContactCreate (conn, cont);
         ContactAddAlias (cont, "mICQ");
         ContactAddAlias (cont, "Tadu");
