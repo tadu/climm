@@ -117,6 +117,7 @@ JUMP_SNAC_F(SnacSrvReplylists)
     SnacCliReady (serv);
     SnacCliAddcontact (serv, NULL, serv->contacts);
     SnacCliReqofflinemsgs (serv);
+    SnacCliReqinfo (serv);
     if (serv->flags & CONN_WIZARD)
     {
         IMRoster (serv, IMROSTER_IMPORT);
