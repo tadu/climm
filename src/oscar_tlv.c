@@ -42,7 +42,7 @@
  *
  * The resulting array of TLV does not have pointers into the given Packet.
  */
-TLV *TLVRead (Packet *pak, UDWORD TLVlen)
+TLV *TLVRead (Packet *pak, UDWORD TLVlen, UDWORD TLVCount)
 {
     TLV *tlv = calloc (__maxTLV, sizeof (TLV));
     int typ, pos, i = __minTLV, n, max = __maxTLV;
@@ -50,7 +50,7 @@ TLV *TLVRead (Packet *pak, UDWORD TLVlen)
 
     assert (tlv);
 
-    while (TLVlen >= 4)
+    while (TLVlen >= 4 && TLVCount > 0)
     {
         typ = PacketReadB2 (pak);
         len = PacketReadB2 (pak);
@@ -93,6 +93,7 @@ TLV *TLVRead (Packet *pak, UDWORD TLVlen)
         tlv[n].tag = typ;
         
         TLVlen -= 2 + 2 + len;
+        TLVCount--;
     }
     return tlv;
 }

@@ -221,7 +221,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         re->id   = PacketReadB2 (pak);     /* ID   */
         re->type = PacketReadB2 (pak);     /* TYPE */
         TLVlen = PacketReadB2 (pak);     /* TLV length */
-        re->tlv  = TLVRead (pak, TLVlen);
+        re->tlv  = TLVRead (pak, TLVlen, -1);
         
         re->name = strdup (ConvFromServ (cname));
 

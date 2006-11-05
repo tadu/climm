@@ -61,7 +61,7 @@ static SNAC SNACv[] = {
     { 10,  1, NULL, NULL},
     { 11,  1, NULL, NULL},
     { 12,  1, NULL, NULL},
-    { 19,  4, NULL, NULL},
+    { 19,  4, NULL, NULL}, /* 5 */
     { 21,  1, NULL, NULL},
     { 34,  0, NULL, NULL},
     {  0,  0, NULL, NULL}
@@ -92,7 +92,7 @@ JUMP_SNAC_F (SnacSrvServiceerr)
     TLV *tlv;
     
     err = PacketReadB2 (event->pak);
-    tlv = TLVRead (event->pak, PacketReadLeft (event->pak));
+    tlv = TLVRead (event->pak, PacketReadLeft (event->pak), -1);
     
     if (tlv[8].str.len)
         DebugH (DEB_PROTOCOL, "Server returned error code %d, sub code %ld for service family.", err, tlv[8].nr);
@@ -225,7 +225,7 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     Contact *cont;
     Packet *pak;
     TLV *tlv;
-    UDWORD ostat;
+    UDWORD ostat, tlvc;
     status_t status;
     
     pak = event->pak;
@@ -235,8 +235,8 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
         rl_printf (i18n (9999, "Warning: Server thinks our UIN is %s, when it is %s.\n"),
                   cont->screen, serv->screen);
     PacketReadB2 (pak);
-    PacketReadB2 (pak);
-    tlv = TLVRead (pak, PacketReadLeft (pak));
+    tlvc = PacketReadB2 (pak);
+    tlv = TLVRead (pak, PacketReadLeft (pak), tlvc);
     if (tlv[10].str.len)
     {
         serv->our_outside_ip = tlv[10].nr;

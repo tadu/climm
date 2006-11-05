@@ -584,7 +584,7 @@ JUMP_SNAC_F(SnacSrvFromicqsrv)
     UDWORD len, uin, type /*, id*/;
     
     pak = event->pak;
-    tlv = TLVRead (pak, PacketReadLeft (pak));
+    tlv = TLVRead (pak, PacketReadLeft (pak), -1);
     if (tlv[1].str.len < 10)
     {
         SnacSrvUnknown (event);

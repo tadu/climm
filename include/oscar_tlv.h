@@ -5,7 +5,7 @@
 
 typedef struct { UWORD tag; UDWORD nr; str_s str; } TLV;
 
-TLV  *TLVRead (Packet *pak, UDWORD TLVlen);
+TLV  *TLVRead (Packet *pak, UDWORD TLVlen, UDWORD TLVCount);
 UWORD TLVGet  (TLV *tlv, UWORD nr);
 void  TLVDone (TLV *tlv, UWORD nr);
 void  TLVD    (TLV *tlv);

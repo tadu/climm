@@ -523,7 +523,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     Packet *p = NULL, *pp = NULL, *pak;
     TLV *tlv;
     Opt *opt;
-    UDWORD midtim, midrnd, midtime, midrand, unk, tmp, type1enc;
+    UDWORD midtim, midrnd, midtime, midrand, unk, tmp, type1enc, tlvc;
     UWORD seq1, tcpver, len, i, msgtyp, type;
     const char *txt = NULL;
     strc_t ctext;
@@ -536,12 +536,12 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     type    = PacketReadB2 (pak);
     cont    = PacketReadCont (pak, serv);
               PacketReadB2 (pak); /* WARNING */
-              PacketReadB2 (pak); /* COUNT */
+    tlvc    = PacketReadB2 (pak); /* COUNT */
     
     if (!cont)
         return;
 
-    tlv = TLVRead (pak, PacketReadLeft (pak));
+    tlv = TLVRead (pak, PacketReadLeft (pak), tlvc);
 
 #ifdef WIP
     if (tlv[6].str.len && tlv[6].nr != cont->status)
@@ -623,7 +623,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                 return;
             }
 
-            tlv = TLVRead (p, PacketReadLeft (p));
+            tlv = TLVRead (p, PacketReadLeft (p), -1);
             PacketD (p);
             
             if ((i = TLVGet (tlv, 0x2711)) == (UWORD)-1)

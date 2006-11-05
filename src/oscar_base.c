@@ -146,7 +146,7 @@ static void FlapChannel4 (Connection *conn, Packet *pak)
 {
     TLV *tlv;
     
-    tlv = TLVRead (pak, PacketReadLeft (pak));
+    tlv = TLVRead (pak, PacketReadLeft (pak), -1);
     if (!tlv[5].str.len)
     {
         rl_printf ("%s " COLINDENT, s_now);
