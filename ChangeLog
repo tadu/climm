@@ -1,5 +1,161 @@
 -*- coding: utf-8 -*-
 
+2006-11-05 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix segfault upon rc initialisation
+	* don't segfault if we try to register a new UIN (even though AOL
+	  still doesn't give out UINs)
+	* fix login problem
+	* fix another segfault in im_icq.8
+	* allow to obey the number of TLVs to follow and use it in some
+	  places
+	* handle messages correctly: first get TLVs by the count (and ignore
+	  them :)), then get the actual message TLV
+	* also do properly check there is the correct TLV
+	* use build mark instead of hard-coded version for jabber
+	* prepare for 0.5.2
+
+2006-10-21 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix compile error found by rtc
+
+2006-09-24 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* use cont->screen instead of cont->uin in as much as possible places
+	* Cleanup find/create contact functions: drop UIN and replace
+	  ContactGroup by Connection for ContactFind(), drop
+	  ContactFindCreate(), add ContactFindAlias() to find given alias
+	  from a contact
+	* rename variable from C++ keyword in oscar_base.c
+	* recognize AIM contacts
+	* enable AIM-interoperability
+	* drop ConnectionFindUIN() and use ConnectionFindScreen() instead
+	* remove usage of ->uin in some more places
+	* only allow file transfers to be accepted if direct connections are
+	  configured
+	* improve contact handling rebustness: add Connection *, as
+	  otherwise a non-contact saved as conn->cont could go live as a
+	  contact of another connection leading to unexpected results
+	* disallow specifying no contact groups at some places so that
+	  internal lists are not accessible anymore, which wasn't used anyway
+	* check and call ContactGroupInit () at some places where it was needed
+	* a few more places to get rid of ->uin
+	* fix bug introduced a few days ago were connections could loose
+	  their (e.g. autologin) flags
+	* do not call ICQv5 functions if were not ICQ at all
+	* use SNAC(0x13,0x19)-SNAC(0x13,0x1b) for authorization
+	  related messages to AIM contacts
+	* fix dump length when version header is given
+	* fix wrong color
+	* status file format 3:
+	  + remove one unused parameter
+	  + remove uin in [connection], but always write screen
+	  + print saving message also for status file
+	* fix a missing include in micq.c
+	* #ifdef Jabber stuff
+	* add recent pkg.m4
+	* give proper failure message if libgloox cannot be found
+	* add another include
+	* change advertised version to 0.5.1.90
+
+
+2006-09-22 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* display text from status changes from Jabber
+	* allow to set status for Jabber including setting status message
+	* IcqFromStatus(): make more robust against invalid enum values
+	* ICQv5 set status: Don't forget to set nativestatus
+	* use normal logging mechanism for Jabber
+	* display only unknown XML nodes and attributes instead of dumping
+	  all of them in handleMessage()
+	* implement JEP-22: always request all notifications, display all
+	  notifications, never send <composing> and send <displayed>
+	  and <delivered> equivalently
+	* support <subject> of messages
+	* be conform to JEP-85 by ignoring all inbound chat state tags; chat
+	  states don't make sense for mICQ
+	* misc fixes:
+	  + no bogus output and status change after login
+	  + ignore empty x child
+	  + use presence enum value as native status
+	  + use ContactIsInv() instead of &ims_inv
+	* support login commands (eg) also for Jabber
+	* fix segfault by wrong default in osccar_icbm.c
+	* change handlePresence() to display only unknown XML residual
+	* implement JEP-115: send and receive version tag, but only use for
+	  display purposes, no caching of capabilities is done
+	* cleanup (reduce number of explicit local variables, drop known
+	  attributes after handling the tag)
+	* implement JEP-91. nothing is done with the time stamp for the
+	  presence yet, though
+	* ignore JEP-153 node in presence tag
+
+2006-09-20 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* separating mICQ and Oscar status, Part I:
+	  s/STATUS_ICQOFFLINE/ims_offline/, get rid of bit operations for
+	  testing for it
+	* Separating mICQ and Oscar status, Part II:
+	  all stati #defined, new type status_t (but still the same UDWORD),
+	  Oscar{From,To}Status() to convert between status_t and UDWORD
+	* Separating mICQ and Oscar status, Part III:
+	  abstract with ContactSetInv() and ContactIsInv()
+	* Separating mICQ and Oscar status, Part IV:
+	  ContactStatus() and ContactStatusStr() for parsing status string
+	  values form rc and command line
+	* change status_t to mean protocol-agnostic status, amend by
+	  statusflags_t and a native status UDWORD where needed
+	* move STATUSF?_ICQ.* to oldicq_compat.c
+	* rename OscarToStats(), OscarFromStatus() to IcqToStatus(),
+	  IcqFromStatus() and move to oldicq_compat.c
+	* change EventExec() type byte into enum evtype_t
+	* add native status parameter to s_status() as it is needed for
+	  verbose mode
+	* change __status() return type into a static enum sortstate_t
+	* new IcqToFlags(), IcqFromFlags() to convert from/to statusflag_t
+	* turn ContactSetInv() into two inline functions ContactCopyInv() and
+	  ContactClearInv(), as well as ContactIsInv() and use everywhere
+	* turn some nested ifs into switches
+	* a few fixes
+
+2006-09-19 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix compiler warning in util_ssl.c
+	* Use new ContactFindUIN() when a contact is searched only by UIN
+	* ContactFind(): drop unused id parameter
+	* ConnectionServerType(): have type int as parameter, not Connection
+	* make checks for server connection type more generic
+	* use screen instead of UIN in several places
+	* ConnectionFindScreen() new, search for screen name unless screen
+	  name is numeric
+	* ConnectionServerNType(): determine server type from string, use
+	  instead of multiple explicit checks
+	* introduce connection type flag TYPEF_HAVEUIN to handle UIN vs
+	  screen correctly
+	* Initial Jabber support
+
+2006-09-15 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* syntax updates
+	* try to handle last modified roster entry
+	* move TLV_ #defines around
+
+2006-04-10 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* patch from sndirsch@suse.de for SUSE bug 151488, which makes the
+	  *_CAP macros more robust. The real issue of wrong usage of HAS_CAP
+	  was already fixed in 0.5.1, though.
+	* update list of meta subcommands
+	* fix a potential segfault in meta data (email list) handling
+	* don't ask hideip flag in general data, it's not used there anymore
+	* re-implement about data change in terms of current META_SAVE_INFO
+	  subcommand
+	* re-implement about general change in terms of current META_SAVE_INFO
+	  subcommand (GMT offset and webaware still broken)
+	* corresponding syntax parser updates
+
+2006-03-02 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* quickfix to drop some HTML some silly clients send
+	* don't segfault if random chat request times out
+	* don't segfault if no 'server' (i.e. file name) is given for
+	  scripting connection
+	* don't set random chat group if none is selected
+	* fix format string DoS and mem leak when debugging is on
+	* silence some compiler warnings by adding explicit initialization
+	* #define for AMIGAOS
+
 2006-01-15 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix tcl for autopackage
 	* export some environment variables in addition to parameters
