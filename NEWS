@@ -27,4 +27,5 @@
 2005-04-24: 0.5.0.2: bug fixes, contact list handling improvements, auto-expanding aliases "a" and "r"
 2005-04-27: 0.5.0.3: fix two bugs introduced in last version
 2005-06-05: 0.5.0.4: general auto-expanding aliases, peek fixed again
-2006-01-16: 0.5.1: bug fixes, another peek fix, peekall command / peekme option, autoauto option.
+2006-01-16: 0.5.1: bug fixes, another peek fix, peekall command / peekme option, autoauto option, preparations for MSN
+2006-11-06: 0.5.2: experimental Jabber support, should be AIM compatible now, login fix

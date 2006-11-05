@@ -1,5 +1,7 @@
 $Id$
 
+* fixup missing peer connections
+
 Note:
   This file contains suggestions of what could/should be done.
   This doens't mean that anything of it will be done.
@@ -28,7 +30,6 @@ Jeff Bearer <jbearer@tribweb.com>
    fit into the space inserted at the end of the last line due to the double
    width character being double width
  : implement wait-for-connection TCP transport
- : implement AIM compatibility
  : implement rate control
  : implement proper callback for password requests
  : option to switch off remote client display 
