@@ -521,7 +521,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     Event *newevent;
     Cap *cap1, *cap2;
     Packet *p = NULL, *pp = NULL, *pak;
-    TLV *tlv;
+    TLV *tlv, *tlvs;
     Opt *opt;
     UDWORD midtim, midrnd, midtime, midrand, unk, tmp, type1enc, tlvc;
     UWORD seq1, tcpver, len, i, msgtyp, type;
@@ -551,21 +551,27 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     if (tlv[6].str.len)
         event->opt = OptSetVals (event->opt, CO_STATUS, tlv[6].nr, 0);
 
-    /* tlv[2] may be there twice - ignore the member since time(NULL). */
-    if (tlv[2].str.len == 4)
-        TLVDone (tlv, 2);
+    TLVD (tlv);
+    tlv = TLVRead (pak, PacketReadLeft (pak), -1);
 
+    if (type == 1 && tlv[2].str.len)
+        tlvs = &tlv[2];
+    else if (type == 2 && tlv[5].str.len)
+        tlvs = &tlv[5];
+    else if (type == 4 && tlv[5].str.len)
+        tlvs = &tlv[5];
+    else
+    {
+        SnacSrvUnknown (event);
+        TLVD (tlv);
+        return;
+    }
+    p = PacketCreate (&tlvs->str);
+    TLVD (tlv);
+    
     switch (type)
     {
         case 1:
-            if (!tlv[2].str.len)
-            {
-                SnacSrvUnknown (event);
-                TLVD (tlv);
-                return;
-            }
-
-            p = PacketCreate (&tlv[2].str);
             PacketReadB2 (p);
             PacketReadData (p, NULL, PacketReadB2 (p));
                        PacketReadB2 (p);
@@ -575,7 +581,6 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             if (len < 4)
             {
                 SnacSrvUnknown (event);
-                TLVD (tlv);
                 PacketD (p);
                 return;
             }
@@ -608,12 +613,10 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             s_done (&str);
             break;
         case 2:
-            p = PacketCreate (&tlv[5].str);
             type   = PacketReadB2 (p);
             midtim = PacketReadB4 (p);
             midrnd = PacketReadB4 (p);
             cap1   = PacketReadCap (p);
-            TLVD (tlv);
             
             ContactSetCap (cont, cap1);
             if (midtim != midtime || midrnd != midrand)
@@ -736,7 +739,6 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             /* TLV 1, 2(!), 3, 4, f ignored */
             break;
         case 4:
-            p = PacketCreate (&tlv[5].str);
             unk    = PacketRead4 (p);
             msgtyp = PacketRead2 (p);
             if (unk != cont->uin)
@@ -756,12 +758,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             IMSrvMsg (cont, serv, NOW, opt);
             Auto_Reply (serv, cont);
             break;
-        default:
-            SnacSrvUnknown (event);
-            TLVD (tlv);
-            return;
     }
-    TLVD (tlv);
 }
 
 /*
