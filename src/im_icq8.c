@@ -317,7 +317,7 @@ static void IMRosterDownCont (Connection *serv, Roster *roster, ContactGroup *cg
         mod = 1;
     }
     ContactAddAlias (cont, rc->name);
-    if (mod || (rc->nick && strcmp (rc->nick, rc->name) && ContactFindAlias (cont, rc->nick)))
+    if (rc->nick && strcmp (rc->nick, rc->name) && !ContactFindAlias (cont, rc->nick))
     {
         ContactAddAlias (cont, rc->nick);
         mod = 1;
