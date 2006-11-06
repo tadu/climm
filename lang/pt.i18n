@@ -1,5 +1,5 @@
 # $Id$ Português (Brazillian)
-#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:pt
 1002:pt_BR
@@ -510,7 +510,7 @@
 1613:Nem engenharia reversa nem decompilação de qualquer código da Mirabilis tomou parte na elaboração deste programa.\n
 1618:UIN:
 1619:Aviso:
-1620:número máximo de contatos encontrado. Pergunta a um mago como aumentar!
+1620.número máximo de contatos encontrado. Pergunta a um mago como aumentar!
 1621:usuários não retornaram.
 1622:Deseja aplicar estar mudanças? (SIM/NÃO)
 1623:Pacote duplo %04x.\n
@@ -518,7 +518,7 @@
 1634:ok.\n
 1637:Não pude ligar socket para a porta livre\n
 1638:Não pude criar socket
-1639:O novo UIN é %ld!\n
+1639.O novo UIN é %ld!\n
 1640:Atualização de informações falhou.\n
 1641:Informações de usuário atualizadas com sucesso.\n
 1642:IP:
@@ -580,7 +580,7 @@
 1747:total
 1754:Nota: Você precisa salvar ('save') para escrever a nova lista de contatos no disco.\n
 1755:adicionou você em sua lista de contatos.\n
-1762:Seu novo UIN é: %ld.\n
+1762.Seu novo UIN é: %ld.\n
 1766:Alterando estado para ausente/não disponível após inativo %s%ld%s segundos.\n
 1767:Troca auto ciclo para ausente/não disponível.
 1770:Manda novamente sua última mensagem para <contatos>.
@@ -656,7 +656,7 @@
 1888:não disponibilidade em rede
 1889:servidor
 1890:ponto-a-ponto
-1891:Conexão %ld já está aberta.\n
+1891.Conexão %ld já está aberta.\n
 1892:conn               Lista conexões disponíveis.\n
 1893:conn login <nr>    Abre conexão <nr>.\n
 1894:Não há conexão número %ld.\n
@@ -668,7 +668,7 @@
 1901:autorizou você para adicioná-lo em sua lista de contatos.\n
 1903:Pacote v8 do servidor saindo:
 1904:Servidor não entende ver %d (apenas %d) para família %d!\n
-1907:Aviso: Servidor pensa que nosso UIN é %ld, quando ele é %ld.\n
+1907.Aviso: Servidor pensa que nosso UIN é %ld, quando ele é %ld.\n
 1911:conectando
 1912:fechado
 1914:Incapaz de alocar estrutura de conexão.\n
@@ -750,7 +750,7 @@
 2005:Produtos domésticos
 2006:Catálogo de pedido por correio
 2007:Serviços de negócios
-2009:Encontrado um companheiro de bate papo aleatório UIN %ld no grupo de bate papo %d.\n
+2009.Encontrado um companheiro de bate papo aleatório UIN %ld no grupo de bate papo %d.\n
 2011:Você não possui uma conexão de escuta ponto-a-ponto.\n
 2012:Nenhuma senha fornecida.\n
 2013:Este comando é apenas para v8.\n
@@ -809,7 +809,7 @@
 2095:conn remove <nr>   Remove conexão <nr>.\n
 2097:conn select <nr>   Seleciona conexão <nr> como conexão servidor.\n
 2098:Conexão %ld não é uma conexão servidor.\n
-2099:Selecionada conexão %ld (versão %d, UIN %ld) como conexão atual.\n
+2099.Selecionada conexão %ld (versão %d, UIN %ld) como conexão atual.\n
 2100:conn select <uin>  Seleciona conexão com UIN <uin> como conexão servidor.\n
 2101:Removendo conexão %ld e seus dependentes completamente.\n
 2102:Conexão %ld é uma conexão configurada.\n
@@ -825,7 +825,7 @@
 2112:                  - como = '/': retira caminho, como = '.': como é\n
 2115:'%s' não é um inteiro.\n
 2116:Nenhum apelido dado.\n
-2117:%ld adicionado como %s.\n
+2117.%ld adicionado como %s.\n
 2118:Sem memória.\n
 2119:auth [grant] <contatos>   - concede autorização.\n
 2120:auth deny <contatos> <msg> - recusa autorização.\n
@@ -847,11 +847,11 @@
 2141:Busca %sfalhou%s.\n
 2142:Conexão direta com %s impossível.\n
 2145:auth add  <contatos>      - adicionar autorização.\n
-2146:'%s' já é um alias para '%s' (%ld).\n
-2147:'%s' (%ld) já é usado para um apelido.\n
-2148:Adicionado '%s' como um alias para '%s' (%ld).\n
-2149:Removido alias '%s' para '%s' (%ld).\n
-2150:Removido contato '%s' (%ld).\n
+2146.'%s' já é um alias para '%s' (%ld).\n
+2147.'%s' (%ld) já é usado para um apelido.\n
+2148.Adicionado '%s' como um alias para '%s' (%ld).\n
+2149.Removido alias '%s' para '%s' (%ld).\n
+2150.Removido contato '%s' (%ld).\n
 2156:conn close <nr>    Fecha conexão <nr>.\n
 2157:Moldova
 2158:Nenhum nome de arquivo dado.\n
@@ -881,7 +881,7 @@
 2188:Você está enviando dados muito rápido - pare de digitar agora, ou o servidor irá desconectar!\n
 2191:Erro de mensagem instantânea: %d.\n
 2192:Habilidades:
-2194:Não sei como abrir este tipo de conexão.\n
+2194.Não sei como abrir este tipo de conexão.\n
 2195:Número obsoleto:
 2196:Texto obsoleto:
 2197:Byte Obsoleto
@@ -911,18 +911,18 @@
 2228:Incapaz de ajustar FIFO para não bloquear
 2233:autorização recusada: %s%s%s\n
 2234:Mensagem %s descartada - sessão perdida.\n
-2236:Informações para %s%s%s (%ld):\n
+2236.Informações para %s%s%s (%ld):\n
 2237:Presença na rede:
 2238:Esconder IP:
 2239:Mais desconhecido:
 2240:Nenhum grupo de contatos dado.\n
 2241:Adicionado '%s' para o grupo de contatos '%s'.\n
 2243:Contato '%s' removido do grupo '%s'.\n
-2244:Grupo de contatos '%s' já possui o contato '%s' (%ld).\n
+2244.Grupo de contatos '%s' já possui o contato '%s' (%ld).\n
 2245:Adicionado grupo de contatos '%s'.\n
 2246:Contato '%s' não está no grupo '%s'.\n
-2248:Meta dados salvos para '%s' (%ld).\n
-2249:Incapaz de salvar meta dados para '%s' (%ld).\n
+2248.Meta dados salvos para '%s' (%ld).\n
+2249.Incapaz de salvar meta dados para '%s' (%ld).\n
 2250:Número '%s' não está no formato +<código_país><provedor_celular><número>.\n
 2251:Erro:
 2252:Um bipe é gerado pelo %sbipe%s.\n
@@ -955,7 +955,7 @@
 2299:Alias não existe.\n
 2300:Seleciona um alias ou lista aliases atuais.
 2301:Apaga um alias.
-2302:Muitos níveis de expansão de um alias; provavelmente um laço infinito.\n
+2302.Muitos níveis de expansão de um alias; provavelmente um laço infinito.\n
 2303:Caractere inválido 0x%x no nome do alias.\n
 2304:Pega resposta automática de todos os <contatos> para o estado atual, ausente, não disponível, não perturbe, ocupado, ou livre para bate papo.
 2305:Manipula meta dados de contatos.
@@ -1040,7 +1040,7 @@
 2402:A flag de auto resposta é manipulada pelo comando %s.\n
 2403:msg>
 2405:Seu estado é %s (%s).\n
-2406:Impossível ler meta dados para  %s (%ld).\n
+2406.Impossível ler meta dados para  %s (%ld).\n
 2407:Esta flag é manipulada pelo comando %s.\n
 2408:%s não é um grupo de contatos.\n
 2409:%s não é um contato.\n
@@ -1086,7 +1086,6 @@
 2449:Grupo de contatos primário para contato '%s' é agora '%s'.\n
 2450:Última(s) %d pessoa(s) com quem você falou:\n
 2451:history <contato> [<último> [<contador>]] -- Mostra histórico de <contatos>.\n
-#2452:%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n
 #2453:    at %p parent %p assoc %p ssl %d\n
 #2454:    open %p reconn %p close %p err %p dispatch %p\n
 2455:Sobre>
@@ -1213,3 +1212,35 @@
 #2576:contact delete  Delete server based contact list entry.\n
 #2577:SBL ids:
 #2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2579:contact delid   Delete server based contact list entry (experts only).\n
+#2580:ignore
+#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
+#2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
+#2583:Location error: %d.\n
+#2584:msn temp
+#2585:msn server
+#2586:msn chat
+2587:Impossível ler meta dados para  %s (%s).\n
+2588:Meta dados salvos para '%s' (%s).\n
+2589:Incapaz de salvar meta dados para '%s' (%s).\n
+2590:%s adicionado como %s.\n
+2591:Grupo de contatos '%s' já possui o contato '%s' (%s).\n
+2592:'%s' já é um alias para '%s' (%s).\n
+2593:'%s' (%s) já é usado para um apelido.\n
+2594:Adicionado '%s' como um alias para '%s' (%s).\n
+2595:Removido contato '%s' (%s).\n
+2596:Removido alias '%s' para '%s' (%s).\n
+#2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
+#2598:There is no connection number %ld and no connection for UIN %s.\n
+#2599:There is no connection for UIN %s.\n
+#2600:No connection selected.\n
+#2601:Connection for %s is already open.\n
+#2602:Don't know how to open connection type %s for %s.\n
+2603:Selecionada conexão %ld (versão %d, UIN %s) como conexão atual.\n
+#2604:jabber
+#2605:Automatic status change.
+2606:Encontrado um companheiro de bate papo aleatório UIN %s no grupo de bate papo %d.\n
+2607:O novo UIN é %s!\n
+2608:Seu novo UIN é: %s.\n
+2609:Aviso: Servidor pensa que nosso UIN é %s, quando ele é %s.\n
+2610:Informações para %s%s%s (%s):\n

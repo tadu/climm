@@ -1,5 +1,5 @@
 # $Id$ (Swedish)
-#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:sv
 1002:sv_SE
@@ -515,7 +515,7 @@
 1613:Vi har ej försökt dekompilera någon av Mirabilis källkod.\n
 1618:UIN:
 1619:Varning:
-1620:maximala antalet kontakter nått. Be en trollkarl förstora mig!
+1620.maximala antalet kontakter nått. Be en trollkarl förstora mig!
 1621:användare inte returnerade.
 1622:Vill du använda dessa ändringar? (JA/NEJ)
 #-#1623:Dubblerat paket %04X\n
@@ -527,7 +527,7 @@
 1634:ok.\n
 1637:Kan inte binda socket till ledig port\n
 1638:Kunde inte skapa socket
-1639:Det nya ICQ-nummret är %ld!\n
+1639.Det nya ICQ-nummret är %ld!\n
 1640:Misslyckades med att uppdatera informationen.\n
 1641:Informationen uppdaterad.\n
 1642:IP:
@@ -600,7 +600,7 @@
 1747:Synlig lista
 1754: OBS: Du måste skriva 'save' för att spara din nya lista.\n
 1755:har lagts till i din lista.\n
-1762:Ditt nya UIN är: %ld.\n
+1762.Ditt nya UIN är: %ld.\n
 1766:Byter status till borta/ej tillgänglig pga %s%ld%s sekunders inaktivitet.\n
 1767:Aktiver autobyte till borta/ej tillgänglig.
 1770:Återsänd ditt senaste meddelande till <kontakter>.
@@ -681,7 +681,7 @@
 1888:inte webmedveten
 1889:server
 1890:partner-till-partner
-1891:Anslutning %ld är redan öppen.\n
+1891.Anslutning %ld är redan öppen.\n
 1892:conn               Lista tillgänglia anslutningar.\n
 1893:conn login <nr>    Öppna anslutning <nr>.\n
 1894:Det finns ingen anslutning med nummer %ld.\n
@@ -695,7 +695,6 @@
 1901:har tillåtit dig att lägga till henne/honom till din kontaktlista. \n
 1903:Utgående v8 serverpaket:
 1904:Servern förstår inte ver %d (enbart %d) för familj %d!\n
-#1907:Warning: Server thinks our UIN is %ld, when it is %ld.\n
 1911:ansluter
 1912:stängd
 1914:Kan ej allokera anslutnings struktur.\n
@@ -777,7 +776,7 @@
 2005:Hushållsprodukter
 2006:Postorderkatalog
 2007:Affärstjänster
-2009:Hittade slumpmässig chat partner UIN %ld i chat grupp %d.\n
+2009.Hittade slumpmässig chat partner UIN %ld i chat grupp %d.\n
 2011:Du har inte en lyssnande partner-till-partner-anslutning.\n
 2012:Inget lösenord angett.\n
 2013:Detta kommandot fungerar enbart i v8.\n
@@ -847,7 +846,7 @@
 #2095:conn remove <nr>   Remove connection <nr>.\n
 2097:conn select <nr>   Välj anslutning <nr> som server-anslutning.\n
 2098:Anslutning %ld är inte en server-anslutning.\n
-2099:Valde anslutning %ld (version %d, UIN %ld) som aktiv anslutning.\n
+2099.Valde anslutning %ld (version %d, UIN %ld) som aktiv anslutning.\n
 2100:conn select <uin>  Väljd anslutning med UIN <uin> som server-anslutning.\n
 2101:Tar bort anslutning %ld fullständigt och det som beror på den.\n
 2102:Anslutning %ld är en konfigurerad anslutning.\n
@@ -869,7 +868,7 @@
 2112:                  - som = '/': ta bort sökväg, som = '.': som den är\n
 2115:'%s' är inte ett heltal.\n
 2116:Inget nytt namn angivet.\n
-2117:%ld tillagt som %s.\n
+2117.%ld tillagt som %s.\n
 2118:Slut på minne.\n
 #-#2119:auth [grant] <namn>    - ge begärd tillåtelse.\n
 #+#2119:auth [grant] <nick>    - grant authorization.\n
@@ -903,11 +902,11 @@
 #-#2145:auth add  <namn>       - lägg till och begär tillåtelse.\n
 #+#2145:auth add  <nick>       - authorized add.\n
 #2145:auth add  <contacts>       - authorized add.\n
-2146:'%s' är redan ett alias för '%s' (%ld).\n
-2147:'%s' (%ld) är redan använt som ett namn.\n
-2148:Adderade '%s' som ett alias för '%s' (%ld).\n
-2149:Tog bort alias '%s' för '%s' (%ld).\n
-2150:Tog bort kontakt '%s' (%ld).\n
+2146.'%s' är redan ett alias för '%s' (%ld).\n
+2147.'%s' (%ld) är redan använt som ett namn.\n
+2148.Adderade '%s' som ett alias för '%s' (%ld).\n
+2149.Tog bort alias '%s' för '%s' (%ld).\n
+2150.Tog bort kontakt '%s' (%ld).\n
 2156:conn close <nr>    Stäng anslutning <nr>.\n
 2157:Moldavien
 #-#2158:Ingen fil angiven.\n
@@ -958,7 +957,7 @@
 2188:Du skickar data för snabbt - sluta skriv nu, annars kommer servern koppla ner dig!\n
 2191:Omedelbart-meddelande-fel: %d.\n
 2192:Förmågor:
-2194:Vet inte hur denna anslutningstyp ska öppnas.\n
+2194.Vet inte hur denna anslutningstyp ska öppnas.\n
 2195:Föråldrat nummer:
 2196:Föråldrad text:
 2197:Föråldrad byte
@@ -996,18 +995,18 @@
 #+#2233:refused authorization: %s%s\n
 #2233:refused authorization: %s%s%s\n
 2234:Meddelande %s ignoreras - session förlorad.\n
-2236:Information om %s%s%s (%ld):\n
+2236.Information om %s%s%s (%ld):\n
 2237:Web-medveten:
 2238:Gömmer IP:
 2239:Okänt mer:
 2240:Ingen kontaktgrupp angiven.\n
 2241:Lade till '%s' till kontaktgrupp '%s'.\n
 2243:Tog bort kontakt '%s' från grupp '%s'.\n
-2244:Kontaktgrupp '%s' har redan kontakten '%s' (%ld).\n
+2244.Kontaktgrupp '%s' har redan kontakten '%s' (%ld).\n
 2245:Lade till kontaktgrupp '%s'.\n
 2246:Kontakt '%s' finns inte i grupp '%s'.\n
-2248:Sparade metadata för '%s' (%ld).\n
-2249:Kunde ej spara metadata för '%s' (%ld).\n
+2248.Sparade metadata för '%s' (%ld).\n
+2249.Kunde ej spara metadata för '%s' (%ld).\n
 2250:Nummret '%s' är inte av formatet +<landskod><operatör><nummer>.\n
 2251:Fel:
 2252:Piper när %sbeep%sing.\n
@@ -1044,7 +1043,7 @@
 2299:Alias existerar inte.\n
 2300:Skapa ett alias eller lista nuvarande alias.
 2301:Ta bort ett alias.
-2302:För många nivåer av alias expandering; antagligen en oändlig loop.\n
+2302.För många nivåer av alias expandering; antagligen en oändlig loop.\n
 2303:Ogiltigt tecken 0x%x i alias.\n
 2304:Hämta automatiskt svar från alla <kontakter> för aktivt status, ej här, ej tillgänglig, stör ej, upptagen eller tillgängli för chat.
 2305:Hantera kontakters metadata.
@@ -1139,7 +1138,6 @@
 #2402:The global auto reply flag is handled by the %s command.\n
 #2403:msg>
 #2405:Your status is %s (%s).\n
-#2406:Couldn't load meta data for %s (%ld).\n
 #2407:This flag is handled by the %s command.\n
 #2408:%s is not a contact group.\n
 #2409:%s is not a contact.\n
@@ -1185,7 +1183,6 @@
 #2449:Primary contact group for contact '%s' is now '%s'.\n
 #2450:Last %d people you talked with:\n
 #2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
-#2452:%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n
 #2453:    at %p parent %p assoc %p ssl %d\n
 #2454:    open %p reconn %p close %p err %p dispatch %p\n
 #2455:About>
@@ -1312,3 +1309,35 @@
 #2576:contact delete  Delete server based contact list entry.\n
 #2577:SBL ids:
 #2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2579:contact delid   Delete server based contact list entry (experts only).\n
+#2580:ignore
+#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
+#2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
+#2583:Location error: %d.\n
+#2584:msn temp
+#2585:msn server
+#2586:msn chat
+#2587:Couldn't load meta data for %s (%s).\n
+2588:Sparade metadata för '%s' (%s).\n
+2589:Kunde ej spara metadata för '%s' (%s).\n
+2590:%s tillagt som %s.\n
+2591:Kontaktgrupp '%s' har redan kontakten '%s' (%s).\n
+2592:'%s' är redan ett alias för '%s' (%s).\n
+2593:'%s' (%s) är redan använt som ett namn.\n
+2594:Adderade '%s' som ett alias för '%s' (%s).\n
+2595:Tog bort kontakt '%s' (%s).\n
+2596:Tog bort alias '%s' för '%s' (%s).\n
+#2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
+#2598:There is no connection number %ld and no connection for UIN %s.\n
+#2599:There is no connection for UIN %s.\n
+#2600:No connection selected.\n
+#2601:Connection for %s is already open.\n
+#2602:Don't know how to open connection type %s for %s.\n
+2603:Valde anslutning %ld (version %d, UIN %s) som aktiv anslutning.\n
+#2604:jabber
+#2605:Automatic status change.
+2606:Hittade slumpmässig chat partner UIN %s i chat grupp %d.\n
+2607:Det nya ICQ-nummret är %s!\n
+2608:Ditt nya UIN är: %s.\n
+#2609:Warning: Server thinks our UIN is %s, when it is %s.\n
+2610:Information om %s%s%s (%s):\n

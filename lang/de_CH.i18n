@@ -1,5 +1,5 @@
 # $Id$
-#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:de
 1002:de_CH
@@ -588,7 +588,7 @@
 1613:Derzue isch ke Programmcode vo Mirabilis zrüggentwicklet oder zrüggübersetzt worde.\n
 1618:UIN:
 1619:Warnig:
-1620:Maximali Azau vo Kontakte erreicht! Bitte e Magier dermit beuftrage, mi z vergrössere!
+1620.Maximali Azau vo Kontakte erreicht! Bitte e Magier dermit beuftrage, mi z vergrössere!
 1621:Suechergäbniss ned zrügggä.
 1622:Möchtisch die Änderige anwände? (Iu/Nei)
 #-#1623:Dopplets Päckli %04X.\n
@@ -601,7 +601,7 @@
 #1634:ok.\n
 1637:Cha der Socket zu kem freie Port verbinde\n
 1638:Ha der Verbindigsändpunkt ned chönne erzüge
-1639:Di nöii Usernummere isch %ld!\n
+1639.Di nöii Usernummere isch %ld!\n
 1640:Aktualisiere vo de Infos fäugschlage.\n
 1641:Userinformatione erfougrich aktualisiert.\n
 #-#1642:IP-Adrässe
@@ -711,7 +711,6 @@
 #+#1765:%s has UIN %d.
 #-#1766:Outomatischi Schautig für ned ume / wit wäg nach %s%d%s Sekunde.\n
 #+#1766:Changing status to away resp. not available after idling %s%d%s seconds.\n
-#1762:Your new UIN is: %ld.\n
 #1766:Changing status to away/not available after idling %s%ld%s seconds.\n
 1767:Schautet di outomatische Abwäseheitsschautig a oder ab oder setzt ds Timeout.
 #-#1770:Sändet die letschti Nachricht a ne nöie User.
@@ -830,7 +829,6 @@
 1890:Diräktverbindig
 #-#1891:Verbindig %d isch scho offe.\n
 #+#1891:Connection %d is already open.\n
-#1891:Connection %ld is already open.\n
 1892:conn             Zeig au verfüegbare Verbindige a.\n
 1893:conn login <nr>  Tuet d Verbindig <nr> uf.\n
 #-#1894:Es git ke Verbindig Nr. %d.\n
@@ -849,7 +847,6 @@
 #-#1907:Warnig: Der Server dänkt dini UIN sig %d, aber sie isch %d.\n
 #+#1907:Warning: Server thinks our UIN is %d, while it is %d.\n
 #1904:Server doesn't understand ver %d (only %d) for family %d!\n
-#1907:Warning: Server thinks our UIN is %ld, when it is %ld.\n
 1911:verbinde
 1912:zueta
 #1914:Can't allocate connection structure.\n
@@ -942,7 +939,6 @@
 2007:Gschäftlechi Dienschtleischtige
 #-#2009:Zuefäuige Chatpartner gfunge: UIN %d ir Chatgruppe %d.\n
 #+#2009:Found random chat partner UIN %d in chat group %d.\n
-#2009:Found random chat partner UIN %ld in chat group %d.\n
 2011:Ke Verbindigsannahme-Verbindig gfunge.\n
 2012:Kes Passwort agä.\n
 2013:Dä Befäu gits nume in v8.\n
@@ -1043,7 +1039,6 @@
 #-#2099:Verbindig %d (version %d, UIN %d) aus momentani Serververbindig gwäut.\n
 #+#2099:Selected connection %d (version %d, UIN %d) as current connection.\n
 #2098:Connection %ld is not a server connection.\n
-#2099:Selected connection %ld (version %d, UIN %ld) as current connection.\n
 2100:conn select <uin>  D Verbindig mit der UIN <uin> aus Serververbindig wähle.\n
 #-#2101:D Verbindig %d u ihri Abhängigkeite wärde komplett entfärnt.\n
 #+#2101:Removing connection %d and its dependands completely.\n
@@ -1074,7 +1069,6 @@
 2116:Ke nöie Nickname definiert.\n
 #-#2117:%d aus %s derzuegfüegt.\n
 #+#2117:%d added as %s.\n
-#2117:%ld added as %s.\n
 2118:Schpicher vou (out of memory).\n
 #-#2119:auth [grant] <nick>    - Outhorisation gä.\n
 #+#2119:auth [grant] <nick>    - grant authorization.\n
@@ -1084,20 +1078,16 @@
 #+#2121:auth req  <nick> <msg> - request authorization.\n
 #-#2122: Hiwis: Du muesch "save" zum ds nöie Passwort uf d Feschtplatte z schpichere.\n
 #+#2122: Note: You need to 'save' to write new password to disc.\n
-#-#2123:%sSyntaxfähler%s: Z weni Argumänt: "%s"\n
-#+#2123:%sSyntax error%s: Too few arguments: '%s'\n
-#-#2124:%sSyntaxfähler%s: Ke ganzi Zau:    "%s"\n
-#+#2124:%sSyntax error%s: Not an integer: '%s'\n
-#-#2126:Der User isch offline, d Nachricht (%s#%08lx:%08lx%s) isch ir Warteschlange.\n
-#+#2126:User is offline, message (%s#%08lx:%08lx%s) queued.\n
-#-#2127:       URL: %s%s%s%s\n
-#+#2127:       URL: %s%s%s%s\n
 #2119:auth [grant] <contacts>    - grant authorization.\n
 #2120:auth deny <contacts> <msg> - refuse authorization.\n
 #2121:auth req  <contacts> <msg> - request authorization.\n
 #2122:Note: You need to 'save' to write new password to disc.\n
-#2123:%sSyntax error%s: Too few arguments: %s\n
-#2124:%sSyntax error%s: Not an integer: %s\n
+2123:%sSyntaxfähler%s: Z weni Argumänt: "%s"\n
+2124:%sSyntaxfähler%s: Ke ganzi Zau:    "%s"\n
+#-#2126:Der User isch offline, d Nachricht (%s#%08lx:%08lx%s) isch ir Warteschlange.\n
+#+#2126:User is offline, message (%s#%08lx:%08lx%s) queued.\n
+#-#2127:       URL: %s%s%s%s\n
+#+#2127:       URL: %s%s%s%s\n
 2128: Beschriebig: %s%s%s\n
 2129:         URL: %s%s%s\n
 2131:Schribe e Nachricht a %s%s%s:\n
@@ -1111,11 +1101,6 @@
 2141:Suechi %sfäugschlage%s.\n
 #2142:Direct connection with %s not possible.\n
 #2145:auth add  <contacts>       - authorized add.\n
-#2146:'%s' is already an alias for '%s' (%ld).\n
-#2147:'%s' (%ld) is already used as a nick.\n
-#2148:Added '%s' as an alias for '%s' (%ld).\n
-#2149:Removed alias '%s' for '%s' (%ld).\n
-#2150:Removed contact '%s' (%ld).\n
 #2156:conn close <nr>    Close connection <nr>.\n
 #2157:Moldova
 #2158:No file name given.\n
@@ -1144,7 +1129,6 @@
 #2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
 #2191:Instant message error: %d.\n
 #2192:Capabilities:
-#2194:Don't know how to open this connection type.\n
 #2195:Obsolete number:
 #2196:Obsolete text:
 #2197:Obsolete byte
@@ -1174,18 +1158,14 @@
 #2228:Couldn't set FIFO nonblocking
 #2233:refused authorization: %s%s%s\n
 #2234:Message %s discarded - lost session.\n
-#2236:Information for %s%s%s (%ld):\n
 #2237:Webaware:
 #2238:Hide IP:
 #2239:Unknown more:
 #2240:No contact group given.\n
 #2241:Added '%s' to contact group '%s'.\n
 #2243:Removed contact '%s' from group '%s'.\n
-#2244:Contact group '%s' already has contact '%s' (%ld).\n
 #2245:Added contact group '%s'.\n
 #2246:Contact '%s' is not in group '%s'.\n
-#2248:Saved meta data for '%s' (%ld).\n
-#2249:Couldn't save meta data for '%s' (%ld).\n
 #2250:Number '%s' is not of the format +<countrycode><cellprovider><number>.\n
 #2251:Error:
 #2252:A beep is generated by %sbeep%sing.\n
@@ -1218,7 +1198,6 @@
 #2299:Alias doesn't exist.\n
 #2300:Set an alias or list current aliases.
 #2301:Delete an alias.
-#2302:Too many levels of alias expansion; probably an infinite loop.\n
 #2303:Invalid character 0x%x in alias name.\n
 #2304:Get automatic reply from all <contacts> for current status, away, not available, do not disturb, occupied, or free for chat.
 #2305:Handle meta data of contacts.
@@ -1303,7 +1282,6 @@
 #2402:The global auto reply flag is handled by the %s command.\n
 #2403:msg>
 #2405:Your status is %s (%s).\n
-#2406:Couldn't load meta data for %s (%ld).\n
 #2407:This flag is handled by the %s command.\n
 #2408:%s is not a contact group.\n
 #2409:%s is not a contact.\n
@@ -1349,7 +1327,6 @@
 #2449:Primary contact group for contact '%s' is now '%s'.\n
 #2450:Last %d people you talked with:\n
 #2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
-#2452:%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n
 #2453:    at %p parent %p assoc %p ssl %d\n
 #2454:    open %p reconn %p close %p err %p dispatch %p\n
 #2455:About>
@@ -1476,3 +1453,35 @@
 #2576:contact delete  Delete server based contact list entry.\n
 #2577:SBL ids:
 #2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2579:contact delid   Delete server based contact list entry (experts only).\n
+#2580:ignore
+#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
+#2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
+#2583:Location error: %d.\n
+#2584:msn temp
+#2585:msn server
+#2586:msn chat
+#2587:Couldn't load meta data for %s (%s).\n
+#2588:Saved meta data for '%s' (%s).\n
+#2589:Couldn't save meta data for '%s' (%s).\n
+#2590:%s added as %s.\n
+#2591:Contact group '%s' already has contact '%s' (%s).\n
+#2592:'%s' is already an alias for '%s' (%s).\n
+#2593:'%s' (%s) is already used as a nick.\n
+#2594:Added '%s' as an alias for '%s' (%s).\n
+#2595:Removed contact '%s' (%s).\n
+#2596:Removed alias '%s' for '%s' (%s).\n
+#2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
+#2598:There is no connection number %ld and no connection for UIN %s.\n
+#2599:There is no connection for UIN %s.\n
+#2600:No connection selected.\n
+#2601:Connection for %s is already open.\n
+#2602:Don't know how to open connection type %s for %s.\n
+#2603:Selected connection %ld (version %d, UIN %s) as current connection.\n
+#2604:jabber
+#2605:Automatic status change.
+#2606:Found random chat partner UIN %s in chat group %d.\n
+2607:Di nöii Usernummere isch %s!\n
+#2608:Your new UIN is: %s.\n
+#2609:Warning: Server thinks our UIN is %s, when it is %s.\n
+#2610:Information for %s%s%s (%s):\n

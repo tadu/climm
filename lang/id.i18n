@@ -1,5 +1,5 @@
 # $Id$ (Indonesian)
-#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:id
 1002:id_ID
@@ -515,7 +515,7 @@
 1613:Tidak ada pendekodean dari kode program Mirabilis yang digunakan untuk membuat program ini.\n
 1618:UIN:
 1619:Peringatan:
-1620:jumlah maksimal kontak terpenuhi. Tanyakan ke penyihir untuk memperbesar aku!
+1620.jumlah maksimal kontak terpenuhi. Tanyakan ke penyihir untuk memperbesar aku!
 1621:user tidak mengembalikan.
 1622:Anda menyetujui perubahan tersebut? (YA/TIDAK)
 #-#1623:Paket Dobel %04X\n
@@ -527,7 +527,7 @@
 1634:ok.\n
 1637:Tidak dapat mem-bind soket untuk membebaskan port\n
 1638:Tidak dapat membuat soket
-1639:UIN baru adalah %ld!\n
+1639.UIN baru adalah %ld!\n
 1640:Gagal untuk memperbaharui informasi.\n
 1641:Informasi user berhasil diperbaharui.\n
 1642:IP:
@@ -600,7 +600,7 @@
 1747:total
 1754:Catatan: Anda perlu untuk men-'save' untuk menulis daftar kontak baru ke disk.\n
 1755:telah menambahkan Anda ke daftar kontaknya.\n
-1762:UIN baru Anda adalah: %ld.\n
+1762.UIN baru Anda adalah: %ld.\n
 1766:Mengubah status ke jauh/tidak ditempat setelah nganggur selama %s%ld%s detik.\n
 1767:Menganti perputaran otomatis ke jauh/tidak ditempat.
 1770:Mengirim ulang pesan terakhir Anda kepada <contacts>.
@@ -681,7 +681,7 @@
 1888:tidak webaware
 1889:server
 1890:peer-to-peer
-1891:Koneksi %ld sudah terbuka.\n
+1891.Koneksi %ld sudah terbuka.\n
 1892:conn               Daftar koneksi yang tersedia.\n
 1893:conn login <nr>    Membuka koneksi <nr>.\n
 1894:Tidak ada nomor koneksi %ld.\n
@@ -695,7 +695,7 @@
 1901:telah mengijinkan Anda untuk menambahkan mereka ke daftar kontak Anda.\n
 1903:Paket Keluar server v8:
 1904:Server tidak mengerti ver %d (hanya %d) untuk keluarga %d!\n
-1907:Peringatan: Server mengira UIN kita adalah %ld, sewaktu %ld.\n
+1907.Peringatan: Server mengira UIN kita adalah %ld, sewaktu %ld.\n
 1911:menghubungkan diri
 1912:tertutup
 1914:Tidak dapat memberi struktur alokasi koneksi.\n
@@ -777,7 +777,7 @@
 2005:Produk Buatan Sendiri
 2006:Pesanan Katalog via Mail
 2007:Layanan Bisnis
-2009:Ditemukan partner bicara acak dengan UIN %ld pada grup bicara %d.\n
+2009.Ditemukan partner bicara acak dengan UIN %ld pada grup bicara %d.\n
 2011:Anda tidak memiliki koneksi peer-to-peer aktif.\n
 2012:Tidak ada password yang diberikan.\n
 2013:Perintah ini hanya unruk v8.\n
@@ -846,7 +846,7 @@
 2095:conn remove <nr>   Menutup koneksi <nr>.\n
 2097:conn select <nr>   Pilih koneksi <nr> sebagai koneksi ke server.\n
 2098:Koneksi %ld bukan koneksi ke server.\n
-2099:Koneksi terpilih %ld (versi %d, UIN %ld) sebagai koneksi aktif.\n
+2099.Koneksi terpilih %ld (versi %d, UIN %ld) sebagai koneksi aktif.\n
 2100:conn select <uin>  Memilih koneksi dengan UIN <uin> sebagai koneksi ke server.\n
 2101:Menghilangkan koneksi %ld dan tergantung total.\n
 2102:Koneksi %ld adalah koneksi yang terkonfigurasi.\n
@@ -868,7 +868,7 @@
 2112:                  - sebagai = '/': menghilangkan path, sebagai = '.': sebagai\n
 2115:'%s' bukan bilangan integer.\n
 2116:Tidak ada nick name baru yang diberikan.\n
-2117:%ld ditambahkan sebagai %s.\n
+2117.%ld ditambahkan sebagai %s.\n
 2118:Memori habis.\n
 #-#2119:auth [grant] <nick>    - menerima otorisasi.\n
 #+#2119:auth [grant] <nick>    - grant authorization.\n
@@ -902,11 +902,11 @@
 #-#2145:auth add  <nick>       - otorisasi menambahkan.\n
 #+#2145:auth add  <nick>       - authorized add.\n
 #2145:auth add  <contacts>       - authorized add.\n
-2146:'%s' sudah sebagai alias untuk '%s' (%ld).\n
-2147:'%s' (%ld) sudah digunakan sebagai nick.\n
-2148:Menambahkan '%s' sebagai alias untuk '%s' (%ld).\n
-2149:Menghapus alias '%s' untuk '%s' (%ld).\n
-2150:Kontak yang dihapus '%s' (%ld).\n
+2146.'%s' sudah sebagai alias untuk '%s' (%ld).\n
+2147.'%s' (%ld) sudah digunakan sebagai nick.\n
+2148.Menambahkan '%s' sebagai alias untuk '%s' (%ld).\n
+2149.Menghapus alias '%s' untuk '%s' (%ld).\n
+2150.Kontak yang dihapus '%s' (%ld).\n
 2156:conn close <nr>    Menutup koneksi <nr>.\n
 2157:Moldova
 #-#2158:Tidak ada file yang diberikan.\n
@@ -957,7 +957,7 @@
 2188:Anda mengirim data terlalu cepat - berhenti mengetik sekarang, atau server akan memutus hubungan!\n
 2191:Kesalahan pesan instan: %d.\n
 2192:Kemampuan:
-2194:Tidak tahu bagaimana cara membuka koneksi tipe ini.\n
+2194.Tidak tahu bagaimana cara membuka koneksi tipe ini.\n
 2195:Nomor absolut:
 2196:Teks absolut:
 2197:Byte absolut
@@ -995,18 +995,18 @@
 #+#2233:refused authorization: %s%s\n
 #2233:refused authorization: %s%s%s\n
 2234:Pesan %s dihilangkan - sesi telah hilang.\n
-2236:Informasi untuk %s%s%s (%ld):\n
+2236.Informasi untuk %s%s%s (%ld):\n
 2237:Webaware:
 2238:Sembunyikan IP:
 2239:Tidak diketahui lainnya:
 2240:Tidak ada grup kontak yang diberikan.\n
 2241:Ditambahkan '%s' ke grup kontak '%s'.\n
 2243:Menghapus kontak '%s' dari grup '%s'.\n
-2244:Grup kontak '%s' sudah memiliki kontak '%s' (%ld).\n
+2244.Grup kontak '%s' sudah memiliki kontak '%s' (%ld).\n
 2245:Ditambahkan grup kontak '%s'.\n
 2246:Kontak '%s' tidak di dalam grup '%s'.\n
-2248:Telah disimpan meta data untuk '%s' (%ld).\n
-2249:Tidak dapat menyimpan meta data untuk '%s' (%ld).\n
+2248.Telah disimpan meta data untuk '%s' (%ld).\n
+2249.Tidak dapat menyimpan meta data untuk '%s' (%ld).\n
 2250:Nomor '%s' tidak merupakan format +<countrycode><cellprovider><number>.\n
 2251:Kesalahan:
 2252:Beep dihasilkan oleh %sbeep%sing.\n
@@ -1043,7 +1043,7 @@
 2299:Alias tidak ada.\n
 2300:Pasang alias atau menampilkan daftar alias saat ini.
 2301:Hapus alias.
-2302:Terlalu banyak level dari pengembangan alias; mungkin loop yang tak terhingga.\n
+2302.Terlalu banyak level dari pengembangan alias; mungkin loop yang tak terhingga.\n
 2303:Karakter tidak sesuai 0x%x pada nama alias.\n
 2304:Mendapatkan jawaban otomatis dari semua <contacts> untuk status saat ini, jauh, tidak ditempat, jangan diganggu, sibuk, atau bebas untuk bicara.
 2305:Menangani meta data dari kontak.
@@ -1132,7 +1132,6 @@
 #2402:The global auto reply flag is handled by the %s command.\n
 #2403:msg>
 #2405:Your status is %s (%s).\n
-#2406:Couldn't load meta data for %s (%ld).\n
 #2407:This flag is handled by the %s command.\n
 #2408:%s is not a contact group.\n
 #2409:%s is not a contact.\n
@@ -1178,7 +1177,6 @@
 #2449:Primary contact group for contact '%s' is now '%s'.\n
 #2450:Last %d people you talked with:\n
 #2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
-#2452:%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n
 #2453:    at %p parent %p assoc %p ssl %d\n
 #2454:    open %p reconn %p close %p err %p dispatch %p\n
 #2455:About>
@@ -1305,3 +1303,35 @@
 #2576:contact delete  Delete server based contact list entry.\n
 #2577:SBL ids:
 #2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2579:contact delid   Delete server based contact list entry (experts only).\n
+#2580:ignore
+#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
+#2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
+#2583:Location error: %d.\n
+#2584:msn temp
+#2585:msn server
+#2586:msn chat
+#2587:Couldn't load meta data for %s (%s).\n
+2588:Telah disimpan meta data untuk '%s' (%s).\n
+2589:Tidak dapat menyimpan meta data untuk '%s' (%s).\n
+2590:%s ditambahkan sebagai %s.\n
+2591:Grup kontak '%s' sudah memiliki kontak '%s' (%s).\n
+2592:'%s' sudah sebagai alias untuk '%s' (%s).\n
+2593:'%s' (%s) sudah digunakan sebagai nick.\n
+2594:Menambahkan '%s' sebagai alias untuk '%s' (%s).\n
+2595:Kontak yang dihapus '%s' (%s).\n
+2596:Menghapus alias '%s' untuk '%s' (%s).\n
+#2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
+#2598:There is no connection number %ld and no connection for UIN %s.\n
+#2599:There is no connection for UIN %s.\n
+#2600:No connection selected.\n
+#2601:Connection for %s is already open.\n
+#2602:Don't know how to open connection type %s for %s.\n
+2603:Koneksi terpilih %ld (versi %d, UIN %s) sebagai koneksi aktif.\n
+#2604:jabber
+#2605:Automatic status change.
+2606:Ditemukan partner bicara acak dengan UIN %s pada grup bicara %d.\n
+2607:UIN baru adalah %s!\n
+2608:UIN baru Anda adalah: %s.\n
+2609:Peringatan: Server mengira UIN kita adalah %s, sewaktu %s.\n
+2610:Informasi untuk %s%s%s (%s):\n

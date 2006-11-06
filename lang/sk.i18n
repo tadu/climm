@@ -1,5 +1,5 @@
 # $Id$ Slovak (Slovak)
-#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:sk
 1002:sk_SK
@@ -510,7 +510,7 @@
 1613:Žiadne spätné inžinierstvo alebo dekompilácia kódu Mirabilis neboli použité pri vytvorení tohoto programu.\n
 1618:UIN:
 1619:Varovanie:
-1620:dosiahnutý maximálny počet kontaktov. Požiadajte čarodejníka aby ma zväčšil!
+1620.dosiahnutý maximálny počet kontaktov. Požiadajte čarodejníka aby ma zväčšil!
 #1621:users not returned.
 1622:Chcete aplikovať tieto nastavenia? (YES/NO)
 1623:Zdvojený paket %04x\n
@@ -519,7 +519,7 @@
 1634:v poriadku.\n
 1637:Nemôžem prideliť socket voľnému portu\n
 1638:Nemôžem vytvoriť socket
-1639:Nové UIN je %ld!\n
+1639.Nové UIN je %ld!\n
 1640:Aktualizácia informácií zlyhala.\n
 1641:Informácie o užívateľovi zaktualizované.\n
 1642:IP:
@@ -581,7 +581,7 @@
 1747:celkom
 1754:Poznámka: Potrebujete použiť príkaz 'save' pre zápis zoznamu kontaktov na disk.\n
 1755:vás pridali do svojho zoznamu kontaktov.\n
-1762:Vaše nové UIN je: %ld.\n
+1762.Vaše nové UIN je: %ld.\n
 1766:Zmena stavu na Preč/Nedostupný po čakaní %s%ld%s sekúnd.\n
 1767:Prepína automatické cyklenie Preč/Nedostupný.
 1770:Znovu pošle posledné správy kontaktom <contacts>.
@@ -657,7 +657,7 @@
 1888:bez webaware
 1889:server
 1890:peer-to-peer
-1891:Spojenie %ld už je otvorené.\n
+1891.Spojenie %ld už je otvorené.\n
 1892:conn               Zoznam dostupných spojení.\n
 1893:conn login <nr>    Otvorís pojenie <nr>.\n
 1894:Neexistuje spojenie s číslom %ld.\n
@@ -669,7 +669,7 @@
 1901:vás autorizoval aby ste si ho pridali do zoznamu kontaktov.\n
 1903:Odchádzajúci v8 server paket:
 1904:Server nerozumie ver %d (only %d) pre rodinu %d!\n
-1907:Varovanie: Server považuje za UIN %ld, keď je %ld.\n
+1907.Varovanie: Server považuje za UIN %ld, keď je %ld.\n
 1911:nadväzovanie spojenia
 1912:uzavreté
 1914:Nemôžem vyhradiť štruktúru spojenia.\n
@@ -751,7 +751,7 @@
 #2005:Household products
 2006:Dobierkové služby
 2007:Obchodné služby
-2009:Nájdený náhodný užívateľ pre rozhovor/chat UIN %ld s chatovej skupine %d.\n
+2009.Nájdený náhodný užívateľ pre rozhovor/chat UIN %ld s chatovej skupine %d.\n
 2011:Neočakávate peer-to-peer spoje nie.\n
 2012:Heslo nebolo zadané.\n
 2013:Tento príkaz je len pre v8.\n
@@ -810,7 +810,7 @@
 2095:conn remove <nr>   Odstráni spojenie <nr>.\n
 2097:conn select <nr>   Zvolí spojenie <nr> ako spojenie so serverom.\n
 2098:Spojenie %ld nie je spojenie so serverom.\n
-2099:Vybrané spojenie %ld (verzia %d, UIN %ld) ako aktuálne spojenie.\n
+2099.Vybrané spojenie %ld (verzia %d, UIN %ld) ako aktuálne spojenie.\n
 2100:conn select <uin>  Zvolí spojenie s UIN <uin> ako spojenie so serverom.\n
 2101:Odstránenie spojenia %ld a jeho závislostí ukončené.\n
 2102:Spojenie %ld je nastavené spojenie.\n
@@ -826,7 +826,7 @@
 #2112:                  - as = '/': strip path, as = '.': as is\n
 2115:'%s' nie je celé číslo.\n
 2116:Nebolo určené nové nickname (prezývka).\n
-2117:%ld pridaný ako %s.\n
+2117.%ld pridaný ako %s.\n
 2118:Pretečenie pamäte.\n
 2119:auth [grant] <contacts>    - povolí autorizáciu.\n
 2120:auth deny <contacts> <msg> - odmietne autorizáciu.\n
@@ -848,11 +848,11 @@
 2141:Vyhľadávanie %szlyhalo%s.\n
 2142:Priame spojenie s %s nie je možné.\n
 2145:auth add  <contacts>       - autorizované pridanie.\n
-2146:'%s' už je alias pre '%s' (%ld).\n
-2147:'%s' (%ld) je už použité pre nick.\n
-2148:Pridané '%s' ako alias pre '%s' (%ld).\n
-2149:Odstránený alias '%s' pre '%s' (%ld).\n
-2150:Odstránený kontakt '%s' (%ld).\n
+2146.'%s' už je alias pre '%s' (%ld).\n
+2147.'%s' (%ld) je už použité pre nick.\n
+2148.Pridané '%s' ako alias pre '%s' (%ld).\n
+2149.Odstránený alias '%s' pre '%s' (%ld).\n
+2150.Odstránený kontakt '%s' (%ld).\n
 2156:conn close <nr>    Zavrie spojenie <nr>.\n
 2157:Moldavsko
 2158:Nebolo zadané meno súboru.\n
@@ -882,7 +882,7 @@
 2188:Posielate údaje príliš rýchlo - prerušte písanie inak server ukončí spojenie!\n
 2191:Instant messaging chyba: %d.\n
 2192:Možnosti: 
-2194:Neviem otvoriť spojenie tohoto typu.\n
+2194.Neviem otvoriť spojenie tohoto typu.\n
 2195:Pôvodné číslo:
 2196:Pôvodný text:
 2197:Pôvodný bajt
@@ -912,18 +912,18 @@
 2228:Nemôžem nastaviť odblokovanie FIFO
 2233:odmieta autorizáciu: %s%s%s\n
 2234:Správa %s zahodená - stratené sedenie.\n
-2236:Informácia pre %s%s%s (%ld):\n
+2236.Informácia pre %s%s%s (%ld):\n
 2237:Webaware:
 2238:Skrytá IP:
 2239:Ďalšie neznáme:
 2240:Nebola zadaná skupina kontaktov.\n
 2241:Pridané '%s' do skupiny kontaktov '%s'.\n
 2243:Kontakt '%s' odstránený zo skupiny '%s'.\n
-2244:Skupina '%s' už obsahuje kontakt '%s' (%ld).\n
+2244.Skupina '%s' už obsahuje kontakt '%s' (%ld).\n
 2245:Pridaná skupina '%s'.\n
 2246:Kontakt '%s' nie je  v skupine '%s'.\n
-2248:Uložené metadata pre '%s' (%ld).\n
-2249:Nemôžem uložiť metadata pre '%s' (%ld).\n
+2248.Uložené metadata pre '%s' (%ld).\n
+2249.Nemôžem uložiť metadata pre '%s' (%ld).\n
 2250:Číslo '%s' nemá formát +<countrycode><cellprovider><number>.\n
 2251:Chyba:
 2252:Pípnutie generované %sbeep%sing.\n
@@ -956,7 +956,7 @@
 2299:Alias neexistuje.\n
 2300:Nastaví alias alebo zobrazí aliasy.
 2301:Odstráni alias.
-2302:Príliš zložitá úroveň aliasov; možnosť nekonečnej slučky.\n
+2302.Príliš zložitá úroveň aliasov; možnosť nekonečnej slučky.\n
 2303:Nevhodný znak 0x%x v názve aliasu.\n
 2304:Získa automatickú odpoveď od všetkých kontaktov <contacts> pre aktuálny stav, Preč, Nedostupný, Nerušiť, Zaneprázdnený alebo pre Voľný k rozhovoru.
 2305:Správa meta data kontaktov.
@@ -1041,7 +1041,7 @@
 2402:Globálny príznak pre automatickú odpoveď je teraz spravovaný príkazom %s.\n
 2403:msg>
 2405:Váš stav je %s (%s).\n
-2406:Nemôžem načítať metadata pre %s (%ld).\n
+2406.Nemôžem načítať metadata pre %s (%ld).\n
 2407:Toto nastavenie je spravované príkazom %s.\n
 2408:%s nie je skupina kontaktov.\n
 2409:%s nie je kontakt.\n
@@ -1087,7 +1087,6 @@
 2449:Primárna skupina pre kontakt '%s' je teraz '%s'.\n
 2450:Posledných %d ľudí,s ktorými ste hovorili:\n
 2451:history <contact> [<last> [<count>]] -- Zobrazí históriu pre <contact>.\n
-#2452:%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n
 #2453:    at %p parent %p assoc %p ssl %d\n
 #2454:    open %p reconn %p close %p err %p dispatch %p\n
 #2455:About>
@@ -1216,3 +1215,35 @@
 #2576:contact delete  Delete server based contact list entry.\n
 #2577:SBL ids:
 #2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2579:contact delid   Delete server based contact list entry (experts only).\n
+#2580:ignore
+#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
+#2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
+#2583:Location error: %d.\n
+#2584:msn temp
+#2585:msn server
+#2586:msn chat
+2587:Nemôžem načítať metadata pre %s (%s).\n
+2588:Uložené metadata pre '%s' (%s).\n
+2589:Nemôžem uložiť metadata pre '%s' (%s).\n
+2590:%s pridaný ako %s.\n
+2591:Skupina '%s' už obsahuje kontakt '%s' (%s).\n
+2592:'%s' už je alias pre '%s' (%s).\n
+2593:'%s' (%s) je už použité pre nick.\n
+2594:Pridané '%s' ako alias pre '%s' (%s).\n
+2595:Odstránený kontakt '%s' (%s).\n
+2596:Odstránený alias '%s' pre '%s' (%s).\n
+#2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
+#2598:There is no connection number %ld and no connection for UIN %s.\n
+#2599:There is no connection for UIN %s.\n
+#2600:No connection selected.\n
+#2601:Connection for %s is already open.\n
+#2602:Don't know how to open connection type %s for %s.\n
+2603:Vybrané spojenie %ld (verzia %d, UIN %s) ako aktuálne spojenie.\n
+#2604:jabber
+#2605:Automatic status change.
+2606:Nájdený náhodný užívateľ pre rozhovor/chat UIN %s s chatovej skupine %d.\n
+2607:Nové UIN je %s!\n
+2608:Vaše nové UIN je: %s.\n
+2609:Varovanie: Server považuje za UIN %s, keď je %s.\n
+2610:Informácia pre %s%s%s (%s):\n

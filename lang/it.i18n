@@ -1,5 +1,5 @@
 # $Id$ Italiano (Italian)
-#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:it
 1002:it_IT
@@ -515,7 +515,7 @@
 1613:Non e' stato effettuato nessun tipo di decompilazione o di 'reverse engineering' su prodotti Mirabilis per fare questo programma.\n
 1618:UIN:
 1619:Attenzione:
-1620:raggiunto il massimo numero di contatti. Chiedi al Wizard di allargarmi!
+1620.raggiunto il massimo numero di contatti. Chiedi al Wizard di allargarmi!
 1621:utenti non riportati.
 1622:Vuoi rendere effettivi i cambiamenti? (SI/NO)
 #-#1623:Pacchetto doppio %04X\n
@@ -527,7 +527,7 @@
 1634:ok.\n
 1637:Non riesco a collegare il socket ad una porta libera\n
 1638:Non riesco a creare il socket
-1639:Il nuovo UIN e' %ld!\n
+1639.Il nuovo UIN e' %ld!\n
 1640:Non sono riuscito ad aggiornare le informazioni.\n
 1641:Informazioni utente aggiornate con successo.\n
 1642:IP:
@@ -600,7 +600,7 @@
 1747:totale
 1754: Nota: Devi salvare per memorizzare i nuovi contatti sul tuo disco fisso.\n
 1755:ti ha aggiunto alla sua Lista Contatti.\n
-1762:Il tuo nuovo UIN e': %ld.\n
+1762.Il tuo nuovo UIN e': %ld.\n
 1766:Cambio lo stato in via/non disponibile dopo %s%ld%s secondi di inattività.\n
 1767:Attiva/disattiva il cambio automatico fra 'via'/'non disponibile'.
 1770:Rimanda il tuo ultimo messaggio a <contatti>.
@@ -681,7 +681,7 @@
 1888:non visibile sul web
 1889:server
 1890:peer-to-peer
-1891:La connessione %ld e' gia' aperta.\n
+1891.La connessione %ld e' gia' aperta.\n
 1892:conn               Elenca le connessioni disponibili.\n
 1893:conn login <nr>    Apre la connessione <nr>.\n
 1894:Non c'e' il numero di connessione %ld.\n
@@ -695,7 +695,7 @@
 1901:ti ha autorizzato ad aggiungerlo alla tua Lista Contatti.\n
 1903:Pacchetto in uscita dal server v8:
 1904:Il server non decifra la versione  %d (solo %d) per famiglia %d!\n
-1907:Attenzione: il server crede che il nostro UIN sia %ld, mentre e' %ld.\n
+1907.Attenzione: il server crede che il nostro UIN sia %ld, mentre e' %ld.\n
 1911:mi connetto
 1912:chiuso
 1914:Non riesco ad allocare la struttura della connessione.\n
@@ -777,7 +777,7 @@
 2005:Prodotti fatti in casa
 2006:Catalogo di ordini via email
 2007:Servizi per affari
-2009:Trovato utente casuale per chattare UIN %ld nel gruppo %d.\n
+2009.Trovato utente casuale per chattare UIN %ld nel gruppo %d.\n
 2011:Non hai una connessione peer-to-peer in ascolto.\n
 2012:Non hai dato una password.\n
 2013:Questo comando e' solo v8.\n
@@ -846,7 +846,7 @@
 2095:conn remove <nr>   Rimuove la connessione <nr>.\n
 2097:conn select <nr>   Scegli connessione <nr> come server di connessione.\n
 2098:Connessione %ld non e' un server di connessione.\n
-2099:Seleziona la connessione %ld (versione %d, UIN %ld) come connessione corrente.\n
+2099.Seleziona la connessione %ld (versione %d, UIN %ld) come connessione corrente.\n
 2100:conn select <uin>  Seleziona la connessione con UIN <uin> come server di connessione.\n
 2101:Rimuovo la connessione %ld e le sue dipendenze completamente.\n
 2102:La connessione %ld e' una connessione configurata.\n
@@ -868,7 +868,7 @@
 2112:                  - as = '/': percorso completo, as = '.': cosi' com'e'\n
 2115:'%s' non e' un intero.\n
 2116:Nessun nuovo nick name dato.\n
-2117:%ld aggiunto come %s.\n
+2117.%ld aggiunto come %s.\n
 2118:Memoria insufficiente.\n
 #-#2119:auth [grant] <nick>    - concedi l'autorizzazione.\n
 #+#2119:auth [grant] <nick>    - grant authorization.\n
@@ -902,11 +902,11 @@
 #-#2145:auth add  <nick>       - aggiuta autorizzata.
 #+#2145:auth add  <nick>       - authorized add.\n
 #2145:auth add  <contacts>       - authorized add.\n
-2146:'%s' e' gia' un alias per '%s' (%ld).\n
-2147:'%s' (%ld) e' gia' usato come nickname.\n
-2148:Aggiunto '%s' come alias per '%s' (%ld).\n
-2149:Rimosso l'alias '%s' per '%s' (%ld).\n
-2150:Rimosso il contatto '%s' (%ld).\n
+2146.'%s' e' gia' un alias per '%s' (%ld).\n
+2147.'%s' (%ld) e' gia' usato come nickname.\n
+2148.Aggiunto '%s' come alias per '%s' (%ld).\n
+2149.Rimosso l'alias '%s' per '%s' (%ld).\n
+2150.Rimosso il contatto '%s' (%ld).\n
 2156:conn close <nr>    Chiudi connessione <nr>.\n
 2157:Moldova
 #-#2158:Nessun file dato.\n
@@ -957,7 +957,7 @@
 2188:Stai inviando dati troppo velocemente - smetti di scrivere subito, o il server si disconnettera'!\n
 2191:Errore del massaggio immediato: %d.\n
 2192:Capacità:
-2194:Non so come aprire questo tipo di connessione.\n
+2194.Non so come aprire questo tipo di connessione.\n
 2195:Numero obsoleto:
 2196:Testo obsoleto:
 2197:Tipo obsoleto
@@ -995,18 +995,18 @@
 #+#2233:refused authorization: %s%s\n
 #2233:refused authorization: %s%s%s\n
 2234:Messaggio %s scartato - sessione persa.\n
-2236:Informazione per %s%s%s (%ld):\n
+2236.Informazione per %s%s%s (%ld):\n
 2237:Reperibilità sul web:
 2238:Nascondi IP:
 2239:Altri sconosciuti:
 2240:Non mi hai dato un gruppo contatti.\n
 2241:Aggiunto '%s' al gruppo contatti '%s'.\n
 2243:Rimosso il contatto '%s' dal gruppo '%s'.\n
-2244:Il gruppo contatti '%s' ha già il contatto '%s' (%ld).\n
+2244.Il gruppo contatti '%s' ha già il contatto '%s' (%ld).\n
 2245:Aggiunto il gruppo contatti '%s'.\n
 2246:Il contatto '%s' non è nel gruppo '%s'.\n
-2248:Ho salvato i meta-dati per '%s' (%ld).\n
-2249:Non posso salvare i meta-dati per '%s' (%ld).\n
+2248.Ho salvato i meta-dati per '%s' (%ld).\n
+2249.Non posso salvare i meta-dati per '%s' (%ld).\n
 2250:Il numero '%s' non è nel formato +<codice-nazione><prefisso><numero>.\n
 2251:Errore:
 2252:Un segnale sonoro è generato da %sbeep%sing.\n
@@ -1043,7 +1043,7 @@
 2299:Questo alias non esiste.\n
 2300:Definisce un alias o mostra gli alias correnti.
 2301:Cancella un alias.
-2302:Troppi livelli di espansione dell'alias; probabilmente un ciclo infinito.\n
+2302.Troppi livelli di espansione dell'alias; probabilmente un ciclo infinito.\n
 2303:Carattere non valido 0x%x nel nome dell'alias.\n
 2304:Ricevi risposte automatiche da tutti i <contatti> per lo stato corrente, via, non disponibile, non disturbare, occupato, o libero per chattare.
 2305:Gestisce i meta-dati dei contatti.
@@ -1138,7 +1138,6 @@
 #2402:The global auto reply flag is handled by the %s command.\n
 #2403:msg>
 #2405:Your status is %s (%s).\n
-#2406:Couldn't load meta data for %s (%ld).\n
 #2407:This flag is handled by the %s command.\n
 #2408:%s is not a contact group.\n
 #2409:%s is not a contact.\n
@@ -1184,7 +1183,6 @@
 #2449:Primary contact group for contact '%s' is now '%s'.\n
 #2450:Last %d people you talked with:\n
 #2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
-#2452:%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n
 #2453:    at %p parent %p assoc %p ssl %d\n
 #2454:    open %p reconn %p close %p err %p dispatch %p\n
 #2455:About>
@@ -1311,3 +1309,35 @@
 #2576:contact delete  Delete server based contact list entry.\n
 #2577:SBL ids:
 #2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2579:contact delid   Delete server based contact list entry (experts only).\n
+#2580:ignore
+#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
+#2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
+#2583:Location error: %d.\n
+#2584:msn temp
+#2585:msn server
+#2586:msn chat
+#2587:Couldn't load meta data for %s (%s).\n
+2588:Ho salvato i meta-dati per '%s' (%s).\n
+2589:Non posso salvare i meta-dati per '%s' (%s).\n
+2590:%s aggiunto come %s.\n
+2591:Il gruppo contatti '%s' ha già il contatto '%s' (%s).\n
+2592:'%s' e' gia' un alias per '%s' (%s).\n
+2593:'%s' (%s) e' gia' usato come nickname.\n
+2594:Aggiunto '%s' come alias per '%s' (%s).\n
+2595:Rimosso il contatto '%s' (%s).\n
+2596:Rimosso l'alias '%s' per '%s' (%s).\n
+#2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
+#2598:There is no connection number %ld and no connection for UIN %s.\n
+#2599:There is no connection for UIN %s.\n
+#2600:No connection selected.\n
+#2601:Connection for %s is already open.\n
+#2602:Don't know how to open connection type %s for %s.\n
+2603:Seleziona la connessione %ld (versione %d, UIN %s) come connessione corrente.\n
+#2604:jabber
+#2605:Automatic status change.
+2606:Trovato utente casuale per chattare UIN %s nel gruppo %d.\n
+2607:Il nuovo UIN e' %s!\n
+2608:Il tuo nuovo UIN e': %s.\n
+2609:Attenzione: il server crede che il nostro UIN sia %s, mentre e' %s.\n
+2610:Informazione per %s%s%s (%s):\n

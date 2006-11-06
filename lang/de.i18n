@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -520,7 +520,7 @@
 1613:Dazu wurde kein Programmcode von Mirabilis zurückentwickelt oder zurückübersetzt.\n
 1618:Benutzernummer:
 1619:Warnung:
-1620:Maximale Anzahl an Kontakten erreicht.
+1620.Maximale Anzahl an Kontakten erreicht.
 1621:Suchergebnisse nicht zurückgegeben.
 1622:Möchten Sie die Änderungen anwenden? (JA/NEIN)
 1623:Doppeltes Paket %04x.\n
@@ -528,7 +528,7 @@
 1634:ok.\n
 1637:Kann Kommunikationsendpunkt nicht mit einem freien Anschluß verknüpfen.\n
 1638:Konnte Verbindungsendpunkt nicht erzeugen
-1639:Die neue Benutzernummer ist %ld!\n
+1639.Die neue Benutzernummer ist %ld!\n
 1640:Aktualisieren der Informationen fehlgeschlagen.\n
 1641:Benutzerinformationen erfolgreich aktualisiert.\n
 1642:IP:
@@ -590,7 +590,7 @@
 1747:Gesamt
 1754:Hinweis: Sie müssen diese Änderung mit "save" abspeichern.\n
 1755:hat Sie zu seiner Kontaktliste hinzugefügt.\n
-1762:Ihre neue Benutzernummer ist: %ld.\n
+1762.Ihre neue Benutzernummer ist: %ld.\n
 1766:Automatische Abwesenheit/Nichtverfügbarkeit nach %s%ld%s Sekunden.\n
 1767:Schaltet die automatische Abwesenheitsschaltung an oder ab.
 1770:Sendet die letzte Nachricht erneut an alle <contacts>.
@@ -666,7 +666,7 @@
 1888:nicht webaware
 1889:Server
 1890:Direktverbindung
-1891:Verbindung %ld ist bereits geöffnet.\n
+1891.Verbindung %ld ist bereits geöffnet.\n
 1892:conn               Liste verfügbare Verbindungen auf.\n
 1893:conn login <nr>    Öffnet Verbindung <nr>.\n
 1894:Es gibt keine Verbindung Nummer %ld.\n
@@ -678,7 +678,7 @@
 1901:hat die Autorisierung erteilt.\n
 1903:Ausgehendes v8-Server-Paket:
 1904:Der Server versteht Version %d (nur Version %d) für Familie %d!\n
-1907:Warnung: Der Server hält unsere Benutzernummer für %ld, obwohl sie %ld ist.\n
+1907.Warnung: Der Server hält unsere Benutzernummer für %ld, obwohl sie %ld ist.\n
 1911:verbinde
 1912:geschlossen
 1914:Kann Verbindungs-Datenstruktur nicht allokieren.\n
@@ -760,7 +760,7 @@
 2005:Haushaltsprodukte
 2006:Versandhauskatalog
 2007:Geschäftsdienste
-2009:Zufälligen Plauderpartner mit Benutzernummer %ld in Interessengruppe %d gefunden.\n
+2009.Zufälligen Plauderpartner mit Benutzernummer %ld in Interessengruppe %d gefunden.\n
 2011:Keine Verbindungsannahme-Verbindung gefunden.\n
 2012:Kein Paßwort angegeben.\n
 2013:Dieses Kommando ist nur für Version 7 oder neuer gültig.\n
@@ -819,7 +819,7 @@
 2095:conn remove <nr>   Entferne Verbindung <nr>.\n
 2097:conn select <nr>   Wähle Verbindung <nr> als aktuelle Server-Verbindung aus.\n
 2098:Verbindung %ld ist keine Server-Verbindung.\n
-2099:Wähle Verbindung %ld (Version %d, Benutzernummer %ld) als aktuelle Server-Verbindung.\n
+2099.Wähle Verbindung %ld (Version %d, Benutzernummer %ld) als aktuelle Server-Verbindung.\n
 2100:conn select <uin>  Wähle Verbindung mit Benutzernummer <uin> als aktive Server-Verbindung.\n
 2101:Entferne Verbindung %ld und davon abhängige Verbindungen vollständig.\n
 2102:Verbindung %ld ist eine konfigurierte Verbindung.\n
@@ -835,7 +835,7 @@
 2112:                  - Als = "/": entferne Pfad, Als = ".": wie Datei\n
 2115:"%s" ist keine ganze Zahl.\n
 2116:Kein neuer Spitzname gegeben.\n
-2117:%ld als %s hinzugefügt.\n
+2117.%ld als %s hinzugefügt.\n
 2118:Kein Speicher mehr vorhanden.\n
 2119:auth [grant] <Kontakt>      - autorisieren.\n
 2120:auth deny <Kontakt> <Warum> - Autorisierung ablehnen.\n
@@ -857,11 +857,11 @@
 2141:Suche %sfehlgeschlagen%s.\n
 2142:Direkt-Verbindung mit %s nicht möglich.\n
 2145:auth add  <Kontakt>         - Nach Autorisierung hinzugefügt.\n
-2146:"%s" ist bereits ein Zweit-Name für "%s" (%ld).\n
-2147:"%s" (%ld) wird bereits als Spitzname verwendet.\n
-2148:"%s" ist jetzt ein Zweit-Name für "%s" (%ld).\n
-2149:Entferne Zweit-Name "%s" für "%s" (%ld).\n
-2150:Entferne Kontakt "%s" (%ld).\n
+2146."%s" ist bereits ein Zweit-Name für "%s" (%ld).\n
+2147."%s" (%ld) wird bereits als Spitzname verwendet.\n
+2148."%s" ist jetzt ein Zweit-Name für "%s" (%ld).\n
+2149.Entferne Zweit-Name "%s" für "%s" (%ld).\n
+2150.Entferne Kontakt "%s" (%ld).\n
 2156:conn close <nr>    Schließe Verbindung <nr>.\n
 2157:Moldavien
 2158:Kein Dateiname angegeben.\n
@@ -891,7 +891,7 @@
 2188:Sende Daten zu schnell - erstmal keine weiteren Befehle eingeben, oder der Server wird die Verbindung unterbrechen.\n
 2191:Fehler beim Versenden einer Nachricht: %d.\n
 2192:Fähigkeiten:
-2194:Kann Verbindungen dieses Typs nicht ohne weiteres öffnen.\n
+2194.Kann Verbindungen dieses Typs nicht ohne weiteres öffnen.\n
 2195:Veraltete Nummer:
 2196:Veralteter Text:
 2197:Veraltetes Byte
@@ -921,18 +921,18 @@
 2228:Konnte FIFO nicht nicht-blockieren machen
 2233:hat die Autorisierung abgelehnt: %s%s%s\n
 2234:Nachricht "%s" weggeworfen - die Verbindung ist verschwunden.\n
-2236:Informationen über %s%s%s (%ld):\n
+2236.Informationen über %s%s%s (%ld):\n
 2237:Webaware:
 2238:IP verstecken:
 2239:Unbekanntes:
 2240:Keine Kontaktgruppe angegeben.\n
 2241:Füge "%s" zur Kontaktgruppe "%s" hinzu.\n
 2243:Entferne Kontakt "%s" von Kontaktgruppe "%s".\n
-2244:Kontaktgruppe "%s" hat bereits den Kontakt "%s" (%ld).\n
+2244.Kontaktgruppe "%s" hat bereits den Kontakt "%s" (%ld).\n
 2245:Erzeuge neue Kontaktgruppe "%s".\n
 2246:Kontakt "%s" ist nicht in Gruppe "%s".\n
-2248:Metadaten für "%s" (%ld) gespeichert.\n
-2249:Konnte Metadaten für "%s" (%ld) nicht speichern.\n
+2248.Metadaten für "%s" (%ld) gespeichert.\n
+2249.Konnte Metadaten für "%s" (%ld) nicht speichern.\n
 2250:Die Nummer "%s" ist nicht vom Format +<Landeskode><Provider><Nummer>.\n
 2251:Fehler:
 2252:Um einen Pieps zu erzeugen, wird gepiepst (%sbeep%s).\n
@@ -965,7 +965,7 @@
 2299:Dieser Alias existiert nicht.\n
 2300:Setzt einen Alias oder listet aktuelle Aliase.
 2301:Löscht einen Alias.
-2302:Zu tief verschachtelte Alias-Auflösung; vermutlich eine endlose Schleife.\n
+2302.Zu tief verschachtelte Alias-Auflösung; vermutlich eine endlose Schleife.\n
 2303:Ungültiges Zeichen 0x%x im Alias-Namen.\n
 2304:Hole automatische Antworten für alle <contacts> für den aktuellen Status, abwesend, nicht verfügbar, nicht stören, beschäftigt oder frei für Plaudereien.
 2305:Bearbeite Meta-Daten eines Kontaktes.
@@ -1050,7 +1050,7 @@
 2402:Die globale Einstellung für automatische Antworten wird jetzt von dem %s-Kommando gesteuert.\n
 2403:msg>
 2405:Dein Status ist %s (%s).\n
-2406:Konnte Metadaten für Kontakt %s (%ld) nicht laden.\n
+2406.Konnte Metadaten für Kontakt %s (%ld) nicht laden.\n
 2407:Diese Einstellung wird jetzt von dem %s-Kommando gesteuert.\n
 2408:%s ist keine Kontaktgruppe.\n
 2409:%s ist kein Kontakt.\n
@@ -1096,7 +1096,7 @@
 2449:Primäre Kontaktgruppe für Kontakt "%s" ist jetzt "%s".\n
 2450:Die letzten %d Kontakte, mit denen kommuniziert wurde:\n
 2451:history <KontaKt> [<Start> [<Anzahl>]] -- Zeige geloggte Nachrichten von <Kontakt>.\n
-2452:%02d %-20s v%d%s für %s (%lx) bei %s:%ld %s\n
+2452.%02d %-20s v%d%s für %s (%lx) bei %s:%ld %s\n
 2453:    bei %p übergeordnet %p zugehörig %p ssl %d\n
 2454:    öffne %p wiederverbinde %p schließe %p fehler %p ausführen %p\n
 2455:Über>
@@ -1224,4 +1224,36 @@
 #2577:SBL ids:
 2578:%d Kontaktgruppen geändert, dabei insgesamt %d Kontakte, %d ignoriert, %d versteckt, %d sichtbar.\n
 # Those are the funny messages. Substract 2000 to get the normal message.
-3620:Du hast zu viele Freunde, wie wär's mit mehr RL?
+#2579:contact delid   Delete server based contact list entry (experts only).\n
+#2580:ignore
+#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
+#2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
+#2583:Location error: %d.\n
+#2584:msn temp
+#2585:msn server
+#2586:msn chat
+2587:Konnte Metadaten für Kontakt %s (%s) nicht laden.\n
+2588:Metadaten für "%s" (%s) gespeichert.\n
+2589:Konnte Metadaten für "%s" (%s) nicht speichern.\n
+2590:%s als %s hinzugefügt.\n
+2591:Kontaktgruppe "%s" hat bereits den Kontakt "%s" (%s).\n
+2592:"%s" ist bereits ein Zweit-Name für "%s" (%s).\n
+2593:"%s" (%s) wird bereits als Spitzname verwendet.\n
+2594:"%s" ist jetzt ein Zweit-Name für "%s" (%s).\n
+2595:Entferne Kontakt "%s" (%s).\n
+2596:Entferne Zweit-Name "%s" für "%s" (%s).\n
+2597:%02d %-20s v%d%s für %s (%s) bei %s:%ld %s\n
+#2598:There is no connection number %ld and no connection for UIN %s.\n
+#2599:There is no connection for UIN %s.\n
+#2600:No connection selected.\n
+#2601:Connection for %s is already open.\n
+#2602:Don't know how to open connection type %s for %s.\n
+2603:Wähle Verbindung %ld (Version %d, Benutzernummer %s) als aktuelle Server-Verbindung.\n
+#2604:jabber
+#2605:Automatic status change.
+2606:Zufälligen Plauderpartner mit Benutzernummer %s in Interessengruppe %d gefunden.\n
+2607:Die neue Benutzernummer ist %s!\n
+2608:Ihre neue Benutzernummer ist: %s.\n
+2609:Warnung: Der Server hält unsere Benutzernummer für %s, obwohl sie %s ist.\n
+2610:Informationen über %s%s%s (%s):\n
+3620.Du hast zu viele Freunde, wie wär's mit mehr RL?

@@ -1,5 +1,5 @@
 # $Id$ Romana (Romanian)
-#  EN: __.i18n,v 1.79 2005/04/24 11:43:08 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:ro
 1002:ro_RO
@@ -517,7 +517,7 @@
 1613:Nu s-a utilizat cod de la Mirabilis pentru crearea acestui program.\n
 1618:UIN:
 1619:NB!:
-1620:numarul maximal de contacte a fost atins. Rugati vrajitorul sa v-o mareasca!
+1620.numarul maximal de contacte a fost atins. Rugati vrajitorul sa v-o mareasca!
 1621:nu au fost intorsi utilizatori.
 1622:Doriti sa aplicati aceste schimbari? (DA/NU)
 #-#1623:%04X pachet dublat\n
@@ -529,7 +529,7 @@
 1634:ok.\n
 1637:socketul nu poate fi legat de un port liber\n
 1638:N-am putut crea un socket
-1639:Noul UIN este %ld!\n
+1639.Noul UIN este %ld!\n
 1640:Innoirea informatiei a esuat.\n
 1641:Informatia utilizatorului innoita cu succes.\n
 1642:IP:
@@ -600,7 +600,7 @@
 1747:total
 1754:Nota: E necesar sa tastati 'save' pentru a scrie noua lista de contacte pe disc.\n
 1755:v-a adaugat in lista sa de contacte.\n
-1762:UINul dvs. este: %ld.\n
+1762.UINul dvs. este: %ld.\n
 1766:Starea a fost schimbata in plecat/indisponibil dupa %s%ld%s secunde lipsite de activitate.\n
 #1767:Toggles auto cycling to away/not available.
 1770:Trimite ultimul mesaj catre <contacts>.
@@ -679,7 +679,7 @@
 1888:nu stie de web
 1889:server
 #1890:peer-to-peer
-1891:Conexiunea %ld e deja deschisa.\n
+1891.Conexiunea %ld e deja deschisa.\n
 1892:conn               Listeaza conexiunile disponibile.\n
 1893:conn login <nr>    Deschide conexiunea <nr>.\n
 1894:Nu exista conexiunea cu nr %ld.\n
@@ -693,7 +693,7 @@
 1901:v-a autorizat ca sa poata fi introdus in lista d-stra de contacte.\n
 1903:Pachet de server v8 ce pleaca:
 1904:Serverul nu intelege ver %d (doar %d) pentru familia %d!\n
-1907:Preintampinare: Serverul crede ca UINul nostru e %ld, cand e %ld.\n
+1907.Preintampinare: Serverul crede ca UINul nostru e %ld, cand e %ld.\n
 1911:ma conectez
 1912:inchis
 1914:N-am reusit sa aloc structura de conectare.\n
@@ -775,7 +775,7 @@
 2005:Produse pentru casa
 #2006:Mail order catalog
 2007:Business servicii
-2009:Am gasit un partener aleatoriu pentru discutii cu UINul %ld in grupul de discutii %d.\n
+2009.Am gasit un partener aleatoriu pentru discutii cu UINul %ld in grupul de discutii %d.\n
 2011:Nu aveti o conexiune peer-to-peer ce asculta.\n
 2012:Parola neindicata.\n
 2013:Aceasta este o doar o comanda v8.\n
@@ -842,7 +842,7 @@
 2095:conn remove <nr>   Sterge conexiunea <nr>.\n
 2097:conn select <nr>   Selecteaza conexiunea <nr> pentru a fi conexiune server.\n
 2098:Conexiunea %ld nu e conexiune la server.\n
-2099:Conexiunea selectata %ld (versiunea %d, UIN %ld) va fi curenta.\n
+2099.Conexiunea selectata %ld (versiunea %d, UIN %ld) va fi curenta.\n
 2100:conn select <uin>  Selectaza conexiunea cu UINul <uin> pentru a fi server.\n
 2101:Sterg complet conexiunea %ld si cele ce depind de ea.\n
 2102:Conexiunea %ld e una configurata.\n
@@ -864,7 +864,7 @@
 #2112:                  - as = '/': strip path, as = '.': as is\n
 2115:'%s' nu este un intreg.\n
 2116:Nu a fost introdus un nou nickname.\n
-2117:%ld adaugat ca %s.\n
+2117.%ld adaugat ca %s.\n
 2118:Memoria este plina.\n
 #-#2119:auth [grant] <nick>    - autorizeaza.\n
 #+#2119:auth [grant] <nick>    - grant authorization.\n
@@ -898,11 +898,11 @@
 #-#2145:auth add  <nick>       - adaugat cu autorizare.\n
 #+#2145:auth add  <nick>       - authorized add.\n
 #2145:auth add  <contacts>       - authorized add.\n
-2146:'%s' e deja alias pentru '%s' (%ld).\n
-2147:'%s' (%ld) deja se foloseste ca nick.\n
-2148:Adaugat '%s' ca alias pentru '%s' (%ld).\n
-2149:Am sters aliasul '%s' pentru '%s' (%ld).\n
-2150:Am sters contactul '%s' (%ld).\n
+2146.'%s' e deja alias pentru '%s' (%ld).\n
+2147.'%s' (%ld) deja se foloseste ca nick.\n
+2148.Adaugat '%s' ca alias pentru '%s' (%ld).\n
+2149.Am sters aliasul '%s' pentru '%s' (%ld).\n
+2150.Am sters contactul '%s' (%ld).\n
 2156:conn close <nr>    Inchide conexiunea <nr>.\n
 2157:Moldova
 #-#2158:Nici un fisier indicat.\n
@@ -950,7 +950,7 @@
 2188:Trimiti date prea repede - inceteaza sa tapezi sau serverul se va deconecta!\n
 2191:Eroare mesaj instantaneu: %d.\n
 2192:Capabilitati:
-2194:Nu stiu cum sa deschid acest tip de conexiune.\n
+2194.Nu stiu cum sa deschid acest tip de conexiune.\n
 2195:Numar invalid:
 2196:Text invalid:
 2197:Octet invalid
@@ -985,18 +985,18 @@
 #+#2233:refused authorization: %s%s\n
 #2233:refused authorization: %s%s%s\n
 2234:Mesajul %s a fost ignorat - conexiune pierduta.\n
-2236:Informatie despre %s%s%s (%ld):\n
+2236.Informatie despre %s%s%s (%ld):\n
 2237:Stie de Web:
 2238:Ascunde IP:
 #2239:Unknown more:
 2240:Nu s-a specificat nici un grup de contacte.\n
 2241:Am adaugat '%s' in grupul de contacte '%s'.\n
 2243:Removed contact '%s' from group '%s'.\n
-2244:Grupul de contacte '%s' deja contine contactul '%s' (%ld).\n
+2244.Grupul de contacte '%s' deja contine contactul '%s' (%ld).\n
 2245:Am adaugat grupul de contacte '%s'.\n
 2246:Contactul '%s' nu e in grupul '%s'.\n
-2248:Meta datele pentru '%s' (%ld) au fost salvate.\n
-2249:Meta datele pentru '%s' (%ld) nu au putut fi salvate.\n
+2248.Meta datele pentru '%s' (%ld) au fost salvate.\n
+2249.Meta datele pentru '%s' (%ld) nu au putut fi salvate.\n
 2250:Numarul '%s' nu are formatul +<codtara><operatorcelulare><numar>.\n
 2251:Eroare:
 2252:Un beep e generat prin %sbeep%suire.\n
@@ -1033,7 +1033,7 @@
 2299:Alias-ul nu exista.\n
 2300:Creaza un alias sau listeaza-le pe cele curente.
 2301:Sterge un alias.
-2302:Prea multe nivele de desfacere a aliasurilor; probabil e ciclu infinit.\n
+2302.Prea multe nivele de desfacere a aliasurilor; probabil e ciclu infinit.\n
 2303:0x%x e caracter invalid in numele aliasului.\n
 2304:Ia raspunsul automat de la toate <contacts> pentru starea curenta, plecat, indisponibil, nu ma deranjati, ocupat, sau disponibil pentru discutii.
 2305:Lucreaza cu meta datele contactelor.
@@ -1122,7 +1122,6 @@
 #2402:The global auto reply flag is handled by the %s command.\n
 #2403:msg>
 #2405:Your status is %s (%s).\n
-#2406:Couldn't load meta data for %s (%ld).\n
 #2407:This flag is handled by the %s command.\n
 #2408:%s is not a contact group.\n
 #2409:%s is not a contact.\n
@@ -1168,7 +1167,6 @@
 #2449:Primary contact group for contact '%s' is now '%s'.\n
 #2450:Last %d people you talked with:\n
 #2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
-#2452:%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n
 #2453:    at %p parent %p assoc %p ssl %d\n
 #2454:    open %p reconn %p close %p err %p dispatch %p\n
 #2455:About>
@@ -1295,3 +1293,35 @@
 #2576:contact delete  Delete server based contact list entry.\n
 #2577:SBL ids:
 #2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#2579:contact delid   Delete server based contact list entry (experts only).\n
+#2580:ignore
+#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
+#2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
+#2583:Location error: %d.\n
+#2584:msn temp
+#2585:msn server
+#2586:msn chat
+#2587:Couldn't load meta data for %s (%s).\n
+2588:Meta datele pentru '%s' (%s) au fost salvate.\n
+2589:Meta datele pentru '%s' (%s) nu au putut fi salvate.\n
+2590:%s adaugat ca %s.\n
+2591:Grupul de contacte '%s' deja contine contactul '%s' (%s).\n
+2592:'%s' e deja alias pentru '%s' (%s).\n
+2593:'%s' (%s) deja se foloseste ca nick.\n
+2594:Adaugat '%s' ca alias pentru '%s' (%s).\n
+2595:Am sters contactul '%s' (%s).\n
+2596:Am sters aliasul '%s' pentru '%s' (%s).\n
+#2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
+#2598:There is no connection number %ld and no connection for UIN %s.\n
+#2599:There is no connection for UIN %s.\n
+#2600:No connection selected.\n
+#2601:Connection for %s is already open.\n
+#2602:Don't know how to open connection type %s for %s.\n
+2603:Conexiunea selectata %ld (versiunea %d, UIN %s) va fi curenta.\n
+#2604:jabber
+#2605:Automatic status change.
+2606:Am gasit un partener aleatoriu pentru discutii cu UINul %s in grupul de discutii %d.\n
+2607:Noul UIN este %s!\n
+2608:UINul dvs. este: %s.\n
+2609:Preintampinare: Serverul crede ca UINul nostru e %s, cand e %s.\n
+2610:Informatie despre %s%s%s (%s):\n
