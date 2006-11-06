@@ -232,7 +232,7 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     cont = PacketReadCont (pak, serv);
     
     if (strcmp (cont->screen, serv->screen))
-        rl_printf (i18n (9999, "Warning: Server thinks our UIN is %s, when it is %s.\n"),
+        rl_printf (i18n (2609, "Warning: Server thinks our UIN is %s, when it is %s.\n"),
                   cont->screen, serv->screen);
     PacketReadB2 (pak);
     tlvc = PacketReadB2 (pak);
