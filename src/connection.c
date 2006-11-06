@@ -305,7 +305,7 @@ const char *ConnectionType (Connection *conn)
 {
     switch (conn->type) {
         case TYPE_JABBER_SERVER:
-            return i18n (9999, "jabber");
+            return i18n (2604, "jabber");
         case TYPE_MSN_TEMP:
             return i18n (2584, "msn temp");
         case TYPE_MSN_SERVER:

@@ -105,7 +105,7 @@ JUMP_SNAC_F(SnacSrvNewuin)
     serv->uin = cont->uin;
     s_repl (&serv->screen, cont->screen);
     rl_print ("\n");
-    rl_printf (i18n (9999, "Your new UIN is: %s.\n"), cont->screen);
+    rl_printf (i18n (2608, "Your new UIN is: %s.\n"), cont->screen);
     serv->flags |= CONN_CONFIGURED;
     if (serv->flags & CONN_WIZARD)
     {

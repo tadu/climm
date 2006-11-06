@@ -1879,7 +1879,7 @@ static JUMP_F(CmdUserStatusMeta)
                     if (ContactMetaLoad (cont))
                         UtilUIDisplayMeta (cont);
                     else
-                        rl_printf (i18n (9999, "Couldn't load meta data for %s (%s).\n"),
+                        rl_printf (i18n (2587, "Couldn't load meta data for %s (%s).\n"),
                                   s_wordquote (cont->nick), cont->screen);
                 }
                 break;
@@ -1887,10 +1887,10 @@ static JUMP_F(CmdUserStatusMeta)
                 for (i = 0; (cont = ContactIndex (cg, i)); i++)
                 {
                     if (ContactMetaSave (cont))
-                        rl_printf (i18n (9999, "Saved meta data for '%s' (%s).\n"),
+                        rl_printf (i18n (2588, "Saved meta data for '%s' (%s).\n"),
                                   cont->nick, cont->screen);
                     else
-                        rl_printf (i18n (9999, "Couldn't save meta data for '%s' (%s).\n"),
+                        rl_printf (i18n (2589, "Couldn't save meta data for '%s' (%s).\n"),
                                   cont->nick, cont->screen);
                 }
                 break;
@@ -2724,7 +2724,7 @@ static JUMP_F(CmdUserAdd)
                         SnacCliAddcontact (conn, cont, NULL);
                     else if (conn->type == TYPE_SERVER_OLD)
                         CmdPktCmdContactList (conn);
-                    rl_printf (i18n (9999, "%s added as %s.\n"), cont->screen, cont->nick);
+                    rl_printf (i18n (2590, "%s added as %s.\n"), cont->screen, cont->nick);
                 }
                 if (ContactHas (cg, cont))
                 {
@@ -2736,7 +2736,7 @@ static JUMP_F(CmdUserAdd)
                     }
                     else
                     {
-                        rl_printf (i18n (2244, "Contact group '%s' already has contact '%s' (%s).\n"),
+                        rl_printf (i18n (2591, "Contact group '%s' already has contact '%s' (%s).\n"),
                                    cg->name, cont->nick, cont->screen);
                     }
                 }
@@ -2772,7 +2772,7 @@ static JUMP_F(CmdUserAdd)
         cmd[i---1] = 0;
     if (!cont->group)
     {
-        rl_printf (i18n (9999, "%s added as %s.\n"), cont->screen, cmd);
+        rl_printf (i18n (2590, "%s added as %s.\n"), cont->screen, cmd);
         rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
         if (c_strlen (cmd) > (UDWORD)uiG.nick_len)
             uiG.nick_len = c_strlen (cmd);
@@ -2786,16 +2786,16 @@ static JUMP_F(CmdUserAdd)
     else
     {
         if (ContactFindAlias (cont, cmd))
-            rl_printf (i18n (9999, "'%s' is already an alias for '%s' (%s).\n"),
+            rl_printf (i18n (2592, "'%s' is already an alias for '%s' (%s).\n"),
                      cmd, cont->nick, cont->screen);
         else if ((cont2 = ContactFind (conn, cmd)))
-            rl_printf (i18n (9999, "'%s' (%s) is already used as a nick.\n"),
+            rl_printf (i18n (2593, "'%s' (%s) is already used as a nick.\n"),
                      cmd, cont2->screen);
         else
         {
             if (!ContactAddAlias (cont, cmd))
                 return 0;
-            rl_printf (i18n (9999, "Added '%s' as an alias for '%s' (%s).\n"),
+            rl_printf (i18n (2594, "Added '%s' as an alias for '%s' (%s).\n"),
                      cmd, cont->nick, cont->screen);
             rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
         }
@@ -2878,13 +2878,13 @@ static JUMP_F(CmdUserRemove)
                 if (all || !cont->alias)
                 {
                     ContactD (cont);
-                    rl_printf (i18n (9999, "Removed contact '%s' (%s).\n"),
+                    rl_printf (i18n (2595, "Removed contact '%s' (%s).\n"),
                               alias, screen);
                 }
                 else
                 {
                     ContactRemAlias (cont, alias);
-                    rl_printf (i18n (9999, "Removed alias '%s' for '%s' (%s).\n"),
+                    rl_printf (i18n (2596, "Removed alias '%s' for '%s' (%s).\n"),
                              alias, cont->nick, screen);
                 }
                 s_free (alias);
@@ -3777,7 +3777,7 @@ static JUMP_F(CmdUserConn)
             {
                 Contact *cont = connl->cont;
 
-                rl_printf (i18n (2452, "%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n"),
+                rl_printf (i18n (2597, "%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n"),
                           i + 1, ConnectionType (connl), connl->version,
 #ifdef ENABLE_SSL
                           connl->ssl_status == SSL_STATUS_OK ? " SSL" : "",
@@ -3824,9 +3824,9 @@ static JUMP_F(CmdUserConn)
                 if (!connl)
                 {
                     if (nr)
-                        rl_printf (i18n (9999, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
+                        rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
                     else
-                        rl_printf (i18n (9999, "There is no connection for UIN %s.\n"), par->txt);
+                        rl_printf (i18n (2599, "There is no connection for UIN %s.\n"), par->txt);
                 }
             }
             else
@@ -3836,14 +3836,14 @@ static JUMP_F(CmdUserConn)
                 else
                     connl = ConnectionFind (TYPEF_ANY_SERVER, NULL, 0);
                 if (!connl)
-                    rl_printf (i18n (9999, "No connection selected.\n"));
+                    rl_printf (i18n (2600, "No connection selected.\n"));
             }
             if (!connl)
                 break;
             if (connl->connect & CONNECT_OK)
-                rl_printf (i18n (9999, "Connection for %s is already open.\n"), connl->screen);
+                rl_printf (i18n (2601, "Connection for %s is already open.\n"), connl->screen);
             else if (!connl->open)
-                rl_printf (i18n (9999, "Don't know how to open connection type %s for %s.\n"),
+                rl_printf (i18n (2602, "Don't know how to open connection type %s for %s.\n"),
                     ConnectionType (connl), connl->screen);
             else
                 connl->open (connl);
@@ -3861,13 +3861,13 @@ static JUMP_F(CmdUserConn)
                 if (!connl)
                 {
                     if (nr)
-                        rl_printf (i18n (9999, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
+                        rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
                     else
-                        rl_printf (i18n (9999, "There is no connection for UIN %s.\n"), par->txt);
+                        rl_printf (i18n (2599, "There is no connection for UIN %s.\n"), par->txt);
                 }
             }
             else
-                rl_printf (i18n (9999, "No connection selected.\n"));
+                rl_printf (i18n (2600, "No connection selected.\n"));
             if (!connl)
                 break;
             if (~connl->type & TYPEF_ANY_SERVER)
@@ -3875,7 +3875,7 @@ static JUMP_F(CmdUserConn)
             else
             {
                 conn = connl;
-                rl_printf (i18n (9999, "Selected connection %ld (version %d, UIN %s) as current connection.\n"),
+                rl_printf (i18n (2603, "Selected connection %ld (version %d, UIN %s) as current connection.\n"),
                           nr, connl->version, connl->screen);
             }
             break;
@@ -4039,9 +4039,9 @@ static JUMP_F(CmdUserAsSession)
         if (!tmpconn && !quiet)
         {
             if (nr)
-                rl_printf (i18n (9999, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
+                rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
             else
-                rl_printf (i18n (9999, "There is no connection for UIN %s.\n"), par->txt);
+                rl_printf (i18n (2599, "There is no connection for UIN %s.\n"), par->txt);
         }
     }
     else
@@ -4051,7 +4051,7 @@ static JUMP_F(CmdUserAsSession)
         else
             tmpconn = ConnectionFind (TYPEF_ANY_SERVER, NULL, 0);
         if (!tmpconn && !quiet)
-            rl_printf (i18n (9999, "No connection selected.\n"));
+            rl_printf (i18n (2600, "No connection selected.\n"));
     }
     if (!tmpconn)
         return 0;

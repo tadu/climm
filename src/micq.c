@@ -163,7 +163,7 @@ static void Idle_Check (Connection *conn)
     }
     if (news != ims_offline && news != conn->status)
     {
-        IMSetStatus (conn, NULL, news, i18n (9999, "Automatic status change."));
+        IMSetStatus (conn, NULL, news, i18n (2605, "Automatic status change."));
         rl_printf ("%s ", s_now);
         rl_printf (i18n (1064, "Automatically changed status to %s.\n"), s_status (news, 0));
     }

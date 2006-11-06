@@ -250,7 +250,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             Meta_User (conn, cont, pak);
             break;
         case SRV_NEW_UIN:
-            rl_printf (i18n (9999, "The new UIN is %s!\n"), cont->screen);
+            rl_printf (i18n (2607, "The new UIN is %s!\n"), cont->screen);
             break;
         case SRV_UPDATE_FAIL:
             rl_print (i18n (1640, "Failed to update info.\n"));
