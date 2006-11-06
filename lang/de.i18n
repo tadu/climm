@@ -1224,14 +1224,14 @@
 #2577:SBL ids:
 2578:%d Kontaktgruppen geändert, dabei insgesamt %d Kontakte, %d ignoriert, %d versteckt, %d sichtbar.\n
 # Those are the funny messages. Substract 2000 to get the normal message.
-#2579:contact delid   Delete server based contact list entry (experts only).\n
-#2580:ignore
-#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
-#2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
-#2583:Location error: %d.\n
-#2584:msn temp
-#2585:msn server
-#2586:msn chat
+2579:contact delid   Lösche Einträge der Server-seitigen Kontaktliste (nur für Experten).\n
+2580:ignorieren
+2581:Verschlüsselte Verbindungen zu Kontakten benötigt die GnuTLS-Bibliothek.\n
+2582:Tcl-Skriptausführung benötigt die Tcl-Bibliothek 8.4.\n
+2583:Fehler vom Location-Dienst: %d.\n
+2584:MSN (temp. Eintrag)
+2585:MSN-Server
+2586:MSN-Chat
 2587:Konnte Metadaten für Kontakt %s (%s) nicht laden.\n
 2588:Metadaten für "%s" (%s) gespeichert.\n
 2589:Konnte Metadaten für "%s" (%s) nicht speichern.\n
@@ -1243,14 +1243,14 @@
 2595:Entferne Kontakt "%s" (%s).\n
 2596:Entferne Zweit-Name "%s" für "%s" (%s).\n
 2597:%02d %-20s v%d%s für %s (%s) bei %s:%ld %s\n
-#2598:There is no connection number %ld and no connection for UIN %s.\n
-#2599:There is no connection for UIN %s.\n
-#2600:No connection selected.\n
-#2601:Connection for %s is already open.\n
-#2602:Don't know how to open connection type %s for %s.\n
+2598:Es gibt keine Verbindung Nummer %ld und keine Verbindung für UIN %s.\n
+2599:Es gibt keine Verbindung für UIN %s.\n
+2600:Keine Verbindung ausgewählt.\n
+2601:Die Verbindung für %s ist bereits geöffnet.\n
+2602:Keine Ahnung, wie Verbindungen vom Typ %s (für %s) geöffnet werden können.\n
 2603:Wähle Verbindung %ld (Version %d, Benutzernummer %s) als aktuelle Server-Verbindung.\n
-#2604:jabber
-#2605:Automatic status change.
+2604:Jabber
+2605:Automatischer Statuswechsel.
 2606:Zufälligen Plauderpartner mit Benutzernummer %s in Interessengruppe %d gefunden.\n
 2607:Die neue Benutzernummer ist %s!\n
 2608:Ihre neue Benutzernummer ist: %s.\n

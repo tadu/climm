@@ -1210,18 +1210,17 @@
 2573:The user is probably offline.\n
 2574:%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n
 2575:Error writing to file (%lu bytes written out of %u).\n
-# Those are the funny messages. Substract 2000 to get the normal message.
-#2576:contact delete  Delete server based contact list entry.\n
-#2577:SBL ids:
-#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
-#2579:contact delid   Delete server based contact list entry (experts only).\n
-#2580:ignore
-#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
-#2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
-#2583:Location error: %d.\n
-#2584:msn temp
-#2585:msn server
-#2586:msn chat
+2576:contact delete  Delete server based contact list entry.\n
+2577:SBL ids:
+2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+2579:contact delid   Delete server based contact list entry (experts only).\n
+2580:ignore
+2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
+2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
+2583:Location error: %d.\n
+2584:msn temp
+2585:msn server
+2586:msn chat
 2587:Couldn't load meta data for %s (%s).\n
 2588:Saved meta data for '%s' (%s).\n
 2589:Couldn't save meta data for '%s' (%s).\n
@@ -1233,19 +1232,20 @@
 2595:Removed contact '%s' (%s).\n
 2596:Removed alias '%s' for '%s' (%s).\n
 2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
-#2598:There is no connection number %ld and no connection for UIN %s.\n
-#2599:There is no connection for UIN %s.\n
-#2600:No connection selected.\n
-#2601:Connection for %s is already open.\n
-#2602:Don't know how to open connection type %s for %s.\n
+2598:There is no connection number %ld and no connection for UIN %s.\n
+2599:There is no connection for UIN %s.\n
+2600:No connection selected.\n
+2601:Connection for %s is already open.\n
+2602:Don't know how to open connection type %s for %s.\n
 2603:Selected connection %ld (version %d, UIN %s) as current connection.\n
-#2604:jabber
-#2605:Automatic status change.
+2604:jabber
+2605:Automatic status change.
 2606:Found random chat partner UIN %s in chat group %d.\n
 2607:The new UIN is %s!\n
 2608:Your new UIN is: %s.\n
 2609:Warning: Server thinks our UIN is %s, when it is %s.\n
 2610:Information for %s%s%s (%s):\n
+# Those are the funny messages. Substract 2000 to get the normal message.
 3082:But hey, let's just poke the server again... [try %d out of %d]\n
 3612:No Mirabilis client was maimed, hacked, tortured, sodomized or otherwise harmed in the making of this utility.\n
 3682:These people are being sociable today:\n
