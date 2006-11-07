@@ -30,6 +30,9 @@ ifneq (,$(findstring notcl,$(DEB_BUILD_OPTIONS)))
 else
         CONFIGURE_OPTIONS += --enable-tcl
 endif
+ifneq (,$(findstring autopackage,$(DEB_BUILD_OPTIONS)))
+	CONFIGURE_OPTIONS += --enable-autopackage
+endif
 
 ifeq (,$(MICQ_EXTRAVERSION))
 	MICQ_EXTRAVERSION = Debian hand compiled

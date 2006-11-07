@@ -97,7 +97,8 @@ test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
 %build
 %configure --disable-dependency-tracking CFLAGS=-O4 \
 	%{!?_without_tcl:--enable-tcl}%{?_without_tcl:--disable-tcl} \
-	%{!?_without_ssl:--enable-ssl}%{?_without_ssl:--disable-ssl}
+	%{!?_without_ssl:--enable-ssl}%{?_without_ssl:--disable-ssl} \
+	--enable-autopackage
 make
 
 %install
