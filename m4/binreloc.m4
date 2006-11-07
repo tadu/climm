@@ -22,13 +22,22 @@ AC_DEFUN([rk_BINRELOC],
 		AC_CHECK_FILE([/proc/self/maps])
 		AC_CACHE_CHECK([whether everything is installed to the same prefix],
 			       [br_cv_valid_prefixes], [
-				if test "$bindir" = '${exec_prefix}/bin' -a "$sbindir" = '${exec_prefix}/sbin' -a \
-					"$datadir" = '${prefix}/share' -a "$libdir" = '${exec_prefix}/lib' -a \
-					"$libexecdir" = '${exec_prefix}/libexec' -a "$sysconfdir" = '${prefix}/etc'
-				then
+			        if test "$bindir" != '${exec_prefix}/bin'; then
+			        	br_cv_valid_prefixes="no (bindir)"
+			        elif test "$sbindir" != '${exec_prefix}/sbin'; then
+			        	br_cv_valid_prefixes="no (sbindir)"
+			        elif test "$libdir" != '${exec_prefix}/lib'; then
+			        	br_cv_valid_prefixes="no (libdir)"
+			        elif test "$libexecdir" != '${exec_prefix}/libexec'; then
+			        	br_cv_valid_prefixes="no (libexecdir)"
+			        elif test "$sysconfdir" != '${prefix}/etc'; then
+			        	br_cv_valid_prefixes="no (sysconfdir)"
+			        elif test "$datadir" = '${prefix}/share'; then
+			        	br_cv_valid_prefixes=yes
+			        elif test "$datadir" != '${datarootdir}' || test "$datarootdir" != '${prefix}/share'; then
+			        	br_cv_valid_prefixes="no (datadir $datadir datarootdir $datarootdir)"
+			        else
 					br_cv_valid_prefixes=yes
-				else
-					br_cv_valid_prefixes=no
 				fi
 				])
 	fi
