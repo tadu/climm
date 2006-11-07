@@ -1,8 +1,8 @@
 Source: micq
 Section: net
 Priority: optional
-Maintainer: Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
-Build-Depends: debhelper (>= 4.0.0), tcl8.4-dev | tcl8.3-dev, libgnutls7-dev | libgnutls10-dev | libgnutls11-dev
+Maintainer: Rüdiger Kuhlmann <micq@ruediger-kuhlmann.de>
+Build-Depends: debhelper (>= 4.0.0), tcl8.4-dev | tcl8.3-dev, libgnutls7-dev | libgnutls10-dev | libgnutls11-dev | libgnutls-dev
 Standards-Version: 3.5.9
 
 Package: micq
