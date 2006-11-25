@@ -3115,12 +3115,11 @@ static JUMP_F(CmdUserHistory)
     Contact *cont = NULL;
 
     int n, msgCount;
-    int msgMin = DEFAULT_HISTORY_COUNT, msgNum = DEFAULT_HISTORY_COUNT;
+    int msgMin = DEFAULT_HISTORY_COUNT, msgNum = DEFAULT_HISTORY_COUNT, msgLines;
     time_t time, htime = (time_t)0;
     struct tm stamp, hstamp;
     char timestr[MAX_STR_BUF];
     const char *timeformat;
-    BOOL isMsg = FALSE, isEmptyMsg = FALSE;
     strc_t par, p, line;
 
     FILE *logfile;
@@ -3128,6 +3127,7 @@ static JUMP_F(CmdUserHistory)
     char buffer[LOG_MAX_PATH + 1], *target = buffer;
     const char *linep;
     int fposCur = 0, fd;
+    UDWORD parsetmp;
 
     ANYCONN;
 
@@ -3148,45 +3148,36 @@ static JUMP_F(CmdUserHistory)
     n = 0;
     if (data == 1)
         memset (&hstamp, 0, sizeof (struct tm));
-    while ((par = s_parse_s (&args, MULTI_SEP)))
+    
+    if (data == 1 && (par = s_parse_s (&args, MULTI_SEP)))
     {
-        switch (n)
+        if ((strlen (par->txt) == 10 &&
+             sscanf (par->txt, "%4d-%2d-%2d",
+                     &hstamp.tm_year, &hstamp.tm_mon, &hstamp.tm_mday) == 3) ||
+            (strlen (par->txt) == 19 &&
+             sscanf (par->txt, "%4d-%2d-%2dT%2d:%2d:%2d",
+                     &hstamp.tm_year, &hstamp.tm_mon, &hstamp.tm_mday,
+                     &hstamp.tm_hour, &hstamp.tm_min, &hstamp.tm_sec) == 6))
         {
-            case 0:
-                /* scan history date */
-                if (data == 1)
-                {
-                    if ((strlen (par->txt) == 10 &&
-                         sscanf (par->txt, "%4d-%2d-%2d",
-                                 &hstamp.tm_year, &hstamp.tm_mon, &hstamp.tm_mday) == 3) ||
-                        (strlen (par->txt) == 19 &&
-                         sscanf (par->txt, "%4d-%2d-%2dT%2d:%2d:%2d",
-                                 &hstamp.tm_year, &hstamp.tm_mon, &hstamp.tm_mday,
-                                 &hstamp.tm_hour, &hstamp.tm_min, &hstamp.tm_sec) == 6))
-                    {
-                        hstamp.tm_mon--;
-                        hstamp.tm_year -= 1900;
-                        htime = timelocal (&hstamp);
-                        msgMin = 0;
-                    }
-                    else
-                    {
-                        rl_printf (i18n (2396, "Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n"), par->txt);
-                        return 0;
-                    }
-                }
-                else
-                {
-                    if (!sscanf (par->txt, "%d", &msgMin))
-                        msgMin = DEFAULT_HISTORY_COUNT;
-                }
-                break;
-            case 1:
-                if (!sscanf (par->txt, "%d", &msgNum))
-                    msgNum = (msgMin < 0) ? (DEFAULT_HISTORY_COUNT) : (msgMin);
+            hstamp.tm_mon--;
+            hstamp.tm_year -= 1900;
+            htime = timelocal (&hstamp);
+            msgMin = 0;
         }
-        n++;
+        else
+        {
+            rl_printf (i18n (2396, "Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n"), par->txt);
+            return 0;
+        }
     }
+    if (data != 1 && s_parseint (&args, &parsetmp))
+        msgMin = (SDWORD)parsetmp;
+    
+    if (msgMin >= 0)
+        msgNum = msgMin;
+    
+    if (s_parseint (&args, &parsetmp))
+        msgNum = parsetmp;
 
     /*
      * get filename of logfile and open it for reading.
@@ -3214,6 +3205,7 @@ static JUMP_F(CmdUserHistory)
         close (fd);
         return 0;
     }
+    close (fd);
 
     /*
      *  correct parameters min and num parameters
@@ -3280,12 +3272,14 @@ static JUMP_F(CmdUserHistory)
            message. */
         if (msgCount == 0)
         {
-            close (fd);
             free (fposArray);
             return 0;
         }
         if (msgCount < msgMin)
+        {
             fposCur = 0;
+            fposLen = msgCount;
+        }
         fseek (logfile, fposArray[fposCur], SEEK_SET);
     }
 
@@ -3297,6 +3291,7 @@ static JUMP_F(CmdUserHistory)
     {
         if (msgCount < msgMin)
         {
+            msgNum = msgCount;
             msgCount = 0;
             msgMin = 1;
         }
@@ -3321,13 +3316,24 @@ static JUMP_F(CmdUserHistory)
     while ((line = UtilIOReadline (logfile)))
     {
         linep = line->txt;
-        if (*linep == '#')
+        if (msgLines && (msgLines > 0 || *linep != '#'))
         {
+            rl_printf ("%s%s\n", COLNONE, linep);
+            msgLines--;
+        }
+        else if (*linep == '#')
+        {
+            msgLines = 0;
+            /* evaluate requested history scope
+               if all lines are dumped, exit */
+            if (msgNum > 0 && msgCount + 1 == msgMin + msgNum)
+                break;
+
             if (fposArray)
             {
                 len = strlen (linep) + 1;
                 /* jump to next message according to fposArray[] */
-                if (ftell (logfile) - len != fposArray[fposCur])
+                if (ftell (logfile) - len != fposArray[fposCur++])
                 {
                     if (!fseek (logfile, fposArray[fposCur], SEEK_SET))
                     {
@@ -3336,96 +3342,68 @@ static JUMP_F(CmdUserHistory)
                     }
                     continue;
                 }
-                else
-                    if (++fposCur == fposLen)
-                        fposCur = 0;
+                if (fposCur == fposLen)
+                    fposCur = 0;
             }
-
             linep++;
-            n = 0;
-            isMsg = FALSE;
 
-            /* extract time form sent and received messages */
-            while ((p = s_parse (&linep)))
+            /* extract time from sent and received messages */
+            if (!(p = s_parse (&linep)))
+                continue;
+            sscanf (p->txt, "%4d%2d%2d%2d%2d%2d",
+                    &stamp.tm_year, &stamp.tm_mon, &stamp.tm_mday,
+                    &stamp.tm_hour, &stamp.tm_min, &stamp.tm_sec);
+
+            if (!(p = s_parse (&linep)))
+                continue;
+
+            if (!(p = s_parse (&linep)))
+                continue;
+            if ((p->txt[0] != '<' || p->txt[1] != '-') &&
+                (p->txt[0] != '-' || p->txt[1] != '>'))
+                continue;
+            msgCount++;
+            
+            if (msgCount < msgMin && data != 1)
+                continue;
+
+            /* convert local time */
+            stamp.tm_mon--;
+            stamp.tm_year -= 1900;
+            time = timegm (&stamp);
+
+            if (time != -1)
             {
-                switch (n)
+                localtime_r (&time, &stamp);
+                /* history date command */
+                if (data == 1 &&
+                    difftime (time, htime) < 0)
                 {
-                    case 0:
-                        if (msgCount > msgMin-2)
-                            sscanf (p->txt, "%4d%2d%2d%2d%2d%2d",
-                                    &stamp.tm_year, &stamp.tm_mon, &stamp.tm_mday,
-                                    &stamp.tm_hour, &stamp.tm_min, &stamp.tm_sec);
-                        break;
-                    case 2:
-                        if ((p->txt[0] == '<' && p->txt[1] == '-') ||
-                            (p->txt[0] == '-' && p->txt[1] == '>'))
-                        {
-                            msgCount++;
-                            /* evaluate requested history scope
-                               if all lines are dumped, exit */
-                            if (msgCount < msgMin && data != 1)
-                                break;
-                            if (msgNum > 0 &&
-                                msgCount + 1 > msgMin + msgNum)
-                            {
-                                close (fd);
-                                free (fposArray);
-                                return 0;
-                            }
-
-                            if (isEmptyMsg)
-                                rl_printf ("%s\n", COLNONE);
-
-                            /* convert local time */
-                            stamp.tm_mon--;
-                            stamp.tm_year -= 1900;
-                            time = timegm (&stamp);
-
-                            if (time != -1)
-                            {
-                                localtime_r (&time, &stamp);
-                                /* history date command */
-                                if (data == 1 &&
-                                    difftime (time, htime) < 0)
-                                {
-                                    msgMin = msgCount + 1;
-                                    break;
-                                }
-                            }
-
-                            isMsg = TRUE;
-                            isEmptyMsg = TRUE;
-
-                            strftime (timestr, MAX_STR_BUF, timeformat, &stamp);
-                            rl_printf ("%s %s[%4d] ", timestr, COLNONE, msgCount);
-
-                            if (*p->txt == '<')
-                                rl_printf ("%s<- ", COLINCOMING);
-                            else
-                                rl_printf ("%s-> ", COLSENT);
-                        }
-                        break;
-                }
-                if (++n > 2)
+                    msgMin = msgCount + 1;
                     break;
+                }
             }
-        }
-        else
-        {
-            if (isMsg == TRUE)
-            {
-                rl_printf ("%s%s\n", COLNONE, linep);
-                isEmptyMsg = FALSE;
-            }
+
+            strftime (timestr, MAX_STR_BUF, timeformat, &stamp);
+            rl_printf ("%s %s[%4d] ", timestr, COLNONE, msgCount);
+            msgLines = -1;
+
+            if (*p->txt == '<')
+                rl_printf ("%s<- ", COLINCOMING);
+            else
+                rl_printf ("%s-> ", COLSENT);
+
+            if (!(p = s_parse (&linep)))
+                continue;
+            /* parse number of lines of message */
+            if (s_parseint (&linep, &parsetmp))
+                msgLines = (SDWORD)parsetmp;
+            if (msgLines <= 0)
+                rl_printf ("%s\n", COLNONE);
         }
     }
-
-    if (isEmptyMsg)
-        rl_printf ("%s\n", COLNONE);
-
-    close (fd);
+    fclose (logfile);
     free (fposArray);
-
     return 0;
 }
 
