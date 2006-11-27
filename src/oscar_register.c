@@ -53,10 +53,13 @@ JUMP_SNAC_F(SnacSrvRegrefused)
         rl_print (i18n (1792, "I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.\n"));
         exit (0);
     }
+    if (~serv->flags & CONN_CONFIGURED)
+    {
 #ifdef ENABLE_PEER2PEER
-    ConnectionD (serv->assoc);
+        ConnectionD (serv->assoc);
 #endif
-    ConnectionD (serv);
+        ConnectionD (serv);
+    }
 }
 
 /*
