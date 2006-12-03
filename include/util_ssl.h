@@ -14,15 +14,17 @@
  */
 #define DH_EXPECT_BITS      512
 
+#define ssl_errno_t int
+
 int SSLInit ();
-int ssl_write (Connection *conn, UBYTE *data, UWORD len);
-int ssl_read (Connection *conn, UBYTE *data, UWORD len);
+ssl_errno_t ssl_write (Connection *conn, UBYTE *data, UWORD len);
+ssl_errno_t ssl_read (Connection *conn, UBYTE *data, UWORD len);
 void ssl_close (Connection *conn DEBUGPARAM);
 void ssl_disconnect (Connection *conn DEBUGPARAM);
 int ssl_supported (Connection *conn DEBUGPARAM);
 int ssl_connect (Connection *conn, BOOL is_client DEBUGPARAM);
 int ssl_handshake (Connection *conn DEBUGPARAM);
-const char *ssl_strerror (int error);
+const char *ssl_strerror (Connection *conn, ssl_errno_t se, int e);
 BOOL TCPSendSSLReq (Connection *list, Contact *cont);
 
 #define ssl_close(c)      ssl_close(c DEBUGARGS)
@@ -36,16 +38,14 @@ BOOL TCPSendSSLReq (Connection *list, Contact *cont);
 #define dc_write    ssl_write
 #define dc_read     ssl_read
 #define dc_close    ssl_close
-#if ENABLE_GNUTLS
-#define dc_strerror gnutls_strerror
-#else
-#define dc_strerror(e) "OpenSSL error"
-#endif
+#define dc_strerror ssl_strerror
 
 #endif /* MICQ_UTIL_SSL_H */
 #else
-#define dc_write(c,d,l) sockwrite((c)->sok,d,l)
-#define dc_read(c,d,l)  sockread((c)->sok,d,l)
-#define dc_close(c)     sockclose((c)->sok)
-#define dc_strerror     strerror
+#define ssl_errno_t int
+#define dc_write(c,d,l)  sockwrite((c)->sok,d,l)
+#define dc_read(c,d,l)   sockread((c)->sok,d,l)
+#define dc_close(c)      sockclose((c)->sok)
+#define dc_strerror(c,e) strerror(e)
 #endif
+

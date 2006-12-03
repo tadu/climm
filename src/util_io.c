@@ -686,7 +686,8 @@ static void UtilIOTOConn (Event *event)
  */
 Packet *UtilIOReceiveTCP (Connection *conn)
 {
-    int off, len, rc;
+    ssl_errno_t ssl_rc;
+    int rc, off, len;
     Packet *pak;
     
     if (!(conn->connect & CONNECT_MASK))
@@ -721,10 +722,11 @@ Packet *UtilIOReceiveTCP (Connection *conn)
 #if defined(SIGPIPE)
         signal (SIGPIPE, SIG_IGN);
 #endif
-        rc = dc_read (conn, pak->data + pak->len, len - pak->len);
-        if (rc <= 0)
+        rc = 0;
+        ssl_rc = dc_read (conn, pak->data + pak->len, len - pak->len);
+        if (ssl_rc <= 0)
         {
-            if (!rc)
+            if (!ssl_rc)
                 rc = UtilIOError (conn);
             else
                 rc = errno;
@@ -765,11 +767,10 @@ Packet *UtilIOReceiveTCP (Connection *conn)
         if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
         {
             Contact *cont;
-            
             if ((cont = conn->cont))
             {
                 rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                rl_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), dc_strerror (rc), rc);
+                rl_printf (i18n (9999, "Error while reading from socket: %s (%d, %d)\n"), dc_strerror (conn, ssl_rc, rc), ssl_rc, rc);
             }
         }
         conn->connect = 0;
@@ -864,6 +865,7 @@ Packet *UtilIOReceiveF (Connection *conn)
 BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
 {
     UBYTE *data;
+    ssl_errno_t ssl_rc;
     int rc, bytessend = 0;
 
     data = (void *) &pak->data;
@@ -878,9 +880,10 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
 
         for ( ; pak->len > pak->rpos; pak->rpos += bytessend)
         {
-            bytessend = dc_write (conn, data + pak->rpos, pak->len - pak->rpos);
-            if (bytessend <= 0)
+            ssl_rc = dc_write (conn, data + pak->rpos, pak->len - pak->rpos);
+            if (ssl_rc <= 0)
                 break;
+            bytessend = ssl_rc;
         }
         if (bytessend <= 0)
             break;
@@ -910,7 +913,7 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
             if ((cont = conn->cont))
             {
                 rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
-                rl_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), dc_strerror (rc), rc);
+                rl_printf (i18n (9999, "Error while reading from socket: %s (%d, %d)\n"), dc_strerror (conn, ssl_rc, rc), ssl_rc, rc);
             }
         }
         conn->connect = 0;

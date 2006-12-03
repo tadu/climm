@@ -165,6 +165,17 @@ static void openssl_info_callback (SSL *s, int where, int ret)
 }
 #endif /* ENABLE_GNUTLS */
 
+const char *ssl_strerror (Connection *conn, ssl_errno_t err, int e)
+{
+#if ENABLE_GNUTLS
+    if (conn->ssl_status == SSL_STATUS_OK && err)
+        return gnutls_strerror (err);
+    return strerror (e);
+#else
+    return "OpenSSL error";
+#endif
+}
+
 /* 
  * Initialize ssl library
  *
@@ -362,7 +373,7 @@ int ssl_connect (Connection *conn, BOOL is_client DEBUGPARAM)
  *
  * Calls default sockread() for non-SSL connections.
  */
-int ssl_read (Connection *conn, UBYTE *data, UWORD len_p)
+ssl_errno_t ssl_read (Connection *conn, UBYTE *data, UWORD len_p)
 {
     int len, rc;
 #if !ENABLE_GNUTLS
@@ -430,7 +441,7 @@ int ssl_read (Connection *conn, UBYTE *data, UWORD len_p)
                 rl_printf (i18n (2527, "OpenSSL internal error: %s:%i\n"), file, line);
                 return -1;
             case SSL_ERROR_SYSCALL:
-                rl_printf (i18n (2528, "OpenSSL read error: %s\n"), strerror(tmp));
+                rl_printf (i18n (2528, "OpenSSL read error: %s\n"), strerror (errno));
                 ssl_disconnect (conn);
                 return -1;
             case SSL_ERROR_ZERO_RETURN:
@@ -456,7 +467,7 @@ int ssl_read (Connection *conn, UBYTE *data, UWORD len_p)
  *
  * Calls default sockwrite() for non-SSL connections.
  */
-int ssl_write (Connection *conn, UBYTE *data, UWORD len_p)
+ssl_errno_t ssl_write (Connection *conn, UBYTE *data, UWORD len_p)
 {
     int len = 0;
 #if !ENABLE_GNUTLS
