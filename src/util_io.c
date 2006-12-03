@@ -740,7 +740,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
                 rc = ECONNRESET;
             break;
         }
-        pak->len += rc;
+        pak->len += ssl_rc;
         if (pak->len < len)
             return NULL;
         if (len == off)
@@ -880,10 +880,9 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
 
         for ( ; pak->len > pak->rpos; pak->rpos += bytessend)
         {
-            ssl_rc = dc_write (conn, data + pak->rpos, pak->len - pak->rpos);
+            bytessend = ssl_rc = dc_write (conn, data + pak->rpos, pak->len - pak->rpos);
             if (ssl_rc <= 0)
                 break;
-            bytessend = ssl_rc;
         }
         if (bytessend <= 0)
             break;
