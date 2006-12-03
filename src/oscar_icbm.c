@@ -544,8 +544,8 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
     tlv = TLVRead (pak, PacketReadLeft (pak), tlvc);
 
 #ifdef WIP
-    if (tlv[6].str.len && tlv[6].nr != cont->status)
-        rl_printf ("FIXMEWIP: status for %s embedded in message 0x%08lx different from server status 0x%08lx.\n", cont->screen, tlv[6].nr, cont->status);
+    if (tlv[6].str.len && tlv[6].nr != cont->nativestatus)
+        rl_printf ("FIXMEWIP: status for %s embedded in message 0x%08lx different from server status 0x%08lx.\n", cont->screen, tlv[6].nr, cont->nativestatus);
 #endif
 
     if (tlv[6].str.len)
