@@ -355,5 +355,10 @@ int rl_pos ()
     return CharCount;
 }
 
+void rl_log_for (const char *nick, const char *col)
+{
+    rl_printf ("%s %s", s_now, ReadLinePrintCont (nick, col));
+}
+
 
 #endif /* USE_MREADLINE */

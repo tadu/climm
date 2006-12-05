@@ -26,7 +26,6 @@ BOOL        ConvFits       (const char *in, UBYTE enc);
 #define     c_strlen(t)         (ENC(enc_loc) == ENC_UTF8 ? s_strlen (t) : strlen (t))
 #define     c_offset(t,o)       (ENC(enc_loc) == ENC_UTF8 ? s_offset (t, o) : (o))
 #define     c_delta(t)          (int)(ENC(enc_loc) == ENC_UTF8 ? strlen (t) - s_strlen (t) : 0)
-#define     s_delta(t)          (int)strlen (t) - (int)s_strlen (t)
 
 const char *ConvTranslit (const char *orig, const char *trans);
 

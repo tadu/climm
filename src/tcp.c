@@ -209,7 +209,7 @@ void TCPDispatchReconn (Connection *peer)
     {
         Contact *cont = peer->cont;
 
-        rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+        rl_log_for (cont->nick, COLCONTACT);
         rl_print  (i18n (2023, "Direct connection closed by peer.\n"));
     }
     if (peer->close)
@@ -357,7 +357,7 @@ void TCPDispatchConn (Connection *peer)
                 
                 if (prG->verbose)
                 {
-                    rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                    rl_log_for (cont->nick, COLCONTACT);
                     rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
                               s_wordquote (s_ip (peer->ip)), COLQUOTE, peer->port, COLNONE);
                 }
@@ -377,7 +377,7 @@ void TCPDispatchConn (Connection *peer)
                 
                 if (prG->verbose)
                 {
-                    rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                    rl_log_for (cont->nick, COLCONTACT);
                     rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
                               s_wordquote (s_ip (peer->ip)), COLQUOTE, peer->port, COLNONE);
                 }
@@ -402,7 +402,7 @@ void TCPDispatchConn (Connection *peer)
             case 4:
                 if (prG->verbose)
                 {
-                    rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                    rl_log_for (cont->nick, COLCONTACT);
                     rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
                               s_wordquote (s_ip (peer->ip)), COLQUOTE, peer->port, COLNONE);
                     rl_print (i18n (1785, "success.\n"));
@@ -547,7 +547,7 @@ void TCPDispatchShake (Connection *peer)
                 EventD (QueueDequeue (peer, QUEUE_TCP_TIMEOUT, peer->ip));
                 if (prG->verbose)
                 {
-                    rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                    rl_log_for (cont->nick, COLCONTACT);
                     rl_print  (i18n (1833, "Peer to peer TCP connection established.\n"));
                 }
                 peer->connect = CONNECT_OK | CONNECT_SELECT_R;
@@ -1393,8 +1393,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
         }
         else
         {
-            rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick),
-                      cont->nick, COLNONE);
+            rl_log_for (cont->nick, COLCONTACT);
             rl_printf (i18n (2091, "Queueing %s as %s for transfer.\n"), files[i], as[i]);
             if (sum)
                 s_catn (&filenames, ", ", 2);

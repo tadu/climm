@@ -170,10 +170,11 @@ const char *ssl_strerror (Connection *conn, ssl_errno_t err, int e)
 #if ENABLE_GNUTLS
     if (conn->ssl_status == SSL_STATUS_OK && err)
         return gnutls_strerror (err);
-    return strerror (e);
 #else
-    return "OpenSSL error";
+    if (conn->ssl_status == SSL_STATUS_OK && err)
+        return "OpenSSL error";
 #endif
+    return strerror (e);
 }
 
 /* 
@@ -607,7 +608,7 @@ int ssl_handshake (Connection *conn DEBUGPARAM)
     conn->connect = CONNECT_OK | CONNECT_SELECT_R;
     if (prG->verbose)
     {
-        rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+        rl_log_for (cont->nick, COLCONTACT);
         rl_printf (i18n (2375, "SSL handshake ok.\n"));
     }
     TCLEvent (cont, "ssl", "ok");

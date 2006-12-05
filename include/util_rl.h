@@ -20,6 +20,8 @@ void ReadLinePromptSet (const char *prompt);
 void ReadLinePromptUpdate (const char *prompt);
 void ReadLinePromptReset (void);
 
+strc_t ReadLineAnalyzeWidth (const char *text, UWORD *width);
 const char *ReadLinePrintWidth (const char *text, const char *left, const char *right, UWORD *width);
+const char *ReadLinePrintCont (const char *nick, const char *left);
 
 #endif

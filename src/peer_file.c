@@ -296,7 +296,7 @@ void PeerFileDispatch (Connection *fpeer)
             name = PacketReadL2Str (pak, NULL); /* NICK  */
             PacketD (pak);
             
-            rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+            rl_log_for (cont->nick, COLCONTACT);
             rl_printf (i18n (2161, "Receiving %ld files with total size %ld bytes at speed %lx from %s.\n"),
                      nr, len, speed, ConvFromCont (name, cont));
             
@@ -319,7 +319,7 @@ void PeerFileDispatch (Connection *fpeer)
             name  = PacketReadL2Str (pak, NULL); /* NICK  */
             PacketD (pak);
             
-            rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+            rl_log_for (cont->nick, COLCONTACT);
             rl_printf (i18n (2170, "Sending file at speed %lx to %s.\n"), speed, s_wordquote (ConvFromCont (name, cont)));
             
             fpeer->our_seq = 1;
@@ -366,7 +366,7 @@ void PeerFileDispatch (Connection *fpeer)
                     }
                     if (ffile->sok == -1)
                     {
-                        rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                        rl_log_for (cont->nick, COLCONTACT);
                         rl_printf (i18n (2083, "Cannot open file %s: %s (%d).\n"),
                                  buf, strerror (rc), rc);
                         ConnectionD (fpeer);
@@ -378,7 +378,7 @@ void PeerFileDispatch (Connection *fpeer)
                 ffile->done = off;
                 ffile->close = &PeerFileIODispatchClose;
 
-                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (2162, "Receiving file %s (%s) with %ld bytes as %s.\n"),
                          name->txt, text->txt, len, buf);
             }
@@ -398,7 +398,7 @@ void PeerFileDispatch (Connection *fpeer)
             nr  = PacketRead4 (pak); /* NR */
             PacketD (pak);
             
-            rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+            rl_log_for (cont->nick, COLCONTACT);
             rl_printf (i18n (2163, "Sending file %ld at offset %ld.\n"),
                      nr, off);
             
@@ -406,7 +406,7 @@ void PeerFileDispatch (Connection *fpeer)
             if (err == -1)
             {
                 err = errno;
-                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (2084, "Error while seeking to offset %ld: %s (%d).\n"),
                          off, strerror (err), err);
                 TCPClose (fpeer);
@@ -419,7 +419,7 @@ void PeerFileDispatch (Connection *fpeer)
             return;
             
         case 4:
-            rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+            rl_log_for (cont->nick, COLCONTACT);
             rl_printf (i18n (2169, "File transfer aborted by peer (%d).\n"),
                      PacketRead1 (pak));
             PacketD (pak);
@@ -435,7 +435,7 @@ void PeerFileDispatch (Connection *fpeer)
         case 6:
             if (fpeer->assoc->done + pak->len - 1 > fpeer->assoc->len)
             {
-                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (2165, "The peer sent more bytes (%ld) than the file length (%ld).\n"),
                          fpeer->assoc->done + pak->len - 1, fpeer->assoc->len);
                 PacketD (pak);
@@ -450,7 +450,7 @@ void PeerFileDispatch (Connection *fpeer)
             len = write (fpeer->assoc->sok, pak->data + 1, pak->len - 1);
             if (len + 1 != pak->len)
             {
-                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (2575, "Error writing to file (%lu bytes written out of %u).\n"), len, pak->len - 1);
                 PacketD (pak);
                 TCPClose (fpeer);
@@ -460,7 +460,7 @@ void PeerFileDispatch (Connection *fpeer)
             if (fpeer->assoc->len == fpeer->assoc->done)
             {
                 ReadLinePromptReset ();
-                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_log_for (cont->nick, COLCONTACT);
                 rl_print  (i18n (2166, "Finished receiving file.\n"));
 #if HAVE_FSYNC
                 fsync (fpeer->assoc->sok);
@@ -477,7 +477,7 @@ void PeerFileDispatch (Connection *fpeer)
             PacketD (pak);
             return;
         default:
-            rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+            rl_log_for (cont->nick, COLCONTACT);
             rl_print  (i18n (2167, "Error - unknown packet.\n"));
             rl_print  (s_dump (pak->data, pak->len));
             PacketD (pak);
@@ -560,14 +560,14 @@ void PeerFileResend (Event *event)
 
     if (event->attempts >= MAX_RETRY_P2PFILE_ATTEMPTS || (!event->pak && !event->seq))
     {
-        rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+        rl_log_for (cont->nick, COLCONTACT);
         rl_printf (i18n (2168, "File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n"),
                  event->seq, opt_text, event->attempts);
         TCPClose (fpeer);
     }
     else if (!(fpeer->connect & CONNECT_MASK))
     {
-        rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+        rl_log_for (cont->nick, COLCONTACT);
         rl_printf (i18n (2072, "File transfer #%ld (%s) canceled because of closed connection.\n"),
                  event->seq, opt_text);
     }
@@ -617,7 +617,7 @@ void PeerFileResend (Event *event)
         if (ffile->sok == -1)
         {
             int rc = errno;
-            rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+            rl_log_for (cont->nick, COLCONTACT);
             rl_printf (i18n (2083, "Cannot open file %s: %s (%d).\n"),
                       opt_text, strerror (rc), rc);
             TCPClose (fpeer);
@@ -644,7 +644,7 @@ void PeerFileResend (Event *event)
         if (len == -1)
         {
             len = errno;
-            rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+            rl_log_for (cont->nick, COLCONTACT);
             rl_printf (i18n (2086, "Error while reading file %s: %s (%d).\n"),
                       opt_text, strerror (len), len);
             TCPClose (fpeer);
@@ -673,7 +673,7 @@ void PeerFileResend (Event *event)
             }
 
             ReadLinePromptReset ();
-            rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+            rl_log_for (cont->nick, COLCONTACT);
             rl_printf (i18n (2087, "Finished sending file %s.\n"), opt_text);
             ConnectionD (fpeer->assoc);
             fpeer->our_seq++;
@@ -686,7 +686,7 @@ void PeerFileResend (Event *event)
             }
             else
             {
-                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (2088, "Finished sending all %d files.\n"), fpeer->our_seq - 1);
                 ConnectionD (fpeer);
             }

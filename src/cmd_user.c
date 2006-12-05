@@ -1504,36 +1504,44 @@ static sortstate_t __status (Contact *cont)
     return ss_on;
 }
 
-static UDWORD __lenuin, __lennick, __lenstat, __lenid, __totallen, __l;
+static UWORD __lenuin, __lenstat, __lenid, __totallen, __l;
 
 static void __initcheck (void)
 {
-    __lenuin = __lennick = __lenstat = __lenid = __l = 0;
+    __lenuin = __lenstat = __lenid = __l = 0;
 }
 
 static void __checkcontact (Contact *cont, UWORD data)
 {
     ContactAlias *alias;
+    UWORD width;
 
-    if (s_strlen (cont->screen) > __lenuin)
-        __lenuin = s_strlen (cont->screen);
-    if (s_strlen (cont->nick) > __lennick)
-        __lennick = s_strlen (cont->nick);
+    ReadLineAnalyzeWidth (cont->screen, &width);
+    if (width > __lenuin)
+      __lenuin = width;
+    
+    ReadLinePrintCont (cont->nick, "");
+    
     if (data & 2)
         for (alias = cont->alias; alias; alias = alias->more)
-            if (s_strlen (alias->alias) > __lennick)
-                __lennick = s_strlen (alias->alias);
-    if (s_strlen (s_status (cont->status, cont->nativestatus)) > __lenstat)
-        __lenstat = s_strlen (s_status (cont->status, cont->nativestatus));
-    if (cont->version && s_strlen (cont->version) > __lenid)
-        __lenid = s_strlen (cont->version);
+            ReadLinePrintCont (alias->alias, "");
+
+    ReadLineAnalyzeWidth (s_status (cont->status, cont->nativestatus), &width);
+    if (width > __lenstat)
+        __lenstat = width;
+    if (cont->version)
+    {
+        ReadLineAnalyzeWidth (cont->version, &width);
+        if (width > __lenid)
+            __lenid = width;
+    }
 }
 
 static void __donecheck (UWORD data)
 {
-    if (__lennick > (UDWORD)uiG.nick_len)
-        uiG.nick_len = __lennick;
-    __totallen = 1 + __lennick + 1 + __lenstat + 3 + __lenid + 2;
+    __lenstat += 2;
+    __lenid += 2;
+    __totallen = 1 + uiG.nick_len + 1 + __lenstat + 1 + __lenid;
     if (prG->verbose)
         __totallen += 29;
     if (data & 2)
@@ -1541,12 +1549,12 @@ static void __donecheck (UWORD data)
 
 }
 
-static void __showcontact (Connection *conn, Contact *cont, UWORD data)
+static void __showcontact (Connection *conn, Contact *cont, UWORD data, const char *none_ul)
 {
     Connection *peer;
     ContactAlias *alias;
     char *stat, *ver = NULL, *ver2 = NULL;
-    const char *ul = "";
+    const char *ul = "", *nul = COLNONE;
     time_t tseen;
     val_t vseen;
 #ifdef WIP
@@ -1587,10 +1595,12 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
     
 #ifdef CONFIG_UNDERLINE
     if (!(++__l % 5))
-        ul = ESC "[4m";
+        ul = ESC "[4m", nul = none_ul;
+    else
+        ul = "", nul = COLNONE;
 #endif
     if (data & 2)
-        rl_printf ("%s%s%c%c%c%2d%c%c%s%s %*s", COLSERVER, ul,
+        rl_printf ("%s%s%c%c%c%2d%c%c%s %s", COLSERVER, ul,
              !cont->group                        ? '#' : ' ',
              ContactPrefVal (cont,  CO_INTIMATE) ? '*' :
               ContactPrefVal (cont, CO_HIDEFROM) ? '-' : ' ',
@@ -1608,10 +1618,11 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
               peer->connect & CONNECT_MASK       ? ':' : '.' ) :
               cont->dc && cont->dc->version && cont->dc->port && ~cont->dc->port &&
               cont->dc->ip_rem && ~cont->dc->ip_rem ? '^' : ' ',
-             COLNONE, ul, (int)__lenuin, cont->screen);
+             nul,
+             ReadLinePrintWidth (cont->screen, ul, nul, &__lenuin));
 
-    rl_printf ("%s%s%c%s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
-             COLSERVER, ul, data & 2                       ? ' ' :
+    rl_printf ("%s%s%c%s%s ",
+             COLSERVER, ul, data & 2            ? ' ' :
              !cont->group                       ? '#' :
              ContactPrefVal (cont, CO_INTIMATE) ? '*' :
              ContactPrefVal (cont, CO_HIDEFROM) ? '-' :
@@ -1623,18 +1634,28 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data)
              peer->connect & CONNECT_OK         ? '&' :
              peer->connect & CONNECT_FAIL       ? '|' :
              peer->connect & CONNECT_MASK       ? ':' : '.' ,
-             COLCONTACT, ul, (int)__lennick + s_delta (cont->nick), cont->nick,
-             COLNONE, ul, COLQUOTE, ul, (int)__lenstat + 2 + s_delta (stat), stat,
-             COLNONE, ul, (int)__lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
+             COLCONTACT,
+             ReadLinePrintWidth (cont->nick, ul, nul, &uiG.nick_len));
+    rl_printf ("%s%s ", COLQUOTE, ReadLinePrintWidth (stat, ul, nul, &__lenstat));
+    rl_printf ("%s%s%s%s\n",
+             ReadLinePrintWidth (ver ? ver : "", ul, "", &__lenid),
              ver2 ? ver2 : "", tbuf, COLNONE);
 
     for (alias = cont->alias; alias && (data & 2); alias = alias->more)
     {
-        rl_printf ("%s%s+       %s%*s", COLSERVER, ul, COLNONE, (int)__lenuin, cont->screen);
-        rl_printf ("%s%s %s%s%-*s%s%s %s%s%-*s%s%s %-*s%s%s%s\n",
-                  COLSERVER, ul, COLCONTACT, ul, (int)__lennick + s_delta (alias->alias), alias->alias,
-                  COLNONE, ul, COLQUOTE, ul, (int)__lenstat + 2 + s_delta (stat), stat,
-                  COLNONE, ul, (int)__lenid + 2 + s_delta (ver ? ver : ""), ver ? ver : "",
+#ifdef CONFIG_UNDERLINE
+            if (!(++__l % 5))
+                ul = ESC "[4m", nul = none_ul;
+            else
+                ul = "", nul = COLNONE;
+#endif
+        rl_printf ("%s%s+       %s", COLSERVER, ul, ReadLinePrintWidth (cont->screen, COLNONE, nul, &__lenuin));
+        rl_printf ("%s%s %s%s ",
+                  COLSERVER, ul, COLCONTACT,
+                  ReadLinePrintWidth (alias->alias, ul, nul, &uiG.nick_len));
+        rl_printf ("%s%s ", COLQUOTE, ReadLinePrintWidth (stat, ul, nul, &__lenstat));
+        rl_printf ("%s%s%s%s\n",
+                  ReadLinePrintWidth (ver ? ver : "", "", "", &__lenid),
                   ver2 ? ver2 : "", tbuf, COLNONE);
     }
     free (stat);
@@ -1658,6 +1679,9 @@ static JUMP_F(CmdUserStatusDetail)
     ContactGroup *cg = NULL, *tcg = NULL;
     Contact *cont = NULL;
     int i, j, k;
+#ifdef CONFIG_UNDERLINE
+    char *non_ul;
+#endif
     sortstate_t stati[] = { ss_none, ss_off, ss_dnd, ss_occ, ss_na, ss_away, ss_on, ss_ffc, ss_birth };
     ANYCONN;
 
@@ -1673,6 +1697,9 @@ static JUMP_F(CmdUserStatusDetail)
     if (tcg)
     {
         char *t1, *t2;
+#ifdef CONFIG_UNDERLINE
+        non_ul = strdup (s_sprintf ("%s%s", COLNONE, ESC "[4m"));
+#endif
         UBYTE id;
 
         __initcheck ();
@@ -1682,8 +1709,11 @@ static JUMP_F(CmdUserStatusDetail)
         
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            __showcontact (conn, cont, data);
-
+#ifdef CONFIG_UNDERLINE
+            __showcontact (conn, cont, data, non_ul);
+#else
+            __showcontact (conn, cont, data, "");
+#endif
             if (cont->dc)
             {
                 rl_printf ("    %-15s %s / %s:%ld\n    %s %d    %s (%d)    %s %08lx\n",
@@ -1725,6 +1755,7 @@ static JUMP_F(CmdUserStatusDetail)
             if (j)
                 rl_print ("\n");
         }
+        s_free (non_ul);
         return 0;
     }
 
@@ -1758,7 +1789,7 @@ static JUMP_F(CmdUserStatusDetail)
     {
         if (conn)
         {
-            rl_printf ("%s %s%s%s ", s_now, COLCONTACT, conn->screen, COLNONE);
+            rl_log_for (conn->screen, COLCONTACT);
             if (~conn->connect & CONNECT_OK)
                 rl_printf (i18n (2405, "Your status is %s (%s).\n"),
                     i18n (1969, "offline"), s_status (conn->status, conn->nativestatus));
@@ -1769,6 +1800,9 @@ static JUMP_F(CmdUserStatusDetail)
             return 0;
     }
 
+#ifdef CONFIG_UNDERLINE
+    non_ul = strdup (s_sprintf ("%s%s", COLNONE, ESC "[4m"));
+#endif
     for (k = -1; (k == -1) ? (tcg ? (cg = tcg) : cg) : (cg = ContactGroupIndex (k)); k++)
     {
         char is_shadow;
@@ -1814,7 +1848,11 @@ static JUMP_F(CmdUserStatusDetail)
                     if (__status (cont) != status)
                         continue;
                     if (data & 64 || !ContactPrefVal (cont, CO_SHADOW))
-                        __showcontact (conn, cont, data);
+#ifdef CONFIG_UNDERLINE
+                        __showcontact (conn, cont, data, non_ul);
+#else
+                        __showcontact (conn, cont, data, "");
+#endif
                 }
             }
             if (is_set)
@@ -1825,6 +1863,9 @@ static JUMP_F(CmdUserStatusDetail)
         if (~data & 32)
             break;
     }
+#ifdef CONFIG_UNDERLINE
+    s_free (non_ul);
+#endif
     if (tcg)
         ContactGroupD (tcg);
     rl_print (COLQUOTE);
@@ -1962,8 +2003,10 @@ static JUMP_F(CmdUserIgnoreStatus)
 static JUMP_F(CmdUserStatusWide)
 {
     ContactGroup *cg, *cgon, *cgoff = NULL;
-    int lennick = 0, columns, colleft, colright, i;
+    int columns, colleft, colright, i;
+    UWORD lennick = 0, width, width2;
     Contact *cont;
+    const char *on = i18n (1654, "Online");
     OPENCONN;
 
     cg = conn->contacts;
@@ -1989,30 +2032,36 @@ static JUMP_F(CmdUserStatusWide)
             if (data)
             {
                 ContactAdd (cgoff, cont);
-                if (s_strlen (cont->nick) > (UDWORD)lennick)
-                    lennick = s_strlen (cont->nick);
+                ReadLineAnalyzeWidth (cont->nick, &width);
+                if (width > lennick)
+                    lennick = width;
             }
         }
         else
         {
             ContactAdd (cgon, cont);
-            if (s_strlen (cont->nick) > (UDWORD)lennick)
-                lennick = s_strlen (cont->nick);
+            ReadLineAnalyzeWidth (cont->nick, &width);
+            if (width > lennick)
+                lennick = width;
         }
     }
 
     columns = rl_columns / (lennick + 3);
     if (columns < 1)
         columns = 1;
+    lennick = rl_columns / columns;
+    lennick = lennick > 3 ? lennick - 3 : 1;
 
     if (data)
     {
-        colleft = (rl_columns - s_strlen (i18n (1653, "Offline"))) / 2 - 1;
+        const char *off = i18n (1653, "Offline");
+        ReadLineAnalyzeWidth (off, &width);
+        colleft = (rl_columns - width) / 2 - 1;
         rl_print (COLQUOTE);
         for (i = 0; i < colleft; i++)
             rl_print ("=");
-        rl_printf (" %s%s%s ", COLCLIENT, i18n (1653, "Offline"), COLQUOTE);
-        colright = rl_columns - i - s_strlen (i18n (1653, "Offline")) - 2;
+        rl_printf (" %s%s%s ", COLCLIENT, off, COLQUOTE);
+        colright = rl_columns - i - width - 2;
         for (i = 0; i < colright; i++)
             rl_print ("=");
         rl_print (COLNONE);
@@ -2020,7 +2069,7 @@ static JUMP_F(CmdUserStatusWide)
         {
             if (!(i % columns))
                 rl_print ("\n");
-            rl_printf ("  %s%-*s%s ", COLCONTACT, lennick + s_delta (cont->nick), cont->nick, COLNONE);
+            rl_printf ("  %s ", ReadLinePrintWidth (cont->nick, COLCONTACT, COLNONE, &lennick));
         }
         rl_print ("\n");
         ContactGroupD (cgoff);
@@ -2028,24 +2077,29 @@ static JUMP_F(CmdUserStatusWide)
 
     cont = conn->cont;
     rl_printf ("%s%s%s %s", COLCONTACT, cont->screen, COLNONE, COLQUOTE);
-    colleft = (rl_columns - s_strlen (i18n (1654, "Online"))) / 2 - s_strlen (cont->screen) - 2;
+    ReadLineAnalyzeWidth (on, &width);
+    colleft = (rl_columns - width) / 2 - 2;
+    ReadLineAnalyzeWidth (cont->screen, &width2);
+    colleft -= width2;
     for (i = 0; i < colleft; i++)
         rl_print ("=");
-    rl_printf (" %s%s%s ", COLCLIENT, i18n (1654, "Online"), COLQUOTE);
-    i += 3 + s_strlen (i18n (1654, "Online")) + s_strlen (cont->screen);
-    colright = rl_columns - i - s_strlen (s_status (conn->status, conn->nativestatus)) - 3;
+    rl_printf (" %s%s%s ", COLCLIENT, on, COLQUOTE);
+    i += 3 + width + width2;
+    
+    on = s_status (conn->status, conn->nativestatus);
+    ReadLineAnalyzeWidth (on, &width);
+    colright = rl_columns - i - width - 3;
     for (i = 0; i < colright; i++)
         rl_print ("=");
-    rl_printf (" %s(%s)%s", COLQUOTE, s_status (conn->status, conn->nativestatus), COLNONE);
+    rl_printf (" %s(%s)%s", COLQUOTE, on, COLNONE);
     for (i = 0; (cont = ContactIndex (cgon, i)); i++)
     {
-        char ind = s_status (cont->status, cont->nativestatus)[0];
-        if (cont->status == ims_online)
-            ind = ' ';
+        const char *flags = i18n (9999, " adnof__iiiiiiii");
 
         if (!(i % columns))
             rl_print ("\n");
-        rl_printf ("%c %s%-*s%s ", ind, COLCONTACT, lennick + s_delta (cont->nick), cont->nick, COLNONE);
+
+        rl_printf ("%c %s ", flags[cont->status], ReadLinePrintWidth (cont->nick, COLCONTACT, COLNONE, &lennick));
     }
     rl_printf ("\n%s", COLQUOTE);
     colleft = rl_columns;

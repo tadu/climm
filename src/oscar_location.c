@@ -101,7 +101,7 @@ JUMP_SNAC_F(SnacSrvUserinfo)
         
     if (event->pak->ref == PEEK_REFID || event->pak->ref == PEEK_REFID2)
     {
-        rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+        rl_log_for (cont->nick, COLCONTACT);
         rl_print (i18n (2017, "The user is online, but possibly invisible.\n"));
     }
 }

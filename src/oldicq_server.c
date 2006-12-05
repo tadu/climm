@@ -259,7 +259,8 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             rl_print (i18n (1641, "User info successfully updated.\n"));
             break;
         case SRV_LOGIN_REPLY:
-            rl_printf ("%s %s%s%s %s\n", s_now, COLCONTACT, cont->screen, COLNONE, i18n (1050, "Login successful!"));
+            rl_log_for (cont->nick, COLCONTACT);
+            rl_printf ("%s\n", i18n (1050, "Login successful!"));
             CmdPktCmdLogin1 (conn);
             CmdPktCmdContactList (conn);
             CmdPktCmdInvisList (conn);
@@ -281,9 +282,9 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             ip[1] = PacketRead1 (pak);
             ip[2] = PacketRead1 (pak);
             ip[3] = PacketRead1 (pak);
-            rl_printf ("%s %s%*s%s %s %u.%u.%u.%u\n",
-                s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick,
-                COLNONE, i18n (1642, "IP:"), ip[0], ip[1], ip[2], ip[3]);
+            rl_log_for (cont->nick, COLCONTACT);
+            rl_printf ("%s %u.%u.%u.%u\n",
+                i18n (1642, "IP:"), ip[0], ip[1], ip[2], ip[3]);
             QueueEnqueueData (conn, QUEUE_UDP_KEEPALIVE, 0, time (NULL) + 120,
                               NULL, 0, NULL, &CmdPktSrvCallBackKeepAlive);
             break;

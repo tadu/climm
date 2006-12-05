@@ -441,7 +441,7 @@ static void SrvCallBackReconn (Connection *conn)
     }
     
     conn->connect = 0;
-    rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+    rl_log_for (cont->nick, COLCONTACT);
     if (event->attempts < 5)
     {
         rl_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << event->attempts);

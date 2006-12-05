@@ -70,7 +70,7 @@ void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t fl
     if (prG->event_cmd && *prG->event_cmd)
         EventExec (cont, prG->event_cmd, old == ims_offline ? ev_on : ev_status, nativestatus, status, NULL);
 
-    rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+    rl_log_for (cont->nick, COLCONTACT);
     rl_printf (old != ims_offline ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status, nativestatus));
     if (cont->version && old == ims_offline)
         rl_printf (" [%s]", cont->version);
@@ -137,9 +137,8 @@ void IMOffline (Contact *cont, Connection *conn)
     if (prG->event_cmd && *prG->event_cmd)
         EventExec (cont, prG->event_cmd, ev_off, cont->nativestatus, old, NULL);
  
-    rl_printf ("%s %s%*s%s %s\n",
-             s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick,
-             COLNONE, i18n (1030, "logged off."));
+    rl_log_for (cont->nick, COLCONTACT);
+    rl_printf ("%s\n", i18n (1030, "logged off."));
     TCLEvent (cont, "status", "logged_off");
 }
 
@@ -266,19 +265,20 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, 
 
     if (line)
     {
+        for (p = q = strdup (line); *q; q++)
+            if (*q == (char)0xfe)
+                *q = '*';
+
         if (tstatus != ims_offline && (!cont || cont->status == ims_offline || !cont->group))
             rl_printf ("(%s) ", s_status (tstatus, 0));
         
         rl_printf ("%s ", s_time (&stamp));
         if (cont)
-            rl_printf ("%s%*s%s ", col, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+            rl_printf ("%s", ReadLinePrintCont (cont->nick, col));
         
         if (prG->verbose > 1)
             rl_printf ("<%d> ", type);
 
-        for (p = q = strdup (line); *q; q++)
-            if (*q == (char)0xfe)
-                *q = '*';
         rl_print (p);
         rl_print ("\n");
         free (p);
@@ -347,11 +347,12 @@ void HistShow (Contact *cont)
     
     for (i = 0; i < HISTSIZE; i++)
         if (hist[i].conn && (!cont || hist[i].cont == cont))
-            rl_printf ("%s%s %s%*s %s%s %s" COLMSGINDENT "%s\n",
+            rl_printf ("%s%s %s %s %s" COLMSGINDENT "%s\n",
                        COLDEBUG, s_time (&hist[i].stamp),
-                       hist[i].inout == HIST_IN ? COLINCOMING : COLACK,
-                       uiG.nick_len + s_delta (hist[i].cont->nick),
-                       hist[i].cont->nick, hist[i].inout == HIST_IN ? "<-" : "->",
+                       ReadLinePrintWidth (hist[i].cont->nick,
+                           hist[i].inout == HIST_IN ? COLINCOMING : COLACK,
+                           hist[i].inout == HIST_IN ? "<-" : "->",
+                           &uiG.nick_len),
                        COLNONE, COLMESSAGE, hist[i].msg);
 }
 
@@ -446,7 +447,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
 #endif
     if (uiG.nick_len < 4)
         uiG.nick_len = 4;
-    rl_printf ("\a%s %s%*s%s ", s_time (&stamp), COLINCOMING, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+    rl_printf ("\a%s %s", s_time (&stamp), ReadLinePrintCont (cont->nick, COLINCOMING));
     
     if (OptGetVal (opt, CO_STATUS, &opt_t_status) && (!cont || cont->status != IcqToStatus (opt_t_status) || !cont->group))
         rl_printf ("(%s) ", s_status (IcqToStatus (opt_t_status), opt_t_status));

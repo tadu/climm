@@ -769,7 +769,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
             Contact *cont;
             if ((cont = conn->cont))
             {
-                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (9999, "Error while reading from socket: %s (%d, %d)\n"), dc_strerror (conn, ssl_rc, rc), ssl_rc, rc);
             }
         }
@@ -847,7 +847,7 @@ Packet *UtilIOReceiveF (Connection *conn)
             Contact *cont;
             if ((cont = conn->cont))
             {
-                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
             }
         }
@@ -911,7 +911,7 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
             
             if ((cont = conn->cont))
             {
-                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (9999, "Error while reading from socket: %s (%d, %d)\n"), dc_strerror (conn, ssl_rc, rc), ssl_rc, rc);
             }
         }

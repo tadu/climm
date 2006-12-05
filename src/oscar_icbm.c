@@ -636,7 +636,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
 #ifdef WIP
                 else
                 {
-                    rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                    rl_log_for (cont->nick, COLCONTACT);
                     rl_printf ("FIXMEWIP: tlv(b)-only packet.\n");
                 }
 #endif
@@ -679,8 +679,8 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                         }
                         
 #ifdef WIP
-                        rl_printf ("%s %*s FIXMEWIP: updates dc to %s:%ld|%ld|%ld v%d %d seq %ld\n",
-                                  s_now, uiG.nick_len + s_delta (cont->nick), cont->nick,
+                        rl_log_for (cont->nick, COLCONTACT);
+                        rl_printf ("FIXMEWIP: updates dc to %s:%ld|%ld|%ld v%d %d seq %ld\n",
                                   s_ip (sip), sp1, sp2, sop, sver, scon, sunk);
 #endif
                         CONTACT_DC (cont)->ip_rem = sip;
@@ -993,7 +993,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             if (msgtype != 1012)
 #endif
             {    
-                rl_printf ("%s %s%*s%s ", s_now, COLCONTACT, uiG.nick_len + s_delta (cont->nick), cont->nick, COLNONE);
+                rl_log_for (cont->nick, COLCONTACT);
                 if (((ack_flags & TCP_MSGF_INV) && !ContactPrefVal (cont, CO_INTIMATE)) || ContactPrefVal (cont, CO_HIDEFROM))
                 {
                     if (ContactPrefVal (cont, CO_SHOWCHANGE))

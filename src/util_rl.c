@@ -717,6 +717,17 @@ const char *ReadLinePrintWidth (const char *text, const char *left, const char *
     return s_sprintf ("%s%s%s%*.*s", left, txt->txt, right, pwidth - twidth, pwidth - twidth, "");
 }
 
+const char *ReadLinePrintCont (const char *nick, const char *left)
+{
+    UWORD twidth, pwidth = uiG.nick_len;
+    strc_t txt;
+    
+    txt = ReadLineAnalyzeWidth (nick, &twidth);
+    if (twidth > uiG.nick_len)
+        uiG.nick_len = pwidth = twidth;
+    return s_sprintf ("%*.*s%s%s%s ", pwidth - twidth, pwidth - twidth, "", left, nick, COLNONE);
+}
+
 
 /*
  * Insert a given unicode codepoint
