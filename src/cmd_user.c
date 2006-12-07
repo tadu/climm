@@ -3168,8 +3168,8 @@ static JUMP_F(CmdUserHistory)
 {
     Contact *cont = NULL;
 
-    int n, msgCount;
-    int msgMin = DEFAULT_HISTORY_COUNT, msgNum = DEFAULT_HISTORY_COUNT, msgLines;
+    int msgCount;
+    int msgMin = DEFAULT_HISTORY_COUNT, msgNum = DEFAULT_HISTORY_COUNT, msgLines = 0;
     time_t time, htime = (time_t)0;
     struct tm stamp, hstamp;
     char timestr[MAX_STR_BUF];
@@ -3180,7 +3180,7 @@ static JUMP_F(CmdUserHistory)
     long *fposArray = NULL, fposLen = 0, len;
     char buffer[LOG_MAX_PATH + 1], *target = buffer;
     const char *linep;
-    int fposCur = 0, fd;
+    int fposCur = 0;
     UDWORD parsetmp;
 
     ANYCONN;
@@ -3199,7 +3199,6 @@ static JUMP_F(CmdUserHistory)
         return 0;
     }
 
-    n = 0;
     if (data == 1)
         memset (&hstamp, 0, sizeof (struct tm));
     
@@ -3234,6 +3233,14 @@ static JUMP_F(CmdUserHistory)
         msgNum = parsetmp;
 
     /*
+     *  correct parameters min and num parameters
+     */
+    if (msgMin == 0 && data != 1)
+        msgNum = 0;
+    if (msgNum < 0)
+        msgNum = -msgNum;
+
+    /*
      * get filename of logfile and open it for reading.
      */
     if (!prG->logplace || !*prG->logplace)
@@ -3246,30 +3253,12 @@ static JUMP_F(CmdUserHistory)
         snprintf (target, buffer + sizeof (buffer) - target, "%s.log", cont->screen);
 
     /* try to open logfile for reading (no symlink file) */
-    if ((fd = open (buffer, O_RDONLY, S_IRUSR)) == -1)
-    {
-        rl_printf (i18n (2385, "Couldn't open %s for reading: %s (%d).\n"),
-                  buffer, strerror (errno), errno);
-        return 0;
-    }
     if (!(logfile = fopen (buffer, "r")))
     {
         rl_printf (i18n (2385, "Couldn't open %s for reading: %s (%d).\n"),
                   buffer, strerror (errno), errno);
-        close (fd);
         return 0;
     }
-    close (fd);
-
-    /*
-     *  correct parameters min and num parameters
-     */
-    if (n == 1)
-        msgNum = (msgMin > 0) ? msgMin : (DEFAULT_HISTORY_COUNT);
-    if (msgMin == 0 && data != 1)
-        msgNum = 0;
-    if (msgNum < 0)
-        msgNum = -msgNum;
 
     memset (&stamp, 0, sizeof (struct tm));
 
@@ -3299,26 +3288,21 @@ static JUMP_F(CmdUserHistory)
                    beginning of line */
                 len = (long)strlen (linep) + 1;
                 linep++;
-                n = 0;
-                while ((p = s_parse (&linep)))
-                {
-                    switch (n)
-                    {
-                        case 2:
-                            if ((p->txt[0] == '<' && p->txt[1] == '-') ||
-                                (p->txt[0] == '-' && p->txt[1] == '>'))
-                            {
-                                msgCount++;
-
-                                /* save corrected file position */
-                                fposArray[fposCur] = ftell (logfile) - len;
-                                if (++fposCur == fposLen)
-                                    fposCur = 0;
-                            }
-                            break;
-                    }
-                    if (++n > 2) break;
-                }
+                if (!(p = s_parse (&linep)))
+                    continue;
+                if (!(p = s_parse (&linep)))
+                    continue;
+                if (!(p = s_parse (&linep)))
+                    continue;
+                if ((p->txt[0] != '<' || p->txt[1] != '-') &&
+                    (p->txt[0] != '-' || p->txt[1] != '>'))
+                    continue;
+                
+                msgCount++;
+                /* save corrected file position */
+                fposArray[fposCur] = ftell (logfile) - len;
+                if (++fposCur == fposLen)
+                    fposCur = 0;
             }
         }
         /* reset file to the requested position. If message
@@ -3387,7 +3371,7 @@ static JUMP_F(CmdUserHistory)
             {
                 len = strlen (linep) + 1;
                 /* jump to next message according to fposArray[] */
-                if (ftell (logfile) - len != fposArray[fposCur++])
+                if (ftell (logfile) - len != fposArray[fposCur])
                 {
                     if (!fseek (logfile, fposArray[fposCur], SEEK_SET))
                     {
@@ -3396,7 +3380,7 @@ static JUMP_F(CmdUserHistory)
                     }
                     continue;
                 }
-                if (fposCur == fposLen)
+                if (++fposCur == fposLen)
                     fposCur = 0;
             }
             linep++;
@@ -3430,8 +3414,7 @@ static JUMP_F(CmdUserHistory)
             {
                 localtime_r (&time, &stamp);
                 /* history date command */
-                if (data == 1 &&
-                    difftime (time, htime) < 0)
+                if (data == 1 && difftime (time, htime) < 0)
                 {
                     msgMin = msgCount + 1;
                     break;
@@ -3447,8 +3430,10 @@ static JUMP_F(CmdUserHistory)
             else
                 rl_printf ("%s-> ", COLSENT);
 
-            if (!(p = s_parse (&linep)))
+            linep = strrchr (linep, '+');
+            if (!linep)
                 continue;
+            linep++;
             /* parse number of lines of message */
             if (s_parseint (&linep, &parsetmp))
                 msgLines = (SDWORD)parsetmp;
