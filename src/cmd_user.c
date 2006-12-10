@@ -1755,7 +1755,9 @@ static JUMP_F(CmdUserStatusDetail)
             if (j)
                 rl_print ("\n");
         }
+#ifdef CONFIG_UNDERLINE
         s_free (non_ul);
+#endif
         return 0;
     }
 
