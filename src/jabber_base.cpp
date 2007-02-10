@@ -226,7 +226,8 @@ void MICQJabber::handleJEP22c (std::string fromf, std::string tof, std::string i
 {
     gloox::Stanza *msg = gloox::Stanza::createMessageStanza (gloox::JID (fromf), "");
     msg->addAttribute ("id", s_sprintf ("%s-%x", m_stamp, m_conn->our_seq++));
-    msg->addAttribute ("from", s_sprintf ("%s/mICQ", m_conn->screen));
+    std::string res = m_client->resource();
+    msg->addAttribute ("from", s_sprintf ("%s/%s", m_conn->screen, res.c_str()));
     gloox::Tag *x = new gloox::Tag (msg, "x");
     x->addAttribute ("xmlns", "jabber:x:event");
     new gloox::Tag (x, type);
@@ -586,7 +587,9 @@ UBYTE MICQJabber::JabberSendmsg (Connection *conn, Contact *cont, const char *te
 
     gloox::Stanza *msg = gloox::Stanza::createMessageStanza (gloox::JID (cont->screen), text);    
     msg->addAttribute ("id", s_sprintf ("%s-%x", m_stamp, m_conn->our_seq++));
-    msg->addAttribute ("from", s_sprintf ("%s/mICQ", conn->screen));
+    
+    std::string res = m_client->resource();
+    msg->addAttribute ("from", s_sprintf ("%s/%s", conn->screen, res.c_str()));
     gloox::Tag *x = new gloox::Tag (msg, "x");
     x->addAttribute ("xmlns", "jabber:x:event");
     new gloox::Tag (x, "offline");
