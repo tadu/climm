@@ -43,9 +43,9 @@ BOOL TCPSendSSLReq (Connection *list, Contact *cont);
 #endif /* MICQ_UTIL_SSL_H */
 #else
 #define ssl_errno_t int
-#define dc_write(c,d,l)  sockwrite((c)->sok,d,l)
-#define dc_read(c,d,l)   sockread((c)->sok,d,l)
-#define dc_close(c)      sockclose((c)->sok)
-#define dc_strerror(c,e) strerror(e)
+#define dc_write(c,d,l)    sockwrite((c)->sok,d,l)
+#define dc_read(c,d,l)     sockread((c)->sok,d,l)
+#define dc_close(c)        sockclose((c)->sok)
+#define dc_strerror(c,s,e) strerror(e)
 #endif
 
