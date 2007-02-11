@@ -78,7 +78,7 @@ static jump_f CmdUserPeer;
 static jump_f CmdUserListQueue;
 #endif
     
-static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag);
+static void CmdUserProcess (const char *command, time_t *idle_val, idleflag_t *idle_flag);
 
 /* 1 = do not apply idle stuff next time           v
    2 = count this line as being idle               v */
@@ -4652,7 +4652,7 @@ void CmdUserInterrupt (void)
 /*
  * Process one line of command.
  */
-static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_flag)
+static void CmdUserProcess (const char *command, time_t *idle_val, idleflag_t *idle_flag)
 {
     char *cmd = NULL;
     const char *args, *argst;
@@ -4745,7 +4745,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, UBYTE *idle_f
                     if (j->unidle == 2)
                         *idle_val = idle_save;
                     else if (j->unidle == 1)
-                        *idle_flag = 0;
+                        *idle_flag = i_idle;
                     status = j->f (argsd, j->data, 0);
                     sticky = j->f;
                 }

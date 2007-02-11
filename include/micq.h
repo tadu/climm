@@ -182,6 +182,13 @@ typedef enum {
   imf_cawb   = 15
 } statusflag_t;
 
+typedef enum {
+  i_idle      = 0,
+  i_os        = 1,
+  i_want_away = 2,
+  i_want_na   = 3
+} idleflag_t;
+
 #define MSGF_MASS         0x8000
 #define MSGF_GETAUTO      0x0300
 
@@ -239,10 +246,10 @@ typedef struct
     UBYTE    reconnect_count;
     BOOL     quit;
     UDWORD   packets, events;
-    time_t   idle_val;
-    UDWORD   idle_msgs;
-    UBYTE    idle_flag;
-    char    *idle_uins;
+    time_t     idle_val;
+    UDWORD     idle_msgs;
+    idleflag_t idle_flag;
+    char      *idle_uins;
     UWORD    nick_len;   /* this *must* be an int why??*/
 } user_interface_state;
 
