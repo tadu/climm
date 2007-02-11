@@ -35,6 +35,9 @@ Windows (MingW):
   * It does, unfortunately, not run under WINE.
   * Use %LC_ALL% or -i option to set locale to e.g. de.CP437
   * load ANSI.SYS; see http://www.o2post.com/kuban/ansi/ansi.htm
+    ... or, since this web page is gone, try the terminal emulator
+    from here:
+    http://mysite.verizon.net/jialpert/Computrs/ANSI_COM.htm
 
   The following features do not work:
   * no remote-control via a FIFO (no FIFOs on this platform)
