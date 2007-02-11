@@ -1846,6 +1846,7 @@ void ReadLinePromptUpdate (const char *prompt)
 void ReadLinePromptReset (void)
 {
     Contact *cont;
+    uiG.idle_msgs = 0;
     if (prG->flags & FLAG_UINPROMPT && (cont = uiG.last_sent))
         ReadLinePromptSet (s_sprintf ("[%s]", cont->nick));
     else
