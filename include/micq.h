@@ -248,7 +248,6 @@ typedef struct
     UDWORD   packets, events;
     time_t     idle_val;
     UDWORD     idle_msgs;
-    idleflag_t idle_flag;
     char      *idle_uins;
     UWORD    nick_len;   /* this *must* be an int why??*/
 } user_interface_state;

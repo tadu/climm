@@ -425,7 +425,7 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
     TabAddIn (cont);
 
     if (   ( is_awaycount && noinv != imr_online && noinv != imr_ffc)
-        || (!is_awaycount && uiG.idle_flag != i_idle))
+        || (!is_awaycount && conn->idle_flag != i_idle))
     {
         if ((cont != uiG.last_rcvd) || !uiG.idle_uins || !uiG.idle_msgs)
             s_repl (&uiG.idle_uins, s_sprintf ("%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", cont->nick));

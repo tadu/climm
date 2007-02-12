@@ -43,6 +43,8 @@ struct Connection_s
     UDWORD    port;           /* the port the server is listening on      */
     char     *passwd;         /* the password for this user               */
     UDWORD    ip;             /* the remote ip (host byte order)          */
+    
+    idleflag_t idle_flag;     /* the idle status                          */
 
     SOK_T     sok;            /* socket for connection to server          */
     UWORD     connect;        /* connection setup status                  */

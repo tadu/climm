@@ -83,76 +83,83 @@ static void Idle_Check (Connection *conn)
     }
     
     now = time (NULL);
-    if (!prG->away_time && !uiG.idle_val)
-        uiG.idle_val = now;
-    delta = uiG.idle_val ? now - uiG.idle_val : 0;
-
-    if (!prG->away_time && delta > 10 && uiG.idle_val)
+    
+    if (!prG->away_time)
     {
-        saver = os_DetectLockedWorkstation();
-        
-        if (saver >= 0 && saver <= 3)
+        if (!uiG.idle_val)
+            uiG.idle_val = now;
+
+        delta = now - uiG.idle_val;
+
+        if (delta > 10 && uiG.idle_val)
         {
-            switch (saver)
+            saver = os_DetectLockedWorkstation();
+            
+            if (saver >= 0 && saver <= 3)
             {
-                case 0: /* no screen saver, not locked */
-                    if (noinv != imr_dnd && noinv != imr_occ && noinv != imr_na && noinv != imr_away)
-                        return;
-                    news = ContactCopyInv (conn->status, imr_online);
-                    uiG.idle_flag = i_idle;
-                    break;
-                case 2: /* locked workstation */
-                case 3:
-                    if (noinv == imr_na)
-                        return;
-                    news = ContactCopyInv (conn->status, imr_na);
-                    uiG.idle_msgs = 0;
-                    uiG.idle_flag = i_os;
-                    break;
-                case 1: /* screen saver only */
-                    if (noinv == imr_away || noinv == imr_occ || noinv == imr_dnd)
-                        return;
-                    news = ContactCopyInv (conn->status, imr_away);
-                    uiG.idle_msgs = 0;
-                    uiG.idle_flag = i_os;
-                    break;
+                switch (saver)
+                {
+                    case 0: /* no screen saver, not locked */
+                        if (noinv != imr_dnd && noinv != imr_occ && noinv != imr_na && noinv != imr_away)
+                            return;
+                        news = ContactCopyInv (conn->status, imr_online);
+                        conn->idle_flag = i_idle;
+                        break;
+                    case 2: /* locked workstation */
+                    case 3:
+                        if (noinv == imr_na)
+                            return;
+                        news = ContactCopyInv (conn->status, imr_na);
+                        uiG.idle_msgs = 0;
+                        conn->idle_flag = i_os;
+                        break;
+                    case 1: /* screen saver only */
+                        if (noinv == imr_away || noinv == imr_occ || noinv == imr_dnd)
+                            return;
+                        news = ContactCopyInv (conn->status, imr_away);
+                        uiG.idle_msgs = 0;
+                        conn->idle_flag = i_os;
+                        break;
+                }
+
+                uiG.idle_val = 0;
+                delta = 0;
+                if (news == ims_offline || news == conn->status)
+                    return;
             }
-
-            uiG.idle_val = 0;
-            delta = 0;
-            if (news == ims_offline || news == conn->status)
-                return;
         }
-    }
 
-    if (!prG->away_time && uiG.idle_flag == i_idle && news == ims_offline)
-        return;
+        if (conn->idle_flag == i_idle && news == ims_offline)
+            return;
+    }
+    else
+        delta = uiG.idle_val ? now - uiG.idle_val : 0;
 
     if (!uiG.idle_val)
         uiG.idle_val = now;
     
-    if (uiG.idle_flag == i_idle)
+    if (conn->idle_flag == i_idle)
     {
         if (delta >= prG->away_time && noinv != imr_dnd
             && noinv != imr_occ && noinv != imr_na && noinv != imr_away)
         {
             news = ContactCopyInv (conn->status, imr_away);
-            uiG.idle_flag = i_want_away;
+            conn->idle_flag = i_want_away;
             uiG.idle_msgs = 0;
         }
     }
-    else if (uiG.idle_flag != i_os)
+    else if (conn->idle_flag != i_os)
     {
         if (delta < prG->away_time || !prG->away_time)
         {
             news = ContactCopyInv (conn->status, imr_online);
-            uiG.idle_flag = i_idle;
+            conn->idle_flag = i_idle;
             uiG.idle_val = 0;
         }
-        else if (uiG.idle_flag == i_want_away && delta >= 2 * prG->away_time)
+        else if (conn->idle_flag == i_want_away && delta >= 2 * prG->away_time)
         {
             news = ContactCopyInv (conn->status, imr_na);
-            uiG.idle_flag = i_want_na;
+            conn->idle_flag = i_want_na;
         }
     }
     if (news != ims_offline && news != conn->status)

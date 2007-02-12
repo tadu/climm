@@ -4630,7 +4630,7 @@ void CmdUserCallbackTodo (Event *event)
 void CmdUser (const char *command)
 {
     time_t a;
-    UBYTE  b;
+    idleflag_t b;
     CmdUserProcess (command, &a, &b);
 }
 
@@ -4639,7 +4639,8 @@ void CmdUser (const char *command)
  */
 void CmdUserInput (strc_t line)
 {
-    CmdUserProcess (line->txt, &uiG.idle_val, &uiG.idle_flag);
+    idleflag_t i = i_idle;
+    CmdUserProcess (line->txt, &uiG.idle_val, conn ? &conn->idle_flag : &i);
 }
 
 static UBYTE isinterrupted = 0;
@@ -4745,7 +4746,10 @@ static void CmdUserProcess (const char *command, time_t *idle_val, idleflag_t *i
                     if (j->unidle == 2)
                         *idle_val = idle_save;
                     else if (j->unidle == 1)
+                    {
                         *idle_flag = i_idle;
+                        *idle_val = idle_save;
+                    }
                     status = j->f (argsd, j->data, 0);
                     sticky = j->f;
                 }
