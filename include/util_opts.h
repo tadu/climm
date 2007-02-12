@@ -81,6 +81,7 @@ extern struct OptEntry_s OptList[];
 #define CO_DCAUTH        (COF_BOOL    | CO_GROUP   | 0x001003UL) /* this connection requires auth for dc  */
 #define CO_DCCONT        (COF_BOOL    | CO_GROUP   | 0x004003UL) /* this connection: dc only for contacts */
 #define CO_OBEYSBL       (COF_BOOL    | CO_GROUP   | 0x010003UL) /* this connection obeys the sbl         */
+#define CO_AWAYCOUNT     (COF_BOOL    | CO_GROUP   | 0x100003UL) /* this connection counts msgs even if _manual_ na/away/... */
 
 #define CO_ENCODING      (COF_NUMERIC | CO_CONTACT | 0x04UL) /* the default encoding for this contact */
 #define CO_ENCODINGSTR   (COF_STRING  | CO_CONTACT | 0x05UL) /* the default encoding for this contact */

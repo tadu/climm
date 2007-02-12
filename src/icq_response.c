@@ -365,7 +365,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
     char *cdata, *cdata_deleteme;
     const char *opt_text, *carr, *opt_subj;
     UDWORD opt_type, opt_origin, opt_bytes, opt_ref, opt_t_status, j;
-
+    int is_awaycount = ContactGroupPrefVal (conn->contacts, CO_AWAYCOUNT);
+    status_noi_t noinv = ContactClearInv (conn->status);
     int i;
     
     if (!cont)
@@ -423,7 +424,8 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
 
     TabAddIn (cont);
 
-    if (uiG.idle_flag)
+    if (   ( is_awaycount && noinv != imr_online && noinv != imr_ffc)
+        || (!is_awaycount && uiG.idle_flag != i_idle))
     {
         if ((cont != uiG.last_rcvd) || !uiG.idle_uins || !uiG.idle_msgs)
             s_repl (&uiG.idle_uins, s_sprintf ("%s %s", uiG.idle_uins && uiG.idle_msgs ? uiG.idle_uins : "", cont->nick));

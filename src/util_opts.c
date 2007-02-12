@@ -59,6 +59,7 @@ struct OptEntry_s OptList[] = {
   { "wantsbl",       CO_WANTSBL       },
   { "peekme",        CO_PEEKME        },
   { "obeysbl",       CO_OBEYSBL       },
+  { "awaycount",     CO_AWAYCOUNT     },
   { "shadow",        CO_SHADOW        },
   { "local",         CO_LOCAL         },
   { "webaware",      CO_WEBAWARE      },

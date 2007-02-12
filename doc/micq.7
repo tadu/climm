@@ -789,6 +789,22 @@ Whether authorized contacts can see the (remote) IP address.
 .BI dccont \ boolean\ connection
 Whether contacts can see the (remote) IP address.
 .TP
+.BI countaway \ boolean\ connection
+If set, incoming messages will be counted and their originators shown
+if the status is manually changed to anything other than
+.I online
+or
+.I ffc
+(with or without
+.IR invisible ).
+Otherwise, this is only done if the status was automatically changed
+to
+.I away
+ot
+.I na
+(with ot without
+.IR invisible ).
+.TP
 .BI obeysbl \ boolean\ connection
 Whether to load the server\-based contact list upon login. This will
 enforce required authorizations, which will be ignored for local
