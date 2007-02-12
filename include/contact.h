@@ -130,6 +130,8 @@ ContactGroup *ContactGroupIndex   (int i);
 UWORD         ContactGroupID      (ContactGroup *group);
 UDWORD        ContactGroupCount   (ContactGroup *group);
 void          ContactGroupD       (ContactGroup *group DEBUGPARAM);
+typedef int (*contact_sort_func_t)(Contact *a, Contact *b, int mode);
+void          ContactGroupSort    (ContactGroup *group, contact_sort_func_t sort, int mode);
 
 /* NULL ContactGroup accesses global list */
 Contact      *ContactIndex        (ContactGroup *group, int i);

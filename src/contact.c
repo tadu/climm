@@ -194,6 +194,56 @@ void ContactGroupD (ContactGroup *group DEBUGPARAM)
         }
 }
 
+void ContactGroupSort (ContactGroup *group, contact_sort_func_t sort, int mode)
+{
+    ContactGroup *orig;
+    int i, j;
+    int found = 1, where = 0, res;
+    Contact **a = NULL, **b = NULL, *m;
+    
+    if (!group)
+    {
+        if (!cnt_groups)
+            ContactGroupInit ();
+        group = CONTACTGROUP_GLOBAL;
+    }
+    orig = group;
+    while (found)
+    {
+        found = 0;
+        j = 0;
+        i = 0;
+        b = NULL;
+        group = orig;
+        while (group)
+        {
+            if (i >= group->used)
+            {
+                i = 0;
+                group = group->more;
+                continue;
+            }
+            if (where && j >= where)
+                break;
+            a = b;
+            b = &group->contacts[i];
+            i++;
+            j++;
+            if (!a)
+                continue;
+            res = sort (*a, *b, mode);
+            if (res < 0)
+            {
+                m = *b;
+                *b = *a;
+                *a = m;
+                found = 1;
+                where = j;
+            }
+        }
+    }
+}
+
 /*
  * Iterate through contacts on a contact group
  */
