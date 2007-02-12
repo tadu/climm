@@ -223,7 +223,7 @@ void ContactGroupSort (ContactGroup *group, contact_sort_func_t sort, int mode)
                 group = group->more;
                 continue;
             }
-            if (where && j >= where)
+            if (where && j > where)
                 break;
             a = b;
             b = &group->contacts[i];
@@ -237,10 +237,10 @@ void ContactGroupSort (ContactGroup *group, contact_sort_func_t sort, int mode)
                 m = *b;
                 *b = *a;
                 *a = m;
-                found = 1;
-                where = j;
+                found = j;
             }
         }
+        where = found;
     }
 }
 
