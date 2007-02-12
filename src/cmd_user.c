@@ -1663,6 +1663,23 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data, const ch
     s_free (ver2);
 }
 
+int __sort_group (Contact *a, Contact *b, int mode)
+{
+    if (!a)
+        return -1;
+    if (!b)
+        return 1;
+    if (__status (a) > __status (b))
+        return -1;
+    if (__status (a) < __status (b))
+        return 1;
+    if (!a->nick)
+        return -1;
+    if (!b->nick)
+        return 1;
+    return strcasecmp (b->nick, a->nick);
+}
+
 /*
  * Shows the contact list in a very detailed way.
  *
@@ -1682,7 +1699,6 @@ static JUMP_F(CmdUserStatusDetail)
 #ifdef CONFIG_UNDERLINE
     char *non_ul;
 #endif
-    sortstate_t stati[] = { ss_none, ss_off, ss_dnd, ss_occ, ss_na, ss_away, ss_on, ss_ffc, ss_birth };
     ANYCONN;
 
     if (!data)
@@ -1842,20 +1858,17 @@ static JUMP_F(CmdUserStatusDetail)
             char is_set;
             is_set = OptGetVal (&cg->copts, CO_SHADOW, &val);
             OptSetVal (&cg->copts, CO_SHADOW, 0);
-            for (i = (data & 1 ? 2 : 0); i < 9; i++)
+            ContactGroupSort (cg, __sort_group, 0);
+            for (j = 0; (cont = ContactIndex (cg, j)); j++)
             {
-                sortstate_t status = stati[i];
-                for (j = 0; (cont = ContactIndex (cg, j)); j++)
-                {
-                    if (__status (cont) != status)
-                        continue;
-                    if (data & 64 || !ContactPrefVal (cont, CO_SHADOW))
+                if (data & 1 && __status (cont) < ss_dnd)
+                    continue;
+                if (data & 64 || !ContactPrefVal (cont, CO_SHADOW))
 #ifdef CONFIG_UNDERLINE
-                        __showcontact (conn, cont, data, non_ul);
+                    __showcontact (conn, cont, data, non_ul);
 #else
-                        __showcontact (conn, cont, data, "");
+                    __showcontact (conn, cont, data, "");
 #endif
-                }
             }
             if (is_set)
                 OptSetVal (&cg->copts, CO_SHADOW, val);
