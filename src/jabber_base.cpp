@@ -470,6 +470,21 @@ void MICQJabber::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to,
         DropAttrib (caps, "node");
         CheckInvalid (caps);
     }
+    else if (gloox::Tag *caps = s->findChild ("caps:c", "xmlns:caps", "http://jabber.org/protocol/caps"))
+    {
+        std::string node = caps->findAttribute ("node");
+        std::string ver = caps->findAttribute ("ver");
+        std::string ext = caps->findAttribute ("ext");
+        if (ext.empty())
+            s_repl (&contf->version, s_sprintf ("%s (%s)", node.c_str(), ver.c_str()));
+        else
+            s_repl (&contf->version, s_sprintf ("%s (%s) [%s]", node.c_str(), ver.c_str(), ext.c_str()));
+        DropAttrib (caps, "xmlns:caps");
+        DropAttrib (caps, "ver");
+        DropAttrib (caps, "ext");
+        DropAttrib (caps, "node");
+        CheckInvalid (caps);
+    }
     
     if (gloox::Tag *vcard = s->findChild ("x", "xmlns", "vcard-temp:x:update"))
     {
