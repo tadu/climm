@@ -108,8 +108,11 @@ void MICQJabber::onDisconnect (gloox::ConnectionError e)
         case gloox::ConnNoError:
             break;
         case gloox::ConnStreamError:
-            rl_printf ("onDisconnect: Error %d: ConnStreamError: Error %d: %s\n",
-                       e, m_client->streamError(), m_client->streamErrorText().c_str());
+            {
+                std::string sET = m_client->streamErrorText();
+                rl_printf ("onDisconnect: Error %d: ConnStreamError: Error %d: %s\n",
+                           e, m_client->streamError(), sET.c_str());
+            }
             break;
         case gloox::ConnStreamClosed:
         case gloox::ConnIoError:
@@ -393,7 +396,10 @@ void MICQJabber::handleMessage (gloox::Stanza *s)
     if (t->hasAttribute ("xmlns", "jabber:client"))
         DropAttrib (t, "xmlns");
     if (!CheckInvalid (t))
-        rl_printf ("handleMessage %s\n", t->xml().c_str());
+    {
+        std::string txml = t->xml();
+        rl_printf ("handleMessage %s\n", txml.c_str());
+    }
     delete t;
 }
 
@@ -528,7 +534,10 @@ void MICQJabber::handlePresence (gloox::Stanza *s)
         DropAttrib (t, "xmlns");
     DropAllChilds (t, "status");
     if (!CheckInvalid (t))
-        rl_printf ("handlePresence %s\n", t->xml().c_str());
+    {
+        std::string txml = t->xml();
+        rl_printf ("handlePresence %s\n", txml.c_str());
+    }
     delete t;
 }
 
