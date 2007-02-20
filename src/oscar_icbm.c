@@ -993,12 +993,14 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             if (msgtype != 1012)
 #endif
             {    
-                rl_log_for (cont->nick, COLCONTACT);
                 if (((ack_flags & TCP_MSGF_INV) && !ContactPrefVal (cont, CO_INTIMATE)) || ContactPrefVal (cont, CO_HIDEFROM))
                 {
                     if (ContactPrefVal (cont, CO_SHOWCHANGE))
+                    {
+                        rl_log_for (cont->nick, COLCONTACT);
                         rl_printf (i18n (2568, "Ignored request for auto-response from %s%s%s.\n"),
                                    COLCONTACT, cont->nick, COLNONE);
+                    }
                     ack_event->due = 0;
                     ack_event->callback = NULL;
                     QueueDequeueEvent (ack_event);
@@ -1006,8 +1008,11 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                     return;
                 }
                 if (ContactPrefVal (cont, CO_SHOWCHANGE))
+                {
+                    rl_log_for (cont->nick, COLCONTACT);
                     rl_printf (i18n (1814, "Sent auto-response message to %s%s%s.\n"),
                                COLCONTACT, cont->nick, COLNONE);
+                }
             }
 
             accept = TRUE;
