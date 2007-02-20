@@ -830,6 +830,29 @@ BOOL ContactRemAlias (Contact *cont, const char *nick DEBUGPARAM)
 
     return FALSE;
 }
+                         /* -1   0   1 */
+int ContactStatusCmp (status_t a, status_t b)
+{
+    status_noi_t aa, bb;
+    aa = ContactClearInv (a);
+    bb = ContactClearInv (b);
+    if (aa == bb)
+    {
+        if (a == b)
+            return 0;
+        if (ContactIsInv (a) == ContactIsInv (b))
+            return 0;
+        return ContactIsInv (a) ? 1 : -1;
+    }
+    else
+    {
+        if (aa == imr_ffc)     return -1;
+        if (bb == imr_ffc)     return 1;
+        /* assumes further states are ordered by absentibility */
+        if (aa < bb)           return -1;
+        return 1;
+    }
+}
 
 /*
  * Returns the contact id for type, if available

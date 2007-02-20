@@ -2,6 +2,7 @@
 /* Copyright: This file may be distributed under version 2 of the GPL licence. */
 
 #include "micq.h"
+#include <assert.h>
 #include "icq_response.h"
 #include "oldicq_compat.h"
 #include "util_rl.h"
@@ -13,84 +14,38 @@
 #include "preferences.h"
 #include "connection.h"
 
-#ifndef ENABLE_TCL
+typedef enum { pm_single, pm_parent } parentmode_t;
+
+typedef enum { st_on, st_ch, st_off } change_t;
+
+#ifdef ENABLE_TCL
+static void cb_st_tcl (Contact *cont, change_t ch, parentmode_t pm, const char *text)
+{
+    TCLEvent (cont, "status", ch == st_off ? "logged_off" : s_status (cont->status, cont->nativestatus));
+}
+#else
 #define TCLMessage(from, text)
 #define TCLEvent(from, type, data)
+#define cb_st_tcl(c,ch,pm,t)
 #endif
 
-/*
- * Inform that a user went online
- */
-void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t flags, UDWORD nativestatus, const char *text)
+static void cb_st_putlog (Contact *cont, change_t ch, parentmode_t pm, const char *text)
 {
-    Event *egevent;
-    status_t old;
-    statusflag_t oldf;
-    UDWORD old2;
+    assert (cont->serv);
+    putlog (cont->serv, NOW, cont, cont->status, cont->nativestatus,
+            ch == st_on ? LOG_ONLINE : ch == st_ch ? LOG_CHANGE : LOG_OFFLINE, 0xFFFF, "");
+}
 
-    if (!cont)
-        return;
-
-    if (status == cont->status && flags == cont->flags && !text)
-        return;
-    
-    if (status == ims_offline)
-    {
-        IMOffline (cont, conn);
-        return;
-    }
-    
-    OptSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
-
-    old = cont->status;
-    oldf = cont->flags;
-    old2 = cont->nativestatus;
-    
-    cont->status = status;
-    cont->flags = flags;
-    cont->nativestatus = nativestatus;
-    cont->oldflags &= ~CONT_SEENAUTO;
-    
-    putlog (conn, NOW, cont, status, nativestatus, old != ims_offline ? LOG_CHANGE : LOG_ONLINE, 0xFFFF, "");
- 
-    if (!cont->group || ContactPrefVal (cont, CO_IGNORE)
-        || (!ContactPrefVal (cont, CO_SHOWONOFF)  && old == ims_offline)
-        || (!ContactPrefVal (cont, CO_SHOWCHANGE) && old != ims_offline)
-        || (~conn->connect & CONNECT_OK))
-        return;
-    
-    if ((egevent = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, 0)))
-    {
-        egevent->due = time (NULL) + 3;
-        QueueEnqueue (egevent);
-        if (!text || !*text)
-            return;
-    }
-
+static void cb_st_exec (Contact *cont, change_t ch, parentmode_t pm, const char *text)
+{
     if (prG->event_cmd && *prG->event_cmd)
-        EventExec (cont, prG->event_cmd, old == ims_offline ? ev_on : ev_status, nativestatus, status, NULL);
+        EventExec (cont, prG->event_cmd, ch == st_on ? ev_on : ch == st_ch ? ev_status : ev_off, cont->nativestatus, cont->status, NULL);
+}
 
-    rl_log_for (cont->nick, COLCONTACT);
-    rl_printf (old != ims_offline ? i18n (2212, "changed status to %s") : i18n (2213, "logged on (%s)"), s_status (status, nativestatus));
-    if (cont->version && old == ims_offline)
-        rl_printf (" [%s]", cont->version);
-    if ((flags & imf_birth) && ((~oldf & imf_birth) || old == ims_offline))
-        rl_printf (" (%s)", i18n (2033, "born today"));
-    if (text && *text)
-        rl_printf (". %s\n", s_wordquote (text));
-    else
-        rl_print (".\n");
-
-    if (prG->verbose && old == ims_offline && cont->dc)
-    {
-        rl_printf ("    %s %s / ", i18n (1642, "IP:"), s_ip (cont->dc->ip_rem));
-        rl_printf ("%s:%ld    %s %d    %s (%d)\n", s_ip (cont->dc->ip_loc),
-            cont->dc->port, i18n (1453, "TCP version:"), cont->dc->version,
-            cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
-            cont->dc->type);
-    }
-
-    if (ContactPrefVal (cont, CO_AUTOAUTO))
+static void cb_st_finger (Contact *cont, change_t ch, parentmode_t pm, const char *text)
+{
+    assert (cont->serv);
+    if (ch != st_off && ContactPrefVal (cont, CO_AUTOAUTO))
     {
         int cdata = 0;
 
@@ -106,10 +61,145 @@ void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t fl
         }
 
         if (cdata)
-            IMCliMsg (conn, cont, OptSetVals (NULL, CO_MSGTYPE, cdata, CO_MSGTEXT, "\xff", CO_FORCE, 1, 0));
+            IMCliMsg (cont->serv, cont, OptSetVals (NULL, CO_MSGTYPE, cdata, CO_MSGTEXT, "\xff", CO_FORCE, 1, 0));
     }
+}
 
-    TCLEvent (cont, "status", s_status (status, nativestatus));
+#if ENABLE_CONT_HIER
+static void cb_st_micq_tail (Contact *cont)
+{
+    if (!cont->parent)
+        return;
+    cb_st_micq_tail (cont->parent);
+    rl_printf (i18n (9999, " with %s%s%s"), COLCONTACT, cont->nick, COLNONE);
+}
+#endif
+
+static void cb_st_micq (Contact *cont, change_t ch, parentmode_t pm, const char *text)
+{
+    Contact *pcont = cont;
+
+#if ENABLE_CONT_HIER
+    int dotail = 0;
+    if (pm == pm_parent)
+        return;
+    
+    for ( ; pcont->parent; pcont = pcont->parent)
+        if (pcont->parent->firstchild != pcont || pcont->parent->firstchild->next)
+            dotail = 1;
+#endif
+    rl_log_for (pcont->nick, COLCONTACT);
+    
+    if (ch == st_off)
+        rl_printf ("%s", i18n (1030, "logged off"));
+    else if (ch == st_on)
+        rl_printf (i18n (2213, "logged on (%s)"), s_status (cont->status, cont->nativestatus));
+    else
+        rl_printf (i18n (2212, "changed status to %s"), s_status (cont->status, cont->nativestatus));
+
+    if (cont->version && ch == st_on)
+        rl_printf (" [%s]", cont->version);
+
+/*    if ((cont->flags & imf_birth) && ((~oldf & imf_birth) || ch == st_on)) */
+    if (cont->flags & imf_birth && ch != st_off)
+        rl_printf (" (%s)", i18n (2033, "born today"));
+
+#if ENABLE_CONT_HIER
+    if (dotail)
+        cb_st_micq_tail (cont);
+#endif
+
+    if (text && *text)
+        rl_printf (". %s\n", s_wordquote (text));
+    else
+        rl_print (".\n");
+
+    if (ch == st_on && cont->dc && prG->verbose)
+    {
+        rl_printf ("    %s %s / ", i18n (1642, "IP:"), s_ip (cont->dc->ip_rem));
+        rl_printf ("%s:%ld    %s %d    %s (%d)\n", s_ip (cont->dc->ip_loc),
+            cont->dc->port, i18n (1453, "TCP version:"), cont->dc->version,
+            cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
+            cont->dc->type);
+    }
+}
+
+static int __IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWORD nativestatus, const char *text, int hide)
+{
+    status_t old;
+    statusflag_t oldf;
+#if ENABLE_CONT_HIER
+    parentmode_t pm = hide & 4 ? pm_parent : pm_single;
+#else
+#define pm pm_single
+#endif
+    change_t ch = status == ims_offline ? st_off : cont->status == ims_offline ? st_on : st_ch;
+
+    if (cont->group)
+        hide |= 2;
+    
+    OptSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
+    old = cont->status;
+    oldf = cont->flags;
+    cont->status = status;
+    if (status != ims_offline)
+        cont->flags = flags;
+    cont->nativestatus = nativestatus;
+    cont->oldflags &= ~CONT_SEENAUTO;
+
+    cb_st_putlog (cont, ch, pm, text);
+    
+    if (ContactPrefVal (cont, CO_IGNORE)
+        || (!ContactPrefVal (cont, CO_SHOWONOFF)  && (old == ims_offline || status == ims_offline))
+        || (!ContactPrefVal (cont, CO_SHOWCHANGE) && old != ims_offline)
+        || (~cont->serv->connect & CONNECT_OK))
+        hide |= 1;
+    
+#if ENABLE_CONT_HIER
+    if (cont->parent)
+    {
+        Contact *pcont = cont;
+
+        assert (cont->parent->firstchild);
+
+#if 0
+        if (status == ims_offline && !cont->group)
+        {
+            Contact **t;
+            for (t = &(cont->parent->firstchild); *t; t=&((*t)->next))
+                if (*t == cont)
+                {
+                    *t = cont->next;
+                    cont->next = NULL;
+                    if (!*t)
+                        break;
+                }
+        }
+#endif
+
+        if (ContactStatusCmp (status, cont->parent->status) >= 0)
+        {
+            Contact *tcont;
+            for (tcont = cont->parent->firstchild; tcont; tcont = tcont->next)
+            {
+                assert (tcont->parent == cont->parent);
+                if (ContactStatusCmp (tcont->status, pcont->status) < 0)
+                    pcont = tcont;
+            }
+        }
+        s_repl (&cont->parent->version, pcont->version);
+        hide |= __IMOnline (cont->parent, pcont->status, pcont->flags, pcont->nativestatus, text, hide | 4);
+    }
+#endif
+    
+    if (hide & 1 || ~hide & 2)
+        return 1;
+
+    cb_st_exec   (cont, ch, pm, text);
+    cb_st_micq   (cont, ch, pm, text);
+    cb_st_finger (cont, ch, pm, text);
+    cb_st_tcl    (cont, ch, pm, text);
+    return 0;
 }
 
 /*
@@ -117,30 +207,36 @@ void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t fl
  */
 void IMOffline (Contact *cont, Connection *conn)
 {
-    status_t old;
+    IMOnline (cont, conn, ims_offline, 0, -1, "");
+}
+
+/*
+ * Inform that a user went online
+ */
+void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t flags, UDWORD nativestatus, const char *text)
+{
+    Event *egevent;
+    int hide = 0;
 
     if (!cont)
         return;
+
+    assert (cont->serv == conn);
+
+    if ((egevent = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, 0)))
+    {
+        egevent->due = time (NULL) + 3;
+        QueueEnqueue (egevent);
+        if (!text || !*text)
+            hide = 1;
+    }
     
-    if (cont->status == ims_offline)
+    if (status == cont->status && (status == ims_offline || flags == cont->flags) && !text)
         return;
 
-    putlog (conn, NOW, cont, ims_offline, -1, LOG_OFFLINE, 0xFFFF, "");
-
-    OptSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
-    old = cont->status;
-    cont->status = ims_offline;
-
-    if (!cont->group || ContactPrefVal (cont, CO_IGNORE) || !ContactPrefVal (cont, CO_SHOWONOFF))
-        return;
-
-    if (prG->event_cmd && *prG->event_cmd)
-        EventExec (cont, prG->event_cmd, ev_off, cont->nativestatus, old, NULL);
- 
-    rl_log_for (cont->nick, COLCONTACT);
-    rl_printf ("%s\n", i18n (1030, "logged off."));
-    TCLEvent (cont, "status", "logged_off");
+    __IMOnline (cont, status, flags, nativestatus, text, hide);
 }
+
 
 #define MSGICQACKSTR   ">>>"
 #define MSGICQ5ACKSTR  "> >"

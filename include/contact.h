@@ -194,6 +194,7 @@ val_t         ContactPrefVal      (Contact *cont, UDWORD flag);
 BOOL          ContactStatus       (const char **args, status_t *stat);
 const char   *ContactStatusStr    (status_t status);
 
+int           ContactStatusCmp    (status_t a, status_t b);
 static inline status_t ContactCopyInv (status_t inv, status_noi_t status)
 {
     if (status == imr_offline)
