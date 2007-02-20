@@ -380,6 +380,32 @@ Contact *ContactFindScreen (ContactGroup *group, const char *screen)
     return NULL;
 }
 
+#if ENABLE_CONT_HIER
+/*
+ * Finds a contact on a contact group by screen name under a parent
+ */
+Contact *ContactFindScreenP (ContactGroup *group, Contact *parent, const char *screen)
+{
+    ContactGroup *tmp;
+    Contact *cont;
+    int i;
+    
+    if (!screen)
+        return NULL;
+    
+    for (tmp = group; tmp; tmp = tmp->more)
+    {
+        for (i = 0; i < tmp->used; i++)
+        {
+            cont = tmp->contacts[i];
+            if (cont->parent == parent && !strcasecmp (screen, cont->screen))
+                return cont;
+        }
+    }
+    return NULL;
+}
+#endif
+
 /*
  * Finds a contact on a contact group by UIN
  */
@@ -425,6 +451,32 @@ static Contact *ContactFindSScreen (ContactGroup *group, Connection *serv, const
     return NULL;
 }
 
+#if ENABLE_CONT_HIER
+/*
+ * Finds a contact on a contact group by screen name under a parent
+ */
+static Contact *ContactFindSScreenP (ContactGroup *group, Connection *serv, Contact *parent, const char *screen)
+{
+    ContactGroup *tmp;
+    Contact *cont;
+    int i;
+    
+    if (!screen)
+        return NULL;
+    
+    for (tmp = group; tmp; tmp = tmp->more)
+    {
+        for (i = 0; i < tmp->used; i++)
+        {
+            cont = tmp->contacts[i];
+            if (serv == cont->serv && cont->parent == parent && !strcasecmp (screen, cont->screen))
+                return cont;
+        }
+    }
+    return NULL;
+}
+#endif
+
 /*
  * Finds a contact for a connection
  */
@@ -458,6 +510,43 @@ Contact *ContactScreen (Connection *serv, const char *screen DEBUGPARAM)
     ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
     return cont;
 }
+
+#if ENABLE_CONT_HIER
+/*
+ * Finds a contact for a connection under a parent
+ */
+#undef ContactScreenP
+Contact *ContactScreenP (Connection *serv, Contact *parent, const char *screen DEBUGPARAM)
+{
+    Contact *cont;
+    UDWORD uin;
+    
+    if (!serv->contacts || !*screen)
+        return NULL;
+
+    if (!cnt_groups)
+        ContactGroupInit ();
+    
+    uin = IcqIsUIN (screen);
+    if (uin && serv->type & TYPEF_HAVEUIN)
+        return ContactUIN (serv, uin);
+
+    if ((cont = ContactFindScreenP (serv->contacts, parent, screen)))
+        return cont;
+    if (!cnt_groups)
+        ContactGroupInit ();
+    if ((cont = ContactFindSScreenP (CONTACTGROUP_NONCONTACTS, serv, parent, screen)))
+        return cont;
+
+    cont = ContactCScreen (serv, screen DEBUGFOR);
+    if (!cont)
+        return NULL;
+    cont->parent = parent;
+
+    ContactAdd (CONTACTGROUP_NONCONTACTS, cont);
+    return cont;
+}
+#endif
 
 /*
  * Finds a contact for a connection

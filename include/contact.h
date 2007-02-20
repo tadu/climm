@@ -103,7 +103,11 @@ struct Contact_s
     Opt copts;
     UDWORD caps[2];
     UBYTE  v1, v2, v3, v4;
-    
+#if ENABLE_CONT_HIER
+    Contact *parent;
+    Contact *firstchild;
+    Contact *next;
+#endif
     ContactIDs *ids;
 
     char  *version;
@@ -137,11 +141,17 @@ void          ContactGroupSort    (ContactGroup *group, contact_sort_func_t sort
 Contact      *ContactIndex        (ContactGroup *group, int i);
 Contact      *ContactUIN          (Connection *serv, UDWORD uin DEBUGPARAM);
 Contact      *ContactScreen       (Connection *serv, const char *screen DEBUGPARAM);
+#if ENABLE_CONT_HIER
+Contact      *ContactScreenP      (Connection *serv, Contact *parent, const char *screen DEBUGPARAM);
+#endif
 void          ContactCreate       (Connection *serv, Contact *cont DEBUGPARAM);
 Contact      *ContactFind         (Connection *serv, const char *nick);
 const char   *ContactFindAlias    (Contact *cont, const char *nick);
 Contact      *ContactFindUIN      (ContactGroup *group, UDWORD uin);
 Contact      *ContactFindScreen   (ContactGroup *group, const char *screen);
+#if ENABLE_CONT_HIER
+Contact      *ContactFindScreenP  (ContactGroup *group, Contact *parent, const char *screen);
+#endif
 BOOL          ContactAdd          (ContactGroup *group, Contact *cont DEBUGPARAM);
 BOOL          ContactHas          (ContactGroup *group, Contact *cont);
 BOOL          ContactRem          (ContactGroup *group, Contact *cont DEBUGPARAM);
@@ -154,6 +164,9 @@ BOOL          ContactRemAlias     (Contact *cont, const char *nick DEBUGPARAM);
 #define ContactGroupD(g)           ContactGroupD(g DEBUGARGS)
 #define ContactUIN(c,u)            ContactUIN(c,u DEBUGARGS)
 #define ContactScreen(c,s)         ContactScreen(c,s DEBUGARGS)
+#if ENABLE_CONT_HIER
+#define ContactScreenP(c,p,s)      ContactScreenP(c,p,s DEBUGARGS)
+#endif
 #define ContactCreate(g,c)         ContactCreate(g,c DEBUGARGS)
 #define ContactAdd(g,c)            ContactAdd(g,c DEBUGARGS)
 #define ContactRem(g,c)            ContactRem(g,c DEBUGARGS)
