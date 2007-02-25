@@ -199,7 +199,7 @@ static int __IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWOR
     cb_st_micq   (cont, ch, pm, text);
     cb_st_finger (cont, ch, pm, text);
     cb_st_tcl    (cont, ch, pm, text);
-    return 0;
+    return hide;
 }
 
 /*
