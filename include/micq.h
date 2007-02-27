@@ -43,6 +43,14 @@ time_t portable_timegm (struct tm *tm);
 #define timelocal mktime
 #endif
 
+#if ENABLE_JABBER
+#define ENABLE_XMPP 1
+#endif
+
+#if ENABLE_XMPP
+#define ENABLE_CONT_HIER 1
+#endif
+
 #ifndef HAVE_LOCALTIME_R
 #define HAVE_LOCALTIME_R 1
 #define localtime_r(t, s)      memcpy(s, localtime(t), sizeof(struct tm))
