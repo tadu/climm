@@ -43,10 +43,6 @@ time_t portable_timegm (struct tm *tm);
 #define timelocal mktime
 #endif
 
-#if ENABLE_JABBER
-#define ENABLE_XMPP 1
-#endif
-
 #if ENABLE_XMPP
 #define ENABLE_CONT_HIER 1
 #endif
@@ -224,7 +220,7 @@ typedef enum {
 /* Licq extension */
 #define MSG_SSL_CLOSE     0xee
 #define MSG_SSL_OPEN      0xef
-/* Jabber */
+/* XMPP */
 #define MSG_NORM_SUBJ     0x30
 
 #define INV_LIST_UPDATE         0x01

@@ -1,10 +1,10 @@
 
-#ifndef MICQ_JABBER_BASE_H
-#define MICQ_JABBER_BASE_H
+#ifndef MICQ_XMPP_BASE_H
+#define MICQ_XMPP_BASE_H
 
-Event *ConnectionInitJabberServer (Connection *serv);
+Event *ConnectionInitXMPPServer (Connection *serv);
 
-UBYTE JabberSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD type);
-void JabberSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg);
+UBYTE XMPPSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD type);
+void XMPPSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg);
 
 #endif

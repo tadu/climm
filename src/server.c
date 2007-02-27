@@ -126,9 +126,9 @@ UBYTE IMCliReMsg (Connection *conn, Contact *cont, Opt *opt)
             return RET_OK;
         }
 #if ENABLE_XMPP
-    if (opt_trans & CV_MSGTRANS_JABBER)
-        if (conn->connect & CONNECT_OK && conn->type == TYPE_JABBER_SERVER)
-            if (RET_IS_OK (ret = JabberSendmsg (conn, cont, opt_text, opt_type)))
+    if (opt_trans & CV_MSGTRANS_XMPP)
+        if (conn->connect & CONNECT_OK && conn->type == TYPE_XMPP_SERVER)
+            if (RET_IS_OK (ret = XMPPSendmsg (conn, cont, opt_text, opt_type)))
                 return ret;
 #endif
     ret = RET_OK;
@@ -205,8 +205,8 @@ void IMSetStatus (Connection *conn, Contact *cont, status_t status, const char *
         rl_printf ("%s %s\n", s_now, s_status (conn->status, conn->nativestatus));
     }
 #if ENABLE_XMPP
-    else if (conn->type == TYPE_JABBER_SERVER)
-        JabberSetstatus (conn, cont, status, msg);
+    else if (conn->type == TYPE_XMPP_SERVER)
+        XMPPSetstatus (conn, cont, status, msg);
 #endif
 }
 

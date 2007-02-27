@@ -1445,7 +1445,7 @@ static JUMP_F(CmdUserVerbose)
                 | DEB_PACK5DATA | DEB_PACK8 | DEB_PACK8DATA | DEB_PACK8SAVE
                 | DEB_PACKTCP | DEB_PACKTCPDATA | DEB_PACKTCPSAVE 
                 | DEB_TCP | DEB_IO | DEB_SSL;
-        else if (s_parsekey (&args, "jabber"))
+        else if (s_parsekey (&args, "xmpp"))
             i |= DEB_XMPPIN | DEB_XMPPOUT | DEB_XMPPOTHER;
         else if (s_parseint (&args, &i))
             break;

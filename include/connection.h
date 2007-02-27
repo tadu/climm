@@ -53,7 +53,7 @@ struct Connection_s
     
     ContactGroup *contacts;   /* The contacts for this connection         */
     
-    void     *jabber_private; /* private data for jabber connections      */
+    void     *xmpp_private;   /* private data for XMPP connections        */
 
     void     *tlv;            /* temporary during v8 connect              */
 
@@ -151,7 +151,7 @@ val_t          ConnectionPrefVal (Connection *conn, UDWORD flag);
 #define TYPEF_REMOTE     1024  /* remote control (socket)*/
 #define TYPEF_MSN        2048  /* MSN: connection        */
 #define TYPEF_MSN_CHAT   4096  /* MSN: chat connection   */
-#define TYPEF_JABBER     8192  /* Jabber connection      */
+#define TYPEF_XMPP       8192  /* XMPP(Jabber) connection*/
 #define TYPEF_HAVEUIN   16384  /* server session uses numeric UINs */
 
 /* any conn->type may be only any of those values:
@@ -170,7 +170,7 @@ val_t          ConnectionPrefVal (Connection *conn, UDWORD flag);
 #define TYPE_MSN_TEMP      TYPEF_MSN
 #define TYPE_MSN_SERVER    (TYPEF_ANY_SERVER | TYPEF_MSN)
 #define TYPE_MSN_CHAT      (TYPEF_ANY_SERVER | TYPEF_MSN | TYPEF_MSN_CHAT)
-#define TYPE_JABBER_SERVER (TYPEF_ANY_SERVER | TYPEF_JABBER)
+#define TYPE_XMPP_SERVER   (TYPEF_ANY_SERVER | TYPEF_XMPP)
 
 #define ASSERT_ANY_SERVER(s)  (assert (s), assert ((s)->type & TYPEF_ANY_SERVER))
 #define ASSERT_SERVER(s)      (assert (s), assert ((s)->type == TYPE_SERVER))

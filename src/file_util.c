@@ -1144,8 +1144,8 @@ int Read_RC_File (FILE *rcf)
                 break;
 #endif
 #ifdef ENABLE_XMPP
-            case TYPE_JABBER_SERVER:
-                conn->open = &ConnectionInitJabberServer;
+            case TYPE_XMPP_SERVER:
+                conn->open = &ConnectionInitXMPPServer;
                 break;
 #endif
 #ifdef ENABLE_PEER2PEER

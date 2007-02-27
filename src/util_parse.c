@@ -158,7 +158,8 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
         return ContactScreen (serv, t->txt);
     }
 
-    if (serv->type == TYPE_JABBER_SERVER && !strncasecmp (p, "JABBER:", 7))
+    if (serv->type == TYPE_XMPP_SERVER &&
+        (!strncasecmp (p, "JABBER:", 7) || !strncasecmp (p, "XMPP:", 5)))
     {
         p += 7;
         t = s_parse (&p);

@@ -38,9 +38,9 @@ AC_ARG_ENABLE([iconvrepl], AC_HELP_STRING([--enable-iconvrepl], [compile in icon
               ac_arg_use_iconvrepl=$enableval, ac_arg_use_iconvrepl=no)
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
-AC_ARG_ENABLE([jabber], AC_HELP_STRING([--enable-jabber], [enable Jabber chat network (EXPERIMENTAL INCOMPLETE)]),
-              ac_arg_use_jabber=$enableval, ac_arg_use_jabber=no)
-AC_ARG_ENABLE([msn], AC_HELP_STRING([--enable-msn], [enable MSN chat network (EXPERIMENTAL INCOMPLETE)]),
+AC_ARG_ENABLE([xmpp], AC_HELP_STRING([--enable-xmpp], [enable XMPP (Jabber) chat network (ALPHA INCOMPLETE)]),
+              ac_arg_use_xmpp=$enableval, ac_arg_use_xmpp=no)
+AC_ARG_ENABLE([msn], AC_HELP_STRING([--enable-msn], [enable MSN chat network (EXPERIMENTAL BROKEN INCOMPLETE)]),
               ac_arg_use_msn=$enableval, ac_arg_use_msn=auto)
 AC_ARG_ENABLE([tcl], AC_HELP_STRING([--disable-tcl], [disable Tcl scripting]),
               ac_arg_use_tcl=$enableval, ac_arg_use_tcl=auto)
@@ -295,24 +295,24 @@ else
 fi
 AC_LANG([C])
 
-if test "x$ac_arg_use_jabber" != "xno"; then
+if test "x$ac_arg_use_xmpp" != "xno"; then
   if test "x$ac_arg_use_ssl" != "xgnutls"; then
-    AC_MSG_CHECKING([Jabber])
+    AC_MSG_CHECKING([XMPP])
     AC_MSG_RESULT([no, GnuTLS missing])
-    ac_use_jabber=no
+    ac_use_xmpp=no
   else
-    PKG_CHECK_MODULES(Jabber, gloox, ac_use_jabber=yes, ac_use_jabber=no)
+    PKG_CHECK_MODULES(XMPP, gloox, ac_use_xmpp=yes, ac_use_xmpp=no)
   fi
 
-  if test "x$ac_use_jabber$ac_arg_use_jabber" = "xnoyes"; then
-    AC_MSG_FAILURE([cannot find Jabber library libgloox])
+  if test "x$ac_use_xmpp$ac_arg_use_xmpp" = "xnoyes"; then
+    AC_MSG_FAILURE([cannot find XMPP library libgloox])
   fi
-  ac_arg_use_jabber=$ac_use_jabber;
-  if test "x$ac_arg_use_jabber" = "xyes"; then
-    AC_SUBST(LIBJABBER, "libmicqjabber.a", [Static lib to link if Jabber is enabled])
-    AC_SUBST(L_LIBJABBER, "-L. -lmicqjabber", [Static lib link option to link if Jabber is enabled])
-    AC_DEFINE(ENABLE_JABBER, 1, [Enable Jabber chat network using libgloox])
-    LIBS="$LIBS $Jabber_LIBS"
+  ac_arg_use_xmpp=$ac_use_xmpp;
+  if test "x$ac_arg_use_xmpp" = "xyes"; then
+    AC_SUBST(LIBXMPP, "libmicqxmpp.a", [Static lib to link if XMPP is enabled])
+    AC_SUBST(L_LIBXMPP, "-L. -lmicqxmpp", [Static lib link option to link if XMPP is enabled])
+    AC_DEFINE(ENABLE_XMPP, 1, [Enable XMPP chat network using libgloox])
+    LIBS="$LIBS $XMPP_LIBS"
   fi
 fi
 
@@ -536,9 +536,9 @@ else
     AC_SUBST(BINRELOC_LIBS,[ ])
 fi
 
-AC_MSG_CHECKING([whether to enable Jabber chat network (EXPERIMENTAL INCOMPLETE)])
-AC_MSG_RESULT([$ac_arg_use_jabber])
-AC_MSG_CHECKING([whether to enable MSN chat network (EXPERIMENTAL INCOMPLETE)])
+AC_MSG_CHECKING([whether to enable XMPP chat network (ALPHA INCOMPLETE)])
+AC_MSG_RESULT([$ac_arg_use_xmpp])
+AC_MSG_CHECKING([whether to enable MSN chat network (EXPERIMENTAL BROKEN INCOMPLETE)])
 AC_MSG_RESULT([$ac_arg_use_msn])
 AC_MSG_CHECKING([whether to enable peer to peer connections])
 AC_MSG_RESULT([$ac_arg_use_dc])

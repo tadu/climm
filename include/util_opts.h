@@ -146,7 +146,7 @@ extern struct OptEntry_s OptList[];
 #define CV_MSGTRANS_TYPE2   2
 #define CV_MSGTRANS_ICQv8   4
 #define CV_MSGTRANS_ICQv5   8
-#define CV_MSGTRANS_JABBER 16
+#define CV_MSGTRANS_XMPP   16
 #define CV_MSGTRANS_ANY    31
 
 #endif
