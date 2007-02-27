@@ -1441,10 +1441,12 @@ static JUMP_F(CmdUserVerbose)
     while (args && *args)
     {
         if      (s_parsekey (&args, "sane"))
-            i = DEB_PROTOCOL | DEB_CONNECT | DEB_EVENT
+            i |= DEB_PROTOCOL | DEB_CONNECT | DEB_EVENT
                 | DEB_PACK5DATA | DEB_PACK8 | DEB_PACK8DATA | DEB_PACK8SAVE
                 | DEB_PACKTCP | DEB_PACKTCPDATA | DEB_PACKTCPSAVE 
                 | DEB_TCP | DEB_IO | DEB_SSL;
+        else if (s_parsekey (&args, "jabber"))
+            i |= DEB_JABBERIN | DEB_JABBEROUT | DEB_JABBEROTHER;
         else if (s_parseint (&args, &i))
             break;
 #if WIP
@@ -1535,6 +1537,10 @@ static void __checkcontact (Contact *cont, UWORD data)
         if (width > __lenid)
             __lenid = width;
     }
+#if ENABLE_CONT_HIER
+    for (cont = cont->firstchild; cont; cont = cont->next)
+        __checkcontact (cont, data);
+#endif
 }
 
 static void __donecheck (UWORD data)
@@ -1600,7 +1606,13 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data, const ch
         ul = "", nul = COLNONE;
 #endif
     if (data & 2)
-        rl_printf ("%s%s%c%c%c%2d%c%c%s %s", COLSERVER, ul,
+    {
+#if ENABLE_CONT_HIER
+        if (data & 128)
+            rl_printf ("%s        %s", ul, ReadLinePrintWidth (cont->screen, "", nul, &__lenuin));
+        else
+#endif
+          rl_printf ("%s%s%c%c%c%2d%c%c%s %s", COLSERVER, ul,
              !cont->group                        ? '#' : ' ',
              ContactPrefVal (cont,  CO_INTIMATE) ? '*' :
               ContactPrefVal (cont, CO_HIDEFROM) ? '-' : ' ',
@@ -1620,9 +1632,31 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data, const ch
               cont->dc->ip_rem && ~cont->dc->ip_rem ? '^' : ' ',
              nul,
              ReadLinePrintWidth (cont->screen, ul, nul, &__lenuin));
+    }
 
-    rl_printf ("%s%s%c%s%s ",
-             COLSERVER, ul, data & 2            ? ' ' :
+#if ENABLE_CONT_HIER
+    if (data & 128)
+      rl_printf ("%s%s%c%s%s ",
+             COLNONE, ul,
+             data & 2                           ? ' ' :
+             !cont->group                       ? '#' :
+             ContactPrefVal (cont, CO_INTIMATE) ? '*' :
+             ContactPrefVal (cont, CO_HIDEFROM) ? '-' :
+             ContactPrefVal (cont, CO_IGNORE)   ? '^' :
+             !peer                              ? ' ' :
+#ifdef ENABLE_SSL
+             peer->connect & CONNECT_OK && peer->ssl_status == SSL_STATUS_OK ? '%' :
+#endif
+             peer->connect & CONNECT_OK         ? '&' :
+             peer->connect & CONNECT_FAIL       ? '|' :
+             peer->connect & CONNECT_MASK       ? ':' : '.' ,
+             "",
+             ReadLinePrintWidth (cont->nick, ul, nul, &uiG.nick_len));
+    else
+#endif
+      rl_printf ("%s%s%c%s%s ",
+             COLSERVER, ul,
+             data & 2                           ? ' ' :
              !cont->group                       ? '#' :
              ContactPrefVal (cont, CO_INTIMATE) ? '*' :
              ContactPrefVal (cont, CO_HIDEFROM) ? '-' :
@@ -1636,6 +1670,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data, const ch
              peer->connect & CONNECT_MASK       ? ':' : '.' ,
              COLCONTACT,
              ReadLinePrintWidth (cont->nick, ul, nul, &uiG.nick_len));
+
     rl_printf ("%s%s ", COLQUOTE, ReadLinePrintWidth (stat, ul, nul, &__lenstat));
     rl_printf ("%s%s%s%s\n",
              ReadLinePrintWidth (ver ? ver : "", ul, "", &__lenid),
@@ -1661,6 +1696,11 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data, const ch
     free (stat);
     s_free (ver);
     s_free (ver2);
+#if ENABLE_CONT_HIER
+    if (prG->verbose)
+        for (cont = cont->firstchild; cont; cont = cont->next)
+            __showcontact (conn, cont, data | 128, none_ul);
+#endif
 }
 
 int __sort_group (Contact *a, Contact *b, int mode)
