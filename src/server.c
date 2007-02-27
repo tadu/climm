@@ -154,14 +154,14 @@ void IMCliInfo (Connection *conn, Contact *cont, int group)
         cont->updated = 0;
         if (conn->type == TYPE_SERVER)
             ref = SnacCliMetareqinfo (conn, cont);
-        else
+        else if (conn->type == TYPE_SERVER_OLD)
             ref = CmdPktCmdMetaReqInfo (conn, cont);
     }
     else
     {
         if (conn->type == TYPE_SERVER)
             ref = SnacCliSearchrandom (conn, group);
-        else
+        else if (conn->type == TYPE_SERVER_OLD)
             ref = CmdPktCmdRandSearch (conn, group);
     }
     QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 60, NULL,
