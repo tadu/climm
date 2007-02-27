@@ -43,12 +43,14 @@ class MICQJabber : public gloox::ConnectionListener, public gloox::MessageHandle
         virtual void  onSessionCreateError (gloox::SessionCreateError error);
         virtual bool  onTLSConnect (const gloox::CertInfo &info);
         virtual void  handleMessage (gloox::Stanza *stanza);
-        void handleMessage2 (gloox::Stanza *t, std::string fromf, std::string tof, std::string id, gloox::StanzaSubType subtype);
-        bool handleJEP22 (gloox::Tag *t, Contact *cfrom, std::string fromf, std::string tof, std::string id);
+        void handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string tof, std::string id, gloox::StanzaSubType subtype);
+        bool handleJEP22 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id);
         void handleJEP22a (gloox::Tag *JEP22, Contact *cfrom);
-        void handleJEP22b (gloox::Tag *JEP22, std::string fromf, std::string tof, std::string id);
-        void handleJEP22c (std::string fromf, std::string tof, std::string id, std::string type);
+        void handleJEP22b (gloox::Tag *JEP22, gloox::JID from, std::string tof, std::string id);
+        void handleJEP22c (gloox::JID from, std::string tof, std::string id, std::string type);
         void handleJEP85 (gloox::Tag *t);
+        void handleGoogleNosave (gloox::Tag *t);
+        void handleJEP136 (gloox::Tag *t);
         time_t handleJEP91 (gloox::Tag *t);
         virtual void  handlePresence (gloox::Stanza *stanza);
         void handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, std::string msg);
@@ -106,6 +108,7 @@ void MICQJabber::onDisconnect (gloox::ConnectionError e)
     switch (e)
     {
         case gloox::ConnNoError:
+            rl_printf ("onDisconnect: NoError.\n");
             break;
         case gloox::ConnStreamError:
             {
@@ -114,14 +117,14 @@ void MICQJabber::onDisconnect (gloox::ConnectionError e)
                            e, m_client->streamError(), sET.c_str());
             }
             break;
-        case gloox::ConnStreamClosed:
-        case gloox::ConnIoError:
-        case gloox::ConnOutOfMemory:
-        case gloox::ConnNoSupportedAuth:
-        case gloox::ConnTlsFailed:
-        case gloox::ConnAuthenticationFailed:
-        case gloox::ConnUserDisconnected:
-        case gloox::ConnNotConnected:
+        case gloox::ConnStreamClosed:         rl_printf ("onDisconnect: Error StreamClosed %d.\n", e); break;
+        case gloox::ConnIoError:              rl_printf ("onDisconnect: Error IoError %d.\n", e); break;
+        case gloox::ConnOutOfMemory:          rl_printf ("onDisconnect: Error OutOfMemory %d.\n", e); break;
+        case gloox::ConnNoSupportedAuth:      rl_printf ("onDisconnect: Error NoSupportedAuth %d.\n", e); break;
+        case gloox::ConnTlsFailed:            rl_printf ("onDisconnect: Error TlsFailed %d.\n", e); break;
+        case gloox::ConnAuthenticationFailed: rl_printf ("onDisconnect: Error AuthenticationFailed %d.\n", e); break;
+        case gloox::ConnUserDisconnected:     rl_printf ("onDisconnect: Error UserDisconnected %d.\n", e); break;
+        case gloox::ConnNotConnected:         rl_printf ("onDisconnect: Error NotConnected %d.\n", e); break;
         default:
             rl_printf ("onDisconnect: Error %d.\n", e);
     }
@@ -189,6 +192,91 @@ static void DropAllChilds (gloox::Tag *s, const std::string &a)
     }
 }
 
+static int __SkipChar (const char **s, char c)
+{
+    if (**s == c && **s)
+        (*s)++;
+    if (**s)
+        return *((*s)++) - '0';
+    return 0;
+}
+
+static time_t ParseUTCDate (std::string str)
+{
+   const char *s = str.c_str();
+   struct tm tm;
+   tm.tm_year =  __SkipChar (&s, 0) * 1000;
+   tm.tm_year += __SkipChar (&s, 0) * 100;
+   tm.tm_year += __SkipChar (&s, 0) * 10;
+   tm.tm_year += __SkipChar (&s, 0) - 1900;
+   tm.tm_mon  =  __SkipChar (&s, '-') * 10;
+   tm.tm_mon  += __SkipChar (&s, 0) - 1;
+   tm.tm_mday =  __SkipChar (&s, '-') * 10;
+   tm.tm_mday += __SkipChar (&s, 0);
+   tm.tm_hour =  __SkipChar (&s, 'T') * 10;
+   tm.tm_hour += __SkipChar (&s, 0);
+   tm.tm_min  =  __SkipChar (&s, ':') * 10;
+   tm.tm_min  += __SkipChar (&s, 0);
+   tm.tm_sec  =  __SkipChar (&s, ':') * 10;
+   if (!*s)
+       return -1;
+   tm.tm_sec  += __SkipChar (&s, 0);
+   if (*s)
+       return -1;
+    return timegm (&tm);
+}
+
+static void GetBothContacts (const gloox::JID &j, Connection *conn, Contact **b, Contact **f, bool crea)
+{
+    Contact *bb, *ff, **t;
+    std::string jb = j.bare();
+    std::string jr = j.resource();
+    
+    if ((bb = ContactFindScreen (conn->contacts, jb.c_str())))
+    {
+        if (!(ff = ContactFindScreenP (conn->contacts, bb, jr.c_str())))
+        {
+            ff = ContactScreenP (conn, bb, jr.c_str());
+        }
+    }
+    else
+    {
+        bb = ContactScreen (conn, jb.c_str());
+        if (crea)
+            ContactCreate (conn, bb);
+        ff = ContactScreenP (conn, bb, jr.c_str());
+    }
+    assert (bb);
+    if (ff)
+    {
+        /* make ff the firstchild or the firstchild->next of bb */
+        if (!bb->firstchild)
+            bb->firstchild = ff;
+        else if (bb->firstchild != ff && bb->firstchild->next != ff)
+        {
+            for (t = &bb->firstchild; *t; t = &((*t)->next))
+                if (*t == ff)
+                {
+                    *t = ff->next;
+                    ff->next = bb->firstchild->next;
+                    bb->firstchild->next = ff;
+                    t = NULL;
+                    break;
+                }
+            if (t)
+            {
+                ff->next = bb->firstchild->next;
+                bb->firstchild->next = ff;
+            }
+        }
+    }
+    else
+        ff = bb;
+    *b = bb;
+    *f = ff;
+}
+
+
 void MICQJabber::handleJEP22a (gloox::Tag *JEP22, Contact *cfrom)
 {
     std::string refid;
@@ -225,9 +313,9 @@ void MICQJabber::handleJEP22a (gloox::Tag *JEP22, Contact *cfrom)
     CheckInvalid (JEP22);
 }
 
-void MICQJabber::handleJEP22c (std::string fromf, std::string tof, std::string id, std::string type)
+void MICQJabber::handleJEP22c (gloox::JID from, std::string tof, std::string id, std::string type)
 {
-    gloox::Stanza *msg = gloox::Stanza::createMessageStanza (gloox::JID (fromf), "");
+    gloox::Stanza *msg = gloox::Stanza::createMessageStanza (from, "");
     msg->addAttribute ("id", s_sprintf ("%s-%x", m_stamp, m_conn->our_seq++));
     std::string res = m_client->resource();
     msg->addAttribute ("from", s_sprintf ("%s/%s", m_conn->screen, res.c_str()));
@@ -238,16 +326,16 @@ void MICQJabber::handleJEP22c (std::string fromf, std::string tof, std::string i
     m_client->send (msg);
 }
 
-void MICQJabber::handleJEP22b (gloox::Tag *JEP22, std::string fromf, std::string tof, std::string id)
+void MICQJabber::handleJEP22b (gloox::Tag *JEP22, gloox::JID from, std::string tof, std::string id)
 {
     if (gloox::Tag *dotag = JEP22->findChild ("delivered"))
     {
-        handleJEP22c (fromf, tof, id, "delivered");
+        handleJEP22c (from, tof, id, "delivered");
         CheckInvalid (dotag);
     }
     if (gloox::Tag *dotag = JEP22->findChild ("displayed"))
     {
-        handleJEP22c (fromf, tof, id, "displayed");
+        handleJEP22c (from, tof, id, "displayed");
         CheckInvalid (dotag);
     }
     if (gloox::Tag *dotag = JEP22->findChild ("composing"))
@@ -260,7 +348,7 @@ void MICQJabber::handleJEP22b (gloox::Tag *JEP22, std::string fromf, std::string
     }
 }
 
-bool MICQJabber::handleJEP22 (gloox::Tag *t, Contact *cfrom, std::string fromf, std::string tof, std::string id)
+bool MICQJabber::handleJEP22 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id)
 {
     if (gloox::Tag *JEP22 = t->findChild ("x", "xmlns", "jabber:x:event"))
     {
@@ -270,7 +358,7 @@ bool MICQJabber::handleJEP22 (gloox::Tag *t, Contact *cfrom, std::string fromf, 
             handleJEP22a (JEP22, cfrom);
             return true;
         }
-        handleJEP22b (JEP22, fromf, tof, id);
+        handleJEP22b (JEP22, from, tof, id);
     }
     return false;
 }
@@ -304,40 +392,6 @@ void MICQJabber::handleJEP85 (gloox::Tag *t)
     }
 }
 
-static int __SkipChar (const char **s, char c)
-{
-    if (**s == c && **s)
-        (*s)++;
-    if (**s)
-        return *((*s)++) - '0';
-    return 0;
-}
-
-static time_t ParseUTCDate (std::string str)
-{
-   const char *s = str.c_str();
-   struct tm tm;
-   tm.tm_year =  __SkipChar (&s, 0) * 1000;
-   tm.tm_year += __SkipChar (&s, 0) * 100;
-   tm.tm_year += __SkipChar (&s, 0) * 10;
-   tm.tm_year += __SkipChar (&s, 0) - 1900;
-   tm.tm_mon  =  __SkipChar (&s, '-') * 10;
-   tm.tm_mon  += __SkipChar (&s, 0) - 1;
-   tm.tm_mday =  __SkipChar (&s, '-') * 10;
-   tm.tm_mday += __SkipChar (&s, 0);
-   tm.tm_hour =  __SkipChar (&s, 'T') * 10;
-   tm.tm_hour += __SkipChar (&s, 0);
-   tm.tm_min  =  __SkipChar (&s, ':') * 10;
-   tm.tm_min  += __SkipChar (&s, 0);
-   tm.tm_sec  =  __SkipChar (&s, ':') * 10;
-   if (!*s)
-       return -1;
-   tm.tm_sec  += __SkipChar (&s, 0);
-   if (*s)
-       return -1;
-    return timegm (&tm);
-}
-
 time_t MICQJabber::handleJEP91 (gloox::Tag *t)
 {
     time_t date = NOW;
@@ -356,25 +410,49 @@ time_t MICQJabber::handleJEP91 (gloox::Tag *t)
     return date;
 }
 
-void MICQJabber::handleMessage2 (gloox::Stanza *t, std::string fromf, std::string tof, std::string id, gloox::StanzaSubType subtype)
+void MICQJabber::handleGoogleNosave (gloox::Tag *t)
 {
-    Contact *cfrom = ContactScreen (m_conn, fromf.c_str());
+    if (gloox::Tag *nosave = t->findChild ("nos:x", "xmlns:nos" "google:nosave"))
+    {
+        DropAttrib (nosave, "xmlns:nos");
+        DropAttrib (nosave, "value");
+        CheckInvalid (nosave);
+    }
+}
+
+void MICQJabber::handleJEP136 (gloox::Tag *t)
+{
+    if (gloox::Tag *arc = t->findChild ("arc:record", "xmlns:arc" "http://jabber.org/protocol/archive"))
+    {
+        DropAttrib (arc, "xmlns:arc");
+        DropAttrib (arc, "otr");
+        CheckInvalid (arc);
+    }
+}
+
+void MICQJabber::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string tof, std::string id, gloox::StanzaSubType subtype)
+{
     Contact *cto = ContactScreen (m_conn, tof.c_str());
     std::string subtypeval = t->findAttribute ("type");
     std::string body = t->body();
     std::string subject = t->subject();
     DropAttrib (t, "type");
     time_t delay;
+    Contact *contb, *contr;
+    
+    GetBothContacts (from, m_conn, &contb, &contr, 1);
 
     handleJEP85 (t);
-    if (handleJEP22 (t, cfrom, fromf, tof, id))
+    handleGoogleNosave (t);
+    handleJEP136 (t);
+    if (handleJEP22 (t, contr, from, tof, id))
         return;
     delay = handleJEP91 (t);
 
     Opt *opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, body.c_str(), 0);
     if (!subject.empty())
         opt = OptSetVals (opt, CO_MSGTYPE, MSG_NORM_SUBJ, CO_SUBJECT, subject.c_str(), 0);
-    IMSrvMsg (cfrom, m_conn, delay, opt);
+    IMSrvMsg (contr, m_conn, delay, opt);
 
     DropAllChilds (t, "body");
     DropAllChilds (t, "subject");
@@ -388,7 +466,7 @@ void MICQJabber::handleMessage (gloox::Stanza *s)
     assert (s->type() == gloox::StanzaMessage);
     
     gloox::Stanza *t = s->clone();
-    handleMessage2 (t, s->from().full(), s->to().full(), s->id(), s->subtype ());
+    handleMessage2 (t, s->from(), s->to().full(), s->id(), s->subtype ());
 
     DropAttrib (t, "from");
     DropAttrib (t, "to");
@@ -403,47 +481,15 @@ void MICQJabber::handleMessage (gloox::Stanza *s)
     delete t;
 }
 
-static void GetBothContacts (const gloox::JID &j, Connection *conn, Contact **b, Contact **f)
-{
-    Contact *bb, *ff;
-    if ((bb = ContactFindScreen (conn->contacts, j.bare().c_str())))
-    {
-        if (!(ff = ContactFindScreen (conn->contacts, j.full().c_str())))
-        {
-            ff = ContactScreen (conn, j.full().c_str());
-            ContactCreate (conn, ff);
-        }
-    }
-    else
-    {
-        bb = ContactScreen (conn, j.bare().c_str());
-        ff = ContactScreen (conn, j.full().c_str());
-    }
-    *b = bb;
-    *f = ff;
-}
-
-static Contact *SomeOnlineRessourceExcept (Connection *conn, Contact *full, Contact *bare)
-{
-    Contact *c;
-    int i;
-    
-    for (i = 0; (c = ContactIndex (conn->contacts, i)); i++)
-        if (c != full && c != bare && c->status != ims_offline
-            && !strncasecmp (c->screen, bare->screen, strlen (bare->screen)))
-            return c;
-    return NULL;
-}
-
 void MICQJabber::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, std::string msg)
 {
     ContactGroup *tcg;
-    Contact *contb, *contf, *c;
+    Contact *contb, *contr, *c;
     status_t status;
     std::string pri;
     time_t delay;
 
-    GetBothContacts (from, m_conn, &contb, &contf);
+    GetBothContacts (from, m_conn, &contb, &contr, 1);
     
     if (gloox::Tag *priority = s->findChild ("priority"))
     {
@@ -461,9 +507,9 @@ void MICQJabber::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to,
         std::string ver = caps->findAttribute ("ver");
         std::string ext = caps->findAttribute ("ext");
         if (ext.empty())
-            s_repl (&contf->version, s_sprintf ("%s (%s)", node.c_str(), ver.c_str()));
+            s_repl (&contr->version, s_sprintf ("%s (%s)", node.c_str(), ver.c_str()));
         else
-            s_repl (&contf->version, s_sprintf ("%s (%s) [%s]", node.c_str(), ver.c_str(), ext.c_str()));
+            s_repl (&contr->version, s_sprintf ("%s (%s) [%s]", node.c_str(), ver.c_str(), ext.c_str()));
         DropAttrib (caps, "xmlns");
         DropAttrib (caps, "ver");
         DropAttrib (caps, "ext");
@@ -476,9 +522,9 @@ void MICQJabber::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to,
         std::string ver = caps->findAttribute ("ver");
         std::string ext = caps->findAttribute ("ext");
         if (ext.empty())
-            s_repl (&contf->version, s_sprintf ("%s (%s)", node.c_str(), ver.c_str()));
+            s_repl (&contr->version, s_sprintf ("%s (%s)", node.c_str(), ver.c_str()));
         else
-            s_repl (&contf->version, s_sprintf ("%s (%s) [%s]", node.c_str(), ver.c_str(), ext.c_str()));
+            s_repl (&contr->version, s_sprintf ("%s (%s) [%s]", node.c_str(), ver.c_str(), ext.c_str()));
         DropAttrib (caps, "xmlns:caps");
         DropAttrib (caps, "ver");
         DropAttrib (caps, "ext");
@@ -502,16 +548,8 @@ void MICQJabber::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to,
     {
         status = ims_offline;
         DropAttrib (s, "type");
-
-        c = SomeOnlineRessourceExcept (m_conn, contb, contf);
-        if (c)
-        {
-            IMOffline (contf, m_conn);
-            contb->status = c->status;
-            rl_printf ("Using %s %p %p %p.\n", c->screen, c, contb, contf);
-        }
-        else
-            IMOffline (contb, m_conn);
+        
+        IMOffline (contr, m_conn);
     }
     else if (gloox::Tag *show = s->findChild ("show"))
     {
@@ -527,11 +565,7 @@ void MICQJabber::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to,
     else
         status = ims_online;
     
-    IMOnline (contf, m_conn, status, imf_none, status, msg.c_str());
-    tcg = contb->group;
-    contb->group = NULL;
-    IMOnline (contb, m_conn, status, imf_none, status, NULL);
-    contb->group = tcg;
+    IMOnline (contr, m_conn, status, imf_none, status, NULL);
 }
 
 void MICQJabber::handlePresence (gloox::Stanza *s)
@@ -555,8 +589,6 @@ void MICQJabber::handlePresence (gloox::Stanza *s)
     }
     delete t;
 }
-
-
 
 void MICQJabber::handleSubscription (gloox::Stanza *s)
 {
@@ -647,7 +679,7 @@ void MICQJabber::JabberSetstatus (Connection *serv, Contact *cont, status_t stat
         gloox::Tag *vers = new gloox::Tag (pres, "c");
         vers->addAttribute ("xmlns", "http://jabber.org/protocol/caps");
         vers->addAttribute ("node", "http://www.mICQ.org/jabber/caps");
-        vers->addAttribute ("vers", "0.5.2");
+        vers->addAttribute ("ver", "0.5.2");
         // vers->addAttribute ("ext", "ext1 ext2");
     }
     m_client->send (pres);
@@ -762,6 +794,7 @@ void JabberCallbackClose (Connection *conn)
     }
     
     j->getClient()->disconnect ();
+    rl_printf ("Disconnected.\n");
     delete j;
     conn->jabber_private = NULL;
 }
