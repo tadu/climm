@@ -1143,7 +1143,7 @@ int Read_RC_File (FILE *rcf)
                 conn->open = &ConnectionInitMSNServer;
                 break;
 #endif
-#ifdef ENABLE_JABBER
+#ifdef ENABLE_XMPP
             case TYPE_JABBER_SERVER:
                 conn->open = &ConnectionInitJabberServer;
                 break;
