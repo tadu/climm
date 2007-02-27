@@ -35,9 +35,9 @@ static const char *DebugStr (UDWORD level)
     if (level & DEB_CONNECT)     return "Connect";
     if (level & DEB_CONTACT)     return "Contact";
     if (level & DEB_SSL)         return "SSL    ";
-    if (level & DEB_JABBERIN)    return "Jab In ";
-    if (level & DEB_JABBEROUT)   return "Jab Out";
-    if (level & DEB_JABBEROTHER) return "Jab Oth";
+    if (level & DEB_XMPPIN)      return "XMPPIn ";
+    if (level & DEB_XMPPOUT)     return "XMPPOut";
+    if (level & DEB_XMPPOTHER)   return "XMPPOth";
     return "unknown";
 }
 

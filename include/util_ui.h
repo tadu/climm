@@ -24,9 +24,9 @@ BOOL DebugReal (UDWORD level, const char *str, ...) __attribute__ ((format (__pr
 #define DEB_TCP           0x00200000L
 #define DEB_IO            0x00400000L
 #define DEB_SSL           0x00800000L
-#define DEB_JABBERIN      0x01000000L
-#define DEB_JABBEROUT     0x02000000L
-#define DEB_JABBEROTHER   0x04000000L
+#define DEB_XMPPIN        0x01000000L
+#define DEB_XMPPOUT       0x02000000L
+#define DEB_XMPPOTHER     0x04000000L
 
 #define AVPFMT "%s%-15s%s %s\n"
 

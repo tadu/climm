@@ -625,11 +625,11 @@ void MICQJabber::handleLog (gloox::LogLevel level, gloox::LogArea area, const st
         case gloox::LogLevelError: lt = "error"; break;
     }
     if (area == gloox::LogAreaXmlIncoming)
-        DebugH (DEB_JABBERIN, "%s/%s: %s", lt, la, message.c_str());
+        DebugH (DEB_XMPPIN, "%s/%s: %s", lt, la, message.c_str());
     else if (area == gloox::LogAreaXmlOutgoing)
-        DebugH (DEB_JABBEROUT, "%s/%s: %s", lt, la, message.c_str());
+        DebugH (DEB_XMPPOUT, "%s/%s: %s", lt, la, message.c_str());
     else
-        DebugH (DEB_JABBEROTHER, "%s/%s: %s", lt, la, message.c_str());
+        DebugH (DEB_XMPPOTHER, "%s/%s: %s", lt, la, message.c_str());
 }
 
 UBYTE MICQJabber::JabberSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD type)
