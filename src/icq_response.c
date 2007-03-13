@@ -246,33 +246,235 @@ void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t fl
 #define MSGTYPE2ACKSTR ConvTranslit (">>\xc2\xbb", ">>}")
 #define MSGTYPE2RECSTR ConvTranslit ("\xc2\xab<<", "{<<")
 
+#if ENABLE_CONT_HIER
+static void cb_msg_tui_tail (Contact *cont)
+{
+    if (!cont->parent)
+        return;
+    cb_msg_tui_tail (cont->parent);
+    rl_printf (i18n (9999, " with %s%s%s"), COLCONTACT, cont->nick, COLNONE);
+}
+#endif
+
+
+typedef struct {
+    const char *orig_data;
+    const char *msgtext;
+    const char *opt_text;
+    UDWORD port;
+    UDWORD bytes;
+    int_msg_t type;
+    status_t tstatus;
+} fat_int_msg_t;
+
+
+int cb_int_msg_tui (Contact *cont, parentmode_t pm, time_t stamp, fat_int_msg_t *msg)
+{
+    const char *line;
+    const char *col = COLCONTACT;
+    char *p, *q;
+
+#if ENABLE_CONT_HIER
+    int dotail = 0;
+    if (pm == pm_parent)
+        return 0;
+
+    for ( ; cont->parent; cont = cont->parent)
+        if (cont->parent->firstchild != cont || cont->parent->firstchild->next)
+            dotail = 1;
+#endif
+                                        
+    switch (msg->type)
+    {
+        case INT_MSGTRY_TYPE2:
+        case INT_MSGTRY_DC:
+        case INT_MSGACK_TYPE2:
+        case INT_MSGACK_DC:
+        case INT_MSGACK_SSL:
+        case INT_MSGACK_V8:
+        case INT_MSGACK_V5:
+        case INT_MSGDISPL:
+        case INT_MSGCOMP:
+        case INT_MSGNOCOMP:
+            if (ContactPrefVal (cont, CO_HIDEACK))
+                return 1;
+            break;
+        default:
+            ;
+    }
+
+    switch (msg->type)
+    {
+        case INT_FILE_ACKED:
+            line = s_sprintf (i18n (2462, "File transfer %s to port %s%ld%s."),
+                              s_qquote (msg->opt_text), COLQUOTE, msg->port, COLNONE);
+            break;
+        case INT_FILE_REJED:
+            line = s_sprintf (i18n (2463, "File transfer %s rejected by peer: %s."),
+                              s_qquote (msg->opt_text), s_wordquote (msg->msgtext));
+            break;
+        case INT_FILE_ACKING:
+            line = s_sprintf (i18n (2464, "Accepting file %s (%s%ld%s bytes)."),
+                              s_qquote (msg->opt_text), COLQUOTE, msg->bytes, COLNONE);
+            break;
+        case INT_FILE_REJING:
+            line = s_sprintf (i18n (2465, "Refusing file request %s (%s%ld%s bytes): %s."),
+                              s_qquote (msg->opt_text), COLQUOTE, msg->bytes, COLNONE, s_wordquote (msg->msgtext));
+            break;
+        case INT_CHAR_REJING:
+            line = s_sprintf (i18n (2466, "Refusing chat request (%s/%s) from %s%s%s."),
+                              p = strdup (s_qquote (msg->opt_text)), q = strdup (s_qquote (msg->msgtext)),
+                              COLCONTACT, cont->nick, COLNONE);
+            free (p);
+            free (q);
+            break;
+        case INT_MSGTRY_TYPE2:
+            line = s_sprintf ("%s%s %s", i18n (2293, "--="), COLSINGLE, msg->msgtext);
+            break;
+        case INT_MSGTRY_DC:
+            line = s_sprintf ("%s%s %s", i18n (2294, "==="), COLSINGLE, msg->msgtext);
+            break;
+        case INT_MSGACK_TYPE2:
+            col = COLACK;
+            line = s_sprintf ("%s%s %s", MSGTYPE2ACKSTR, COLSINGLE, msg->msgtext);
+            break;
+        case INT_MSGACK_DC:
+            col = COLACK;
+            line = s_sprintf ("%s%s %s", MSGTCPACKSTR, COLSINGLE, msg->msgtext);
+            break;
+#ifdef ENABLE_SSL
+        case INT_MSGACK_SSL:
+            col = COLACK;
+            line = s_sprintf ("%s%s %s", MSGSSLACKSTR, COLSINGLE, msg->msgtext);
+            break;
+#endif
+        case INT_MSGACK_V8:
+            col = COLACK;
+            line = s_sprintf ("%s%s %s", MSGICQACKSTR, COLSINGLE, msg->msgtext);
+            break;
+        case INT_MSGACK_V5:
+            col = COLACK;
+            line = s_sprintf ("%s%s %s", MSGICQ5ACKSTR, COLSINGLE, msg->msgtext);
+            break;
+        case INT_MSGDISPL:
+            col = COLACK;
+            line = s_sprintf ("%s%s %s", "<displayed>", COLSINGLE, msg->msgtext);
+            break;
+        case INT_MSGCOMP:
+            col = COLACK;
+            line = s_sprintf ("%s%s %s", "<composing>", COLSINGLE, msg->msgtext);
+            break;
+        case INT_MSGNOCOMP:
+            col = COLACK;
+            line = s_sprintf ("%s%s %s", "<no composing>", COLSINGLE, msg->msgtext);
+            break;
+        case INT_MSGOFF:
+            col = COLACK;
+            line = s_sprintf ("%s%s %s", "<offline>", COLSINGLE, msg->msgtext);
+            break;
+        default:
+            line = "";
+    }
+
+    for (p = q = strdup (line); *q; q++)
+        if (*q == (char)0xfe)
+            *q = '*';
+
+    rl_printf ("%s ", s_time (&stamp));
+    rl_printf ("%s", ReadLinePrintCont (cont->nick, col));
+    
+    if (prG->verbose > 1)
+        rl_printf ("<%d> ", msg->type);
+
+    if (msg->tstatus != ims_offline && (!cont || cont->status == ims_offline || !cont->group))
+        rl_printf ("(%s) ", s_status (msg->tstatus, 0));
+    
+    rl_print (p);
+#if ENABLE_CONT_HIER
+    if (dotail)
+        cb_msg_tui_tail (cont);
+#endif
+    rl_print ("\n");
+    free (p);
+
+    return 0;
+}
+
+int cb_int_msg_hist (Contact *cont, parentmode_t pm, time_t stamp, fat_int_msg_t *msg)
+{
+    HistMsg (cont->serv, cont, stamp, msg->msgtext, HIST_OUT);
+    return 0;
+}
+
+int __IMIntMsg (Contact *cont, time_t stamp, fat_int_msg_t *msg, int hide)
+{
+#if ENABLE_CONT_HIER
+    parentmode_t pm = hide & 4 ? pm_parent : pm_single;
+#else
+#define pm pm_single
+#endif
+/*    cb_int_msg_log (cont, pm, stamp, msg); */
+
+    if (ContactPrefVal (cont, CO_IGNORE))
+        hide |= 1;
+
+#if ENABLE_CONT_HIER
+    if (cont->parent)
+    {
+        assert (cont->parent->firstchild);
+        hide |= __IMIntMsg (cont->parent, stamp, msg, hide | 4);
+    }
+#endif
+    if (hide & 1)
+        return 1;
+
+    hide &= ~2;
+/*    if (!cb_int_msg_exec   (cont, pm, stamp, msg)) */
+    if (!cb_int_msg_tui    (cont, pm, stamp, msg))
+/*    if (!cb_int_msg_finger (cont, pm, stamp, msg)) */
+    if (!cb_int_msg_hist   (cont, pm, stamp, msg))
+/*    if (!cb_int_msg_tcl    (cont, pm, stamp, msg)) */
+        hide |= 2;
+    if (~hide & 2)
+        hide |= 1;
+
+    return hide;
+}
+
 /*
  * Central entry point for protocol triggered output.
  */
 void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, int_msg_t type, const char *text, Opt *opt)
 {
-    const char *line, *opt_text;
-    const char *col = COLCONTACT;
-    UDWORD opt_port, opt_bytes;
-    char *p, *q;
-    const char *my_text = text;
+    fat_int_msg_t msg;
     char *deleteme = NULL;
 
-    if (!cont || ContactPrefVal (cont, CO_IGNORE))
+    if (!cont)
     {
         OptD (opt);
         return;
     }
-    if (!OptGetStr (opt, CO_MSGTEXT, &opt_text))
-        opt_text = "";
-    if (!OptGetVal (opt, CO_PORT, &opt_port))
-        opt_port = 0;
-    if (!OptGetVal (opt, CO_BYTES, &opt_bytes))
-        opt_bytes = 0;
+    assert (cont->serv == conn);
     
-    if (!strncasecmp (text, "<font ", 6))
+    memset (&msg, 0, sizeof msg);
+    if (stamp == NOW)
+        stamp = time (NULL);
+
+    msg.orig_data = text;
+    msg.msgtext = text;
+    msg.type = type;
+    msg.tstatus = tstatus;
+    
+    if (!OptGetStr (opt, CO_MSGTEXT, &msg.opt_text))
+        msg.opt_text = "";
+    if (!OptGetVal (opt, CO_PORT, &msg.port))
+        msg.port = 0;
+    if (!OptGetVal (opt, CO_BYTES, &msg.bytes))
+        msg.bytes = 0;
+
+    if (!strncasecmp (msg.orig_data, "<font ", 6))
     {
-      char *t = deleteme = strdup (text);
+      char *t = deleteme = strdup (msg.orig_data);
       while (*t && *t != '>')
         t++;
       if (*t)
@@ -280,106 +482,13 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, 
         size_t l = strlen (++t);
         if (!strcasecmp (t + l - 7, "</font>"))
           t[l - 7] = 0;
-        my_text = t;
+        msg.msgtext = t;
       }
     }
-
-    switch (type)
-    {
-        case INT_FILE_ACKED:
-            line = s_sprintf (i18n (2462, "File transfer %s to port %s%ld%s."),
-                              s_qquote (opt_text), COLQUOTE, opt_port, COLNONE);
-            break;
-        case INT_FILE_REJED:
-            line = s_sprintf (i18n (2463, "File transfer %s rejected by peer: %s."),
-                              s_qquote (opt_text), s_wordquote (my_text));
-            break;
-        case INT_FILE_ACKING:
-            line = s_sprintf (i18n (2464, "Accepting file %s (%s%ld%s bytes)."),
-                              s_qquote (opt_text), COLQUOTE, opt_bytes, COLNONE);
-            break;
-        case INT_FILE_REJING:
-            line = s_sprintf (i18n (2465, "Refusing file request %s (%s%ld%s bytes): %s."),
-                              s_qquote (opt_text), COLQUOTE, opt_bytes, COLNONE, s_wordquote (my_text));
-            break;
-        case INT_CHAR_REJING:
-            line = s_sprintf (i18n (2466, "Refusing chat request (%s/%s) from %s%s%s."),
-                              p = strdup (s_qquote (opt_text)), q = strdup (s_qquote (my_text)),
-                              COLCONTACT, cont->nick, COLNONE);
-            free (p);
-            free (q);
-            break;
-        case INT_MSGTRY_TYPE2:
-            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", i18n (2293, "--="), COLSINGLE, my_text);
-            break;
-        case INT_MSGTRY_DC:
-            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", i18n (2294, "==="), COLSINGLE, my_text);
-            break;
-        case INT_MSGACK_TYPE2:
-            col = COLACK;
-            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", MSGTYPE2ACKSTR, COLSINGLE, my_text);
-            break;
-        case INT_MSGACK_DC:
-            col = COLACK;
-            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", MSGTCPACKSTR, COLSINGLE, my_text);
-            break;
-#ifdef ENABLE_SSL
-        case INT_MSGACK_SSL:
-            col = COLACK;
-            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", MSGSSLACKSTR, COLSINGLE, my_text);
-            break;
-#endif
-        case INT_MSGACK_V8:
-            col = COLACK;
-            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", MSGICQACKSTR, COLSINGLE, my_text);
-            break;
-        case INT_MSGACK_V5:
-            col = COLACK;
-            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", MSGICQ5ACKSTR, COLSINGLE, my_text);
-            break;
-        case INT_MSGDISPL:
-            col = COLACK;
-            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", "<displayed>", COLSINGLE, my_text);
-            break;
-        case INT_MSGCOMP:
-            col = COLACK;
-            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", "<composing>", COLSINGLE, my_text);
-            break;
-        case INT_MSGNOCOMP:
-            col = COLACK;
-            line = ContactPrefVal (cont, CO_HIDEACK) ? NULL : s_sprintf ("%s%s %s", "<no composing>", COLSINGLE, my_text);
-            break;
-        case INT_MSGOFF:
-            col = COLACK;
-            line = s_sprintf ("%s%s %s", "<offline>", COLSINGLE, my_text);
-            break;
-        default:
-            line = "";
-    }
-
-    if (line)
-    {
-        for (p = q = strdup (line); *q; q++)
-            if (*q == (char)0xfe)
-                *q = '*';
-
-        if (tstatus != ims_offline && (!cont || cont->status == ims_offline || !cont->group))
-            rl_printf ("(%s) ", s_status (tstatus, 0));
-        
-        rl_printf ("%s ", s_time (&stamp));
-        if (cont)
-            rl_printf ("%s", ReadLinePrintCont (cont->nick, col));
-        
-        if (prG->verbose > 1)
-            rl_printf ("<%d> ", type);
-
-        rl_print (p);
-        rl_print ("\n");
-        free (p);
-    }
+    
+    __IMIntMsg (cont, stamp, &msg, 0);
 
     OptD (opt);
-    HistMsg (conn, cont, stamp == NOW ? time (NULL) : stamp, my_text, HIST_OUT);
     if (deleteme)
         s_free (deleteme);
 }
@@ -463,6 +572,7 @@ typedef struct {
     UDWORD ref;
 } fat_msg_t;
 
+
 static int cb_msg_log (Contact *cont, parentmode_t pm, time_t stamp, fat_msg_t *msg)
 {
     putlog (cont->serv, stamp, cont, IcqToStatus (msg->nativestatus), msg->nativestatus,
@@ -502,20 +612,14 @@ static int cb_msg_tcl (Contact *cont, parentmode_t pm, time_t stamp, fat_msg_t *
             TCLEvent (cont, "file_request", s_sprintf ("{%s} %ld %ld", msg->msgtext, msg->bytes, msg->ref));
             break;
         case MSG_AUTO:
-            break;
         case MSGF_GETAUTO | MSG_GET_AWAY: 
-            break;
         case MSGF_GETAUTO | MSG_GET_OCC:
-            break;
         case MSGF_GETAUTO | MSG_GET_NA:
-            break;
         case MSGF_GETAUTO | MSG_GET_DND:
-            break;
         case MSGF_GETAUTO | MSG_GET_FFC:
-            break;
         case MSGF_GETAUTO | MSG_GET_VER:
-            break;
         case MSG_URL:
+        case MSG_CONTACT:
             break;
         case MSG_AUTH_REQ:
             TCLEvent (cont, "authorization", "request");
@@ -535,8 +639,6 @@ static int cb_msg_tcl (Contact *cont, parentmode_t pm, time_t stamp, fat_msg_t *
                 TCLEvent (cont, "mail", s_sprintf ("{%s} {%s} {%s} {%s}", msg->tmp[0], msg->tmp[3], msg->tmp[4], msg->tmp[5]));
             else
                 TCLEvent (cont, "web", s_sprintf ("{%s} {%s} {%s} {%s}", msg->tmp[0], msg->tmp[3], msg->tmp[4], msg->tmp[5]));
-            break;
-        case MSG_CONTACT:
             break;
     }
 #endif
@@ -593,16 +695,6 @@ static int cb_msg_hist (Contact *cont, parentmode_t pm, time_t stamp, fat_msg_t 
     }
     return 0;
 }
-
-#if ENABLE_CONT_HIER
-static void cb_msg_tui_tail (Contact *cont)
-{
-    if (!cont->parent)
-        return;
-    cb_msg_tui_tail (cont->parent);
-    rl_printf (i18n (9999, " with %s%s%s"), COLCONTACT, cont->nick, COLNONE);
-}
-#endif
 
 static int cb_msg_tui (Contact *ocont, parentmode_t pm, time_t stamp, fat_msg_t *msg)
 {
