@@ -108,27 +108,27 @@ static void IMRosterDoDelete (Event *event)
     if (roster->delname)
     {
         for (re = roster->groups; re; re = re->next)
-            if (!strcmp (re->name, roster->delname))
+            if (!strcmp (re->name, roster->delname) || (re->nick && !strcmp (re->nick, roster->delname)))
                 SnacCliRosterentrydelete (serv, re);
 
         for (re = roster->ignore; re; re = re->next)
-            if (!strcmp (re->name, roster->delname))
+            if (!strcmp (re->name, roster->delname) || (re->nick && !strcmp (re->nick, roster->delname)))
                 SnacCliRosterentrydelete (serv, re);
 
         for (re = roster->invisible; re; re = re->next)
-            if (!strcmp (re->name, roster->delname))
+            if (!strcmp (re->name, roster->delname) || (re->nick && !strcmp (re->nick, roster->delname)))
                 SnacCliRosterentrydelete (serv, re);
 
         for (re = roster->visible; re; re = re->next)
-            if (!strcmp (re->name, roster->delname))
+            if (!strcmp (re->name, roster->delname) || (re->nick && !strcmp (re->nick, roster->delname)))
                 SnacCliRosterentrydelete (serv, re);
 
         for (re = roster->normal; re; re = re->next)
-            if (!strcmp (re->name, roster->delname))
+            if (!strcmp (re->name, roster->delname) || (re->nick && !strcmp (re->nick, roster->delname)))
                 SnacCliRosterentrydelete (serv, re);
 
         for (re = roster->generic; re; re = re->next)
-            if (!strcmp (re->name, roster->delname))
+            if (!strcmp (re->name, roster->delname) || (re->nick && !strcmp (re->nick, roster->delname)))
                 SnacCliRosterentrydelete (serv, re);
     }
     else
