@@ -111,8 +111,55 @@ strc_t s_parse_s (const char **input, const char *sep)
     return parsed;
 }
 
+static int is_valid_icq_name (char *t)
+{
+    for (t++; *t; t++)
+        if (*t < '0' || *t > '9')
+            return 0;
+    return 1;
+}
+
+static int is_valid_aim_name (char *t)
+{
+    if (*t >= '0' && *t <= '9')
+        return 0;
+    for ( ; *t; t++)
+    {
+        if ((*t < '0' || *t > '9') && (*t < 'a' || *t > 'z') && (*t < 'A' || *t > 'Z'))
+            return 0;
+        if (*t >= 'A' && *t <= 'Z')
+            t += 'a' - 'A';
+    }
+    return 1;
+}
+
+static int is_valid_xmpp_name (char *txt)
+{
+    char *at, *slash;
+    
+    if (!(at = strchr (txt, '@')))
+        return 0;
+    if (strchr (at + 1, '@'))
+        return 0;
+    slash = strchr (txt, '/');
+    if (slash && slash != strchr (at, '/'))
+        return 0;
+    return 1;
+}
+
+static int is_valid_msn_name (char *txt)
+{
+    char *at;
+    
+    if (!(at = strchr (txt, '@')))
+        return 0;
+    if (strchr (at + 1, '@'))
+        return 0;
+    return 1;
+}
+
 /*
- * Parses a nick, accepting numeric UINs as well.
+ * Parses a nick, UIN or screen name.
  */
 Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
 {
@@ -144,8 +191,12 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
         t = s_parse (&p);
         if (!t)
             return NULL;
-        *input = p;
-        return ContactScreen (serv, t->txt);
+        if (is_valid_aim_name (t->txt))
+        {
+            *input = p;
+            return ContactScreen (serv, t->txt);
+        }
+        p = *input;
     }
 
     if (serv->type == TYPE_MSN_SERVER && !strncasecmp (p, "MSN:", 4))
@@ -154,33 +205,43 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
         t = s_parse (&p);
         if (!t)
             return NULL;
-        *input = p;
-        return ContactScreen (serv, t->txt);
+        if (is_valid_msn_name (t->txt))
+        {
+            *input = p;
+            return ContactScreen (serv, t->txt);
+        }
+        p = *input;
     }
 
     if (serv->type == TYPE_XMPP_SERVER &&
         (!strncasecmp (p, "JABBER:", 7) || !strncasecmp (p, "XMPP:", 5)))
     {
-        p += 7;
+        p += (*p == 'J') ? 7 : '5';
         t = s_parse (&p);
         if (!t)
             return NULL;
-        *input = p;
-        return ContactScreen (serv, t->txt);
+        if (is_valid_xmpp_name (t->txt))
+        {
+            *input = p;
+            return ContactScreen (serv, t->txt);
+        }
+        p = *input;
     }
 
-    if (strchr ("0123456789", *p))
+    if ((serv->type == TYPE_SERVER || serv->type == TYPE_SERVER_OLD)
+        && !strncasecmp (p, "ICQ:", 4))
     {
-        l = 0;
-        if (s_parseint_s (&p, &max, sep) && max)
+        t = s_parse (&p);
+        if (!t)
+            return NULL;
+        if (is_valid_icq_name (t->txt))
         {
-            if ((r = ContactUIN (serv, max)))
-            {
-                *input = p;
-                return r;
-            }
+            *input = p;
+            return ContactScreen (serv, t->txt);
         }
+        p = *input;
     }
+
     max = 0;
     parsed = NULL;
     ll = strlen (p);
@@ -211,6 +272,29 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
         *input = p + max;
         return parsed;
     }
+
+    t = s_parse (&p);
+    if (!t)
+        return NULL;
+
+    if (serv->type == TYPE_MSN_SERVER && is_valid_msn_name (t->txt))
+    {
+        *input = p;
+        return ContactScreen (serv, t->txt);
+    }
+
+    if (serv->type == TYPE_XMPP_SERVER && is_valid_xmpp_name (t->txt))
+    {
+        *input = p;
+        return ContactScreen (serv, t->txt);
+    }
+
+    if ((serv->type == TYPE_SERVER || serv->type == TYPE_SERVER_OLD) && is_valid_icq_name (t->txt))
+    {
+        *input = p;
+        return ContactScreen (serv, t->txt);
+    }
+
     return NULL;
 }
 
