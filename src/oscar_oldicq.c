@@ -161,7 +161,7 @@ JUMP_SNAC_F(SnacSrvToicqerr)
                 rl_printf (i18n (2517, "I'm out of wisdom about the server's problem. It just didn't work out.\n"));
             EventD (oevent);
         }
-        else
+        else if ((pak->ref & 0xffff) != 0x4242)
         {
             rl_printf (i18n (2207, "Protocol error in command to old ICQ server: %d.\n"), err);
             rl_print (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
