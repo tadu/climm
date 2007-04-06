@@ -216,7 +216,7 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
     if (serv->type == TYPE_XMPP_SERVER &&
         (!strncasecmp (p, "JABBER:", 7) || !strncasecmp (p, "XMPP:", 5)))
     {
-        p += (*p == 'J') ? 7 : '5';
+        p += (*p == 'J') ? 7 : 5;
         t = s_parse (&p);
         if (!t)
             return NULL;
