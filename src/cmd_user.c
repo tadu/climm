@@ -2518,7 +2518,19 @@ static JUMP_F(CmdUserOpt)
         }
         coptname = strdup (s_qquote (optname));
         
-        if (!(par = s_parse (&args)))
+        if (s_parsekey (&args, "undef") || s_parsekey (&args, "delete")
+            || s_parsekey (&args, "remove") || s_parsekey (&args, "erase"))
+        {
+            if (flag & COF_STRING)
+                OptSetStr (copts, flag, NULL);
+            else
+                OptUndef (copts, flag);
+            rl_printf (data & COF_CONTACT ? i18n (2431, "Undefining option %s for contact %s.\n") :
+                       data & COF_GROUP   ? i18n (2432, "Undefining option %s for contact group %s.\n")
+                                          : i18n (2433, "Undefining global option %s%s.\n"),
+                      coptname, coptobj);
+        }
+        else if (!(par = s_parse (&args)))
         {
             const char *res = NULL;
             val_t val;
@@ -2539,19 +2551,8 @@ static JUMP_F(CmdUserOpt)
                            data & COF_GROUP   ? i18n (2429, "Option %s for contact group %s is %s.\n")
                                               : i18n (2430, "Option %s%s is globally %s.\n"),
                           coptname, coptobj, s_qquote (flag & COF_STRING  ? res : OptS2C (res)));
-            return 0;
-        }
-        
-        if (!strcasecmp (par->txt, "undef"))
-        {
-            if (flag & COF_STRING)
-                OptSetStr (copts, flag, NULL);
-            else
-                OptUndef (copts, flag);
-            rl_printf (data & COF_CONTACT ? i18n (2431, "Undefining option %s for contact %s.\n") :
-                       data & COF_GROUP   ? i18n (2432, "Undefining option %s for contact group %s.\n")
-                                          : i18n (2433, "Undefining global option %s%s.\n"),
-                      coptname, coptobj);
+            free (coptname);
+            break;
         }
         else if (flag & COF_STRING)
         {
@@ -2607,6 +2608,7 @@ static JUMP_F(CmdUserOpt)
         else
         {
             rl_printf (i18n (2446, "Invalid value %s for boolean option %s.\n"), s_qquote (par->txt), coptname);
+            free (coptname);
             continue;
         }
         if (flag & COF_GROUP && ~flag & COF_CONTACT && data == COF_GROUP && connl)
