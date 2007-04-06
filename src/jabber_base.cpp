@@ -8,6 +8,7 @@ extern "C" {
 #include "icq_response.h"
 #include "util_ui.h"
 #include "buildmark.h"
+#include "preferences.h"
 }
 
 #include <cassert>
@@ -48,6 +49,7 @@ class MICQXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
         void handleXEP22a (gloox::Tag *XEP22, Contact *cfrom);
         void handleXEP22b (gloox::Tag *XEP22, gloox::JID from, std::string tof, std::string id);
         void handleXEP22c (gloox::JID from, std::string tof, std::string id, std::string type);
+        void handleXEP71 (gloox::Tag *t);
         void handleXEP85 (gloox::Tag *t);
         void handleGoogleNosave (gloox::Tag *t);
         void handleXEP136 (gloox::Tag *t);
@@ -363,6 +365,16 @@ bool MICQXMPP::handleXEP22 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std:
     return false;
 }
 
+void MICQXMPP::handleXEP71 (gloox::Tag *t)
+{
+    if (gloox::Tag *xhtmlim = t->findChild ("html", "xmlns", "http://jabber.org/protocol/xhtml-im"))
+    {
+        DropAttrib (xhtmlim, "xmlns");
+        DropAllChilds (xhtmlim, "body");
+        CheckInvalid (xhtmlim);
+    }
+}
+
 void MICQXMPP::handleXEP85 (gloox::Tag *t)
 {
     if (gloox::Tag *active = t->findChild ("active", "xmlns", "http://jabber.org/protocol/chatstates"))
@@ -412,7 +424,7 @@ time_t MICQXMPP::handleXEP91 (gloox::Tag *t)
 
 void MICQXMPP::handleGoogleNosave (gloox::Tag *t)
 {
-    if (gloox::Tag *nosave = t->findChild ("nos:x", "xmlns:nos" "google:nosave"))
+    if (gloox::Tag *nosave = t->findChild ("nos:x", "xmlns:nos", "google:nosave"))
     {
         DropAttrib (nosave, "xmlns:nos");
         DropAttrib (nosave, "value");
@@ -422,7 +434,7 @@ void MICQXMPP::handleGoogleNosave (gloox::Tag *t)
 
 void MICQXMPP::handleXEP136 (gloox::Tag *t)
 {
-    if (gloox::Tag *arc = t->findChild ("arc:record", "xmlns:arc" "http://jabber.org/protocol/archive"))
+    if (gloox::Tag *arc = t->findChild ("arc:record", "xmlns:arc", "http://jabber.org/protocol/archive"))
     {
         DropAttrib (arc, "xmlns:arc");
         DropAttrib (arc, "otr");
@@ -440,8 +452,9 @@ void MICQXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string to
     time_t delay;
     Contact *contb, *contr;
     
-    GetBothContacts (from, m_conn, &contb, &contr, 1);
+    GetBothContacts (from, m_conn, &contb, &contr, 0);
 
+    handleXEP71 (t);
     handleXEP85 (t);
     handleGoogleNosave (t);
     handleXEP136 (t);
@@ -625,9 +638,13 @@ void MICQXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std:
         case gloox::LogLevelError: lt = "error"; break;
     }
     if (area == gloox::LogAreaXmlIncoming)
+    {
         DebugH (DEB_XMPPIN, "%s/%s: %s", lt, la, message.c_str());
+    }
     else if (area == gloox::LogAreaXmlOutgoing)
+    {
         DebugH (DEB_XMPPOUT, "%s/%s: %s", lt, la, message.c_str());
+    }
     else
         DebugH (DEB_XMPPOTHER, "%s/%s: %s", lt, la, message.c_str());
 }
@@ -708,7 +725,7 @@ Event *ConnectionInitXMPPServer (Connection *serv)
     const char *sp;
     Event *event;
     
-    assert (serv->type = TYPE_XMPP_SERVER);
+    assert (serv->type == TYPE_XMPP_SERVER);
     
     if (!serv->screen || !serv->passwd)
         return NULL;
