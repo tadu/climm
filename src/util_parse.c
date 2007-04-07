@@ -111,7 +111,7 @@ strc_t s_parse_s (const char **input, const char *sep)
     return parsed;
 }
 
-static int is_valid_icq_name (char *t)
+int is_valid_icq_name (char *t)
 {
     for (t++; *t; t++)
         if (*t < '0' || *t > '9')
@@ -119,7 +119,7 @@ static int is_valid_icq_name (char *t)
     return 1;
 }
 
-static int is_valid_aim_name (char *t)
+int is_valid_aim_name (char *t)
 {
     if (*t >= '0' && *t <= '9')
         return 0;
@@ -133,7 +133,7 @@ static int is_valid_aim_name (char *t)
     return 1;
 }
 
-static int is_valid_xmpp_name (char *txt)
+int is_valid_xmpp_name (char *txt)
 {
     char *at, *slash;
     
@@ -147,7 +147,7 @@ static int is_valid_xmpp_name (char *txt)
     return 1;
 }
 
-static int is_valid_msn_name (char *txt)
+int is_valid_msn_name (char *txt)
 {
     char *at;
     

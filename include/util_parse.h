@@ -12,6 +12,11 @@ char         *s_parserem_s  (const char **input, const char *sep);
 BOOL          s_parseint_s  (const char **input, UDWORD        *parsed, const char *sep);
 BOOL          s_parsekey_s  (const char **input, const char *kw,        const char *sep);
 
+int is_valid_icq_name  (char *user);
+int is_valid_aim_name  (char *user);
+int is_valid_xmpp_name (char *user);
+int is_valid_msn_name  (char *user);
+
 #define DEFAULT_SEP " \t\r\n"
 #define MULTI_SEP   " \t\r\n,"
 
