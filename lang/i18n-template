@@ -15,7 +15,7 @@ sub ReadTrans($)
     open (TMPL, "<:bytes", $name) || die "Could not open file $name.";
     while (<TMPL>)
     {
-        if (m=^# \$Id: C.i18n,v ([0-9.]* 20../../.. ..:..:..).*=)
+        if (m=^# \$Id: C.i18n,v ([0-9.]* 20..[-/]..[-/].. ..:..:..).*=)
         {
             $version = $1;
         }
