@@ -80,8 +80,8 @@ MICQXMPP::MICQXMPP (Connection *serv)
     m_client->registerSubscriptionHandler (this);
     m_client->registerPresenceHandler (this);
     m_client->logInstance ().registerLogHandler (gloox::LogLevelDebug,   gloox::LogAreaAll, this);
-    m_client->disco()->setVersion ("mICQ testing", BuildVersion ());
-    m_client->disco()->setIdentity ("client", "bot");
+    m_client->disco()->setVersion ("mICQ", BuildVersionText);
+    m_client->disco()->setIdentity ("client", "console");
     m_client->setAutoPresence (true);
     m_client->setInitialPriority (5);
 
