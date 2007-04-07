@@ -173,24 +173,24 @@ void Initialize_RC_File ()
     prG->away_time = default_away_time;
 
     rl_print ("\n");
-    rl_print (i18n (9999, "No valid user account found. The setup wizard will guide you through the process of setting one up.\n"));
-    rl_print (i18n (9999, "You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n"));
+    rl_print (i18n (2612, "No valid user account found. The setup wizard will guide you through the process of setting one up.\n"));
+    rl_print (i18n (2613, "You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n"));
     rl_print ("  *  ");
-    rl_printf (i18n (9999, "%s, enter i.e. %s\n"), "ICQ", "12345678");
+    rl_printf (i18n (2614, "%s, enter i.e. %s\n"), "ICQ", "12345678");
 #ifdef ENABLE_XMPP
     rl_print ("  *  ");
-    rl_printf (i18n (9999, "%s, enter i.e. %s\n"), "XMPP (Jabber, Google Talk)", "example@gmail.com");
+    rl_printf (i18n (2614, "%s, enter i.e. %s\n"), "XMPP (Jabber, Google Talk)", "example@gmail.com");
 #endif
 #ifdef ENABLE_MSN
     rl_print ("  *  ");
-    rl_printf (i18n (9999, "%s, enter i.e. %s\n"), "MSN", "fool@hotmale.net");
+    rl_printf (i18n (2614, "%s, enter i.e. %s\n"), "MSN", "fool@hotmale.net");
 #endif
     while (1)
     {
         servertype = 0;
         while (!servertype)
         {
-            rl_printf ("%s ", i18n (9999, "User account ID:"));
+            rl_printf ("%s ", i18n (2615, "User account ID:"));
             fflush (stdout);
             ReadLineTtyUnset ();
             line = UtilIOReadline (stdin);
@@ -216,7 +216,7 @@ void Initialize_RC_File ()
                 servertype = TYPE_MSN_SERVER;
             else
 #endif
-                rl_printf (i18n (9999, "Cannot parse %s as a valid user ID. Try again!\n"), line->txt);
+                rl_printf (i18n (2616, "Cannot parse %s as a valid user ID. Try again!\n"), line->txt);
         }
         if (user && !servertype)
             break;
@@ -224,7 +224,7 @@ void Initialize_RC_File ()
         user = strdup (line->txt);
         
         rl_print ("\n");
-        rl_printf (i18n (9999, "Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n"),
+        rl_printf (i18n (2617, "Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n"),
             ConnectionServerType (servertype), user);
         
         rl_printf ("%s ", i18n (1795, "Password:"));
@@ -237,7 +237,7 @@ void Initialize_RC_File ()
         conn->flags |= CONN_WIZARD;
         free (user);
         s_free (passwd);
-        rl_print (i18n (9999, "You may add more user accounts now. Enter nothing to not add more accounts.\n"));
+        rl_print (i18n (2618, "You may add more user accounts now. Enter nothing to not add more accounts.\n"));
     }
 
     prG->s5Use = 0;

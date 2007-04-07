@@ -770,7 +770,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
             if ((cont = conn->cont))
             {
                 rl_log_for (cont->nick, COLCONTACT);
-                rl_printf (i18n (9999, "Error while reading from socket: %s (%d, %d)\n"), dc_strerror (conn, ssl_rc, rc), ssl_rc, rc);
+                rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), dc_strerror (conn, ssl_rc, rc), ssl_rc, rc);
             }
         }
         conn->connect = 0;
@@ -848,7 +848,7 @@ Packet *UtilIOReceiveF (Connection *conn)
             if ((cont = conn->cont))
             {
                 rl_log_for (cont->nick, COLCONTACT);
-                rl_printf (i18n (1878, "Error while reading from socket: %s (%d)\n"), strerror (rc), rc);
+                rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), strerror (rc), rc, rc);
             }
         }
         conn->connect = 0;
@@ -912,7 +912,7 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
             if ((cont = conn->cont))
             {
                 rl_log_for (cont->nick, COLCONTACT);
-                rl_printf (i18n (9999, "Error while reading from socket: %s (%d, %d)\n"), dc_strerror (conn, ssl_rc, rc), ssl_rc, rc);
+                rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), dc_strerror (conn, ssl_rc, rc), ssl_rc, rc);
             }
         }
         conn->connect = 0;
@@ -989,7 +989,7 @@ strc_t UtilIOReadline (FILE *fd)
     static str_s str;
     char *p;
     
-    s_init (&str, "", 128);
+    s_init (&str, "", 256);
     while (1)
     {
         str.txt[str.max - 2] = 0;

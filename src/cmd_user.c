@@ -2149,7 +2149,7 @@ static JUMP_F(CmdUserStatusWide)
     rl_printf (" %s(%s)%s", COLQUOTE, on, COLNONE);
     for (i = 0; (cont = ContactIndex (cgon, i)); i++)
     {
-        const char *flags = i18n (9999, " adnof__iiiiiiii");
+        const char *flags = i18n (2611, " adnof__iiiiiiii");
 
         if (!(i % columns))
             rl_print ("\n");

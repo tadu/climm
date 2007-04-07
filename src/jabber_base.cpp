@@ -739,7 +739,7 @@ Event *ConnectionInitXMPPServer (Connection *serv)
     }
 
     sp = s_sprintf ("%s", s_wordquote (s_sprintf ("%s:%lu", serv->server, serv->port)));
-    rl_printf (i18n (9999, "Opening XMPP connection for %s at %s...\n"),
+    rl_printf (i18n (2620, "Opening XMPP connection for %s at %s...\n"),
         s_wordquote (serv->screen), sp);
     
     if (!serv->port)

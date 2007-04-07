@@ -68,7 +68,7 @@ static void cb_status_tui_tail (Contact *cont)
     if (!cont->parent)
         return;
     cb_status_tui_tail (cont->parent);
-    rl_printf (i18n (9999, " with %s%s%s"), COLCONTACT, cont->nick, COLNONE);
+    rl_printf (i18n (2619, " with %s%s%s"), COLCONTACT, cont->nick, COLNONE);
 }
 #endif
 
@@ -252,7 +252,7 @@ static void cb_msg_tui_tail (Contact *cont)
     if (!cont->parent)
         return;
     cb_msg_tui_tail (cont->parent);
-    rl_printf (i18n (9999, " with %s%s%s"), COLCONTACT, cont->nick, COLNONE);
+    rl_printf (i18n (2619, " with %s%s%s"), COLCONTACT, cont->nick, COLNONE);
 }
 #endif
 
