@@ -41,6 +41,7 @@
 #include "util_ssl.h"
 #include "util_alias.h"
 #include "cmd_user.h"
+#include "util_parse.h"
 #include "os.h"
 
 #define MICQ_ICON_1 "   " GREEN "_" SGR0 "     "
@@ -228,7 +229,7 @@ static void Init (int argc, char *argv[])
                     i++, arg_vv = n | 0x80000000UL;
             }
         }
-        else if (!strcmp (argv[i], "-u") || !strcmp (argv[i], "--uin"))
+        else if (!strcmp (argv[i], "-u") || !strcmp (argv[i], "--uin") || !strcmp (argv[i], "--user"))
         {
             if (argv[i + 1] && *argv[i + 1])
             {
@@ -355,7 +356,7 @@ static void Init (int argc, char *argv[])
         rl_print  (i18n (2204, "  -i, --i1" "8n     use given locale (default: auto-detected)\n"));
         rl_print  (i18n (2200, "  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n"));
         rl_printf (i18n (2203, "  -l, --logplace use given log file/dir (default: %s)\n"), "BASE" _OS_PATHSEPSTR "history" _OS_PATHSEPSTR);
-        rl_print  (i18n (2494, "  -u, --uin      login with this UIN instead of those configured\n"));
+        rl_print  (i18n (2494, "  -u, --user     login with this user/UIN instead of those configured\n"));
         rl_print  (i18n (2495, "  -p, --passwd   ... and override password\n"));
         rl_print  (i18n (2496, "  -s, --status   ... and override status\n"));
         rl_print  (i18n (2497, "  -C, --cmd      ... and execute mICQ command\n"));
@@ -471,12 +472,25 @@ static void Init (int argc, char *argv[])
     
     for (i = 0; i < j; i++)
     {
-        if      (!strcmp (targv[i], "-u") || !strcmp (targv[i], "--uin"))
+        if      (!strcmp (targv[i], "-u") || !strcmp (targv[i], "--uin") || !strcmp (targv[i], "--user"))
         {
             if (arg_u)
             {
-                if (!(conn = ConnectionFindScreen (TYPEF_ANY_SERVER, arg_u)) && atoll (arg_u))
-                    conn = PrefNewConnection (atoll (arg_u), arg_p);
+                if (!(conn = ConnectionFindScreen (TYPEF_ANY_SERVER, arg_u)))
+                {
+                    char *u = strdup (arg_u);
+                    if (is_valid_icq_name (u))
+                        conn = PrefNewConnection (TYPE_SERVER, u, arg_p);
+#ifdef ENABLE_XMPP
+                    else if (is_valid_xmpp_name (u))
+                        conn = PrefNewConnection (TYPE_XMPP_SERVER, u, arg_p);
+#endif
+#ifdef ENABLE_MSN
+                    else if (is_valid_msn_name (u))
+                        conn = PrefNewConnection (TYPE_MSN_SERVER, u, arg_p);
+#endif
+                    s_free (u);
+                }
             }
             else if (!*targv[i+1])
                 conn = ConnectionFind (TYPEF_ANY_SERVER, NULL, NULL);

@@ -7,4 +7,4 @@ void PrefReadStat (FILE *stf);
 int PrefWriteStatusFile (void);
 int PrefWriteConfFile (void);
 
-Connection *PrefNewConnection (UDWORD uin, const char *passwd);
+Connection *PrefNewConnection (UDWORD servertype, const char *user, const char *passwd);

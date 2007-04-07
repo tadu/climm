@@ -55,106 +55,190 @@
 #define WAND3 " \xb7 \\ "
 #define WAND4 "    \\"
 
-Connection *PrefNewConnection (UDWORD uin, const char *passwd)
+Connection *PrefNewConnection (UDWORD servertype, const char *user, const char *passwd)
 {
     Connection *conn;
     Contact *cont;
     
-    conn = ConnectionC (TYPE_SERVER);
-    conn->open = &ConnectionInitServer;
-    
-    conn->flags |= CONN_AUTOLOGIN;
-    conn->pref_server = strdup ("login.icq.com");
-    conn->pref_port = 5190;
-    conn->pref_status = ims_online;
-    conn->version = 8;
-    conn->uin = uin;
-    s_repl (&conn->screen, s_sprintf ("%lu", uin));
-#ifdef __BEOS__
-    conn->pref_passwd = passwd ? strdup (passwd) : NULL;
-#endif
-    
-    conn->server  = strdup ("login.icq.com");
-    conn->port    = 5190;
-    conn->passwd  = passwd ? strdup (passwd) : NULL;
-    conn->status = ims_online;
+    if (servertype == TYPE_SERVER)
+    {
+        conn = ConnectionC (servertype);
+        conn->open = &ConnectionInitServer;
+        
+        conn->flags |= CONN_AUTOLOGIN;
+        conn->pref_server = strdup ("login.icq.com");
+        conn->pref_port = 5190;
+        conn->pref_status = ims_online;
+        conn->version = 8;
+        s_repl (&conn->screen, user);
+        conn->uin = atoi (user);
+        conn->pref_passwd = passwd ? strdup (passwd) : NULL;
+        
+        conn->server  = strdup (conn->pref_server);
+        conn->port    = conn->pref_port;
+        conn->passwd  = passwd ? strdup (passwd) : NULL;
+        conn->status  = ims_online;
 
-    conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
-    OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
+        conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%s", user));
+        OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
+        
+        cont = ContactUIN (conn, 82274703);
+        ContactCreate (conn, cont);
+        ContactAddAlias (cont, "mICQ");
+        ContactAddAlias (cont, "Tadu");
+        OptSetStr (&cont->copts, CO_COLORINCOMING, OptC2S ("red bold"));
+        OptSetStr (&cont->copts, CO_COLORMESSAGE, OptC2S ("red bold"));
+        rl_print ("\n");
+        rl_printf (i18n (2381, "I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n"));
+        rl_print ("\n");
+    }
+#ifdef ENABLE_XMPP
+    else if (servertype == TYPE_XMPP_SERVER)
+    {
+        const char *serverpart = strchr (user, '@') + 1;
     
-    cont = ContactUIN (conn, 82274703);
-    ContactCreate (conn, cont);
-    ContactAddAlias (cont, "mICQ");
-    ContactAddAlias (cont, "Tadu");
-    OptSetStr (&cont->copts, CO_COLORINCOMING, OptC2S ("red bold"));
-    OptSetStr (&cont->copts, CO_COLORMESSAGE, OptC2S ("red bold"));
-    rl_printf (i18n (2381, "I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n"));
+        conn = ConnectionC (servertype);
+        conn->open = &ConnectionInitXMPPServer;
+        
+        conn->flags |= CONN_AUTOLOGIN;
+        if (!strcmp (serverpart, "gmail.com") || !strcmp (serverpart, "gmail.com"))
+            conn->pref_server = strdup ("talk.google.com");
+        else
+            conn->pref_server = strdup (serverpart);
+        conn->pref_port = 5222;
+        conn->pref_status = ims_online;
+        conn->version = 8;
+        s_repl (&conn->screen, user);
+        conn->uin = 0;
+        conn->pref_passwd = passwd ? strdup (passwd) : NULL;
+        
+        conn->server  = strdup (conn->pref_server);
+        conn->port    = conn->pref_port;
+        conn->passwd  = passwd ? strdup (passwd) : NULL;
+        conn->status  = ims_online;
+
+        conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-xmpp-%s", user));
+        OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
+        
+        cont = ContactScreen (conn, "RKuhlmann@gmail.com");
+        ContactCreate (conn, cont);
+        ContactAddAlias (cont, "mICQ");
+        ContactAddAlias (cont, "Tadu");
+        OptSetStr (&cont->copts, CO_COLORINCOMING, OptC2S ("red bold"));
+        OptSetStr (&cont->copts, CO_COLORMESSAGE, OptC2S ("red bold"));
+        rl_print ("\n");
+        rl_printf (i18n (2381, "I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n"));
+        rl_print ("\n");
+    }
+#endif
+#ifdef ENABLE_MSN
+    else if (servertype == TYPE_MSN_SERVER)
+    {
+        conn = ConnectionC (servertype);
+        conn->open = &ConnectionInitMSNServer;
+        
+        conn->flags |= CONN_AUTOLOGIN;
+        conn->pref_server = strdup (strchr (user, '@') + 1);
+        conn->pref_port = 42;
+        conn->pref_status = ims_online;
+        conn->version = 8;
+        s_repl (&conn->screen, user);
+        conn->uin = 0;
+        conn->pref_passwd = passwd ? strdup (passwd) : NULL;
+        
+        conn->server  = strdup (conn->pref_server);
+        conn->port    = conn->pref_port;
+        conn->passwd  = passwd ? strdup (passwd) : NULL;
+        conn->status  = ims_online;
+
+        conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-msn-%s", user));
+        OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
+    }
+#endif
     return conn;
 }
 
 void Initialize_RC_File ()
 {
     strc_t line;
-    char *pwd;
     Connection *conn;
 #ifdef ENABLE_REMOTECONTROL
     Connection *conns;
 #endif
-    Contact *cont;
+    char *user = NULL;
     char *passwd;
     char *t;
-    UDWORD uin;
-    long tmpuin;
+    UDWORD servertype = 0;
     
     prG->away_time = default_away_time;
 
     rl_print ("\n");
-    rl_print (i18n (1793, "No valid UIN found. The setup wizard will guide you through the process of setting one up.\n"));
-    rl_print (i18n (1794, "If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.\n"));
-    rl_printf ("%s ", i18n (1618, "UIN:"));
-    fflush (stdout);
-    ReadLineTtyUnset ();
-    line = UtilIOReadline (stdin);
-    ReadLineTtySet ();
-    tmpuin = 0;
-    if (line)
-        sscanf (line->txt, "%ld", &tmpuin);
-    uin = tmpuin;
-
-    rl_print ("\n");
-    if (uin)
-        rl_printf (i18n (1781, "Your password for UIN %ld:\n"), uin);
-    else
-        rl_print (i18n (1782, "You need a password for your new UIN.\n"));
+    rl_print (i18n (9999, "No valid user account found. The setup wizard will guide you through the process of setting one up.\n"));
+    rl_print (i18n (9999, "You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n"));
+    rl_print ("  *  ");
+    rl_printf (i18n (9999, "%s, enter i.e. %s\n"), "ICQ", "12345678");
+#ifdef ENABLE_XMPP
+    rl_print ("  *  ");
+    rl_printf (i18n (9999, "%s, enter i.e. %s\n"), "XMPP (Jabber, Google Talk)", "example@gmail.com");
+#endif
+#ifdef ENABLE_MSN
+    rl_print ("  *  ");
+    rl_printf (i18n (9999, "%s, enter i.e. %s\n"), "MSN", "fool@hotmale.net");
+#endif
     while (1)
     {
-        rl_printf ("%s ", i18n (1795, "Password:"));
-        fflush (stdout);
-        line = UtilIOReadline (stdin);
-        if (!line)
-            continue;
-        rl_print ("\n");
-        if (uin)
+        servertype = 0;
+        while (!servertype)
+        {
+            rl_printf ("%s ", i18n (9999, "User account ID:"));
+            fflush (stdout);
+            ReadLineTtyUnset ();
+            line = UtilIOReadline (stdin);
+            ReadLineTtySet ();
+            
+            if (!line || !line->len)
+            {
+                if (!user)
+                    continue;
+                break;
+            }
+
+#ifdef ENABLE_XMPP
+            if (is_valid_xmpp_name (line->txt))
+                servertype = TYPE_XMPP_SERVER;
+            else
+#endif
+            if (is_valid_icq_name (line->txt))
+                servertype = TYPE_SERVER;
+            else
+#ifdef ENABLE_MSN
+            if (is_valid_msn_name (line->txt))
+                servertype = TYPE_MSN_SERVER;
+            else
+#endif
+                rl_printf (i18n (9999, "Cannot parse %s as a valid user ID. Try again!\n"), line->txt);
+        }
+        if (user && !servertype)
             break;
 
-        rl_print (i18n (1783, "To prevent typos, please enter your password again.\n"));
+        user = strdup (line->txt);
+        
+        rl_print ("\n");
+        rl_printf (i18n (9999, "Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n"),
+            ConnectionServerType (servertype), user);
+        
         rl_printf ("%s ", i18n (1795, "Password:"));
         fflush (stdout);
-        pwd = strdup (line->txt);
         line = UtilIOReadline (stdin);
-        if (!line)
-            continue;
         rl_print ("\n");
-        if (strcmp (pwd, line->txt))
-        {
-            rl_printf ("\n%s\n", i18n (1093, "Passwords did not match - please try again."));
-            free (pwd);
-            continue;
-        }
-        free (pwd);
-        break;
+
+        passwd = line && line->len ? strdup (c_out (line->txt)) : NULL;
+        conn = PrefNewConnection (servertype, user, passwd);
+        conn->flags |= CONN_WIZARD;
+        free (user);
+        s_free (passwd);
+        rl_print (i18n (9999, "You may add more user accounts now. Enter nothing to not add more accounts.\n"));
     }
-    passwd = strdup (c_out (line->txt));
 
     prG->s5Use = 0;
     prG->s5Port = 0;
@@ -211,26 +295,7 @@ void Initialize_RC_File ()
     rl_print ("\n");
     ReadLineTtySet ();
 
-    if (!uin)
-    {
-        rl_print (i18n (1796, "Setup wizard finished. Please wait until registration has finished.\n"));
-        conn = SrvRegisterUIN (NULL, passwd);
-        conn->open = &ConnectionInitServer;
-        conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%ld", uin));
-        OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
-
-        cont = ContactUIN (conn, 82274703);
-        ContactCreate (conn, cont);
-        ContactAddAlias (cont, "mICQ");
-        ContactAddAlias (cont, "Tadu");
-        OptSetStr (&cont->copts, CO_COLORINCOMING, OptC2S ("red bold"));
-        OptSetStr (&cont->copts, CO_COLORMESSAGE, OptC2S ("red bold"));
-    }
-    else
-    {
-        conn = PrefNewConnection (uin, passwd);
-        rl_print (i18n (1791, "Setup wizard finished. Congratulations!\n"));
-    }
+    rl_print (i18n (1791, "Setup wizard finished. Congratulations!\n"));
     rl_print ("\n");
     
     {
@@ -240,7 +305,6 @@ void Initialize_RC_File ()
         mkdir (tmp, 0700);
         free (tmp);
     }
-    conn->flags |= CONN_WIZARD;
 #ifdef ENABLE_REMOTECONTROL
     conns = ConnectionC (TYPE_REMOTE);
     conns->open = &RemoteOpen;
@@ -274,10 +338,7 @@ void Initialize_RC_File ()
     OptSetStr (&prG->copts, CO_AUTOOCC,  i18n (1012, "User is occupied [Auto-Message]"));
     OptSetStr (&prG->copts, CO_AUTOFFC,  i18n (2055, "User is ffc and wants to chat about everything."));
 
-    if (uin)
-        Save_RC ();
-    
-    free (passwd);
+    Save_RC ();
 }
 
 #define PrefParse(x)          switch (1) { case 1: if (!(par = s_parse (&args))) { rl_printf (i18n (2123, "%sSyntax error%s: Too few arguments: %s\n"), COLERROR, COLNONE, s_qquote (line->txt)); continue; } x = par->txt; }
