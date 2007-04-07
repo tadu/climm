@@ -60,10 +60,10 @@ POSIX=`echo n\  | tail -n 1 2>/dev/null`
 force:
 
 lang:
-	@rm -f *.c~ ../lang/*.i18n~
-	@../lang/i18n-extract *.c
-	@../lang/i18n-number *.c
-	@if grep -q "i18n (#" *.c; then \
+	@rm -f *.c~ *.cpp~ ../lang/*.i18n~
+	@../lang/i18n-extract *.c *.cpp
+	@../lang/i18n-number *.c *.cpp
+	@if grep -q "i18n (#" *.c *.cpp; then \
 	   echo "Ooops, untranslated strings left."; \
 	   grep "i18n (#" *.c; \
 	   exit 1; fi; true
