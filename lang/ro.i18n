@@ -1,5 +1,5 @@
 # $Id$ Romana (Romanian)
-#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.85 2007-04-07 14:20:22 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:ro
 1002:ro_RO
@@ -27,7 +27,7 @@
 1027:DA
 1028:NU
 1029:Introduceti DA sau NU, va rog!
-1030:s-a deconectat.
+1030:s-a deconectat
 #1032:debug: double packet #%04lx type %04x (%s)\n
 1033:Pachet server v8 care vine:
 1034:Numarul maxim de incercari a fost atins. Cedez.
@@ -54,7 +54,7 @@
 #1085:on
 #1086:off
 #1089:Unloaded translation.
-1093:Parolele nu au coincis - incercati inca odata.
+1093.Parolele nu au coincis - incercati inca odata.
 1094:server SOCKS5:
 1095:port SOCKS5:
 1096:nume utilizator SOCKS5:
@@ -515,7 +515,7 @@
 1606:A fost primit un ID de sesiune rau %08lx (corect: %08lx) cu cmd %04x ignorat.\n
 1612:Acest program a fost creata fara vre-un ajutor de la Mirabilis si fara acordul lor.\n
 1613:Nu s-a utilizat cod de la Mirabilis pentru crearea acestui program.\n
-1618:UIN:
+1618.UIN:
 1619:NB!:
 1620.numarul maximal de contacte a fost atins. Rugati vrajitorul sa v-o mareasca!
 1621:nu au fost intorsi utilizatori.
@@ -607,9 +607,9 @@
 1771:D-stra pana ce nu ati trimis nici un mesaj nimanui!\n
 1774:Pachetul primit:
 1775:Pachetul trimis:
-1781:Parola pentru UIN %ld:\n
-1782:Este necesara o parola pentru UIN-ul d-stra nou.\n
-1783:Pentru a preveni erori, va rugam sa introduceti inca o data parola d-stra \n 
+1781.Parola pentru UIN %ld:\n
+1782.Este necesara o parola pentru UIN-ul d-stra nou.\n
+1783.Pentru a preveni erori, va rugam sa introduceti inca o data parola d-stra \n 
 1784:Daca sunteti dupa firewall, posibil sa aveti nevoie de a utiliza un server SOCKS5. Daca il utilizati, introduceti va rog IPul sau hostname-ul lui. In caz contrar sau in caz de incertitudine, pur si simplu apasati return.\n
 1785:succes.\n
 1786:Mai e nevoie si de portul la care serverul socks asculta. In caz de incertitudine, apasati return pentru portul implicit.\n
@@ -619,10 +619,10 @@
 1790:Vrajitorul de configurare si-a terminat executia. Felicitari pentru noul d-stra UIN!\n
 1791:Vrajitorul de configurare si-a terminat executia. Felicitari!\n
 1792:Imi cer scuze, insa AOL nu doreste sa ne ofere un UIN nou, probabil din cauza ca sunt prea multe cereri pentru UINuri noi de la acest IP .\n
-1793:Nu a fost gasit un UIN valid. Vrajitorul de configurare va va ghida prin procesul de instalare a unui UIN.\n
-1794:Daca deja vaeti un UIN, sunteti rugat sa il introduceti.In caz contrar tastati 0 si eu voi face cerere pentru d-stra.\n
+1793.Nu a fost gasit un UIN valid. Vrajitorul de configurare va va ghida prin procesul de instalare a unui UIN.\n
+1794.Daca deja vaeti un UIN, sunteti rugat sa il introduceti.In caz contrar tastati 0 si eu voi face cerere pentru d-stra.\n
 1795:Parola:
-1796:Vrajitorul  de configurare si-a terminat executia. Va rugam sa asteptati pana registrarea finiseaza.\n
+1796.Vrajitorul  de configurare si-a terminat executia. Va rugam sa asteptati pana registrarea finiseaza.\n
 1797:Finante si corporatii
 1798:Scoala generala
 1799:Scoala suprema
@@ -668,7 +668,7 @@
 1875:Interese personale:
 1876:Trecut personal:
 1877:bine.\n
-1878:Eroare la citirea din socket: %s (%d)\n
+1878:Eroare la citirea din socket: %s (%d, %d)\n
 #1879:Affiliations:
 1881:canalul FLAP 1 nu are date.\n
 1882:canalul FLAP 1 cmd 1 date suplimentare:\n
@@ -1208,7 +1208,7 @@
 #2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
 #2492:Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 #2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
-#2494:  -u, --uin      login with this UIN instead of those configured\n
+#2494:  -u, --user     login with this user/UIN instead of those configured\n
 #2495:  -p, --passwd   ... and override password\n
 #2496:  -s, --status   ... and override status\n
 #2497:  -C, --cmd      ... and execute mICQ command\n
@@ -1318,10 +1318,20 @@
 #2601:Connection for %s is already open.\n
 #2602:Don't know how to open connection type %s for %s.\n
 2603:Conexiunea selectata %ld (versiunea %d, UIN %s) va fi curenta.\n
-#2604:jabber
+#2604:xmpp
 #2605:Automatic status change.
 2606:Am gasit un partener aleatoriu pentru discutii cu UINul %s in grupul de discutii %d.\n
 2607:Noul UIN este %s!\n
 2608:UINul dvs. este: %s.\n
 2609:Preintampinare: Serverul crede ca UINul nostru e %s, cand e %s.\n
 2610:Informatie despre %s%s%s (%s):\n
+#2611: adnof__iiiiiiii
+#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
+#2613:You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n
+#2614:%s, enter i.e. %s\n
+#2615:User account ID:
+#2616:Cannot parse %s as a valid user ID. Try again!\n
+#2617:Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n
+#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
+#2619: with %s%s%s
+#2620:Opening XMPP connection for %s at %s...\n

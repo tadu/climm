@@ -1,5 +1,5 @@
 # $Id$ castellano (Spanish)
-#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.85 2007-04-07 14:20:22 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:es
 1002:es
@@ -54,7 +54,7 @@
 1085:activado
 1086: desactivado
 1089:Traducción descargada.
-1093:Las claves no concuerdan - por favor intente nuevamente.
+1093.Las claves no concuerdan - por favor intente nuevamente.
 1094:Servidor SOCKS5:
 1095:Puerto SOCKS5:
 1096:Usuario SOCKS5:
@@ -531,7 +531,7 @@
 1606:Recibimos un session id mal: %08lx (el correcto: %08lx) con el comando %04x, se ignoro.\n
 1612:Este programa fue hecho sin ningun tipo de ayuda ni consentimiento por parte de Mirabilis.\n
 1613:No se utilizo ningun mecanismo de decompilación o ingenieria inversa de codigo de Mirabilis para realizar este programa.\n
-1618:UIN:
+1618.UIN:
 1619:Advertencia:
 1620.Se alcanzo el numero maximo de contactos.
 1621:usuarios no devueltos.
@@ -631,9 +631,9 @@
 1771:Todavia no le mandaste un mensaje a nadie!\n
 1774:Paquete entrante:
 1775:Paquete saliente:
-1781:Tu clave para el UIN %ld:\n
-1782:Necesitas una clave para tu nuevo UIN.\n
-1783:Para prevenir errores, por favor ingresa tu clave nuevamente.\n
+1781.Tu clave para el UIN %ld:\n
+1782.Necesitas una clave para tu nuevo UIN.\n
+1783.Para prevenir errores, por favor ingresa tu clave nuevamente.\n
 1784:Si estas detras de un firewall, probablemente necesites usar un servidor SOCKS5. De necesitarlo, por favor ingresa su nombre o dirección IP. Sino, o si no sabes, apreta enter.\n
 1785:realizado correctamente.\n
 1786:Tambien necesito el puerto en el que el servidor SOCKS espera conexiones. Nuevamente, si no sabes, apreta enter para usar el puerto predeterminado.\n
@@ -643,10 +643,10 @@
 1790:El asistente de configuración ha terminado. Felicitaciónes por tu nuevo UIN!\n
 1791:El asistente de configuración ha terminado. Felicitaciónes!\n
 1792:Lamentablemente AOL no nos quiere dar un nuevo UIN, probablemente porque ya hay demasiados pedidos de esta IP. Por favor volvé a intentar mas tarde.\n
-1793:No se encontro un UIN valido. El asistente de configuración te guiara en el proceso de creación de uno nuevo.\n
-1794:Si ya tenes un UIN, escribilo; sino pone 0 y pediré uno nuevo.\n
+1793.No se encontro un UIN valido. El asistente de configuración te guiara en el proceso de creación de uno nuevo.\n
+1794.Si ya tenes un UIN, escribilo; sino pone 0 y pediré uno nuevo.\n
 1795:Clave:
-1796:El asistente ha terminado. Por favor espera mientras termina el proceso de registración.\n
+1796.El asistente ha terminado. Por favor espera mientras termina el proceso de registración.\n
 1797:Finanzas y corporaciones
 1798:Escuela primaria
 1799:Escuela secundaria/Polimodal
@@ -696,7 +696,7 @@
 1875:Intereses Personales:
 1876:Historia personal:
 1877:ok.\n
-1878:Error leyendo del socket: %s (%d)\n
+1878:Error leyendo del socket: %s (%d, %d)\n
 1879:Afiliaciones:
 1881:FLAP canal 1 fuera de datos.\n
 1882:FLAP canal 1 cmd 1 datos extra:\n
@@ -1259,7 +1259,7 @@
 #2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
 #2492:Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 #2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
-#2494:  -u, --uin      login with this UIN instead of those configured\n
+#2494:  -u, --user     login with this user/UIN instead of those configured\n
 #2495:  -p, --passwd   ... and override password\n
 #2496:  -s, --status   ... and override status\n
 #2497:  -C, --cmd      ... and execute mICQ command\n
@@ -1369,10 +1369,20 @@
 #2601:Connection for %s is already open.\n
 #2602:Don't know how to open connection type %s for %s.\n
 2603:Se selecciono la conexion %ld (versión %d, UIN %s) como la conexión actual.\n
-#2604:jabber
+#2604:xmpp
 #2605:Automatic status change.
 2606:Se encontro un compañero al azar, UIN %s, grupo %d.\n
 2607:El nuevo UIN es %s!\n
 2608:Tu nuevo UIN es: %s.\n
 2609:Alerta: el servidor cree que nuestro UIN is %s, cuando en realidad es %s.\n
 2610:Información para %s%s%s (%s):\n
+#2611: adnof__iiiiiiii
+#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
+#2613:You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n
+#2614:%s, enter i.e. %s\n
+#2615:User account ID:
+#2616:Cannot parse %s as a valid user ID. Try again!\n
+#2617:Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n
+#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
+#2619: with %s%s%s
+#2620:Opening XMPP connection for %s at %s...\n

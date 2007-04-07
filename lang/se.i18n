@@ -1,5 +1,5 @@
 # $Id$ (Swedish)
-#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.85 2007-04-07 14:20:22 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:sv
 1002:sv_SE
@@ -54,7 +54,7 @@
 1085:på
 1086:av
 1089:Tog bort översättning.
-1093:Lösenorden stämmer inte, försök igen!
+1093.Lösenorden stämmer inte, försök igen!
 1094:SOCKS5 server-namn eller IP-nummer (svara 0 om du inte vill använda SOCKS):
 1095:SOCKS5 port (brukar vara 1080):
 1096:SOCKS5 användarnam (ange 0 om du inte behöver logga in):
@@ -513,7 +513,7 @@
 1606:Mottog ett felaktigt sessions ID %08lx (korrekt: %08lx) med kommando %04x ignorerat.\n
 1612:Detta program har utvecklats helt utan hjälp från Mirabilis.\n
 1613:Vi har ej försökt dekompilera någon av Mirabilis källkod.\n
-1618:UIN:
+1618.UIN:
 1619:Varning:
 1620.maximala antalet kontakter nått. Be en trollkarl förstora mig!
 1621:användare inte returnerade.
@@ -607,9 +607,9 @@
 1771:Du har inte skickat ett enda meddelande till någon än!\n
 1774:Inkommande paket:
 1775:Utgående paket:
-1781:Ditt lösenord för UIN %ld:\n
-1782:Du behöver ett lösenord till ditt nya UIN.\n
-1783:För att undvika stavfel, var vänlig ange lösenord en gång till.\n
+1781.Ditt lösenord för UIN %ld:\n
+1782.Du behöver ett lösenord till ditt nya UIN.\n
+1783.För att undvika stavfel, var vänlig ange lösenord en gång till.\n
 1784:Om du är bakom en brandväg, kan du behöva använda en SOCKS5-server. Om du för det, var vänlig fyll i dess värdnamn eller IP-adress. Om inte, eller om osäker, tryck bara enter.\n
 1785:framgång.\n
 1786:Jag kan också behöve portnummret som socks-servern lyssnar på. Om dy är osäker, tryck enter så används standardporten.\n
@@ -619,10 +619,10 @@
 1790:Setupguiden klar. Grattis till ditt nya UIN!\n
 1791:Setupguiden klar. Grattis!\n
 1792:Jag är ledsen, men AOL vill inte ge oss ett nytt UIN, antagligen på grund av att det skapats för många från det här IP-nummret. Försök igen lite senare.\n
-1793:Inget giltigt UIN hittat. Setupguiden kommer att guida dig genom processen att skapa ett nytt.\n
-1794:Om du redan har ett UIN, var snäll och fyll i det. Om inte, skriv bara 0, så ska vi fixa ett till dig.\n
+1793.Inget giltigt UIN hittat. Setupguiden kommer att guida dig genom processen att skapa ett nytt.\n
+1794.Om du redan har ett UIN, var snäll och fyll i det. Om inte, skriv bara 0, så ska vi fixa ett till dig.\n
 1795:Lösenord:
-1796:Setupguiden klar. Var vänlig vänta tills registreringen har slutförts.\n
+1796.Setupguiden klar. Var vänlig vänta tills registreringen har slutförts.\n
 1797:Företag och Finans
 1798:Låg-/mellanstadiet
 1799:Högstadiet/gymnasiet
@@ -670,7 +670,7 @@
 1875:Egna intressen:
 1876:Tidigare bakgrund:
 1877:ok.\n
-1878:Fel vid läsning från socket: %s (%d)\n
+1878:Fel vid läsning från socket: %s (%d, %d)\n
 1879:Medlemsskap:
 1881:FLAP kanal 1 slut på data.\n
 1882:FLAP kanal 1 kommando 1 extra data:\n
@@ -1224,7 +1224,7 @@
 #2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
 #2492:Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 #2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
-#2494:  -u, --uin      login with this UIN instead of those configured\n
+#2494:  -u, --user     login with this user/UIN instead of those configured\n
 #2495:  -p, --passwd   ... and override password\n
 #2496:  -s, --status   ... and override status\n
 #2497:  -C, --cmd      ... and execute mICQ command\n
@@ -1334,10 +1334,20 @@
 #2601:Connection for %s is already open.\n
 #2602:Don't know how to open connection type %s for %s.\n
 2603:Valde anslutning %ld (version %d, UIN %s) som aktiv anslutning.\n
-#2604:jabber
+#2604:xmpp
 #2605:Automatic status change.
 2606:Hittade slumpmässig chat partner UIN %s i chat grupp %d.\n
 2607:Det nya ICQ-nummret är %s!\n
 2608:Ditt nya UIN är: %s.\n
 #2609:Warning: Server thinks our UIN is %s, when it is %s.\n
 2610:Information om %s%s%s (%s):\n
+#2611: adnof__iiiiiiii
+#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
+#2613:You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n
+#2614:%s, enter i.e. %s\n
+#2615:User account ID:
+#2616:Cannot parse %s as a valid user ID. Try again!\n
+#2617:Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n
+#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
+#2619: with %s%s%s
+#2620:Opening XMPP connection for %s at %s...\n

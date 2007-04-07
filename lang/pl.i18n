@@ -1,5 +1,5 @@
 # $Id$ (Polish)
-#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.85 2007-04-07 14:20:22 <-- NEVER TOUCH THIS - it's updated automatically
 #-#1010:Nie ma mnie przy komputerze
 #1000:UTF-8
 #1001:<lang>
@@ -37,7 +37,7 @@
 #-#1039:!\n
 #-#1040:Micq> 
 #1029:Please enter YES or NO!
-#1030:logged off.
+#1030:logged off
 #1032:debug: double packet #%04lx type %04x (%s)\n
 #1033:Incoming v8 server packet:
 #1034:Maximum number of tries reached. Giving up.
@@ -80,7 +80,6 @@
 #1085:on
 #1086:off
 #1089:Unloaded translation.
-#1093:Passwords did not match - please try again.
 #1094:SOCKS5 server:
 #1095:SOCKS5 port:
 #1096:SOCKS5 user name:
@@ -601,7 +600,6 @@
 #1606:Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
 #1612:This program was made without any help from Mirabilis or their consent.\n
 #1613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n
-#1618:UIN:
 #1619:Warning:
 #1621:users not returned.
 #1622:Do you want to apply these changes? (YES/NO)
@@ -677,9 +675,6 @@
 #1771:You haven't sent a message to anyone yet!\n
 #1774:Incoming packet:
 #1775:Outgoing packet:
-#1781:Your password for UIN %ld:\n
-#1782:You need a password for your new UIN.\n
-#1783:To prevent typos, please enter your password again.\n
 #1784:If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n
 #1785:success.\n
 #1786:I also need the port the socks server listens on. If unsure, press return for the default port.\n
@@ -689,10 +684,7 @@
 #1790:Setup wizard finished. Congratulations to your new UIN!\n
 #1791:Setup wizard finished. Congratulations!\n
 #1792:I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.\n
-#1793:No valid UIN found. The setup wizard will guide you through the process of setting one up.\n
-#1794:If you already have an UIN, please enter it. Otherwise, enter 0, and I will request one for you.\n
 #1795:Password:
-#1796:Setup wizard finished. Please wait until registration has finished.\n
 #1797:Finance and corporate
 #1798:Elementary School
 #1799:High School
@@ -735,7 +727,7 @@
 #1875:Personal interests:
 #1876:Personal past background:
 #1877:ok.\n
-#1878:Error while reading from socket: %s (%d)\n
+#1878:Error while reading from socket: %s (%d, %d)\n
 #1879:Affiliations:
 #1881:FLAP channel 1 out of data.\n
 #1882:FLAP channel 1 cmd 1 extra data:\n
@@ -1198,7 +1190,7 @@
 #2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
 #2492:Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 #2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
-#2494:  -u, --uin      login with this UIN instead of those configured\n
+#2494:  -u, --user     login with this user/UIN instead of those configured\n
 #2495:  -p, --passwd   ... and override password\n
 #2496:  -s, --status   ... and override status\n
 #2497:  -C, --cmd      ... and execute mICQ command\n
@@ -1308,10 +1300,20 @@
 #2601:Connection for %s is already open.\n
 #2602:Don't know how to open connection type %s for %s.\n
 #2603:Selected connection %ld (version %d, UIN %s) as current connection.\n
-#2604:jabber
+#2604:xmpp
 #2605:Automatic status change.
 #2606:Found random chat partner UIN %s in chat group %d.\n
 #2607:The new UIN is %s!\n
 #2608:Your new UIN is: %s.\n
 #2609:Warning: Server thinks our UIN is %s, when it is %s.\n
 #2610:Information for %s%s%s (%s):\n
+#2611: adnof__iiiiiiii
+#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
+#2613:You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n
+#2614:%s, enter i.e. %s\n
+#2615:User account ID:
+#2616:Cannot parse %s as a valid user ID. Try again!\n
+#2617:Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n
+#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
+#2619: with %s%s%s
+#2620:Opening XMPP connection for %s at %s...\n

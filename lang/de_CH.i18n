@@ -1,5 +1,5 @@
 # $Id$
-#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.85 2007-04-07 14:20:22 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:de
 1002:de_CH
@@ -72,7 +72,7 @@
 1085:i
 1086:us
 1089:I lösche d Übersetzig us em Schpicher.
-1093:Die zwe Passwörter si ja gar ned glich... Wosch nomau probiere?
+1093.Die zwe Passwörter si ja gar ned glich... Wosch nomau probiere?
 1094:Rächnername oder IP-Adresse für SOCKS5 (oder 0, we de ke SOCKS5 bruchsch):
 1095:Port für SOCKS5 (normalerwis 1080):
 1096:Username für SOCKS5 (oder 0, faus de ke Outhentifizierig bruchsch):
@@ -586,7 +586,7 @@
 #1606:Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
 1612:Das Programm isch ohni Hiuf oder Zueschtimmig vo Mirabilis erschteut worde.\n
 1613:Derzue isch ke Programmcode vo Mirabilis zrüggentwicklet oder zrüggübersetzt worde.\n
-1618:UIN:
+1618.UIN:
 1619:Warnig:
 1620.Maximali Azau vo Kontakte erreicht! Bitte e Magier dermit beuftrage, mi z vergrössere!
 1621:Suechergäbniss ned zrügggä.
@@ -722,9 +722,8 @@
 #+#1777:Opening peer-to-peer connection at localhost:%d... 
 #-#1781:Bitte ds Passwort für d Usernummere %d igä:\n
 #+#1781:Your password for UIN %d:\n
-#1781:Your password for UIN %ld:\n
-1782:Du bruchsch es Passwort für die nöii Usernummere.\n
-1783:Anti-Tippfähler-Massnahm: Bitte Passwort nomau igä.\n
+1782.Du bruchsch es Passwort für die nöii Usernummere.\n
+1783.Anti-Tippfähler-Massnahm: Bitte Passwort nomau igä.\n
 1784:We de hinger eme Firewall bisch muesch evtl. SOCKS5 bruche. Wenn ja, bitte gib der Rächnername oder d IP-Adrässe vom Firewall i. Süsch chasch eifach Enter drücke.\n
 1785:erfougrich.\n
 1786:I bruche der Port, wo der Socks-Server druf lost. We de dä ned weisch drück eifach Enter für der Schtandard-Port.\n
@@ -734,10 +733,10 @@
 1790:Irichtigs-Assischtänt beändet. Härzleche Glückwunsch zu dire nöie Usernummere!\n
 1791:Irichtigs-Assischtänt beändet. Härzleche Glückwunsch!\n
 1792:Leider weigeret sech AOL, e nöii Usernummere z vergä, wahrschinlech wiu vo däre IP-Adrässe z viu Afrage für nöii Usernummere i z churzer Zyt cho si. Bitte schpäter nomau probiere.\n
-1793:Ke güutigi Usernummere gfunge. Der Irichtungs-Assischtänt wird dir derbi häufe, eini izrichte.\n
-1794:We de bereits e Usernummere hesch bitte igä. Süsch drück doch eifach Enter, i wirde eini für di beantrage.\n
+1793.Ke güutigi Usernummere gfunge. Der Irichtungs-Assischtänt wird dir derbi häufe, eini izrichte.\n
+1794.We de bereits e Usernummere hesch bitte igä. Süsch drück doch eifach Enter, i wirde eini für di beantrage.\n
 1795:Passwort:
-1796:Inrichtigs-Assischtänt beändet. Bitte wart doch schnäu, bis d Regischtrierig beändet isch.\n
+1796.Inrichtigs-Assischtänt beändet. Bitte wart doch schnäu, bis d Regischtrierig beändet isch.\n
 1797:Finanze u so
 1798:Grundschueu
 1799:High School
@@ -812,7 +811,7 @@
 1875:Persönlechi Interässe:
 1876:Persönleche Hingergrund:
 1877:OK.\n
-1878:Fähler bim Läse vom Socket: %s (%d)\n
+1878:Fähler bim Läse vom Socket: %s (%d, %d)\n
 1879:Verbindige:
 1881:Der FLAP Channel 1 het kener Date me.\n
 1882:Der FLAP Channel 1 het Äxtradate (cmd 1):\n
@@ -1368,7 +1367,7 @@
 #2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
 #2492:Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 #2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
-#2494:  -u, --uin      login with this UIN instead of those configured\n
+#2494:  -u, --user     login with this user/UIN instead of those configured\n
 #2495:  -p, --passwd   ... and override password\n
 #2496:  -s, --status   ... and override status\n
 #2497:  -C, --cmd      ... and execute mICQ command\n
@@ -1478,10 +1477,20 @@
 #2601:Connection for %s is already open.\n
 #2602:Don't know how to open connection type %s for %s.\n
 #2603:Selected connection %ld (version %d, UIN %s) as current connection.\n
-#2604:jabber
+#2604:xmpp
 #2605:Automatic status change.
 #2606:Found random chat partner UIN %s in chat group %d.\n
 2607:Di nöii Usernummere isch %s!\n
 #2608:Your new UIN is: %s.\n
 #2609:Warning: Server thinks our UIN is %s, when it is %s.\n
 #2610:Information for %s%s%s (%s):\n
+#2611: adnof__iiiiiiii
+#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
+#2613:You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n
+#2614:%s, enter i.e. %s\n
+#2615:User account ID:
+#2616:Cannot parse %s as a valid user ID. Try again!\n
+#2617:Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n
+#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
+#2619: with %s%s%s
+#2620:Opening XMPP connection for %s at %s...\n

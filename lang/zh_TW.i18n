@@ -1,5 +1,5 @@
 # $Id$ Chinese/Taiwan (中文)
-#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.85 2007-04-07 14:20:22 <-- NEVER TOUCH THIS - it's updated automatically
 #-#1000:big5
 #+#1000:iso-8859-1
 #1000:UTF-8
@@ -56,7 +56,7 @@
 1085:開啟
 1086:關閉
 1089:除去翻譯。
-1093:密碼不正確 - 請再試一次。
+1093.密碼不正確 - 請再試一次。
 1094:SOCKS5 伺服器:
 1095:SOCKS5 埠:
 1096:SOCKS5 用戶名稱:
@@ -515,7 +515,7 @@
 1606:Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
 1612:這程式並無透過 Mirabilis 的協助或許可而寫成。\n
 1613:寫這程式時沒有反工程或反編譯任何 Mirabilis 碼。\n
-1618:UIN:
+1618.UIN:
 1619:警告:
 1620.已達到最大的好友數目，請向精靈要求把我加大吧﹗
 1621:用戶還未回來。
@@ -609,9 +609,9 @@
 1771:還沒有發出訊息給任何人﹗\n
 1774:接收到的封包:
 1775:發出的封包:
-1781:閣下 UIN %ld 的密碼:\n
-1782:閣下的新 UIN 需要密碼。\n
-1783:為免打錯字，請再次輸入密碼。\n
+1781.閣下 UIN %ld 的密碼:\n
+1782.閣下的新 UIN 需要密碼。\n
+1783.為免打錯字，請再次輸入密碼。\n
 1784:如果閣下在防火牆後面，很可能要用 SOCK5 伺服器。假如是這樣，請輸入其 hostname 或 IP 地址。否則 (或不肯定) 請按 return。\n
 1785:成功。\n
 1786:我還需要 socks 伺服器所聽取的埠，假如不肯定，按 return 用預設的埠。\n
@@ -621,10 +621,10 @@
 1790:安裝精靈已經完成，恭喜你取得新的 UIN﹗\n
 1791:安裝精靈已經完成，恭喜你﹗\n
 1792:對不起，AOL 不肯給你新的 UIN，可能因為這個 IP 有太多新 UIN 請求，請遲些再試吧。\n
-1793:找不到有效的 UIN，安裝精靈會帶領你安裝一個新的。\n
-1794:假如閣下已經有 UIN，請輸入它，否則按 0，我會替你要求一個新的。\n
+1793.找不到有效的 UIN，安裝精靈會帶領你安裝一個新的。\n
+1794.假如閣下已經有 UIN，請輸入它，否則按 0，我會替你要求一個新的。\n
 1795:密碼:
-1796:安裝精靈已經完成，請稍候。\n
+1796.安裝精靈已經完成，請稍候。\n
 1797:財經及公司
 1798:小學
 1799:中學
@@ -674,7 +674,7 @@
 1875:個人興趣:
 1876:個人過去背景:
 1877:ok.\n
-1878:讀取 socket: %s (%d) 時發生錯誤\n
+1878:讀取 socket: %s (%d, %d) 時發生錯誤\n
 1879:所屬團體:
 1881:FLAP channel 1 out of data.\n
 1882:FLAP channel 1 cmd 1 extra data:\n
@@ -1224,7 +1224,7 @@
 #2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
 #2492:Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 #2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
-#2494:  -u, --uin      login with this UIN instead of those configured\n
+#2494:  -u, --user     login with this user/UIN instead of those configured\n
 #2495:  -p, --passwd   ... and override password\n
 #2496:  -s, --status   ... and override status\n
 #2497:  -C, --cmd      ... and execute mICQ command\n
@@ -1334,10 +1334,20 @@
 #2601:Connection for %s is already open.\n
 #2602:Don't know how to open connection type %s for %s.\n
 2603:選擇了連線 %ld (version %d, UIN %s) 為目前的連線。\n
-#2604:jabber
+#2604:xmpp
 #2605:Automatic status change.
 2606:找到隨意聊天拍當 UIN %s 於興趣小組 %d。\n
 2607:新的 UIN 是 %s!\n
 2608:閣下的新 UIN 是:%s。\n
 2609:警告: 伺服器以為我們的 UIN 是 %s，但其實是 %s。\n
 2610:%s%s%s (%s) 的個人資料:\n
+#2611: adnof__iiiiiiii
+#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
+#2613:You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n
+#2614:%s, enter i.e. %s\n
+#2615:User account ID:
+#2616:Cannot parse %s as a valid user ID. Try again!\n
+#2617:Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n
+#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
+#2619: with %s%s%s
+#2620:Opening XMPP connection for %s at %s...\n

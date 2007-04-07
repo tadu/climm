@@ -1,12 +1,12 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.85 2007-04-07 14:20:22 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
-1003:0-5-0-0
+1003:0-5-3
 1004:Rico -mc- Glöckner, Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
-1006:2004-11-18
+1006:2007-04-07
 1008:iso-8859-1
 1010:[Automatische Nachricht] Benutzer ist nicht da (User is Away)
 1011:[Automatische Nachricht] Benutzer ist nicht verfügbar (User is not available)
@@ -27,7 +27,7 @@
 1027:Ja
 1028:Nein
 1029:Bitte Ja oder Nein eingeben!
-1030:hat sich ausgeloggt.
+1030:hat sich ausgeloggt
 1032:debug: Doppeltes Packet #%04lx vom Typ %04x (%s)\n
 1033:Eingehendes Server-Paket (Version 8):
 1034:Maximale Anzahl an Versuchen erreicht - gebe auf.
@@ -54,7 +54,7 @@
 1085:an
 1086:aus
 1089:Entferne Übersetzung aus dem Speicher.
-1093:Die Paßwörter stimmen nicht überein, nochmal!
+1093.Die Paßwörter stimmen nicht überein, nochmal!
 1094:Rechnername oder IP-Adresse für SOCKS5 (oder 0, wenn Sie kein SOCKS5 benötigen):
 1095:Port für SOCKS5 (normalerweise 1080):
 1096:Benutzername für SOCKS5 (oder 0, falls Sie keine Authentifizierung benötigen):
@@ -518,7 +518,7 @@
 1606:Paket mit falscher Sitzungskennung ID %08lx (richtig: %08lx) mit Kommando %04x ignoriert.\n
 1612:Dieses Programm wurde ohne Hilfe / Zustimmung von Mirabilis erstellt.\n
 1613:Dazu wurde kein Programmcode von Mirabilis zurückentwickelt oder zurückübersetzt.\n
-1618:Benutzernummer:
+1618.Benutzernummer:
 1619:Warnung:
 1620.Maximale Anzahl an Kontakten erreicht.
 1621:Suchergebnisse nicht zurückgegeben.
@@ -597,9 +597,9 @@
 1771:Noch keine Nachricht an irgendwen verschickt!\n
 1774:Eingehendes Paket:
 1775:Ausgehendes Paket:
-1781:Bitte Paßwort für Benutzernummer %ld eingeben:\n
-1782:Sie benötigen ein Paßwort für Ihre neue Benutzernummer.\n
-1783:Um Tippfehler zu vermeiden, geben Sie Ihr Paßwort bitte erneut ein.\n
+1781.Bitte Paßwort für Benutzernummer %ld eingeben:\n
+1782.Sie benötigen ein Paßwort für Ihre neue Benutzernummer.\n
+1783.Um Tippfehler zu vermeiden, geben Sie Ihr Paßwort bitte erneut ein.\n
 1784:Wenn Sie sich hinter einer Firewall befinden, müssen Sie eventuell SOCKS5 verwenden. Wenn ja, geben Sie bitte dessen Rechnernamen oder IP-Adresse ein. Andernfalls drücken Sie einfach die Eingabetaste.\n
 1785:erfolgreich.\n
 1786:Ich benötige den Port, auf den der Socks-Server hört. wenn Sie sich unsicher sind, drücken Sie die Eingabetaste für den Standard-Port.\n
@@ -609,10 +609,10 @@
 1790:Einrichtungs-Assistent beendet. Herzlichen Glückwunsch zu Ihrer neuen Benutzernummer!\n
 1791:Einrichtungs-Assistent beendet. Herzlichen Glückwunsch!\n
 1792:Leider weigert sich AOL, eine neue Benutzernummer zu vergeben, vermutlich, weil zu viele Anfragen nach einer neuen Benutzernummer in zu kurzer Zeit von dieser IP-Adresse kamen. Bitte versuchen Sie es später noch einmal.\n
-1793:Keine gültige Benutzernummer gefunden. Der Einrichtungs-Assistent wird Ihnen dabei helfen, eine einzurichten.\n
-1794:Wenn Sie bereits eine Benutzernummer besitzen, geben Sie diese bitte ein. Andernfalls drücken Sie die Eingabetaste, und ich werde eine für Sie beantragen.\n
+1793.Keine gültige Benutzernummer gefunden. Der Einrichtungs-Assistent wird Ihnen dabei helfen, eine einzurichten.\n
+1794.Wenn Sie bereits eine Benutzernummer besitzen, geben Sie diese bitte ein. Andernfalls drücken Sie die Eingabetaste, und ich werde eine für Sie beantragen.\n
 1795:Paßwort:
-1796:Einrichtungs-Assistent beendet. Bitte warten Sie, bis die Registrierung beendet ist.\n
+1796.Einrichtungs-Assistent beendet. Bitte warten Sie, bis die Registrierung beendet ist.\n
 1797:Finanzen und Firmen
 1798:Grundschule
 1799:weiterführende Schule
@@ -655,7 +655,7 @@
 1875:Persönliche Interessen:
 1876:Persönlicher vergangener Hintergrund:
 1877:ok.\n
-1878:Fehler beim Lesen vom Kommunikationsendpunkt: %s (%d)\n
+1878:Fehler beim Lesen vom Kommunikationsendpunkt: %s (%d, %d)\n
 1879:Mitgliedschaften:
 1881:FLAP auf Kanal 1 hat zu wenig Daten.\n
 1882:FLAP auf Kanal 1 Kommando 1 mit weiteren Daten:\n
@@ -1138,7 +1138,7 @@
 2491:Differenzen in %d Kontaktgruppen, dabei insgesamt %d Kontakten, %d ignoriert, %d versteckt, %d sichtbar, %d lokal.\n
 2492:Benutzung: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
-2494:  -u, --uin      mit dieser UIN einloggen statt der konfigurierten\n
+2494:  -u, --user     mit diesem Benutzer/UIN einloggen statt der konfigurierten\n
 2495:  -p, --passwd   ... und nehme dieses Paßwort\n
 2496:  -s, --status   ... und setze diesen Status\n
 2497:  -C, --cmd      ... und führe dieses mICQ-Kommando aus\n
@@ -1154,9 +1154,9 @@
 2507:Übersetzung %s%s%s nicht gefunden. Beiträge von Übersetzungen sind immer willkommen!\n
 2508:Deutsche Übersetzung (%s) geladen (%s%d%s Einträge).\n
 2509:WSAStartup() für WinSocks 1.1 fehlgeschlagen.
-2510:Öffne Verbindung zu v5-Server bei %s:%s%ld%s...
+2510:Baue Verbindung mit v5-Server %s:%s%ld%s auf...
 2511:Weiterleitung zu Server %s:%s%ld%s... 
-2512:Öffne Verbindung zu v8-Server bei %s:%s%ld%s für %s%s%s... 
+2512:Baue Verbindung mit v8-Server %s:%s%ld%s für %s%s%s auf...
 2513:neue UIN
 2514:abgelehnt (ignoriert)
 2515:Zuviele Benutzer für heute abgefragt - bitte morgen neu probieren.\n
@@ -1164,9 +1164,9 @@
 2517:Keine Ahnung, was der Server für ein Problem hat. Es hat halt nicht funktioniert.\n
 2518:Die neue UIN wird erst mit dem nächsten "save"-Befehl gespeichert.\n
 2519:Öffne Kommunikationsendpunkt für Dateiübertragungen auf %slocalhost%s:%s%ld%s... 
-2520:Öffne Dateiübertragungsverbindung zu %s:%s%ld%s... \n
-2521:Öffne Direkt-Verbindung auf %slocalhost%s:%s%ld%s... 
-2522:Öffne Direktverbindung auf %s:%s%ld%s... 
+2520:Baue Dateiübertragungsverbindung mit %s:%s%ld%s auf... \n
+2521:Baue Direkt-Verbindung mit %slocalhost%s:%s%ld%s auf... 
+2522:Baue Direkt-Verbindung mit %s:%s%ld%s auf... 
 2523:%s ist kein Spitzname.\n
 2524:Kann Textfenster-Einstellungen nicht zurücksetzen.\n
 2525:Kann Textfenster-Einstellungen nicht lesen.\n
@@ -1223,7 +1223,6 @@
 2576:contact delete  Lösche Kontakte aus der Server-seitigen Kontaktliste.\n
 #2577:SBL ids:
 2578:%d Kontaktgruppen geändert, dabei insgesamt %d Kontakte, %d ignoriert, %d versteckt, %d sichtbar.\n
-# Those are the funny messages. Substract 2000 to get the normal message.
 2579:contact delid   Lösche Einträge der Server-seitigen Kontaktliste (nur für Experten).\n
 2580:ignorieren
 2581:Verschlüsselte Verbindungen zu Kontakten benötigt die GnuTLS-Bibliothek.\n
@@ -1249,11 +1248,23 @@
 2601:Die Verbindung für %s ist bereits geöffnet.\n
 2602:Keine Ahnung, wie Verbindungen vom Typ %s (für %s) geöffnet werden können.\n
 2603:Wähle Verbindung %ld (Version %d, Benutzernummer %s) als aktuelle Server-Verbindung.\n
-2604:Jabber
+2604:XMPP
 2605:Automatischer Statuswechsel.
 2606:Zufälligen Plauderpartner mit Benutzernummer %s in Interessengruppe %d gefunden.\n
 2607:Die neue Benutzernummer ist %s!\n
 2608:Ihre neue Benutzernummer ist: %s.\n
 2609:Warnung: Der Server hält unsere Benutzernummer für %s, obwohl sie %s ist.\n
 2610:Informationen über %s%s%s (%s):\n
+2611: adnof__iiiiiiii
+2612:Kein gültiger Benutzer-Konto gefunden. Der Einrichtungs-Assistent wird Ihnen dabei helfen, eines einzurichten.\n
+2613:Zuerst müssen Sie ein Benutzer-Konto angeben, daß sie benutzen wollen. Dieses mICQ unterstützt die folgenden Protokolle:\n
+2614:%s, geben Sie z.B. %s ein\n
+2615:Benutzer-Konto:
+2616:Kann %s nicht als gültiges Benutzer-Konto verstehen. Versuchen Sie's nochmal!\n
+2617:Als nächstes können Sie mICQ erlauben, Ihr Paßwort für das %s-Konto %s zu speichen. Geben Sie nichts ein, falls Sie das Paßwort nicht speichern wollen.\n
+2618:Sie können noch weitere Benutzer-Konten einrichten. Geben Sie nichts ein, falls Sie kein weiteres einrichten wollen.\n
+2619: mit %s%s%s
+2620:Baue XMPP-Verbindung für %s mit %s auf...\n
+2999.max.
+# Those are the funny messages. Substract 2000 to get the normal message.
 3620.Du hast zu viele Freunde, wie wär's mit mehr RL?

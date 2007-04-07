@@ -1,5 +1,5 @@
 # $Id$ (Indonesian)
-#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.85 2007-04-07 14:20:22 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:id
 1002:id_ID
@@ -27,7 +27,7 @@
 1027:YA
 1028:TIDAK
 1029:Tolong jawab YA atau TIDAK!
-1030:keluar.
+1030:keluar
 1032:debug: paket ganda #%04lx type %04x (%s)\n
 1033:Paket server v8 datang:
 1034:Sudah mencapai jumlah percobaan maksimum. Menyerah.
@@ -54,7 +54,7 @@
 1085:hidup
 1086:mati
 1089:Penterjemah dihilangkan.
-1093:Password tidak sama - tolong coba lagi.
+1093.Password tidak sama - tolong coba lagi.
 1094:Server SOCKS5:
 1095:Port SOCKS5:
 1096:User name SOCKS5:
@@ -513,7 +513,7 @@
 1606:Menerima sesi buruk dengan ID %08lx (yang benar: %08lx) dengan cmd %04x diabaikan.\n
 1612:Program ini dibuat tanpa bantuan dari Mirabilis atau rekanan mereka.\n
 1613:Tidak ada pendekodean dari kode program Mirabilis yang digunakan untuk membuat program ini.\n
-1618:UIN:
+1618.UIN:
 1619:Peringatan:
 1620.jumlah maksimal kontak terpenuhi. Tanyakan ke penyihir untuk memperbesar aku!
 1621:user tidak mengembalikan.
@@ -607,9 +607,9 @@
 1771:Anda belum mengirim pesan kepada siapapun!\n
 1774:Paket masuk:
 1775:Paket keluar:
-1781:Password Anda untuk UIN %ld:\n
-1782:Anda memerlukan password untuk UIN baru Anda.\n
-1783:Untuk mencegah kesalahan pengetikan, tolong masukkan password Anda lagi.\n
+1781.Password Anda untuk UIN %ld:\n
+1782.Anda memerlukan password untuk UIN baru Anda.\n
+1783.Untuk mencegah kesalahan pengetikan, tolong masukkan password Anda lagi.\n
 1784:Jika Anda dibelakang firewall, Anda mungkin perlu untuk menggunakan server SOCKS5. Jika ya, tolong masukkan nama host atau alamat IP-nya. Selain itu, atau jika tidak yakin, tekan saja Enter.\n
 1785:sukses.\n
 1786:Saya juga memerlukan port dimana socks server aktif. Jika tidak yakin, tekan Enter untuk port default.\n
@@ -619,10 +619,10 @@
 1790:Bantuan setup selesai. Selamat atas UIN baru Anda!\n
 1791:Bantuan setup selesai. Selamat!\n
 1792:Maafkan saya, AOL tidak mau memberikan UIN baru ke kita, mungkin karena terlalu banyak permintaan UIN baru dari IP ini. Tolong ulangi lagi nanti.\n
-1793:Tidak ada UIN valid yang ketemu. Bantuan setup akan membantu Anda selama proses setting.\n
-1794:Jika Anda sudah memiliki UIN, tolong masukkan. Selain itu, masukkan 0, dan saya akan meminta satu untuk Anda.\n
+1793.Tidak ada UIN valid yang ketemu. Bantuan setup akan membantu Anda selama proses setting.\n
+1794.Jika Anda sudah memiliki UIN, tolong masukkan. Selain itu, masukkan 0, dan saya akan meminta satu untuk Anda.\n
 1795:Password:
-1796:Bantuan setup selesai. Tolong tunggu sampai pendaftaran selesai.\n
+1796.Bantuan setup selesai. Tolong tunggu sampai pendaftaran selesai.\n
 1797:Finansial dan corporate
 1798:Sekolah Kejuruan
 1799:SMU
@@ -670,7 +670,7 @@
 1875:Kesenangan Pribadi:
 1876:Latar belakang pribadi sebelumnya:
 1877:ok.\n
-1878:Salah sewaktu membaca dari soket: %s (%d)\n
+1878:Salah sewaktu membaca dari soket: %s (%d, %d)\n
 1879:Affiliasi:
 1881:FLAP saluran 1 kehabisan data.\n
 1882:FLAP saluran 1 cmd 1 data ekstra:\n
@@ -1218,7 +1218,7 @@
 #2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
 #2492:Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 #2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
-#2494:  -u, --uin      login with this UIN instead of those configured\n
+#2494:  -u, --user     login with this user/UIN instead of those configured\n
 #2495:  -p, --passwd   ... and override password\n
 #2496:  -s, --status   ... and override status\n
 #2497:  -C, --cmd      ... and execute mICQ command\n
@@ -1328,10 +1328,20 @@
 #2601:Connection for %s is already open.\n
 #2602:Don't know how to open connection type %s for %s.\n
 2603:Koneksi terpilih %ld (versi %d, UIN %s) sebagai koneksi aktif.\n
-#2604:jabber
+#2604:xmpp
 #2605:Automatic status change.
 2606:Ditemukan partner bicara acak dengan UIN %s pada grup bicara %d.\n
 2607:UIN baru adalah %s!\n
 2608:UIN baru Anda adalah: %s.\n
 2609:Peringatan: Server mengira UIN kita adalah %s, sewaktu %s.\n
 2610:Informasi untuk %s%s%s (%s):\n
+#2611: adnof__iiiiiiii
+#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
+#2613:You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n
+#2614:%s, enter i.e. %s\n
+#2615:User account ID:
+#2616:Cannot parse %s as a valid user ID. Try again!\n
+#2617:Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n
+#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
+#2619: with %s%s%s
+#2620:Opening XMPP connection for %s at %s...\n

@@ -1,5 +1,5 @@
 # $Id$ <Japanese in Japanese> (Japanese)
-#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.85 2007-04-07 14:20:22 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:ja
 1002:ja_JP
@@ -54,7 +54,7 @@
 1085:on
 1086:off
 1089:翻訳の使用をやめました
-1093:パスワードが一致しません。もう一度入力してください
+1093.パスワードが一致しません。もう一度入力してください
 1094:SOCKS5 サーバ:
 1095:SOCKS5 ポート番号:
 1096:SOCKS5 ユーザ名:
@@ -513,7 +513,7 @@
 1606:不正なセッション ID %08lx を受信しました(正しくは: %08lx) コマンド要求 %04x を無視します。\n
 1612:このプログラムの作成にはMirabilis社から援助も承認も受けていません。\n
 1613:また、作成にはMirabilis社のプログラムに対して解析を行っていません。\n
-1618:UIN:
+1618.UIN:
 1619:警告:
 1620.コンタクトリストに登録できる最大数になりました。
 1621:ユーザは戻ってきていません
@@ -607,9 +607,9 @@
 1771:まだ誰にもへメッセージを送っていません!\n
 1774:受信パケット:
 1775:送信パケット:
-1781:あなたの UIN のパスワードは %ld:\n
-1782:新しい UIN にはパスワードが必要です。\n
-1783:もう一度入力してください。\n
+1781.あなたの UIN のパスワードは %ld:\n
+1782.新しい UIN にはパスワードが必要です。\n
+1783.もう一度入力してください。\n
 1784:間にファイアウォールがあるなら、SOCKS5 サーバを使わなければならないかもしれません。SOCK5 サーバを使っているなら、SOCKS5 サーバの管理者から受け取ったユーザ名を入力してください。SOCKS5 サーバを使っていないなら、そのままリターンキーを押してください。\n
 1785:成功しました。\n
 1786:SOCKS5 サーバが開いているポート番号を入力する必要があります。分からなければ、リターンキーを押せばデフォルトのポート番号が使われます。\n
@@ -619,10 +619,10 @@
 1790:新しい UIN のセットアップが終了しました。おめでとうございます!\n
 1791:セットアップが終了しました。おめでとうございます!\n
 1792:申し訳ありませんが、AOL は新しい UIN を発行してくれません。恐らくこの IP からなされる新しい UIN のサインアップが多すぎるためなので、後で再度挑戦してください。\n
-1793:有効な UIN が見つかりません。これから自動的に新しい UIN のセットアップに入ります。\n
-1794:もしすでに UIN を持っているのであれば、それを入力してください。持っていないのであれば、0を入力してください(自動的に新しい UIN のセットアップに入ります)。\n
+1793.有効な UIN が見つかりません。これから自動的に新しい UIN のセットアップに入ります。\n
+1794.もしすでに UIN を持っているのであれば、それを入力してください。持っていないのであれば、0を入力してください(自動的に新しい UIN のセットアップに入ります)。\n
 1795:パスワード:
-1796:セットアップが終了しました。登録が終わるまでお待ちください。\n
+1796.セットアップが終了しました。登録が終わるまでお待ちください。\n
 1797:金融と企業
 1798:小学校
 1799:高校生
@@ -670,7 +670,7 @@
 1875:個人的関心:
 1876:個人的経歴:
 1877:ok.\n
-1878:ソケットから読み込む間にエラーがありました:%s(%d)\n
+1878:ソケットから読み込む間にエラーがありました:%s(%d,%d)\n
 1879:交友関係:
 1881:FLAP チャンネル 1 にデータがありません。\n
 1882:FLAP チャンネル 1 のコマンド 1 に余分なデータがあります:\n
@@ -1233,7 +1233,7 @@
 #2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
 #2492:Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 #2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
-#2494:  -u, --uin      login with this UIN instead of those configured\n
+#2494:  -u, --user     login with this user/UIN instead of those configured\n
 #2495:  -p, --passwd   ... and override password\n
 #2496:  -s, --status   ... and override status\n
 #2497:  -C, --cmd      ... and execute mICQ command\n
@@ -1343,10 +1343,20 @@
 #2601:Connection for %s is already open.\n
 #2602:Don't know how to open connection type %s for %s.\n
 2603:接続 %ld (バージョン %d, UIN %s) を現在の接続として選択しました。\n
-#2604:jabber
+#2604:xmpp
 #2605:Automatic status change.
 2606:チャットグループ %s に UIN %d のランダムチャットパートナーを見つけました。\n
 2607:新しい UIN は %s です\n
 2608:あなたの新しい UIN は: %s。\n
 2609:警告: サーバはわたしたちの UIN が %s の場合、UIN は %s であると考えます。\n
 2610:%s%s%s (%s) についての情報:\n
+#2611: adnof__iiiiiiii
+#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
+#2613:You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n
+#2614:%s, enter i.e. %s\n
+#2615:User account ID:
+#2616:Cannot parse %s as a valid user ID. Try again!\n
+#2617:Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n
+#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
+#2619: with %s%s%s
+#2620:Opening XMPP connection for %s at %s...\n

@@ -1,5 +1,5 @@
 # $Id$ Slovak (Slovak)
-#  EN: __.i18n,v 1.84 2006/11/06 21:00:54 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.85 2007-04-07 14:20:22 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:sk
 1002:sk_SK
@@ -27,7 +27,7 @@
 1027:ANO
 1028:NIE
 1029:Prosím ANO alebo NIE!
-1030:odhlásený.
+1030:odhlásený
 1032:ladenie: double packet #%04lx type %04x (%s)\n
 1033:Prichádza v8 server paket:
 1034:Maximálny počet pokusov dosiahnutý. Vzdávam to.
@@ -54,7 +54,7 @@
 1085:on
 1086:off
 1089:Preklad zrušený.
-1093:Hesdlo nesúhlasí - skúste znova.
+1093.Hesdlo nesúhlasí - skúste znova.
 1094:SOCKS5 server:
 1095:SOCKS5 port:
 1096:SOCKS5 login:
@@ -508,7 +508,7 @@
 1606:Prijaté chybné ID sedenia %08lx (správne: %08lx) s cmd %04x ignorované.\n
 1612:Tento program bol vytvorený bez účasti pôvodného kódu Mirabilis alebo jeho obsahu.\n
 1613:Žiadne spätné inžinierstvo alebo dekompilácia kódu Mirabilis neboli použité pri vytvorení tohoto programu.\n
-1618:UIN:
+1618.UIN:
 1619:Varovanie:
 1620.dosiahnutý maximálny počet kontaktov. Požiadajte čarodejníka aby ma zväčšil!
 #1621:users not returned.
@@ -588,9 +588,9 @@
 1771:Ešte ste nikomu neposlali správu!\n
 1774:Prichádzajúci paket:
 1775:Odchádzajúci paket:
-1781:Vaše heslo pre UIN %ld:\n
-1782:Potrebujete heslo pre vaše nové UIN.\n
-1783:Kvôli preklepom vložte heslo ešte raz.\n
+1781.Vaše heslo pre UIN %ld:\n
+1782.Potrebujete heslo pre vaše nové UIN.\n
+1783.Kvôli preklepom vložte heslo ešte raz.\n
 1784:Ak ste chránení firewallom, možno budete musieť použiť SOCKS5 server. Ak áno, vložte jeho hostname alebo IP adresu. Ak si nie ste istý, stlačte Enter.\n
 1785:úspešne.\n
 1786:Potrebujem port,na ktorom SOCKS server počúva. Ak si nie ste istý, stlačte Enter pre štandartný port.\n
@@ -600,10 +600,10 @@
 1790:Sprievodca nastavením dokončený. Blahoželám k novému UIN!\n
 1791:Sprievodca nastavením dokončený. Blahoželám!\n
 1792:Je mi ľúto, AOL vám nechce vydať nové UIN, možno preto, že dostal príliš mnoho požiadavok na nové UIN z tejto IP adresy. Skúste neskôr.\n
-1793:Neplatné UIN. Sprievodca nastavením vám pomôže s nastavením vášho UIN.\n
-1794:Ak už UIN máte, vložte ho. Inak, vložte 0 a požiadam AOL o jedno pre vás.\n
+1793.Neplatné UIN. Sprievodca nastavením vám pomôže s nastavením vášho UIN.\n
+1794.Ak už UIN máte, vložte ho. Inak, vložte 0 a požiadam AOL o jedno pre vás.\n
 1795:Heslo:
-1796:Sprievodca nastavením dokončený. Prosím, počkajte na dokončenie registrácie.\n
+1796.Sprievodca nastavením dokončený. Prosím, počkajte na dokončenie registrácie.\n
 1797:Financie a spoločnosti
 1798:Základná škola
 1799:Stredná škola
@@ -646,7 +646,7 @@
 1875:Osobné záujmy:
 #1876:Personal past background:
 1877:ok.\n
-1878:Chyba počas čítania zo socketu: %s (%d)\n
+1878:Chyba počas čítania zo socketu: %s (%d, %d)\n
 #1879:Affiliations:
 1881:FLAP kanál 1 je bez dát.\n
 1882:FLAP kanál 1 cmd 1 extra dáta:\n
@@ -1128,7 +1128,9 @@
 2491:Rozdiely v  %d skupinách, celkom %d kontaktov, %d ignorovaných, %d skrytých, %d intimate, %d lokálnych.\n
 2492:Použitie: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
-2494:  -u, --uin      prihlásiť s týmto UIN namiesto nakonfigurovaného\n
+#-#2494:  -u, --uin      prihlásiť s týmto UIN namiesto nakonfigurovaného\n
+#+#2494:  -u, --uin      login with this UIN instead of those configured\n
+# #2494:  -u, --user     login with this user/UIN instead of those configured\n
 2495:  -p, --passwd   ... a použiť toto heslo\n
 2496:  -s, --status   ... a nastaviť tento stav\n
 2497:  -C, --cmd      ... a vykonať tento príkaz mICQ\n
@@ -1240,10 +1242,20 @@
 #2601:Connection for %s is already open.\n
 #2602:Don't know how to open connection type %s for %s.\n
 2603:Vybrané spojenie %ld (verzia %d, UIN %s) ako aktuálne spojenie.\n
-#2604:jabber
+#2604:xmpp
 #2605:Automatic status change.
 2606:Nájdený náhodný užívateľ pre rozhovor/chat UIN %s s chatovej skupine %d.\n
 2607:Nové UIN je %s!\n
 2608:Vaše nové UIN je: %s.\n
 2609:Varovanie: Server považuje za UIN %s, keď je %s.\n
 2610:Informácia pre %s%s%s (%s):\n
+#2611: adnof__iiiiiiii
+#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
+#2613:You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n
+#2614:%s, enter i.e. %s\n
+#2615:User account ID:
+#2616:Cannot parse %s as a valid user ID. Try again!\n
+#2617:Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n
+#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
+#2619: with %s%s%s
+#2620:Opening XMPP connection for %s at %s...\n
