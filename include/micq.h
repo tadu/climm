@@ -254,6 +254,7 @@ typedef struct
     UDWORD     idle_msgs;
     char      *idle_uins;
     UWORD    nick_len;   /* this *must* be an int why??*/
+    Connection *conn;          /* Current connection */
 } user_interface_state;
 
 extern user_interface_state uiG;
