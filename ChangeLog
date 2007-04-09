@@ -1,5 +1,117 @@
 -*- coding: utf-8 -*-
 
+2007-04-09 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* Patch from Maxim Komar:
+	+ use new global uiG.conn for current session
+	+ make prompt strings widely confgurable
+	* handle strfmt() overflows correctly
+	* do not try to get current microseconds if we're not
+	  printing current time
+	* use s_strftime() in some more places
+	* Update ChangeLog
+
+2007-04-06 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* accept ISO date in cvs :
+	* fix parsing of XMPP: contacts, thanks Vladimír Marek
+	* ignore XEP71
+	* fix ignoring other XEPs due to missing ,
+	* do not create contacts for incoming messages - only for
+	  status messages
+	* fix another typo detected by Vladimír Marek
+	* change undef (in opt*) to be a keyword, also allow delete, remove, erase
+	* fix minor mem leak
+	* another fix for autoaway
+	* fix version with color string and also set client identity to
+	  'console' instead of 'bot' (thx Maxim Komar)
+	* export is_valid_{icq,aim,xmpp,msn}_name functions
+	* accept --user instead of --uin
+	* rewrite setup wizard
+	* i18n updates:
+	+ we need i18n also in .cpp files
+	+ update i18n numbers
+	+ another 2007/03/07 vs 2007-03-07 fix
+	+ automatic format update
+	+ update de and en
+
+2007-03-15 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* add code to let contacts have parents, part V:
+	+ receiving internal messages, also reorganize here as well
+	* improve parsing of Jabber IDs
+	* accept parameter to contact delete also as nick name
+	* ignore errors from setrandomchatgroup command
+
+2007-02-27 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix return value (could lead to not shown status changes for Jabber)
+	* add code to let contacts have parents, part III:
+	+ receiving messages, also reorganize here as well
+	* fix: don't call icqv6 code for non-icq connections
+	* set ENABLE_CONT_HIER to 1 for Jabber and set ENABLE_XMPP if old
+	  ENABLE_JABBER is set
+	* add code to let contacts have parents, part IV:
+	+ first shot at eg (etc) for contacts with childs
+	* Jabber improvements:
+	+ better error message on disconnect
+	+ use new parent contact functions to find and create contacts
+	+ ignore JEP136 and GoogleNosave
+	+ use of IMOnline/IMOffline/IMSrvMsg functions updated wrt
+	  contacts with parents
+	+ fix attribute for version
+	* s/ENABLE_JABBER/ENABLE_XMPP/ s/DEB_JABBER/DEB_XMPP/ etc
+
+2007-02-20 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix some std::string that could be optimized away too eraly
+	* accept client capability node also namespaced
+	* fix log stamp and nick printed without anything after in case of
+	  auto-response request and showchange off
+	* add code to let contacts have parents, part I:
+	+ search and create functions ContactFindScreenP(), ContactScreenP(),
+	  static ContactFindSScreenP()
+	* add code to let contacts have parents, part II
+	+ showing status changes and recalculate parent status correctly,
+	  also reorganize the complete handling
+
+2007-02-12 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* use prepped ressource after bind (required for Google Talk)
+	* refer to a working ANSI terminal
+	* fix cd_strerror macro if SSL is disabled, thanks rtc & Frank Gruellich
+	* introduce enum for idle auto status change flag
+	* prevent many identical status changes in a row by cleaner logic
+	* re-set count of received messages when the prompt is re-set
+	* update ru micqrc.5 from Maxim Komar
+	* add option to also count messages during away/na/... if the status
+	  change was manual
+	* move idle_flag to connection structure to make autoaway somewhat
+	  consistent with multiple connections
+	* new ContactGroupSort() to sort contact group entries using a given
+	  comparison function
+	* sort contacts within groups and stati by nick, partially case
+	  sensitive
+
+2006-12-10 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix compile error when CONFIG_UNDERLINE is undefined
+
+2006-12-05 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix error number confusion
+	* status vs nativestatus in WIP code
+	* align log messages, [ew]*g(v) and (e)wide according to screen
+	  columns, not code points
+	* another history command fix
+
+2006-11-25 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* Fix CmdUserHistory:
+	+ fix fd leak
+	+ reorder wierd code path
+	+ use more specific parsing functions
+	+ fix bug at printing messages with lines starting
+	  with # by using line count
+	* never discard connection after registration service
+	  errors if it is a configured one
+
+2006-11-07 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* automatic i18n updates
+	* autopackage fixes
+	* release 0.5.2
+
 2006-11-05 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix segfault upon rc initialisation
 	* don't segfault if we try to register a new UIN (even though AOL
