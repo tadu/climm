@@ -29,3 +29,6 @@
 2005-06-05: 0.5.0.4: general auto-expanding aliases, peek fixed again
 2006-01-16: 0.5.1: bug fixes, another peek fix, peekall command / peekme option, autoauto option, preparations for MSN
 2006-11-06: 0.5.2: experimental Jabber support, should be AIM compatible now, login fix
+2007-04-11: 0.5.3: much improved Jabber integration, configurable prompt, [ew]*g(v) and (e)wide now handle wide
+                   characters correctly, fix history command fd leak, fix discarding of configurated connected
+                   upon certain login errors

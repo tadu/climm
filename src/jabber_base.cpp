@@ -696,7 +696,7 @@ void MICQXMPP::XMPPSetstatus (Connection *serv, Contact *cont, status_t status, 
         gloox::Tag *vers = new gloox::Tag (pres, "c");
         vers->addAttribute ("xmlns", "http://jabber.org/protocol/caps");
         vers->addAttribute ("node", "http://www.mICQ.org/xmpp/caps");
-        vers->addAttribute ("ver", "0.5.2");
+        vers->addAttribute ("ver", "0.5.2.90");
         // vers->addAttribute ("ext", "ext1 ext2");
     }
     m_client->send (pres);

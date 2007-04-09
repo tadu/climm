@@ -4,7 +4,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([micq], [0.5.2])
+AC_INIT([micq], [0.5.3])
 AC_CONFIG_SRCDIR([include/micq.h])
 AC_CONFIG_LIBOBJ_DIR(replace)
 AC_CONFIG_HEADER(include/config.h)
