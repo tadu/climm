@@ -389,42 +389,59 @@ const char *s_status_short (status_t status, UDWORD nativestatus)
  */
 const char *s_time (time_t *stamp)
 {
+    static str_s str = { NULL, 0, 0 };
     struct timeval p = {0L, 0L};
     struct tm now;
     struct tm *thetime;
-    static char tbuf[40];
-    str_s str = { NULL, 0, 0 };
     time_t nowsec;
+    size_t rc = 0;
 
-#ifdef HAVE_GETTIMEOFDAY
-    if (gettimeofday (&p, NULL) == -1)
-#endif
+    if (stamp && *stamp != NOW)
     {
-        p.tv_usec = 0L;
+        thetime = localtime (stamp);
         nowsec = time (NULL);
     }
-#ifdef HAVE_GETTIMEOFDAY
     else
-        nowsec = p.tv_sec;
+    {
+#ifdef HAVE_GETTIMEOFDAY
+        if (gettimeofday (&p, NULL) == -1)
 #endif
-
+        {
+            p.tv_usec = 0L;
+            nowsec = time (NULL);
+        }
+#ifdef HAVE_GETTIMEOFDAY
+        else
+            nowsec = p.tv_sec;
+#endif
+        thetime = &now;
+        stamp = NULL;
+    }
     now = *localtime (&nowsec);
-
-    thetime = (!stamp || *stamp == NOW) ? &now : localtime (stamp);
-
-    strftime (tbuf, sizeof (tbuf), thetime->tm_year == now.tm_year 
-        && thetime->tm_mon == now.tm_mon && thetime->tm_mday == now.tm_mday
-        ? "%H:%M:%S" : "%a %b %d %H:%M:%S %Y", thetime); /*"*/
-
-    if (prG->verbose > 7)
-        snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),
-                  ".%.06ld", !stamp || *stamp == NOW ? p.tv_usec : 0);
-    else if (prG->verbose > 1)
-        snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),
-                  ".%.03ld", !stamp || *stamp == NOW ? p.tv_usec / 1000 : 0);
     
-    str.txt = tbuf;
-    str.len = strlen (tbuf);
+    while (!rc)
+    {
+        rc = strftime (str.txt, str.max,
+                    thetime->tm_year == now.tm_year 
+                 && thetime->tm_mon  == now.tm_mon
+                 && thetime->tm_mday == now.tm_mday
+                 ? "%H:%M:%S" : "%a %b %d %H:%M:%S %Y", thetime); /*"*/
+        if (rc <= 0 || rc >= str.max)
+        {
+            rc = 0;
+            s_blow (&str, 32);
+        }
+        else
+        {
+            str.txt[str.max - 1] = 0;
+            str.len = strlen (str.txt);
+        }
+    }
+    if (prG->verbose > 7)
+        s_catf (&str, ".%.06ld", p.tv_usec);
+    else if (prG->verbose > 1)
+        s_catf (&str, ".%.03ld", p.tv_usec / 1000);
+    
     return ConvFrom (&str, prG->enc_loc)->txt;
 }
 
@@ -433,40 +450,48 @@ const char *s_time (time_t *stamp)
  */
 const char *s_strftime (time_t *stamp, const char *fmt)
 {
-    struct timeval p = {0L, 0L};
-    struct tm now;
+    static str_s str = { NULL, 0, 0 };
     struct tm *thetime;
-    static char tbuf[40];
-    str_s str = { NULL, 0, 0 };
+    size_t rc = 0;
     time_t nowsec;
-
-#ifdef HAVE_GETTIMEOFDAY
-    if (gettimeofday (&p, NULL) == -1)
-#endif
-    {
-        p.tv_usec = 0L;
-        nowsec = time (NULL);
-    }
-#ifdef HAVE_GETTIMEOFDAY
-    else
-        nowsec = p.tv_sec;
-#endif
-
-    now = *localtime (&nowsec);
-
-    thetime = (!stamp || *stamp == NOW) ? &now : localtime (stamp);
-
-    strftime (tbuf, sizeof (tbuf), fmt, thetime);
-
-    if (prG->verbose > 7)
-        snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),
-                  ".%.06ld", !stamp || *stamp == NOW ? p.tv_usec : 0);
-    else if (prG->verbose > 1)
-        snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),
-                  ".%.03ld", !stamp || *stamp == NOW ? p.tv_usec / 1000 : 0);
+    char *dotfmt;
     
-    str.txt = tbuf;
-    str.len = strlen (tbuf);
+    /* strfmt()'s error reporting is incomplete, so make sure a correct result is never empty */
+    dotfmt = malloc (strlen (fmt) + 2);
+    strcpy (dotfmt, fmt);
+    strcat (dotfmt, ".");
+
+    if (stamp && *stamp != NOW)
+        thetime = localtime (stamp);
+    else
+    {
+        nowsec = time (NULL);
+        thetime = localtime (&nowsec);
+    }
+    
+    s_init (&str, "", 32);
+    
+    while (!rc)
+    {
+        rc = strftime (str.txt, str.max, dotfmt, thetime);
+        if (rc <= 0 || rc >= str.max)
+        {
+            rc = 0;
+            s_blow (&str, 32);
+        }
+        else
+        {
+            str.txt[str.max - 1] = 0;
+            str.len = strlen (str.txt);
+            if (str.len && str.txt [str.len - 1] == '.')
+            {
+                str.txt [str.len - 1] = 0;
+                str.len--;
+            }
+        }
+    }
+    s_free (dotfmt);
+    
     return ConvFrom (&str, prG->enc_loc)->txt;
 }
 
