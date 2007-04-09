@@ -49,6 +49,9 @@
 #include "jabber_base.h"
 
 /****/
+#define USER_PROMPT "%4c%b%p%d://%1c%b%n%3c/%2c%b%s%8c %t%7c%b>%6c%r%7c%b<%6c%b%a%7c%b>"
+/*#define USER_PROMPT "%n@%p:%s %t>%r<%a>"*/
+#define USER_PROMPT_STRFTIME "%c"
 
 #define WAND1 " \xb7 \xb7 "
 #define WAND2 "\xb7 o \xb7"
@@ -313,6 +316,8 @@ void Initialize_RC_File ()
     conns->server = strdup (conns->pref_server);
 #endif
 
+    prG->prompt    = strdup (USER_PROMPT);
+    prG->prompt_strftime = strdup (USER_PROMPT_STRFTIME);
     prG->logplace  = strdup ("history" _OS_PATHSEPSTR);
     prG->chat      = 49;
     prG->autoupdate = AUTOUPDATE_CURRENT;
@@ -579,6 +584,11 @@ int Read_RC_File (FILE *rcf)
                     PrefParseInt (i);
                     prG->chat = i;
                 }
+                else if (!strcasecmp (cmd, "prompt_strftime"))
+                {
+                    PrefParse (tmp);
+                    prG->prompt_strftime = strdup (tmp);
+                }
                 else if (!strcasecmp (cmd, "autoupdate"))
                 {
                     PrefParseInt (i);
@@ -726,6 +736,8 @@ int Read_RC_File (FILE *rcf)
                         which = FLAG_AUTOREPLY;
                     else if (!strcasecmp (cmd, "uinprompt"))
                         which = FLAG_UINPROMPT;
+                    else if (!strcasecmp (cmd, "prompt"))
+                        which = -9;
                     else if (!strcasecmp (cmd, "autosave"))
                         which = FLAG_AUTOSAVE;
                     else if (!strcasecmp (cmd, "autofinger"))
@@ -859,6 +871,20 @@ int Read_RC_File (FILE *rcf)
                         OptSetVal (&prG->copts, CO_DCCONT, 1);
                         dep = 8723;
                     }
+                    else if (which == -9)
+                    {
+                        PrefParse (cmd);
+
+                        prG->flags &= ~FLAG_USERPROMPT & ~FLAG_UINPROMPT;
+                        if (!strcasecmp (cmd, "user"))
+                            prG->flags |= FLAG_USERPROMPT;
+                        else if (!strcasecmp (cmd, "uin"))
+                            prG->flags |= FLAG_UINPROMPT;
+                        else if (!strcasecmp (cmd, "simple"))
+                            ;
+                        else
+                            ERROR;
+                    }
                 }
                 else if (!strcasecmp (cmd, "options"))
                 {
@@ -989,6 +1015,11 @@ int Read_RC_File (FILE *rcf)
                     free (cmd);
                     free (tmp);
                     free (tmp2);
+                }
+                else if (!strcasecmp (cmd, "prompt"))
+                {
+                    if ((tmp = (s_parseprompt (&args))->txt) != NULL)
+                        prG->prompt = strdup (tmp);
                 }
                 else
                 {
@@ -1182,6 +1213,12 @@ int Read_RC_File (FILE *rcf)
     
     if (!prG->chat)
         prG->chat = 49;
+
+    if (!prG->prompt)
+        prG->prompt = strdup (USER_PROMPT);
+
+    if (!prG->prompt_strftime)
+        prG->prompt_strftime = strdup (USER_PROMPT_STRFTIME);
 
     for (i = 0; (conn = ConnectionNr (i)); i++)
     {
@@ -1773,8 +1810,9 @@ int PrefWriteConfFile (void)
                     prG->flags & FLAG_COLOR     ? "on " : "off");
     fprintf (rcf, "set auto       %s # if automatic responses are to be sent\n",
                     prG->flags & FLAG_AUTOREPLY ? "on " : "off");
-    fprintf (rcf, "set uinprompt  %s # if the prompt should contain the last uin a message was received from\n",
-                    prG->flags & FLAG_UINPROMPT ? "on " : "off");
+    fprintf (rcf, "set prompt  %s # type of prompt (user, uin, simple)\n",
+                    prG->flags & FLAG_USERPROMPT ? "user " : 
+                    prG->flags & FLAG_UINPROMPT ? "uin " : "simple");
     fprintf (rcf, "set autosave   %s # whether the micqrc should be automatically saved on exit\n",
                     prG->flags & FLAG_AUTOSAVE ? "on " : "off");
     fprintf (rcf, "set autofinger %s # whether new UINs should be fingered automatically\n",
@@ -1802,9 +1840,17 @@ int PrefWriteConfFile (void)
 
     fprintf (rcf, "event %s\n\n", prG->event_cmd && *prG->event_cmd ? s_quote (prG->event_cmd) : "off");
 
+    fprintf (rcf, "prompt_strftime \"%s\"          # format for time prompt option %%T. man strftime\n",
+                   prG->prompt_strftime);
+
     fprintf (rcf, "\n# The strings section - runtime redefinable strings.\n");
-    fprintf (rcf, "# The aliases.\n");
     fprintf (rcf, "[Strings]\n");
+    fprintf (rcf, "# The user prompt.\n");
+
+    fprintf (rcf, "prompt \"%s\"          # user prompt. for prompt template see manual\n",
+                   prG->prompt);
+
+    fprintf (rcf, "# The aliases.\n");
     {
         const alias_t *node;
         for (node = AliasList (); node; node = node->next)

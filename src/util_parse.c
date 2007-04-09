@@ -159,6 +159,59 @@ int is_valid_msn_name (char *txt)
 }
 
 /*
+ * Parses the next word, respecting double quotes
+ */
+strc_t s_parseprompt_s (const char **input, const char *sep)
+{
+    static str_s str;
+    strc_t parsed;
+    const char *p = *input;
+    char *q;
+    int s = 0;
+    
+    while (*p && strchr (sep, *p))
+        p++;
+    if (*p == '#')
+    {
+        while (*p)
+            p++;
+    }
+    *input = p;
+    if (!*p)
+        return NULL;
+
+    s_init (&str, p, 0);
+
+    q = str.txt;
+    parsed = &str;
+    if (!q)
+        return NULL;
+    
+    if (*p == '"')
+    {
+        s = 1;
+        p++;
+    }
+    while (*p)
+    {
+        if (*p == '"' && s)
+        {
+            *q = '\0';
+            *input = p + 1;
+            str.len = q - str.txt;
+            return parsed;
+        }
+        if (!s && strchr (sep, *p))
+            break;
+        *(q++) = *(p++);
+    }
+    *q = '\0';
+    *input = p;
+    str.len = q - str.txt;
+    return parsed;
+}
+
+/*
  * Parses a nick, UIN or screen name.
  */
 Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)

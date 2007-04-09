@@ -68,7 +68,7 @@ static jump_f
     CmdUserTabs, CmdUserLast, CmdUserHistory, CmdUserFind, CmdUserUptime,
     CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserConn, CmdUserContact,
-    CmdUserAnyMess, CmdUserGetAuto, CmdUserOpt;
+    CmdUserAnyMess, CmdUserGetAuto, CmdUserOpt, CmdUserPrompt;
 
 #ifdef ENABLE_PEER2PEER
 static jump_f CmdUserPeer;
@@ -173,6 +173,7 @@ static jump_t jump[] = {
     { &CmdUserQuit,          "x",            0,   2 },
     { &CmdUserQuit,          "exit",         0,   1 },
     { &CmdUserPass,          "pass",         0,   0 },
+    { &CmdUserPrompt,        "prompt",       0,   0 },
     { &CmdUserSMS,           "sms",          0,   0 },
     { &CmdUserPeek,          "peek",         0,   0 },
     { &CmdUserPeek,          "peekall",      0,   1 },
@@ -370,7 +371,7 @@ static JUMP_F(CmdUserHelp)
         "pass, update, other, about, setr, reg", NULL },
       { _i18n (1447, "Client"), "client",
         _i18n (1443, "Commands relating to mICQ displays and configuration."),
-        "verbose, clear, sound, autoaway, auto, alias, unalias, lang, uptime, set, opt, optcontact, optgroup, optconnection, optglobal, save, q = quit = exit, x, !", NULL },
+        "verbose, clear, sound, prompt, autoaway, auto, alias, unalias, lang, uptime, set, opt, optcontact, optgroup, optconnection, optglobal, save, q = quit = exit, x, !", NULL },
       { _i18n (2171, "Advanced"), "advanced",
         _i18n (2172, "Advanced commands."),
         "meta, conn, peer, file, accept, contact, peek, peek2, peekall, as",
@@ -565,6 +566,8 @@ static JUMP_F(CmdUserHelp)
             CMD_USER_HELP  ("verbose [<nr>]", i18n (1418, "Set the verbosity level, or display verbosity level."));
         else if (!strcasecmp (par->txt, "clear"))
             CMD_USER_HELP  ("clear", i18n (1419, "Clears the screen."));
+        else if (!strcasecmp (par->txt, "prompt"))
+            CMD_USER_HELP ("prompt [<user defined prompt>]", i18n (9999, "Set or show user defined prompt. See manual for details."));
         else if (!strcasecmp (par->txt, "sound"))
             CMD_USER_HELP3 ("sound [%s|%s|event]", i18n (1085, "on"), i18n (1086, "off"),
                             i18n (1420, "Switches beeping when receiving new messages on or off, or using the event script."));
@@ -584,7 +587,7 @@ static JUMP_F(CmdUserHelp)
         else if (!strcasecmp (par->txt, "uptime"))
             CMD_USER_HELP  ("uptime", i18n (1719, "Shows how long mICQ has been running and some statistics."));
         else if (!strcasecmp (par->txt, "set"))
-            CMD_USER_HELP  ("set <option> <value>", i18n (2044, "Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny."));
+            CMD_USER_HELP  ("set <option> <value>", i18n (2044, "Set, clear or display an <option>: color, delbs, auto, prompt, autosave, autofinger, linebreak, funny."));
         else if (!strcasecmp (par->txt, "opt"))
             CMD_USER_HELP  ("opt [<contact>|<contact group>|connection|global [<option> [<value>]]]", i18n (2398, "Set or display options for a contact group, a contact or global.\n"));
         else if (!strcasecmp (par->txt, "optcontact"))
@@ -682,6 +685,28 @@ static JUMP_F(CmdUserPass)
             rl_print (i18n (2122, "Note: You need to 'save' to write new password to disc.\n"));
             uiG.conn->pref_passwd = strdup (arg1);
         }
+    }
+    return 0;
+}
+
+/*
+ * Sets a new user prompt.
+ */
+static JUMP_F(CmdUserPrompt)
+{
+    char *arg1 = NULL;
+    
+    if (!(arg1 = s_parserem (&args)))
+    {
+        if (prG->prompt != NULL)
+            rl_print (s_sprintf ("%s\n", prG->prompt));
+    }
+    else
+    {
+        if (prG->prompt != NULL)
+            free (prG->prompt);
+        prG->prompt = strdup (arg1);
+        rl_print (i18n (2612, "Note: You need to 'save' to write new user prompt to disc.\n"));
     }
     return 0;
 }
@@ -2240,7 +2265,7 @@ static JUMP_F(CmdUserSet)
         else if (!strcasecmp (par->txt, "delbs"))      { data = FLAG_DELBS;      str = i18n (2262, "Interpreting a delete character as backspace is %s%s%s.\n"); }
         else if (!strcasecmp (par->txt, "funny"))      { data = FLAG_FUNNY;      str = i18n (2134, "Funny messages are %s%s%s.\n"); }
         else if (!strcasecmp (par->txt, "auto"))       { data = FLAG_AUTOREPLY;  str = i18n (2265, "Automatic replies are %s%s%s.\n"); }
-        else if (!strcasecmp (par->txt, "uinprompt"))  { data = FLAG_UINPROMPT;  str = i18n (2266, "Having the last nick in the prompt is %s%s%s.\n"); }
+        else if (!strcasecmp (par->txt, "prompt"))     data = -3; 
         else if (!strcasecmp (par->txt, "autosave"))   { data = FLAG_AUTOSAVE;   str = i18n (2267, "Automatic saves are %s%s%s.\n"); }
         else if (!strcasecmp (par->txt, "autofinger")) { data = FLAG_AUTOFINGER; str = i18n (2268, "Automatic fingering of new UINs is %s%s%s.\n"); }
         else if (!strcasecmp (par->txt, "linebreak"))  data = -1;
@@ -2312,7 +2337,28 @@ static JUMP_F(CmdUserSet)
                 else
                     rl_print (i18n (2254, "A beep is never generated.\n"));
             }
-            break;
+            break;  
+        case -3:
+            if (par)
+            {
+                UDWORD flags = prG->flags & ~FLAG_USERPROMPT & ~FLAG_UINPROMPT;
+                if (!strcasecmp (par->txt, "user") || !strcasecmp (par->txt, i18n (9999, "user")))
+                    prG->flags = flags | FLAG_USERPROMPT;
+                else if (!strcasecmp (par->txt, "uin") || !strcasecmp (par->txt, i18n (9999, "uin")))
+                    prG->flags = flags | FLAG_UINPROMPT;
+                else if (!strcasecmp (par->txt, "simple") || !strcasecmp (par->txt, i18n (9999, "simple")))
+                    prG->flags = flags;
+                else
+                    data = 0;
+            }
+            if (!quiet)
+            {
+                rl_printf (i18n (2266, "Type of the prompt is %s%s%s.\n"), COLQUOTE,
+                            prG->flags & FLAG_USERPROMPT ? i18n (9999, "user") :
+                            prG->flags & FLAG_UINPROMPT ? i18n (9999, "uin") : i18n (9999, "simple"),
+                            COLNONE);
+            }
+            break;  
     }
     if (!data)
     {
@@ -2321,7 +2367,7 @@ static JUMP_F(CmdUserSet)
         rl_print (i18n (2278, "    delbs:      interpret delete characters as backspace.\n"));
         rl_print (i18n (1815, "    funny:      use funny messages for output.\n"));
         rl_print (i18n (2281, "    auto:       send auto-replies.\n"));
-        rl_print (i18n (2282, "    uinprompt:  have the last nick in the prompt.\n"));
+        rl_print (i18n (2282, "    prompt:     type of the prompt: user, uin, simple\n"));
         rl_print (i18n (2283, "    autosave:   automatically save the micqrc.\n"));
         rl_print (i18n (2284, "    autofinger: automatically finger new UINs.\n"));
         rl_print (i18n (2285, "    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n"));

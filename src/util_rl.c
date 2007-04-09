@@ -37,6 +37,7 @@
 #include "contact.h"
 #include "cmd_user.h"
 #include "preferences.h"
+#include "connection.h"
 
 #include <stdarg.h>
 #include <ctype.h>
@@ -143,6 +144,7 @@ static void rl_lineexpand (const char *hist);
 static void rl_historyback (void);
 static void rl_historyforward (void);
 static void rl_historyadd (void);
+static const char *rl_user_prompt (const char *prompt);
 
 #if defined(SIGWINCH)
 static volatile int rl_columns_cur = 0;
@@ -1847,8 +1849,161 @@ void ReadLinePromptReset (void)
 {
     Contact *cont;
     uiG.idle_msgs = 0;
-    if (prG->flags & FLAG_UINPROMPT && (cont = uiG.last_sent))
+    if (prG->flags & FLAG_USERPROMPT)
+        ReadLinePromptSet (rl_user_prompt (prG->prompt));
+    else if (prG->flags & FLAG_UINPROMPT && (cont = uiG.last_sent))
         ReadLinePromptSet (s_sprintf ("[%s]", cont->nick));
     else
         ReadLinePromptSet (i18n (2467, "mICQ>"));
+}
+
+const char *rl_user_prompt (const char *prompt)
+{
+    static str_s t = { NULL, 0, 0 };
+    long int digit = -1;
+    
+    const char *p = prompt;
+    char *endptr;
+
+    Contact *cont;
+
+    if (prompt == NULL)
+        return "";
+
+    s_init (&t, (prG->flags & FLAG_COLOR) ? SGR0 : "", 20);
+
+    while (*p)
+    {
+        if (*p == '%')
+        {
+            p++;
+            if (!isdigit (*p))
+                digit = -1;
+            else
+            {
+                digit = strtol (p, &endptr ,0);
+                p = endptr;
+            }
+
+            switch (*p)
+            {
+                /* === user info === */    
+                case 'n':
+                    if ((uiG.conn != NULL)
+                            && (uiG.conn->cont != NULL)
+                            && (uiG.conn->cont->nick != NULL))
+                        s_cat (&t, s_sprintf ("%s", uiG.conn->cont->nick));
+                    break;
+                case 'U':
+                    if (uiG.conn != NULL)
+                        s_cat (&t, s_sprintf ("%s", uiG.conn->screen));
+                    break;
+
+                /* === status === */
+                case 'S':
+                    if (uiG.conn != NULL)
+                        s_cat (&t, s_status (uiG.conn->status, uiG.conn->nativestatus));
+                    break;
+                case 's':
+                    if (uiG.conn != NULL)
+                        s_cat (&t, s_status_short (uiG.conn->status, uiG.conn->nativestatus));
+                    break;
+
+                /* === server info === */    
+                case 'p':
+                    if (uiG.conn != NULL)
+                        s_cat (&t, ConnectionServerType (uiG.conn->type));
+                    break;
+                case 'P':
+                    if ((uiG.conn != NULL)
+                            && (uiG.conn->server != NULL))
+                        s_cat (&t, uiG.conn->server);
+                    break;
+
+                /* === last nicks === */    
+                case 'a':
+                    if ((cont = uiG.last_sent) != 0)
+                        s_cat (&t, cont->nick);
+                    break;
+                case 'r':
+                    if ((cont = uiG.last_rcvd) != 0)
+                        s_cat (&t, cont->nick);
+                    break;
+
+                /* === times === */
+                case 't':
+                    s_cat (&t, s_time (NULL));
+                    break;
+                case 'T':
+                    if (prG->prompt_strftime != NULL)
+                        s_cat (&t, s_strftime (NULL, prG->prompt_strftime));
+                    break;
+
+                /* === misc === */    
+                case '%':
+                    s_catc (&t, *p);
+                    break;
+
+                /* === colors === */
+                case 'c':
+                    if ((prG->flags & FLAG_COLOR)
+                            && ((digit >= 0) && (digit <= 9)))
+                        s_cat (&t, s_sprintf (ESC "[0;3%ldm", digit));
+                    break;
+                case 'C':
+                    if ((prG->flags & FLAG_COLOR)
+                            && ((digit >= 0) && (digit <= 9)))
+                        s_cat (&t, s_sprintf (ESC "[0;4%ldm", digit));
+                    break;
+                case 'b':
+                    if ((prG->flags & FLAG_COLOR)
+                            && ((digit >= -1) && (digit <= 1)))
+                        s_cat (&t, s_sprintf (ESC "[%s%sm"
+                                 , digit == 0 ? "2" : ""
+                                 , "1"));
+                    break;
+                case 'u':
+                    if ((prG->flags & FLAG_COLOR)
+                            && ((digit >= -1) && (digit <= 1)))
+                        s_cat (&t, s_sprintf (ESC "[%s%sm"
+                                 , digit == 0 ? "2" : ""
+                                 , "4"));
+                    break;
+                case 'i':
+                    if ((prG->flags & FLAG_COLOR)
+                            && ((digit >= -1) && (digit <= 1)))
+                        s_cat (&t, s_sprintf (ESC "[%s%sm"
+                                 , digit == 0 ? "2" : ""
+                                 , "7"));
+                    break;
+                case 'd':
+                    if (prG->flags & FLAG_COLOR)
+                        s_cat (&t, ESC SGR0);
+                    break;
+                default:
+                    break;
+            }
+            p++;
+            continue;
+        } else if (*p == '\\')
+        {
+            p++;
+            switch (*p)
+            {
+                case 'b':  s_catc (&t, '\b'); break;
+                case 'r':  s_catc (&t, '\r'); break;
+                case 'n':  s_catc (&t, '\n'); break;
+                case 't':  s_catc (&t, '\t'); break;
+                case 'e':  s_catc (&t, ESCC); break;
+                case '\\': s_catc (&t, '\\'); break;
+                default:   s_catc (&t, *p);   break;
+            }
+            p++;
+            continue;
+        }
+        s_catc (&t, *(p++));
+    }
+
+    s_cat (&t, COLNONE);
+    return t.txt;
 }

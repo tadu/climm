@@ -38,7 +38,9 @@ void        s_done    (str_t str);
 const char *s_sprintf (const char *fmt, ...) __attribute__ ((format (__printf__, 1, 2)));
 const char *s_ip      (UDWORD ip);
 const char *s_status  (status_t status, UDWORD nativestatus);
+const char *s_status_short  (status_t status, UDWORD nativestatus);
 const char *s_time    (time_t *stamp);
+const char *s_strftime (time_t *stamp, const char *fmt);
 const char *s_msgtok  (char *);
 
 const char *s_dump    (const UBYTE *data, UWORD len);

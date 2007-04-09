@@ -349,6 +349,42 @@ const char *s_status (status_t status, UDWORD nativestatus)
 }
 
 /*
+ * Return a static string short describing the status.
+ */
+const char *s_status_short (status_t status, UDWORD nativestatus)
+{
+    static char buf[20];
+    
+    if (status == ims_offline)
+        return "off";
+ 
+    if (ContactIsInv (status))
+        snprintf (buf, sizeof (buf), "%s-", "inv");
+    else
+        buf[0] = '\0';
+    
+    switch (ContactClearInv (status))
+    {
+        case imr_dnd:     snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", "dnd");  break;
+        case imr_occ:     snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", "occ");  break;
+        case imr_na:      snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", "na");   break;
+        case imr_away:    snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", "away"); break;
+        case imr_ffc:     snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", "ffc");  break;
+        case imr_offline: assert (0);
+        case imr_online:
+            if (buf[0])
+                buf[strlen (buf) - 1] = '\0';
+            else
+                snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", "online");
+    }
+
+    if (prG->verbose)
+        snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), " %08lx", nativestatus);
+    
+    return buf;
+}
+
+/*
  * Returns static string describing the given time.
  */
 const char *s_time (time_t *stamp)
@@ -379,6 +415,48 @@ const char *s_time (time_t *stamp)
     strftime (tbuf, sizeof (tbuf), thetime->tm_year == now.tm_year 
         && thetime->tm_mon == now.tm_mon && thetime->tm_mday == now.tm_mday
         ? "%H:%M:%S" : "%a %b %d %H:%M:%S %Y", thetime); /*"*/
+
+    if (prG->verbose > 7)
+        snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),
+                  ".%.06ld", !stamp || *stamp == NOW ? p.tv_usec : 0);
+    else if (prG->verbose > 1)
+        snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),
+                  ".%.03ld", !stamp || *stamp == NOW ? p.tv_usec / 1000 : 0);
+    
+    str.txt = tbuf;
+    str.len = strlen (tbuf);
+    return ConvFrom (&str, prG->enc_loc)->txt;
+}
+
+/*
+ * Returns static string describing the given time in strftime format.
+ */
+const char *s_strftime (time_t *stamp, const char *fmt)
+{
+    struct timeval p = {0L, 0L};
+    struct tm now;
+    struct tm *thetime;
+    static char tbuf[40];
+    str_s str = { NULL, 0, 0 };
+    time_t nowsec;
+
+#ifdef HAVE_GETTIMEOFDAY
+    if (gettimeofday (&p, NULL) == -1)
+#endif
+    {
+        p.tv_usec = 0L;
+        nowsec = time (NULL);
+    }
+#ifdef HAVE_GETTIMEOFDAY
+    else
+        nowsec = p.tv_sec;
+#endif
+
+    now = *localtime (&nowsec);
+
+    thetime = (!stamp || *stamp == NOW) ? &now : localtime (stamp);
+
+    strftime (tbuf, sizeof (tbuf), fmt, thetime);
 
     if (prG->verbose > 7)
         snprintf (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),

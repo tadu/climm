@@ -254,9 +254,6 @@ for the same effect.
 .BI set \ auto\ on|off
 Disable or enable automatic responses (reply messages).
 .TP
-.BI set \ uinprompt\ on|off
-Disable or enable the use of the nick you last received a message from in the prompt.
-.TP
 .BI set \ autosave\ on|off
 Disable or enable the automatic saving of the micqrc.
 .TP
@@ -426,10 +423,22 @@ and
 .B ffc
 for
 .IR status .
+.TP
+.BI prompt_strftime \ <strftime_format>
+Set format for option %T used in user
+.IR prompt .
+For details see micq(7) and strftime(3).
 .SH STRINGS
 The
 .B Strings
 section contains command renames.
+.TP
+.BI prompt \ <user_prompt>
+Set user prompt in
+.IR user_prompt .
+For details see command
+.IR prompt 
+in micq(7).
 .TP
 .BI alter \ <old>\ <new>
 Rename command

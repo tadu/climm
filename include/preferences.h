@@ -42,6 +42,9 @@ struct Preferences_s
     SBYTE  chat;
     SBYTE  autoupdate;
 
+    char  *prompt_strftime;    /* user define prompt */
+    char  *prompt;             /* user define prompt */
+
 #ifdef ENABLE_TCL
     tcl_pref_p tclscript;
     tcl_callback *tclout;
@@ -82,6 +85,7 @@ const char *PrefLogNameReal (Preferences *pref);
 #define FLAG_DEP_ULTRAQUIET (1 << 13)
 #define FLAG_AUTOSAVE   (1 << 14)
 #define FLAG_AUTOFINGER (1 << 15)
+#define FLAG_USERPROMPT (1 << 16)
 /*      FLAG_S5
  *      FLAG_S5_USE
  */

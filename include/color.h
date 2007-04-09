@@ -17,6 +17,7 @@
 #define SGR0            ESC "[0m"
 #define BOLD            ESC "[1m"
 #define UL              ESC "[4m"
+#define INV             ESC "[7m"
 
 #define COLNONE         ContactPrefStr (NULL, CO_COLORNONE)
 #define COLSERVER       ContactPrefStr (NULL, CO_COLORSERVER)

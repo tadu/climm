@@ -559,6 +559,87 @@ or call the
 .B event
 script for beeps. New syntax for 0.4.10.
 .TP
+.BI prompt\ <user_prompt>
+Set user prompt in
+.IR user_prompt .
+The following variables will be parsed and may
+be used in prompt string:
+.RS
+.TP
+.B %U
+by your current user name
+.TP
+.B %n
+by your current nick
+.TP
+.B %S 
+by description of your status
+.TP
+.B %s 
+by short description of your status
+.TP
+.B %P 
+by server name
+.TP
+.B %p 
+by type of server (icq8, jabber, msn...)
+.TP
+.B %a 
+by last send uin/nick
+.TP
+.B %r
+by last recived uin/nick
+.TP
+.B %t 
+by time in format HH:MM:SS
+.TP
+.B %T 
+by time in format given in option
+.B prompt_strftime .
+.TP
+.B %%
+%
+.TP
+.B %[0\-9]c
+by foreground color
+.TP
+.B %[0\-9]C
+by background color
+.TP
+.B %[0\-1]b 
+bold. on = 1 (default), off = 0
+.TP
+.B %[0\-1]u 
+underline. on = 1 (default), off = 0
+.TP
+.B %[0\-1]i 
+inverse; on = 1 (default), off = 0. Reverses foreground and background colors.
+.TP
+.B %d 
+set default all colors and styles
+.TP
+.B \\\\b 
+backspace
+.TP
+.B \\\\r 
+carriage return
+.TP
+.B \\\\n 
+new line
+.TP
+.B \\\\t 
+horizontal tab
+.TP
+.B \\\\e 
+ESC
+.TP
+.B \\\\\\\\
+backslash
+.PP
+Example:
+ prompt %4c%b%p%d://%1c%b%n%3c/%2c%b%s%8c %t%7c%b>%6c%r%7c%b<%6c%b%a%7c%b>
+.RE
+.TP
 .BI autoaway \ [<timeout>|on|off]
 Set the timeout to
 .IR timeout ,
@@ -682,8 +763,19 @@ use funny messages,
 .BR auto :
 send auto\-replies when you\'re e.g. away,
 .TP
-.BR uinprompt :
+.BR prompt :
+Type of the prompt:
+.RS
+.TP
+.BR user
+use user prompt. See command prompt in micq(7), and options prompt and prompt_strftime in micqrc(5),
+.TP
+.BR uin
 have the last nick in the prompt,
+.TP
+.BR simple
+simpe prompt, by default is "mICQ>".
+.RE
 .TP
 .BR autosave :
 automatically save the micqrc,
