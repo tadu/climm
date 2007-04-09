@@ -3273,7 +3273,6 @@ static JUMP_F(CmdUserHistory)
     int msgMin = DEFAULT_HISTORY_COUNT, msgNum = DEFAULT_HISTORY_COUNT, msgLines = 0;
     time_t time, htime = (time_t)0;
     struct tm stamp, hstamp;
-    char timestr[MAX_STR_BUF];
     const char *timeformat;
     strc_t par, p, line;
 
@@ -3522,8 +3521,7 @@ static JUMP_F(CmdUserHistory)
                 }
             }
 
-            strftime (timestr, MAX_STR_BUF, timeformat, &stamp);
-            rl_printf ("%s %s[%4d] ", timestr, COLNONE, msgCount);
+            rl_printf ("%s %s[%4d] ", s_strftime (&time, timeformat, 0), COLNONE, msgCount);
             msgLines = -1;
 
             if (*p->txt == '<')
@@ -3580,7 +3578,6 @@ static JUMP_F(CmdUserFind)
     int n, msgCount, matchCount = 0, patternLen, len;
     time_t time;
     struct tm stamp;
-    char timestr[MAX_STR_BUF];
     const char *timeformat;
     BOOL isMsg = FALSE, isIncoming = FALSE, doRead = TRUE;
     strc_t par, line = NULL;
@@ -3759,8 +3756,7 @@ static JUMP_F(CmdUserFind)
         if (time != -1)
             localtime_r (&time, &stamp);
 
-        strftime (timestr, MAX_STR_BUF, timeformat, &stamp);
-        rl_printf ("%s %s[%4d] ", timestr, COLNONE, msgCount);
+        rl_printf ("%s %s[%4d] ", s_strftime (&time, timeformat, 0), COLNONE, msgCount);
 
         if (isIncoming)
             rl_printf ("%s<- ", COLINCOMING);

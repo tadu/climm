@@ -1936,7 +1936,7 @@ const char *rl_user_prompt (const char *prompt)
                     break;
                 case 'T':
                     if (prG->prompt_strftime != NULL)
-                        s_cat (&t, s_strftime (NULL, prG->prompt_strftime));
+                        s_cat (&t, s_strftime (NULL, prG->prompt_strftime, 0));
                     break;
 
                 /* === misc === */    

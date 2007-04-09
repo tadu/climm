@@ -448,25 +448,24 @@ const char *s_time (time_t *stamp)
 /*
  * Returns static string describing the given time in strftime format.
  */
-const char *s_strftime (time_t *stamp, const char *fmt)
+const char *s_strftime (time_t *stamp, const char *fmt, char as_gmt)
 {
     static str_s str = { NULL, 0, 0 };
     struct tm *thetime;
     size_t rc = 0;
-    time_t nowsec;
     char *dotfmt;
     
-    /* strfmt()'s error reporting is incomplete, so make sure a correct result is never empty */
+    /* strftime()'s error reporting is incomplete, so make sure a correct result is never empty */
     dotfmt = malloc (strlen (fmt) + 2);
     strcpy (dotfmt, fmt);
     strcat (dotfmt, ".");
 
     if (stamp && *stamp != NOW)
-        thetime = localtime (stamp);
+        thetime = as_gmt ? gmtime (stamp) : localtime (stamp);
     else
     {
-        nowsec = time (NULL);
-        thetime = localtime (&nowsec);
+        time_t nowsec = time (NULL);
+        thetime = as_gmt ? gmtime (&nowsec) : localtime (&nowsec);
     }
     
     s_init (&str, "", 32);

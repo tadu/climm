@@ -552,15 +552,15 @@ void SnacCliSearchwp (Connection *serv, const MetaWP *wp)
 void SnacCliSendsms (Connection *serv, const char *target, const char *text)
 {
     Packet *pak;
-    char buf[2000], tbuf[100];
+    char buf[2000];
     time_t t = time (NULL);
-
-    strftime (tbuf, sizeof (tbuf), "%a, %d %b %Y %H:%M:%S GMT", gmtime (&t));
+    
     snprintf (buf, sizeof (buf), "<icq_sms_message><destination>%s</destination>"
              "<text>%s (%s www.mICQ.org)</text><codepage>1252</codepage><senders_UIN>%s</senders_UIN>"
              "<senders_name>%s</senders_name><delivery_receipt>Yes</delivery_receipt>"
              "<time>%s</time></icq_sms_message>",
-             target, text, serv->screen, serv->screen, "mICQ", tbuf);
+             target, text, serv->screen, serv->screen, "mICQ",
+             s_strftime (&t, "%a, %d %b %Y %H:%M:%S GMT", 1));
 
     pak = SnacMetaC (serv, 2000, META_SEND_SMS, 0);
     PacketWriteB2      (pak, 1);

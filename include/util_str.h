@@ -40,7 +40,7 @@ const char *s_ip      (UDWORD ip);
 const char *s_status  (status_t status, UDWORD nativestatus);
 const char *s_status_short  (status_t status, UDWORD nativestatus);
 const char *s_time    (time_t *stamp);
-const char *s_strftime (time_t *stamp, const char *fmt);
+const char *s_strftime (time_t *stamp, const char *fmt, char as_gmt);
 const char *s_msgtok  (char *);
 
 const char *s_dump    (const UBYTE *data, UWORD len);
