@@ -4,19 +4,23 @@
 
 #include "oscar_tlv.h"
 
-#define ROSTER_TYPE_NORMAL     0
-#define ROSTER_TYPE_GROUP      1
-#define ROSTER_TYPE_VISIBLE    2
-#define ROSTER_TYPE_INVISIBLE  3
-#define ROSTER_TYPE_VISIBILITY 4
-#define ROSTER_TYPE_PRESENCE   5
-#define ROSTER_TYPE_ICQTIC     9
-#define ROSTER_TYPE_IGNORE    14
-#define ROSTER_TYPE_LASTUPD   15
-#define ROSTER_TYPE_NONCONT   16
-#define ROSTER_TYPE_WIERD17   17
-#define ROSTER_TYPE_IMPORTT   19
-#define ROSTER_TYPE_ICON      20
+typedef enum {
+  roster_normal = 0,
+  roster_group = 1,
+  roster_visible = 2,
+  roster_invisible = 3,
+  roster_visibility = 4,
+  roster_presence = 5,
+  roster_icqtic = 9,
+  roster_ignore = 14,
+  roster_lastupd = 15,
+  roster_noncont = 16,
+  roster_wierd17 = 17,
+  roster_importt = 19,
+  roster_icon = 20,
+  roster_wierd25 = 25,
+  roster_wierd29 = 29
+} roster_t;
 
 jump_snac_f SnacSrvReplylists, SnacSrvReplyroster, SnacSrvUpdateack,
     SnacSrvRosterok, SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvAddedyou;
