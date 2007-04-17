@@ -80,7 +80,7 @@ MICQXMPP::MICQXMPP (Connection *serv)
     m_client->registerSubscriptionHandler (this);
     m_client->registerPresenceHandler (this);
     m_client->logInstance ().registerLogHandler (gloox::LogLevelDebug,   gloox::LogAreaAll, this);
-    m_client->disco()->setVersion ("mICQ", BuildVersionText);
+    m_client->disco()->setVersion ("mICQ", BuildVersionStr, BuildPlatformStr);
     m_client->disco()->setIdentity ("client", "console");
     m_client->setAutoPresence (true);
     m_client->setInitialPriority (5);
@@ -696,7 +696,7 @@ void MICQXMPP::XMPPSetstatus (Connection *serv, Contact *cont, status_t status, 
         gloox::Tag *vers = new gloox::Tag (pres, "c");
         vers->addAttribute ("xmlns", "http://jabber.org/protocol/caps");
         vers->addAttribute ("node", "http://www.mICQ.org/xmpp/caps");
-        vers->addAttribute ("ver", "0.5.2.90");
+        vers->addAttribute ("ver", BuildVersionStr);
         // vers->addAttribute ("ext", "ext1 ext2");
     }
     m_client->send (pres);
