@@ -567,7 +567,7 @@ static JUMP_F(CmdUserHelp)
         else if (!strcasecmp (par->txt, "clear"))
             CMD_USER_HELP  ("clear", i18n (1419, "Clears the screen."));
         else if (!strcasecmp (par->txt, "prompt"))
-            CMD_USER_HELP ("prompt [<user defined prompt>]", i18n (9999, "Set or show user defined prompt. See manual for details."));
+            CMD_USER_HELP ("prompt [<user defined prompt>]", i18n (2629, "Set or show user defined prompt. See manual for details."));
         else if (!strcasecmp (par->txt, "sound"))
             CMD_USER_HELP3 ("sound [%s|%s|event]", i18n (1085, "on"), i18n (1086, "off"),
                             i18n (1420, "Switches beeping when receiving new messages on or off, or using the event script."));
@@ -706,7 +706,7 @@ static JUMP_F(CmdUserPrompt)
         if (prG->prompt != NULL)
             free (prG->prompt);
         prG->prompt = strdup (arg1);
-        rl_print (i18n (2612, "Note: You need to 'save' to write new user prompt to disc.\n"));
+        rl_print (i18n (2633, "Note: You need to 'save' to write new user prompt to disc.\n"));
     }
     return 0;
 }
@@ -2342,11 +2342,11 @@ static JUMP_F(CmdUserSet)
             if (par)
             {
                 UDWORD flags = prG->flags & ~FLAG_USERPROMPT & ~FLAG_UINPROMPT;
-                if (!strcasecmp (par->txt, "user") || !strcasecmp (par->txt, i18n (9999, "user")))
+                if (!strcasecmp (par->txt, "user") || !strcasecmp (par->txt, i18n (2630, "user")))
                     prG->flags = flags | FLAG_USERPROMPT;
-                else if (!strcasecmp (par->txt, "uin") || !strcasecmp (par->txt, i18n (9999, "uin")))
+                else if (!strcasecmp (par->txt, "uin") || !strcasecmp (par->txt, i18n (2631, "uin")))
                     prG->flags = flags | FLAG_UINPROMPT;
-                else if (!strcasecmp (par->txt, "simple") || !strcasecmp (par->txt, i18n (9999, "simple")))
+                else if (!strcasecmp (par->txt, "simple") || !strcasecmp (par->txt, i18n (2632, "simple")))
                     prG->flags = flags;
                 else
                     data = 0;
@@ -2354,8 +2354,8 @@ static JUMP_F(CmdUserSet)
             if (!quiet)
             {
                 rl_printf (i18n (2266, "Type of the prompt is %s%s%s.\n"), COLQUOTE,
-                            prG->flags & FLAG_USERPROMPT ? i18n (9999, "user") :
-                            prG->flags & FLAG_UINPROMPT ? i18n (9999, "uin") : i18n (9999, "simple"),
+                            prG->flags & FLAG_USERPROMPT ? i18n (2630, "user") :
+                            prG->flags & FLAG_UINPROMPT ? i18n (2631, "uin") : i18n (2632, "simple"),
                             COLNONE);
             }
             break;  
