@@ -117,9 +117,22 @@
 #define EV_SSL
 #endif
 
-#define EV EV_AP EV_SSL EV_TCL EV_P2P
+#ifdef ENABLE_XMPP
+#define EV_XMPP "XMPP "
+#else
+#define EV_XMPP
+#endif
+
+#ifdef ENABLE_MSN
+#define EV_MSN "MSN "
+#else
+#define EV_MSN
+#endif
+
+#define EV EV_AP EV_SSL EV_TCL EV_P2P EV_XMPP EV_MSN
 
 const UDWORD BuildPlatformID = BUILD_PLATFORM;
+const char  *BuildPlatformStr = EXTRAVERSION_DEF;
 
 const char *BuildVersion (void)
 {
@@ -143,7 +156,8 @@ const char *BuildAttribution (void)
 }                  
 
 const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
-const char  *BuildVersionText = "$VER: mICQ " VERSION " " EV EXTRAVERSION "\n(" CVSUPDATE " build " BUILDDATE ")";
+const char *BuildVersionText = "$VER: mICQ " VERSION " " EV EXTRAVERSION "\n(" CVSUPDATE " build " BUILDDATE ")";
+const char *BuildVersionStr  = VERSION MICQ_IS_CVS;
 
 /*
  i18n (1000, "UTF-8")            charset used

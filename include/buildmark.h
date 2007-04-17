@@ -31,10 +31,12 @@
 #define BUILD_PLATFORM_SOLARIS BUILD_PLATFORM_UNIX  | 0x004000
 #define BUILD_PLATFORM_DEBIAN  BUILD_PLATFORM_LINUX | 0x010000
 
-const        char  *BuildVersion (void);
-const        char  *BuildAttribution (void);
-extern const UDWORD BuildVersionNum;
-extern const UDWORD BuildPlatformID;
-extern const char  *BuildVersionText;
+const        char  *BuildVersion (void);     /* used for ver command */
+const        char  *BuildAttribution (void); /* welcome message */
+extern const UDWORD BuildVersionNum;         /* e.g. 0x00050100, put into ICQ version time stamps */
+extern const char  *BuildVersionStr;         /* e.g. "0.5.1" or "0.5.2 CVS 2007-04-06 12:01:02 UTC", put into XMPP version */
+extern const UDWORD BuildPlatformID;         /* one of BUILD_PLATFORM_*, put into ICQ version time stamps */
+extern const char  *BuildPlatformStr;        /* e.g. "Debian" or "AmigaOS", put into XMPP OS */
+extern const char  *BuildVersionText;        /* e.g. "$VER: mICQ 0.5.2 SSL P2P Linux hand compiled" */
 
 #endif /* MICQ_BUILDMARK_H */
