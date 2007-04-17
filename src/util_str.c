@@ -351,36 +351,30 @@ const char *s_status (status_t status, UDWORD nativestatus)
 /*
  * Return a static string short describing the status.
  */
-const char *s_status_short (status_t status, UDWORD nativestatus)
+const char *s_status_short (status_t status)
 {
     static char buf[20];
     
     if (status == ims_offline)
-        return "off";
+        return i18n (2621, "off");
+    if (status == ims_inv)
+        return i18n (2622, "inv");
  
     if (ContactIsInv (status))
-        snprintf (buf, sizeof (buf), "%s-", "inv");
+        snprintf (buf, sizeof (buf), "%s-", i18n (2622, "inv"));
     else
         buf[0] = '\0';
     
     switch (ContactClearInv (status))
     {
-        case imr_dnd:     snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", "dnd");  break;
-        case imr_occ:     snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", "occ");  break;
-        case imr_na:      snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", "na");   break;
-        case imr_away:    snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", "away"); break;
-        case imr_ffc:     snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", "ffc");  break;
+        case imr_dnd:     snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", i18n (2623, "dnd"));  break;
+        case imr_occ:     snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", i18n (2624, "occ"));  break;
+        case imr_na:      snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", i18n (2625, "na"));   break;
+        case imr_away:    snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", i18n (2626, "away")); break;
+        case imr_ffc:     snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", i18n (2627, "ffc"));  break;
         case imr_offline: assert (0);
-        case imr_online:
-            if (buf[0])
-                buf[strlen (buf) - 1] = '\0';
-            else
-                snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", "online");
+        case imr_online:  snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), "%s", i18n (2628, "online"));
     }
-
-    if (prG->verbose)
-        snprintf (buf + strlen (buf), sizeof (buf) - strlen (buf), " %08lx", nativestatus);
-    
     return buf;
 }
 

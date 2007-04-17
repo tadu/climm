@@ -1909,7 +1909,7 @@ const char *rl_user_prompt (const char *prompt)
                     break;
                 case 's':
                     if (uiG.conn != NULL)
-                        s_cat (&t, s_status_short (uiG.conn->status, uiG.conn->nativestatus));
+                        s_cat (&t, s_status_short (uiG.conn->status));
                     break;
 
                 /* === server info === */    
