@@ -148,7 +148,7 @@ UBYTE IMCliReMsg (Connection *conn, Contact *cont, Opt *opt)
 
 void IMCliInfo (Connection *conn, Contact *cont, int group)
 {
-    UDWORD ref;
+    UDWORD ref = 0;
     if (cont)
     {
         cont->updated = 0;
@@ -164,8 +164,9 @@ void IMCliInfo (Connection *conn, Contact *cont, int group)
         else if (conn->type == TYPE_SERVER_OLD)
             ref = CmdPktCmdRandSearch (conn, group);
     }
-    QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 60, NULL,
-                      cont, NULL, &CallbackMeta);
+    if (ref)
+        QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 60, NULL,
+                          cont, NULL, &CallbackMeta);
 }
 
 static void CallbackMeta (Event *event)

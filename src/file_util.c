@@ -60,7 +60,7 @@
 
 Connection *PrefNewConnection (UDWORD servertype, const char *user, const char *passwd)
 {
-    Connection *conn;
+    Connection *conn = NULL;
     Contact *cont;
     
     if (servertype == TYPE_SERVER)
