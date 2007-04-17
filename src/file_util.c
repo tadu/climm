@@ -1018,8 +1018,8 @@ int Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "prompt"))
                 {
-                    if ((tmp = (s_parseprompt (&args))->txt) != NULL)
-                        prG->prompt = strdup (tmp);
+                    PrefParse (cmd);
+                    prG->prompt = strdup (cmd);
                 }
                 else
                 {
@@ -1847,8 +1847,8 @@ int PrefWriteConfFile (void)
     fprintf (rcf, "[Strings]\n");
     fprintf (rcf, "# The user prompt.\n");
 
-    fprintf (rcf, "prompt \"%s\"          # user prompt. for prompt template see manual\n",
-                   prG->prompt);
+    fprintf (rcf, "prompt %s          # user prompt. for prompt template see manual\n",
+                   s_quote (prG->prompt));
 
     fprintf (rcf, "# The aliases.\n");
     {

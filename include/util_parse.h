@@ -4,7 +4,6 @@
 #define MICQ_UTIL_PARSE_H
 
 strc_t        s_parse_s     (const char **input, const char *sep);
-strc_t        s_parseprompt_s (const char **input, const char *sep);
 Contact      *s_parsenick_s (const char **input, const char *sep, Connection *serv);
 ContactGroup *s_parsecg_s   (const char **input, const char *sep, Connection *serv);
 ContactGroup *s_parselist_s (const char **input, BOOL rem,        Connection *serv);
@@ -22,7 +21,6 @@ int is_valid_msn_name  (char *user);
 #define MULTI_SEP   " \t\r\n,"
 
 #define s_parse(i)          s_parse_s     (i, DEFAULT_SEP)
-#define s_parseprompt(i)    s_parseprompt_s     (i, DEFAULT_SEP)
 #define s_parsenick(i,s)    s_parsenick_s (i, DEFAULT_SEP, s)
 #define s_parsecg(i,s)      s_parsecg_s   (i, DEFAULT_SEP, s)
 #define s_parselist(i,s)    s_parselist_s (i, 0, s)
