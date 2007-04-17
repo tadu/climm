@@ -77,6 +77,7 @@ export MICQ_EXTRAVERSION="Official Autopackage"
 ./configure
 ./config.status --file autopackage/micq.apspec:autopackage/micq.apspec.in
 makeinstaller autopackage/micq.apspec
+make -C src
 makeinstaller autopackage/micq.apspec
 mv mICQ-$VERSION.x86.package ..
 cd ..
@@ -90,12 +91,15 @@ cp micq-$VERSION.tgz micq_$VERSION.orig.tar.gz
 tar -zxf micq-$VERSION.tgz
 cd micq-$VERSION
 sed -i "1s/$VERSION-0/$VERSION-2edgy0/" debian/changelog
+sed -i "/Build-Depends:/s/$/| libgloox-dev/" debian/control
+export DEB_BUILD_OPTIONS=yesxmpp
 export MICQ_EXTRAVERSION="Official deb (edgy)"
 fakeroot dpkg-buildpackage -tc -us -uc
 cd /tmp
 rm -rf micq-$VERSION
 mv micq_$VERSION-2edgy0_i386.deb $WEBDIR/deb/dists/edgy/main/binary-i386/
 mv micq_$VERSION-2edgy0* micq_$VERSION.orig.tar.gz $WEBDIR/deb/dists/edgy/main/source/
+unset DEB_BUILD_OPTIONS=yesxmpp
 
 #
 # final
