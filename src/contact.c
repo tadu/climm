@@ -1234,10 +1234,18 @@ val_t ContactPrefVal (Contact *ocont, UDWORD flag)
     Contact *cont;
     val_t res = 0;
     
+#if ENABLE_CONT_HIER
     for (cont = ocont; cont; cont = cont->parent)
+#else
+    for (cont = ocont; cont; cont = NULL)
+#endif
         if (OptGetVal (&cont->copts, flag, &res))
             return res;
+#if ENABLE_CONT_HIER
     for (cont = ocont; cont; cont = cont->parent)
+#else
+    for (cont = ocont; cont; cont = NULL)
+#endif
         if (cont->group)
         {
             if (OptGetVal (&cont->group->copts, flag, &res))
@@ -1258,10 +1266,18 @@ const char *ContactPrefStr (Contact *ocont, UDWORD flag)
     Contact *cont;
     const char *res = NULL;
 
+#if ENABLE_CONT_HIER
     for (cont = ocont; cont; cont = cont->parent)
+#else
+    for (cont = ocont; cont; cont = NULL)
+#endif
         if (OptGetStr (&cont->copts, flag, &res))
             return res;
+#if ENABLE_CONT_HIER
     for (cont = ocont; cont; cont = cont->parent)
+#else
+    for (cont = ocont; cont; cont = NULL)
+#endif
         if (cont->group)
         {
             if (OptGetStr (&cont->group->copts, flag, &res))
@@ -1273,10 +1289,18 @@ const char *ContactPrefStr (Contact *ocont, UDWORD flag)
         return res;
     if (~flag & COF_COLOR || flag == CO_COLORNONE)
         return "";
+#if ENABLE_CONT_HIER
     for (cont = ocont; cont; cont = cont->parent)
+#else
+    for (cont = ocont; cont; cont = NULL)
+#endif
         if (OptGetStr (&cont->copts, CO_COLORNONE, &res))
             return res;
+#if ENABLE_CONT_HIER
     for (cont = ocont; cont; cont = cont->parent)
+#else
+    for (cont = ocont; cont; cont = NULL)
+#endif
         if (cont->group)
         {
             if (OptGetStr (&cont->group->copts, CO_COLORNONE, &res))
