@@ -1629,7 +1629,7 @@ static void TCPCallBackReceive (Event *event)
             {
                 case MSG_NORM:
                 case MSG_URL:
-                    IMIntMsg (cont, peer, NOW, ims_offline, opt_origin == CV_ORIGIN_dc ? INT_MSGACK_DC : INT_MSGACK_SSL, opt_text, NULL);
+                    IMIntMsg (cont, serv, NOW, ims_offline, opt_origin == CV_ORIGIN_dc ? INT_MSGACK_DC : INT_MSGACK_SSL, opt_text, NULL);
                     if (~cont->oldflags & CONT_SEENAUTO && strlen (tmp) && strcmp (tmp, opt_text))
                     {
                         IMSrvMsg (cont, serv, NOW, OptSetVals (NULL, CO_ORIGIN, opt_origin, CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, tmp, 0));
