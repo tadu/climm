@@ -1229,14 +1229,15 @@ val_t ContactGroupPrefVal (ContactGroup *cg, UDWORD flag)
 /*
  * Query an option for a contact.
  */
-val_t ContactPrefVal (Contact *cont, UDWORD flag)
+val_t ContactPrefVal (Contact *ocont, UDWORD flag)
 {
+    Contact *cont;
     val_t res = 0;
     
-    if (cont)
-    {
+    for (cont = ocont; cont; cont = cont->parent)
         if (OptGetVal (&cont->copts, flag, &res))
             return res;
+    for (cont = ocont; cont; cont = cont->parent)
         if (cont->group)
         {
             if (OptGetVal (&cont->group->copts, flag, &res))
@@ -1244,7 +1245,6 @@ val_t ContactPrefVal (Contact *cont, UDWORD flag)
             if (cont->group->serv && OptGetVal (&cont->group->serv->contacts->copts, flag, &res))
                 return res;
         }
-    }
     if (OptGetVal (&prG->copts, flag, &res))
         return res;
     return 0;
@@ -1253,14 +1253,15 @@ val_t ContactPrefVal (Contact *cont, UDWORD flag)
 /*
  * Query a string option for a contact.
  */
-const char *ContactPrefStr (Contact *cont, UDWORD flag)
+const char *ContactPrefStr (Contact *ocont, UDWORD flag)
 {
+    Contact *cont;
     const char *res = NULL;
-    
-    if (cont)
-    {
+
+    for (cont = ocont; cont; cont = cont->parent)
         if (OptGetStr (&cont->copts, flag, &res))
             return res;
+    for (cont = ocont; cont; cont = cont->parent)
         if (cont->group)
         {
             if (OptGetStr (&cont->group->copts, flag, &res))
@@ -1268,15 +1269,14 @@ const char *ContactPrefStr (Contact *cont, UDWORD flag)
             if (cont->group->serv && OptGetStr (&cont->group->serv->contacts->copts, flag, &res))
                 return res;
         }
-    }
     if (OptGetStr (&prG->copts, flag, &res))
         return res;
     if (~flag & COF_COLOR || flag == CO_COLORNONE)
         return "";
-    if (cont)
-    {
+    for (cont = ocont; cont; cont = cont->parent)
         if (OptGetStr (&cont->copts, CO_COLORNONE, &res))
             return res;
+    for (cont = ocont; cont; cont = cont->parent)
         if (cont->group)
         {
             if (OptGetStr (&cont->group->copts, CO_COLORNONE, &res))
@@ -1284,7 +1284,6 @@ const char *ContactPrefStr (Contact *cont, UDWORD flag)
             if (cont->group->serv && OptGetStr (&cont->group->serv->contacts->copts, CO_COLORNONE, &res))
                 return res;
         }
-    }
     if (OptGetStr (&prG->copts, CO_COLORNONE, &res))
         return res;
     return "";
