@@ -721,13 +721,16 @@ const char *ReadLinePrintWidth (const char *text, const char *left, const char *
 
 const char *ReadLinePrintCont (const char *nick, const char *left)
 {
+    static str_s str = { NULL, 0, 0 };
     UWORD twidth, pwidth = uiG.nick_len;
     strc_t txt;
     
     txt = ReadLineAnalyzeWidth (nick, &twidth);
     if (twidth > uiG.nick_len)
         uiG.nick_len = pwidth = twidth;
-    return s_sprintf ("%*.*s%s%s%s ", pwidth - twidth, pwidth - twidth, "", left, nick, COLNONE);
+    s_init (&str, "", 10);
+    s_catf (&str, "%*.*s%s%s%s ", pwidth - twidth, pwidth - twidth, "", left, nick, COLNONE);
+    return str.txt;
 }
 
 
