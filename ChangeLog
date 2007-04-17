@@ -1,5 +1,25 @@
 -*- coding: utf-8 -*-
 
+2007-04-18 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* prepare for 0.5.3
+	* define MICQ_IS_CVS to check whether we are a CVS version
+	* BuildVersionStr, BuildPlatformStr for XMPP versioning
+	* directly resolve contact hierarchies in ContactPrefStr()
+	* turn ROSTER_TYPE_* into roster_* enum and add two unknown
+	  values to ignore
+	* update XMPP version information
+	* fix assertion failure
+	* fix potential string re-use
+	* ru micq.7 update from Maxim Komar
+	* fix typos found by Maxim Komar in en micq.7
+	* make short status i18n'able
+	* remove native status from short status
+	* remove s_parseprompt() function (was used just for one config)
+	* fix uninitialized variable errors
+	* compile fix if XMPP is disabled
+	* add DEB_BUILD_OPTIONS value for enabling XMPP
+	* fix autopackage creation, enable xmpp for edgy
+
 2007-04-09 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Patch from Maxim Komar:
 	+ use new global uiG.conn for current session
