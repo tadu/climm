@@ -4,45 +4,48 @@ Authors:
         Matthew D. Smith
             micq development up to 0.4.7
 
-        Rüdiger Kuhlman        <info__at__ruediger-kuhlmann.de>
+        Rüdiger Kuhlman        <info__at__ruediger-kuhlmann__dot__de>
             mICQ development since 0.4.8
 
 Contributors:
 
-        Rico Glöckner          <mc__at__ukeer.de>
+        Rico Glöckner          <mc__at__ukeer__dot__de>
             hosts micq.org and the mailinglist
 
-        Peter Backes            <rtc__at__helen.PLASMA.Xg8.DE>
+        Peter Backes            <rtc__at__helen__dot__PLASMA__dot__Xg8__dot__DE>
             v8: info stuff; code cleanup; log file format and helper scripts
 
-        Roman Hoog Antink       <roman__at__rs3.ch>
+        Roman Hoog Antink       <roman__at__rs3__dot__ch>
             SSL and TCL extensions
 
-        Michel Oosterhof        <micheloo__at__xs4all.nl>
+	Maxim Komar		<komar__at__ukr__dot__net>
+	    configurable prompt
+
+        Michel Oosterhof        <micheloo__at__xs4all__dot__nl>
             initial auto{conf,make} support
 
-        Lutz Rossa              <rossa__at__hmi.de>
+        Lutz Rossa              <rossa__at__hmi__dot__de>
             win32 screensaver/lock detection
 
-        Frédéric Lamorce	<fred__at__bemail.org>	BeDevId #15453
+        Frédéric Lamorce	<fred__at__bemail__dot__org>	BeDevId #15453
             added UDP Socks5 support (for v5)
             /* BeDevId #15453, http://www.colba.net/~tiange/ */
         
-        Sebastian Felis		<sebastian__at__segv.de>
+        Sebastian Felis		<sebastian__at__segv__dot__de>
             history & find command
         
-        Bob			<gnomeking__at__gmail.com>
+        Bob			<gnomeking__at__gmail__dot__com>
             chat command
 
 Current Translators:
 
-	Tomáš Bambas		<conyx__at__seznam.cz>
+	Maxim Komar		<komar__at__ukr__dot__net>
+	    updated russian (ru) man pages to 0.5.3
+
+	Tomáš Bambas		<conyx__at__seznam__dot__cz>
 	    czech (cs_CZ) translation 0.5.0.4
 
-	Seva Gluschenko		<gvs__at__demos.net>
-	    updated russian (ru) translation to 0.5.0.4
-	
-	Leonardo Rosa		<leorosa@feq.unicamp.br>
+	Leonardo Rosa		<leorosa__at__feq__dot__unicamp__dot__br>
 	    portuguese/brazil (pt) translation 0.5
 	    updated portuguese man pages to 0.4.10
 	    portuguese web page
@@ -52,65 +55,68 @@ Current Translators:
 
 Former Translators:
 
-	Nikola Lecic		<lecicc__at__ptt.yu>
+	Seva Gluschenko		<gvs__at__demos__dot__net>
+	    updated russian (ru) translation to 0.5.0.4
+	
+	Nikola Lecic		<lecicc__at__ptt__dot__yu>
 	    serbian (sr_yu) translation 0.4.10
 	    serbian man pages, serbian web page
 	
 	Alonso Andres
 	    portuguese/brazil (pt) translation 0.4.10
 
-	Artem Sokolov		<sokolov__at__ukr.net>
+	Artem Sokolov		<sokolov__at__ukr__dot__net>
 	    ukrainian (uk.i18n) translation 0.4.10
 	    2 ukrainian man pages
 	
-        J. Grant		<jg__at__jguk.org>
+        J. Grant		<jg__at__jguk__dot__org>
             japanese (ja_jp) translation 0.4.10
 
-	Alberto Bertogli	<albertogli__at__telpin.com.ar>
+	Alberto Bertogli	<albertogli__at__telpin__dot__com__dot__ar>
 	    spanish (es.i18n) translation 0.4.9.3
 	    spanish man pages, spanish web page
 	
-	Fabio KaLiF		<f.venturi__at__email.it>
+	Fabio KaLiF		<f.venturi__at__email__dot__it>
 	    italian (it.i18n) translation
 	
-	L. Budi Handoko		<handoko__at__riset.dinus.ac.id>
+	L. Budi Handoko		<handoko__at__riset__dot__dinus__dot__ac__dot__id>
 	    indonesian (id.i18n) translation to 0.4.10
 	
-	Guido Gloor		<haslo__at__haslo.ch>
+	Guido Gloor		<haslo__at__haslo__dot__ch>
 	    swiss-german (de_CH.i18n) translation to 0.4.9.3
 
         Digor Dumitru, Alina Pelin
             (partial) romanian (ro.i18n) translation
         
-	"Pest"			<pezt__at__mail.ru>
+	"Pest"			<pezt__at__mail__dot__ru>
 	    update russian (ru.i18n) translation to 0.4.9.3
 	    russian man pages, russian web page
 
-        Deives Michellis	<dmichellis__at__yahoo.com>
+        Deives Michellis	<dmichellis__at__yahoo__dot__com>
             portuguese/brazil (pt_br) man pages to 0.4.9.?
 
-	Guillaume Coqueblin	<esquimo_2ooo__at__caramail.com>
+	Guillaume Coqueblin	<esquimo_2ooo__at__caramail__dot__com>
 	    (update) french (fr.i18n) translation to >= 0.4.8pl9
 	
-	Julien Gilli		<jgilli__at__nerim.fr>
+	Julien Gilli		<jgilli__at__nerim__dot__fr>
 	    french man pages, french web pages
 	
-	Valerie Dachev		<v.dachev__at__mail.com>
+	Valerie Dachev		<v.dachev__at__mail__dot__com>
 	    bulgarian translation
 	
 	Taneli Huuskonen
 	    finnish translation
 	    
-	Cawko Xakep 		<xakep__at__snark.ukma.kiev.ua>
+	Cawko Xakep 		<xakep__at__snark__dot__ukma__dot__kiev__dot__ua>
 	    ukrainan translation
 	
-	Dmitri Lukyanov		<ldv__at__sdsl-64-7-10-170.dsl.iad.megapath.net>
+	Dmitri Lukyanov		<ldv__at__sdsl-64-7-10-170__dot__dsl__dot__iad__dot__megapath__dot__net>
 	    (update) russian translation
 
-	Björn Hansson		<hansson__at__netera.se>
+	Björn Hansson		<hansson__at__netera__dot__se>
 	    (update) swedish translation
 
-	Benjamin Michotte <binny__at__baby-linux.net>
+	Benjamin Michotte <binny__at__baby-linux__dot__net>
 	    (update) french translation
 
 
