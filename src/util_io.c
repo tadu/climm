@@ -686,7 +686,7 @@ static void UtilIOTOConn (Event *event)
  */
 Packet *UtilIOReceiveTCP (Connection *conn)
 {
-    ssl_errno_t ssl_rc;
+    ssl_errno_t ssl_rc = 0;
     int rc, off, len;
     Packet *pak;
     
@@ -865,7 +865,7 @@ Packet *UtilIOReceiveF (Connection *conn)
 BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
 {
     UBYTE *data;
-    ssl_errno_t ssl_rc;
+    ssl_errno_t ssl_rc = 0;
     int rc, bytessend = 0;
 
     data = (void *) &pak->data;
