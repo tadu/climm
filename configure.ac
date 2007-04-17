@@ -21,6 +21,12 @@ AM_MAINTAINER_MODE
 
 AC_DEFINE(MICQ_VERSION,VERSION,[mICQ's current version])
 
+if test -f $(srcdir)/.is_release; then
+  AC_DEFINE(MICQ_IS_CVS, "")
+else
+  AC_DEFINE(MICQ_IS_CVS, " CVS " BUILDDATE, whether we are CVS or not)
+fi
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_RANLIB
