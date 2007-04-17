@@ -1,5 +1,5 @@
 # $Id$ (Ukrainian)
-#  EN: __.i18n,v 1.85 2007-04-07 14:20:22 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.86 2007-04-17 20:58:31 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:uk
 1002:uk_UA
@@ -803,10 +803,7 @@
 2039:Посилає повідомлення на <номер> сотового телефону <ніка>.
 2042:Виводить список людей в ефірі з вашого контакт-лісту в широкоформатному вигляді.
 2043:Знищити всі контакти в <контактах> з <групи>.
-#-#2044:Встановити, очистити або вивести <опцію>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
-#+#2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
-# #2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
-#2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
+2044:Встановити, очистити або вивести <опцію>: color, delbs, auto, prompt, autosave, autofinger, linebreak, funny.
 2045:Переключає вашу видимість відносно <контактів> коли ви в ефірі.
 2046:Вам можливо захочеться натомість використати 8 версію протоколу для протоколів один-на-один.\n
 2047:Створення каталогу %s.\n
@@ -1020,7 +1017,9 @@
 2260:Будь ласка спробуйте натомість команду getauto.\n
 2262:Інтерпретацію символів знищення як backspace %s%s%s.\n
 2265:Автоматичні відповіді %s%s%s.\n
-2266:Виведення останній ніку у запрошенні %s%s%s.\n
+#-#2266:Виведення останній ніку у запрошенні %s%s%s.\n
+#+#2266:Having the last nick in the prompt is %s%s%s.\n
+# #2266:Type of the prompt is %s%s%s.\n
 2267:Автоматичне збереження %s%s%s.\n
 2268:Автоматичний вивід інформації про нові UIN-и %s%s%s.\n
 2269:"розбиваючий"
@@ -1031,7 +1030,7 @@
 2281:    auto:       відсилати автовідповіді.\n
 #-#2282:    uinprompt:  останній нік у запрошенні.\n
 #+#2282:    uinprompt:  display the last nick in the prompt.\n
-#2282:    uinprompt:  have the last nick in the prompt.\n
+#2282:    prompt:     type of the prompt: user, uin, simple\n
 2283:    autosave:   автоматично зберігати файл micqrc.\n
 2284:    autofinger: автоматично виводити інформацію про нові UIN-и.\n
 2285:    linebreak:  стиль для повідомлень, довших за рядок: simple, break, indent, s
@@ -1345,3 +1344,16 @@
 #2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
 #2619: with %s%s%s
 #2620:Opening XMPP connection for %s at %s...\n
+#2621:off
+#2622:inv
+#2623:dnd
+#2624:occ
+#2625:na
+#2626:away
+#2627:ffc
+#2628:online
+#2629:Set or show user defined prompt. See manual for details.
+#2630:user
+#2631:uin
+#2632:simple
+#2633:Note: You need to 'save' to write new user prompt to disc.\n

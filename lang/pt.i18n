@@ -1,5 +1,5 @@
 # $Id$ Português (Brazillian)
-#  EN: __.i18n,v 1.85 2007-04-07 14:20:22 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.86 2007-04-17 20:58:31 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:pt
 1002:pt_BR
@@ -773,7 +773,7 @@
 2039:Envia uma mensagem para o telefone <celular> (do <apelido>).
 2042:Mostra uma lista de pessoas conectadas na sua lista de contatos em um formato de tela cheia.
 2043:Remove todos os contatos em <contatos> do grupo de contatos <grupo>.
-2044:Seleciona, limpa ou mostra uma <opção>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
+2044:Seleciona, limpa ou mostra uma <opção>: color, delbs, auto, prompt, autosave, autofinger, linebreak, funny.
 2045:Muda sua visibilidade para <contatos> quando você estiver conectado.
 2046:Você pode querer usar protocolo versão 8 para o protocolo ICQ ponto-a-ponto ao invés.\n
 2047:Criando diretório %s.\n
@@ -934,7 +934,9 @@
 2260:Por favor tente o comando getauto ao invés.\n
 2262:Interpretar um caractere delete como backspace está %s%s%s.\n
 2265:Respostas automáticas são %s%s%s.\n
-2266:Ter o último apelido no prompt está %s%s%s.\n
+#-#2266:Ter o último apelido no prompt está %s%s%s.\n
+#+#2266:Having the last nick in the prompt is %s%s%s.\n
+# #2266:Type of the prompt is %s%s%s.\n
 2267:Salvar automaticamente está %s%s%s.\n
 2268:'Finger' automático de novos UINs está %s%s%s.\n
 2269:break
@@ -943,7 +945,9 @@
 2272:smart
 2278:    delbs:      interpreta caracteres delete como backspace.\n
 2281:    auto:       enviar auto-respostas.\n
-2282:    uinprompt:  ter o último apelido no prompt.\n
+#-#2282:    uinprompt:  ter o último apelido no prompt.\n
+#+#2282:    uinprompt:  have the last nick in the prompt.\n
+# #2282:    prompt:     type of the prompt: user, uin, simple\n
 2283:    autosave:   automaticamente salvar o micqrc.\n
 2284:    autofinger: automaticamente 'finger' novos UINs.\n
 2285:    linebreak:  estilo para quebra de linha das mensagens: simple, break, indent, smart.\n
@@ -1130,6 +1134,7 @@
 #-#2494:  -u, --uin      login com esse UIN ao invés do configurado\n
 #+#2494:  -u, --uin      login with this UIN instead of those configured\n
 # #2494:  -u, --user     login with this user/UIN instead of those configured\n
+#2494:  -u, --user     login with this user/UIN instead of those configured\n
 2495:  -p, --passwd   ... e force a senha\n
 2496:  -s, --status   ... e force o estado\n
 2497:  -C, --cmd      ... e execute um comando mICQ\n
@@ -1256,3 +1261,16 @@
 #2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
 #2619: with %s%s%s
 #2620:Opening XMPP connection for %s at %s...\n
+#2621:off
+#2622:inv
+#2623:dnd
+#2624:occ
+#2625:na
+#2626:away
+#2627:ffc
+#2628:online
+#2629:Set or show user defined prompt. See manual for details.
+#2630:user
+#2631:uin
+#2632:simple
+#2633:Note: You need to 'save' to write new user prompt to disc.\n

@@ -1,5 +1,5 @@
 # $Id$ castellano (Spanish)
-#  EN: __.i18n,v 1.85 2007-04-07 14:20:22 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.86 2007-04-17 20:58:31 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:es
 1002:es
@@ -837,7 +837,7 @@
 #-#2045:Cambia tu visibilidad con <uin> o <nick> cuando estas conectado.
 #+#2045:Toggles your visibility to <uin> or <nick> when you're online.
 #2043:Remove all contacts in <contacts> from contact group <group>.
-#2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
+#2044:Set, clear or display an <option>: color, delbs, auto, prompt, autosave, autofinger, linebreak, funny.
 #2045:Toggles your visibility to <contacts> when you're online.
 2046:Probablemente quieras usar la versión 8 del protocolo para conexiones par-a-par.\n
 2047:Creando directorio %s.\n
@@ -1068,7 +1068,7 @@
 #2260:Please try the getauto command instead.\n
 #2262:Interpreting a delete character as backspace is %s%s%s.\n
 #2265:Automatic replies are %s%s%s.\n
-#2266:Having the last nick in the prompt is %s%s%s.\n
+#2266:Type of the prompt is %s%s%s.\n
 #2267:Automatic saves are %s%s%s.\n
 #2268:Automatic fingering of new UINs is %s%s%s.\n
 #2269:break
@@ -1077,7 +1077,7 @@
 #2272:smart
 #2278:    delbs:      interpret delete characters as backspace.\n
 #2281:    auto:       send auto-replies.\n
-#2282:    uinprompt:  have the last nick in the prompt.\n
+#2282:    prompt:     type of the prompt: user, uin, simple\n
 #2283:    autosave:   automatically save the micqrc.\n
 #2284:    autofinger: automatically finger new UINs.\n
 #2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
@@ -1386,3 +1386,16 @@
 #2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
 #2619: with %s%s%s
 #2620:Opening XMPP connection for %s at %s...\n
+#2621:off
+#2622:inv
+#2623:dnd
+#2624:occ
+#2625:na
+#2626:away
+#2627:ffc
+#2628:online
+#2629:Set or show user defined prompt. See manual for details.
+#2630:user
+#2631:uin
+#2632:simple
+#2633:Note: You need to 'save' to write new user prompt to disc.\n

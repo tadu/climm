@@ -1,5 +1,5 @@
 # $Id$ Romana (Romanian)
-#  EN: __.i18n,v 1.85 2007-04-07 14:20:22 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.86 2007-04-17 20:58:31 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:ro
 1002:ro_RO
@@ -801,10 +801,7 @@
 2039:Trimite un mesaj catre numarul <cell> (al <nick>).
 2042:Afiseaza o lista a oamenilor conectati intr-un format ecran larg.
 2043:Sterge toate contactele <contacts> din grupul de contacte <group>.
-#-#2044:Seteaza, sterge sau afiseaza o <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
-#+#2044:Set, clear or display an <option>: hermit, delbs, log, logonoff, auto, uinprompt, autosave, autofinger, linebreak, tabs, silent.
-# #2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
-#2044:Set, clear or display an <option>: color, delbs, auto, uinprompt, autosave, autofinger, linebreak, funny.
+2044:Seteaza, sterge sau afiseaza o <option>: color, delbs, auto, prompt, autosave, autofinger, linebreak, funny.
 2045:Schimba starea vizibilitatii dvs. pentru <contacts> cand sunteti conectat.
 2046:Posibil sa doriti utilizarea protocolului cu versiunea 8 pentru protocolul ICQ peer-to-peer.\n
 2047:Creez mapa %s.\n
@@ -1010,7 +1007,9 @@
 2260:Incercati va rog comanda getauto.\n
 2262:Interpretarea unui caracter delete ca backspace este %s%s%s.\n
 2265:Raspunsurile automate sint %s%s%s.\n
-2266:Prezenta ultimului nick in prompt este %s%s%s.\n
+#-#2266:Prezenta ultimului nick in prompt este %s%s%s.\n
+#+#2266:Having the last nick in the prompt is %s%s%s.\n
+# #2266:Type of the prompt is %s%s%s.\n
 2267:Salvarile automate sunt %s%s%s.\n
 2268:Finger-ul automat la UINurile noi este %s%s%s.\n
 #2269:break
@@ -1021,7 +1020,7 @@
 2281:    auto:       trimite raspunsuri automate.\n
 #-#2282:    uinprompt:  ultimul nick sa fie in prompt.\n
 #+#2282:    uinprompt:  display the last nick in the prompt.\n
-#2282:    uinprompt:  have the last nick in the prompt.\n
+#2282:    prompt:     type of the prompt: user, uin, simple\n
 2283:    autosave:   automat salveaza micqrc.\n
 2284:    autofinger: automat fa finger la UINurile noi.\n
 #2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
@@ -1335,3 +1334,16 @@
 #2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
 #2619: with %s%s%s
 #2620:Opening XMPP connection for %s at %s...\n
+#2621:off
+#2622:inv
+#2623:dnd
+#2624:occ
+#2625:na
+#2626:away
+#2627:ffc
+#2628:online
+#2629:Set or show user defined prompt. See manual for details.
+#2630:user
+#2631:uin
+#2632:simple
+#2633:Note: You need to 'save' to write new user prompt to disc.\n
