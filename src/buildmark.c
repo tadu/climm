@@ -29,8 +29,8 @@
  * $Id$
  */
 
-/*                        0.5.2.90 */
-#define MICQ_BUILD_NUM 0x0005025a
+/*                        0.5.3 */
+#define MICQ_BUILD_NUM 0x00050300
 
 #include "micq.h"
 #include "buildmark.h"
