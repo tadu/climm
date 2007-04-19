@@ -47,7 +47,7 @@ cp micq-$VERSION.tgz /usr/src/rpm/SOURCES/
 rpmbuild --clean --nodeps -ba /usr/src/rpm/SPECS/micq.spec
 #rpm --clean -ta micq-$VERSION.tgz
 mv /usr/src/rpm/RPMS/i386/micq-$VERSION-1.i386.rpm $WEBDIR/binary/
-mv /usr/src/rpm/SRPMS/micq-$VERSION-1.src.rpm $WEBDIR/binary/
+mv /usr/src/rpm/SRPMS/micq-$VERSION-1.src.rpm $WEBDIR/source/
 
 #
 # AmigaOS
@@ -101,9 +101,11 @@ mv micq_$VERSION-2edgy0_i386.deb $WEBDIR/deb/dists/edgy/main/binary-i386/
 mv micq_$VERSION-2edgy0* micq_$VERSION.orig.tar.gz $WEBDIR/deb/dists/edgy/main/source/
 unset DEB_BUILD_OPTIONS=yesxmpp
 
+
 #
 # final
 #
+mv micq-$VERSION.tgz WEBDIR/source/
 cd $WEBDIR
 find . -name "*[-_]$VERSION*" -exec md5sum  {} \; | sed "s/^/md5sum /"
 find . -name "*[-_]$VERSION*" -exec sha1sum {} \; | sed "s/^/sha1sum /"
