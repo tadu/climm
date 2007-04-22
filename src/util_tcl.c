@@ -334,15 +334,11 @@ void TCLInit ()
     int i, result;
     Connection *conn;
 
-#if ENABLE_AUTOPACKAGE
-    extern int libtcl8_4_is_present;
     if (!libtcl8_4_is_present)
     {
         rl_printf (i18n (2582, "Install the Tcl 8.4 library and enjoy scripting in mICQ!\n"));
         return;
     }
-#endif
-
 
 #if HAVE_SIGPROCMASK
     sigset_t sigs;

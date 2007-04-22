@@ -64,6 +64,16 @@ time_t portable_timegm (struct tm *tm);
 
 #define ENABLE_DEBUG 1
 
+#if ENABLE_AUTOPACKAGE
+extern int libtcl8_4_is_present;
+extern int libgnutls_is_present;
+extern int libgcrypt_is_present;
+#else
+#define libtcl8_4_is_present 1
+#define libgnutls_is_present 1
+#define libgcrypt_is_present 1
+#endif
+
 struct Queue_s;
 struct Event_s;
 struct Contact_s;

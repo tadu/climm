@@ -103,9 +103,6 @@ void SrvCallBackFlap (Event *event)
 static void FlapChannel1 (Connection *conn, Packet *pak)
 {
     int i;
-#if ENABLE_AUTOPACKAGE
-    extern int libgcrypt_is_present;
-#endif
 
     if (PacketReadLeft (pak) < 4)
     {
@@ -137,11 +134,7 @@ static void FlapChannel1 (Connection *conn, Packet *pak)
                 tlv = NULL;
             }
 #if ENABLE_SSL
-#if ENABLE_AUTOPACKAGE
             else if (libgcrypt_is_present)
-#else
-            else if (1)
-#endif
             {
                 FlapCliHello (conn);
                 SnacCliReqlogin (conn);

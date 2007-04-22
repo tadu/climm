@@ -196,14 +196,11 @@ int SSLInit ()
 
     ssl_init_ok = 0;
     
-#if ENABLE_AUTOPACKAGE
-    extern int libgnutls_is_present;
     if (!libgnutls_is_present)
     {
         rl_printf (i18n (2581, "Install the GnuTLS library and enjoy encrypted connections to peers!\n"));
         return -1;
     }
-#endif
 
     ret = gnutls_global_init ();
     SSL_CHECK_SUCCESS_0_OK (ret, -1, "gnutls_global_init", NULL);
