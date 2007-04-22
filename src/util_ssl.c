@@ -30,6 +30,7 @@
  */
 
 #include "micq.h"
+#include <assert.h>
 
 #if ENABLE_SSL
 
@@ -56,6 +57,7 @@ static char ssl_init_ok = 0;
 #if ENABLE_GNUTLS
 
 #include <gnutls/gnutls.h>
+#include <gcrypt.h>
 #define SSL_FAIL(s, e)    { const char *t = s; \
                             if (prG->verbose & DEB_SSL || \
                                 e != GNUTLS_E_UNEXPECTED_PACKET_LENGTH) \
@@ -82,6 +84,7 @@ static gnutls_dh_params dh_parm;
 #include <openssl/err.h>
 #include <openssl/dh.h>
 #include <openssl/opensslv.h>
+#include <openssl/md5.h>
 
 static SSL_CTX *gSSL_CTX;
 
@@ -253,6 +256,78 @@ int SSLInit ()
     ssl_init_ok = 1;
     return 0;
 }
+
+
+
+#if ENABLE_GNUTLS
+struct ssl_md5ctx_s {
+    gcry_md_hd_t h;
+};
+
+ssl_md5ctx_t *ssl_md5_init ()
+{
+    ssl_md5ctx_t *ctx = malloc (sizeof *ctx);
+    if (!ctx)
+        return NULL;
+    gcry_error_t err = gcry_md_open (&ctx->h, GCRY_MD_MD5, 0);
+    if (gcry_err_code (err))
+    {
+        free (ctx);
+        return NULL;
+    }
+    return ctx;
+}
+
+void ssl_md5_write (ssl_md5ctx_t *ctx, char *buf, size_t len)
+{
+    if (!ctx)
+        return;
+    gcry_md_write (ctx->h, buf, len);
+}
+
+int ssl_md5_final (ssl_md5ctx_t *ctx, char *buf)
+{
+    if (!ctx)
+        return -1;
+    gcry_md_final (ctx->h);
+    unsigned char *hash = gcry_md_read (ctx->h, 0);
+    assert (hash);
+    memcpy (buf, hash, 16);
+    gcry_md_close (ctx->h);
+    free (ctx);
+    return 0;
+}
+#else
+struct ssl_md5ctx_s {
+    MD5_CTX ctx;
+};
+
+ssl_md5ctx_t *ssl_md5_init ()
+{
+    ssl_md5ctx_t *ctx = malloc (sizeof *ctx);
+    if (!ctx)
+        return NULL;
+    MD5_Init (&ctx->ctx);
+    return ctx;
+}
+
+void ssl_md5_write (ssl_md5ctx_t *ctx, char *buf, size_t len)
+{
+    if (!ctx)
+        return;
+    MD5_Update (&ctx->ctx, buf, len);
+}
+
+int ssl_md5_final (ssl_md5ctx_t *ctx, char *buf)
+{
+    if (!ctx)
+        return -1;
+    MD5_Final ((unsigned char *)buf, &ctx->ctx);
+    free (ctx);
+    return 0;
+}
+#endif
+
 
 /*
  * Check whether peer supports SSL
