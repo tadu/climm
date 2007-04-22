@@ -412,7 +412,8 @@ const char *s_time (time_t *stamp)
         stamp = NULL;
     }
     now = *localtime (&nowsec);
-    
+
+    s_init (&str, "", 32);    
     while (!rc)
     {
         rc = strftime (str.txt, str.max,
