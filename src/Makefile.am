@@ -68,6 +68,6 @@ lang:
 	   grep "i18n (#" *.c; \
 	   exit 1; fi; true
 	@rm -f *.c~ ../lang/*.i18n~
-	@../lang/i18n-extract *.c
+	@../lang/i18n-extract *.c *.cpp
 	@rm -rf ../lang/*.i18n~
 
