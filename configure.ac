@@ -75,9 +75,11 @@ if test "x$ac_arg_use_dc" != "xno"; then
     ac_use_ssl=no
     if test "x$ac_arg_use_ssl" != "xopenssl"; then
       AM_PATH_LIBGNUTLS(0.8.8, ac_use_ssl=gnutls)
+      AM_PATH_LIBGCRYPT(, , ac_use_ssl=no)
+      AC_CHECK_HEADERS([gcrypt.h], , ac_use_ssl=no)
       if test "x$ac_use_ssl" = "xgnutls"; then
-        LIBS="$LIBGNUTLS_LIBS $LIBS"
-        CFLAGS="$LIBGNUTLS_CFLAGS $CFLAGS"
+        LIBS="$LIBGNUTLS_LIBS $LIBGCRYPT_LIBS $LIBS"
+        CFLAGS="$LIBGNUTLS_CFLAGS $LIBGCRYPT_CFLAGS $CFLAGS"
         AC_CHECK_FUNC(gnutls_dh_params_generate2, [AC_DEFINE(HAVE_DH_GENPARAM2, 1, [Whether new DH prime generator is available])],)
       fi
     fi
@@ -335,6 +337,7 @@ if test "x$ac_arg_use_ssl" = "xgnutls"; then
   AC_DEFINE(ENABLE_GNUTLS, 1, [Whether to use GnuTLS for SSL/TLS support])
 elif test "x$ac_arg_use_ssl" = "xopenssl"; then
   AC_DEFINE(ENABLE_SSL, 1, [Whether to enable SSL/TLS support])
+  AC_DEFINE(ENABLE_OPENSSL, 1, [Whether to use OpenSSL for SSL/TLS support])
 fi
 
 if test "x$ac_arg_use_tcl" = "xyes"; then
@@ -534,7 +537,7 @@ if test "x$ac_arg_use_autopackage" = xyes; then
         AC_SEARCH_LIBS([dlopen], [dl])
         LIBS="$old_LIBS $LIBS"
         if test "x$RELAYTOOL" != x:; then
-            LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gloox' $LIBS"'`'
+            LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox' $LIBS"'`'
             AC_DEFINE(ENABLE_AUTOPACKAGE,1,[Use autopackage to check libraries at run time])
         fi
     fi
