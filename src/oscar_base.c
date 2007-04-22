@@ -52,7 +52,6 @@
 #include "tcp.h"
 
 static void FlapChannel1 (Connection *conn, Packet *pak);
-static void FlapChannel4 (Connection *conn, Packet *pak);
 
 void SrvCallBackFlap (Event *event)
 {
@@ -104,6 +103,9 @@ void SrvCallBackFlap (Event *event)
 static void FlapChannel1 (Connection *conn, Packet *pak)
 {
     int i;
+#if ENABLE_AUTOPACKAGE
+    extern int libgcrypt_is_present;
+#endif
 
     if (PacketReadLeft (pak) < 4)
     {
@@ -134,6 +136,17 @@ static void FlapChannel1 (Connection *conn, Packet *pak)
                 TLVD (tlv);
                 tlv = NULL;
             }
+#if ENABLE_SSL
+#if ENABLE_AUTOPACKAGE
+            else if (libgcrypt_is_present)
+#else
+            else if (1)
+#endif
+            {
+                FlapCliHello (conn);
+                SnacCliReqlogin (conn);
+            }
+#endif
             else
                 FlapCliIdent (conn);
             break;
@@ -142,7 +155,7 @@ static void FlapChannel1 (Connection *conn, Packet *pak)
     }
 }
 
-static void FlapChannel4 (Connection *conn, Packet *pak)
+void FlapChannel4 (Connection *conn, Packet *pak)
 {
     TLV *tlv;
     
@@ -318,7 +331,7 @@ void FlapCliIdent (Connection *conn)
         conn->passwd = strdup (pwd ? ConvFrom (pwd, prG->enc_loc)->txt : "");
 #endif
     }
-    
+
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
     PacketWriteTLVStr  (pak, 1, conn->screen);

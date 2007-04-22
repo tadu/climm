@@ -40,6 +40,7 @@
 #include "connection.h"
 #include "conv.h"
 #include "file_util.h"
+#include "util_ssl.h"
 
 /*
  * SRV_REGREFUSED - SNAC(17,1)
@@ -60,6 +61,44 @@ JUMP_SNAC_F(SnacSrvRegrefused)
 #endif
         ConnectionD (serv);
     }
+}
+
+/*
+ * CLI_MD5LOGIN - SNAC(17,2)
+ */
+void SnacCliMd5login (Connection *serv, const char *hash)
+{
+    Packet *pak;
+
+    /* send packet */
+    pak = SnacC (serv, 23, 2, 0, 0);
+    PacketWriteTLVStr  (pak, 1, serv->screen);
+    PacketWriteTLVStr  (pak, 3, "ICQ Inc. - Product of ICQ (TM).2003b.5.37.1.3728.85");
+    PacketWriteTLVData (pak, 37, hash, 16);
+    PacketWriteTLV2    (pak, 22, 266);
+    PacketWriteTLV2    (pak, 23, FLAP_VER_MAJOR);
+    PacketWriteTLV2    (pak, 24, FLAP_VER_MINOR);
+    PacketWriteTLV2    (pak, 25, FLAP_VER_LESSER);
+    PacketWriteTLV2    (pak, 26, FLAP_VER_BUILD);
+    PacketWriteTLV4    (pak, 20, FLAP_VER_SUBBUILD);
+    PacketWriteTLVStr  (pak, 15, "de");  /* en */
+    PacketWriteTLVStr  (pak, 14, "DE");  /* en */
+    /* SSI use flag: 1 - only SSI, 0 - family 3 snacs? */
+    PacketWriteTLV (pak, 74);
+    PacketWrite1 (pak, 0);
+    PacketWriteTLVDone (pak);
+    SnacSend(serv, pak);
+}
+
+/*
+ * SRV_REPLYLOGIN - SNAC(17,3)
+ */
+JUMP_SNAC_F(SnacSrvReplylogin)
+{
+    Connection *serv = event->conn;
+
+    /* delegate to old login method */
+    FlapChannel4 (serv, event->pak);
 }
 
 /*
@@ -136,4 +175,51 @@ JUMP_SNAC_F(SnacSrvNewuin)
     }
     else
         rl_print (i18n (2518, "You need to 'save' to write your new UIN to disc.\n"));
+}
+
+/*
+ * CLI_REQLOGIN - SNAC(17,6)
+ */
+void SnacCliReqlogin (Connection *serv)
+{
+    Packet *pak;
+
+    pak = SnacC (serv, 23, 6, 0, 0);
+    PacketWriteTLVStr (pak, 1, serv->screen);
+    PacketWriteTLV (pak, 0x4B); /* unknown */
+    PacketWriteTLVDone (pak);
+    PacketWriteTLV (pak, 0x5A); /* unknown */
+    PacketWriteTLVDone (pak);
+    SnacSend (serv, pak);
+}
+
+/*
+ * SRV_SRV_LOGINKEY - SNAC(17,7)
+ */
+JUMP_SNAC_F(SnacSrvLoginkey)
+{
+    Connection *serv = event->conn;
+    char hash[16];
+    ssl_md5ctx_t *ctx;
+    int rc;
+    strc_t key;
+
+    key = PacketReadB2Str (event->pak, NULL);
+    if (!key->len)
+        return;
+
+    /* compute md5 hash */
+#define AIM_MD5_STRING "AOL Instant Messenger (SM)"
+
+    ctx = ssl_md5_init ();
+    if (!ctx)
+        return;
+    ssl_md5_write (ctx, key->txt, key->len);
+    ssl_md5_write (ctx, serv->passwd, strlen (serv->passwd));
+    ssl_md5_write (ctx, AIM_MD5_STRING, strlen (AIM_MD5_STRING));
+    rc = ssl_md5_final (ctx, hash);
+    if (rc)
+        return;
+
+    SnacCliMd5login (serv, hash);
 }

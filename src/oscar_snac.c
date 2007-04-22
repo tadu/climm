@@ -88,7 +88,9 @@ static SNAC SNACS[] = {
     { 21,  1, "SRV_TOICQERR",        SnacSrvToicqerr},
     { 21,  3, "SRV_FROMICQSRV",      SnacSrvFromicqsrv},
     { 23,  1, "SRV_REGREFUSED",      SnacSrvRegrefused},
+    { 23,  3, "SRV_REPLYLOGIN",      SnacSrvReplylogin},
     { 23,  5, "SRV_NEWUIN",          SnacSrvNewuin},
+    { 23,  7, "SRV_LOGINKEY",        SnacSrvLoginkey},
     {  1,  2, "CLI_READY",           NULL},
     {  1,  6, "CLI_RATESREQUEST",    NULL},
     {  1,  8, "CLI_ACKRATES",        NULL},
@@ -123,7 +125,9 @@ static SNAC SNACS[] = {
     { 19, 24, "CLI_REQAUTH",         NULL},
     { 19, 26, "CLI_AUTHORIZE",       NULL},
     { 21,  2, "CLI_TOICQSRV",        NULL},
+    { 23,  2, "CLI_MD5LOGIN",        NULL},
     { 23,  4, "CLI_REGISTERUSER",    NULL},
+    { 23,  6, "CLI_REQLOGIN",        NULL},
     {  0,  0, "unknown",             NULL}
 };
 

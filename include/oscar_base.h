@@ -16,6 +16,7 @@ void FlapCliIdent (Connection *serv);
 void FlapCliCookie (Connection *serv, const char *cookie, UWORD len);
 void FlapCliGoodbye (Connection *serv);
 void FlapCliKeepalive (Connection *serv);
+void FlapChannel4 (Connection *conn, Packet *pak);
 
 void SrvCallBackFlap (Event *event);
 
