@@ -20,6 +20,7 @@ cp lang/Makefile.am lang/Makefile
 rm lang/Makefile
 #cp /usr/share/gnulib/build-aux/missing /usr/share/gnulib/build-aux/install-sh /usr/share/gnulib/build-aux/depcomp /usr/share/gnulib/build-aux/config.sub /usr/share/gnulib/build-aux/config.guess .
 eval `grep ^\ VERSION configure`
+echo "$VERSION" > .is_release
 cd ..
 mv micq micq-$VERSION
 tar -zcf micq-$VERSION.tgz micq-$VERSION
