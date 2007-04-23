@@ -129,7 +129,6 @@ extern struct OptEntry_s OptList[];
 #define CO_ORIGIN        (COF_NUMERIC              | 0x23UL) /* the message's origin */
 #define CO_STATUS        (COF_NUMERIC              | 0x24UL) /* a status */
 #define CO_BYTES         (COF_NUMERIC              | 0x25UL) /* a file length */
-#define CO_PORT          (COF_NUMERIC              | 0x26UL) /* a port number */
 #define CO_REF           (COF_NUMERIC              | 0x27UL) /* a reference */
 #define CO_FORCE         (COF_NUMERIC              | 0x28UL) /* force action */
 #define CO_FILENAME      (COF_STRING               | 0x29UL) /* a filename */

@@ -550,7 +550,7 @@ static JUMP_SRV_F (CmdPktSrvAck)
             return;
 
         IMIntMsg (cont, conn, NOW, ims_offline, INT_MSGACK_V5,
-                  c_in_to_split (PacketReadAtL2Str (event->pak, 30, NULL), cont), NULL);
+                  c_in_to_split (PacketReadAtL2Str (event->pak, 30, NULL), cont));
     }
     
     PacketD (pak);

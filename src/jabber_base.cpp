@@ -292,26 +292,26 @@ void MICQXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
     
     if (gloox::Tag *dotag = XEP22->findChild ("delivered"))
     {
-        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGACK_V8, "", NULL);
+        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGACK_V8, "");
         CheckInvalid (dotag);
     }
     else if (gloox::Tag *dotag = XEP22->findChild ("displayed"))
     {
-        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGDISPL, "", NULL);
+        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGDISPL, "");
         CheckInvalid (dotag);
     }
     else if (gloox::Tag *dotag = XEP22->findChild ("composing"))
     {
-        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGCOMP, "", NULL);
+        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGCOMP, "");
         CheckInvalid (dotag);
     }
     else if (gloox::Tag *dotag = XEP22->findChild ("offline"))
     {
-        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGOFF, "", NULL);
+        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGOFF, "");
         CheckInvalid (dotag);
     }
     else
-        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGNOCOMP, "", NULL);
+        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGNOCOMP, "");
     CheckInvalid (XEP22);
 }
 

@@ -145,7 +145,6 @@ void PeerFileUser (UDWORD seq, Contact *cont, const char *reason, Connection *se
 UBYTE PeerFileIncAccept (Connection *list, Event *event)
 {
     Connection *flist, *fpeer, *serv;
-    Opt *opt;
     Contact *cont;
     UDWORD opt_bytes, opt_acc;
     const char *opt_files;
@@ -166,10 +165,9 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
         || !(fpeer = ConnectionClone (flist, TYPE_FILEDIRECT)))
     {
         const char *txt;
-        opt = OptSetVals (NULL, CO_MSGTEXT, opt_files, 0);
         if (!OptGetStr (event->wait->opt, CO_REFUSE, &txt))
             txt = "";
-        IMIntMsg (cont, serv, NOW, ims_offline, INT_FILE_REJING, txt, opt);
+        IMIntMsgFat (cont, serv, NOW, ims_offline, INT_FILE_REJING, txt, opt_files, 0, 0);
         return FALSE;
     }
     ASSERT_FILELISTEN (flist);
@@ -186,8 +184,7 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     fpeer->close     = &PeerFileDispatchDClose;
     fpeer->reconnect = &TCPDispatchReconn;
 
-    opt = OptSetVals (NULL, CO_BYTES, opt_bytes, CO_MSGTEXT, opt_files, 0);
-    IMIntMsg (cont, serv, NOW, ims_offline, INT_FILE_ACKING, "", opt);
+    IMIntMsgFat (cont, serv, NOW, ims_offline, INT_FILE_ACKING, "", opt_files, 0, opt_bytes);
     
     return TRUE;
 }

@@ -444,16 +444,14 @@ int __IMIntMsg (Contact *cont, time_t stamp, fat_int_msg_t *msg, int hide)
 /*
  * Central entry point for protocol triggered output.
  */
-void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, int_msg_t type, const char *text, Opt *opt)
+void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, int_msg_t type, const char *text)
 {
     fat_int_msg_t msg;
     char *deleteme = NULL;
 
     if (!cont)
-    {
-        OptD (opt);
         return;
-    }
+
     assert (cont->serv == conn);
     
     memset (&msg, 0, sizeof msg);
@@ -464,13 +462,9 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, 
     msg.msgtext = text;
     msg.type = type;
     msg.tstatus = tstatus;
-    
-    if (!OptGetStr (opt, CO_MSGTEXT, &msg.opt_text))
-        msg.opt_text = "";
-    if (!OptGetVal (opt, CO_PORT, &msg.port))
-        msg.port = 0;
-    if (!OptGetVal (opt, CO_BYTES, &msg.bytes))
-        msg.bytes = 0;
+    msg.opt_text = "";
+    msg.port = 0;
+    msg.bytes = 0;
 
     if (!strncasecmp (msg.orig_data, "<font ", 6))
     {
@@ -488,7 +482,49 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, 
     
     __IMIntMsg (cont, stamp, &msg, 0);
 
-    OptD (opt);
+    if (deleteme)
+        s_free (deleteme);
+}
+
+void IMIntMsgFat (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, int_msg_t type,
+                  const char *text, const char *opt_text, UDWORD port, UDWORD bytes)
+{
+    fat_int_msg_t msg;
+    char *deleteme = NULL;
+
+    if (!cont)
+        return;
+
+    assert (cont->serv == conn);
+    
+    memset (&msg, 0, sizeof msg);
+    if (stamp == NOW)
+        stamp = time (NULL);
+
+    msg.orig_data = text;
+    msg.msgtext = text;
+    msg.type = type;
+    msg.tstatus = tstatus;
+    msg.opt_text = opt_text ? opt_text : "";
+    msg.port = port;
+    msg.bytes = bytes;
+
+    if (!strncasecmp (msg.orig_data, "<font ", 6))
+    {
+      char *t = deleteme = strdup (msg.orig_data);
+      while (*t && *t != '>')
+        t++;
+      if (*t)
+      {
+        size_t l = strlen (++t);
+        if (!strcasecmp (t + l - 7, "</font>"))
+          t[l - 7] = 0;
+        msg.msgtext = t;
+      }
+    }
+    
+    __IMIntMsg (cont, stamp, &msg, 0);
+
     if (deleteme)
         s_free (deleteme);
 }
