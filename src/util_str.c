@@ -392,8 +392,9 @@ const char *s_time (time_t *stamp)
 
     if (stamp && *stamp != NOW)
     {
-        thetime = localtime (stamp);
         nowsec = time (NULL);
+        now = *localtime (&nowsec);
+        thetime = localtime (stamp);
     }
     else
     {
@@ -410,8 +411,8 @@ const char *s_time (time_t *stamp)
 #endif
         thetime = &now;
         stamp = NULL;
+        now = *localtime (&nowsec);
     }
-    now = *localtime (&nowsec);
 
     s_init (&str, "", 32);    
     while (!rc)
