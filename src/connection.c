@@ -92,6 +92,7 @@ Connection *ConnectionC (UWORD type DEBUGPARAM)
     conn->sok = -1;
     conn->type = type;
     conn->flags = CONN_CONFIGURED;
+    conn->logfd = -1;
 
     Debug (DEB_CONNECT, "<=== %p[%d] create %d", conn, j, type);
 

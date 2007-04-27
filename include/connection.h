@@ -81,6 +81,8 @@ struct Connection_s
     Connection            *assoc;  /* associated session           */
     Connection            *parent; /* parent session               */
     
+    SOK_T     logfd;
+    
     UDWORD    stat_real_pak_sent;
     UDWORD    stat_real_pak_rcvd;
     UDWORD    stat_pak_sent;

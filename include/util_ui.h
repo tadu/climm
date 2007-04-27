@@ -17,10 +17,8 @@ BOOL DebugReal (UDWORD level, const char *str, ...) __attribute__ ((format (__pr
 #define DEB_PACK5DATA     0x00000800L
 #define DEB_PACK8         0x00001000L
 #define DEB_PACK8DATA     0x00002000L
-#define DEB_PACK8SAVE     0x00004000L
 #define DEB_PACKTCP       0x00010000L
 #define DEB_PACKTCPDATA   0x00020000L
-#define DEB_PACKTCPSAVE   0x00040000L
 #define DEB_TCP           0x00200000L
 #define DEB_IO            0x00400000L
 #define DEB_SSL           0x00800000L

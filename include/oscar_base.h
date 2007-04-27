@@ -23,7 +23,6 @@ void SrvCallBackFlap (Event *event);
 Packet *FlapC (UBYTE channel);
 void    FlapSend (Connection *serv, Packet *pak);
 void    FlapPrint (Packet *pak);
-void    FlapSave (Packet *pak, BOOL in);
 
 Event *ConnectionInitServer (Connection *serv);
 Connection *SrvRegisterUIN (Connection *serv, const char *pass);

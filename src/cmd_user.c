@@ -1465,8 +1465,8 @@ static JUMP_F(CmdUserVerbose)
     {
         if      (s_parsekey (&args, "sane"))
             i |= DEB_PROTOCOL | DEB_CONNECT | DEB_EVENT
-                | DEB_PACK5DATA | DEB_PACK8 | DEB_PACK8DATA | DEB_PACK8SAVE
-                | DEB_PACKTCP | DEB_PACKTCPDATA | DEB_PACKTCPSAVE 
+                | DEB_PACK5DATA | DEB_PACK8 | DEB_PACK8DATA
+                | DEB_PACKTCP | DEB_PACKTCPDATA 
                 | DEB_TCP | DEB_IO | DEB_SSL;
         else if (s_parsekey (&args, "xmpp"))
             i |= DEB_XMPPIN | DEB_XMPPOUT | DEB_XMPPOTHER;
@@ -1485,12 +1485,10 @@ static JUMP_F(CmdUserVerbose)
         else if (s_parsekey (&args, "5PD"))     i |= DEB_PACK5DATA;
         else if (s_parsekey (&args, "8PK"))     i |= DEB_PACK8;
         else if (s_parsekey (&args, "8PD"))     i |= DEB_PACK8DATA;
-        else if (s_parsekey (&args, "8PS"))     i |= DEB_PACK8SAVE;
         else if (s_parsekey (&args, "TCP"))     i |= DEB_TCP;
         else if (s_parsekey (&args, "I/O"))     i |= DEB_IO;
         else if (s_parsekey (&args, "TPK"))     i |= DEB_PACKTCP;
         else if (s_parsekey (&args, "TPD"))     i |= DEB_PACKTCPDATA;
-        else if (s_parsekey (&args, "TPS"))     i |= DEB_PACKTCPSAVE;
         else if (strlen (args) == 3)
         {
             rl_printf ("### numeric, or keywords: SSL PRO PAK QUE CON EVE EXT CTC OPT 5PD 8PK 8PD 8PS TCP I/O TPK TPD TPS\n");

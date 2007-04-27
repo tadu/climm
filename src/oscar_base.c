@@ -31,12 +31,14 @@
 
 #include "micq.h"
 #include <assert.h>
+#include <sys/types.h>
 #if HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
 #if HAVE_WINSOCK2_H
 #include <winsock2.h>
 #endif
+#include <fcntl.h>
 #include "util_ui.h"
 #include "util_io.h"
 #include "util_syntax.h"
@@ -52,6 +54,7 @@
 #include "tcp.h"
 
 static void FlapChannel1 (Connection *conn, Packet *pak);
+static void FlapSave (Connection *serv, Packet *pak, BOOL in);
 
 void SrvCallBackFlap (Event *event)
 {
@@ -205,7 +208,6 @@ void FlapPrint (Packet *pak)
     UWORD seq, len;
 
     pak->rpos = 1;
-    
     ch  = PacketRead1 (pak);
     seq = PacketReadB2 (pak);
     len = PacketReadB2 (pak);
@@ -222,35 +224,74 @@ void FlapPrint (Packet *pak)
     pak->rpos = opos;
 }
 
-void FlapSave (Packet *pak, BOOL in)
+static void FlapSave (Connection *serv, Packet *pak, BOOL in)
 {
-    FILE *logf;
     UDWORD oldrpos = pak->rpos;
-    char buf[200], *d;
+    UBYTE ch;
+    UWORD seq, len;
+    str_s str = { NULL, 0, 0 };
+    const char *data;
+    char *dump;
     
-    snprintf (buf, sizeof (buf), "%sdebug", PrefUserDir (prG));
-    mkdir (buf, 0700);
-    snprintf (buf, sizeof (buf), "%sdebug" _OS_PATHSEPSTR "packets", PrefUserDir (prG));
-    if (!(logf = fopen (buf, "a")))
+    if (serv->logfd < 0)
+    {
+        const char *dir, *file;
+        dir = s_sprintf ("%sdebug", PrefUserDir (prG));
+        mkdir (dir, 0700);
+        file = s_sprintf ("%sdebug" _OS_PATHSEPSTR "packets.icq8.%s.%lu", PrefUserDir (prG), serv->screen, time (NULL));
+        serv->logfd = open (file, O_WRONLY | O_CREAT | O_APPEND, 0600);
+    }
+    if (serv->logfd < 0)
         return;
 
-    fprintf (logf, "%s FLAP seq %08x length %04x channel %d\n",
-             in ? "<<<" : ">>>", PacketReadAtB2 (pak, 2),
-             pak->len - 6, PacketReadAt1 (pak, 1));
-    if (PacketReadAt1 (pak, 1) != 2)
-        pak->rpos = 6;
-    else
+    pak->rpos = 1;
+    ch  = PacketRead1 (pak);
+    seq = PacketReadB2 (pak);
+    len = PacketReadB2 (pak);
+    
+    data = s_sprintf ("%s %s\n", s_now, in ? "<<<" : ">>>");
+    write (serv->logfd, data, strlen (data));
+    
+    s_init (&str, "", 64);
+    s_catf (&str, "%s FLAP  ch %d seq %08x length %04x\n",
+            s_dumpnd (pak->data, 6), ch, seq, len);
+    
+    if (ch == 2)
     {
-        fprintf (logf, "SNAC (%x,%x) [%s] flags %x ref %lx\n",
-                 PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8),
-                 SnacName (PacketReadAtB2 (pak, 6), PacketReadAtB2 (pak, 8)),
-                 PacketReadAtB2 (pak, 10), PacketReadAtB4 (pak, 12));
-        pak->rpos = 16;
+        UWORD fam, cmd, flag;
+        UDWORD ref, len;
+        char *syn;
+        
+        fam  = PacketReadB2 (pak);
+        cmd  = PacketReadB2 (pak);
+        flag = PacketReadB2 (pak);
+        ref  = PacketReadB4 (pak);
+        len  = PacketReadAtB2 (pak, pak->rpos);
+
+        s_catf (&str, "%s SNAC (%x,%x) [%s] flags %x ref %lx",
+            s_dumpnd (pak->data + 6, flag & 0x8000 ? 10 + len + 2 : 10),
+            fam, cmd, SnacName (fam, cmd), flag, ref);
+
+        if (flag & 0x8000)
+        {
+            s_catf (&str, " extra (%ld)", len);
+            pak->rpos += len + 2;
+        }
+        s_catc (&str, '\n');
+
+        syn = strdup (s_sprintf ("gs%dx%ds", fam, cmd));
+        dump = PacketDump (pak, syn, "", "");
+        free (syn);
+        s_catf (&str, "%s", dump);
+        free (dump);
     }
-    fprintf (logf, "%s", d = PacketDump (pak, "", "", ""));
-    free (d);
+    else
+        s_catf (&str, "%s", s_dump (pak->data + 6, pak->len - 6));
+
+    data = s_ind (str.txt);
+    s_done (&str);
+    write (serv->logfd, data, strlen (data));
     pak->rpos = oldrpos;
-    fclose (logf);
 }
 
 Packet *FlapC (UBYTE channel)
@@ -284,8 +325,9 @@ void FlapSend (Connection *conn, Packet *pak)
         FlapPrint (pak);
         rl_print (COLEXDENT "\r");
     }
-    if (prG->verbose & DEB_PACK8SAVE)
-        FlapSave (pak, FALSE);
+    
+    if (ConnectionPrefVal (conn, CO_LOGSTREAM))
+        FlapSave (conn, pak, FALSE);
     
     conn->stat_pak_sent++;
     conn->stat_real_pak_sent++;
@@ -560,8 +602,8 @@ void SrvCallBackReceive (Connection *conn)
         FlapPrint (pak);
         rl_print (COLEXDENT "\r");
     }
-    if (prG->verbose & DEB_PACK8SAVE)
-        FlapSave (pak, TRUE);
+    if (ConnectionPrefVal (conn, CO_LOGSTREAM))
+        FlapSave (conn, pak, TRUE);
     
     QueueEnqueueData (conn, QUEUE_FLAP, pak->id, time (NULL),
                       pak, 0, NULL, &SrvCallBackFlap);

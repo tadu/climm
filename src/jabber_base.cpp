@@ -1,6 +1,14 @@
 
 extern "C" {
 #include "micq.h"
+#include <sys/types.h>
+#if HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif
+#include <fcntl.h>
 #include "jabber_base.h"
 #include "connection.h"
 #include "contact.h"
@@ -615,6 +623,29 @@ void MICQXMPP::handleSubscription (gloox::Stanza *s)
                s->xml().c_str());
 }
 
+void MICQXMPPSave (Connection *serv, const char *text, bool in)
+{
+    const char *data;
+    
+    if (serv->logfd < 0)
+    {
+        const char *dir, *file;
+        dir = s_sprintf ("%sdebug", PrefUserDir (prG));
+        mkdir (dir, 0700);
+        file = s_sprintf ("%sdebug" _OS_PATHSEPSTR "packets.xmpp.%s.%lu", PrefUserDir (prG), serv->screen, time (NULL));
+        serv->logfd = open (file, O_WRONLY | O_CREAT | O_APPEND, 0600);
+    }
+    if (serv->logfd < 0)
+        return;
+
+    data = s_sprintf ("%s %s\n", s_now, in ? "<<<" : ">>>");
+    write (serv->logfd, data, strlen (data));
+
+    text = s_ind (text);
+    write (serv->logfd, text, strlen (text));
+    write (serv->logfd, "\n", 1);
+}
+
 void MICQXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message)
 {
     const char *lt = "";
@@ -639,10 +670,14 @@ void MICQXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std:
     }
     if (area == gloox::LogAreaXmlIncoming)
     {
+        if (ConnectionPrefVal (m_conn, CO_LOGSTREAM))
+            MICQXMPPSave (m_conn, message.c_str(), 1);
         DebugH (DEB_XMPPIN, "%s/%s: %s", lt, la, message.c_str());
     }
     else if (area == gloox::LogAreaXmlOutgoing)
     {
+        if (ConnectionPrefVal (m_conn, CO_LOGSTREAM))
+            MICQXMPPSave (m_conn, message.c_str(), 0);
         DebugH (DEB_XMPPOUT, "%s/%s: %s", lt, la, message.c_str());
     }
     else

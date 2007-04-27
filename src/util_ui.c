@@ -25,10 +25,8 @@ static const char *DebugStr (UDWORD level)
     if (level & DEB_PACK5DATA)   return "v5 data";
     if (level & DEB_PACK8)       return "v8 pack";
     if (level & DEB_PACK8DATA)   return "v8 data";
-    if (level & DEB_PACK8SAVE)   return "v8 save";
     if (level & DEB_PACKTCP)     return "TCPpack";
     if (level & DEB_PACKTCPDATA) return "TCPdata";
-    if (level & DEB_PACKTCPSAVE) return "TCPsave";
     if (level & DEB_PROTOCOL)    return "Protocl";
     if (level & DEB_TCP)         return "TCP HS ";
     if (level & DEB_IO)          return "In/Out ";
