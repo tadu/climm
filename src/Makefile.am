@@ -1,5 +1,7 @@
 # $Id$ 
 
+AUTOMAKE_OPTIONS = subdir-objects
+
 bin_PROGRAMS = micq
 
 AM_CFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include
