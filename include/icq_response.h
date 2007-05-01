@@ -16,7 +16,8 @@ typedef enum {
 void IMIntMsg    (Contact *cont, time_t stamp, status_t tstatus, int_msg_t type, const char *text);
 void IMIntMsgFat (Contact *cont, time_t stamp, status_t tstatus, int_msg_t type, const char *text,
                   const char *opt_text, UDWORD port, UDWORD bytes);
-void IMSrvMsg  (Contact *cont, time_t stamp, Opt *opt);
+void IMSrvMsg    (Contact *cont, time_t stamp, UDWORD opt_origin, UDWORD opt_type, const char *text);
+void IMSrvMsgFat (Contact *cont, time_t stamp, Opt *opt);
 void IMOnline  (Contact *cont, status_t status, statusflag_t flags, UDWORD nativestatus, const char *text);
 void IMOffline (Contact *cont);
 

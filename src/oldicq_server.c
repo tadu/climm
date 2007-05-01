@@ -441,8 +441,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
 
             if ((cont = ContactUIN (conn, uin)))
             {
-                IMSrvMsg (cont, NOW, OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5,
-                          CO_MSGTYPE, wdata, CO_MSGTEXT, text, 0));
+                IMSrvMsg (cont, NOW, CV_ORIGIN_v5, wdata, text);
                 Auto_Reply (conn, cont);
             }
             free (text);

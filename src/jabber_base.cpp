@@ -473,7 +473,7 @@ void MICQXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string to
     Opt *opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, body.c_str(), 0);
     if (!subject.empty())
         opt = OptSetVals (opt, CO_MSGTYPE, MSG_NORM_SUBJ, CO_SUBJECT, subject.c_str(), 0);
-    IMSrvMsg (contr, delay, opt);
+    IMSrvMsgFat (contr, delay, opt);
 
     DropAllChilds (t, "body");
     DropAllChilds (t, "subject");

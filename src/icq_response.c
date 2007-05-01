@@ -989,7 +989,12 @@ int __IMSrvMsg (Contact *cont, time_t stamp, fat_msg_t *msg, int hide)
 /*
  * Central entry point for incoming messages.
  */
-void IMSrvMsg (Contact *cont, time_t stamp, Opt *opt)
+void IMSrvMsg (Contact *cont, time_t stamp, UDWORD opt_origin, UDWORD opt_type, const char *text)
+{
+    IMSrvMsgFat (cont, stamp, OptSetVals (NULL, CO_ORIGIN, opt_origin, CO_MSGTYPE, opt_type, CO_MSGTEXT, text, 0));
+}
+
+void IMSrvMsgFat (Contact *cont, time_t stamp, Opt *opt)
 {
     fat_msg_t msg;
     char *cdata_deleteme;

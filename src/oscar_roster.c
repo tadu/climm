@@ -831,7 +831,6 @@ void SnacCliReqauth (Connection *serv, Contact *cont, const char *msg)
 JUMP_SNAC_F(SnacSrvAuthreq)
 {
     Connection *serv = event->conn;
-    Opt *opt;
     Packet *pak;
     Contact *cont;
     strc_t ctext;
@@ -845,10 +844,7 @@ JUMP_SNAC_F(SnacSrvAuthreq)
         return;
     
     text = strdup (c_in_to_split (ctext, cont));
-    
-    opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8,
-                                 CO_MSGTYPE, MSG_AUTH_REQ, CO_MSGTEXT, text, 0);
-    IMSrvMsg (cont, NOW, opt);
+    IMSrvMsg (cont, NOW, CV_ORIGIN_v8, MSG_AUTH_REQ, text);
     free (text);
 }
 
@@ -874,7 +870,6 @@ void SnacCliAuthorize (Connection *serv, Contact *cont, BOOL accept, const char 
 JUMP_SNAC_F(SnacSrvAuthreply)
 {
     Connection *serv = event->conn;
-    Opt *opt;
     Packet *pak;
     Contact *cont;
     strc_t ctext;
@@ -890,10 +885,7 @@ JUMP_SNAC_F(SnacSrvAuthreply)
         return;
     
     text = strdup (c_in_to_split (ctext, cont));
-
-    opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8,
-              CO_MSGTYPE, acc ? MSG_AUTH_GRANT : MSG_AUTH_DENY, CO_MSGTEXT, text, 0);
-    IMSrvMsg (cont, NOW, opt);
+    IMSrvMsg (cont, NOW, CV_ORIGIN_v8, acc ? MSG_AUTH_GRANT : MSG_AUTH_DENY, text);
     free (text);
 }
 
@@ -902,14 +894,8 @@ JUMP_SNAC_F(SnacSrvAuthreply)
  */
 JUMP_SNAC_F(SnacSrvAddedyou)
 {
-    Connection *serv = event->conn;
-    Opt *opt;
     Contact *cont;
-    Packet *pak;
 
-    pak = event->pak;
-    cont = PacketReadCont (pak, serv);
-
-    opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, MSG_AUTH_ADDED, 0);
-    IMSrvMsg (cont, NOW, opt);
+    cont = PacketReadCont (event->pak, event->conn);
+    IMSrvMsg (cont, NOW, CV_ORIGIN_v8, MSG_AUTH_ADDED, "");
 }

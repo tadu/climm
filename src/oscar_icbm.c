@@ -162,8 +162,7 @@ JUMP_SNAC_F(SnacSrvAckmsg)
     event = QueueDequeue (serv, QUEUE_TYPE2_RESEND, seq_dc);
 
     if ((msgtype & 0x300) == 0x300)
-        IMSrvMsg (cont, NOW, OptSetVals (NULL,
-                  CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, msgtype, CO_MSGTEXT, text, 0));
+        IMSrvMsg (cont, NOW, CV_ORIGIN_v8, msgtype, text);
     else if (event)
     {
         const char *opt_text;
@@ -172,8 +171,7 @@ JUMP_SNAC_F(SnacSrvAckmsg)
             IMIntMsg (cont, NOW, ims_offline, INT_MSGACK_TYPE2, opt_text);
             if ((~cont->oldflags & CONT_SEENAUTO) && strlen (text) && strcmp (text, opt_text))
             {
-                IMSrvMsg (cont, NOW, OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8,
-                          CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, text, 0));
+                IMSrvMsg (cont, NOW, CV_ORIGIN_v8, MSG_AUTO, text);
                 cont->oldflags |= CONT_SEENAUTO;
             }
         }
@@ -607,7 +605,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             }
             opt = OptSetVals (event->opt, CO_ORIGIN, CV_ORIGIN_v5, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, txt, 0);
             event->opt = NULL;
-            IMSrvMsg (cont, NOW, opt);
+            IMSrvMsgFat (cont, NOW, opt);
             Auto_Reply (serv, cont);
             s_done (&str);
             break;
@@ -754,7 +752,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             opt = OptSetVals (event->opt, CO_ORIGIN, CV_ORIGIN_v5, CO_MSGTYPE, msgtyp,
                       CO_MSGTEXT, msgtyp == MSG_NORM ? ConvFromCont (ctext, cont) : c_in_to_split (ctext, cont), 0);
             event->opt = NULL;
-            IMSrvMsg (cont, NOW, opt);
+            IMSrvMsgFat (cont, NOW, opt);
             Auto_Reply (serv, cont);
             break;
     }
@@ -1040,7 +1038,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 OptSetStr (opt2, CO_MSGTEXT, name);
                 OptSetVal (opt2, CO_REF, ack_event->seq);
                 OptSetVal (opt2, CO_MSGTYPE, msgtype);
-                IMSrvMsg (cont, NOW, opt2);
+                IMSrvMsgFat (cont, NOW, opt2);
                 opt2 = OptC ();
                 OptSetVal (opt2, CO_FILEACCEPT, 0);
                 OptSetStr (opt2, CO_REFUSE, i18n (2514, "refused (ignored)"));
@@ -1135,7 +1133,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                             OptSetStr (opt2, CO_MSGTEXT, name);
                             OptSetVal (opt2, CO_REF, ack_event->seq);
                             OptSetVal (opt2, CO_MSGTYPE, MSG_FILE);
-                            IMSrvMsg (cont, NOW, opt2);
+                            IMSrvMsgFat (cont, NOW, opt2);
                             opt2 = OptC ();
                             OptSetVal (opt2, CO_FILEACCEPT, 0);
                             OptSetStr (opt2, CO_REFUSE, i18n (2514, "refused (ignored)"));
@@ -1181,14 +1179,8 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                     case 0x002d:
                         if (id[0] == (char)0xbf)
                         {
-                            opt2 = OptC ();
-                            OptSetVal (opt2, CO_MSGTYPE, msgtype);
-                            OptSetStr (opt2, CO_MSGTEXT, c_in_to_split (text, cont));
-                            IMSrvMsg (cont, NOW, opt2);
-                            opt2 = OptC ();
-                            OptSetVal (opt2, CO_MSGTYPE, MSG_CHAT);
-                            OptSetStr (opt2, CO_MSGTEXT, name);
-                            IMSrvMsg (cont, NOW, opt2);
+                            IMSrvMsg (cont, NOW, 0, msgtype, c_in_to_split (text, cont));
+                            IMSrvMsg (cont, NOW, 0, MSG_CHAT, name);
                             opt2 = OptC ();
                             OptSetVal (opt2, CO_MSGTYPE, MSG_CHAT);
                             OptSetStr (opt2, CO_MSGTEXT, reason->txt);
@@ -1200,10 +1192,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                         }
                         else if (id[0] == (char)0x2a)
                         {
-                            opt2 = OptC ();
-                            OptSetVal (opt2, CO_MSGTYPE, MSG_CONTACT);
-                            OptSetStr (opt2, CO_MSGTEXT, c_in_to_split (reason, cont));
-                            IMSrvMsg (cont, NOW, opt2);
+                            IMSrvMsg (cont, NOW, 0, MSG_CONTACT, c_in_to_split (reason, cont));
                             PacketWrite2    (ack_pak, ack_status);
                             PacketWrite2    (ack_pak, ack_flags);
                             PacketWriteLNTS (ack_pak, "");
@@ -1275,7 +1264,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
             if (!strcmp (cctmp->txt, CAP_GID_UTF8))
                 OptSetStr (opt, CO_MSGTEXT, text->txt);
             if (*text->txt)
-                IMSrvMsg (cont, NOW, opt);
+                IMSrvMsgFat (cont, NOW, opt);
             inc_event->opt = NULL;
             PacketWrite2     (ack_pak, ack_status);
             PacketWrite2     (ack_pak, ack_flags);

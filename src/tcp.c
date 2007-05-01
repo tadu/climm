@@ -1632,7 +1632,7 @@ static void TCPCallBackReceive (Event *event)
                     IMIntMsg (cont, NOW, ims_offline, opt_origin == CV_ORIGIN_dc ? INT_MSGACK_DC : INT_MSGACK_SSL, opt_text);
                     if (~cont->oldflags & CONT_SEENAUTO && strlen (tmp) && strcmp (tmp, opt_text))
                     {
-                        IMSrvMsg (cont, NOW, OptSetVals (NULL, CO_ORIGIN, opt_origin, CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, tmp, 0));
+                        IMSrvMsg (cont, NOW, opt_origin, MSG_AUTO, tmp);
                         cont->oldflags |= CONT_SEENAUTO;
                     }
                     break;
@@ -1643,7 +1643,7 @@ static void TCPCallBackReceive (Event *event)
                 case MSGF_GETAUTO | MSG_GET_DND:
                 case MSGF_GETAUTO | MSG_GET_FFC:
                 case MSGF_GETAUTO | MSG_GET_VER:
-                    IMSrvMsg (cont, NOW, OptSetVals (NULL, CO_ORIGIN, opt_origin, CO_MSGTYPE, opt_type,
+                    IMSrvMsgFat (cont, NOW, OptSetVals (NULL, CO_ORIGIN, opt_origin, CO_MSGTYPE, opt_type,
                               CO_MSGTEXT, tmp, CO_STATUS, IcqToStatus (ostat & ~MSGF_GETAUTO), 0));
                     break;
 
