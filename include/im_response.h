@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_IM_SRV_H
-#define MICQ_IM_SRV_H
+#ifndef MICQ_IM_RESPONSE_H
+#define MICQ_IM_RESPONSE_H
 
 void HistShow (Contact *cont);
 void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg, UWORD inout);
@@ -54,4 +54,4 @@ void IMOffline (Contact *cont);
 #define HIST_IN 1
 #define HIST_OUT 2
 
-#endif /* MICQ_IM_SRV_H */
+#endif /* MICQ_IM_RESPONSE_H */

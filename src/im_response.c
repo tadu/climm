@@ -3,7 +3,7 @@
 
 #include "micq.h"
 #include <assert.h>
-#include "icq_response.h"
+#include "im_response.h"
 #include "oldicq_compat.h"
 #include "util_rl.h"
 #include "tabs.h"

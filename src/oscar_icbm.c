@@ -42,7 +42,7 @@
 #include "connection.h"
 #include "conv.h"
 #include "server.h"
-#include "icq_response.h"
+#include "im_response.h"
 #include "buildmark.h"
 #include "tcp.h"
 #include "peer_file.h"

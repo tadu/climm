@@ -41,7 +41,7 @@
 #include "connection.h"
 #include "preferences.h"
 #include "conv.h"
-#include "icq_response.h"
+#include "im_response.h"
 #include "util_ui.h"
 
 static Packet *SnacMetaC (Connection *serv, UWORD sub, UWORD type, UWORD ref);

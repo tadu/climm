@@ -9,10 +9,9 @@
 #include <limits.h>
 #include "util_ui.h"
 #include "datatype.h"
-#include "mreadline.h"
 #include "server.h"
 #include "util.h"
-#include "icq_response.h"
+#include "im_response.h"
 #include "oldicq_compat.h"
 #include "oldicq_client.h"
 #include "oscar_snac.h"

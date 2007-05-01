@@ -13,7 +13,7 @@ extern "C" {
 #include "connection.h"
 #include "contact.h"
 #include "util_io.h"
-#include "icq_response.h"
+#include "im_response.h"
 #include "util_ui.h"
 #include "buildmark.h"
 #include "preferences.h"

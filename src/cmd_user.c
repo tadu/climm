@@ -40,7 +40,7 @@
 #include "tabs.h"
 #include "connection.h"
 #include "tcp.h"
-#include "icq_response.h"
+#include "im_response.h"
 #include "conv.h"
 #include "peer_file.h"
 #include "file_util.h"

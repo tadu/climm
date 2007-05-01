@@ -49,7 +49,7 @@
 #include "conv.h"
 #include "file_util.h"
 #include "util_ui.h"
-#include "icq_response.h"
+#include "im_response.h"
 
 #define TLV_REQAUTH    102
 #define TLV_GROUPITEMS 200

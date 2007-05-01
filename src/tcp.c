@@ -16,7 +16,7 @@
 #include "buildmark.h"
 #include "conv.h"
 #include "cmd_user.h"
-#include "icq_response.h"
+#include "im_response.h"
 #include "preferences.h"
 #include "server.h"
 #include "contact.h"

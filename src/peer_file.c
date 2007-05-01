@@ -57,7 +57,7 @@
 #include "util_io.h"
 #include "util_rl.h"
 #include "util.h"
-#include "icq_response.h"
+#include "im_response.h"
 #include "tcp.h"
 #include "conv.h"
 

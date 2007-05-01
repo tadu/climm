@@ -39,7 +39,7 @@
 #include "util_ui.h"
 #include "contact.h" /* for cont->screen */
 #include "preferences.h"
-#include "icq_response.h" /* yuck */
+#include "im_response.h" /* yuck */
 #include "packet.h" /* yuck */
 
 struct QueueEntry

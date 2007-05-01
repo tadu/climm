@@ -12,7 +12,7 @@
 #include "util.h"
 #include "util_ui.h"
 #include "cmd_user.h"
-#include "icq_response.h"
+#include "im_response.h"
 #include "preferences.h"
 #include "server.h"
 #include "connection.h"

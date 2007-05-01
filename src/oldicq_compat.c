@@ -12,7 +12,7 @@
 #include "server.h"
 #include "conv.h"
 #include "oldicq_client.h"
-#include "icq_response.h"
+#include "im_response.h"
 #include "oscar_snac.h"
 #include "oscar_oldicq.h"
 #include "util_ui.h"

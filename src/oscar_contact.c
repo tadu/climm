@@ -40,7 +40,7 @@
 #include "packet.h"
 #include "contact.h"
 #include "connection.h"
-#include "icq_response.h"
+#include "im_response.h"
 
 /*
  * SRV_CONTACTERR - SNAC(3,1)

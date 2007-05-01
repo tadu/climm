@@ -40,7 +40,7 @@
 #include "preferences.h"
 #include "util.h"
 #include "conv.h"
-#include "icq_response.h"
+#include "im_response.h"
 #include "util_ui.h"
 #include "buildmark.h"
 #include <assert.h>
