@@ -30,7 +30,7 @@
 #include "conv.h"
 #include "buildmark.h"
 #include "preferences.h"
-#include "server.h"
+#include "im_request.h"
 #include "contact.h"
 #include "connection.h"
 #include "tcp.h"

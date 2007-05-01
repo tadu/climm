@@ -8,7 +8,7 @@
 #include "util_rl.h"
 #include "tabs.h"
 #include "contact.h"
-#include "server.h"
+#include "im_request.h"
 #include "util.h"
 #include "conv.h"
 #include "preferences.h"

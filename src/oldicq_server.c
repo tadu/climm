@@ -14,7 +14,7 @@
 #include "cmd_user.h"
 #include "im_response.h"
 #include "preferences.h"
-#include "server.h"
+#include "im_request.h"
 #include "connection.h"
 #include "packet.h"
 #include "contact.h"

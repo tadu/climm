@@ -9,7 +9,7 @@
 #include "connection.h"
 #include "preferences.h"
 #include "packet.h"
-#include "server.h"
+#include "im_request.h"
 #include "conv.h"
 #include "oldicq_client.h"
 #include "im_response.h"

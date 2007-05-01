@@ -7,7 +7,7 @@ bin_PROGRAMS = micq
 AM_CFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include
 
 micq_SOURCES = autopackage_prefix.c conv.c file_util.c im_response.c micq.c \
-       server.c util.c util_opts.c util_ui.c mreadline.c \
+       im_request.c util.c util_opts.c util_ui.c mreadline.c \
        msg_queue.c tabs.c i18n.c util_table.c contact.c tcp.c packet.c \
        cmd_user.c preferences.c util_io.c util_str.c util_parse.c \
        util_syntax.c util_rl.c util_alias.c connection.c peer_file.c \

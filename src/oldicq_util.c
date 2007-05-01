@@ -20,7 +20,7 @@
 #include "conv.h"
 #include "preferences.h"
 #include "contact.h"
-#include "server.h"
+#include "im_request.h"
 #include "im_response.h"
 #include "util_io.h"
 #include <assert.h>

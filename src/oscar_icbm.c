@@ -41,7 +41,7 @@
 #include "contact.h"
 #include "connection.h"
 #include "conv.h"
-#include "server.h"
+#include "im_request.h"
 #include "im_response.h"
 #include "buildmark.h"
 #include "tcp.h"

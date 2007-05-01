@@ -46,7 +46,7 @@
 #include "file_util.h"
 #include "buildmark.h"
 #include "contact.h"
-#include "server.h"
+#include "im_request.h"
 #include "util_tcl.h"
 #include "util_ssl.h"
 #include "util_alias.h"

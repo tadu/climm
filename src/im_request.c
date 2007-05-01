@@ -9,7 +9,7 @@
 #include <limits.h>
 #include "util_ui.h"
 #include "datatype.h"
-#include "server.h"
+#include "im_request.h"
 #include "util.h"
 #include "im_response.h"
 #include "oldicq_compat.h"
