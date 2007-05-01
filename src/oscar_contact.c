@@ -223,7 +223,7 @@ JUMP_SNAC_F(SnacSrvUseronline)
     OptSetVal (&cont->copts, CO_TIMEONLINE, time (NULL) - tlv[15].nr);
     ContactSetVersion (cont);
     ostat = tlv[6].str.len ? tlv[6].nr : 0;
-    IMOnline (cont, serv, IcqToStatus (ostat), IcqToFlags (ostat), ostat, NULL);
+    IMOnline (cont, IcqToStatus (ostat), IcqToFlags (ostat), ostat, NULL);
     TLVD (tlv);
 }
 
@@ -232,13 +232,6 @@ JUMP_SNAC_F(SnacSrvUseronline)
  */
 JUMP_SNAC_F(SnacSrvUseroffline)
 {
-    Connection *serv = event->conn;
-    Contact *cont;
-    Packet *pak;
-    
-    pak = event->pak;
-    cont = PacketReadCont (pak, serv);
-
-    IMOffline (cont, serv);
+    IMOffline (PacketReadCont (event->pak, event->conn));
 }
 

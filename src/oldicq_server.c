@@ -315,7 +315,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
         case SRV_USER_OFFLINE:
             uin = PacketRead4 (pak);
             if ((cont = ContactUIN (conn, uin)))
-                IMOffline (cont, conn);
+                IMOffline (cont);
             break;
         case SRV_BAD_PASS:
             rl_print (i18n (1645, "You entered an incorrect password.\n"));
@@ -354,14 +354,14 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             cont->dc->id2     = PacketRead4 (pak);
             cont->dc->id3     = PacketRead4 (pak);
             ContactSetVersion (cont);
-            IMOnline (cont, conn, IcqToStatus (status), IcqToFlags (status), status, NULL);
+            IMOnline (cont, IcqToStatus (status), IcqToFlags (status), status, NULL);
             break;
         case SRV_STATUS_UPDATE:
             uin = PacketRead4 (pak);
             if ((cont = ContactUIN (conn, uin)))
             {
                 status = PacketRead4 (pak);
-                IMOnline (cont, conn, IcqToStatus (status), IcqToFlags (status), status, NULL);
+                IMOnline (cont, IcqToStatus (status), IcqToFlags (status), status, NULL);
             }
             break;
         case SRV_GO_AWAY:
@@ -441,7 +441,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
 
             if ((cont = ContactUIN (conn, uin)))
             {
-                IMSrvMsg (cont, conn, NOW, OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5,
+                IMSrvMsg (cont, NOW, OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5,
                           CO_MSGTYPE, wdata, CO_MSGTEXT, text, 0));
                 Auto_Reply (conn, cont);
             }
@@ -549,7 +549,7 @@ static JUMP_SRV_F (CmdPktSrvAck)
         if (!(cont = ContactUIN (conn, PacketReadAt4 (event->pak, CMD_v5_OFF_PARAM))))
             return;
 
-        IMIntMsg (cont, conn, NOW, ims_offline, INT_MSGACK_V5,
+        IMIntMsg (cont, NOW, ims_offline, INT_MSGACK_V5,
                   c_in_to_split (PacketReadAtL2Str (event->pak, 30, NULL), cont));
     }
     

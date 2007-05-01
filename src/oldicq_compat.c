@@ -495,7 +495,7 @@ void Recv_Message (Connection *conn, Packet *pak)
         text = type == MSG_NORM ? ConvFromCont (ctext, cont) : c_in_to_split (ctext, cont);
 
     uiG.last_rcvd = cont;
-    IMSrvMsg (cont, conn, timegm (&stamp),
+    IMSrvMsg (cont, timegm (&stamp),
               OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v5, CO_MSGTYPE, type, CO_MSGTEXT, text, 0));
 }
 

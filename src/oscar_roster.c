@@ -848,7 +848,7 @@ JUMP_SNAC_F(SnacSrvAuthreq)
     
     opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8,
                                  CO_MSGTYPE, MSG_AUTH_REQ, CO_MSGTEXT, text, 0);
-    IMSrvMsg (cont, serv, NOW, opt);
+    IMSrvMsg (cont, NOW, opt);
     free (text);
 }
 
@@ -893,7 +893,7 @@ JUMP_SNAC_F(SnacSrvAuthreply)
 
     opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8,
               CO_MSGTYPE, acc ? MSG_AUTH_GRANT : MSG_AUTH_DENY, CO_MSGTEXT, text, 0);
-    IMSrvMsg (cont, serv, NOW, opt);
+    IMSrvMsg (cont, NOW, opt);
     free (text);
 }
 
@@ -911,5 +911,5 @@ JUMP_SNAC_F(SnacSrvAddedyou)
     cont = PacketReadCont (pak, serv);
 
     opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, MSG_AUTH_ADDED, 0);
-    IMSrvMsg (cont, serv, NOW, opt);
+    IMSrvMsg (cont, NOW, opt);
 }

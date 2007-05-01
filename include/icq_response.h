@@ -13,12 +13,12 @@ typedef enum {
   INT_MSGDISPL, INT_MSGCOMP, INT_MSGNOCOMP, INT_MSGOFF
 } int_msg_t;
 
-void IMIntMsg    (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, int_msg_t type, const char *text);
-void IMIntMsgFat (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, int_msg_t type, const char *text,
+void IMIntMsg    (Contact *cont, time_t stamp, status_t tstatus, int_msg_t type, const char *text);
+void IMIntMsgFat (Contact *cont, time_t stamp, status_t tstatus, int_msg_t type, const char *text,
                   const char *opt_text, UDWORD port, UDWORD bytes);
-void IMSrvMsg  (Contact *cont, Connection *conn, time_t stamp, Opt *opt);
-void IMOnline  (Contact *cont, Connection *conn, status_t status, statusflag_t flags, UDWORD nativestatus, const char *text);
-void IMOffline (Contact *cont, Connection *conn);
+void IMSrvMsg  (Contact *cont, time_t stamp, Opt *opt);
+void IMOnline  (Contact *cont, status_t status, statusflag_t flags, UDWORD nativestatus, const char *text);
+void IMOffline (Contact *cont);
 
 #define HIST_IN 1
 #define HIST_OUT 2

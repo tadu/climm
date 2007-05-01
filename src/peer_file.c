@@ -167,7 +167,7 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
         const char *txt;
         if (!OptGetStr (event->wait->opt, CO_REFUSE, &txt))
             txt = "";
-        IMIntMsgFat (cont, serv, NOW, ims_offline, INT_FILE_REJING, txt, opt_files, 0, 0);
+        IMIntMsgFat (cont, NOW, ims_offline, INT_FILE_REJING, txt, opt_files, 0, 0);
         return FALSE;
     }
     ASSERT_FILELISTEN (flist);
@@ -184,7 +184,7 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     fpeer->close     = &PeerFileDispatchDClose;
     fpeer->reconnect = &TCPDispatchReconn;
 
-    IMIntMsgFat (cont, serv, NOW, ims_offline, INT_FILE_ACKING, "", opt_files, 0, opt_bytes);
+    IMIntMsgFat (cont, NOW, ims_offline, INT_FILE_ACKING, "", opt_files, 0, opt_bytes);
     
     return TRUE;
 }

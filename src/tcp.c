@@ -1502,7 +1502,7 @@ static void TCPCallBackResend (Event *event)
         if (peer->connect & CONNECT_OK)
         {
             if (event->attempts > 1)
-                IMIntMsg (cont, peer->parent->parent, NOW, ims_offline, INT_MSGTRY_DC, opt_text);
+                IMIntMsg (cont, NOW, ims_offline, INT_MSGTRY_DC, opt_text);
 
             if (event->attempts < 2)
                 PeerPacketSend (peer, pak);
@@ -1629,10 +1629,10 @@ static void TCPCallBackReceive (Event *event)
             {
                 case MSG_NORM:
                 case MSG_URL:
-                    IMIntMsg (cont, serv, NOW, ims_offline, opt_origin == CV_ORIGIN_dc ? INT_MSGACK_DC : INT_MSGACK_SSL, opt_text);
+                    IMIntMsg (cont, NOW, ims_offline, opt_origin == CV_ORIGIN_dc ? INT_MSGACK_DC : INT_MSGACK_SSL, opt_text);
                     if (~cont->oldflags & CONT_SEENAUTO && strlen (tmp) && strcmp (tmp, opt_text))
                     {
-                        IMSrvMsg (cont, serv, NOW, OptSetVals (NULL, CO_ORIGIN, opt_origin, CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, tmp, 0));
+                        IMSrvMsg (cont, NOW, OptSetVals (NULL, CO_ORIGIN, opt_origin, CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, tmp, 0));
                         cont->oldflags |= CONT_SEENAUTO;
                     }
                     break;
@@ -1643,16 +1643,16 @@ static void TCPCallBackReceive (Event *event)
                 case MSGF_GETAUTO | MSG_GET_DND:
                 case MSGF_GETAUTO | MSG_GET_FFC:
                 case MSGF_GETAUTO | MSG_GET_VER:
-                    IMSrvMsg (cont, serv, NOW, OptSetVals (NULL, CO_ORIGIN, opt_origin, CO_MSGTYPE, opt_type,
+                    IMSrvMsg (cont, NOW, OptSetVals (NULL, CO_ORIGIN, opt_origin, CO_MSGTYPE, opt_type,
                               CO_MSGTEXT, tmp, CO_STATUS, IcqToStatus (ostat & ~MSGF_GETAUTO), 0));
                     break;
 
                 case MSG_FILE:
                     port = PacketReadB2 (pak);
                     if (PeerFileAccept (peer, ostat, port))
-                        IMIntMsgFat (cont, serv, NOW, status, INT_FILE_ACKED, tmp, opt_text, port, 0);
+                        IMIntMsgFat (cont, NOW, status, INT_FILE_ACKED, tmp, opt_text, port, 0);
                     else
-                        IMIntMsgFat (cont, serv, NOW, status, INT_FILE_REJED, tmp, opt_text, 0, 0);
+                        IMIntMsgFat (cont, NOW, status, INT_FILE_REJED, tmp, opt_text, 0, 0);
                     break;
 #ifdef ENABLE_SSL                    
                 /* We never stop SSL connections on our own. That's why 
@@ -1698,9 +1698,9 @@ static void TCPCallBackReceive (Event *event)
                     {
                         case 0x0029:
                             if (PeerFileAccept (peer, ostat, port))
-                                IMIntMsgFat (cont, serv, NOW, status, INT_FILE_ACKED, tmp, opt_text, port, 0);
+                                IMIntMsgFat (cont, NOW, status, INT_FILE_ACKED, tmp, opt_text, port, 0);
                             else
-                                IMIntMsgFat (cont, serv, NOW, status, INT_FILE_REJED, tmp, opt_text, 0, 0);
+                                IMIntMsgFat (cont, NOW, status, INT_FILE_REJED, tmp, opt_text, 0, 0);
                             break;
                             
                         default:

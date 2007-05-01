@@ -300,26 +300,26 @@ void MICQXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
     
     if (gloox::Tag *dotag = XEP22->findChild ("delivered"))
     {
-        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGACK_V8, "");
+        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGACK_V8, "");
         CheckInvalid (dotag);
     }
     else if (gloox::Tag *dotag = XEP22->findChild ("displayed"))
     {
-        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGDISPL, "");
+        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGDISPL, "");
         CheckInvalid (dotag);
     }
     else if (gloox::Tag *dotag = XEP22->findChild ("composing"))
     {
-        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGCOMP, "");
+        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGCOMP, "");
         CheckInvalid (dotag);
     }
     else if (gloox::Tag *dotag = XEP22->findChild ("offline"))
     {
-        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGOFF, "");
+        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGOFF, "");
         CheckInvalid (dotag);
     }
     else
-        IMIntMsg (cfrom, m_conn, NOW, ims_offline, INT_MSGNOCOMP, "");
+        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGNOCOMP, "");
     CheckInvalid (XEP22);
 }
 
@@ -473,7 +473,7 @@ void MICQXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string to
     Opt *opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, body.c_str(), 0);
     if (!subject.empty())
         opt = OptSetVals (opt, CO_MSGTYPE, MSG_NORM_SUBJ, CO_SUBJECT, subject.c_str(), 0);
-    IMSrvMsg (contr, m_conn, delay, opt);
+    IMSrvMsg (contr, delay, opt);
 
     DropAllChilds (t, "body");
     DropAllChilds (t, "subject");
@@ -570,7 +570,7 @@ void MICQXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, s
         status = ims_offline;
         DropAttrib (s, "type");
         
-        IMOffline (contr, m_conn);
+        IMOffline (contr);
     }
     else if (gloox::Tag *show = s->findChild ("show"))
     {
@@ -586,7 +586,7 @@ void MICQXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, s
     else
         status = ims_online;
     
-    IMOnline (contr, m_conn, status, imf_none, status, NULL);
+    IMOnline (contr, status, imf_none, status, NULL);
 }
 
 void MICQXMPP::handlePresence (gloox::Stanza *s)

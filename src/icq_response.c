@@ -203,15 +203,15 @@ static int __IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWOR
 /*
  * Inform that a user went offline
  */
-void IMOffline (Contact *cont, Connection *conn)
+void IMOffline (Contact *cont)
 {
-    IMOnline (cont, conn, ims_offline, 0, -1, "");
+    IMOnline (cont, ims_offline, 0, -1, "");
 }
 
 /*
  * Inform that a user went online
  */
-void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t flags, UDWORD nativestatus, const char *text)
+void IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWORD nativestatus, const char *text)
 {
     Event *egevent;
     int hide = 0;
@@ -219,9 +219,7 @@ void IMOnline (Contact *cont, Connection *conn, status_t status, statusflag_t fl
     if (!cont)
         return;
 
-    assert (cont->serv == conn);
-
-    if ((egevent = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, 0)))
+    if ((egevent = QueueDequeue2 (cont->serv, QUEUE_DEP_WAITLOGIN, 0, 0)))
     {
         egevent->due = time (NULL) + 3;
         QueueEnqueue (egevent);
@@ -444,7 +442,7 @@ int __IMIntMsg (Contact *cont, time_t stamp, fat_int_msg_t *msg, int hide)
 /*
  * Central entry point for protocol triggered output.
  */
-void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, int_msg_t type, const char *text)
+void IMIntMsg (Contact *cont, time_t stamp, status_t tstatus, int_msg_t type, const char *text)
 {
     fat_int_msg_t msg;
     char *deleteme = NULL;
@@ -452,8 +450,6 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, 
     if (!cont)
         return;
 
-    assert (cont->serv == conn);
-    
     memset (&msg, 0, sizeof msg);
     if (stamp == NOW)
         stamp = time (NULL);
@@ -486,7 +482,7 @@ void IMIntMsg (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, 
         s_free (deleteme);
 }
 
-void IMIntMsgFat (Contact *cont, Connection *conn, time_t stamp, status_t tstatus, int_msg_t type,
+void IMIntMsgFat (Contact *cont, time_t stamp, status_t tstatus, int_msg_t type,
                   const char *text, const char *opt_text, UDWORD port, UDWORD bytes)
 {
     fat_int_msg_t msg;
@@ -495,8 +491,6 @@ void IMIntMsgFat (Contact *cont, Connection *conn, time_t stamp, status_t tstatu
     if (!cont)
         return;
 
-    assert (cont->serv == conn);
-    
     memset (&msg, 0, sizeof msg);
     if (stamp == NOW)
         stamp = time (NULL);
@@ -995,7 +989,7 @@ int __IMSrvMsg (Contact *cont, time_t stamp, fat_msg_t *msg, int hide)
 /*
  * Central entry point for incoming messages.
  */
-void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
+void IMSrvMsg (Contact *cont, time_t stamp, Opt *opt)
 {
     fat_msg_t msg;
     char *cdata_deleteme;
@@ -1006,7 +1000,6 @@ void IMSrvMsg (Contact *cont, Connection *conn, time_t stamp, Opt *opt)
         OptD (opt);
         return;
     }
-    assert (cont->serv == conn);
     
     memset (&msg, 0, sizeof msg);
     
