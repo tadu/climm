@@ -14,32 +14,265 @@
 #include "preferences.h"
 #include "connection.h"
 
-typedef enum { pm_single, pm_parent } parentmode_t;
-
-typedef enum { st_on, st_ch, st_off } change_t;
-
-static void cb_status_tcl (Contact *cont, change_t ch, parentmode_t pm, const char *text)
-{
-#ifdef ENABLE_TCL
-    TCLEvent (cont, "status", ch == st_off ? "logged_off" : s_status (cont->status, cont->nativestatus));
+#if 0
+static cb_status  cb_status_tcl,   cb_status_log,   cb_status_exec,  cb_status_auto, cb_status_tui;
+static cb_int_msg cb_int_msg_tcl,  cb_int_msg_hist,                                  cb_int_msg_tui;
+static cb_srv_msg cb_srv_msg_tcl,  cb_srv_msg_log,  cb_srv_msg_exec, cb_srv_msg_auto,
+                  cb_srv_msg_hist, cb_srv_msg_auto,                                  cb_srv_msg_tui;
 #endif
-}
-static void cb_status_putlog (Contact *cont, change_t ch, parentmode_t pm, const char *text)
+
+/** TCL **/
+#ifdef ENABLE_TCL
+static int cb_status_tcl (Contact *cont, parentmode_t pm, change_t ch, const char *text)
 {
+#if ENABLE_CONT_HIER
+    if (cont->parent)
+        return 0;
+#endif
+    TCLEvent (cont, "status", ch == st_off ? "logged_off" : s_status (cont->status, cont->nativestatus));
+    return 0;
+}
+
+static int cb_int_msg_tcl (Contact *cont, parentmode_t pm, time_t stamp, fat_int_msg_t *msg)
+{
+    return 0;
+}
+
+static int cb_srv_msg_tcl (Contact *cont, parentmode_t pm, time_t stamp, fat_srv_msg_t *msg)
+{
+#if ENABLE_CONT_HIER
+    if (cont->parent)
+        return 0;
+#endif
+    switch (msg->type & ~MSGF_MASS)
+    {
+        case MSG_NORM_SUBJ:
+            if (msg->subj)
+            {
+                TCLEvent (cont, "message", s_sprintf ("{%s: %s}", msg->subj, msg->msgtext));
+                TCLMessage (cont, msg->subj);
+                TCLMessage (cont, msg->msgtext);
+                break;
+            }
+            /* fall-through */
+        case MSG_NORM:
+        default:
+            TCLEvent (cont, "message", s_sprintf ("{%s}", msg->msgtext));
+            TCLMessage (cont, msg->msgtext);
+            break;
+        case MSG_FILE:
+            TCLEvent (cont, "file_request", s_sprintf ("{%s} %ld %ld", msg->msgtext, msg->bytes, msg->ref));
+            break;
+        case MSG_AUTO:
+        case MSGF_GETAUTO | MSG_GET_AWAY: 
+        case MSGF_GETAUTO | MSG_GET_OCC:
+        case MSGF_GETAUTO | MSG_GET_NA:
+        case MSGF_GETAUTO | MSG_GET_DND:
+        case MSGF_GETAUTO | MSG_GET_FFC:
+        case MSGF_GETAUTO | MSG_GET_VER:
+        case MSG_URL:
+        case MSG_CONTACT:
+            break;
+        case MSG_AUTH_REQ:
+            TCLEvent (cont, "authorization", "request");
+            break;
+        case MSG_AUTH_DENY:
+            TCLEvent (cont, "authorization", "refused");
+            break;
+        case MSG_AUTH_GRANT:
+            TCLEvent (cont, "authorization", "granted");
+            break;
+        case MSG_AUTH_ADDED:
+            TCLEvent (cont, "contactlistadded", "");
+            break;
+        case MSG_EMAIL:
+        case MSG_WEB:
+            if (msg->type == MSG_EMAIL)
+                TCLEvent (cont, "mail", s_sprintf ("{%s} {%s} {%s} {%s}", msg->tmp[0], msg->tmp[3], msg->tmp[4], msg->tmp[5]));
+            else
+                TCLEvent (cont, "web", s_sprintf ("{%s} {%s} {%s} {%s}", msg->tmp[0], msg->tmp[3], msg->tmp[4], msg->tmp[5]));
+            break;
+    }
+    return 0;
+}
+
+#endif /* ENABLE_TCL */
+
+
+/** LOGGING **/
+static int cb_status_log (Contact *cont, parentmode_t pm, change_t ch, const char *text)
+{
+#if ENABLE_CONT_HIER
+    if (cont->parent)
+        return 0;
+#endif
     assert (cont->serv);
     putlog (cont->serv, NOW, cont, cont->status, cont->nativestatus,
             ch == st_on ? LOG_ONLINE : ch == st_ch ? LOG_CHANGE : LOG_OFFLINE, 0xFFFF, "");
+    return 0;
 }
 
-static void cb_status_exec (Contact *cont, change_t ch, parentmode_t pm, const char *text)
+static int cb_srv_msg_log (Contact *cont, parentmode_t pm, time_t stamp, fat_srv_msg_t *msg)
 {
+#if ENABLE_CONT_HIER
+    if (cont->parent)
+        return 0;
+#endif
+    putlog (cont->serv, stamp, cont, IcqToStatus (msg->nativestatus), msg->nativestatus,
+        (msg->type == MSG_AUTH_ADDED) ? LOG_ADDED : LOG_RECVD, msg->type,
+         msg->msgtext);
+    return 0;
+}
+
+
+/** SHELL SCRIPTING **/
 #ifdef MSGEXEC
+static int cb_status_exec (Contact *cont, parentmode_t pm, change_t ch, const char *text)
+{
     if (prG->event_cmd && *prG->event_cmd)
         EventExec (cont, prG->event_cmd, ch == st_on ? ev_on : ch == st_ch ? ev_status : ev_off, cont->nativestatus, cont->status, NULL);
-#endif
+    return 0;
 }
 
-static void cb_status_finger (Contact *cont, change_t ch, parentmode_t pm, const char *text)
+static int cb_srv_msg_exec (Contact *cont, parentmode_t pm, time_t stamp, fat_srv_msg_t *msg)
+{
+    if (prG->event_cmd && *prG->event_cmd)
+        EventExec (cont, prG->event_cmd, ev_msg, msg->type, cont->status, msg->orig_data);
+    return 0;
+}
+#endif /* MSGEXEC */
+
+
+/** HISTORY **/
+#define HISTSIZE 100
+struct History_s
+{
+    Connection *conn;
+    Contact *cont;
+    time_t stamp;
+    char *msg;
+    UWORD inout;
+};
+typedef struct History_s History;
+
+static History hist[HISTSIZE];
+
+void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg, UWORD inout)
+{
+    int i, j, k;
+
+    if (hist[HISTSIZE - 1].conn && hist[0].conn)
+    {
+        free (hist[0].msg);
+        for (i = 0; i < HISTSIZE - 1; i++)
+            hist[i] = hist[i + 1];
+        hist[HISTSIZE - 1].conn = NULL;
+    }
+
+    for (i = k = j = 0; j < HISTSIZE - 1 && hist[j].conn; j++)
+        if (cont == hist[j].cont)
+        {
+            if (!k)
+                i = j;
+            if (++k == 10)
+            {
+                free (hist[i].msg);
+                for ( ; i < HISTSIZE - 1; i++)
+                    hist[i] = hist[i + 1];
+                hist[HISTSIZE - 1].conn = NULL;
+                j--;
+            }
+        }
+    
+    hist[j].conn = conn;
+    hist[j].cont = cont;
+    hist[j].stamp = stamp;
+    hist[j].msg = strdup (msg);
+    hist[j].inout = inout;
+}
+
+void HistShow (Contact *cont)
+{
+    int i;
+    
+    for (i = 0; i < HISTSIZE; i++)
+        if (hist[i].conn && (!cont || hist[i].cont == cont))
+            rl_printf ("%s%s %s %s %s" COLMSGINDENT "%s\n",
+                       COLDEBUG, s_time (&hist[i].stamp),
+                       ReadLinePrintWidth (hist[i].cont->nick,
+                           hist[i].inout == HIST_IN ? COLINCOMING : COLACK,
+                           hist[i].inout == HIST_IN ? "<-" : "->",
+                           &uiG.nick_len),
+                       COLNONE, COLMESSAGE, hist[i].msg);
+}
+static int cb_int_msg_hist (Contact *cont, parentmode_t pm, time_t stamp, fat_int_msg_t *msg)
+{
+#if ENABLE_CONT_HIER
+    if (cont->parent)
+        return 0;
+#endif
+    HistMsg (cont->serv, cont, stamp, msg->msgtext, HIST_OUT);
+    return 0;
+}
+
+static int cb_srv_msg_hist (Contact *cont, parentmode_t pm, time_t stamp, fat_srv_msg_t *msg)
+{
+#if ENABLE_CONT_HIER
+    if (cont->parent)
+        return 0;
+#endif
+    switch (msg->type & ~MSGF_MASS)
+    {
+        case MSG_NORM_SUBJ:
+            if (msg->subj)
+            {
+                HistMsg (cont->serv, cont, stamp, msg->subj, HIST_IN);
+                HistMsg (cont->serv, cont, stamp, msg->msgtext, HIST_IN);
+                break;
+            }
+        case MSG_NORM:
+        default:
+            HistMsg (cont->serv, cont, stamp, msg->msgtext, HIST_IN);
+            break;
+        case MSG_FILE:
+            break;
+        case MSG_AUTO:
+            break;
+        case MSGF_GETAUTO | MSG_GET_AWAY: 
+            break;
+        case MSGF_GETAUTO | MSG_GET_OCC:
+            break;
+        case MSGF_GETAUTO | MSG_GET_NA:
+            break;
+        case MSGF_GETAUTO | MSG_GET_DND:
+            break;
+        case MSGF_GETAUTO | MSG_GET_FFC:
+            break;
+        case MSGF_GETAUTO | MSG_GET_VER:
+            break;
+        case MSG_URL:
+            HistMsg (cont->serv, cont, stamp, msg->msgtext, HIST_IN);
+            break;
+        case MSG_AUTH_REQ:
+            break;
+        case MSG_AUTH_DENY:
+            break;
+        case MSG_AUTH_GRANT:
+            break;
+        case MSG_AUTH_ADDED:
+            break;
+        case MSG_EMAIL:
+        case MSG_WEB:
+            break;
+        case MSG_CONTACT:
+            break;
+    }
+    return 0;
+}
+
+/** AUTOFINGER FEATURE **/
+
+static int cb_status_auto (Contact *cont, parentmode_t pm, change_t ch, const char *text)
 {
     assert (cont->serv);
     if (ch != st_off && ContactPrefVal (cont, CO_AUTOAUTO))
@@ -60,26 +293,51 @@ static void cb_status_finger (Contact *cont, change_t ch, parentmode_t pm, const
         if (cdata)
             IMCliMsg (cont->serv, cont, OptSetVals (NULL, CO_MSGTYPE, cdata, CO_MSGTEXT, "\xff", CO_FORCE, 1, 0));
     }
+    return 0;
 }
 
+static int cb_srv_msg_auto (Contact *cont, parentmode_t pm, time_t stamp, fat_srv_msg_t *msg)
+{
+    if (prG->flags & FLAG_AUTOFINGER && ~cont->updated & UPF_AUTOFINGER &&
+        ~cont->updated & UPF_SERVER && ~cont->updated & UPF_DISC)
+    {
+        cont->updated |= UPF_AUTOFINGER;
+        IMCliInfo (cont->serv, cont, 0);
+    }
+    return 0;
+}
+
+
+/** TEXT UI **/
+
+#define MSGICQACKSTR   ">>>"
+#define MSGICQ5ACKSTR  "> >"
+#define MSGICQRECSTR   "<<<"
+#define MSGTCPACKSTR   ConvTranslit ("\xc2\xbb\xc2\xbb\xc2\xbb", "}}}")
+#define MSGTCPRECSTR   ConvTranslit ("\xc2\xab\xc2\xab\xc2\xab", "{{{")
+#define MSGSSLACKSTR   ConvTranslit ("\xc2\xbb%\xc2\xbb", "}%}")
+#define MSGSSLRECSTR   ConvTranslit ("\xc2\xab%\xc2\xab", "{%{")
+#define MSGTYPE2ACKSTR ConvTranslit (">>\xc2\xbb", ">>}")
+#define MSGTYPE2RECSTR ConvTranslit ("\xc2\xab<<", "{<<")
+
 #if ENABLE_CONT_HIER
-static void cb_status_tui_tail (Contact *cont)
+static void cb_tui_tail (Contact *cont)
 {
     if (!cont->parent)
         return;
-    cb_status_tui_tail (cont->parent);
+    cb_tui_tail (cont->parent);
     rl_printf (i18n (2619, " with %s%s%s"), COLCONTACT, cont->nick, COLNONE);
 }
 #endif
 
-static void cb_status_tui (Contact *cont, change_t ch, parentmode_t pm, const char *text)
+static int cb_status_tui (Contact *cont, parentmode_t pm, change_t ch, const char *text)
 {
     Contact *pcont = cont;
 
 #if ENABLE_CONT_HIER
     int dotail = 0;
     if (pm == pm_parent)
-        return;
+        return 0;
     
     for ( ; pcont->parent; pcont = pcont->parent)
         if (pcont->parent->firstchild != pcont || pcont->parent->firstchild->next)
@@ -103,7 +361,7 @@ static void cb_status_tui (Contact *cont, change_t ch, parentmode_t pm, const ch
 
 #if ENABLE_CONT_HIER
     if (dotail)
-        cb_status_tui_tail (cont);
+        cb_tui_tail (cont);
 #endif
 
     if (text && *text)
@@ -119,154 +377,10 @@ static void cb_status_tui (Contact *cont, change_t ch, parentmode_t pm, const ch
             cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
             cont->dc->type);
     }
+    return 0;
 }
 
-static int __IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWORD nativestatus, const char *text, int hide)
-{
-    status_t old;
-    statusflag_t oldf;
-#if ENABLE_CONT_HIER
-    parentmode_t pm = hide & 4 ? pm_parent : pm_single;
-#else
-#define pm pm_single
-#endif
-    change_t ch = status == ims_offline ? st_off : cont->status == ims_offline ? st_on : st_ch;
-
-    if (cont->group)
-        hide |= 2;
-    
-    OptSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
-    old = cont->status;
-    oldf = cont->flags;
-    cont->status = status;
-    if (status != ims_offline)
-        cont->flags = flags;
-    cont->nativestatus = nativestatus;
-    cont->oldflags &= ~CONT_SEENAUTO;
-
-    cb_status_putlog (cont, ch, pm, text);
-    
-    if (ContactPrefVal (cont, CO_IGNORE)
-        || (!ContactPrefVal (cont, CO_SHOWONOFF)  && (old == ims_offline || status == ims_offline))
-        || (!ContactPrefVal (cont, CO_SHOWCHANGE) && old != ims_offline)
-        || (~cont->serv->connect & CONNECT_OK))
-        hide |= 1;
-    
-#if ENABLE_CONT_HIER
-    if (cont->parent)
-    {
-        Contact *pcont = cont;
-
-        assert (cont->parent->firstchild);
-
-#if 0
-        if (status == ims_offline && !cont->group)
-        {
-            Contact **t;
-            for (t = &(cont->parent->firstchild); *t; t=&((*t)->next))
-                if (*t == cont)
-                {
-                    *t = cont->next;
-                    cont->next = NULL;
-                    if (!*t)
-                        break;
-                }
-        }
-#endif
-
-        if (ContactStatusCmp (status, cont->parent->status) >= 0)
-        {
-            Contact *tcont;
-            for (tcont = cont->parent->firstchild; tcont; tcont = tcont->next)
-            {
-                assert (tcont->parent == cont->parent);
-                if (ContactStatusCmp (tcont->status, pcont->status) < 0)
-                    pcont = tcont;
-            }
-        }
-        s_repl (&cont->parent->version, pcont->version);
-        hide |= __IMOnline (cont->parent, pcont->status, pcont->flags, pcont->nativestatus, text, hide | 4);
-    }
-#endif
-    
-    if (hide & 1 || ~hide & 2)
-        return 1;
-
-    cb_status_exec   (cont, ch, pm, text);
-    cb_status_tui    (cont, ch, pm, text);
-    cb_status_finger (cont, ch, pm, text);
-    cb_status_tcl    (cont, ch, pm, text);
-    return hide;
-}
-#undef pm
-
-/*
- * Inform that a user went offline
- */
-void IMOffline (Contact *cont)
-{
-    IMOnline (cont, ims_offline, 0, -1, "");
-}
-
-/*
- * Inform that a user went online
- */
-void IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWORD nativestatus, const char *text)
-{
-    Event *egevent;
-    int hide = 0;
-
-    if (!cont)
-        return;
-
-    if ((egevent = QueueDequeue2 (cont->serv, QUEUE_DEP_WAITLOGIN, 0, 0)))
-    {
-        egevent->due = time (NULL) + 3;
-        QueueEnqueue (egevent);
-        if (!text || !*text)
-            hide = 1;
-    }
-    
-    if (status == cont->status && (status == ims_offline || flags == cont->flags) && !text)
-        return;
-
-    __IMOnline (cont, status, flags, nativestatus, text, hide);
-}
-
-
-#define MSGICQACKSTR   ">>>"
-#define MSGICQ5ACKSTR  "> >"
-#define MSGICQRECSTR   "<<<"
-#define MSGTCPACKSTR   ConvTranslit ("\xc2\xbb\xc2\xbb\xc2\xbb", "}}}")
-#define MSGTCPRECSTR   ConvTranslit ("\xc2\xab\xc2\xab\xc2\xab", "{{{")
-#define MSGSSLACKSTR   ConvTranslit ("\xc2\xbb%\xc2\xbb", "}%}")
-#define MSGSSLRECSTR   ConvTranslit ("\xc2\xab%\xc2\xab", "{%{")
-#define MSGTYPE2ACKSTR ConvTranslit (">>\xc2\xbb", ">>}")
-#define MSGTYPE2RECSTR ConvTranslit ("\xc2\xab<<", "{<<")
-
-#if ENABLE_CONT_HIER
-static void cb_msg_tui_tail (Contact *cont)
-{
-    if (!cont->parent)
-        return;
-    cb_msg_tui_tail (cont->parent);
-    rl_printf (i18n (2619, " with %s%s%s"), COLCONTACT, cont->nick, COLNONE);
-}
-#endif
-
-
-typedef struct {
-    const char *orig_data;
-    const char *msgtext;
-    const char *opt_text;
-    UDWORD port;
-    UDWORD bytes;
-    int_msg_t type;
-    status_t tstatus;
-} fat_int_msg_t;
-
-
-int cb_int_msg_tui (Contact *cont, parentmode_t pm, time_t stamp, fat_int_msg_t *msg)
+static int cb_int_msg_tui (Contact *cont, parentmode_t pm, time_t stamp, fat_int_msg_t *msg)
 {
     const char *line;
     const char *col = COLCONTACT;
@@ -390,7 +504,7 @@ int cb_int_msg_tui (Contact *cont, parentmode_t pm, time_t stamp, fat_int_msg_t 
     rl_print (p);
 #if ENABLE_CONT_HIER
     if (dotail)
-        cb_msg_tui_tail (cont);
+        cb_tui_tail (cont);
 #endif
     rl_print ("\n");
     free (p);
@@ -398,335 +512,7 @@ int cb_int_msg_tui (Contact *cont, parentmode_t pm, time_t stamp, fat_int_msg_t 
     return 0;
 }
 
-int cb_int_msg_hist (Contact *cont, parentmode_t pm, time_t stamp, fat_int_msg_t *msg)
-{
-    HistMsg (cont->serv, cont, stamp, msg->msgtext, HIST_OUT);
-    return 0;
-}
-
-int __IMIntMsg (Contact *cont, time_t stamp, fat_int_msg_t *msg, int hide)
-{
-#if ENABLE_CONT_HIER
-    parentmode_t pm = hide & 4 ? pm_parent : pm_single;
-#else
-#define pm pm_single
-#endif
-/*    cb_int_msg_log (cont, pm, stamp, msg); */
-
-    if (ContactPrefVal (cont, CO_IGNORE))
-        hide |= 1;
-
-#if ENABLE_CONT_HIER
-    if (cont->parent)
-    {
-        assert (cont->parent->firstchild);
-        hide |= __IMIntMsg (cont->parent, stamp, msg, hide | 4);
-    }
-#endif
-    if (hide & 1)
-        return 1;
-
-    hide &= ~2;
-/*    if (!cb_int_msg_exec   (cont, pm, stamp, msg)) */
-    if (!cb_int_msg_tui    (cont, pm, stamp, msg))
-/*    if (!cb_int_msg_finger (cont, pm, stamp, msg)) */
-    if (!cb_int_msg_hist   (cont, pm, stamp, msg))
-/*    if (!cb_int_msg_tcl    (cont, pm, stamp, msg)) */
-        hide |= 2;
-    if (~hide & 2)
-        hide |= 1;
-
-    return hide;
-}
-
-/*
- * Central entry point for protocol triggered output.
- */
-void IMIntMsg (Contact *cont, time_t stamp, status_t tstatus, int_msg_t type, const char *text)
-{
-    fat_int_msg_t msg;
-    char *deleteme = NULL;
-
-    if (!cont)
-        return;
-
-    memset (&msg, 0, sizeof msg);
-    if (stamp == NOW)
-        stamp = time (NULL);
-
-    msg.orig_data = text;
-    msg.msgtext = text;
-    msg.type = type;
-    msg.tstatus = tstatus;
-    msg.opt_text = "";
-    msg.port = 0;
-    msg.bytes = 0;
-
-    if (!strncasecmp (msg.orig_data, "<font ", 6))
-    {
-      char *t = deleteme = strdup (msg.orig_data);
-      while (*t && *t != '>')
-        t++;
-      if (*t)
-      {
-        size_t l = strlen (++t);
-        if (!strcasecmp (t + l - 7, "</font>"))
-          t[l - 7] = 0;
-        msg.msgtext = t;
-      }
-    }
-    
-    __IMIntMsg (cont, stamp, &msg, 0);
-
-    if (deleteme)
-        s_free (deleteme);
-}
-
-void IMIntMsgFat (Contact *cont, time_t stamp, status_t tstatus, int_msg_t type,
-                  const char *text, const char *opt_text, UDWORD port, UDWORD bytes)
-{
-    fat_int_msg_t msg;
-    char *deleteme = NULL;
-
-    if (!cont)
-        return;
-
-    memset (&msg, 0, sizeof msg);
-    if (stamp == NOW)
-        stamp = time (NULL);
-
-    msg.orig_data = text;
-    msg.msgtext = text;
-    msg.type = type;
-    msg.tstatus = tstatus;
-    msg.opt_text = opt_text ? opt_text : "";
-    msg.port = port;
-    msg.bytes = bytes;
-
-    if (!strncasecmp (msg.orig_data, "<font ", 6))
-    {
-      char *t = deleteme = strdup (msg.orig_data);
-      while (*t && *t != '>')
-        t++;
-      if (*t)
-      {
-        size_t l = strlen (++t);
-        if (!strcasecmp (t + l - 7, "</font>"))
-          t[l - 7] = 0;
-        msg.msgtext = t;
-      }
-    }
-    
-    __IMIntMsg (cont, stamp, &msg, 0);
-
-    if (deleteme)
-        s_free (deleteme);
-}
-
-#define HISTSIZE 100
-
-struct History_s
-{
-    Connection *conn;
-    Contact *cont;
-    time_t stamp;
-    char *msg;
-    UWORD inout;
-};
-typedef struct History_s History;
-
-static History hist[HISTSIZE];
-
-/*
- * History
- */
-void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg, UWORD inout)
-{
-    int i, j, k;
-
-    if (hist[HISTSIZE - 1].conn && hist[0].conn)
-    {
-        free (hist[0].msg);
-        for (i = 0; i < HISTSIZE - 1; i++)
-            hist[i] = hist[i + 1];
-        hist[HISTSIZE - 1].conn = NULL;
-    }
-
-    for (i = k = j = 0; j < HISTSIZE - 1 && hist[j].conn; j++)
-        if (cont == hist[j].cont)
-        {
-            if (!k)
-                i = j;
-            if (++k == 10)
-            {
-                free (hist[i].msg);
-                for ( ; i < HISTSIZE - 1; i++)
-                    hist[i] = hist[i + 1];
-                hist[HISTSIZE - 1].conn = NULL;
-                j--;
-            }
-        }
-    
-    hist[j].conn = conn;
-    hist[j].cont = cont;
-    hist[j].stamp = stamp;
-    hist[j].msg = strdup (msg);
-    hist[j].inout = inout;
-}
-
-void HistShow (Contact *cont)
-{
-    int i;
-    
-    for (i = 0; i < HISTSIZE; i++)
-        if (hist[i].conn && (!cont || hist[i].cont == cont))
-            rl_printf ("%s%s %s %s %s" COLMSGINDENT "%s\n",
-                       COLDEBUG, s_time (&hist[i].stamp),
-                       ReadLinePrintWidth (hist[i].cont->nick,
-                           hist[i].inout == HIST_IN ? COLINCOMING : COLACK,
-                           hist[i].inout == HIST_IN ? "<-" : "->",
-                           &uiG.nick_len),
-                       COLNONE, COLMESSAGE, hist[i].msg);
-}
-
-typedef struct {
-    const char *orig_data;
-    char *msgtext;
-    const char *subj;
-    const char *url;
-    const char *tmp[6];
-    UDWORD type;
-    UDWORD origin;
-    UDWORD nativestatus;
-    UDWORD bytes;
-    UDWORD ref;
-} fat_msg_t;
-
-
-static int cb_msg_log (Contact *cont, parentmode_t pm, time_t stamp, fat_msg_t *msg)
-{
-    putlog (cont->serv, stamp, cont, IcqToStatus (msg->nativestatus), msg->nativestatus,
-        (msg->type == MSG_AUTH_ADDED) ? LOG_ADDED : LOG_RECVD, msg->type,
-         msg->msgtext);
-    return 0;
-}
-
-static int cb_msg_exec (Contact *cont, parentmode_t pm, time_t stamp, fat_msg_t *msg)
-{
-#ifdef MSGEXEC
-    if (prG->event_cmd && *prG->event_cmd)
-        EventExec (cont, prG->event_cmd, ev_msg, msg->type, cont->status, msg->orig_data);
-#endif
-    return 0;
-}
-
-static int cb_msg_tcl (Contact *cont, parentmode_t pm, time_t stamp, fat_msg_t *msg)
-{
-#ifdef ENABLE_TCL
-    switch (msg->type & ~MSGF_MASS)
-    {
-        case MSG_NORM_SUBJ:
-            if (msg->subj)
-            {
-                TCLEvent (cont, "message", s_sprintf ("{%s: %s}", msg->subj, msg->msgtext));
-                TCLMessage (cont, msg->subj);
-                TCLMessage (cont, msg->msgtext);
-                break;
-            }
-        case MSG_NORM:
-        default:
-            TCLEvent (cont, "message", s_sprintf ("{%s}", msg->msgtext));
-            TCLMessage (cont, msg->msgtext);
-            break;
-        case MSG_FILE:
-            TCLEvent (cont, "file_request", s_sprintf ("{%s} %ld %ld", msg->msgtext, msg->bytes, msg->ref));
-            break;
-        case MSG_AUTO:
-        case MSGF_GETAUTO | MSG_GET_AWAY: 
-        case MSGF_GETAUTO | MSG_GET_OCC:
-        case MSGF_GETAUTO | MSG_GET_NA:
-        case MSGF_GETAUTO | MSG_GET_DND:
-        case MSGF_GETAUTO | MSG_GET_FFC:
-        case MSGF_GETAUTO | MSG_GET_VER:
-        case MSG_URL:
-        case MSG_CONTACT:
-            break;
-        case MSG_AUTH_REQ:
-            TCLEvent (cont, "authorization", "request");
-            break;
-        case MSG_AUTH_DENY:
-            TCLEvent (cont, "authorization", "refused");
-            break;
-        case MSG_AUTH_GRANT:
-            TCLEvent (cont, "authorization", "granted");
-            break;
-        case MSG_AUTH_ADDED:
-            TCLEvent (cont, "contactlistadded", "");
-            break;
-        case MSG_EMAIL:
-        case MSG_WEB:
-            if (msg->type == MSG_EMAIL)
-                TCLEvent (cont, "mail", s_sprintf ("{%s} {%s} {%s} {%s}", msg->tmp[0], msg->tmp[3], msg->tmp[4], msg->tmp[5]));
-            else
-                TCLEvent (cont, "web", s_sprintf ("{%s} {%s} {%s} {%s}", msg->tmp[0], msg->tmp[3], msg->tmp[4], msg->tmp[5]));
-            break;
-    }
-#endif
-    return 0;
-}
-
-static int cb_msg_hist (Contact *cont, parentmode_t pm, time_t stamp, fat_msg_t *msg)
-{
-    switch (msg->type & ~MSGF_MASS)
-    {
-        case MSG_NORM_SUBJ:
-            if (msg->subj)
-            {
-                HistMsg (cont->serv, cont, stamp, msg->subj, HIST_IN);
-                HistMsg (cont->serv, cont, stamp, msg->msgtext, HIST_IN);
-                break;
-            }
-        case MSG_NORM:
-        default:
-            HistMsg (cont->serv, cont, stamp, msg->msgtext, HIST_IN);
-            break;
-        case MSG_FILE:
-            break;
-        case MSG_AUTO:
-            break;
-        case MSGF_GETAUTO | MSG_GET_AWAY: 
-            break;
-        case MSGF_GETAUTO | MSG_GET_OCC:
-            break;
-        case MSGF_GETAUTO | MSG_GET_NA:
-            break;
-        case MSGF_GETAUTO | MSG_GET_DND:
-            break;
-        case MSGF_GETAUTO | MSG_GET_FFC:
-            break;
-        case MSGF_GETAUTO | MSG_GET_VER:
-            break;
-        case MSG_URL:
-            HistMsg (cont->serv, cont, stamp, msg->msgtext, HIST_IN);
-            break;
-        case MSG_AUTH_REQ:
-            break;
-        case MSG_AUTH_DENY:
-            break;
-        case MSG_AUTH_GRANT:
-            break;
-        case MSG_AUTH_ADDED:
-            break;
-        case MSG_EMAIL:
-        case MSG_WEB:
-            break;
-        case MSG_CONTACT:
-            break;
-    }
-    return 0;
-}
-
-static int cb_msg_tui (Contact *ocont, parentmode_t pm, time_t stamp, fat_msg_t *msg)
+static int cb_srv_msg_tui (Contact *ocont, parentmode_t pm, time_t stamp, fat_srv_msg_t *msg)
 {
     UDWORD j;
     int i, is_awaycount;
@@ -772,7 +558,7 @@ static int cb_msg_tui (Contact *ocont, parentmode_t pm, time_t stamp, fat_msg_t 
     
 #if ENABLE_CONT_HIER
     if (dotail)
-        cb_msg_tui_tail (cont);
+        cb_tui_tail (cont);
 #endif
     
     if (msg->nativestatus != -1 && (ocont->status != IcqToStatus (msg->nativestatus) || !cont->group))
@@ -930,60 +716,265 @@ static int cb_msg_tui (Contact *ocont, parentmode_t pm, time_t stamp, fat_msg_t 
     return 0;
 }
 
-static int cb_msg_finger (Contact *cont, parentmode_t pm, time_t stamp, fat_msg_t *msg)
-{
-    if (prG->flags & FLAG_AUTOFINGER && ~cont->updated & UPF_AUTOFINGER &&
-        ~cont->updated & UPF_SERVER && ~cont->updated & UPF_DISC)
-    {
-        cont->updated |= UPF_AUTOFINGER;
-        IMCliInfo (cont->serv, cont, 0);
-    }
-    return 0;
-}
+/** INTERNAL FUNCTIONS **/
 
-int __IMSrvMsg (Contact *cont, time_t stamp, fat_msg_t *msg, int hide)
+#define hide_noleaf 4
+#define hide_cont   2
+#define hide_hide   1
+
+static int __IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWORD nativestatus, const char *text, int hide)
 {
+    status_t old;
+    statusflag_t oldf;
 #if ENABLE_CONT_HIER
-    parentmode_t pm = hide & 4 ? pm_parent : pm_single;
+    parentmode_t pm = hide & hide_noleaf ? pm_parent : pm_leaf;
 #else
-#define pm pm_single
+#define pm pm_leaf
 #endif
-    cb_msg_log (cont, pm, stamp, msg);
+    change_t ch = status == ims_offline ? st_off : cont->status == ims_offline ? st_on : st_ch;
+
+    if (cont->group)
+        hide |= hide_cont;
+    
+    OptSetVal (&cont->copts, CO_TIMESEEN, time (NULL));
+    old = cont->status;
+    oldf = cont->flags;
+    cont->status = status;
+    if (status != ims_offline)
+        cont->flags = flags;
+    cont->nativestatus = nativestatus;
+    cont->oldflags &= ~CONT_SEENAUTO;
+
+    cb_status_log (cont, ch, pm, text);
+    
+    if (ContactPrefVal (cont, CO_IGNORE)
+        || (!ContactPrefVal (cont, CO_SHOWONOFF)  && (old == ims_offline || status == ims_offline))
+        || (!ContactPrefVal (cont, CO_SHOWCHANGE) && old != ims_offline)
+        || (cont->serv && ~cont->serv->connect & CONNECT_OK))
+        hide |= hide_hide;
+    
+#if ENABLE_CONT_HIER
+    if (cont->parent)
+    {
+        Contact *pcont = cont;
+
+        assert (cont->parent->firstchild);
+
+#if 0
+        if (status == ims_offline && !cont->group)
+        {
+            Contact **t;
+            for (t = &(cont->parent->firstchild); *t; t=&((*t)->next))
+                if (*t == cont)
+                {
+                    *t = cont->next;
+                    cont->next = NULL;
+                    if (!*t)
+                        break;
+                }
+        }
+#endif
+
+        if (ContactStatusCmp (status, cont->parent->status) >= 0)
+        {
+            Contact *tcont;
+            for (tcont = cont->parent->firstchild; tcont; tcont = tcont->next)
+            {
+                assert (tcont->parent == cont->parent);
+                if (ContactStatusCmp (tcont->status, pcont->status) < 0)
+                    pcont = tcont;
+            }
+        }
+        s_repl (&cont->parent->version, pcont->version);
+        hide |= __IMOnline (cont->parent, pcont->status, pcont->flags, pcont->nativestatus, text, hide | hide_noleaf);
+    }
+#endif
+    
+    if (hide & hide_hide || ~hide & hide_cont)
+        return hide_hide;
+
+#ifdef MSGEXEC
+    cb_status_exec (cont, pm, ch, text);
+#endif
+    cb_status_tui  (cont, pm, ch, text);
+    cb_status_auto (cont, pm, ch, text);
+#ifdef ENABLE_TCL
+    cb_status_tcl  (cont, pm, ch, text);
+#endif
+    return hide;
+}
+#undef pm
+
+
+int __IMIntMsg (Contact *cont, time_t stamp, fat_int_msg_t *msg, int hide)
+{
+    int noerr = 0;
+#if ENABLE_CONT_HIER
+    parentmode_t pm = hide & hide_noleaf ? pm_parent : pm_leaf;
+#else
+#define pm pm_leaf
+#endif
+/*    cb_int_msg_log (cont, pm, stamp, msg); */
 
     if (ContactPrefVal (cont, CO_IGNORE))
-        hide |= 1;
+        return hide_hide;
 
 #if ENABLE_CONT_HIER
     if (cont->parent)
     {
         assert (cont->parent->firstchild);
-        hide |= __IMSrvMsg (cont->parent, stamp, msg, hide | 4);
+        hide |= __IMIntMsg (cont->parent, stamp, msg, hide | hide_noleaf);
     }
 #endif
-    if (hide & 1)
-        return 1;
+    if (hide & hide_hide)
+        return hide_hide;
+
+#ifdef MSGEXEC
+/*    if (!cb_int_msg_exec (cont, pm, stamp, msg)) */
+#endif
+    if (!cb_int_msg_tui  (cont, pm, stamp, msg))
+/*    if (!cb_int_msg_auto (cont, pm, stamp, msg)) */
+    if (!cb_int_msg_hist (cont, pm, stamp, msg))
+#ifdef ENABLE_TCL
+    if (!cb_int_msg_tcl  (cont, pm, stamp, msg))
+#endif
+        noerr = 1;
+    if (!noerr)
+        hide |= hide_hide;
+
+    return hide;
+}
+
+int __IMSrvMsg (Contact *cont, time_t stamp, fat_srv_msg_t *msg, int hide)
+{
+    int noerr = 0;
+#if ENABLE_CONT_HIER
+    parentmode_t pm = hide & hide_noleaf ? pm_parent : pm_leaf;
+#else
+#define pm pm_leaf
+#endif
+    cb_srv_msg_log (cont, pm, stamp, msg);
+
+    if (ContactPrefVal (cont, CO_IGNORE))
+        return hide_hide;
+
+#if ENABLE_CONT_HIER
+    if (cont->parent)
+    {
+        assert (cont->parent->firstchild);
+        hide |= __IMSrvMsg (cont->parent, stamp, msg, hide | hide_noleaf);
+    }
+#endif
+    if (hide & hide_hide)
+        return hide_hide;
 
     s_repl (&cont->last_message, msg->msgtext);
     cont->last_time = stamp;
 
-    hide &= ~2;
-    if (!cb_msg_exec   (cont, pm, stamp, msg))
-    if (!cb_msg_tui    (cont, pm, stamp, msg))
-    if (!cb_msg_finger (cont, pm, stamp, msg))
-    if (!cb_msg_hist   (cont, pm, stamp, msg))
-    if (!cb_msg_tcl    (cont, pm, stamp, msg))
-        hide |= 2;
-    if (~hide & 2)
-        hide |= 1;
+    if (!cb_srv_msg_exec   (cont, pm, stamp, msg))
+    if (!cb_srv_msg_tui    (cont, pm, stamp, msg))
+    if (!cb_srv_msg_auto   (cont, pm, stamp, msg))
+    if (!cb_srv_msg_hist   (cont, pm, stamp, msg))
+#ifdef ENABLE_TCL
+    if (!cb_srv_msg_tcl    (cont, pm, stamp, msg))
+#endif
+        noerr = 1;
+    if (!noerr)
+        hide |= hide_hide;
 
 #if ENABLE_CONT_HIER
     while (cont->parent)
         cont = cont->parent;
-    if (pm == pm_single)
+    if (pm == pm_leaf)
 #endif
         uiG.last_rcvd = cont;
     TabAddIn (cont);
     return hide;
+}
+
+/** FUNCTIONS TO BE CALLED FROM EXTERN **/
+
+/*
+ * Inform that a user went offline
+ */
+void IMOffline (Contact *cont)
+{
+    IMOnline (cont, ims_offline, 0, -1, "");
+}
+
+/*
+ * Inform that a user went online
+ */
+void IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWORD nativestatus, const char *text)
+{
+    Event *egevent;
+    int hide = 0;
+
+    if (!cont)
+        return;
+
+    if ((egevent = QueueDequeue2 (cont->serv, QUEUE_DEP_WAITLOGIN, 0, 0)))
+    {
+        egevent->due = time (NULL) + 3;
+        QueueEnqueue (egevent);
+        if (!text || !*text)
+            hide = hide_hide;
+    }
+    
+    if (status == cont->status && (status == ims_offline || flags == cont->flags) && !text)
+        return;
+
+    __IMOnline (cont, status, flags, nativestatus, text, hide);
+}
+
+
+/*
+ * Central entry point for protocol triggered output.
+ */
+void IMIntMsg (Contact *cont, time_t stamp, status_t tstatus, int_msg_t type, const char *text)
+{
+    IMIntMsgFat (cont, stamp, tstatus, type, text, "", 0, 0);
+}
+
+void IMIntMsgFat (Contact *cont, time_t stamp, status_t tstatus, int_msg_t type,
+                  const char *text, const char *opt_text, UDWORD port, UDWORD bytes)
+{
+    fat_int_msg_t msg;
+    char *deleteme = NULL;
+
+    if (!cont)
+        return;
+
+    memset (&msg, 0, sizeof msg);
+    if (stamp == NOW)
+        stamp = time (NULL);
+
+    msg.orig_data = text;
+    msg.msgtext = text;
+    msg.type = type;
+    msg.tstatus = tstatus;
+    msg.opt_text = opt_text ? opt_text : "";
+    msg.port = port;
+    msg.bytes = bytes;
+
+    if (!strncasecmp (msg.orig_data, "<font ", 6))
+    {
+      char *t = deleteme = strdup (msg.orig_data);
+      while (*t && *t != '>')
+        t++;
+      if (*t)
+      {
+        size_t l = strlen (++t);
+        if (!strcasecmp (t + l - 7, "</font>"))
+          t[l - 7] = 0;
+        msg.msgtext = t;
+      }
+    }
+    
+    __IMIntMsg (cont, stamp, &msg, 0);
+
+    if (deleteme)
+        s_free (deleteme);
 }
 
 /*
@@ -996,7 +987,7 @@ void IMSrvMsg (Contact *cont, time_t stamp, UDWORD opt_origin, UDWORD opt_type, 
 
 void IMSrvMsgFat (Contact *cont, time_t stamp, Opt *opt)
 {
-    fat_msg_t msg;
+    fat_srv_msg_t msg;
     char *cdata_deleteme;
     int max_0xff = 0, i;
     
