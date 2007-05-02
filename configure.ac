@@ -280,7 +280,7 @@ if test "x$ac_arg_use_remote" != "xno"; then
       [ac_cv_fifo_stuff=no],
       [ac_cv_fifo_stuff=cross])
   ])
-  if test "x$ac_cv_fifo_stuff" != xyes && test "x$ac_cv_fifo_stuff$ac_arg_use_remote" != "crossyes"; then
+  if test "x$ac_cv_fifo_stuff" != xyes && test "x$ac_cv_fifo_stuff$ac_arg_use_remote" != xcrossyes; then
     ac_arg_use_remote=none
   else
     ac_arg_use_remote=yes
