@@ -14,6 +14,7 @@ extern "C" {
 #include "contact.h"
 #include "util_io.h"
 #include "im_response.h"
+#include "im_request.h"
 #include "util_ui.h"
 #include "buildmark.h"
 #include "preferences.h"
@@ -37,8 +38,8 @@ extern "C" {
 }
 
 class MICQXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
-                   public gloox::PresenceHandler,    public gloox::SubscriptionHandler,
-                   public gloox::LogHandler {
+                 public gloox::PresenceHandler,    public gloox::SubscriptionHandler,
+                 public gloox::LogHandler {
     private :
         Connection *m_conn;
         gloox::Client *m_client;
@@ -69,6 +70,7 @@ class MICQXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
         gloox::Client *getClient () { return m_client; }
         UBYTE XMPPSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD type);
         void  XMPPSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg);
+        void  XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, const char *msg);
 };
 
 MICQXMPP::MICQXMPP (Connection *serv)
@@ -739,7 +741,24 @@ void MICQXMPP::XMPPSetstatus (Connection *serv, Contact *cont, status_t status, 
     m_conn->nativestatus = p;
 }
 
-
+void MICQXMPP::XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, const char *msg)
+{
+    gloox::JID j = gloox::JID (cont->screen);
+    gloox::Tag *pres = new gloox::Tag ("presence");
+    std::string res = m_client->resource();
+    pres->addAttribute ("from", s_sprintf ("%s/%s", serv->screen, res.c_str()));
+    while (cont->parent && cont->parent->serv == cont->serv)
+        cont = cont->parent;
+    pres->addAttribute ("to", cont->screen);
+    pres->addAttribute ("type", how == auth_grant ? "subscribed"
+                              : how == auth_deny  ? "unsubscribed"
+                              : how == auth_req   ? "subscribe"
+                                                  : "unsubscribe");
+    if (msg)
+        new gloox::Tag (pres, "status", msg);
+    m_client->send (pres);
+}
+    
 static void XMPPCallBackTimeout (Event *event)
 {
     Connection *conn = event->conn;
@@ -857,7 +876,7 @@ BOOL XMPPCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
     return 0;
 }
 
-UBYTE XMPPSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD type)
+UBYTE XMPPSendmsg (Connection *serv, Contact *cont, UDWORD type, const char *text)
 {
     MICQXMPP *j = getXMPPClient (serv);
     assert (j);
@@ -870,3 +889,12 @@ void XMPPSetstatus (Connection *serv, Contact *cont, status_t status, const char
     assert (j);
     j->XMPPSetstatus (serv, cont, status, msg);
 }
+
+void XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, const char *msg)
+{
+    MICQXMPP *j = getXMPPClient (serv);
+    assert (j);
+    assert (cont);
+    j->XMPPAuthorize (serv, cont, how, msg);
+}
+

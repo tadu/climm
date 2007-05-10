@@ -3059,8 +3059,8 @@ static JUMP_F(CmdUserAuth)
     ContactGroup *cg;
     Contact *cont;
     int i;
-    char *msg = NULL;
-    UWORD msgtype;
+    char *msg;
+    auth_t how;
     OPENCONN;
 
     if (!data)
@@ -3081,35 +3081,19 @@ static JUMP_F(CmdUserAuth)
     }
     if (!(cg = s_parselist (&args, uiG.conn)))
         return 0;
-    if (data & 2 && !(msg = s_parserem (&args)))
-        msg = NULL;
+    msg = s_parserem (&args);
 
     switch (data)
     {
-        case 2:
-            if (!msg)         /* FIXME: let it untranslated? */
-                msg = "Authorization refused\n";
-            msgtype = MSG_AUTH_DENY;
-            break;
-        case 3:
-            if (!msg)         /* FIXME: let it untranslated? */
-                msg = "Please authorize my request and add me to your Contact List\n";
-            msgtype = MSG_AUTH_REQ;
-            break;
-        case 4:
-            if (!msg)
-                msg = "\x03";
-            msgtype = MSG_AUTH_ADDED;
-            break;
+        case 2: how = auth_deny; break;
+        case 3: how = auth_req;  break;
+        case 4: how = auth_add;  break;
         default:
-        case 5:
-            if (!msg)
-                msg = "\x03";
-            msgtype = MSG_AUTH_GRANT;
+        case 5: how = auth_grant;
     }
 
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
-        IMCliMsg (uiG.conn, cont, OptSetVals (NULL, CO_MSGTYPE, msgtype, CO_MSGTEXT, msg, 0));
+        IMCliAuth (cont, msg, how);
     return 0;
 }
 

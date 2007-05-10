@@ -127,7 +127,7 @@ UBYTE IMCliReMsg (Connection *conn, Contact *cont, Opt *opt)
 #if ENABLE_XMPP
     if (opt_trans & CV_MSGTRANS_XMPP)
         if (conn->connect & CONNECT_OK && conn->type == TYPE_XMPP_SERVER)
-            if (RET_IS_OK (ret = XMPPSendmsg (conn, cont, opt_text, opt_type)))
+            if (RET_IS_OK (ret = XMPPSendmsg (conn, cont, opt_type, opt_text)))
                 return ret;
 #endif
     ret = RET_OK;
@@ -210,3 +210,43 @@ void IMSetStatus (Connection *conn, Contact *cont, status_t status, const char *
 #endif
 }
 
+void IMCliAuth (Contact *cont, const char *msg, auth_t how)
+{
+    assert (cont);
+    assert (cont->serv);
+    if (~cont->serv->connect & CONNECT_OK)
+        return;
+
+    if (cont->serv->type == TYPE_SERVER || cont->serv->type == TYPE_SERVER_OLD)
+    {
+        UDWORD msgtype;
+        switch (how)
+        {
+            case auth_deny:
+                if (!msg)         /* FIXME: let it untranslated? */
+                    msg = "Authorization refused\n";
+                msgtype = MSG_AUTH_DENY;
+                break;
+            case auth_req:
+                if (!msg)         /* FIXME: let it untranslated? */
+                    msg = "Please authorize my request and add me to your Contact List\n";
+                msgtype = MSG_AUTH_REQ;
+                break;
+            case auth_add:
+                if (!msg)
+                    msg = "\x03";
+                msgtype = MSG_AUTH_ADDED;
+                break;
+            default:
+            case auth_grant:
+                if (!msg)
+                    msg = "\x03";
+                msgtype = MSG_AUTH_GRANT;
+        }
+        IMCliMsg (cont->serv, cont, OptSetVals (NULL, CO_MSGTYPE, msgtype, CO_MSGTEXT, msg, 0));
+    }
+#if ENABLE_XMPP
+    else if (cont->serv->type == TYPE_XMPP_SERVER)
+        XMPPAuthorize (cont->serv, cont, how, msg);
+#endif
+}
