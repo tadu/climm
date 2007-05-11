@@ -414,6 +414,11 @@ int OTRMsgIn (const char *msg, Contact *cont, char **new_msg)
 
     if (!userstate)
         return 0;
+    
+#if ENABLE_CONT_HIER
+    while (cont->parent && cont->parent->serv == cont->serv)
+        cont = cont->parent;
+#endif
 
     ret = otrl_message_receiving (userstate, &ops, NULL, cont->serv->screen,
             proto_name (cont->serv->type), cont->screen, msg, new_msg, NULL, NULL, NULL);
@@ -431,6 +436,11 @@ int OTRMsgOut (const char *msg, Connection *conn, Contact *cont, char **new_msg)
 
     if (!userstate)
         return 1;
+
+#if ENABLE_CONT_HIER
+    while (cont->parent && cont->parent->serv == cont->serv)
+        cont = cont->parent;
+#endif
 
     ret = otrl_message_sending (userstate, &ops, NULL, conn->screen, proto_name (conn->type),
             cont->screen, msg, NULL, new_msg, NULL, NULL);
