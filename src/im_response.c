@@ -13,6 +13,7 @@
 #include "conv.h"
 #include "preferences.h"
 #include "connection.h"
+#include "util_otr.h"
 
 #if 0
 static cb_status  cb_status_tcl,   cb_status_log,   cb_status_exec,  cb_status_auto, cb_status_tui;
@@ -1002,12 +1003,6 @@ void IMSrvMsgFat (Contact *cont, time_t stamp, Opt *opt)
     if (stamp == NOW)
         stamp = time (NULL);
 
-    if (!OptGetStr (opt, CO_MSGTEXT, &msg.orig_data))
-        msg.orig_data = "";
-    msg.msgtext = cdata_deleteme = strdup (msg.orig_data);
-    while (*msg.msgtext && strchr ("\n\r", msg.msgtext[strlen (msg.msgtext) - 1]))
-        msg.msgtext[strlen (msg.msgtext) - 1] = '\0';
-
     if (!OptGetVal (opt, CO_MSGTYPE, &msg.type))
         msg.type = MSG_NORM;
     if (!OptGetVal (opt, CO_ORIGIN, &msg.origin))
@@ -1020,6 +1015,37 @@ void IMSrvMsgFat (Contact *cont, time_t stamp, Opt *opt)
         msg.ref = 0;
     if (!OptGetStr (opt, CO_SUBJECT, &msg.subj))
         msg.subj = NULL;
+
+    if (!OptGetStr (opt, CO_MSGTEXT, &msg.orig_data))
+        msg.orig_data = "";
+#ifdef ENABLE_OTR
+    /* process incomming messages for OTR decryption */
+    if (msg.type == MSG_NORM && libotr_is_present)
+    { /* only normal messages */
+        char *otr_text = NULL;
+
+        if (OTRMsgIn (msg.orig_data, cont, &otr_text))
+        {
+            /*rl_print ("%sinternal OTR protocol message received%s\n",
+                    COLDEBUG, COLNONE);*/
+            OptD (opt);
+            if (otr_text)
+                OTRFree (otr_text);
+            return; /* no msg ack/logging? */
+        }
+        if (otr_text)
+        { /* replace text with decrypted version */
+            msg.msgtext = cdata_deleteme = strdup (otr_text);
+            OTRFree (otr_text);
+        }
+        else /* no change */
+            msg.msgtext = cdata_deleteme = strdup (msg.orig_data);
+    }
+    else
+#endif /* ENABLE_OTR */
+        msg.msgtext = cdata_deleteme = strdup (msg.orig_data);
+    while (*msg.msgtext && strchr ("\n\r", msg.msgtext[strlen (msg.msgtext) - 1]))
+        msg.msgtext[strlen (msg.msgtext) - 1] = '\0';
 
     max_0xff = 0;
     switch (msg.type & ~MSGF_MASS)

@@ -50,6 +50,7 @@
 #include "util_tcl.h"
 #include "util_ssl.h"
 #include "util_alias.h"
+#include "util_otr.h"
 
 #define MAX_STR_BUF 256                 /* buffer length for history */
 #define DEFAULT_HISTORY_COUNT 10        /* count of last messages of history */
@@ -77,7 +78,11 @@ static jump_f CmdUserPeer;
 #ifdef ENABLE_DEBUG
 static jump_f CmdUserListQueue;
 #endif
-    
+
+#ifdef ENABLE_OTR
+static jump_f CmdUserOtr;
+#endif
+
 static void CmdUserProcess (const char *command, time_t *idle_val, idleflag_t *idle_flag);
 
 /* 1 = do not apply idle stuff next time     v
@@ -200,6 +205,9 @@ static jump_t jump[] = {
 #endif
 #ifdef ENABLE_DEBUG
     { &CmdUserListQueue,     "_queue",       0,   0 },
+#endif
+#ifdef ENABLE_OTR
+    { &CmdUserOtr,           "otr",          0,   0 },
 #endif
     { NULL, NULL, 0, 0 }
 };
@@ -657,6 +665,55 @@ static JUMP_F(CmdUserHelp)
     s_free (newargs);
     return 0;
 }
+
+#ifdef ENABLE_OTR
+/*
+ * OTR commands
+ */
+static JUMP_F(CmdUserOtr)
+{
+    Contact *cont = NULL;
+
+    if (!libotr_is_present)
+    {
+        rl_print (i18n (2634, "Install libotr for OTR support\n"));
+        return 0;
+    }
+
+    if (data == 0)
+    {
+        if (s_parsekey (&args, "list"))
+            data = OTR_CMD_LIST;
+        else if (s_parsekey (&args, "start"))
+            data = OTR_CMD_START;
+        else if (s_parsekey (&args, "stop"))
+            data = OTR_CMD_STOP;
+        else if (s_parsekey (&args, "trust"))
+            data = OTR_CMD_TRUST;
+        else if (s_parsekey (&args, "genkey"))
+            data = OTR_CMD_GENKEY;
+        else if (s_parsekey (&args, "keys"))
+            data = OTR_CMD_KEYS;
+        else
+        {
+            rl_print (i18n (2635, "otr - Off-the-Record Messaging\n"));
+            rl_print (i18n (2636, "otr list [<contact>]          - List OTR connection states\n"));
+            rl_print (i18n (2637, "otr start|stop <contact>      - Start/Stop OTR session\n"));
+            rl_print (i18n (2638, "otr trust <contact> [<trust>] - Set/Show trust for active fingerprint\n"));
+            rl_print (i18n (2639, "otr genkey                    - Generate private key\n"));
+            rl_print (i18n (2640, "otr keys                      - List private keys\n"));
+        }
+    }
+
+    if ((data == OTR_CMD_LIST || data == OTR_CMD_START || data == OTR_CMD_STOP || data == OTR_CMD_TRUST)
+            && uiG.conn)
+    {
+        cont = s_parsenick (&args, uiG.conn);
+    }
+
+    return OTRCmd (data, cont, s_parserem (&args));
+}
+#endif /* ENABLE_OTR */
 
 /*
  * Sets a new password.

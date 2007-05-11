@@ -109,6 +109,8 @@ extern struct OptEntry_s OptList[];
 #define CO_TAUTOFFC      (COF_STRING  | CO_CONTACT | 0x24UL) /* the temp free for chat auto reply message  */
 #define CO_TAUTOINV      (COF_STRING  | CO_CONTACT | 0x25UL) /* the temp invisible auto reply message      */
 
+#define CO_OTRPOLICY     (COF_STRING  | CO_CONTACT | 0x30UL) /* OTR policy for a contact */
+
 #define CO_COLORNONE     (COF_COLOR   | CO_GLOBAL  | 0x80UL) /* the escape sequence to print for no color              */
 #define CO_COLORSERVER   (COF_COLOR   | CO_GLOBAL  | 0x81UL) /* the escape sequence to print for server message        */
 #define CO_COLORCLIENT   (COF_COLOR   | CO_GLOBAL  | 0x82UL) /* the escape sequence to print for client stuff          */
@@ -136,6 +138,7 @@ extern struct OptEntry_s OptList[];
 #define CO_FILEACCEPT    (COF_NUMERIC              | 0x2aUL) /* accept a file transfer */
 #define CO_REFUSE        (COF_STRING               | 0x2bUL) /* refuse message */
 #define CO_SUBJECT       (COF_STRING               | 0x2cUL) /* message with subject */
+#define CO_OTRINJECT     (COF_NUMERIC              | 0x2dUL) /* otr injected message */
 
 #define CV_ORIGIN_v5  8
 #define CV_ORIGIN_v8  2

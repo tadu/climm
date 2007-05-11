@@ -53,6 +53,8 @@ AC_ARG_ENABLE([tcl], AC_HELP_STRING([--disable-tcl], [disable Tcl scripting]),
 AC_ARG_ENABLE([ssl], AC_HELP_STRING([--disable-ssl], [disable SSL encryption]),
               ac_arg_use_ssl=$enableval, ac_arg_use_ssl=auto)
 AC_ARG_ENABLE([ssl], AC_HELP_STRING([[[[--enable-ssl=gnutls,openssl]]]], [choose SSL library]))
+AC_ARG_ENABLE([otr], AC_HELP_STRING([--disable-otr], [disable OTR encryption support]),
+              ac_arg_use_otr=$enableval, ac_arg_use_otr=auto)
 
 AC_ARG_ENABLE([autopackage], AC_HELP_STRING([--enable-autopackage], [enable autopackage generation]),
               ac_arg_use_autopackage=$enableval, ac_arg_use_autopackage=no)
@@ -107,6 +109,28 @@ if test "x$ac_arg_use_dc" != "xno"; then
   fi
 else
   ac_arg_use_ssl=no
+fi
+
+if test "x$ac_arg_use_otr" != "xno"; then
+    ac_use_otr=no
+    if test "x$ac_arg_use_ssl" != "xgnutls"; then
+        AM_PATH_LIBGCRYPT(, ac_use_otr=maybe, ac_use_otr=no)
+    else
+        ac_use_otr=maybe
+    fi
+    if test "x$ac_use_otr" = "xmaybe"; then
+        AM_PATH_LIBOTR(, ac_use_otr=yes, ac_use_otr=no)
+    fi
+    if test "x$ac_use_otr" = "xyes"; then
+        LIBS="$LIBOTR_LIBS $LIBS"
+        CFLAGS="$LIBOTR_CFLAGS $CFLAGS"
+        ac_arg_use_otr=yes
+    else
+        if test "x$ac_arg_use_otr" = "xyes"; then
+            AC_MSG_FAILURE([OTR support requested, but no usable libotr found!])
+        fi
+        ac_arg_use_otr=no
+    fi
 fi
 
 if test "x$ac_arg_use_tcl" != "xno"; then
@@ -340,6 +364,10 @@ elif test "x$ac_arg_use_ssl" = "xopenssl"; then
   AC_DEFINE(ENABLE_OPENSSL, 1, [Whether to use OpenSSL for SSL/TLS support])
 fi
 
+if test "x$ac_arg_use_otr" = "xyes"; then
+    AC_DEFINE(ENABLE_OTR, 1, [Whether to support OTR encryption])
+fi
+
 if test "x$ac_arg_use_tcl" = "xyes"; then
   AC_DEFINE(ENABLE_TCL, 1, [Whether to use the Tcl scripting extension])
 fi
@@ -537,7 +565,7 @@ if test "x$ac_arg_use_autopackage" = xyes; then
         AC_SEARCH_LIBS([dlopen], [dl])
         LIBS="$old_LIBS $LIBS"
         if test "x$RELAYTOOL" != x:; then
-            LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox' $LIBS"'`'
+            LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $LIBS"'`'
             AC_DEFINE(ENABLE_AUTOPACKAGE,1,[Use autopackage to check libraries at run time])
         fi
     fi
@@ -557,6 +585,8 @@ AC_MSG_CHECKING([whether to enable Tcl scripting])
 AC_MSG_RESULT([$ac_arg_use_tcl])
 AC_MSG_CHECKING([whether to enable SSL/TLS support])
 AC_MSG_RESULT([$ac_arg_use_ssl])
+AC_MSG_CHECKING([whether to enable OTR support])
+AC_MSG_RESULT([$ac_arg_use_otr])
 
 
 AC_CONFIG_FILES([src/Makefile Makefile lang/Makefile doc/Makefile])

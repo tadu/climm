@@ -18,6 +18,9 @@ Contributors:
         Roman Hoog Antink       <roman__at__rs3__dot__ch>
             SSL and TCL extensions
 
+        Robert Bartel		<r.bartel__at__gmx__dot__net
+            OTR support
+
 	Maxim Komar		<komar__at__ukr__dot__net>
 	    configurable prompt
 

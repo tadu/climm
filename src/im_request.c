@@ -28,6 +28,7 @@
 #include "oscar_service.h"
 #include "oscar_roster.h"
 #include "jabber_base.h"
+#include "util_otr.h"
 
 static void CallbackMeta (Event *event);
 static void CallbackTogvis (Event *event);
@@ -50,6 +51,10 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Opt *opt)
 {
     const char *opt_text;
     UDWORD opt_type, opt_trans;
+#ifdef ENABLE_OTR
+    char *otr_text = NULL;
+    UDWORD injected;
+#endif
     
     if (!cont || !conn || !OptGetStr (opt, CO_MSGTEXT, &opt_text))
     {
@@ -60,9 +65,39 @@ UBYTE IMCliMsg (Connection *conn, Contact *cont, Opt *opt)
         OptSetVal (opt, CO_MSGTYPE, opt_type = MSG_NORM);
     if (!OptGetVal (opt, CO_MSGTRANS, &opt_trans))
         OptSetVal (opt, CO_MSGTRANS, opt_trans = CV_MSGTRANS_ANY);
+
+#ifdef ENABLE_OTR
+    if (!OptGetVal (opt, CO_OTRINJECT, &injected))
+        injected = FALSE;
+    /* process outgoing messages for OTR */
+    if (opt_type == MSG_NORM && !injected && libotr_is_present)
+    {
+        if (OTRMsgOut (opt_text, conn, cont, &otr_text))
+        {
+            rl_print (COLERROR);
+            rl_printf (i18n (2641, "Message for %s could not be encrypted and was NOT sent!"),
+                    cont->nick);
+            rl_printf ("%s\n", COLNONE);
+            OptD (opt);
+            if (otr_text)
+                OTRFree (otr_text);
+            return RET_FAIL;
+        }
+    }
+    /* log original message */
+#endif
     
     putlog (conn, NOW, cont, ims_online, 0,
             opt_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, opt_type, opt_text);
+
+#ifdef ENABLE_OTR
+    /* replace text if OTR changed it */
+    if (otr_text)
+    {
+        OptSetStr (opt, CO_MSGTEXT, otr_text);
+        OTRFree (otr_text);
+    }
+#endif
 
     return IMCliReMsg (conn, cont, opt);
 }

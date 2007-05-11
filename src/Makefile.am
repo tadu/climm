@@ -15,7 +15,7 @@ micq_SOURCES = autopackage_prefix.c conv.c file_util.c im_response.c micq.c \
        oscar_base.c oscar_tlv.c oscar_snac.c \
        oscar_service.c oscar_location.c oscar_contact.c oscar_icbm.c \
        oscar_bos.c oscar_roster.c oscar_oldicq.c oscar_register.c  \
-       remote.c os.c util_tcl.c util_ssl.c im_icq8.c buildmark.c
+       remote.c os.c util_tcl.c util_ssl.c im_icq8.c buildmark.c util_otr.c
 
 EXTRA_LIBRARIES = libmicqmsn.a libmicqxmpp.a
 noinst_LIBRARIES = @LIBMSN@ @LIBXMPP@

@@ -39,6 +39,7 @@
 #include "oldicq_compat.h"
 #include "util_tcl.h"
 #include "util_ssl.h"
+#include "util_otr.h"
 #include "util_alias.h"
 #include "cmd_user.h"
 #include "util_parse.h"
@@ -451,6 +452,10 @@ static void Init (int argc, char *argv[])
         rl_printf (i18n (2371, "SSL init failed.\n"));
 #endif
 
+#ifdef ENABLE_OTR
+    OTRInit ();
+#endif
+
 #ifdef ENABLE_TCL
     TCLInit ();
 #endif
@@ -643,6 +648,10 @@ int main (int argc, char *argv[])
 
         QueueRun ();
     }
+
+#ifdef ENABLE_OTR
+    OTREnd ();
+#endif
 
     for (i = 0; (conn = ConnectionNr (i)); i++)
         if (conn->close)
