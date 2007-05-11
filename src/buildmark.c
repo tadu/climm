@@ -129,7 +129,13 @@
 #define EV_MSN
 #endif
 
-#define EV EV_AP EV_SSL EV_TCL EV_P2P EV_XMPP EV_MSN
+#ifdef ENABLE_OTR
+#define EV_OTR "OTR "
+#else
+#define EV_OTR
+#endif
+
+#define EV EV_OTR EV_AP EV_SSL EV_TCL EV_P2P EV_XMPP EV_MSN
 
 const UDWORD BuildPlatformID = BUILD_PLATFORM;
 const char  *BuildPlatformStr = EXTRAVERSION_DEF;
