@@ -205,7 +205,7 @@ JUMP_SNAC_F(SnacSrvLoginkey)
     strc_t key;
 
     key = PacketReadB2Str (event->pak, NULL);
-    if (!key->len)
+    if (!key->len || !serv->passwd)
         return;
 
     /* compute md5 hash */

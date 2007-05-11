@@ -246,6 +246,7 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
             
             if (cont->status != ims_offline &&
                 HAS_CAP (cont->caps, CAP_UTF8) &&
+                !ConvFits (text, ENC_ASCII) &&
                 !(cont->dc && cont->dc->id1 == (time_t)0xffffff42 &&
                   (cont->dc->id2 & 0x7fffffff) < (time_t)0x00040c00)) /* exclude old mICQ */
             {
@@ -270,7 +271,7 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD 
                               SnacCallbackIgnore);
 
             icqcol = atoi (text); /* FIXME FIXME WIXME */
-            str = s_split (&text, enc, 450);
+            str = s_split (&text, enc, 700); /* FIXME: not 450? What is the real max? */
 
             PacketWriteTLV     (pak, 2);
             PacketWriteTLV     (pak, 1281);

@@ -113,12 +113,16 @@ fi
 
 if test "x$ac_arg_use_otr" != "xno"; then
     ac_use_otr=no
+    temp_LIBS="$LIBS"
+    temp_CFLAGS="$CFLAGS"
     if test "x$ac_arg_use_ssl" != "xgnutls"; then
         AM_PATH_LIBGCRYPT(, ac_use_otr=maybe, ac_use_otr=no)
+        LIBS="$LIBGCRYPT_LIBS $LIBS"
+        CFLAGS="$LIBGCRYPT_CFLAGS $CFLAGS"
     else
         ac_use_otr=maybe
     fi
-    if test "x$ac_use_otr" = "xmaybe"; then
+    if test "x$ac_use_otr" != "xno"; then
         AM_PATH_LIBOTR(, ac_use_otr=yes, ac_use_otr=no)
     fi
     if test "x$ac_use_otr" = "xyes"; then
@@ -129,6 +133,8 @@ if test "x$ac_arg_use_otr" != "xno"; then
         if test "x$ac_arg_use_otr" = "xyes"; then
             AC_MSG_FAILURE([OTR support requested, but no usable libotr found!])
         fi
+        LIBS="$temp_LIBS"
+        CFLAGS="$temp_CFLAGS"
         ac_arg_use_otr=no
     fi
 fi
