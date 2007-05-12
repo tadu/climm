@@ -333,10 +333,12 @@ void OTRInit ()
     gcry_error_t ret;
 
     if (!libotr_is_present)
+    {
+        rl_printf (i18n (2644, "Install libOTR 3.0.0 or newer and enjoy off-the-record encrypted messages!\n"));
         return;
+    }
 
     OTRL_INIT;
-    rl_printf (i18n (2644, "Using OTR library version %s\n"), otrl_version ());
 
     assert (!userstate);
     userstate = otrl_userstate_create ();
