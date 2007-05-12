@@ -3931,13 +3931,13 @@ static JUMP_F(CmdUserConn)
     switch (data)
     {
         case 0:
-            rl_print (i18n (1892, "conn               List available connections.\n"));
-            rl_print (i18n (2094, "conn login         Open current/first server connection.\n"));
-            rl_print (i18n (1893, "conn login <nr>    Open connection <nr>.\n"));
-            rl_print (i18n (2156, "conn close <nr>    Close connection <nr>.\n"));
-            rl_print (i18n (2095, "conn remove <nr>   Remove connection <nr>.\n"));
-            rl_print (i18n (2097, "conn select <nr>   Select connection <nr> as server connection.\n"));
-            rl_print (i18n (2100, "conn select <uin>  Select connection with UIN <uin> as server connection.\n"));
+            rl_print (i18n (1892, "conn                    List available connections.\n"));
+            rl_print (i18n (2094, "conn login [pass]       Open current/first server connection.\n"));
+            rl_print (i18n (1893, "conn login <nr> [pass]  Open connection <nr>.\n"));
+            rl_print (i18n (2156, "conn close <nr>         Close connection <nr>.\n"));
+            rl_print (i18n (2095, "conn remove <nr>        Remove connection <nr>.\n"));
+            rl_print (i18n (2097, "conn select <nr>        Select connection <nr> as server connection.\n"));
+            rl_print (i18n (2100, "conn select <uin>       Select connection with UIN <uin> as server connection.\n"));
             break;
 
         case 1:
@@ -3997,7 +3997,7 @@ static JUMP_F(CmdUserConn)
                     if (nr)
                         rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
                     else
-                        rl_printf (i18n (2599, "There is no connection for UIN %s.\n"), par->txt);
+                        rl_printf (i18n (2599, "There is no connection for %s.\n"), par->txt);
                 }
             }
             else
@@ -4011,11 +4011,15 @@ static JUMP_F(CmdUserConn)
             }
             if (!connl)
                 break;
+            if ((targs = s_parserem (&args)))
+                s_repl (&connl->passwd, targs);
             if (connl->connect & CONNECT_OK)
                 rl_printf (i18n (2601, "Connection for %s is already open.\n"), connl->screen);
             else if (!connl->open)
                 rl_printf (i18n (2602, "Don't know how to open connection type %s for %s.\n"),
                     ConnectionType (connl), connl->screen);
+            else if (!connl->passwd || !*connl->passwd)
+                rl_printf (i18n (9999, "No password given for %s.\n"), connl->screen);
             else
                 connl->open (connl);
             break;

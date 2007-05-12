@@ -172,6 +172,8 @@ void FlapChannel4 (Connection *conn, Packet *pak)
         
         if (tlv[8].nr == 24)
             rl_print (i18n (2328, "You logged in too frequently, please wait 30 minutes before trying again.\n"));
+        if (tlv[8].nr == 5)
+            s_repl (&conn->passwd, NULL);
 
         if ((conn->connect & CONNECT_MASK) && conn->sok != -1)
             sockclose (conn->sok);

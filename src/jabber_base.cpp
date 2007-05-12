@@ -136,7 +136,9 @@ void MICQXMPP::onDisconnect (gloox::ConnectionError e)
         case gloox::ConnOutOfMemory:          rl_printf ("onDisconnect: Error OutOfMemory %d.\n", e); break;
         case gloox::ConnNoSupportedAuth:      rl_printf ("onDisconnect: Error NoSupportedAuth %d.\n", e); break;
         case gloox::ConnTlsFailed:            rl_printf ("onDisconnect: Error TlsFailed %d.\n", e); break;
-        case gloox::ConnAuthenticationFailed: rl_printf ("onDisconnect: Error AuthenticationFailed %d.\n", e); break;
+        case gloox::ConnAuthenticationFailed: rl_printf ("onDisconnect: Error AuthenticationFailed %d.\n", e);
+            s_repl (&m_conn->passwd, NULL);
+            break;
         case gloox::ConnUserDisconnected:     rl_printf ("onDisconnect: Error UserDisconnected %d.\n", e); break;
         case gloox::ConnNotConnected:         rl_printf ("onDisconnect: Error NotConnected %d.\n", e); break;
         default:
