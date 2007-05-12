@@ -430,7 +430,7 @@ static void Init (int argc, char *argv[])
                   COLQUOTE, s_qquote (prG->locale), COLNONE);
     }
     else if (i)
-        rl_printf (i18n (2508, "English (%s) translation loaded (%s%d%s entries).\n"),
+        rl_printf (i18n (2508, "No translation (%s) loaded (%s%d%s entries).\n"),
                   s_qquote (prG->locale), COLQUOTE, i, COLNONE);
     else
         rl_printf ("No translation requested. You live in nowhereland, eh?\n");

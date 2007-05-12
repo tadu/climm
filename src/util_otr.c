@@ -334,7 +334,7 @@ void OTRInit ()
 
     if (!libotr_is_present)
     {
-        rl_printf (i18n (2644, "Install libOTR 3.0.0 or newer and enjoy off-the-record encrypted messages!\n"));
+        rl_printf (i18n (2634, "Install libOTR 3.0.0 or newer and enjoy off-the-record encrypted messages!\n"));
         return;
     }
 
@@ -585,8 +585,8 @@ static void cb_create_privkey (void *opdata, const char *accountname, const char
 {
     gcry_error_t ret;
 
-    rl_printf (i18n (2654, "OTR: generating new key for %s (%s)\n"
-            "this may take a while..."), accountname, protocol);
+    rl_printf (i18n (2654, "OTR: generating new key for %s (%s)\nthis may take a while..."),
+               accountname, protocol);
     ret = otrl_privkey_generate (userstate, keyfile.txt, accountname, protocol);
     if (ret)
         rl_print (i18n (2655, "something went wrong\n"));

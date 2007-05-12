@@ -676,7 +676,7 @@ static JUMP_F(CmdUserOtr)
 
     if (!libotr_is_present)
     {
-        rl_print (i18n (2634, "Install libotr for OTR support\n"));
+        rl_print (i18n (2634, "Install libOTR 3.0.0 or newer and enjoy off-the-record encrypted messages!\n"));
         return 0;
     }
 
