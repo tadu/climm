@@ -928,7 +928,8 @@ static JUMP_F(CmdUserTrans)
                 if (i == -1)
                     rl_printf (i18n (2316, "Translation %s not found.\n"), par->txt);
                 else
-                    rl_printf (i18n (2400, "No translation (%s) loaded (%d entries).\n"), par->txt, i);
+                    rl_printf (i18n (2508, "No translation (%s) loaded (%s%d%s entries).\n"),
+                        s_qquote (prG->locale), COLQUOTE, i, COLNONE);
             }
             one = 1;
         }
