@@ -26,19 +26,14 @@ Event *ConnectionInitServerV5 (Connection *conn)
         return NULL;
     }
     
+    if (!conn->passwd || !*conn->passwd)
+        return NULL;
     conn->close = &CallBackClosev5;
     conn->cont = ContactUIN (conn, conn->uin);
     if (!conn->server || !*conn->server)
         s_repl (&conn->server, "icq.icq.com");
     if (!conn->port)
         conn->port = 4000;
-    if (!conn->passwd || !*conn->passwd)
-    {
-        strc_t pwd;
-        rl_printf ("%s ", i18n (1063, "Enter password:"));
-        pwd = UtilIOReadline (stdin);
-        conn->passwd = strdup (pwd ? pwd->txt : "");
-    }
     QueueEnqueueData (conn, /* FIXME: */ 0, 0, time (NULL), NULL, 0, NULL, &CallBackServerInitV5);
     return NULL;
 }

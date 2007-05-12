@@ -86,10 +86,12 @@ Event *ConnectionInitMSNServer (Connection *serv)
     MICQMSN *cb = new MICQMSN;
     
     assert (serv->type = TYPE_MSN_SERVER);
+    if (!serv->screen || !serv->passwd)
+        return NULL;
 
     rl_printf ("ConnectionInitMSNServer: %p {%s} {%s} {%s} {%lu}\n", serv, serv->screen, serv->passwd, serv->server, serv->port);
     
-    if (!serv->screen || !serv->passwd || !strchr (serv->screen, '@'))
+    if (!strchr (serv->screen, '@'))
         return NULL;
     
     if (!serv->server)

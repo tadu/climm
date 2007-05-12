@@ -116,6 +116,8 @@ void CmdPktCmdLogin (Connection *conn)
         conn->our_session = rand () & 0x3fffffff;
     }
     
+    assert (conn->passwd);
+    assert (*conn->passwd);
     assert (strlen (conn->passwd) <= 8);
     
     pak = PacketCv5 (conn, CMD_LOGIN);

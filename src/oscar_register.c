@@ -114,6 +114,9 @@ void SnacCliRegisteruser (Connection *serv)
 {
     Packet *pak;
     
+    assert (serv->passwd);
+    assert (*serv->passwd);
+    
     pak = SnacC (serv, 23, 4, 0, 0);
     PacketWriteTLV (pak, 1);
     PacketWriteB4 (pak, 0);
@@ -203,9 +206,12 @@ JUMP_SNAC_F(SnacSrvLoginkey)
     ssl_md5ctx_t *ctx;
     int rc;
     strc_t key;
+    
+    assert (serv->passwd);
+    assert (*serv->passwd);
 
     key = PacketReadB2Str (event->pak, NULL);
-    if (!key->len || !serv->passwd)
+    if (!key->len)
         return;
 
     /* compute md5 hash */

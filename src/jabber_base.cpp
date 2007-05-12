@@ -79,6 +79,8 @@ MICQXMPP::MICQXMPP (Connection *serv)
     m_stamp = (char *)malloc (15);
     time_t now = time (NULL);
     strftime (m_stamp, 15, "%Y%m%d%H%M%S", gmtime (&now));
+    assert (serv->passwd);
+    assert (*serv->passwd);
     m_client = new gloox::Client (gloox::JID (serv->screen), serv->passwd, serv->port);
     m_client->setResource ("mICQ");
     if (serv->server)

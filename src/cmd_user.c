@@ -736,8 +736,8 @@ static JUMP_F(CmdUserPass)
             SnacCliMetasetpass (uiG.conn, arg1);
         else if (uiG.conn->type == TYPE_SERVER_OLD)
             CmdPktCmdMetaPass (uiG.conn, arg1);
-        uiG.conn->passwd = strdup (arg1);
-        if (uiG.conn->pref_passwd && strlen (uiG.conn->pref_passwd))
+        s_repl (&uiG.conn->passwd, arg1);
+        if (uiG.conn->pref_passwd && *uiG.conn->pref_passwd)
         {
             rl_print (i18n (2122, "Note: You need to 'save' to write new password to disc.\n"));
             uiG.conn->pref_passwd = strdup (arg1);

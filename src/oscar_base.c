@@ -355,17 +355,8 @@ void FlapCliIdent (Connection *conn)
     Packet *pak;
     char *f;
 
-    if (!conn->passwd || !*conn->passwd)
-    {
-        strc_t pwd;
-#ifdef __BEOS__
-        rl_print (i18n (2063, "You need to save your password in your ~/.micq/micqrc file.\n"));
-#else
-        rl_printf ("%s ", i18n (1063, "Enter password:"));
-        pwd = UtilIOReadline (stdin);
-        conn->passwd = strdup (pwd ? ConvFrom (pwd, prG->enc_loc)->txt : "");
-#endif
-    }
+    assert (conn->passwd);
+    assert (*conn->passwd);
 
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
@@ -434,10 +425,12 @@ Event *ConnectionInitServer (Connection *conn)
     Contact *cont;
     Event *event;
     
-    if (!conn->server || !*conn->server || !conn->port)
+    if (!conn->passwd || !*conn->passwd || !conn->port)
         return NULL;
     if (!conn->uin && ~conn->flags & CONN_WIZARD)
         return NULL;
+    if (!conn->server || !*conn->server)
+        s_repl (&conn->server, "login.icq.com");
 
     if (conn->sok != -1)
         sockclose (conn->sok);
@@ -616,6 +609,9 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
 #ifdef ENABLE_PEER2PEER
     Connection *newl;
 #endif
+
+    assert (pass);
+    assert (*pass);
     
     if (!(news = ConnectionC (TYPE_SERVER)))
         return NULL;

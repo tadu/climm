@@ -505,7 +505,7 @@ static void Init (int argc, char *argv[])
                     conn->status = arg_ss;
                 if (arg_p)
                     s_repl (&conn->passwd, arg_p);
-                if ((!arg_s || arg_ss != ims_offline) && (loginevent = conn->open (conn)))
+                if (conn->passwd && *conn->passwd && (!arg_s || arg_ss != ims_offline) && (loginevent = conn->open (conn)))
                     QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
                                      OptSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                      &CmdUserCallbackTodo);
@@ -537,13 +537,28 @@ static void Init (int argc, char *argv[])
     }
     
     if (!uingiven)
+        for (i = 0; (conn = ConnectionNr (i)); i++)
+            if (conn->open && conn->flags & CONN_AUTOLOGIN)
+                if (conn->type & TYPEF_ANY_SERVER)
+                    if (!conn->passwd || !*conn->passwd)
+                    {
+                        strc_t pwd;
+                        const char *s = s_sprintf ("%s", s_qquote (conn->screen));
+                        rl_printf (i18n (9999, "Enter password for %s account %s: "),
+                                   s_qquote (ConnectionServerType (conn->type)), s);
+                        pwd = UtilIOReadline (stdin);
+                        rl_printf ("\n");
+                        s_repl (&conn->passwd, pwd ? ConvFrom (pwd, prG->enc_loc)->txt : "");
+                    }
+
+    if (!uingiven)
     {
         for (i = 0; (conn = ConnectionNr (i)); i++)
             if (conn->open && conn->flags & CONN_AUTOLOGIN)
             {
                 if (conn->type & TYPEF_ANY_SERVER)
                 {
-                    if (conn->status != ims_offline && (loginevent = conn->open (conn)))
+                    if (conn->passwd && *conn->passwd && conn->status != ims_offline && (loginevent = conn->open (conn)))
                          QueueEnqueueDep (conn, QUEUE_MICQ_COMMAND, 0, loginevent, NULL, conn->cont,
                                           OptSetVals (NULL, CO_MICQCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                           &CmdUserCallbackTodo);
