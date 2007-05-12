@@ -835,13 +835,13 @@ static JUMP_F(CmdUserInfo)
     if (data)
     {
         if ((cont = uiG.last_rcvd))
-            IMCliInfo (uiG.conn, cont, 0);
+            IMCliInfo (cont->serv, cont, 0);
         return 0;
     }
 
     if ((cg = s_parselistrem (&args, uiG.conn)))
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            IMCliInfo (uiG.conn, cont, 0);
+            IMCliInfo (cont->serv, cont, 0);
     return 0;
 }
 
@@ -1004,7 +1004,7 @@ static JUMP_F(CmdUserGetAuto)
                     default:          continue;
                 }
             }
-            IMCliMsg (uiG.conn, cont, OptSetVals (NULL, CO_MSGTYPE, cdata, CO_MSGTEXT, "\xff", CO_FORCE, 1, 0));
+            IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, cdata, CO_MSGTEXT, "\xff", CO_FORCE, 1, 0));
         }
 
     if (data || one)
@@ -1283,11 +1283,11 @@ static JUMP_F (CmdUserResend)
     if ((cg = s_parselistrem (&args, uiG.conn)))
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            IMCliMsg (uiG.conn, cont, OptSetVals (NULL, CO_MSGTYPE, uiG.last_message_sent_type, CO_MSGTEXT, uiG.last_message_sent, 0));
+            IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, uiG.last_message_sent_type, CO_MSGTEXT, uiG.last_message_sent, 0));
             uiG.last_sent = cont;
         }
     else
-        IMCliMsg (uiG.conn, uiG.last_sent, OptSetVals (NULL, CO_MSGTYPE, uiG.last_message_sent_type, CO_MSGTEXT, uiG.last_message_sent, 0));
+        IMCliMsg (uiG.last_sent, OptSetVals (NULL, CO_MSGTYPE, uiG.last_message_sent_type, CO_MSGTEXT, uiG.last_message_sent, 0));
     return 0;
 }
 
@@ -1423,7 +1423,7 @@ static JUMP_F (CmdUserMessage)
             uiG.last_message_sent_type = MSG_NORM;
             for (i = 0; (cont = ContactIndex (cg, i)); i++)
             {
-                IMCliMsg (uiG.conn, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, arg1, 0));
+                IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, arg1, 0));
                 uiG.last_sent = cont;
                 if (tab)
                 {
@@ -1479,7 +1479,7 @@ static JUMP_F (CmdUserMessage)
         uiG.last_message_sent_type = MSG_NORM;
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            IMCliMsg (uiG.conn, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, t.txt, 0));
+            IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, t.txt, 0));
             uiG.last_sent = cont;
             if (tab)
             {
@@ -2086,12 +2086,12 @@ static JUMP_F(CmdUserStatusMeta)
                 }
                 return 0;
             case 6:
-                IMCliInfo (uiG.conn, uiG.last_rcvd, 0);
+                IMCliInfo (uiG.last_rcvd->serv, uiG.last_rcvd, 0);
                 if (!cg)
                     break;
             case 5:
                 for (i = 0; (cont = ContactIndex (cg, i)); i++)
-                    IMCliInfo (uiG.conn, cont, 0);
+                    IMCliInfo (cont->serv, cont, 0);
                 data = 5;
                 break;
         }
@@ -3201,7 +3201,7 @@ static JUMP_F(CmdUserURL)
 
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
-        IMCliMsg (uiG.conn, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_URL, CO_MSGTEXT, cmsg, 0));
+        IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, MSG_URL, CO_MSGTEXT, cmsg, 0));
         uiG.last_sent = cont;
     }
 
@@ -4160,7 +4160,7 @@ static JUMP_F(CmdUserQuit)
     {
         for (i = 0; (cont = ContactIndex (NULL, i)); i++)
             if (cont->group && cont->group->serv && cont->status != ims_offline && ContactPrefVal (cont, CO_TALKEDTO))
-                IMCliMsg (cont->group->serv, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, arg1, 0));
+                IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, arg1, 0));
     }
 
     uiG.quit = data;

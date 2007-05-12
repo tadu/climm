@@ -485,7 +485,7 @@ int OTRCmd (int cmd, Contact *cont, const char *arg)
                     break;
                 }
                 msg = otrl_proto_default_query_msg (ctx->accountname, policy);
-                IMCliMsg (cont->serv, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM,
+                IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM,
                             CO_MSGTEXT, msg, CO_OTRINJECT, TRUE, 0));
                 //free (msg); /* freed automatical by IMCliMsg? */
             }
@@ -634,7 +634,7 @@ static void cb_inject_message (void *opdata, const char *accountname, const char
         return;
     }
 
-    if (IMCliMsg (cont->serv, cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM,
+    if (IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM,
                     CO_MSGTEXT, message, CO_OTRINJECT, TRUE, 0)) == RET_FAIL)
     {
         rl_print (COLDEBUG);

@@ -10,10 +10,10 @@ typedef enum {
   auth_add
 } auth_t;
 
-UBYTE IMCliMsg (Connection *conn, Contact *cont, Opt *opt);
-void  IMSetStatus (Connection *conn, Contact *cont, status_t status, const char *msg);
-UBYTE IMCliReMsg  (Connection *conn, Contact *cont, Opt *opt); /* no log */
-void  IMCliInfo   (Connection *conn, Contact *cont, int group);
+UBYTE IMCliMsg    (Contact *cont, Opt *opt);
+void  IMSetStatus (Connection *serv, Contact *cont, status_t status, const char *msg);
+UBYTE IMCliReMsg  (Contact *cont, Opt *opt); /* no log */
+void  IMCliInfo   (Connection *serv, Contact *cont, int group);
 void  IMCliAuth   (Contact *cont, const char *msg, auth_t how);
 
 #endif /* MICQ_IM_CLI_H */
