@@ -249,6 +249,9 @@ static JUMP_F(CmdUserChange)
 {
     char *arg1 = NULL;
     status_t sdata = data;
+    ContactGroup *cg = NULL;
+    Contact *cont;
+    int i;
     ANYCONN;
 
     if (data + 1 == 0)
@@ -268,29 +271,43 @@ static JUMP_F(CmdUserChange)
         sdata = IcqToStatus (data);
     }
 
-    OptSetStr (&prG->copts, CO_TAUTODND,  NULL);
-    OptSetStr (&prG->copts, CO_TAUTOOCC,  NULL);
-    OptSetStr (&prG->copts, CO_TAUTONA,   NULL);
-    OptSetStr (&prG->copts, CO_TAUTOAWAY, NULL);
-    OptSetStr (&prG->copts, CO_TAUTOFFC,  NULL);
-    OptSetStr (&prG->copts, CO_TAUTOINV,  NULL);
+    if (s_parsekey (&args, "for"))
+    {
+        if (!(cg = s_parselist (&args, uiG.conn)))
+            return 0;
 
-    if (!(arg1 = s_parserem (&args)))
-        arg1 = "";
+        if (!(arg1 = s_parserem (&args)))
+            arg1 = "";
 
-    switch (ContactClearInv (sdata)) {
-        case imr_dnd:  OptSetStr (&prG->copts, CO_TAUTODND,  arg1); break;
-        case imr_occ:  OptSetStr (&prG->copts, CO_TAUTOOCC,  arg1); break;
-        case imr_na:   OptSetStr (&prG->copts, CO_TAUTONA,   arg1); break;
-        case imr_away: OptSetStr (&prG->copts, CO_TAUTOAWAY, arg1); break;
-        case imr_ffc:  OptSetStr (&prG->copts, CO_TAUTOFFC,  arg1); break;
-        case imr_offline: break;
-        case imr_online:
-            if (sdata == ims_inv)
-                       OptSetStr (&prG->copts, CO_TAUTOINV,  arg1); break;
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            IMSetStatus (NULL, cont, sdata, arg1);
     }
-    
-    IMSetStatus (uiG.conn, NULL, sdata, arg1);
+    else
+    {
+        OptSetStr (&prG->copts, CO_TAUTODND,  NULL);
+        OptSetStr (&prG->copts, CO_TAUTOOCC,  NULL);
+        OptSetStr (&prG->copts, CO_TAUTONA,   NULL);
+        OptSetStr (&prG->copts, CO_TAUTOAWAY, NULL);
+        OptSetStr (&prG->copts, CO_TAUTOFFC,  NULL);
+        OptSetStr (&prG->copts, CO_TAUTOINV,  NULL);
+
+        if (!(arg1 = s_parserem (&args)))
+            arg1 = "";
+
+        switch (ContactClearInv (sdata))
+        {
+            case imr_dnd:  OptSetStr (&prG->copts, CO_TAUTODND,  arg1); break;
+            case imr_occ:  OptSetStr (&prG->copts, CO_TAUTOOCC,  arg1); break;
+            case imr_na:   OptSetStr (&prG->copts, CO_TAUTONA,   arg1); break;
+            case imr_away: OptSetStr (&prG->copts, CO_TAUTOAWAY, arg1); break;
+            case imr_ffc:  OptSetStr (&prG->copts, CO_TAUTOFFC,  arg1); break;
+            case imr_offline: break;
+            case imr_online:
+                if (sdata == ims_inv)
+                           OptSetStr (&prG->copts, CO_TAUTOINV,  arg1); break;
+        }
+        IMSetStatus (uiG.conn, NULL, sdata, arg1);
+    }
     return 0;
 }
 
@@ -471,21 +488,21 @@ static JUMP_F(CmdUserHelp)
         else if (!strcasecmp (par->txt, "login"))
             CMD_USER_HELP  ("login", "= conn login");
         else if (!strcasecmp (par->txt, "online"))
-            CMD_USER_HELP  ("online [<away-message>]", i18n (1431, "Set status to \"online\"."));
+            CMD_USER_HELP  ("online [for <contacts>] [<away-message>]", i18n (1431, "Set status to \"online\"."));
         else if (!strcasecmp (par->txt, "away"))
-            CMD_USER_HELP  ("away [<away-message>]", i18n (1432, "Set status to \"away\"."));
+            CMD_USER_HELP  ("away [for <contacts>] [<away-message>]", i18n (1432, "Set status to \"away\"."));
         else if (!strcasecmp (par->txt, "na"))
-            CMD_USER_HELP  ("na [<away-message>]", i18n (1433, "Set status to \"not available\"."));
+            CMD_USER_HELP  ("na [for <contacts>] [<away-message>]", i18n (1433, "Set status to \"not available\"."));
         else if (!strcasecmp (par->txt, "occ"))
-            CMD_USER_HELP  ("occ [<away-message>]", i18n (1434, "Set status to \"occupied\"."));
+            CMD_USER_HELP  ("occ [for <contacts>] [<away-message>]", i18n (1434, "Set status to \"occupied\"."));
         else if (!strcasecmp (par->txt, "dnd"))
-            CMD_USER_HELP  ("dnd [<away-message>]", i18n (1435, "Set status to \"do not disturb\"."));
+            CMD_USER_HELP  ("dnd [for <contacts>] [<away-message>]", i18n (1435, "Set status to \"do not disturb\"."));
         else if (!strcasecmp (par->txt, "ffc"))
-            CMD_USER_HELP  ("ffc [<away-message>]", i18n (1436, "Set status to \"free for chat\"."));
+            CMD_USER_HELP  ("ffc [for <contacts>] [<away-message>]", i18n (1436, "Set status to \"free for chat\"."));
         else if (!strcasecmp (par->txt, "inv"))
-            CMD_USER_HELP  ("inv [<away-message>]", i18n (1437, "Set status to \"invisible\"."));
+            CMD_USER_HELP  ("inv [for <contacts>] [<away-message>]", i18n (1437, "Set status to \"invisible\"."));
         else if (!strcasecmp (par->txt, "change"))
-            CMD_USER_HELP  ("change <status> [<away-message>]", i18n (1427, "Changes your status to the status number, or list the available modes."));
+            CMD_USER_HELP  ("change <status> [for <contacts>] [<away-message>]", i18n (1427, "Changes your status to the status number, or list the available modes."));
         /* User */
         else if (!strcasecmp (par->txt, "f"))
             CMD_USER_HELP  ("f <uin|nick>", i18n (1430, "Displays general info on <uin> or <nick>."));

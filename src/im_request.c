@@ -225,24 +225,35 @@ static void CallbackMeta (Event *event)
     }
 }
 
-void IMSetStatus (Connection *conn, Contact *cont, status_t status, const char *msg)
+void IMSetStatus (Connection *serv, Contact *cont, status_t status, const char *msg)
 {
-    if (~conn->connect & CONNECT_OK)
+    assert (serv || cont);
+    if (cont)
     {
-        conn->status = status;
-        conn->nativestatus = 0;
-    }
-    else if (conn->type == TYPE_SERVER)
-        SnacCliSetstatus (conn, status, 1);
-    else if (conn->type == TYPE_SERVER_OLD)
-    {
-        CmdPktCmdStatusChange (conn, status);
-        rl_printf ("%s %s\n", s_now, s_status (conn->status, conn->nativestatus));
-    }
 #if ENABLE_XMPP
-    else if (conn->type == TYPE_XMPP_SERVER)
-        XMPPSetstatus (conn, cont, status, msg);
+        if (cont->serv->type == TYPE_XMPP_SERVER)
+            XMPPSetstatus (cont->serv, cont, status, msg);
 #endif
+    }
+    else
+    {
+        if (~serv->connect & CONNECT_OK)
+        {
+            serv->status = status;
+            serv->nativestatus = 0;
+        }
+        else if (serv->type == TYPE_SERVER && !cont)
+            SnacCliSetstatus (serv, status, 1);
+        else if (serv->type == TYPE_SERVER_OLD && !cont)
+        {
+            CmdPktCmdStatusChange (serv, status);
+            rl_printf ("%s %s\n", s_now, s_status (serv->status, serv->nativestatus));
+        }
+#if ENABLE_XMPP
+        else if (serv->type == TYPE_XMPP_SERVER)
+            XMPPSetstatus (serv, NULL, status, msg);
+#endif
+    }
 }
 
 void IMCliAuth (Contact *cont, const char *msg, auth_t how)

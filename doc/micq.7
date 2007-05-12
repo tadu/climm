@@ -212,38 +212,94 @@ A built\-in shortcut for
 .IR conn\ login .
 Opens the first server connection.
 .TP
-.B online
-Change status to "online".
+.BI online\  [ for \ <contacts>\ [<message>]]
+Change status to 
+.IR online ,
+or change status to
+.I online
+only for the listed
+.I contacts
+and optionally specify the status
+.I message 
+for them.
 .TP
-.BI away \ [<message>]
-Change status to "away". Optionally set auto response temporarely for this status to
-.IR message .
+.BI away\  [ for \ <contacts>]\ [<message>]
+Change status to
+.I away
+and optionally set auto response temporarely for this status to
+.IR message ,
+or change status only for given
+.I contacts
+and optionally specify the status
+.I message 
+for them.
 .TP
-.BI na \ [<message>]
-Change status to "not available". Optionally set auto response temporarely for this status to
-.IR message .
+.BI na\  [ for \ <contacts>]\ [<message>]
+Change status to
+.IR na (not\ available)
+and optionally set auto response temporarely for this status to
+.IR message ,
+or change status only for given
+.I contacts
+and optionally specify the status
+.I message 
+for them.
 .TP
-.BI occ \ [<message>]
-Change status to "occupied". Optionally set auto response temporarely for this status to
-.IR message .
+.BI occ\  [ for \ <contacts>]\ [<message>]
+Change status to
+.IR occ (occupied)
+and optionally set auto response temporarely for this status to
+.IR message ,
+or change status only for given
+.I contacts
+and optionally specify the status
+.I message 
+for them.
 .TP
-.BI dnd \ [<message>]
-Change status to "do not disturb". Optionally set auto response temporarely for this status to
-.IR message .
+.BI dnd\  [ for \ <contacts>]\ [<message>]
+Change status to
+.IR dnd (do\ not\ disturb)
+and optionally set auto response temporarely for this status to
+.IR message ,
+or change status only for given
+.I contacts
+and optionally specify the status
+.I message 
+for them.
 .TP
-.BI ffc \ [<message>]
-Change status to "free for chat". Optionally set auto response temporarely for this status to
-.IR message .
+.BI ffc\  [ for \ <contacts>]\ [<message>]
+Change status to
+.IR ffc (free\ for\ chat)
+and optionally set auto response temporarely for this status to
+.IR message ,
+or change status only for given
+.I contacts
+and optionally specify the status
+.I message 
+for them.
 .TP
-.B inv
-Change status to "invisible".
+.BI inv\  [ for \ <contacts>]\ [<message>]
+Change status to
+.IR inv (invisible)
+and optionally set auto response temporarely for this status to
+.IR message ,
+or change status only for given
+.I contacts
+and optionally specify the status
+.I message 
+for them.
 .TP
-.BI change \ [<number>\ [<message>]]
-Changes your status to
-.IR number .
-Without a number it lists some available modes. Optionally
-set auto response for this status to
-.IR message .
+.BI change \ [<number>\ [ for \ <contacts>]\ [<message>]]
+Without a number it lists some available modes.
+Otherwise, change status to
+.IR number
+and optionally set auto response temporarely for this status to
+.IR message ,
+or change status only for given
+.I contacts
+and optionally specify the status
+.I message 
+for them.
 .SH COMMANDS CONCERNING FINDING AND SEEING OTHER USERS
 .TP
 .BI f \ <contacts>
