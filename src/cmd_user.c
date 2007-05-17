@@ -1021,7 +1021,7 @@ static JUMP_F(CmdUserGetAuto)
                     default:          continue;
                 }
             }
-            IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, cdata, CO_MSGTEXT, "\xff", CO_FORCE, 1, 0));
+            IMCliMsg (cont, cdata, "\xff", OptSetVals (NULL, CO_FORCE, 1, 0));
         }
 
     if (data || one)
@@ -1300,11 +1300,11 @@ static JUMP_F (CmdUserResend)
     if ((cg = s_parselistrem (&args, uiG.conn)))
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, uiG.last_message_sent_type, CO_MSGTEXT, uiG.last_message_sent, 0));
+            IMCliMsg (cont, uiG.last_message_sent_type, uiG.last_message_sent, NULL);
             uiG.last_sent = cont;
         }
     else
-        IMCliMsg (uiG.last_sent, OptSetVals (NULL, CO_MSGTYPE, uiG.last_message_sent_type, CO_MSGTEXT, uiG.last_message_sent, 0));
+        IMCliMsg (uiG.last_sent, uiG.last_message_sent_type, uiG.last_message_sent, NULL);
     return 0;
 }
 
@@ -1361,7 +1361,7 @@ static JUMP_F (CmdUserAnyMess)
             rl_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
             return 0;
         }
-        PeerSendMsg (uiG.conn->assoc, cont, OptSetVals (NULL, CO_MSGTYPE, data >> 2, CO_MSGTEXT, t.txt, 0));
+        PeerSendMsg (uiG.conn->assoc, cont, data >> 2, t.txt);
 #endif
     }
     else
@@ -1370,10 +1370,15 @@ static JUMP_F (CmdUserAnyMess)
             CmdPktCmdSendMessage (uiG.conn, cont, t.txt, data >> 2);
         else if (uiG.conn->type == TYPE_SERVER)
         {
-            if (f != 2)
-                SnacCliSendmsg (uiG.conn, cont, t.txt, data >> 2, f);
-            else
-                SnacCliSendmsg2 (uiG.conn, cont, OptSetVals (NULL, CO_FORCE, 1, CO_MSGTYPE, data >> 2, CO_MSGTEXT, t.txt, 0));
+            Message *msg = MsgC ();
+            UBYTE ret;
+            msg->cont = cont;
+            msg->send_message = strdup (t.txt);
+            msg->type = data;
+            msg->force = 1;
+            ret = SnacCliSendmsg (cont->serv, cont, f, msg);
+            if (!RET_IS_OK (ret))
+                MsgD (msg);
         }
     }
     return 0;
@@ -1440,7 +1445,7 @@ static JUMP_F (CmdUserMessage)
             uiG.last_message_sent_type = MSG_NORM;
             for (i = 0; (cont = ContactIndex (cg, i)); i++)
             {
-                IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, arg1, 0));
+                IMCliMsg (cont, MSG_NORM, arg1, NULL);
                 uiG.last_sent = cont;
                 if (tab)
                 {
@@ -1496,7 +1501,7 @@ static JUMP_F (CmdUserMessage)
         uiG.last_message_sent_type = MSG_NORM;
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, t.txt, 0));
+            IMCliMsg (cont, MSG_NORM, t.txt, NULL);
             uiG.last_sent = cont;
             if (tab)
             {
@@ -3218,7 +3223,7 @@ static JUMP_F(CmdUserURL)
 
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
     {
-        IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, MSG_URL, CO_MSGTEXT, cmsg, 0));
+        IMCliMsg (cont, MSG_URL, cmsg, NULL);
         uiG.last_sent = cont;
     }
 
@@ -4181,7 +4186,7 @@ static JUMP_F(CmdUserQuit)
     {
         for (i = 0; (cont = ContactIndex (NULL, i)); i++)
             if (cont->group && cont->group->serv && cont->status != ims_offline && ContactPrefVal (cont, CO_TALKEDTO))
-                IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, arg1, 0));
+                IMCliMsg (cont, CO_MSGTYPE, arg1, NULL);
     }
 
     uiG.quit = data;

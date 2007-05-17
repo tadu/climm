@@ -1253,19 +1253,34 @@ static Packet *PacketTCPC (Connection *peer, UDWORD cmd)
     return pak;
 }
 
+UBYTE PeerSendMsg (Connection *list, Contact *cont, UDWORD type, const char *text)
+{
+    UBYTE ret;
+    Message *msg = MsgC ();
+    
+    msg->send_message = strdup (text);
+    msg->type = type;
+    ret = PeerSendMsgFat (list, cont, msg);
+    if (!RET_IS_OK (ret))
+        MsgD (msg);
+    return ret;
+}
+
 /*
  * Sends a message via TCP.
  * Adds it to the resend queue until acked.
  */
-UBYTE PeerSendMsg (Connection *list, Contact *cont, Opt *opt)
+UBYTE PeerSendMsgFat (Connection *list, Contact *cont, Message *msg)
 {
     Packet *pak;
     Connection *peer;
-    const char *opt_text = NULL;
-    UDWORD opt_type = 0;
+    Event *event;
 
     ASSERT_MSGLISTEN(list);
     assert (cont);
+    assert (msg);
+    assert (msg->cont == cont);
+    assert (msg->send_message);
 
     if (!cont->dc || !cont->dc->port)
         return RET_DEFER;
@@ -1275,13 +1290,8 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Opt *opt)
         return RET_DEFER;
     if (!cont->dc->ip_loc && !cont->dc->ip_rem)
         return RET_DEFER;
-    
-    if (!OptGetStr (opt, CO_MSGTEXT, &opt_text))
-        return RET_FAIL;
-    if (!OptGetVal (opt, CO_MSGTYPE, &opt_type))
-        opt_type = MSG_NORM;
 
-    switch (opt_type & 0xff)
+    switch (msg->type & 0xff)
     {
         case MSG_NORM:
         case MSG_URL:
@@ -1311,17 +1321,18 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Opt *opt)
     ASSERT_MSGDIRECT(peer);
     
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-    SrvMsgAdvanced   (pak, peer->our_seq, opt_type, list->parent->status,
-                      cont->status, -1, c_out_for (opt_text, cont, opt_type));
+    SrvMsgAdvanced   (pak, peer->our_seq, msg->type, list->parent->status,
+                      cont->status, -1, c_out_for (msg->send_message, cont, msg->type));
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
-    if (CONT_UTF8 (cont, opt_type))
+    if (CONT_UTF8 (cont, msg->type))
         PacketWriteDLStr (pak, CAP_GID_UTF8);
 
     peer->stat_real_pak_sent++;
 
-    QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--, time (NULL),
-                      pak, cont, opt, &TCPCallBackResend);
+    event = QueueEnqueueData2 (peer, QUEUE_TCP_RESEND, peer->our_seq--, 0, msg, &TCPCallBackResend, NULL);
+    event->cont = cont;
+    event->pak = pak;
     return RET_INPR;
 }
 
@@ -1332,10 +1343,12 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, Opt *opt)
 BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, const char **files, const char **as, int count)
 {
     Packet *pak;
+    Event *event;
     Connection *peer, *flist, *fpeer;
     int i, rc, sumlen, sum;
     time_t now = time (NULL);
     str_s filenames = { NULL, 0, 0};
+    Message *msg;
 
     ASSERT_MSGLISTEN(list);
     assert (cont);
@@ -1361,7 +1374,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     if (!(peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
         return FALSE;
     if (peer->connect & CONNECT_FAIL)
-            return FALSE;
+        return FALSE;
 
     ASSERT_MSGDIRECT(peer);
     
@@ -1449,10 +1462,15 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     }
 
     peer->stat_real_pak_sent++;
+    
+    msg = MsgC ();
+    msg->type = MSG_FILE;
+    msg->send_message = strdup (description);
+    msg->cont = cont;
+    event = QueueEnqueueData2 (peer, QUEUE_TCP_RESEND, peer->our_seq--, 0, msg, &TCPCallBackResend, NULL);
+    event->cont = cont;
+    event->pak = pak;
 
-    QueueEnqueueData (peer, QUEUE_TCP_RESEND, peer->our_seq--, now, pak, cont,
-                      OptSetVals (NULL, CO_MSGTYPE, MSG_FILE, CO_MSGTEXT, description, 0),
-                      &TCPCallBackResend);
     s_done (&filenames);
     return TRUE;
 }
@@ -1462,47 +1480,37 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
  */
 static void TCPCallBackResend (Event *event)
 {
-    Contact *cont;
-    const char *opt_text;
+    Contact *cont = event->cont;
     UWORD delta;
-    UDWORD opt_type, opt_trans;
     char isfile;
     Connection *peer = event->conn;
     Packet *pak = event->pak;
+    Message *msg = event->data;
     
-    if (!OptGetStr (event->opt, CO_MSGTEXT, &opt_text))
-        opt_text = "";
-
+    assert (msg);
+    assert (cont);
+    assert (pak);
+    assert (msg->cont == cont);
+    assert (msg->send_message);
+    
     if (!peer)
     {
-        rl_printf (i18n (2092, "TCP message %s discarded - lost session.\n"), opt_text);
+        rl_printf (i18n (2092, "TCP message %s discarded - lost session.\n"), msg->send_message);
+        MsgD (msg);
+        event->data = NULL;
         EventD (event);
         return;
     }
-    
-    cont = event->cont;
-    if (!OptGetVal (event->opt, CO_MSGTYPE, &opt_type))
-        opt_type = MSG_NORM;
-    isfile = opt_type == MSG_FILE || opt_type == MSG_SSL_OPEN;
-
-    if (!cont)
-    {
-        EventD (event);
-        return;
-    }
+    isfile = msg->type == MSG_FILE || msg->type == MSG_SSL_OPEN;
 
     ASSERT_MSGDIRECT (peer);
-    assert (pak);
-    
-    if (!OptGetVal (event->opt, CO_MSGTRANS, &opt_trans))
-        opt_trans = CV_MSGTRANS_ANY;
     
     if (peer->connect & CONNECT_MASK && event->attempts < (isfile ? MAX_RETRY_P2PFILE_ATTEMPTS : MAX_RETRY_P2P_ATTEMPTS))
     {
         if (peer->connect & CONNECT_OK)
         {
             if (event->attempts > 1)
-                IMIntMsg (cont, NOW, ims_offline, INT_MSGTRY_DC, opt_text);
+                IMIntMsg (cont, NOW, ims_offline, INT_MSGTRY_DC, msg->send_message);
 
             if (event->attempts < 2)
                 PeerPacketSend (peer, pak);
@@ -1519,16 +1527,18 @@ static void TCPCallBackResend (Event *event)
     {
         TCPClose (peer);
         peer->connect = CONNECT_FAIL;
-        OptSetVal (event->opt, CO_MSGTRANS, opt_trans & ~CV_MSGTRANS_DC);
+        msg->trans &= ~CV_MSGTRANS_DC;
         delta = (peer->version > 6 ? 1 : 0);
         if (PacketReadAt2 (pak, 4 + delta) == TCP_CMD_MESSAGE)
         {
-            IMCliReMsg (cont, event->opt);
-            event->opt = NULL;
+            IMCliReMsg (cont, msg);
+            event->data = NULL;
         }
         else
             rl_printf (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
     }
+    MsgD (msg);
+    event->data = NULL;
     EventD (event);
 }
 
@@ -1572,8 +1582,7 @@ static void TCPCallBackReceive (Event *event)
   /*  UDWORD len, flags, xtmp1, xtmp2, xtmp3; */
     status_t status;
     UDWORD ostat;
-    const char *opt_text;
-    UDWORD opt_origin, opt_type;
+    UDWORD opt_origin;
     
     if (!OptGetVal (event->opt, CO_ORIGIN, &opt_origin))
         opt_origin = 0;
@@ -1595,6 +1604,7 @@ static void TCPCallBackReceive (Event *event)
 
     switch (cmd)
     {
+        Message *msg;
         case TCP_CMD_ACK:
             /*unk=*/ PacketRead2 (pak);
             seq    = PacketRead2 (pak);
@@ -1610,15 +1620,18 @@ static void TCPCallBackReceive (Event *event)
             if (!(oldevent = QueueDequeue (peer, QUEUE_TCP_RESEND, seq)))
                 break;
             
-            if (!OptGetStr (oldevent->opt, CO_MSGTEXT, &opt_text))
-                opt_text = "";
-            if (!OptGetVal (oldevent->opt, CO_MSGTYPE, &opt_type))
-                opt_type = type;
+            msg = oldevent->data;
+            oldevent->data = NULL;
+            assert (msg);
+            assert (oldevent->conn);
+            assert (oldevent->cont);
+            assert (oldevent->cont == cont);
             
-            if (opt_type != type && type != MSG_EXTENDED)
+            if (msg->type != type && type != MSG_EXTENDED)
             {
                 /* D'oh! */
-                rl_printf ("FIXME: message type mismatch: %d vs %ld\n", type, opt_type); /* FIXME */
+                rl_printf ("FIXME: message type mismatch: %d vs %ld\n", type, msg->type); /* FIXME */
+                MsgD (msg);
                 EventD (oldevent);
                 break;
             }
@@ -1629,11 +1642,14 @@ static void TCPCallBackReceive (Event *event)
             {
                 case MSG_NORM:
                 case MSG_URL:
-                    IMIntMsg (cont, NOW, ims_offline, opt_origin == CV_ORIGIN_dc ? INT_MSGACK_DC : INT_MSGACK_SSL, opt_text);
-                    if (~cont->oldflags & CONT_SEENAUTO && strlen (tmp) && strcmp (tmp, opt_text))
+                    if (!msg->otrinjected)
                     {
-                        IMSrvMsg (cont, NOW, opt_origin, MSG_AUTO, tmp);
-                        cont->oldflags |= CONT_SEENAUTO;
+                        IMIntMsg (cont, NOW, ims_offline, opt_origin == CV_ORIGIN_dc ? INT_MSGACK_DC : INT_MSGACK_SSL, msg->plain_message ? msg->plain_message : msg->send_message);
+                        if (~cont->oldflags & CONT_SEENAUTO && strlen (tmp) && strcmp (tmp, msg->send_message))
+                        {
+                            IMSrvMsg (cont, NOW, opt_origin, MSG_AUTO, tmp);
+                            cont->oldflags |= CONT_SEENAUTO;
+                        }
                     }
                     break;
 
@@ -1643,16 +1659,16 @@ static void TCPCallBackReceive (Event *event)
                 case MSGF_GETAUTO | MSG_GET_DND:
                 case MSGF_GETAUTO | MSG_GET_FFC:
                 case MSGF_GETAUTO | MSG_GET_VER:
-                    IMSrvMsgFat (cont, NOW, OptSetVals (NULL, CO_ORIGIN, opt_origin, CO_MSGTYPE, opt_type,
+                    IMSrvMsgFat (cont, NOW, OptSetVals (NULL, CO_ORIGIN, opt_origin, CO_MSGTYPE, msg->type,
                               CO_MSGTEXT, tmp, CO_STATUS, IcqToStatus (ostat & ~MSGF_GETAUTO), 0));
                     break;
 
                 case MSG_FILE:
                     port = PacketReadB2 (pak);
                     if (PeerFileAccept (peer, ostat, port))
-                        IMIntMsgFat (cont, NOW, status, INT_FILE_ACKED, tmp, opt_text, port, 0);
+                        IMIntMsgFat (cont, NOW, status, INT_FILE_ACKED, tmp, msg->plain_message ? msg->plain_message : msg->send_message, port, 0);
                     else
-                        IMIntMsgFat (cont, NOW, status, INT_FILE_REJED, tmp, opt_text, 0, 0);
+                        IMIntMsgFat (cont, NOW, status, INT_FILE_REJED, tmp, msg->plain_message ? msg->plain_message : msg->send_message, 0, 0);
                     break;
 #ifdef ENABLE_SSL                    
                 /* We never stop SSL connections on our own. That's why 
@@ -1698,9 +1714,9 @@ static void TCPCallBackReceive (Event *event)
                     {
                         case 0x0029:
                             if (PeerFileAccept (peer, ostat, port))
-                                IMIntMsgFat (cont, NOW, status, INT_FILE_ACKED, tmp, opt_text, port, 0);
+                                IMIntMsgFat (cont, NOW, status, INT_FILE_ACKED, tmp, msg->plain_message ? msg->plain_message : msg->send_message, port, 0);
                             else
-                                IMIntMsgFat (cont, NOW, status, INT_FILE_REJED, tmp, opt_text, 0, 0);
+                                IMIntMsgFat (cont, NOW, status, INT_FILE_REJED, tmp, msg->plain_message ? msg->plain_message : msg->send_message, 0, 0);
                             break;
                             
                         default:
@@ -1717,6 +1733,7 @@ static void TCPCallBackReceive (Event *event)
                                      peer->sok, cont->screen, cont->nick, oldevent->pak, peer, seq);
             }
             free (tmp);
+            MsgD (msg);
             EventD (oldevent);
             break;
 

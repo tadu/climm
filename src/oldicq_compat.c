@@ -92,7 +92,7 @@ void Auto_Reply (Connection *conn, Contact *cont)
         }
     }
 
-    IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, MSG_AUTO, CO_MSGTEXT, temp, 0));
+    IMCliMsg (cont, MSG_AUTO, temp, NULL);
 }
 
 #define s_read(s) s_repl (&s, ConvFromCont (PacketReadL2Str (pak, NULL), cont))

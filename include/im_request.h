@@ -4,15 +4,31 @@
 #define MICQ_IM_CLI_H
 
 typedef enum {
-  auth_req = 1,
-  auth_grant,
-  auth_deny,
-  auth_add
+    auth_req = 1,
+    auth_grant,
+    auth_deny,
+    auth_add
 } auth_t;
 
-UBYTE IMCliMsg    (Contact *cont, Opt *opt);
+struct Message_s {
+    Contact *cont;
+    char *send_message;
+    char *plain_message;
+
+    UDWORD type;
+    UDWORD origin;
+    UDWORD trans;
+    int otrinjected:1;
+    int force:1;
+};
+
+
+Message *MsgC (void);
+void     MsgD (Message *msg);
+
+UBYTE IMCliMsg    (Contact *cont, UDWORD type, const char *msg, Opt *opt);
 void  IMSetStatus (Connection *serv, Contact *cont, status_t status, const char *msg);
-UBYTE IMCliReMsg  (Contact *cont, Opt *opt); /* no log */
+UBYTE IMCliReMsg  (Contact *cont, Message *msg); /* no log */
 void  IMCliInfo   (Connection *serv, Contact *cont, int group);
 void  IMCliAuth   (Contact *cont, const char *msg, auth_t how);
 

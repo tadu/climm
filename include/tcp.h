@@ -15,8 +15,8 @@ void TCPDirectClose    (Connection *list, Contact *cont);
 void TCPDirectOff      (Connection *list, Contact *cont);
 
 /* Do the given peer2peer request */
-BOOL TCPSendMsg        (Connection *list, Contact *cont, const char *msg, UWORD sub_cmd);
-UBYTE PeerSendMsg      (Connection *list, Contact *cont, Opt *opt);
+UBYTE PeerSendMsg      (Connection *list, Contact *cont, UDWORD type, const char *text);
+UBYTE PeerSendMsgFat   (Connection *list, Contact *cont, Message *msg);
 BOOL TCPSendFiles      (Connection *list, Contact *cont, const char *description, const char **file, const char **as, int count);
 BOOL TCPGetAuto        (Connection *list, Contact *cont, UWORD which);
 
@@ -26,7 +26,6 @@ UBYTE       PeerFileIncAccept (Connection *list, Event *event);
 
 void PeerFileResend (Event *event);
 void PeerFileDispatchIncoming (Connection *fpeer);
-void PeerFileResend (Event *event);
 void PeerFileDispatch (Connection *);
 
 Packet *PeerPacketC    (Connection *peer, UBYTE cmd);

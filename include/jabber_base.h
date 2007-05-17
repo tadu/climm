@@ -6,7 +6,7 @@
 
 Event *ConnectionInitXMPPServer (Connection *serv);
 
-UBYTE XMPPSendmsg   (Connection *serv, Contact *cont, UDWORD type, const char *text);
+UBYTE XMPPSendmsg   (Connection *serv, Contact *cont, Message *msg);
 void  XMPPSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg);
 void  XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, const char *msg);
 

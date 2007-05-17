@@ -485,9 +485,8 @@ int OTRCmd (int cmd, Contact *cont, const char *arg)
                     break;
                 }
                 msg = otrl_proto_default_query_msg (ctx->accountname, policy);
-                IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM,
-                            CO_MSGTEXT, msg, CO_OTRINJECT, TRUE, 0));
-                //free (msg); /* freed automatical by IMCliMsg? */
+                IMCliMsg (cont, MSG_NORM, msg, OptSetVals (NULL, CO_OTRINJECT, TRUE, 0));
+                free (msg);
             }
             else
                 rl_print (i18n (2649, "Contact offline or already encrypted?\n"));
@@ -634,8 +633,7 @@ static void cb_inject_message (void *opdata, const char *accountname, const char
         return;
     }
 
-    if (IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, MSG_NORM,
-                    CO_MSGTEXT, message, CO_OTRINJECT, TRUE, 0)) == RET_FAIL)
+    if (IMCliMsg (cont, MSG_NORM, message, OptSetVals (NULL, CO_OTRINJECT, TRUE, 0)) == RET_FAIL)
     {
         rl_print (COLDEBUG);
         rl_printf (i18n (2659, "otr_inject: message injection for contact %s failed"), recipient);

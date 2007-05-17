@@ -6,8 +6,7 @@ jump_snac_f SnacSrvIcbmerr, SnacSrvReplyicbm, SnacSrvRecvmsg,
     SnacSrvAckmsg, SnacSrvSrvackmsg;
 
 void SnacCliSeticbm (Connection *serv);
-UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD type, UBYTE format);
-UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Opt *opt);
+UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, UBYTE format, Message *msg);
 
 void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD type,
                      status_t status, status_t deststatus, UWORD flags, const char *msg);

@@ -85,6 +85,7 @@ struct Preferences_s;
 struct ConnectionPreferences_s;
 struct Cap_s;
 struct Extra_s;
+struct Message_s;
 
 typedef struct Queue_s        Queue;
 typedef struct Event_s        Event;
@@ -97,6 +98,7 @@ typedef struct Connection_s   Connection;
 typedef struct Preferences_s  Preferences;
 typedef struct Cap_s          Cap;
 typedef struct Extra_s        Extra;
+typedef struct Message_s      Message;
 
 typedef void MSN_Handle;
 

@@ -71,6 +71,7 @@ void        QueuePrint (void);
 #define QUEUE_TYPE2_RESEND_ACK  40
 #define QUEUE_TYPE1_RESEND_ACK  44
 #define QUEUE_TYPE4_RESEND_ACK  45
+#define QUEUE_XMPP_RESEND_ACK   46
 #define QUEUE_TCP_TIMEOUT       72
 #define QUEUE_CON_TIMEOUT       77
 #define QUEUE_TCP_RECEIVE       32

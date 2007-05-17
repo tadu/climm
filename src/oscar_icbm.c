@@ -52,6 +52,7 @@
 
 static void SnacCallbackType2Ack (Event *event);
 static void SnacCallbackType2 (Event *event);
+static void SnacCallbackType2Cancel (Event *event);
 static void SnacCallbackIgnore (Event *event);
 
 #define PEEK_REFID 0x3d1db11f
@@ -163,20 +164,23 @@ JUMP_SNAC_F(SnacSrvAckmsg)
 
     if ((msgtype & 0x300) == 0x300)
         IMSrvMsg (cont, NOW, CV_ORIGIN_v8, msgtype, text);
-    else if (event)
+    if (event)
     {
-        const char *opt_text;
-        if (OptGetStr (event->opt, CO_MSGTEXT, &opt_text));
+        Message *msg = event->data;
+        assert (msg);
+        if ((msg->plain_message || msg->send_message) && !msg->otrinjected && (msgtype & 0x300) != 0x300)
         {
-            IMIntMsg (cont, NOW, ims_offline, INT_MSGACK_TYPE2, opt_text);
-            if ((~cont->oldflags & CONT_SEENAUTO) && strlen (text) && strcmp (text, opt_text))
+            IMIntMsg (cont, NOW, ims_offline, INT_MSGACK_TYPE2, msg->plain_message ? msg->plain_message : msg->send_message);
+            if ((~cont->oldflags & CONT_SEENAUTO) && strlen (text) && msg->send_message && strcmp (text, msg->send_message))
             {
                 IMSrvMsg (cont, NOW, CV_ORIGIN_v8, MSG_AUTO, text);
                 cont->oldflags |= CONT_SEENAUTO;
             }
         }
+        MsgD (msg);
+        event->data = NULL;
+        EventD (event);
     }
-    EventD (event);
     free (text);
 }
 
@@ -188,129 +192,118 @@ void SnacCallbackIgnore (Event *event)
 /*
  * CLI_SENDMSG - SNAC(4,6)
  */
-UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, const char *text, UDWORD type, UBYTE format)
+static UBYTE SnacCliSendmsg1 (Connection *serv, Contact *cont, Message *msg)
 {
     Packet *pak;
+    Event *event;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
-    
-    if (!cont)
-        return RET_DEFER;
-    
-    if (format == 2 || type == MSG_GET_PEEK)
-        return SnacCliSendmsg2 (serv, cont, OptSetVals (NULL, CO_MSGTYPE, type, CO_MSGTEXT, text, 0));
-    
-    if (!format || format == 0xff)
-    {
-        switch (type & 0xff)
-        {
-            case MSG_AUTO:
-            case MSG_URL:
-            case MSG_AUTH_REQ:
-            case MSG_AUTH_GRANT:
-            case MSG_AUTH_DENY:
-            case MSG_AUTH_ADDED:
-                if (!cont->uin)
-                    return RET_DEFER;
-                format = 4;
-                break;
-            case MSG_NORM:
-                format = 1;
-                break;
-            default:
-            case MSG_GET_AWAY:
-            case MSG_GET_DND:
-            case MSG_GET_OCC:
-            case MSG_GET_FFC:
-            case MSG_GET_NA:
-            case MSG_GET_VER:
-                return RET_DEFER;
-        }
-    }
+    int remenc;
+    strc_t str;
+    int enc = ENC_LATIN1, icqenc = 0, icqcol;
+    const char *s;
+
+    assert (serv);
+    assert (cont);
     
     pak = SnacC (serv, 4, 6, 0, 0);
     PacketWriteB4 (pak, mtime);
     PacketWriteB4 (pak, mid);
-    PacketWriteB2 (pak, format);
+    PacketWriteB2 (pak, 1 /* format */);
     PacketWriteCont (pak, cont);
     
-    switch (format)
+    remenc = ContactPrefVal (cont, CO_ENCODING);
+    
+    if (cont->status != ims_offline &&
+        HAS_CAP (cont->caps, CAP_UTF8) &&
+        !ConvFits (msg->send_message, ENC_ASCII) &&
+        !(cont->dc && cont->dc->id1 == (time_t)0xffffff42 &&
+          (cont->dc->id2 & 0x7fffffff) < (time_t)0x00040c00)) /* exclude old mICQ */
     {
-        int remenc;
-
-        case 1:
-            {
-            strc_t str;
-            int enc = ENC_LATIN1, icqenc = 0, icqcol;
-            
-            remenc = ContactPrefVal (cont, CO_ENCODING);
-            
-            if (cont->status != ims_offline &&
-                HAS_CAP (cont->caps, CAP_UTF8) &&
-                !ConvFits (text, ENC_ASCII) &&
-                !(cont->dc && cont->dc->id1 == (time_t)0xffffff42 &&
-                  (cont->dc->id2 & 0x7fffffff) < (time_t)0x00040c00)) /* exclude old mICQ */
-            {
-                enc = ENC_UCS2BE;
-                icqenc = 2;
-            }
-            else
-            {
-                /* too bad, there's nothing we can do */
-                enc = remenc;
-                icqenc = 3;
-            }
-            if (type != 1)
-            {
-                icqenc = type;
-                enc = ENC_LATIN9;
-            }
-
-            QueueEnqueueData (serv, QUEUE_TYPE1_RESEND_ACK, pak->ref,
-                              time (NULL) + 120, NULL, cont,
-                              OptSetVals (NULL, CO_MSGTEXT, text, 0),
-                              SnacCallbackIgnore);
-
-            icqcol = atoi (text); /* FIXME FIXME WIXME */
-            str = s_split (&text, enc, 700); /* FIXME: not 450? What is the real max? */
-
-            PacketWriteTLV     (pak, 2);
-            PacketWriteTLV     (pak, 1281);
-            if (icqenc == 2)
-                PacketWriteB2  (pak, 0x0106);
-            else
-                PacketWrite1   (pak, 0x01);
-            PacketWriteTLVDone (pak);
-            PacketWriteTLV     (pak, 257);
-            PacketWriteB2      (pak, icqenc);
-            PacketWriteB2      (pak, icqcol);
-            PacketWriteData    (pak, str->txt, str->len);
-            PacketWriteTLVDone (pak);
-            PacketWriteTLVDone (pak);
-            PacketWriteB2 (pak, 3);
-            PacketWriteB2 (pak, 0);
-            PacketWriteB2 (pak, 6);
-            PacketWriteB2 (pak, 0);
-            SnacSend (serv, pak);
-            if (*text)
-                return SnacCliSendmsg (serv, cont, text, type, format);
-            }
-            break;
-        case 4:
-            PacketWriteTLV     (pak, 5);
-            PacketWrite4       (pak, serv->uin);
-            PacketWrite1       (pak, type % 256);
-            PacketWrite1       (pak, type / 256);
-            PacketWriteLNTS    (pak, c_out_to_split (text, cont));
-            PacketWriteTLVDone (pak);
-            PacketWriteB2 (pak, 6);
-            PacketWriteB2 (pak, 0);
-            QueueEnqueueData (serv, QUEUE_TYPE4_RESEND_ACK, pak->ref,
-                              time (NULL) + 120, NULL, cont,
-                              OptSetVals (NULL, CO_MSGTYPE, type, CO_MSGTEXT, text, 0),
-                              SnacCallbackIgnore);
-            SnacSend (serv, pak);
+        enc = ENC_UCS2BE;
+        icqenc = 2;
     }
+    else
+    {
+        /* too bad, there's nothing we can do */
+        enc = remenc;
+        icqenc = 3;
+    }
+    if (msg->type != 1)
+    {
+        icqenc = msg->type;
+        enc = ENC_LATIN9;
+    }
+
+    icqcol = atoi (msg->send_message); /* FIXME FIXME WIXME */
+    s = msg->send_message;
+    str = s_split (&s, enc, 700); /* FIXME: not 450? What is the real max? */
+
+    PacketWriteTLV     (pak, 2);
+    PacketWriteTLV     (pak, 1281);
+    if (icqenc == 2)
+        PacketWriteB2  (pak, 0x0106);
+    else
+        PacketWrite1   (pak, 0x01);
+    PacketWriteTLVDone (pak);
+    PacketWriteTLV     (pak, 257);
+    PacketWriteB2      (pak, icqenc);
+    PacketWriteB2      (pak, icqcol);
+    PacketWriteData    (pak, str->txt, str->len);
+    PacketWriteTLVDone (pak);
+    PacketWriteTLVDone (pak);
+    PacketWriteB2 (pak, 3);
+    PacketWriteB2 (pak, 0);
+    PacketWriteB2 (pak, 6);
+    PacketWriteB2 (pak, 0);
+    SnacSend (serv, pak);
+
+    if (*s)
+    {
+        char *d = strdup (s);
+        IMCliMsg (cont, msg->type, s, OptSetVals (NULL, 0));
+        free (d);
+    }
+    event = QueueEnqueueData2 (serv, QUEUE_TYPE1_RESEND_ACK, pak->ref, 120, msg, &SnacCallbackIgnore, NULL);
+    event->cont = cont;
     return RET_OK;
+}
+
+static UBYTE SnacCliSendmsg4 (Connection *serv, Contact *cont, Message *msg)
+{
+    Packet *pak;
+    Event *event;
+    UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
+    
+    assert (serv);
+    assert (cont);
+    
+    pak = SnacC (serv, 4, 6, 0, 0);
+    PacketWriteB4 (pak, mtime);
+    PacketWriteB4 (pak, mid);
+    PacketWriteB2 (pak, 4 /* format */);
+    PacketWriteCont (pak, cont);
+    
+    PacketWriteTLV     (pak, 5);
+    PacketWrite4       (pak, serv->uin);
+    PacketWrite1       (pak, msg->type % 256);
+    PacketWrite1       (pak, msg->type / 256);
+    PacketWriteLNTS    (pak, c_out_to_split (msg->send_message, cont));
+    PacketWriteTLVDone (pak);
+    PacketWriteB2 (pak, 6);
+    PacketWriteB2 (pak, 0);
+    SnacSend (serv, pak);
+
+    event = QueueEnqueueData2 (serv, QUEUE_TYPE4_RESEND_ACK, pak->ref, 120, msg, &SnacCallbackIgnore, NULL);
+    event->cont = cont;
+    return RET_OK;
+}
+
+static void SnacCallbackType2Cancel2 (Event *event)
+{
+    assert (event);
+    assert (event->conn);
+    assert (!event->data);
+    EventD (event);
 }
 
 static void SnacCallbackType2Ack (Event *event)
@@ -319,23 +312,35 @@ static void SnacCallbackType2Ack (Event *event)
     Contact *cont = event->cont;
     Event *aevent;
     UDWORD opt_ref;
-
-    if (!serv)
+    Message *msg;
+    
+    if (!OptGetVal (event->opt, CO_REF, &opt_ref))
     {
         EventD (event);
         return;
     }
-    if (   !OptGetVal (event->opt, CO_REF, &opt_ref)
-        || !(aevent = QueueDequeue (serv, QUEUE_TYPE2_RESEND, opt_ref)))
-    {
-        EventD (event);
-        return;
-    }
+    aevent = QueueDequeue (serv, QUEUE_TYPE2_RESEND, opt_ref);
+    assert (aevent);
+    assert (cont);
     ASSERT_SERVER (serv);
     
-    IMCliReMsg (cont, aevent->opt);
-    aevent->opt = NULL;
+    msg = aevent->data;
+    assert (msg);
+    assert (msg->cont == cont);
+    aevent->data = NULL;
     EventD (aevent);
+    EventD (event);
+    IMCliReMsg (cont, msg);
+}
+
+static void SnacCallbackType2Cancel (Event *event)
+{
+    Message *msg = event->data;
+    if (msg->send_message && !msg->otrinjected)
+        rl_printf (i18n (2234, "Message %s discarded - lost session.\n"),
+            msg->plain_message ? msg->plain_message : msg->send_message);
+    MsgD (event->data);
+    event->data = NULL;
     EventD (event);
 }
 
@@ -344,36 +349,29 @@ static void SnacCallbackType2 (Event *event)
     Connection *serv = event->conn;
     Contact *cont = event->cont;
     Packet *pak = event->pak;
-    const char *opt_text;
-    
-    if (!OptGetStr (event->opt, CO_MSGTEXT, &opt_text))
-        opt_text = "";
-
-    if (!serv || !cont)
-    {
-        if (!serv && opt_text)
-            rl_printf (i18n (2234, "Message %s discarded - lost session.\n"), opt_text);
-        EventD (event);
-        return;
-    }
+    Message *msg = event->data;
+    Event *event2;
 
     ASSERT_SERVER (serv);
     assert (pak);
+    assert (event->cont);
+    assert (event->data);
+    assert (!event->opt);
 
     if (event->attempts < MAX_RETRY_TYPE2_ATTEMPTS && serv->connect & CONNECT_MASK)
     {
         if (serv->connect & CONNECT_OK)
         {
             if (event->attempts > 1)
-                IMIntMsg (cont, NOW, ims_offline, INT_MSGTRY_TYPE2, opt_text);
+                IMIntMsg (cont, NOW, ims_offline, INT_MSGTRY_TYPE2, msg->plain_message ? msg->plain_message : msg->send_message);
             SnacSend (serv, PacketClone (pak));
             event->attempts++;
             /* allow more time for the peer's ack than the server's ack */
             event->due = time (NULL) + RETRY_DELAY_TYPE2 + 5;
-            QueueEnqueueData (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref,
-                              time (NULL) + RETRY_DELAY_TYPE2, NULL, cont,
-                              OptSetVals (NULL, CO_REF, event->seq, 0),
-                              &SnacCallbackType2Ack);
+
+            event2 = QueueEnqueueData2 (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref, RETRY_DELAY_TYPE2, NULL, &SnacCallbackType2Ack, &SnacCallbackType2Cancel2);
+            event2->cont = cont;
+            event2->opt = OptSetVals (NULL, CO_REF, event->seq, 0);
         }
         else
             event->due = time (NULL) + 1;
@@ -381,44 +379,24 @@ static void SnacCallbackType2 (Event *event)
         return;
     }
     
-    IMCliReMsg (cont, event->opt);
-    event->opt = NULL;
+    IMCliReMsg (cont, msg);
+    event->data = NULL;
     EventD (event);
 }
 
-/*
- * CLI_SENDMSG - SNAC(4,6) - type2
- */
-UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Opt *opt)
+static UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Message *msg)
 {
     Packet *pak;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     BOOL peek = 0;
-    UDWORD opt_type, opt_trans, opt_force;
-    const char *opt_text;
     
-    if (!OptGetStr (opt, CO_MSGTEXT, &opt_text))
-        return RET_FAIL;
-    if (!OptGetVal (opt, CO_MSGTYPE, &opt_type))
-        opt_type = MSG_NORM;
-    if (!OptGetVal (opt, CO_FORCE, &opt_force))
-        opt_force = 0;
-    if (!OptGetVal (opt, CO_MSGTRANS, &opt_trans))
-        opt_trans = CV_MSGTRANS_ANY;
-
-    if (opt_type == MSG_GET_PEEK)
+    assert (serv);
+    assert (cont);
+    assert (msg);
+    
+    if (!msg->force)
     {
-        peek = 1;
-        opt_type = MSG_GET_AWAY | MSGF_GETAUTO;
-    }
-    
-    if (!cont || !(peek || (opt_type & 0xff) == MSG_GET_VER || opt_force ||
-        (HAS_CAP (cont->caps, CAP_SRVRELAY) && HAS_CAP (cont->caps, CAP_ISICQ))))
-        return RET_DEFER;
-    
-    if (!opt_force)
-    {
-        switch (opt_type & 0xff)
+        switch (msg->type & 0xff)
         {
             case MSG_AUTO:
             case MSG_AUTH_REQ:
@@ -426,13 +404,24 @@ UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Opt *opt)
             case MSG_AUTH_DENY:
             case MSG_AUTH_ADDED:
                 return RET_DEFER;
+            case MSG_GET_VER:
+            case MSG_GET_PEEK:
+                break;
+            default:
+                if (!HAS_CAP (cont->caps, CAP_SRVRELAY) || !HAS_CAP (cont->caps, CAP_ISICQ))
+                    return RET_DEFER;
         }
     }
-
-    serv->our_seq_dc--;
     
-    OptSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_TYPE2);
-
+    if (msg->type == MSG_GET_PEEK)
+    {
+        peek = 1;
+        msg->type = MSG_GET_AWAY | MSGF_GETAUTO;
+    }
+    
+    serv->our_seq_dc--;
+    msg->trans &= ~CV_MSGTRANS_TYPE2;
+    
     pak = SnacC (serv, 4, 6, 0, peek ? PEEK_REFID : 0);
     PacketWriteB4 (pak, mtime);
     PacketWriteB4 (pak, mid);
@@ -474,10 +463,10 @@ UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Opt *opt)
       }
       else
       {
-          SrvMsgAdvanced     (pak, serv->our_seq_dc, opt_type, serv->status, cont->status, -1, c_out_for (opt_text, cont, opt_type));
+          SrvMsgAdvanced     (pak, serv->our_seq_dc, msg->type, serv->status, cont->status, -1, c_out_for (msg->send_message, cont, msg->type));
           PacketWrite4       (pak, TCP_COL_FG);
           PacketWrite4       (pak, TCP_COL_BG);
-          if (CONT_UTF8 (cont, opt_type))
+          if (CONT_UTF8 (cont, msg->type))
               PacketWriteDLStr     (pak, CAP_GID_UTF8);
       }
      PacketWriteTLVDone (pak);
@@ -488,15 +477,114 @@ UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Opt *opt)
     {    
         PacketWriteB4  (pak, 0x00060000);
         SnacSend (serv, pak);
-        OptD (opt);
+        MsgD (msg);
     }
     else
     {
+        Event *event;
+
         PacketWriteB4      (pak, 0x00030000); /* empty TLV(3) */
-        QueueEnqueueData (serv, QUEUE_TYPE2_RESEND, serv->our_seq_dc,
-                          time (NULL), pak, cont, opt, &SnacCallbackType2);
+        event = QueueEnqueueData2 (serv, QUEUE_TYPE2_RESEND, serv->our_seq_dc, 0, msg, &SnacCallbackType2, &SnacCallbackType2Cancel);
+        event->cont = cont;
+        event->pak = pak;
     }
     return RET_INPR;
+}
+
+
+/*
+ * CLI_SENDMSG - SNAC(4,6) - all
+ */
+UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, UBYTE format, Message *msg)
+{
+    assert (serv);
+    assert (cont);
+    assert (msg);
+    
+    if (format == 2 && !msg->force)
+    {
+        switch (msg->type & 0xff)
+        {
+            case MSG_AUTO:
+            case MSG_AUTH_REQ:
+            case MSG_AUTH_GRANT:
+            case MSG_AUTH_DENY:
+            case MSG_AUTH_ADDED:
+                return RET_DEFER;
+            case MSG_GET_PEEK:
+            case MSG_GET_VER:
+                break;
+            default:
+                if (!HAS_CAP (cont->caps, CAP_SRVRELAY) || !HAS_CAP (cont->caps, CAP_ISICQ))
+                    return RET_DEFER;
+        }
+    }
+    else if (format == 1)
+    {
+        if ((msg->type & 0xff) != MSG_NORM)
+            return RET_DEFER;
+    }
+    else if (format == 4)
+    {
+        switch (msg->type & 0xff)
+        {
+            case MSG_AUTO:
+            case MSG_URL:
+            case MSG_AUTH_REQ:
+            case MSG_AUTH_GRANT:
+            case MSG_AUTH_DENY:
+            case MSG_AUTH_ADDED:
+                if (!cont->uin)
+                    return RET_DEFER;
+                break;
+            case MSG_NORM:
+            default:
+            case MSG_GET_AWAY:
+            case MSG_GET_DND:
+            case MSG_GET_OCC:
+            case MSG_GET_FFC:
+            case MSG_GET_NA:
+            case MSG_GET_VER:
+            case MSG_GET_PEEK:
+                return RET_DEFER;
+        }
+    }
+    else if (!format || format == 0xff)
+    {
+        switch (msg->type & 0xff)
+        {
+            case MSG_AUTO:
+            case MSG_URL:
+            case MSG_AUTH_REQ:
+            case MSG_AUTH_GRANT:
+            case MSG_AUTH_DENY:
+            case MSG_AUTH_ADDED:
+                if (!cont->uin)
+                    return RET_DEFER;
+                format = 4;
+                break;
+            case MSG_NORM:
+                format = 1;
+                break;
+            default:
+            case MSG_GET_AWAY:
+            case MSG_GET_DND:
+            case MSG_GET_OCC:
+            case MSG_GET_FFC:
+            case MSG_GET_NA:
+            case MSG_GET_VER:
+            case MSG_GET_PEEK:
+                return RET_DEFER;
+        }
+    }
+    
+    if (format == 1)
+        return SnacCliSendmsg1 (serv, cont, msg);
+    else if (format == 4)
+        return SnacCliSendmsg4 (serv, cont, msg);
+    else if (format == 2)
+        return SnacCliSendmsg2 (serv, cont, msg);
+    return RET_DEFER;
 }
 
 static void SnacSrvCallbackSendack (Event *event)
@@ -767,16 +855,16 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
     Connection *serv = event->conn;
     Event *event2 = NULL;
     Packet *pak;
-    const char *text;
+    Message *msg;
     Contact *cont;
     /* UDWORD mid1, mid2; */
-    UWORD type;
+    UWORD format;
 
     pak = event->pak;
 
     /*mid1=*/PacketReadB4 (pak);
     /*mid2=*/PacketReadB4 (pak);
-    type = PacketReadB2 (pak);
+    format = PacketReadB2 (pak);
 
     cont = PacketReadCont (pak, serv);
     
@@ -784,29 +872,36 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
         return;
     
     
-    switch (type)
+    switch (format)
     {
         case 1:
             event2 = QueueDequeue (serv, QUEUE_TYPE1_RESEND_ACK, pak->ref);
-            if (event2 && OptGetStr (event2->opt, CO_MSGTEXT, &text))
-                IMIntMsg (cont, NOW, ims_offline, INT_MSGACK_V8, text);
+            if (!event2 || !(msg = event2->data))
+                break;
+            if ((msg->send_message || msg->plain_message) && !msg->otrinjected)
+                IMIntMsg (cont, NOW, ims_offline, INT_MSGACK_V8, msg->plain_message ? msg->plain_message : msg->send_message);
             break;
         case 4:
             event2 = QueueDequeue (serv, QUEUE_TYPE4_RESEND_ACK, pak->ref);
-            if (event2 && OptGetStr (event2->opt, CO_MSGTEXT, &text))
-                IMIntMsg (cont, NOW, ims_offline, INT_MSGACK_V8, text);
+            if (!event2 || !(msg = event2->data))
+                break;
+            if ((msg->send_message || msg->plain_message) && !msg->otrinjected)
+                IMIntMsg (cont, NOW, ims_offline, INT_MSGACK_V8, msg->plain_message ? msg->plain_message : msg->send_message);
             break;
         case 2: /* msg was received by server */
             event2 = QueueDequeue (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref);
+            if (!event2 || !(msg = event2->data))
+                break;
             if (pak->ref == PEEK_REFID)
-            {
                 rl_print (i18n (2573, "The user is probably offline.\n"));
-                return;
-            }
             break;
     }
     if (event2)
+    {
+        MsgD (event->data);
+        event->data = NULL;
         EventD (event2);
+    }
 }
 
 void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD msgtype, status_t status,

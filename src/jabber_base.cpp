@@ -68,7 +68,7 @@ class MICQXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
         virtual void  handleSubscription (gloox::Stanza *stanza);
         virtual void  handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message);
         gloox::Client *getClient () { return m_client; }
-        UBYTE XMPPSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD type);
+        UBYTE XMPPSendmsg (Connection *conn, Contact *cont, Message *msg);
         void  XMPPSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg);
         void  XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, const char *msg);
 };
@@ -296,6 +296,8 @@ static void GetBothContacts (const gloox::JID &j, Connection *conn, Contact **b,
 void MICQXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
 {
     std::string refid;
+    int ref = -1;
+    int_msg_t type;
     
     if (gloox::Tag *tid = XEP22->findChild ("id"))
     {
@@ -303,36 +305,61 @@ void MICQXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
         DropCData (tid);
         CheckInvalid (tid);
     }
+    if (!strncmp (refid.c_str(), "xmpp-", 5) && !strncmp (refid.c_str() + 5, m_stamp, 14)
+        && strlen (refid.c_str()) > 19 && refid.c_str()[19] == '-')
+        sscanf (refid.c_str() + 20, "%x", &ref);
     
-    if (gloox::Tag *dotag = XEP22->findChild ("delivered"))
+    if (gloox::Tag *dotag = XEP22->findChild ("offline"))
     {
-        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGACK_V8, "");
+        type = INT_MSGOFF;
+        CheckInvalid (dotag);
+    }
+    else if (gloox::Tag *dotag = XEP22->findChild ("paused"))
+    {
+        CheckInvalid (dotag);
+        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGNOCOMP, "");
+        ref = -1;
+    }
+    else if (gloox::Tag *dotag = XEP22->findChild ("delivered"))
+    {
+        type = INT_MSGACK_TYPE2;
         CheckInvalid (dotag);
     }
     else if (gloox::Tag *dotag = XEP22->findChild ("displayed"))
     {
-        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGDISPL, "");
+        type = INT_MSGDISPL;
         CheckInvalid (dotag);
     }
     else if (gloox::Tag *dotag = XEP22->findChild ("composing"))
     {
+        CheckInvalid (dotag);
         IMIntMsg (cfrom, NOW, ims_offline, INT_MSGCOMP, "");
-        CheckInvalid (dotag);
-    }
-    else if (gloox::Tag *dotag = XEP22->findChild ("offline"))
-    {
-        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGOFF, "");
-        CheckInvalid (dotag);
+        ref = -1;
     }
     else
-        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGNOCOMP, "");
+        ref = -1;
+
+    if (ref != -1)
+    {     
+        Event *event = QueueDequeue (m_conn, QUEUE_XMPP_RESEND_ACK, ref);
+        if (event)
+        {
+            Message *msg = (Message *)event->data;
+            assert (msg);
+            if (msg->send_message && !msg->otrinjected)
+                IMIntMsg (cfrom, NOW, ims_offline, type, msg->plain_message ? msg->plain_message : msg->send_message);
+            event->attempts += 5;
+            QueueEnqueue (event);
+        }
+    }
+    
     CheckInvalid (XEP22);
 }
 
 void MICQXMPP::handleXEP22c (gloox::JID from, std::string tof, std::string id, std::string type)
 {
     gloox::Stanza *msg = gloox::Stanza::createMessageStanza (from, "");
-    msg->addAttribute ("id", s_sprintf ("%s-%x", m_stamp, m_conn->our_seq++));
+    msg->addAttribute ("id", s_sprintf ("ack-%s-%x", m_stamp, m_conn->our_seq++));
     std::string res = m_client->resource();
     msg->addAttribute ("from", s_sprintf ("%s/%s", m_conn->screen, res.c_str()));
     gloox::Tag *x = new gloox::Tag (msg, "x");
@@ -690,27 +717,69 @@ void MICQXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std:
         DebugH (DEB_XMPPOTHER, "%s/%s: %s", lt, la, message.c_str());
 }
 
-UBYTE MICQXMPP::XMPPSendmsg (Connection *conn, Contact *cont, const char *text, UDWORD type)
+static void SnacCallbackXmpp (Event *event)
 {
-    assert (conn == m_conn);
+    Message *msg = (Message *)event->data;
 
-    if (!cont || !text)
-        return RET_DEFER;
+    assert (event);
+    assert (msg);
+    assert (event->cont);
+
+    if (event->attempts < 5)
+    {
+        if (msg->send_message && !msg->otrinjected)
+            IMIntMsg (event->cont, NOW, ims_offline, INT_MSGACK_V8, msg->plain_message ? msg->plain_message : msg->send_message);
+        event->attempts = 20;
+        event->due = time (NULL) + 600;
+        QueueEnqueue (event);
+    }
+    else
+    {
+        MsgD (msg);
+        event->data = NULL;
+        EventD (event);
+    }
+}
+
+static void SnacCallbackXmppCancel (Event *event)
+{
+    Message *msg = (Message *)event->data;
+    if (msg->send_message && !msg->otrinjected)
+        rl_printf (i18n (2234, "Message %s discarded - lost session.\n"),
+    msg->plain_message ? msg->plain_message : msg->send_message);
+    MsgD (msg);
+    event->data = NULL;
+    EventD (event);
+}
+
+UBYTE MICQXMPP::XMPPSendmsg (Connection *serv, Contact *cont, Message *msg)
+{
+    assert (serv == m_conn);
+
+    assert (cont);
+    assert (msg->send_message);
+
     if (~m_conn->connect & CONNECT_OK)
         return RET_DEFER;
+    if (msg->type != MSG_NORM)
+        return RET_DEFER;
 
-    gloox::Stanza *msg = gloox::Stanza::createMessageStanza (gloox::JID (cont->screen), text);    
-    msg->addAttribute ("id", s_sprintf ("%s-%x", m_stamp, m_conn->our_seq++));
+    gloox::Stanza *msgs = gloox::Stanza::createMessageStanza (gloox::JID (cont->screen), msg->send_message);
+    msgs->addAttribute ("id", s_sprintf ("xmpp-%s-%x", m_stamp, ++m_conn->our_seq));
     
     std::string res = m_client->resource();
-    msg->addAttribute ("from", s_sprintf ("%s/%s", conn->screen, res.c_str()));
-    gloox::Tag *x = new gloox::Tag (msg, "x");
+    msgs->addAttribute ("from", s_sprintf ("%s/%s", serv->screen, res.c_str()));
+    gloox::Tag *x = new gloox::Tag (msgs, "x");
     x->addAttribute ("xmlns", "jabber:x:event");
     new gloox::Tag (x, "offline");
     new gloox::Tag (x, "delivered");
     new gloox::Tag (x, "displayed");
     new gloox::Tag (x, "composing");
-    m_client->send (msg);
+    m_client->send (msgs);
+
+    Event *event = QueueEnqueueData2 (serv, QUEUE_XMPP_RESEND_ACK, m_conn->our_seq, 120, msg, &SnacCallbackXmpp, &SnacCallbackXmppCancel);
+    event->cont = cont;
+
     return RET_OK;
 }
 
@@ -880,11 +949,11 @@ BOOL XMPPCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
     return 0;
 }
 
-UBYTE XMPPSendmsg (Connection *serv, Contact *cont, UDWORD type, const char *text)
+UBYTE XMPPSendmsg (Connection *serv, Contact *cont, Message *msg)
 {
     MICQXMPP *j = getXMPPClient (serv);
     assert (j);
-    return j->XMPPSendmsg (serv, cont, text, type);
+    return j->XMPPSendmsg (serv, cont, msg);
 }
 
 void XMPPSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg)

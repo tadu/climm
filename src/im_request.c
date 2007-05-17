@@ -47,136 +47,192 @@ static void CallbackTogvis (Event *event)
     EventD (event);
 }
 
-UBYTE IMCliMsg (Contact *cont, Opt *opt)
+Message *MsgC ()
 {
-    const char *opt_text;
-    UDWORD opt_type, opt_trans;
+    Message *msg;
+    
+    msg = calloc (1, sizeof *msg);
+    DebugH (DEB_MSG, "M<" STR_DOT STR_DOT STR_DOT " %p:", msg);
+    return msg;
+}
+
+void MsgD (Message *msg)
+{
+    char *s, *t;
+    if (!msg)
+        return;
+    DebugH (DEB_MSG, "M>" STR_DOT STR_DOT STR_DOT " %p [%s] %lu %lu %lu %u %u (%s) (%s) ",
+           msg, msg->cont ? msg->cont->screen : "",
+           msg->type, msg->origin, msg->trans, msg->otrinjected, msg->force,
+           msg->send_message ? msg->send_message : "(null)",
+           msg->plain_message ? msg->plain_message : "(null)");
+                                    
+    s = msg->send_message;
+    t = msg->plain_message;
+    msg->send_message = NULL;
+    msg->plain_message = NULL;
+    free (msg);
+    s_free (s);
+    s_free (t);
+}
+
+Message *cb_msg_log (Message *msg)
+{
+    putlog (msg->cont->serv, NOW, msg->cont, ims_online, 0,
+            msg->type == MSG_AUTO ? LOG_AUTO : LOG_SENT, msg->type,
+            msg->plain_message ? msg->plain_message : msg->send_message);
+    return msg;
+}
+
 #ifdef ENABLE_OTR
+Message *cb_msg_otr (Message *msg)
+{
     char *otr_text = NULL;
-    UDWORD injected;
-#endif
-    
-    if (!cont || !cont->serv || !OptGetStr (opt, CO_MSGTEXT, &opt_text))
-    {
-        OptD (opt);
-        return RET_FAIL;
-    }
-    if (!OptGetVal (opt, CO_MSGTYPE, &opt_type))
-        OptSetVal (opt, CO_MSGTYPE, opt_type = MSG_NORM);
-    if (!OptGetVal (opt, CO_MSGTRANS, &opt_trans))
-        OptSetVal (opt, CO_MSGTRANS, opt_trans = CV_MSGTRANS_ANY);
 
-#ifdef ENABLE_OTR
-    if (!OptGetVal (opt, CO_OTRINJECT, &injected))
-        injected = FALSE;
     /* process outgoing messages for OTR */
-    if (opt_type == MSG_NORM && !injected && libotr_is_present)
-    {
-        if (OTRMsgOut (opt_text, cont->serv, cont, &otr_text))
-        {
-            rl_print (COLERROR);
-            rl_printf (i18n (2641, "Message for %s could not be encrypted and was NOT sent!"),
-                    cont->nick);
-            rl_printf ("%s\n", COLNONE);
-            OptD (opt);
-            if (otr_text)
-                OTRFree (otr_text);
-            return RET_FAIL;
-        }
-    }
-    /* log original message */
-#endif
-    
-    putlog (cont->serv, NOW, cont, ims_online, 0,
-            opt_type == MSG_AUTO ? LOG_AUTO : LOG_SENT, opt_type, opt_text);
+    if (msg->type != MSG_NORM || msg->otrinjected || !libotr_is_present)
+        return msg;
 
-#ifdef ENABLE_OTR
+    if (OTRMsgOut (msg->send_message, msg->cont->serv, msg->cont, &otr_text))
+    {
+        rl_print (COLERROR);
+        rl_printf (i18n (2641, "Message for %s could not be encrypted and was NOT sent!"),
+                msg->cont->nick);
+        rl_printf ("%s\n", COLNONE);
+        MsgD (msg);
+        if (otr_text)
+            OTRFree (otr_text);
+        return NULL;
+    }
     /* replace text if OTR changed it */
     if (otr_text)
     {
-        OptSetStr (opt, CO_MSGTEXT, otr_text);
+        assert (!msg->plain_message);
+        msg->plain_message = msg->send_message;
+        msg->send_message = strdup (otr_text);
         OTRFree (otr_text);
     }
+    return msg;
+}
 #endif
 
-    return IMCliReMsg (cont, opt);
+Message *cb_msg_revealinv (Message *msg)
+{
+    UDWORD reveal_time;
+    Event *event;
+
+    if (msg->cont->serv->type != TYPE_SERVER)
+        return msg;
+    if (msg->type & MSGF_GETAUTO)
+        return msg;
+    if (!ContactIsInv (msg->cont->serv->status))
+        return msg;
+    if (ContactPrefVal (msg->cont, CO_INTIMATE) || ContactPrefVal (msg->cont, CO_HIDEFROM))
+        return msg;
+    if (!(reveal_time = ContactPrefVal (msg->cont, CO_REVEALTIME)))
+        return msg;
+
+    event = QueueDequeue2 (msg->cont->serv, QUEUE_TOGVIS, 0, msg->cont);
+    if (event)
+        EventD (event);
+    else
+        SnacCliAddvisible (msg->cont->serv, msg->cont);
+    QueueEnqueueData (msg->cont->serv, QUEUE_TOGVIS, 0, time (NULL) + reveal_time, NULL, msg->cont, NULL, CallbackTogvis);
+    return msg;
 }
 
-UBYTE IMCliReMsg (Contact *cont, Opt *opt)
+
+UBYTE IMCliMsg (Contact *cont, UDWORD type, const char *text, Opt *opt)
 {
-    const char *opt_text;
-    Event *event;
-    UDWORD opt_type, opt_trans, reveal_time;
-    UBYTE ret;
+    Message *msg;
+    UDWORD tmp;
     
-    if (!cont || !cont->serv || !OptGetStr (opt, CO_MSGTEXT, &opt_text))
+    if (!cont || !cont->serv)
     {
         OptD (opt);
         return RET_FAIL;
     }
-    if (!OptGetVal (opt, CO_MSGTYPE, &opt_type))
-        OptSetVal (opt, CO_MSGTYPE, opt_type = MSG_NORM);
-    if (!OptGetVal (opt, CO_MSGTRANS, &opt_trans))
-        OptSetVal (opt, CO_MSGTRANS, opt_trans = CV_MSGTRANS_ANY);
-    
-    if (cont->serv->type == TYPE_SERVER
-        && ContactIsInv (cont->serv->status)  && !ContactPrefVal (cont, CO_INTIMATE)
-        && !(opt_type & MSGF_GETAUTO) && !ContactPrefVal (cont, CO_HIDEFROM)
-        && (reveal_time = ContactPrefVal (cont, CO_REVEALTIME)))
-    {
-        event = QueueDequeue2 (cont->serv, QUEUE_TOGVIS, 0, cont);
-        if (event)
-            EventD (event);
-        else
-            SnacCliAddvisible (cont->serv, cont);
-        QueueEnqueueData (cont->serv, QUEUE_TOGVIS, 0, time (NULL) + reveal_time, NULL, cont, NULL, CallbackTogvis);
-    }
+    msg = MsgC ();
+    if (!msg)
+        return RET_FAIL;
+    msg->cont = cont;
+    msg->type = type;
+    msg->send_message = strdup (text);
+    if (!opt || !OptGetVal (opt, CO_MSGTRANS, &msg->trans))
+        msg->trans = CV_MSGTRANS_ANY;
+    if (opt && OptGetVal (opt, CO_FORCE, &tmp))
+        msg->force = tmp;
+    if (opt && OptGetVal (opt, CO_OTRINJECT, &tmp))
+        msg->otrinjected = tmp;
 
-#ifdef ENABLE_PEER2PEER
-    if (opt_trans & CV_MSGTRANS_DC)
-        if (cont->serv->assoc)
-            if (RET_IS_OK (ret = PeerSendMsg (cont->serv->assoc, cont, opt)))
-                return ret;
-    OptSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_DC);
+#ifdef ENABLE_OTR
+             msg = cb_msg_otr (msg);
 #endif
-    if (opt_trans & CV_MSGTRANS_TYPE2)
-        if (cont->serv->connect & CONNECT_OK && cont->serv->type == TYPE_SERVER)
-            if (RET_IS_OK (ret = SnacCliSendmsg2 (cont->serv, cont, opt)))
+    if (msg) msg = cb_msg_log (msg);
+    if (msg)
+        return IMCliReMsg (cont, msg);
+    return RET_FAIL;
+}
+
+UBYTE IMCliReMsg (Contact *cont, Message *msg)
+{
+    UBYTE ret;
+
+    assert (cont);
+    assert (msg);
+    assert (msg->cont == cont);    
+    assert (msg->send_message);
+    
+    msg = cb_msg_revealinv (msg);
+    if (!msg)
+        return RET_FAIL;
+    
+#ifdef ENABLE_PEER2PEER
+    if (msg->trans & CV_MSGTRANS_DC)
+        if (cont->serv->assoc)
+            if (RET_IS_OK (ret = PeerSendMsgFat (cont->serv->assoc, cont, msg)))
                 return ret;
-    OptSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_TYPE2);
-    if (opt_trans & CV_MSGTRANS_ICQv8)
+    msg->trans &= ~CV_MSGTRANS_DC;
+#endif
+    if (msg->trans & CV_MSGTRANS_TYPE2)
         if (cont->serv->connect & CONNECT_OK && cont->serv->type == TYPE_SERVER)
-            if (RET_IS_OK (ret = SnacCliSendmsg (cont->serv, cont, opt_text, opt_type, 0)))
-            {
-                OptD (opt);
+            if (RET_IS_OK (ret = SnacCliSendmsg (cont->serv, cont, 2, msg)))
                 return ret;
-            }
-    OptSetVal (opt, CO_MSGTRANS, opt_trans &= ~CV_MSGTRANS_ICQv8);
-    if (opt_trans & CV_MSGTRANS_ICQv5)
+    msg->trans &= ~CV_MSGTRANS_TYPE2;
+    if (msg->trans & CV_MSGTRANS_ICQv8)
+        if (cont->serv->connect & CONNECT_OK && cont->serv->type == TYPE_SERVER)
+        {
+            if (RET_IS_OK (ret = SnacCliSendmsg (cont->serv, cont, 1, msg)))
+                return ret;
+            if (RET_IS_OK (ret = SnacCliSendmsg (cont->serv, cont, 4, msg)))
+                return ret;
+        }
+    msg->trans &= ~CV_MSGTRANS_ICQv8;
+    if (msg->trans & CV_MSGTRANS_ICQv5)
         if (cont->serv->connect & CONNECT_OK && cont->serv->type == TYPE_SERVER_OLD)
         {
-            CmdPktCmdSendMessage (cont->serv, cont, opt_text, opt_type);
-            OptD (opt);
+            CmdPktCmdSendMessage (cont->serv, cont, msg->send_message, msg->type);
+            MsgD (msg);
             return RET_OK;
         }
 #if ENABLE_XMPP
-    if (opt_trans & CV_MSGTRANS_XMPP)
+    if (msg->trans & CV_MSGTRANS_XMPP)
         if (cont->serv->connect & CONNECT_OK && cont->serv->type == TYPE_XMPP_SERVER)
-            if (RET_IS_OK (ret = XMPPSendmsg (cont->serv, cont, opt_type, opt_text)))
+            if (RET_IS_OK (ret = XMPPSendmsg (cont->serv, cont, msg)));
                 return ret;
 #endif
     ret = RET_OK;
-    if (cont->serv->type == TYPE_SERVER && opt_type == MSG_AUTH_DENY)
-        SnacCliAuthorize (cont->serv, cont, 0, opt_text);
-    else if (cont->serv->type == TYPE_SERVER && opt_type == MSG_AUTH_REQ)
-        SnacCliReqauth (cont->serv, cont, opt_text);
-    else if (cont->serv->type == TYPE_SERVER && opt_type == MSG_AUTH_ADDED)
+    if (cont->serv->type == TYPE_SERVER && msg->type == MSG_AUTH_DENY)
+        SnacCliAuthorize (cont->serv, cont, 0, msg->send_message);
+    else if (cont->serv->type == TYPE_SERVER && msg->type == MSG_AUTH_REQ)
+        SnacCliReqauth (cont->serv, cont, msg->send_message);
+    else if (cont->serv->type == TYPE_SERVER && msg->type == MSG_AUTH_ADDED)
         SnacCliGrantauth (cont->serv, cont);
-    else if (cont->serv->type == TYPE_SERVER && opt_type == MSG_AUTH_GRANT)
+    else if (cont->serv->type == TYPE_SERVER && msg->type == MSG_AUTH_GRANT)
         SnacCliAuthorize (cont->serv, cont, 1, NULL);
     else
         ret = RET_INPR;
-    OptD (opt);
+    MsgD (msg);
     return ret;
 }
 
@@ -289,7 +345,7 @@ void IMCliAuth (Contact *cont, const char *msg, auth_t how)
                     msg = "\x03";
                 msgtype = MSG_AUTH_GRANT;
         }
-        IMCliMsg (cont, OptSetVals (NULL, CO_MSGTYPE, msgtype, CO_MSGTEXT, msg, 0));
+        IMCliMsg (cont, msgtype, msg, NULL);
     }
 #if ENABLE_XMPP
     else if (cont->serv->type == TYPE_XMPP_SERVER)
