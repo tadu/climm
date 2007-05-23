@@ -615,6 +615,9 @@ const char *QueueType (UDWORD type)
         case QUEUE_PEER_FILE:      return "PEER_FILE";
         case QUEUE_PEER_RESEND:    return "PEER_RESEND";
         case QUEUE_TYPE2_RESEND:   return "TYPE2_RESEND";
+        case QUEUE_TYPE1_RESEND_ACK: return "TYPE1_R_ACK";
+        case QUEUE_TYPE2_RESEND_ACK: return "TYPE2_R_ACK";
+        case QUEUE_TYPE4_RESEND_ACK: return "TYPE4_R_ACK";
         case QUEUE_ACKNOWLEDGE:    return "ACKNOWLEDGE";
         case QUEUE_USERFILEACK:    return "USERFILEACK";
         case QUEUE_REQUEST_ROSTER: return "REQUEST_ROSTER";

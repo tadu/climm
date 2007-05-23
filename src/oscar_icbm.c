@@ -200,7 +200,6 @@ static UBYTE SnacCliSendmsg1 (Connection *serv, Contact *cont, Message *msg)
     int remenc;
     strc_t str;
     int enc = ENC_LATIN1, icqenc = 0, icqcol;
-    const char *s;
 
     assert (serv);
     assert (cont);
@@ -235,8 +234,13 @@ static UBYTE SnacCliSendmsg1 (Connection *serv, Contact *cont, Message *msg)
     }
 
     icqcol = atoi (msg->send_message); /* FIXME FIXME WIXME */
-    s = msg->send_message;
-    str = s_split (&s, enc, 700); /* FIXME: not 450? What is the real max? */
+    str = ConvTo (msg->send_message, enc);
+    if (str->len > 700)
+    {
+        msg->maxsize = 700; /* FIXME: not 450? What is the real max? */
+        msg->maxenc = enc;
+        return RET_DEFER;
+    }
 
     PacketWriteTLV     (pak, 2);
     PacketWriteTLV     (pak, 1281);
@@ -257,12 +261,6 @@ static UBYTE SnacCliSendmsg1 (Connection *serv, Contact *cont, Message *msg)
     PacketWriteB2 (pak, 0);
     SnacSend (serv, pak);
 
-    if (*s)
-    {
-        char *d = strdup (s);
-        IMCliMsg (cont, msg->type, s, OptSetVals (NULL, 0));
-        free (d);
-    }
     event = QueueEnqueueData2 (serv, QUEUE_TYPE1_RESEND_ACK, pak->ref, 120, msg, &SnacCallbackIgnore, NULL);
     event->cont = cont;
     return RET_OK;
@@ -272,10 +270,19 @@ static UBYTE SnacCliSendmsg4 (Connection *serv, Contact *cont, Message *msg)
 {
     Packet *pak;
     Event *event;
+    const char *text;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     
     assert (serv);
     assert (cont);
+    
+    text = c_out_to_split (msg->send_message, cont);
+    if (strlen (text) > 3 * 1024)
+    {
+        msg->maxsize = 3 * 1024;
+        msg->maxenc = ContactPrefVal (cont, CO_ENCODING);
+        return RET_DEFER;
+    }
     
     pak = SnacC (serv, 4, 6, 0, 0);
     PacketWriteB4 (pak, mtime);
@@ -287,7 +294,7 @@ static UBYTE SnacCliSendmsg4 (Connection *serv, Contact *cont, Message *msg)
     PacketWrite4       (pak, serv->uin);
     PacketWrite1       (pak, msg->type % 256);
     PacketWrite1       (pak, msg->type / 256);
-    PacketWriteLNTS    (pak, c_out_to_split (msg->send_message, cont));
+    PacketWriteLNTS    (pak, text);
     PacketWriteTLVDone (pak);
     PacketWriteB2 (pak, 6);
     PacketWriteB2 (pak, 0);
@@ -389,34 +396,24 @@ static UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Message *msg)
     Packet *pak;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     BOOL peek = 0;
+    const char *text;
     
     assert (serv);
     assert (cont);
     assert (msg);
     
-    if (!msg->force)
-    {
-        switch (msg->type & 0xff)
-        {
-            case MSG_AUTO:
-            case MSG_AUTH_REQ:
-            case MSG_AUTH_GRANT:
-            case MSG_AUTH_DENY:
-            case MSG_AUTH_ADDED:
-                return RET_DEFER;
-            case MSG_GET_VER:
-            case MSG_GET_PEEK:
-                break;
-            default:
-                if (!HAS_CAP (cont->caps, CAP_SRVRELAY) || !HAS_CAP (cont->caps, CAP_ISICQ))
-                    return RET_DEFER;
-        }
-    }
-    
     if (msg->type == MSG_GET_PEEK)
     {
         peek = 1;
         msg->type = MSG_GET_AWAY | MSGF_GETAUTO;
+    }
+
+    text = c_out_for (msg->send_message, cont, msg->type);
+    if (strlen (text) > 3 * 1024)
+    {
+        msg->maxsize = 3 * 1024;
+        msg->maxenc = CONT_UTF8 (cont, msg->type) ? ENC_UTF8 : ContactPrefVal (cont, CO_ENCODING);
+        return RET_DEFER;
     }
     
     serv->our_seq_dc--;
@@ -463,7 +460,7 @@ static UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Message *msg)
       }
       else
       {
-          SrvMsgAdvanced     (pak, serv->our_seq_dc, msg->type, serv->status, cont->status, -1, c_out_for (msg->send_message, cont, msg->type));
+          SrvMsgAdvanced     (pak, serv->our_seq_dc, msg->type, serv->status, cont->status, -1, text);
           PacketWrite4       (pak, TCP_COL_FG);
           PacketWrite4       (pak, TCP_COL_BG);
           if (CONT_UTF8 (cont, msg->type))
@@ -519,12 +516,12 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, UBYTE format, Message *ms
                     return RET_DEFER;
         }
     }
-    else if (format == 1)
+    else if (format == 1 && !msg->force)
     {
         if ((msg->type & 0xff) != MSG_NORM)
             return RET_DEFER;
     }
-    else if (format == 4)
+    else if (format == 4 && !msg->force)
     {
         switch (msg->type & 0xff)
         {
@@ -898,8 +895,8 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
     }
     if (event2)
     {
-        MsgD (event->data);
-        event->data = NULL;
+        MsgD (event2->data);
+        event2->data = NULL;
         EventD (event2);
     }
 }

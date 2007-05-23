@@ -646,7 +646,7 @@ strc_t s_split (const char **input, UBYTE enc, int len)
     str.len = off;
     str.txt[off] = 0;
     *input += off;
-    return ConvTo (str.txt, enc);
+    return &str;
 }
 
 

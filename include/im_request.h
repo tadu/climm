@@ -18,6 +18,10 @@ struct Message_s {
     UDWORD type;
     UDWORD origin;
     UDWORD trans;
+
+    UDWORD maxsize; /* to handle too long messages */
+    UBYTE maxenc;
+
     int otrinjected:1;
     int force:1;
 };

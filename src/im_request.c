@@ -52,7 +52,7 @@ Message *MsgC ()
     Message *msg;
     
     msg = calloc (1, sizeof *msg);
-    DebugH (DEB_MSG, "M<" STR_DOT STR_DOT STR_DOT " %p:", msg);
+    DebugH (DEB_MSG, "M" STR_DOT STR_DOT STR_DOT "> %p:", msg);
     return msg;
 }
 
@@ -61,7 +61,7 @@ void MsgD (Message *msg)
     char *s, *t;
     if (!msg)
         return;
-    DebugH (DEB_MSG, "M>" STR_DOT STR_DOT STR_DOT " %p [%s] %lu %lu %lu %u %u (%s) (%s) ",
+    DebugH (DEB_MSG, "M<" STR_DOT STR_DOT STR_DOT " %p [%s] %lu %lu %lu %u %u (%s) (%s) ",
            msg, msg->cont ? msg->cont->screen : "",
            msg->type, msg->origin, msg->trans, msg->otrinjected, msg->force,
            msg->send_message ? msg->send_message : "(null)",
@@ -105,7 +105,7 @@ Message *cb_msg_otr (Message *msg)
         return NULL;
     }
     /* replace text if OTR changed it */
-    if (otr_text)
+    if (otr_text && strcmp (msg->send_message, otr_text))
     {
         assert (!msg->plain_message);
         msg->plain_message = msg->send_message;
@@ -146,6 +146,7 @@ UBYTE IMCliMsg (Contact *cont, UDWORD type, const char *text, Opt *opt)
 {
     Message *msg;
     UDWORD tmp;
+    UBYTE ret = RET_FAIL;
     
     if (!cont || !cont->serv)
     {
@@ -166,12 +167,102 @@ UBYTE IMCliMsg (Contact *cont, UDWORD type, const char *text, Opt *opt)
         msg->otrinjected = tmp;
 
 #ifdef ENABLE_OTR
-             msg = cb_msg_otr (msg);
+    msg = cb_msg_otr (msg);
+    if (!msg)
+        return RET_FAIL;
 #endif
-    if (msg) msg = cb_msg_log (msg);
-    if (msg)
-        return IMCliReMsg (cont, msg);
-    return RET_FAIL;
+    msg = cb_msg_log (msg);
+    if (!msg)
+        return RET_FAIL;
+    ret = IMCliReMsg (cont, msg);
+    while (ret == RET_DEFER && msg->maxsize && !msg->plain_message)
+    {
+        strc_t str = s_split (&text, msg->maxenc, msg->maxsize);
+        s_repl (&msg->send_message, str->txt);
+        msg->maxsize = 0;
+        if (!opt || !OptGetVal (opt, CO_MSGTRANS, &msg->trans))
+            msg->trans = CV_MSGTRANS_ANY;
+        ret = IMCliReMsg (cont, msg);
+        if (!RET_IS_OK (ret))
+            break;
+        msg = MsgC ();
+        if (!msg)
+            return RET_FAIL;
+        msg->cont = cont;
+        msg->type = type;
+        msg->send_message = strdup (text);
+        if (!opt || !OptGetVal (opt, CO_MSGTRANS, &msg->trans))
+            msg->trans = CV_MSGTRANS_ANY;
+        if (opt && OptGetVal (opt, CO_FORCE, &tmp))
+            msg->force = tmp;
+        if (opt && OptGetVal (opt, CO_OTRINJECT, &tmp))
+            msg->otrinjected = tmp;
+        ret = IMCliReMsg (cont, msg);                                                            
+    }
+    if (ret == RET_DEFER && msg->maxsize && msg->plain_message)
+    {
+        str_s str = { NULL, 0, 0 };
+        UDWORD fragments, frag;
+        char *message = msg->send_message;
+
+        fragments = strlen (message) / msg->maxsize + 1;
+        frag = 1;
+        assert (fragments < 65536);
+        while (frag <= fragments)
+        {
+        
+            s_init (&str, "", msg->maxsize);
+            s_catf (&str, "?OTR,%hu,%hu,", (unsigned short)frag, (unsigned short)fragments);
+            s_catn (&str, message, strlen (message) / (fragments + 1 - frag));
+            s_catc (&str, ',');
+            message += strlen (message) / (fragments + 1 - frag);
+            if (frag < fragments)
+            {
+                Message *msg2 = MsgC ();
+                if (!msg2)
+                {
+                    MsgD (msg);
+                    s_done (&str);
+                    return RET_FAIL;
+                }
+                msg2->cont = cont;
+                msg2->type = type;
+                msg2->send_message = strdup (str.txt);
+                msg2->trans = CV_MSGTRANS_ANY;
+                msg2->otrinjected = 1;
+                ret = IMCliReMsg (cont, msg2);
+                if (!RET_IS_OK (ret))
+                {
+                    MsgD (msg2);
+                    MsgD (msg);
+                    s_done (&str);
+                    return RET_FAIL;
+                }
+            }
+            else
+            {
+                s_repl (&msg->send_message, str.txt);
+                if (!opt || !OptGetVal (opt, CO_MSGTRANS, &msg->trans))
+                    msg->trans = CV_MSGTRANS_ANY;
+                msg->otrinjected = 0;
+                ret = IMCliReMsg (cont, msg);
+                if (!RET_IS_OK (ret))
+                {
+                    MsgD (msg);
+                    s_done (&str);
+                    return RET_FAIL;
+                }
+            }
+            frag++;
+        }
+        s_done (&str);
+        MsgD (msg);
+        return RET_OK;
+    }
+
+    if (!RET_IS_OK (ret))
+        MsgD (msg);
+    return ret;
 }
 
 UBYTE IMCliReMsg (Contact *cont, Message *msg)
@@ -189,17 +280,22 @@ UBYTE IMCliReMsg (Contact *cont, Message *msg)
     
 #ifdef ENABLE_PEER2PEER
     if (msg->trans & CV_MSGTRANS_DC)
+    {
         if (cont->serv->assoc)
             if (RET_IS_OK (ret = PeerSendMsgFat (cont->serv->assoc, cont, msg)))
                 return ret;
-    msg->trans &= ~CV_MSGTRANS_DC;
+        msg->trans &= ~CV_MSGTRANS_DC;
+    }
 #endif
     if (msg->trans & CV_MSGTRANS_TYPE2)
+    {
         if (cont->serv->connect & CONNECT_OK && cont->serv->type == TYPE_SERVER)
             if (RET_IS_OK (ret = SnacCliSendmsg (cont->serv, cont, 2, msg)))
                 return ret;
-    msg->trans &= ~CV_MSGTRANS_TYPE2;
+        msg->trans &= ~CV_MSGTRANS_TYPE2;
+    }
     if (msg->trans & CV_MSGTRANS_ICQv8)
+    {
         if (cont->serv->connect & CONNECT_OK && cont->serv->type == TYPE_SERVER)
         {
             if (RET_IS_OK (ret = SnacCliSendmsg (cont->serv, cont, 1, msg)))
@@ -207,7 +303,8 @@ UBYTE IMCliReMsg (Contact *cont, Message *msg)
             if (RET_IS_OK (ret = SnacCliSendmsg (cont->serv, cont, 4, msg)))
                 return ret;
         }
-    msg->trans &= ~CV_MSGTRANS_ICQv8;
+        msg->trans &= ~CV_MSGTRANS_ICQv8;
+    }
     if (msg->trans & CV_MSGTRANS_ICQv5)
         if (cont->serv->connect & CONNECT_OK && cont->serv->type == TYPE_SERVER_OLD)
         {
@@ -221,19 +318,7 @@ UBYTE IMCliReMsg (Contact *cont, Message *msg)
             if (RET_IS_OK (ret = XMPPSendmsg (cont->serv, cont, msg)));
                 return ret;
 #endif
-    ret = RET_OK;
-    if (cont->serv->type == TYPE_SERVER && msg->type == MSG_AUTH_DENY)
-        SnacCliAuthorize (cont->serv, cont, 0, msg->send_message);
-    else if (cont->serv->type == TYPE_SERVER && msg->type == MSG_AUTH_REQ)
-        SnacCliReqauth (cont->serv, cont, msg->send_message);
-    else if (cont->serv->type == TYPE_SERVER && msg->type == MSG_AUTH_ADDED)
-        SnacCliGrantauth (cont->serv, cont);
-    else if (cont->serv->type == TYPE_SERVER && msg->type == MSG_AUTH_GRANT)
-        SnacCliAuthorize (cont->serv, cont, 1, NULL);
-    else
-        ret = RET_INPR;
-    MsgD (msg);
-    return ret;
+    return RET_FAIL;
 }
 
 void IMCliInfo (Connection *conn, Contact *cont, int group)
@@ -298,9 +383,9 @@ void IMSetStatus (Connection *serv, Contact *cont, status_t status, const char *
             serv->status = status;
             serv->nativestatus = 0;
         }
-        else if (serv->type == TYPE_SERVER && !cont)
+        else if (serv->type == TYPE_SERVER)
             SnacCliSetstatus (serv, status, 1);
-        else if (serv->type == TYPE_SERVER_OLD && !cont)
+        else if (serv->type == TYPE_SERVER_OLD)
         {
             CmdPktCmdStatusChange (serv, status);
             rl_printf ("%s %s\n", s_now, s_status (serv->status, serv->nativestatus));
@@ -312,7 +397,7 @@ void IMSetStatus (Connection *serv, Contact *cont, status_t status, const char *
     }
 }
 
-void IMCliAuth (Contact *cont, const char *msg, auth_t how)
+void IMCliAuth (Contact *cont, const char *text, auth_t how)
 {
     assert (cont);
     assert (cont->serv);
@@ -325,30 +410,54 @@ void IMCliAuth (Contact *cont, const char *msg, auth_t how)
         switch (how)
         {
             case auth_deny:
-                if (!msg)         /* FIXME: let it untranslated? */
-                    msg = "Authorization refused\n";
+                if (!text)         /* FIXME: let it untranslated? */
+                    text = "Authorization refused\n";
                 msgtype = MSG_AUTH_DENY;
                 break;
             case auth_req:
-                if (!msg)         /* FIXME: let it untranslated? */
-                    msg = "Please authorize my request and add me to your Contact List\n";
+                if (!text)         /* FIXME: let it untranslated? */
+                    text = "Please authorize my request and add me to your Contact List\n";
                 msgtype = MSG_AUTH_REQ;
                 break;
             case auth_add:
-                if (!msg)
-                    msg = "\x03";
+                if (!text)
+                    text = "\x03";
                 msgtype = MSG_AUTH_ADDED;
                 break;
             default:
             case auth_grant:
-                if (!msg)
-                    msg = "\x03";
+                if (!text)
+                    text = "\x03";
                 msgtype = MSG_AUTH_GRANT;
         }
-        IMCliMsg (cont, msgtype, msg, NULL);
+        if (cont->serv->type == TYPE_SERVER_OLD)
+            CmdPktCmdSendMessage (cont->serv, cont, text, msgtype);
+        else if (cont->uin)
+        {
+            Message *msg = MsgC ();
+            if (!msg)
+                return;
+            msg->cont = cont;
+            msg->type = msgtype;
+            msg->force = 1;
+            msg->send_message = strdup (text);
+            if (!RET_IS_OK (SnacCliSendmsg (cont->serv, cont, 4, msg)))
+                MsgD (msg);
+        }
+        else
+        {
+            if (how == auth_deny)
+                SnacCliAuthorize (cont->serv, cont, 0, text);
+            else if (how == auth_req)
+                SnacCliReqauth (cont->serv, cont, text);
+            else if (how == auth_add)
+                SnacCliGrantauth (cont->serv, cont);
+            else if (how == auth_grant)
+                SnacCliAuthorize (cont->serv, cont, 1, NULL);
+        }
     }
 #if ENABLE_XMPP
     else if (cont->serv->type == TYPE_XMPP_SERVER)
-        XMPPAuthorize (cont->serv, cont, how, msg);
+        XMPPAuthorize (cont->serv, cont, how, text);
 #endif
 }

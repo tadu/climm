@@ -623,6 +623,8 @@ static int cb_is_logged_in (void *opdata, const char *accountname, const char *p
 static void cb_inject_message (void *opdata, const char *accountname, const char *protocol, const char *recipient, const char *message)
 {
     Contact *cont;
+    Message *msg;
+    UBYTE ret;
 
     cont = find_contact (accountname, protocol, recipient);
     if (!cont)
@@ -633,7 +635,36 @@ static void cb_inject_message (void *opdata, const char *accountname, const char
         return;
     }
 
-    if (IMCliMsg (cont, MSG_NORM, message, OptSetVals (NULL, CO_OTRINJECT, TRUE, 0)) == RET_FAIL)
+    msg = MsgC ();
+    msg->cont = cont;
+    msg->type = MSG_NORM;
+    msg->send_message = strdup (message);
+    msg->otrinjected = 1;
+    msg->trans = CV_MSGTRANS_ANY;
+    ret = IMCliReMsg (cont, msg);
+    if (ret == RET_DEFER && msg->maxsize)
+    {
+        str_s str = { NULL, 0, 0 };
+        UDWORD fragments, frag;
+        
+        fragments = strlen (message) / msg->maxsize + 1;
+        frag = 1;
+        assert (fragments < 65536);
+        while (frag <= fragments)
+        {
+            s_init (&str, "", msg->maxsize);
+            s_catf (&str, "?OTR,%hu,%hu,", (unsigned short)frag, (unsigned short)fragments);
+            s_catn (&str, message, strlen (message) / (fragments + 1 - frag));
+            s_catc (&str, ',');
+            message += strlen (message) / (fragments + 1 - frag);
+            cb_inject_message (opdata, accountname, protocol, recipient, str.txt);
+        }
+        s_done (&str);
+        MsgD (msg);
+        return;
+    }
+    
+    if (!RET_IS_OK (ret))
     {
         rl_print (COLDEBUG);
         rl_printf (i18n (2659, "otr_inject: message injection for contact %s failed"), recipient);
