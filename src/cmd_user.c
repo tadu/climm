@@ -690,6 +690,7 @@ static JUMP_F(CmdUserHelp)
 static JUMP_F(CmdUserOtr)
 {
     Contact *cont = NULL;
+    strc_t earg;
 
     if (!libotr_is_present)
     {
@@ -697,38 +698,65 @@ static JUMP_F(CmdUserOtr)
         return 0;
     }
 
-    if (data == 0)
+    if (!data)
     {
-        if (s_parsekey (&args, "list"))
-            data = OTR_CMD_LIST;
-        else if (s_parsekey (&args, "start"))
-            data = OTR_CMD_START;
-        else if (s_parsekey (&args, "stop"))
-            data = OTR_CMD_STOP;
-        else if (s_parsekey (&args, "trust"))
-            data = OTR_CMD_TRUST;
-        else if (s_parsekey (&args, "genkey"))
-            data = OTR_CMD_GENKEY;
-        else if (s_parsekey (&args, "keys"))
-            data = OTR_CMD_KEYS;
-        else
-        {
-            rl_print (i18n (2635, "otr - Off-the-Record Messaging\n"));
+        if      (s_parsekey (&args, "list"))   data = OTR_CMD_LIST;
+        else if (s_parsekey (&args, "start"))  data = OTR_CMD_START;
+        else if (s_parsekey (&args, "stop"))   data = OTR_CMD_STOP;
+        else if (s_parsekey (&args, "trust"))  data = OTR_CMD_TRUST;
+        else if (s_parsekey (&args, "genkey")) data = OTR_CMD_GENKEY;
+        else if (s_parsekey (&args, "keys"))   data = OTR_CMD_KEYS;
+        else                                   data = 0;
+    }
+    
+    switch (data)
+    {
+        case 0:
+            rl_print (i18n (2635, "otr                           - Off-the-Record Messaging\n"));
             rl_print (i18n (2636, "otr list [<contact>]          - List OTR connection states\n"));
             rl_print (i18n (2637, "otr start|stop <contact>      - Start/Stop OTR session\n"));
             rl_print (i18n (2638, "otr trust <contact> [<trust>] - Set/Show trust for active fingerprint\n"));
             rl_print (i18n (2639, "otr genkey                    - Generate private key\n"));
             rl_print (i18n (2640, "otr keys                      - List private keys\n"));
-        }
+            break;
+        case OTR_CMD_LIST:
+            cont = s_parsenick (&args, uiG.conn);
+            if (!cont && (earg = s_parse (&args)))
+                rl_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), earg->txt);
+            else
+                OTRContext (cont);
+            break;
+        case OTR_CMD_START:
+        case OTR_CMD_STOP:
+            cont = s_parsenick (&args, uiG.conn);
+            if (cont)
+                OTRStart (cont, data == OTR_CMD_START ? 1 : 0);
+            else
+                rl_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
+            break;
+        case OTR_CMD_TRUST:
+            cont = s_parsenick (&args, uiG.conn);
+            if (!cont)
+            {
+                rl_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), args);
+                break;
+            }
+            if (s_parsekey (&args, "trust") || s_parsekey (&args, "verify"))
+                OTRSetTrust (cont, 2);
+            else if (s_parsekey (&args, "mistrust") || s_parsekey (&args, "distrust") || s_parsekey (&args, "falsify"))
+                OTRSetTrust (cont, 1);
+            else if (s_parse (&args))
+                rl_printf (i18n (9999, "Trust must be trust, verify, or mistrust, distrust, falsify.\n"));
+            else
+                OTRSetTrust (cont, 0);
+            break;
+        case OTR_CMD_GENKEY:
+            OTRGenKey ();
+            break;
+        case OTR_CMD_KEYS:
+            OTRListKeys ();
     }
-
-    if ((data == OTR_CMD_LIST || data == OTR_CMD_START || data == OTR_CMD_STOP || data == OTR_CMD_TRUST)
-            && uiG.conn)
-    {
-        cont = s_parsenick (&args, uiG.conn);
-    }
-
-    return OTRCmd (data, cont, s_parserem (&args));
+    return 0;
 }
 #endif /* ENABLE_OTR */
 
@@ -3922,14 +3950,13 @@ static JUMP_F(CmdUserConn)
 
     if (!data)
     {
-        if (!(par = s_parse (&args)))          data = 1;
-        else if (!strcmp (par->txt, "login"))  data = 2;
-        else if (!strcmp (par->txt, "open"))   data = 2;
-        else if (!strcmp (par->txt, "select")) data = 3;
-        else if (!strcmp (par->txt, "delete")) data = 4;
-        else if (!strcmp (par->txt, "remove")) data = 4;
-        else if (!strcmp (par->txt, "close"))  data = 5;
-        else if (!strcmp (par->txt, "logoff")) data = 5;
+        if      (s_parsekey (&args, "login"))  data = 2;
+        else if (s_parsekey (&args, "open"))   data = 2;
+        else if (s_parsekey (&args, "select")) data = 3;
+        else if (s_parsekey (&args, "delete")) data = 4;
+        else if (s_parsekey (&args, "remove")) data = 4;
+        else if (s_parsekey (&args, "close"))  data = 5;
+        else if (s_parsekey (&args, "logoff")) data = 5;
         else                                   data = 0;
     }
      

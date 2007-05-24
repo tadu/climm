@@ -159,6 +159,17 @@ static Contact *find_contact (const char *account, const char *proto, const char
     return cont;
 }
 
+static void add_app_data_find (void *data, ConnContext *context)
+{
+    if (context->app_data)
+        return;
+    if (data)
+        context->app_data = data;
+    data = find_contact (context->accountname, context->protocol, context->username);
+    assert (data);
+    context->app_data = data;
+}
+
 /* contact to otr context */
 static ConnContext *find_context (Contact *cont, int create)
 {
@@ -169,7 +180,9 @@ static ConnContext *find_context (Contact *cont, int create)
         return NULL;
 
     ctx = otrl_context_find (userstate, cont->screen, uiG.conn->screen,
-            proto_name (uiG.conn->type), create, &created, NULL, NULL);
+            proto_name (uiG.conn->type), create, &created, add_app_data_find, cont);
+    if (ctx)
+        assert (ctx->app_data == cont);
     return ctx;
 }
 
@@ -214,82 +227,59 @@ static char *readable_sid (unsigned char *data, size_t len, OtrlSessionIdHalf ha
 /* Prints OTR connection state */
 static void print_context (ConnContext *ctx)
 {
-    const char *state = "unknown state",
-          *auth = "unknown auth",
-          *policy = "unknown";
-    OtrlPolicy p = cb_policy (NULL, ctx);
+    const char *state, *auth, *policy;
+    OtrlPolicy p = cb_policy (ctx->app_data, ctx);
 
-    if (!userstate || !ctx)
+     if (!userstate || !ctx)
         return;
 
     switch (ctx->msgstate)
     {
-        case OTRL_MSGSTATE_PLAINTEXT:
-            state = "plaintext";
-            break;
-        case OTRL_MSGSTATE_ENCRYPTED:
-            state = "encrypted";
-            break;
-        case OTRL_MSGSTATE_FINISHED:
-            state = "finished";
-            break;
+        case OTRL_MSGSTATE_PLAINTEXT: state = "plaintext"; break;
+        case OTRL_MSGSTATE_ENCRYPTED: state = "encrypted"; break;
+        case OTRL_MSGSTATE_FINISHED:  state = "finished";  break;
+        default:                      state = "unknown state";
     }
     switch (ctx->auth.authstate)
     {
         case OTRL_AUTHSTATE_NONE:
             switch (ctx->otr_offer)
             {
-                case OFFER_NOT:
-                    auth = "no offer sent";
-                    break;
-                case OFFER_SENT:
-                    auth = "offer sent";
-                    break;
-                case OFFER_ACCEPTED:
-                    auth = "offer accepted";
-                    break;
-                case OFFER_REJECTED:
-                    auth = "offer rejected";
-                    break;
+                case OFFER_NOT:      auth = "no offer sent";  break;
+                case OFFER_SENT:     auth = "offer sent";     break;
+                case OFFER_ACCEPTED: auth = "offer accepted"; break;
+                case OFFER_REJECTED: auth = "offer rejected"; break;
+                default:             auth = "unknown auth";
             }
             break;
-        case OTRL_AUTHSTATE_AWAITING_DHKEY:
-            auth = "awaiting D-H key";
-            break;
-        case OTRL_AUTHSTATE_AWAITING_REVEALSIG:
-            auth = "awaiting reveal signature";
-            break;
-        case OTRL_AUTHSTATE_AWAITING_SIG:
-            auth = "awaiting signature";
-            break;
-        case OTRL_AUTHSTATE_V1_SETUP:
-            auth = "v1 setup";
-            break;
+        case OTRL_AUTHSTATE_AWAITING_DHKEY:     auth = "awaiting D-H key";          break;
+        case OTRL_AUTHSTATE_AWAITING_REVEALSIG: auth = "awaiting reveal signature"; break;
+        case OTRL_AUTHSTATE_AWAITING_SIG:       auth = "awaiting signature";        break;
+        case OTRL_AUTHSTATE_V1_SETUP:           auth = "v1 setup";                  break;
+        default:                                auth = "unknown auth";
     }
-    if (p == OTRL_POLICY_NEVER)
-        policy = "never";
-    else if (p == OTRL_POLICY_OPPORTUNISTIC)
-        policy = "try";
-    else if (p == OTRL_POLICY_MANUAL)
-        policy = "manual";
-    else if (p == OTRL_POLICY_ALWAYS)
-        policy = "always";
+    if      (p == OTRL_POLICY_NEVER)         policy = "never";
+    else if (p == OTRL_POLICY_OPPORTUNISTIC) policy = "try";
+    else if (p == OTRL_POLICY_MANUAL)        policy = "manual";
+    else if (p == (OTRL_POLICY_ALWAYS & ~OTRL_POLICY_ALLOW_V1))
+                                             policy = "always";
+    else                                     policy = "unknown";
 
-    rl_printf ("%10s (from %s/%s): %s%s%s (%s) policy: %s\n",
-            ctx->username, ctx->accountname, ctx->protocol, COLERROR,
+    rl_printf ("%s/%s/%s: %s%s%s (%s) [%s]\n",
+            ctx->accountname, ctx->protocol, ctx->username, COLQUOTE,
             state, COLNONE, auth, policy);
     if (ctx->active_fingerprint && ctx->active_fingerprint->fingerprint)
     {
-        char fpr[45] = "?";
+        char fpr[45], *tr;
         otrl_privkey_hash_to_human (fpr, ctx->active_fingerprint->fingerprint);
-        rl_printf (" fpr: %45s %s(%s)%s\n", fpr, COLERROR, ctx->active_fingerprint->trust?
-                ctx->active_fingerprint->trust : "no trust", COLNONE);
+        tr = ctx->active_fingerprint->trust;
+        rl_printf (" %45s %s(%s)%s\n", fpr, COLQUOTE, tr && *tr ? i18n (9999, "trusted") : i18n (9999, "untrusted"), COLNONE);
     }
     if (ctx->msgstate == OTRL_MSGSTATE_ENCRYPTED)
     {
         char *sid = readable_sid (ctx->sessionid, ctx->sessionid_len, ctx->sessionid_half);
-        rl_printf (" V%u session %u: %s%s%s\n",
-                ctx->protocol_version, ctx->generation, COLERROR, sid, COLNONE);
+        rl_printf (" V%u/%u: %s%s%s\n",
+                ctx->protocol_version, ctx->generation, COLQUOTE, sid, COLNONE);
         free (sid);
     }
 }
@@ -358,7 +348,7 @@ void OTRInit ()
     }
 
     /* get fingerprints */
-    otrl_privkey_read_fingerprints (userstate, fprfile.txt, NULL, NULL);
+    otrl_privkey_read_fingerprints (userstate, fprfile.txt, add_app_data_find, NULL);
 }
 
 /* Close encrypted sessions, free userstate and write fingerprints */
@@ -422,8 +412,8 @@ int OTRMsgIn (const char *msg, Contact *cont, char **new_msg)
         cont = cont->parent;
 #endif
 
-    ret = otrl_message_receiving (userstate, &ops, NULL, cont->serv->screen,
-            proto_name (cont->serv->type), cont->screen, msg, new_msg, NULL, NULL, NULL);
+    ret = otrl_message_receiving (userstate, &ops, cont, cont->serv->screen,
+            proto_name (cont->serv->type), cont->screen, msg, new_msg, NULL, add_app_data_find, cont);
 
     return ret;
 }
@@ -444,8 +434,8 @@ int OTRMsgOut (const char *msg, Connection *conn, Contact *cont, char **new_msg)
         cont = cont->parent;
 #endif
 
-    ret = otrl_message_sending (userstate, &ops, NULL, conn->screen, proto_name (conn->type),
-            cont->screen, msg, NULL, new_msg, NULL, NULL);
+    ret = otrl_message_sending (userstate, &ops, cont, conn->screen, proto_name (conn->type),
+            cont->screen, msg, NULL, new_msg, add_app_data_find, cont);
 
     if (ret)
         return 1;
@@ -453,88 +443,98 @@ int OTRMsgOut (const char *msg, Connection *conn, Contact *cont, char **new_msg)
         return 0;
 }
 
-/* OTR user command handler */
-int OTRCmd (int cmd, Contact *cont, const char *arg)
+ConnContext *Cont2Ctx (Contact *cont, int create)
 {
-    ConnContext *ctx = NULL;
-
-    if (!userstate)
-        return 0;
-    
-    if (cont)
-        ctx = find_context (cont, cmd == OTR_CMD_START? 1 : 0);
-
-    switch (cmd)
+    ConnContext *ctx;
+    if (!cont)
+        return NULL;
+    ctx = find_context (cont, create);
+    if (!ctx)
     {
-        case OTR_CMD_LIST: /* list */
-            rl_print (i18n (2647, "OTR connection states:\n"));
-            if (ctx)
-                print_context (ctx);
-            else
-                print_all_context ();
-            break;
-        case OTR_CMD_START: /* start */
-            if (ctx && ctx->msgstate != OTRL_MSGSTATE_ENCRYPTED &&
-                    cont && cont->status != ims_offline)
-            {
-                char *msg;
-                OtrlPolicy policy = cb_policy (NULL, ctx);
-                if (policy == OTRL_POLICY_NEVER)
-                {
-                    rl_print (i18n (2648, "Change otr policy first!\n"));
-                    break;
-                }
-                msg = otrl_proto_default_query_msg (ctx->accountname, policy);
-                IMCliMsg (cont, MSG_NORM, msg, OptSetVals (NULL, CO_OTRINJECT, TRUE, 0));
-                free (msg);
-            }
-            else
-                rl_print (i18n (2649, "Contact offline or already encrypted?\n"));
-            break;
-        case OTR_CMD_STOP: /* stop */
-            if (ctx && ctx->msgstate == OTRL_MSGSTATE_ENCRYPTED &&
-                    cont && cont->status != ims_offline)
-            {
-                otrl_message_disconnect (userstate, &ops, NULL,
-                    ctx->accountname, ctx->protocol, ctx->username);
-            }
-            else
-                rl_print (i18n (2650, "Contact offline or not encrypted?\n"));
-            break;
-        case OTR_CMD_TRUST: /* trust */
-            if (ctx && ctx->active_fingerprint && ctx->active_fingerprint->fingerprint)
-            {
-                char fpr[45];
-
-                otrl_privkey_hash_to_human (fpr, ctx->active_fingerprint->fingerprint);
-                if (arg) {
-                    otrl_context_set_trust (ctx->active_fingerprint, strdup (arg));
-                }
-                arg = ctx->active_fingerprint->trust;
-                printf ("%s [%45s]: %s\n", ctx->username, fpr,
-                       arg? arg:"no trust");
-            }
-            else
-                rl_print (i18n (2651, "No active fingerprint set!\n"));
-            break;
-        case OTR_CMD_GENKEY: /* genkey */
-            if (uiG.conn && !otrl_privkey_find (userstate,
-                    uiG.conn->screen, proto_name(uiG.conn->type)))
-            {
-                cb_create_privkey (NULL, uiG.conn->screen, proto_name (uiG.conn->type));
-            }
-            else
-                rl_print (i18n (2652, "Delete existing key first!\n"));
-            break;
-        case OTR_CMD_KEYS: /* keys */
-            print_keys ();
-            break;
+        rl_printf (i18n (9999, "Could not find context for %s.\n"), s_cquote (cont->screen, COLQUOTE));
+        return NULL;
     }
-
-    return 0;
+    return ctx;
 }
 
-/***** Callback functions follow *****/
+void OTRContext (Contact *cont)
+{
+    ConnContext *ctx = Cont2Ctx (cont, 0);
+    if (!userstate || (cont && !ctx))
+        return;
+    if (ctx)
+        print_context (ctx);
+    else
+        print_all_context ();
+}
+
+void OTRStart (Contact *cont, UBYTE start)
+{
+    ConnContext *ctx = Cont2Ctx (cont, start);
+    if (!userstate || !ctx)
+        return;
+
+    if (start && ctx->msgstate == OTRL_MSGSTATE_ENCRYPTED)
+        otrl_message_disconnect (userstate, &ops, NULL, ctx->accountname, ctx->protocol, ctx->username);
+
+    if (start)
+    {
+        OtrlPolicy policy = cb_policy (NULL, ctx);
+        char *msg;
+        if (policy == OTRL_POLICY_NEVER)
+        {
+            rl_printf (i18n (2648, "No OTR is allowed as long as policy is set to %s.\n"), s_qquote ("never"));
+            rl_printf (i18n (9999, "Use %s to change.\n"), s_qquote (s_sprintf ("opt %s otrpolicy", cont->nick)));
+            return;
+        }
+        msg = otrl_proto_default_query_msg (ctx->accountname, policy);
+        IMCliMsg (cont, MSG_NORM, msg, OptSetVals (NULL, CO_OTRINJECT, TRUE, 0));
+        free (msg);
+    }
+    else
+        otrl_message_disconnect (userstate, &ops, NULL, ctx->accountname, ctx->protocol, ctx->username);
+}
+
+void OTRSetTrust (Contact *cont, UBYTE trust)
+{
+    char fpr[45], *tr;
+    ConnContext *ctx = Cont2Ctx (cont, 0);
+    if (!userstate || !ctx)
+        return;
+
+    if (!ctx->active_fingerprint || !ctx->active_fingerprint->fingerprint)
+    {
+        rl_print (i18n (2651, "No active fingerprint set - start OTR session first.\n"));
+        return;
+    }
+
+    otrl_privkey_hash_to_human (fpr, ctx->active_fingerprint->fingerprint);
+    if (trust)
+        otrl_context_set_trust (ctx->active_fingerprint, trust == 2 ? "." : NULL);
+
+    tr = ctx->active_fingerprint->trust;
+    printf ("%s [%44s]: %s\n", ctx->username, fpr, tr && *tr ? i18n (9999, "trusted") : i18n (9999, "untrusted"));
+}
+
+void OTRGenKey (void)
+{
+    if (!userstate)
+        return;
+    if (uiG.conn && !otrl_privkey_find (userstate,
+            uiG.conn->screen, proto_name (uiG.conn->type)))
+    {
+        cb_create_privkey (NULL, uiG.conn->screen, proto_name (uiG.conn->type));
+    }
+    else
+        rl_print (i18n (2652, "Delete existing key first!\n"));
+}
+
+void OTRListKeys (void)
+{
+    if (!userstate)
+        return;
+    print_keys ();
+}
 
 /* Return the OTR policy for the given context.
  * maybe combination of:
@@ -547,16 +547,14 @@ int OTRCmd (int cmd, Contact *cont, const char *arg)
  * */
 static OtrlPolicy cb_policy (void *opdata, ConnContext *context)
 {
-    Contact *cont = NULL;
+    Contact *cont = opdata;
     const char *policy = NULL;
-
-    if (context)
-    {
-        cont = find_contact (context->accountname, context->protocol,
-                context->username);
-        if (cont)
-            policy = ContactPrefStr (cont, CO_OTRPOLICY);
-    }
+    
+    assert (cont);
+    assert (cont == context->app_data);
+    
+    if (cont)
+        policy = ContactPrefStr (cont, CO_OTRPOLICY);
     if (policy)
     {
         if (!strcmp (policy, "never"))
@@ -566,7 +564,7 @@ static OtrlPolicy cb_policy (void *opdata, ConnContext *context)
         else if (!strcmp (policy, "manual"))
             return OTRL_POLICY_MANUAL;
         else if (!strcmp (policy, "always"))
-            return OTRL_POLICY_ALWAYS;
+            return OTRL_POLICY_ALWAYS & ~OTRL_POLICY_ALLOW_V1;
         else if (*policy)
         {
             rl_print (COLDEBUG);
@@ -574,8 +572,7 @@ static OtrlPolicy cb_policy (void *opdata, ConnContext *context)
             rl_printf ("%s\n", COLNONE);
         }
     }
-
-    return OTRL_POLICY_DEFAULT;
+    return cont ? OTRL_POLICY_DEFAULT : OTRL_POLICY_ALLOW_V1;
 }
 
 /* Create a private key for the given accountname/protocol if
@@ -588,9 +585,9 @@ static void cb_create_privkey (void *opdata, const char *accountname, const char
                accountname, protocol);
     ret = otrl_privkey_generate (userstate, keyfile.txt, accountname, protocol);
     if (ret)
-        rl_print (i18n (2655, "something went wrong\n"));
+        rl_print (i18n (2655, "failed.\n"));
     else
-        rl_print (i18n (2656, "done\n"));
+        rl_print (i18n (2656, "successfull.\n"));
 }
 
 /* Report whether you think the given user is online.  Return 1 if
@@ -601,18 +598,13 @@ static void cb_create_privkey (void *opdata, const char *accountname, const char
  * logged in" errors if you're wrong. */
 static int cb_is_logged_in (void *opdata, const char *accountname, const char *protocol, const char *recipient)
 {
-    Contact *cont;
+    Contact *cont = opdata;
+    assert (cont);
+    assert (cont == find_contact (accountname, protocol, recipient));
 
-    cont = find_contact (accountname, protocol, recipient);
-    if (!cont)
-    {
-        rl_print (COLDEBUG);
-        rl_printf (i18n (2657, "util_otr: could not check whether %s is online"), recipient);
-        rl_printf ("%s\n", COLNONE);
+    if (!cont->group)
         return -1;
-    }
-
-    if (cont->status == ims_offline)
+    else if (cont->status == ims_offline)
         return 0;
     else
         return 1;
@@ -622,18 +614,12 @@ static int cb_is_logged_in (void *opdata, const char *accountname, const char *p
  * accountname/protocol. */
 static void cb_inject_message (void *opdata, const char *accountname, const char *protocol, const char *recipient, const char *message)
 {
-    Contact *cont;
+    Contact *cont = opdata;
     Message *msg;
     UBYTE ret;
 
-    cont = find_contact (accountname, protocol, recipient);
-    if (!cont)
-    {
-        rl_print (COLDEBUG);
-        rl_printf (i18n (2658, "otr_inject: no contact %s found - message could not be injected!"), recipient);
-        rl_printf ("%s\n", COLNONE);
-        return;
-    }
+    assert (cont);
+    assert (cont == find_contact (accountname, protocol, recipient));
 
     msg = MsgC ();
     msg->cont = cont;
@@ -677,23 +663,21 @@ static void cb_inject_message (void *opdata, const char *accountname, const char
 static void cb_notify (void *opdata, OtrlNotifyLevel level, const char *accountname, const char *protocol,
         const char *username, const char *title, const char *primary, const char *secondary)
 {
+    Contact *cont = (Contact *)opdata;
     const char *type;
+
+    assert (cont);
+    assert (cont == find_contact (accountname, protocol, username));
 
     switch (level)
     {
-        case OTRL_NOTIFY_ERROR:
-            type = "Error";
-        break;
-        case OTRL_NOTIFY_WARNING:
-            type = "Warning";
-        break;
-        case OTRL_NOTIFY_INFO:
-            type = "Info";
-        break;
-        default:
-            type = "Notify";
+        case OTRL_NOTIFY_ERROR:    type = "Error";   break;
+        case OTRL_NOTIFY_WARNING:  type = "Warning"; break;
+        case OTRL_NOTIFY_INFO:     type = "Info";    break;
+        default:                   type = "Notify";
     }
 
+    rl_log_for (cont->nick, COLCONTACT);
     rl_printf ("%sOTR %s:%s %s\n %s\n %s\n", COLERROR, type, COLNONE,
             title, primary, secondary);
 }
@@ -707,7 +691,11 @@ static void cb_notify (void *opdata, OtrlNotifyLevel level, const char *accountn
 static int cb_display_otr_message (void *opdata, const char *accountname,
         const char *protocol, const char *username, const char *msg)
 {
-    rl_printf ("%sOTR[%s]:%s %s\n", COLERROR, username, COLNONE, msg);
+    Contact *cont = (Contact *)opdata;
+    assert (cont);
+    assert (cont == find_contact (accountname, protocol, username));
+    rl_log_for (cont->nick, COLCONTACT);
+    rl_printf ("%sOTR%s: %s\n", COLERROR, COLNONE, msg);
     return 0;
 }
 
@@ -716,7 +704,7 @@ static int cb_display_otr_message (void *opdata, const char *accountname,
 static void cb_update_context_list (void *opdata)
 {
     /* anything useful here? */
-    print_all_context ();
+    /* print_all_context (); */
 }
 
 /* Return a newly-allocated string containing a human-friendly name
@@ -728,7 +716,7 @@ static const char *cb_protocol_name (void *opdata, const char *protocol)
 }
 
 /* Deallocate a string allocated by protocol_name */
-static void cb_protocol_name_free(void *opdata, const char *protocol_name) {
+static void cb_protocol_name_free (void *opdata, const char *protocol_name) {
     free ((char *) protocol_name);
 }
 
@@ -736,10 +724,13 @@ static void cb_protocol_name_free(void *opdata, const char *protocol_name) {
 static void cb_new_fingerprint (void *opdata, OtrlUserState us, const char *accountname,
         const char *protocol, const char *username, unsigned char fingerprint[20])
 {
-    char fpr[45] = "?";
-
+    Contact *cont = (Contact *)opdata;
+    char fpr[45];
+    assert (cont);
+    assert (cont == find_contact (accountname, protocol, username));
     otrl_privkey_hash_to_human (fpr, fingerprint);
-    rl_printf (i18n (2660, "OTR: new fingerprint for %s: %s\n"), username, fpr);
+    rl_log_for (cont->nick, COLCONTACT);
+    rl_printf (i18n (2660, "new OTR fingerprint: %s.\n"), fpr);
 }
 
 /* The list of known fingerprints has changed.  Write them to disk. */
@@ -751,23 +742,35 @@ static void cb_write_fingerprints (void *opdata)
 /* A ConnContext has entered a secure state. */
 static void cb_gone_secure (void *opdata, ConnContext *context)
 {
-    rl_printf (i18n (2661, "OTR: secure channel to %s established\n"), context->username);
+    Contact *cont = opdata;
+    assert (cont);
+    assert (cont == context->app_data);
+    rl_log_for (cont->nick, COLCONTACT);
+    rl_printf (i18n (2661, "secure OTR channel established.\n"));
 }
 
 /* A ConnContext has left a secure state. */
 static void cb_gone_insecure (void *opdata, ConnContext *context)
 {
-    rl_printf (i18n (2662, "OTR: secure channel to %s closed\n"), context->username);
+    Contact *cont = opdata;
+    assert (cont);
+    assert (cont == context->app_data);
+    rl_log_for (cont->nick, COLCONTACT);
+    rl_printf (i18n (2662, "secure OTR channel closed.\n"));
 }
 
 /* We have completed an authentication, using the D-H keys we
  * already knew.  is_reply indicates whether we initiated the AKE. */
 static void cb_still_secure (void *opdata, ConnContext *context, int is_reply)
 {
+    Contact *cont = opdata;
+    assert (cont);
+    assert (cont == context->app_data);
+    rl_log_for (cont->nick, COLCONTACT);
     if (is_reply)
-        rl_printf (i18n (2663, "OTR: secure channel to %s reestablished\n"), context->username);
+        rl_printf (i18n (2663, "secure OTR channel reestablished.\n"));
     else
-        rl_printf (i18n (2664, "OTR: %s reestablished secure channel\n"), context->username);
+        rl_printf (i18n (2664, "reestablished secure OTR channel.\n"));
 }
 
 /* Log a message.  The passed message will end in "\n". */

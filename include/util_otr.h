@@ -19,6 +19,10 @@ void OTRFree (char *msg);
 int OTRMsgIn (const char *msg, Contact *cont, char **new_msg);
 int OTRMsgOut (const char *msg, Connection *conn, Contact *cont, char **new_msg);
 
-int OTRCmd (int cmd, Contact *cont, const char *arg);
+void OTRContext (Contact *cont);
+void OTRStart (Contact *cont, UBYTE start);
+void OTRSetTrust (Contact *cont, UBYTE trust);
+void OTRGenKey (void);
+void OTRListKeys (void);
 #endif /* ENABLE_OTR */
 #endif
