@@ -168,9 +168,11 @@ JUMP_SNAC_F(SnacSrvAckmsg)
     {
         Message *msg = event->data;
         assert (msg);
+        assert (msg->cont == cont);
         if ((msg->plain_message || msg->send_message) && !msg->otrinjected && (msgtype & 0x300) != 0x300)
         {
-            IMIntMsg (cont, NOW, ims_offline, INT_MSGACK_TYPE2, msg->plain_message ? msg->plain_message : msg->send_message);
+            msg->type = INT_MSGACK_TYPE2;
+            IMIntMsgMsg (msg, NOW, ims_offline);
             if ((~cont->oldflags & CONT_SEENAUTO) && strlen (text) && msg->send_message && strcmp (text, msg->send_message))
             {
                 IMSrvMsg (cont, NOW, CV_ORIGIN_v8, MSG_AUTO, text);
@@ -875,15 +877,17 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
             event2 = QueueDequeue (serv, QUEUE_TYPE1_RESEND_ACK, pak->ref);
             if (!event2 || !(msg = event2->data))
                 break;
+            msg->type = INT_MSGACK_V8;
             if ((msg->send_message || msg->plain_message) && !msg->otrinjected)
-                IMIntMsg (cont, NOW, ims_offline, INT_MSGACK_V8, msg->plain_message ? msg->plain_message : msg->send_message);
+                IMIntMsgMsg (msg, NOW, ims_offline);
             break;
         case 4:
             event2 = QueueDequeue (serv, QUEUE_TYPE4_RESEND_ACK, pak->ref);
             if (!event2 || !(msg = event2->data))
                 break;
+            msg->type = INT_MSGACK_V8;
             if ((msg->send_message || msg->plain_message) && !msg->otrinjected)
-                IMIntMsg (cont, NOW, ims_offline, INT_MSGACK_V8, msg->plain_message ? msg->plain_message : msg->send_message);
+                IMIntMsgMsg (msg, NOW, ims_offline);
             break;
         case 2: /* msg was received by server */
             event2 = QueueDequeue (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref);

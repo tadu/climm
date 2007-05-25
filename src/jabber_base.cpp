@@ -347,7 +347,11 @@ void MICQXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
             Message *msg = (Message *)event->data;
             assert (msg);
             if (msg->send_message && !msg->otrinjected)
-                IMIntMsg (cfrom, NOW, ims_offline, type, msg->plain_message ? msg->plain_message : msg->send_message);
+            {
+                msg->type = type;
+//                assert (msg->cont == cfrom); ->parent
+                IMIntMsgMsg (msg, NOW, ims_offline);
+            }
             event->attempts += 5;
             QueueEnqueue (event);
         }
@@ -728,7 +732,10 @@ static void SnacCallbackXmpp (Event *event)
     if (event->attempts < 5)
     {
         if (msg->send_message && !msg->otrinjected)
-            IMIntMsg (event->cont, NOW, ims_offline, INT_MSGACK_V8, msg->plain_message ? msg->plain_message : msg->send_message);
+        {
+            msg->type = INT_MSGACK_V8;
+            IMIntMsgMsg (msg, NOW, ims_offline);
+        }
         event->attempts = 20;
         event->due = time (NULL) + 600;
         QueueEnqueue (event);

@@ -179,8 +179,8 @@ static ConnContext *find_context (Contact *cont, int create)
     if (!cont || !userstate || !uiG.conn)
         return NULL;
 
-    ctx = otrl_context_find (userstate, cont->screen, uiG.conn->screen,
-            proto_name (uiG.conn->type), create, &created, add_app_data_find, cont);
+    ctx = otrl_context_find (userstate, cont->screen, cont->serv->screen,
+            proto_name (cont->serv->type), create, &created, add_app_data_find, cont);
     if (ctx)
         assert (ctx->app_data == cont);
     return ctx;
@@ -373,7 +373,7 @@ void OTREnd ()
     for (ctx = userstate->context_root; ctx; ctx = ctx->next)
         if (ctx->msgstate == OTRL_MSGSTATE_ENCRYPTED)
         {
-            otrl_message_disconnect (userstate, &ops, NULL,
+            otrl_message_disconnect (userstate, &ops, ctx->app_data,
                 ctx->accountname, ctx->protocol, ctx->username);
         }
 
@@ -400,47 +400,97 @@ void OTRFree (char *msg)
  * returns != 0 when message was internal for OTR protocol
  * (like key exchange...)
  */
-int OTRMsgIn (const char *msg, Contact *cont, char **new_msg)
+int OTRMsgIn (Contact *cont, fat_srv_msg_t *msg)
 {
+    Contact *pcont = cont;
     int ret;
+    assert (userstate);
 
-    if (!userstate)
-        return 0;
-    
+    char *otr_text = NULL;
+
 #if ENABLE_CONT_HIER
-    while (cont->parent && cont->parent->serv == cont->serv)
-        cont = cont->parent;
+    while (pcont->parent && pcont->parent->serv == pcont->serv)
+        pcont = pcont->parent;
 #endif
 
-    ret = otrl_message_receiving (userstate, &ops, cont, cont->serv->screen,
-            proto_name (cont->serv->type), cont->screen, msg, new_msg, NULL, add_app_data_find, cont);
+    ret = otrl_message_receiving (userstate, &ops, pcont, pcont->serv->screen,
+            proto_name (pcont->serv->type), pcont->screen, msg->msgtext, &otr_text, NULL, add_app_data_find, pcont);
 
-    return ret;
+    if (ret)
+    {
+        if (otr_text)
+            OTRFree (otr_text);
+        return 1;
+    }
+
+    if (otr_text)
+    { /* replace text with decrypted version */
+        ConnContext *ctx;
+
+        free (msg->msgtext);
+        msg->msgtext = strdup (otr_text);
+        OTRFree (otr_text);
+        ctx = find_context (pcont, 0);
+        assert (ctx);
+        if (ctx->msgstate == OTRL_MSGSTATE_ENCRYPTED)
+        {
+            msg->otrencrypted = 1;
+            if (ctx->active_fingerprint && ctx->active_fingerprint->trust && *ctx->active_fingerprint->trust)
+                msg->otrencrypted = 2;
+        }
+    }
+    return 0;
 }
 
 /* Process outgoing message 
  * returns != 0 when message could not be encrypted
  * (do not send cleartext in this case)
  */
-int OTRMsgOut (const char *msg, Connection *conn, Contact *cont, char **new_msg)
+Message *OTRMsgOut (Message *msg)
 {
+    char *otr_text = NULL;
+    Contact *cont = msg->cont;
     gcry_error_t ret;
 
-    if (!userstate)
-        return 1;
+    assert (userstate);
 
 #if ENABLE_CONT_HIER
     while (cont->parent && cont->parent->serv == cont->serv)
         cont = cont->parent;
 #endif
 
-    ret = otrl_message_sending (userstate, &ops, cont, conn->screen, proto_name (conn->type),
-            cont->screen, msg, NULL, new_msg, add_app_data_find, cont);
+    ret = otrl_message_sending (userstate, &ops, cont, cont->serv->screen, proto_name (cont->serv->type),
+            cont->screen, msg->send_message, NULL, &otr_text, add_app_data_find, cont);
 
     if (ret)
-        return 1;
-    else
-        return 0;
+    {
+        rl_print (COLERROR);
+        rl_printf (i18n (2641, "Message for %s could not be encrypted and was NOT sent!"),
+                msg->cont->nick);
+        rl_printf ("%s\n", COLNONE);
+        MsgD (msg);
+        if (otr_text)
+            OTRFree (otr_text);
+        return NULL;
+    }
+    /* replace text if OTR changed it */
+    if (otr_text && strcmp (msg->send_message, otr_text))
+    {
+        ConnContext *ctx;
+        assert (!msg->plain_message);
+        ctx = find_context (cont, 0);
+        assert (ctx);
+        if (ctx->msgstate == OTRL_MSGSTATE_ENCRYPTED)
+        {
+            msg->otrencrypted = 1;
+            if (ctx->active_fingerprint && ctx->active_fingerprint->trust && *ctx->active_fingerprint->trust)
+                msg->otrencrypted = 2;
+        }
+        msg->plain_message = msg->send_message;
+        msg->send_message = strdup (otr_text);
+        OTRFree (otr_text);
+    }
+    return msg;
 }
 
 ConnContext *Cont2Ctx (Contact *cont, int create)
@@ -475,11 +525,11 @@ void OTRStart (Contact *cont, UBYTE start)
         return;
 
     if (start && ctx->msgstate == OTRL_MSGSTATE_ENCRYPTED)
-        otrl_message_disconnect (userstate, &ops, NULL, ctx->accountname, ctx->protocol, ctx->username);
+        otrl_message_disconnect (userstate, &ops, cont, ctx->accountname, ctx->protocol, ctx->username);
 
     if (start)
     {
-        OtrlPolicy policy = cb_policy (NULL, ctx);
+        OtrlPolicy policy = cb_policy (cont, ctx);
         char *msg;
         if (policy == OTRL_POLICY_NEVER)
         {
@@ -492,7 +542,7 @@ void OTRStart (Contact *cont, UBYTE start)
         free (msg);
     }
     else
-        otrl_message_disconnect (userstate, &ops, NULL, ctx->accountname, ctx->protocol, ctx->username);
+        otrl_message_disconnect (userstate, &ops, cont, ctx->accountname, ctx->protocol, ctx->username);
 }
 
 void OTRSetTrust (Contact *cont, UBYTE trust)

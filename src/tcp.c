@@ -1644,7 +1644,8 @@ static void TCPCallBackReceive (Event *event)
                 case MSG_URL:
                     if (!msg->otrinjected)
                     {
-                        IMIntMsg (cont, NOW, ims_offline, opt_origin == CV_ORIGIN_dc ? INT_MSGACK_DC : INT_MSGACK_SSL, msg->plain_message ? msg->plain_message : msg->send_message);
+                        msg->type = opt_origin == CV_ORIGIN_dc ? INT_MSGACK_DC : INT_MSGACK_SSL;
+                        IMIntMsgMsg (msg, NOW, ims_offline);
                         if (~cont->oldflags & CONT_SEENAUTO && strlen (tmp) && strcmp (tmp, msg->send_message))
                         {
                             IMSrvMsg (cont, NOW, opt_origin, MSG_AUTO, tmp);

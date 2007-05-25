@@ -4,6 +4,8 @@
 
 #include "micq.h"
 
+#include "im_response.h"
+
 #ifdef ENABLE_OTR
 #define OTR_CMD_LIST    (1)
 #define OTR_CMD_START   (2)
@@ -16,8 +18,8 @@ void OTRInit ();
 void OTREnd ();
 void OTRFree (char *msg);
 
-int OTRMsgIn (const char *msg, Contact *cont, char **new_msg);
-int OTRMsgOut (const char *msg, Connection *conn, Contact *cont, char **new_msg);
+int OTRMsgIn (Contact *cont, fat_srv_msg_t *msg);
+Message *OTRMsgOut (Message *msg);
 
 void OTRContext (Contact *cont);
 void OTRStart (Contact *cont, UBYTE start);

@@ -311,15 +311,33 @@ static int cb_srv_msg_auto (Contact *cont, parentmode_t pm, time_t stamp, fat_sr
 
 /** TEXT UI **/
 
-#define MSGICQACKSTR   ">>>"
-#define MSGICQ5ACKSTR  "> >"
-#define MSGICQRECSTR   "<<<"
-#define MSGTCPACKSTR   ConvTranslit ("\xc2\xbb\xc2\xbb\xc2\xbb", "}}}")
-#define MSGTCPRECSTR   ConvTranslit ("\xc2\xab\xc2\xab\xc2\xab", "{{{")
-#define MSGSSLACKSTR   ConvTranslit ("\xc2\xbb%\xc2\xbb", "}%}")
-#define MSGSSLRECSTR   ConvTranslit ("\xc2\xab%\xc2\xab", "{%{")
-#define MSGTYPE2ACKSTR ConvTranslit (">>\xc2\xbb", ">>}")
-#define MSGTYPE2RECSTR ConvTranslit ("\xc2\xab<<", "{<<")
+#define MSGICQACKSTR         ">>>"
+#define MSGICQACKSTROTR      "&>>"
+#define MSGICQACKSTROTRSEC   "%>>"
+#define MSGICQ5ACKSTR        "> >"
+#define MSGICQ5ACKSTROTR     "& >"
+#define MSGICQ5ACKSTROTRSEC  "% >"
+#define MSGTCPACKSTR         ConvTranslit ("\xc2\xbb\xc2\xbb\xc2\xbb", "}}}")
+#define MSGTCPACKSTROTR      ConvTranslit ("&\xc2\xbb\xc2\xbb", "&}}")
+#define MSGTCPACKSTROTRSEC   ConvTranslit ("%\xc2\xbb\xc2\xbb", "%}}")
+#define MSGSSLACKSTR         ConvTranslit ("\xc2\xbb%\xc2\xbb", "}%}")
+#define MSGSSLACKSTROTR      ConvTranslit ("&%\xc2\xbb", "&%}")
+#define MSGSSLACKSTROTRSEC   ConvTranslit ("%%\xc2\xbb", "%%}")
+#define MSGTYPE2ACKSTR       ConvTranslit (">>\xc2\xbb", ">>}")
+#define MSGTYPE2ACKSTROTR    ConvTranslit ("&>\xc2\xbb", "&>}")
+#define MSGTYPE2ACKSTROTRSEC ConvTranslit ("%>\xc2\xbb", "%>}")
+#define MSGICQRECSTR         "<<<"
+#define MSGICQRECSTROTR      "<<&"
+#define MSGICQRECSTROTRSEC   "<<%"
+#define MSGTCPRECSTR         ConvTranslit ("\xc2\xab\xc2\xab\xc2\xab", "{{{")
+#define MSGTCPRECSTROTR      ConvTranslit ("\xc2\xab\xc2\xab&", "{{&")
+#define MSGTCPRECSTROTRSEC   ConvTranslit ("\xc2\xab\xc2\xab%", "{{%")
+#define MSGSSLRECSTR         ConvTranslit ("\xc2\xab%\xc2\xab", "{%{")
+#define MSGSSLRECSTROTR      ConvTranslit ("\xc2\xab%&", "{%&")
+#define MSGSSLRECSTROTRSEC   ConvTranslit ("\xc2\xab%%", "{%%")
+#define MSGTYPE2RECSTR       ConvTranslit ("\xc2\xab<<", "{<<")
+#define MSGTYPE2RECSTROTR    ConvTranslit ("\xc2\xab<&", "{<&")
+#define MSGTYPE2RECSTROTRSEC ConvTranslit ("\xc2\xab<%", "{<%")
 
 #if ENABLE_CONT_HIER
 static void cb_tui_tail (Contact *cont)
@@ -386,6 +404,7 @@ static int cb_int_msg_tui (Contact *cont, parentmode_t pm, time_t stamp, fat_int
     const char *line;
     const char *col = COLCONTACT;
     char *p, *q;
+    const char *marker = NULL;
 
 #if ENABLE_CONT_HIER
     int dotail = 0;
@@ -441,52 +460,37 @@ static int cb_int_msg_tui (Contact *cont, parentmode_t pm, time_t stamp, fat_int
             free (p);
             free (q);
             break;
-        case INT_MSGTRY_TYPE2:
-            line = s_sprintf ("%s%s %s", i18n (2293, "--="), COLSINGLE, msg->msgtext);
-            break;
-        case INT_MSGTRY_DC:
-            line = s_sprintf ("%s%s %s", i18n (2294, "==="), COLSINGLE, msg->msgtext);
-            break;
-        case INT_MSGACK_TYPE2:
-            col = COLACK;
-            line = s_sprintf ("%s%s %s", MSGTYPE2ACKSTR, COLSINGLE, msg->msgtext);
-            break;
-        case INT_MSGACK_DC:
-            col = COLACK;
-            line = s_sprintf ("%s%s %s", MSGTCPACKSTR, COLSINGLE, msg->msgtext);
-            break;
+        case INT_MSGDISPL:      marker = "<displayed>";      break;
+        case INT_MSGCOMP:       marker = "<composing>";      break;
+        case INT_MSGNOCOMP:     marker = "<no composing>";   break;
+        case INT_MSGOFF:        marker = "<offline>";        break;
+        case INT_MSGTRY_TYPE2:  marker = i18n (2293, "--="); break;
+        case INT_MSGTRY_DC:     marker = i18n (2294, "==="); break;
+        case INT_MSGACK_TYPE2:  marker = msg->bytes == 2 ? MSGTYPE2ACKSTROTRSEC
+                                       : msg->bytes == 1 ? MSGTYPE2ACKSTROTR
+                                       :                   MSGTYPE2ACKSTR;     break;
+        case INT_MSGACK_DC:     marker = msg->bytes == 2 ? MSGTCPACKSTROTRSEC
+                                       : msg->bytes == 1 ? MSGTCPACKSTROTR
+                                       :                   MSGTCPACKSTR;       break;
 #ifdef ENABLE_SSL
-        case INT_MSGACK_SSL:
-            col = COLACK;
-            line = s_sprintf ("%s%s %s", MSGSSLACKSTR, COLSINGLE, msg->msgtext);
-            break;
+        case INT_MSGACK_SSL:    marker = msg->bytes == 2 ? MSGSSLACKSTROTRSEC
+                                       : msg->bytes == 1 ? MSGSSLACKSTROTR
+                                       :                   MSGSSLACKSTR;       break;
 #endif
-        case INT_MSGACK_V8:
-            col = COLACK;
-            line = s_sprintf ("%s%s %s", MSGICQACKSTR, COLSINGLE, msg->msgtext);
-            break;
-        case INT_MSGACK_V5:
-            col = COLACK;
-            line = s_sprintf ("%s%s %s", MSGICQ5ACKSTR, COLSINGLE, msg->msgtext);
-            break;
-        case INT_MSGDISPL:
-            col = COLACK;
-            line = s_sprintf ("%s%s %s", "<displayed>", COLSINGLE, msg->msgtext);
-            break;
-        case INT_MSGCOMP:
-            col = COLACK;
-            line = s_sprintf ("%s%s %s", "<composing>", COLSINGLE, msg->msgtext);
-            break;
-        case INT_MSGNOCOMP:
-            col = COLACK;
-            line = s_sprintf ("%s%s %s", "<no composing>", COLSINGLE, msg->msgtext);
-            break;
-        case INT_MSGOFF:
-            col = COLACK;
-            line = s_sprintf ("%s%s %s", "<offline>", COLSINGLE, msg->msgtext);
-            break;
+        case INT_MSGACK_V8:     marker = msg->bytes == 2 ? MSGICQACKSTROTRSEC
+                                       : msg->bytes == 1 ? MSGICQACKSTROTR
+                                       :                   MSGICQACKSTR;       break;
+        case INT_MSGACK_V5:     marker = msg->bytes == 2 ? MSGICQ5ACKSTROTRSEC
+                                       : msg->bytes == 1 ? MSGICQ5ACKSTROTR
+                                       :                   MSGICQ5ACKSTR;      break;
         default:
             line = "";
+    }
+    
+    if (marker)
+    {
+        col = COLACK;
+        line = s_sprintf ("%s%s %s", marker, COLSINGLE, msg->msgtext);
     }
 
     for (p = q = strdup (line); *q; q++)
@@ -546,12 +550,25 @@ static int cb_srv_msg_tui (Contact *ocont, parentmode_t pm, time_t stamp, fat_sr
                            COLNONE, COLSERVER, i18n (2467, "mICQ>")));
     }
 
-
-    carr = (msg->origin == CV_ORIGIN_dc) ? MSGTCPRECSTR :
+    if (!msg->otrencrypted)
+        carr = (msg->origin == CV_ORIGIN_dc) ? MSGTCPRECSTR :
 #ifdef ENABLE_SSL
-           (msg->origin == CV_ORIGIN_ssl) ? MSGSSLRECSTR :
+               (msg->origin == CV_ORIGIN_ssl) ? MSGSSLRECSTR :
 #endif
-           (msg->origin == CV_ORIGIN_v8) ? MSGTYPE2RECSTR : MSGICQRECSTR;
+               (msg->origin == CV_ORIGIN_v8) ? MSGTYPE2RECSTR : MSGICQRECSTR;
+    else if (msg->otrencrypted == 1)
+        carr = (msg->origin == CV_ORIGIN_dc) ? MSGTCPRECSTROTR :
+#ifdef ENABLE_SSL
+               (msg->origin == CV_ORIGIN_ssl) ? MSGSSLRECSTROTR :
+#endif
+               (msg->origin == CV_ORIGIN_v8) ? MSGTYPE2RECSTROTR : MSGICQRECSTROTR;
+    else
+        carr = (msg->origin == CV_ORIGIN_dc) ? MSGTCPRECSTROTRSEC :
+#ifdef ENABLE_SSL
+               (msg->origin == CV_ORIGIN_ssl) ? MSGSSLRECSTROTRSEC :
+#endif
+               (msg->origin == CV_ORIGIN_v8) ? MSGTYPE2RECSTROTRSEC : MSGICQRECSTROTRSEC;
+
 
     if (uiG.nick_len < 4)
         uiG.nick_len = 4;
@@ -937,6 +954,12 @@ void IMIntMsg (Contact *cont, time_t stamp, status_t tstatus, int_msg_t type, co
     IMIntMsgFat (cont, stamp, tstatus, type, text, "", 0, 0);
 }
 
+void IMIntMsgMsg (Message *msg, time_t stamp, status_t tstatus)
+{
+    IMIntMsgFat (msg->cont, stamp, tstatus, msg->type, msg->plain_message ? msg->plain_message : msg->send_message,
+                 NULL, 0, !msg->otrencrypted ? 0 : msg->otrencrypted ? 1 : 2);
+}
+
 void IMIntMsgFat (Contact *cont, time_t stamp, status_t tstatus, int_msg_t type,
                   const char *text, const char *opt_text, UDWORD port, UDWORD bytes)
 {
@@ -989,7 +1012,6 @@ void IMSrvMsg (Contact *cont, time_t stamp, UDWORD opt_origin, UDWORD opt_type, 
 void IMSrvMsgFat (Contact *cont, time_t stamp, Opt *opt)
 {
     fat_srv_msg_t msg;
-    char *cdata_deleteme;
     int max_0xff = 0, i;
     
     if (!cont)
@@ -1018,32 +1040,17 @@ void IMSrvMsgFat (Contact *cont, time_t stamp, Opt *opt)
 
     if (!OptGetStr (opt, CO_MSGTEXT, &msg.orig_data))
         msg.orig_data = "";
+    msg.msgtext = strdup (msg.orig_data);
+
 #ifdef ENABLE_OTR
     /* process incomming messages for OTR decryption */
     if (msg.type == MSG_NORM && libotr_is_present)
-    { /* only normal messages */
-        char *otr_text = NULL;
-
-        if (OTRMsgIn (msg.orig_data, cont, &otr_text))
+        if (OTRMsgIn (cont, &msg))
         {
-            /*rl_print ("%sinternal OTR protocol message received%s\n",
-                    COLDEBUG, COLNONE);*/
             OptD (opt);
-            if (otr_text)
-                OTRFree (otr_text);
             return; /* no msg ack/logging? */
         }
-        if (otr_text)
-        { /* replace text with decrypted version */
-            msg.msgtext = cdata_deleteme = strdup (otr_text);
-            OTRFree (otr_text);
-        }
-        else /* no change */
-            msg.msgtext = cdata_deleteme = strdup (msg.orig_data);
-    }
-    else
 #endif /* ENABLE_OTR */
-        msg.msgtext = cdata_deleteme = strdup (msg.orig_data);
     while (*msg.msgtext && strchr ("\n\r", msg.msgtext[strlen (msg.msgtext) - 1]))
         msg.msgtext[strlen (msg.msgtext) - 1] = '\0';
 
@@ -1077,12 +1084,14 @@ void IMSrvMsgFat (Contact *cont, time_t stamp, Opt *opt)
         size_t l = strlen (++t);
         if (!strcasecmp (t + l - 7, "</font>"))
           t[l - 7] = 0;
+        t = strdup (t);
+        free (msg.msgtext);
         msg.msgtext = t;
       }
     }
     
     __IMSrvMsg (cont, stamp, &msg, 0);
     
-    free (cdata_deleteme);
+    free (msg.msgtext);
     OptD (opt);
 }

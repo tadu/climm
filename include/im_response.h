@@ -37,6 +37,7 @@ typedef struct {
     UDWORD nativestatus;
     UDWORD bytes;
     UDWORD ref;
+    int otrencrypted:2;
 } fat_srv_msg_t;
 
 typedef int (cb_status)  (Contact *cont, parentmode_t pm, change_t ch, const char *text);
@@ -44,6 +45,7 @@ typedef int (cb_int_msg) (Contact *cont, parentmode_t pm, time_t stamp, fat_int_
 typedef int (cb_srv_msg) (Contact *cont, parentmode_t pm, time_t stamp, fat_srv_msg_t *msg);
 
 void IMIntMsg    (Contact *cont, time_t stamp, status_t tstatus, int_msg_t type, const char *text);
+void IMIntMsgMsg (Message *msg, time_t stamp, status_t tstatus);
 void IMIntMsgFat (Contact *cont, time_t stamp, status_t tstatus, int_msg_t type, const char *text,
                   const char *opt_text, UDWORD port, UDWORD bytes);
 void IMSrvMsg    (Contact *cont, time_t stamp, UDWORD opt_origin, UDWORD opt_type, const char *text);

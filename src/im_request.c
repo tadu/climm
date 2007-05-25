@@ -87,32 +87,11 @@ Message *cb_msg_log (Message *msg)
 #ifdef ENABLE_OTR
 Message *cb_msg_otr (Message *msg)
 {
-    char *otr_text = NULL;
-
     /* process outgoing messages for OTR */
     if (msg->type != MSG_NORM || msg->otrinjected || !libotr_is_present)
         return msg;
 
-    if (OTRMsgOut (msg->send_message, msg->cont->serv, msg->cont, &otr_text))
-    {
-        rl_print (COLERROR);
-        rl_printf (i18n (2641, "Message for %s could not be encrypted and was NOT sent!"),
-                msg->cont->nick);
-        rl_printf ("%s\n", COLNONE);
-        MsgD (msg);
-        if (otr_text)
-            OTRFree (otr_text);
-        return NULL;
-    }
-    /* replace text if OTR changed it */
-    if (otr_text && strcmp (msg->send_message, otr_text))
-    {
-        assert (!msg->plain_message);
-        msg->plain_message = msg->send_message;
-        msg->send_message = strdup (otr_text);
-        OTRFree (otr_text);
-    }
-    return msg;
+    return OTRMsgOut (msg);
 }
 #endif
 

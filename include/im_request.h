@@ -23,6 +23,7 @@ struct Message_s {
     UBYTE maxenc;
 
     int otrinjected:1;
+    int otrencrypted:2;
     int force:1;
 };
 
