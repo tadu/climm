@@ -23,7 +23,8 @@ typedef enum {
 } roster_t;
 
 jump_snac_f SnacSrvReplylists, SnacSrvReplyroster, SnacSrvUpdateack,
-    SnacSrvRosterok, SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvAddedyou;
+    SnacSrvRosterok, SnacSrvAuthreq, SnacSrvAuthreply, SnacSrvAddedyou,
+    SnacSrvRosterupdate, SnacSrvAddstart, SnacSrvAddend;
 
 typedef struct RosterEntry_s RosterEntry;
 typedef struct Roster_s Roster;

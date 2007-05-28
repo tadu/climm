@@ -529,6 +529,40 @@ void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont)
 }
 
 /*
+ * SRV_ROSTERUPDATE
+ */
+JUMP_SNAC_F(SnacSrvRosterupdate)
+{
+    Packet *pak = event->pak;
+    Contact *cont;
+    UWORD tag, id, type, TLVlen;
+    TLV *tlv;
+    strc_t cname;
+    UWORD j;
+
+    cname  = PacketReadB2Str (pak, NULL);
+    tag    = PacketReadB2 (pak);     /* TAG  */
+    id     = PacketReadB2 (pak);     /* ID   */
+    type   = PacketReadB2 (pak);     /* TYPE */
+    TLVlen = PacketReadB2 (pak);     /* TLV length */
+    tlv    = TLVRead (pak, TLVlen, -1);
+    
+    if (type == roster_normal)
+    {
+        cont = ContactScreen (event->conn, cname->txt);
+        j = TLVGet (tlv, TLV_NICK);
+        assert (j < 200 || j == (UWORD)-1);
+        if (j != (UWORD)-1 && tlv[j].str.len)
+            ContactAddAlias (cont, ConvFromServ (&tlv[j].str));
+    }
+    
+    TLVD (tlv);
+
+    if (pak->rpos < pak->len)
+        SnacSrvUnknown (event);
+}
+
+/*
  * CLI_ROSTERUPDATE - SNAC(13,9)
  */
 void SnacCliSetvisibility (Connection *serv)
@@ -771,6 +805,25 @@ JUMP_SNAC_F(SnacSrvRosterok)
         SnacCliRosterack (serv);
     }
 }
+
+/*
+ * SRV_ADDSTART
+ */
+JUMP_SNAC_F(SnacSrvAddstart)
+{
+    if (event->pak->rpos < event->pak->len)
+        SnacSrvUnknown (event);
+}
+
+/*
+ * SRV_ADDEND
+ */
+JUMP_SNAC_F(SnacSrvAddend)
+{
+    if (event->pak->rpos < event->pak->len)
+        SnacSrvUnknown (event);
+}
+
 
 /*
  * CLI_ADDSTART - SNAC(13,11)
