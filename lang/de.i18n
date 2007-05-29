@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.86 2007-04-17 20:58:31 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.87 2007-05-29 22:58:40 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -46,7 +46,7 @@
 1060:Ausführlichkeit is %ld.\n
 1061:"%s" ist kein Spitzname.\n
 1062:ignorierte User:
-1063:Bitte Passwort eingeben: 
+1063.Bitte Passwort eingeben: 
 1064:Automatischer Statuswechsel nach %s.\n
 1078:Keine Übersetzung verfügbar.
 1079:Übersetzung (%s, %s) von %s, zuletzt geändert am %s von %s, für mICQ %d.%d.%d%s.\n
@@ -667,8 +667,8 @@
 1889:Server
 1890:Direktverbindung
 1891.Verbindung %ld ist bereits geöffnet.\n
-1892:conn               Liste verfügbare Verbindungen auf.\n
-1893:conn login <nr>    Öffnet Verbindung <nr>.\n
+1892:conn                    Liste verfügbare Verbindungen auf.\n
+1893:conn login <nr> [pass]  Öffnet Verbindung <nr>.\n
 1894:Es gibt keine Verbindung Nummer %ld.\n
 1895:Login fehlgeschlagen:\n
 1896:Der Server hat die Verbindung geschlossen:\n
@@ -795,7 +795,7 @@
 2058:getauto na    <nick> - Hole die automatische Antwort für "nicht verfügbar" von diesem Kontakt.\n
 2059:getauto dnd   <nick> - Hole die automatische Antwort für "nicht stören" von diesem Kontakt.\n
 2060:getauto ffc   <nick> - Hole die automatische Antwort für "für Plaudereien frei" von diesem Kontakt.\n
-2063:Sie müssen Ihr Paßwort in Ihrem ~/.micq/micqrc speichern.\n
+2063.Sie müssen Ihr Paßwort in Ihrem ~/.micq/micqrc speichern.\n
 2065:Unbekanntes TCP_MSG_GREET_-Kommando %04x.\n
 2066:Unbekanntes TCP_MSG_-Kommando %04x.\n
 2067:Dateiein-/ausgabe
@@ -815,12 +815,12 @@
 2090:Dateiübertragung
 2091:Sende "%s" als "%s".\n
 2092:Direktverbindungsnachricht %s weggeworfen - Verbindung verschwunden.\n
-2094:conn login         Öffne aktuelle/erste Server-Verbindung.\n
-2095:conn remove <nr>   Entferne Verbindung <nr>.\n
-2097:conn select <nr>   Wähle Verbindung <nr> als aktuelle Server-Verbindung aus.\n
+2094:conn login [pass]       Öffne aktuelle/erste Server-Verbindung.\n
+2095:conn remove <nr>        Entferne Verbindung <nr>.\n
+2097:conn select <nr>        Wähle Verbindung <nr> als aktuelle Server-Verbindung aus.\n
 2098:Verbindung %ld ist keine Server-Verbindung.\n
 2099.Wähle Verbindung %ld (Version %d, Benutzernummer %ld) als aktuelle Server-Verbindung.\n
-2100:conn select <uin>  Wähle Verbindung mit Benutzernummer <uin> als aktive Server-Verbindung.\n
+2100:conn select <uin>       Wähle Verbindung mit Benutzernummer <uin> als aktive Server-Verbindung.\n
 2101:Entferne Verbindung %ld und davon abhängige Verbindungen vollständig.\n
 2102:Verbindung %ld ist eine konfigurierte Verbindung.\n
 2103:contact show    Zeige Server-seitige Kontaktliste.\n
@@ -862,7 +862,7 @@
 2148."%s" ist jetzt ein Zweit-Name für "%s" (%ld).\n
 2149.Entferne Zweit-Name "%s" für "%s" (%ld).\n
 2150.Entferne Kontakt "%s" (%ld).\n
-2156:conn close <nr>    Schließe Verbindung <nr>.\n
+2156:conn close <nr>         Schließe Verbindung <nr>.\n
 2157:Moldavien
 2158:Kein Dateiname angegeben.\n
 2159:Ein paar Dateien.
@@ -1045,7 +1045,7 @@
 2397:Keine Server-Verbindung gefunden.\n
 2398:Setze oder zeige Option für Kontaktgruppe, Kontakt oder global an.
 2399:Fordere eine SSL-Verbindung an.
-2400:Deutsche Übersetzung (%s) geladen (%d Einträge).\n
+2400.Deutsche Übersetzung (%s) geladen (%d Einträge).\n
 2401:Automatische Antworten sind jetzt Kontaktoptionen, siehe das %s-Kommando.\n
 2402:Die globale Einstellung für automatische Antworten wird jetzt von dem %s-Kommando gesteuert.\n
 2403:msg>
@@ -1243,7 +1243,7 @@
 2596:Entferne Zweit-Name "%s" für "%s" (%s).\n
 2597:%02d %-20s v%d%s für %s (%s) bei %s:%ld %s\n
 2598:Es gibt keine Verbindung Nummer %ld und keine Verbindung für UIN %s.\n
-2599:Es gibt keine Verbindung für UIN %s.\n
+2599:Es gibt keine Verbindung für %s.\n
 2600:Keine Verbindung ausgewählt.\n
 2601:Die Verbindung für %s ist bereits geöffnet.\n
 2602:Keine Ahnung, wie Verbindungen vom Typ %s (für %s) geöffnet werden können.\n
@@ -1278,6 +1278,56 @@
 2631:uin
 2632:simple
 2633:Hinweis: Sie müssen den neuen Prompt mit "save" abspeichern.\n
+2634:OTR-verschlüsselte Nachrichten benötigen libOTR 3.0.0 oder neuer.\n
+2635:otr                           - Off-the-Record-verschlüsselte Nachrichten\n
+2636:otr list [<contact>]          - Liste OTR-Sitzungsstati.\n
+2637:otr start|stop <contact>      - Starte/Stoppe OTR-Sitzung.\n
+2638:otr trust <contact> [<trust>] - Setze/zeige Vertrauen für aktiven Fingerabdruck.\n
+2639:otr genkey                    - Generiere einen privaten Schlüssel.\n
+2640:otr keys                      - Liste private Schlüssel.\n
+2641:Nachricht für %s konnte nicht verschlüsselt werden und wurde NICHT gesendet!
+#2642:util_otr: no connection found for account %s and protocol %s
+#2643:util_otr: no contact %s found
+2645:Konnte privaten OTR-Schlüssel nicht von %s lesen.\n
+2646:Schreiben der OTR-Fingerabdrücke fehlgeschlagen!
+2648:OTR wurde durch Setzen der Richtlinie %s verboten.\n
+2651:Kein aktiver Fingerabdruck gesetzt, da keine OTR-Sitzung gestartet ist.\n
+2652:Es existiert bereits ein privater Schlüssel.\n
+#2653:util_otr: "%s" not a policy (use never|try|manual|always)
+#2654:OTR: generating new key for %s (%s)\nthis may take a while...
+#2655:failed.\n
+#2656:successfull.\n
+#2659:otr_inject: message injection for contact %s failed
+2660:neuer OTR-Fingerabdruck: %s.\n
+2661:sichere OTR-Sitzung aufgebaut.\n
+2662:sichere OTR-Sitzung beendet.\n
+2663:sichere OTR-Sitzung erneuert.\n
+2664:sichere OTR-Sitzung erneuert.\n
+2665:unverschlüsselt
+2666:verschlüsselt
+#2667:finished
+#2668:unknown state
+2669:kein Angebot gesendet
+2670:Angebot gesendet
+2671:Angebot angenommen
+2672:Angebot abgelehnt
+#2673:unknown auth
+#2674:awaiting D-H key
+#2675:awaiting reveal signature
+#2676:awaiting signature
+#2677:v1 setup
+2678:never (niemals)
+2679:try (versuchen)
+2680:manual (manuell)
+2681:always (immer)
+2682:unbekannt
+2683:überprüft
+2684:nicht überprüft
+#2685:Could not find context for %s.\n
+2686:Zum Ändern %s eingeben.\n
+2687:<trust> muß trust, verify, oder mistrust, distrust, falsify sein.\n
+2688:Kein Paßwort für %s angegeben.\n
+2689:Gebe Paßwort für %s-Konto %s ein: 
 2999.max.
 # Those are the funny messages. Substract 2000 to get the normal message.
 3620.Du hast zu viele Freunde, wie wär's mit mehr RL?
