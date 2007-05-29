@@ -544,7 +544,7 @@ static void Init (int argc, char *argv[])
                     {
                         strc_t pwd;
                         const char *s = s_sprintf ("%s", s_qquote (conn->screen));
-                        rl_printf (i18n (9999, "Enter password for %s account %s: "),
+                        rl_printf (i18n (2689, "Enter password for %s account %s: "),
                                    s_qquote (ConnectionServerType (conn->type)), s);
                         pwd = UtilIOReadline (stdin);
                         rl_printf ("\n");

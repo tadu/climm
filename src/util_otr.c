@@ -235,35 +235,35 @@ static void print_context (ConnContext *ctx)
 
     switch (ctx->msgstate)
     {
-        case OTRL_MSGSTATE_PLAINTEXT: state = "plaintext"; break;
-        case OTRL_MSGSTATE_ENCRYPTED: state = "encrypted"; break;
-        case OTRL_MSGSTATE_FINISHED:  state = "finished";  break;
-        default:                      state = "unknown state";
+        case OTRL_MSGSTATE_PLAINTEXT: state = i18n (2665, "plaintext"); break;
+        case OTRL_MSGSTATE_ENCRYPTED: state = i18n (2666, "encrypted"); break;
+        case OTRL_MSGSTATE_FINISHED:  state = i18n (2667, "finished");  break;
+        default:                      state = i18n (2668, "unknown state");
     }
     switch (ctx->auth.authstate)
     {
         case OTRL_AUTHSTATE_NONE:
             switch (ctx->otr_offer)
             {
-                case OFFER_NOT:      auth = "no offer sent";  break;
-                case OFFER_SENT:     auth = "offer sent";     break;
-                case OFFER_ACCEPTED: auth = "offer accepted"; break;
-                case OFFER_REJECTED: auth = "offer rejected"; break;
-                default:             auth = "unknown auth";
+                case OFFER_NOT:      auth = i18n (2669, "no offer sent");  break;
+                case OFFER_SENT:     auth = i18n (2670, "offer sent");     break;
+                case OFFER_ACCEPTED: auth = i18n (2671, "offer accepted"); break;
+                case OFFER_REJECTED: auth = i18n (2672, "offer rejected"); break;
+                default:             auth = i18n (2673, "unknown auth");
             }
             break;
-        case OTRL_AUTHSTATE_AWAITING_DHKEY:     auth = "awaiting D-H key";          break;
-        case OTRL_AUTHSTATE_AWAITING_REVEALSIG: auth = "awaiting reveal signature"; break;
-        case OTRL_AUTHSTATE_AWAITING_SIG:       auth = "awaiting signature";        break;
-        case OTRL_AUTHSTATE_V1_SETUP:           auth = "v1 setup";                  break;
-        default:                                auth = "unknown auth";
+        case OTRL_AUTHSTATE_AWAITING_DHKEY:     auth = i18n (2674, "awaiting D-H key");          break;
+        case OTRL_AUTHSTATE_AWAITING_REVEALSIG: auth = i18n (2675, "awaiting reveal signature"); break;
+        case OTRL_AUTHSTATE_AWAITING_SIG:       auth = i18n (2676, "awaiting signature");        break;
+        case OTRL_AUTHSTATE_V1_SETUP:           auth = i18n (2677, "v1 setup");                  break;
+        default:                                auth = i18n (2673, "unknown auth");
     }
-    if      (p == OTRL_POLICY_NEVER)         policy = "never";
-    else if (p == OTRL_POLICY_OPPORTUNISTIC) policy = "try";
-    else if (p == OTRL_POLICY_MANUAL)        policy = "manual";
+    if      (p == OTRL_POLICY_NEVER)         policy = i18n (2678, "never");
+    else if (p == OTRL_POLICY_OPPORTUNISTIC) policy = i18n (2679, "try");
+    else if (p == OTRL_POLICY_MANUAL)        policy = i18n (2680, "manual");
     else if (p == (OTRL_POLICY_ALWAYS & ~OTRL_POLICY_ALLOW_V1))
-                                             policy = "always";
-    else                                     policy = "unknown";
+                                             policy = i18n (2681, "always");
+    else                                     policy = i18n (2682, "unknown");
 
     rl_printf ("%s/%s/%s: %s%s%s (%s) [%s]\n",
             ctx->accountname, ctx->protocol, ctx->username, COLQUOTE,
@@ -273,7 +273,7 @@ static void print_context (ConnContext *ctx)
         char fpr[45], *tr;
         otrl_privkey_hash_to_human (fpr, ctx->active_fingerprint->fingerprint);
         tr = ctx->active_fingerprint->trust;
-        rl_printf (" %45s %s(%s)%s\n", fpr, COLQUOTE, tr && *tr ? i18n (9999, "trusted") : i18n (9999, "untrusted"), COLNONE);
+        rl_printf (" %45s %s(%s)%s\n", fpr, COLQUOTE, tr && *tr ? i18n (2683, "trusted") : i18n (2684, "untrusted"), COLNONE);
     }
     if (ctx->msgstate == OTRL_MSGSTATE_ENCRYPTED)
     {
@@ -501,7 +501,7 @@ ConnContext *Cont2Ctx (Contact *cont, int create)
     ctx = find_context (cont, create);
     if (!ctx)
     {
-        rl_printf (i18n (9999, "Could not find context for %s.\n"), s_cquote (cont->screen, COLQUOTE));
+        rl_printf (i18n (2685, "Could not find context for %s.\n"), s_cquote (cont->screen, COLQUOTE));
         return NULL;
     }
     return ctx;
@@ -534,7 +534,7 @@ void OTRStart (Contact *cont, UBYTE start)
         if (policy == OTRL_POLICY_NEVER)
         {
             rl_printf (i18n (2648, "No OTR is allowed as long as policy is set to %s.\n"), s_qquote ("never"));
-            rl_printf (i18n (9999, "Use %s to change.\n"), s_qquote (s_sprintf ("opt %s otrpolicy", cont->nick)));
+            rl_printf (i18n (2686, "Use %s to change.\n"), s_qquote (s_sprintf ("opt %s otrpolicy", cont->nick)));
             return;
         }
         msg = otrl_proto_default_query_msg (ctx->accountname, policy);
@@ -563,7 +563,7 @@ void OTRSetTrust (Contact *cont, UBYTE trust)
         otrl_context_set_trust (ctx->active_fingerprint, trust == 2 ? "." : NULL);
 
     tr = ctx->active_fingerprint->trust;
-    printf ("%s [%44s]: %s\n", ctx->username, fpr, tr && *tr ? i18n (9999, "trusted") : i18n (9999, "untrusted"));
+    printf ("%s [%44s]: %s\n", ctx->username, fpr, tr && *tr ? i18n (2683, "trusted") : i18n (2684, "untrusted"));
 }
 
 void OTRGenKey (void)

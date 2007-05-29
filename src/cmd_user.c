@@ -746,7 +746,7 @@ static JUMP_F(CmdUserOtr)
             else if (s_parsekey (&args, "mistrust") || s_parsekey (&args, "distrust") || s_parsekey (&args, "falsify"))
                 OTRSetTrust (cont, 1);
             else if (s_parse (&args))
-                rl_printf (i18n (9999, "Trust must be trust, verify, or mistrust, distrust, falsify.\n"));
+                rl_printf (i18n (2687, "Trust must be trust, verify, or mistrust, distrust, falsify.\n"));
             else
                 OTRSetTrust (cont, 0);
             break;
@@ -4051,7 +4051,7 @@ static JUMP_F(CmdUserConn)
                 rl_printf (i18n (2602, "Don't know how to open connection type %s for %s.\n"),
                     ConnectionType (connl), connl->screen);
             else if (!connl->passwd || !*connl->passwd)
-                rl_printf (i18n (9999, "No password given for %s.\n"), connl->screen);
+                rl_printf (i18n (2688, "No password given for %s.\n"), connl->screen);
             else
                 connl->open (connl);
             break;
@@ -4070,7 +4070,7 @@ static JUMP_F(CmdUserConn)
                     if (nr)
                         rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
                     else
-                        rl_printf (i18n (2599, "There is no connection for UIN %s.\n"), par->txt);
+                        rl_printf (i18n (2599, "There is no connection for %s.\n"), par->txt);
                 }
             }
             else
@@ -4248,7 +4248,7 @@ static JUMP_F(CmdUserAsSession)
             if (nr)
                 rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
             else
-                rl_printf (i18n (2599, "There is no connection for UIN %s.\n"), par->txt);
+                rl_printf (i18n (2599, "There is no connection for %s.\n"), par->txt);
         }
     }
     else
