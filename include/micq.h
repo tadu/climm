@@ -26,11 +26,11 @@
 #include <stdio.h>
 
 #ifdef PREFER_PORTABLE_SNPRINTF
-#include <snprintf.h>
+#include <../replace/snprintf.h>
 #endif
 
 #ifdef PREFER_PORTABLE_MEMMOVE
-#include <memmove.h>
+#include <../replace/memmove.h>
 #endif
 
 #ifndef HAVE_TIMEGM
