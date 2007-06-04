@@ -32,3 +32,5 @@
 2007-04-18: 0.5.3: much improved Jabber integration, configurable prompt, [ew]*g(v) and (e)wide now handle wide
                    characters correctly, fix history command fd leak, fix discarding of configurated connected
                    upon certain login errors
+2007-06-05: 0.5.4: OTR (for ICQ and XMPP), md5 login, no more assertion failed on too long messages,
+                   ask for all not given passwords before trying to do any login, bug fixes

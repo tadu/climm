@@ -1,8 +1,8 @@
-micq (1:0.5.3-0) unstable; urgency=low
+micq (1:0.5.4-0) unstable; urgency=low
 
   * New upstream version.
 
- -- Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>  Mon, 16 Jan 2006 18:00:08 +0200
+ -- Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>  Mon, 04 Jun 2007 18:00:08 +0200
 
 micq (1:0.4.10.3-1.1) unstable; urgency=low
 

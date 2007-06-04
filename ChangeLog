@@ -1,5 +1,8 @@
 -*- coding: utf-8 -*-
 
+2007-06-05 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* 0.5.4
+
 2007-05-23 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* support fragmentation, including in OTR
 	* rework OTR tui and command line parsing
