@@ -1402,7 +1402,7 @@ static JUMP_F (CmdUserAnyMess)
             UBYTE ret;
             msg->cont = cont;
             msg->send_message = strdup (t.txt);
-            msg->type = data;
+            msg->type = data >> 2;
             msg->force = 1;
             ret = SnacCliSendmsg (cont->serv, cont, f, msg);
             if (!RET_IS_OK (ret))
