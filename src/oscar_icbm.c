@@ -573,7 +573,7 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, UBYTE format, Message *ms
             case MSG_GET_NA:
             case MSG_GET_VER:
             case MSG_GET_PEEK:
-                return RET_DEFER;
+                format = 2;
         }
     }
     
