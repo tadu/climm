@@ -333,6 +333,9 @@ void TCLInit ()
     tcl_pref_p pref;
     int i, result;
     Connection *conn;
+#if HAVE_SIGPROCMASK
+    sigset_t sigs;
+#endif
 
     if (!libtcl8_4_is_present)
     {
@@ -341,8 +344,6 @@ void TCLInit ()
     }
 
 #if HAVE_SIGPROCMASK
-    sigset_t sigs;
-
     sigemptyset (&sigs);
     sigaddset (&sigs, SIGINT);
     sigprocmask (SIG_BLOCK, &sigs, NULL);
