@@ -294,7 +294,7 @@ UBYTE IMCliReMsg (Contact *cont, Message *msg)
 #if ENABLE_XMPP
     if (msg->trans & CV_MSGTRANS_XMPP)
         if (cont->serv->connect & CONNECT_OK && cont->serv->type == TYPE_XMPP_SERVER)
-            if (RET_IS_OK (ret = XMPPSendmsg (cont->serv, cont, msg)));
+            if (RET_IS_OK (ret = XMPPSendmsg (cont->serv, cont, msg)))
                 return ret;
 #endif
     return RET_FAIL;
