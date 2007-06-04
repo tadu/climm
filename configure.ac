@@ -45,7 +45,7 @@ AC_ARG_ENABLE([iconvrepl], AC_HELP_STRING([--enable-iconvrepl], [compile in icon
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
 AC_ARG_ENABLE([xmpp], AC_HELP_STRING([--enable-xmpp], [enable XMPP (Jabber) chat network (BETA)]),
-              ac_arg_use_xmpp=$enableval, ac_arg_use_xmpp=no)
+              ac_arg_use_xmpp=$enableval, ac_arg_use_xmpp=auto)
 AC_ARG_ENABLE([msn], AC_HELP_STRING([--enable-msn], [enable MSN chat network (EXPERIMENTAL BROKEN INCOMPLETE)]),
               ac_arg_use_msn=$enableval, ac_arg_use_msn=auto)
 AC_ARG_ENABLE([tcl], AC_HELP_STRING([--disable-tcl], [disable Tcl scripting]),
