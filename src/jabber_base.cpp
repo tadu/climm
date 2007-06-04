@@ -734,7 +734,7 @@ static void SnacCallbackXmpp (Event *event)
         if (msg->send_message && !msg->otrinjected)
         {
             msg->type = INT_MSGACK_V8;
-            IMIntMsgMsg (msg, NOW, ims_offline);
+//            IMIntMsgMsg (msg, NOW, ims_offline);
         }
         event->attempts = 20;
         event->due = time (NULL) + 600;
