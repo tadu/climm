@@ -46,7 +46,7 @@ Einige andere ICQ-Programme basieren im Geiste auf mICQ, dennoch
 ist mICQ immernoch _das_ textbasierte ICQ-Programm schlechthin.
 
 [BuildPrepare]
-prepareBuild --enable-autopackage --enable-iconvrepl --siable-xmpp
+prepareBuild --enable-autopackage --enable-iconvrepl --disable-xmpp
 mkdir -p "$build_root/doc" "$build_root/data"
 for f in $(< $source_dir/debian/docs) ChangeLog; do
   cp "$source_dir/$f" "$build_root/doc"
