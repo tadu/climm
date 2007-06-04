@@ -579,7 +579,7 @@ else
     AC_SUBST(BINRELOC_LIBS,[ ])
 fi
 
-AC_MSG_CHECKING([whether to enable XMPP chat network (ALPHA INCOMPLETE)])
+AC_MSG_CHECKING([whether to enable XMPP chat network (XMPP)])
 AC_MSG_RESULT([$ac_arg_use_xmpp])
 AC_MSG_CHECKING([whether to enable MSN chat network (EXPERIMENTAL BROKEN INCOMPLETE)])
 AC_MSG_RESULT([$ac_arg_use_msn])

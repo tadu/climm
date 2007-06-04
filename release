@@ -86,21 +86,21 @@ rm -rf micq-$VERSION
 mv mICQ-$VERSION.x86.package $WEBDIR/binary/
 
 #
-# Debian Edgy
+# Debian Feisty
 #
 cp micq-$VERSION.tgz micq_$VERSION.orig.tar.gz
 tar -zxf micq-$VERSION.tgz
 cd micq-$VERSION
-sed -i "1s/$VERSION-0/$VERSION-2edgy0/" debian/changelog
+sed -i "1s/$VERSION-0/$VERSION-2feisty0/" debian/changelog
 sed -i "/Build-Depends:/s/$/| libgloox-dev/" debian/control
 export DEB_BUILD_OPTIONS=yesxmpp
-export MICQ_EXTRAVERSION="Official deb (edgy)"
+export MICQ_EXTRAVERSION="Official deb (feisty)"
 fakeroot dpkg-buildpackage -tc -us -uc
 cd /tmp
 rm -rf micq-$VERSION
-mv micq_$VERSION-2edgy0_i386.deb $WEBDIR/deb/dists/edgy/main/binary-i386/
-mv micq_$VERSION-2edgy0* micq_$VERSION.orig.tar.gz $WEBDIR/deb/dists/edgy/main/source/
-unset DEB_BUILD_OPTIONS=yesxmpp
+mv micq_$VERSION-2feisty0_i386.deb $WEBDIR/deb/dists/feisty/main/binary-i386/
+mv micq_$VERSION-2feisty0* micq_$VERSION.orig.tar.gz $WEBDIR/deb/dists/feisty/main/source/
+unset DEB_BUILD_OPTIONS
 
 
 #
