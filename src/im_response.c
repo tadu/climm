@@ -401,7 +401,7 @@ static int cb_status_tui (Contact *cont, parentmode_t pm, change_t ch, const cha
 
 static int cb_int_msg_tui (Contact *cont, parentmode_t pm, time_t stamp, fat_int_msg_t *msg)
 {
-    const char *line;
+    const char *line = "";
     const char *col = COLCONTACT;
     char *p, *q;
     const char *marker = NULL;
