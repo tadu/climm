@@ -4,7 +4,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([micq], [0.5.3])
+AC_INIT([micq], [0.5.4])
 AC_CONFIG_SRCDIR([include/micq.h])
 AC_CONFIG_LIBOBJ_DIR(replace)
 AC_CONFIG_HEADER(include/config.h)
@@ -44,7 +44,7 @@ AC_ARG_ENABLE([iconvrepl], AC_HELP_STRING([--enable-iconvrepl], [compile in icon
               ac_arg_use_iconvrepl=$enableval, ac_arg_use_iconvrepl=no)
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
-AC_ARG_ENABLE([xmpp], AC_HELP_STRING([--enable-xmpp], [enable XMPP (Jabber) chat network (ALPHA INCOMPLETE)]),
+AC_ARG_ENABLE([xmpp], AC_HELP_STRING([--enable-xmpp], [enable XMPP (Jabber) chat network (BETA)]),
               ac_arg_use_xmpp=$enableval, ac_arg_use_xmpp=no)
 AC_ARG_ENABLE([msn], AC_HELP_STRING([--enable-msn], [enable MSN chat network (EXPERIMENTAL BROKEN INCOMPLETE)]),
               ac_arg_use_msn=$enableval, ac_arg_use_msn=auto)
