@@ -1051,7 +1051,7 @@ void IMSrvMsgFat (Contact *cont, time_t stamp, Opt *opt)
             return; /* no msg ack/logging? */
         }
 #endif /* ENABLE_OTR */
-    while (*msg.msgtext && strchr ("\n\r", msg.msgtext[strlen (msg.msgtext) - 1]))
+    while (*msg.msgtext && strchr ("\n\r \t", msg.msgtext[strlen (msg.msgtext) - 1]))
         msg.msgtext[strlen (msg.msgtext) - 1] = '\0';
 
     max_0xff = 0;
