@@ -1,5 +1,66 @@
 -*- coding: utf-8 -*-
 
+2007-05-23 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* support fragmentation, including in OTR
+	* rework OTR tui and command line parsing
+	* put Contact* in context application data
+	* mark OTR encrypted messages with & (untrusted) and % (trusted) as
+	  first (outgoing) or last (incoming) character of the marker
+	* fix some failed assertions
+	* ignore ssi updates from server
+	* i18n updates
+
+2007-05-13 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* add optional argument to [conn] login for password
+	* delete current password if login fails with authorization failed
+	  (but do not change saved password)
+	* remember outgoing message texts in Message structure, in
+	  particular plain text and actual sent message
+2007-05-10 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* implement auth req/grant/deny for XMPP
+	* Robert Bartel's OTR patch
+	* don't use USC-2BE for US-ASCII messages
+	* allow 700 characters for type-1 messages instead of 450
+	* make OTR work for XMPP
+	* add buildmark for OTR support
+	* only open connection if passwd is given
+	* ask first for all passwords before trying to open any server connection
+	* don't bother me with OTR version number - bother me if it is
+	  missing instead
+	* remove some more unnecessary Connection * parameters
+	* enable and document directed presence
+
+2007-05-01 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* rename IMSrvMsg() to IMSrvMsgFat() and add new IMSrvMsg() with
+	  origin, type and text instead of Opt*
+	* re-sort icq_response.c, start making signatures externally visible
+	  and don't log, hist, and tcl everything twice for xmpp
+	* rename icq_response.[ch] to im_response.[ch] since it's not icq
+	  specific
+	* ... and rename server.c to im_request.c
+	* fix cross-compiling with fifo stuff, thnkx Kjell Braden
+
+2007-04-26 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix variable clobbering that causes always the current time to be printed
+	* connection option 'logstream' to enable complete stream logging,
+	  replaces verbosity flags DEB_PACK8SAVE and DEB_PACKTCPSAVE 
+	  (never used anyway), but also for xmpp
+	* switch to using automake 1.10
+	* remove Connection* argument from icq_response.h functions as
+	  that's given in Contact* already
+
+2007-04-22 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* HPUX strftime() writes into 0-sized array, so better make sure we
+	  pass it a non-0-sized array, which is cleaner anyway
+	* explicitly check for libgcrypt and relay it for autopackage as it
+	  also contains md5 functions
+	* abstract away access to md5 functionality in OpenSSL and GnuTLS
+	* add m4 file for libgcrypt
+	* apply patch from Robert Bartel for MD5 login with changes to get
+	  md5 functions also from GnuTLS
+	* move some autopackage ifdefs out of sight
+	* stop using Opt* for internal messages
+
 2007-04-18 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* prepare for 0.5.3
 	* define MICQ_IS_CVS to check whether we are a CVS version
@@ -19,6 +80,8 @@
 	* compile fix if XMPP is disabled
 	* add DEB_BUILD_OPTIONS value for enabling XMPP
 	* fix autopackage creation, enable xmpp for edgy
+	* add Maxim Komar to AUTHORS file for i18n update and for
+	  configurable prompt
 
 2007-04-09 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* Patch from Maxim Komar:
