@@ -44,15 +44,7 @@ class MICQXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
         Connection *m_conn;
         gloox::Client *m_client;
         char *m_stamp;
-    public :
-                      MICQXMPP (Connection *serv);
-        virtual       ~MICQXMPP ();
-        virtual void  onConnect ();
-        virtual void  onDisconnect (gloox::ConnectionError e);
-        virtual void  onResourceBindError (gloox::ResourceBindError error);
-        virtual void  onSessionCreateError (gloox::SessionCreateError error);
-        virtual bool  onTLSConnect (const gloox::CertInfo &info);
-        virtual void  handleMessage (gloox::Stanza *stanza);
+
         void handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string tof, std::string id, gloox::StanzaSubType subtype);
         bool handleXEP22 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id);
         void handleXEP22a (gloox::Tag *XEP22, Contact *cfrom);
@@ -63,8 +55,18 @@ class MICQXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
         void handleGoogleNosave (gloox::Tag *t);
         void handleXEP136 (gloox::Tag *t);
         time_t handleXEP91 (gloox::Tag *t);
-        virtual void  handlePresence (gloox::Stanza *stanza);
         void handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, std::string msg);
+
+    public :
+                      MICQXMPP (Connection *serv);
+        virtual       ~MICQXMPP ();
+        virtual void  onConnect ();
+        virtual void  onDisconnect (gloox::ConnectionError e);
+        virtual void  onResourceBindError (gloox::ResourceBindError error);
+        virtual void  onSessionCreateError (gloox::SessionCreateError error);
+        virtual bool  onTLSConnect (const gloox::CertInfo &info);
+        virtual void  handleMessage (gloox::Stanza *stanza);
+        virtual void  handlePresence (gloox::Stanza *stanza);
         virtual void  handleSubscription (gloox::Stanza *stanza);
         virtual void  handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message);
         gloox::Client *getClient () { return m_client; }
