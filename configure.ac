@@ -72,6 +72,24 @@ fi
 AC_HEADER_STDC
 AC_CHECK_HEADERS([locale.h langinfo.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h wchar.h wctype.h pwd.h])
 
+if test "x$ac_arg_use_autopackage" = xyes; then
+    enable_binreloc=auto
+    rk_BINRELOC
+    if test "x$br_cv_binreloc" = xyes; then
+        AC_CHECK_PROGS(RELAYTOOL, relaytool, :)
+        if test "x$RELAYTOOL" != x:; then
+            old_LIBS=$LIBS
+            LIBS=
+            AC_SEARCH_LIBS([dlopen], [dl])
+            LIBS="$old_LIBS $LIBS"
+            ac_use_autopackage=yes
+            AC_DEFINE(ENABLE_AUTOPACKAGE,1,[Use autopackage to check libraries at run time])
+        fi
+    fi
+else
+    AC_SUBST(BINRELOC_LIBS,[ ])
+fi
+
 if test "x$ac_arg_use_dc" != "xno"; then
   if test "x$ac_arg_use_ssl" != "xno"; then
     ac_use_ssl=no
@@ -350,7 +368,11 @@ if test "x$ac_arg_use_xmpp" != "xno"; then
     AC_SUBST(LIBXMPP, "libmicqxmpp.a", [Static lib to link if XMPP is enabled])
     AC_SUBST(L_LIBXMPP, "-L. -lmicqxmpp", [Static lib link option to link if XMPP is enabled])
     AC_DEFINE(ENABLE_XMPP, 1, [Enable XMPP chat network using libgloox])
-    LIBS="$LIBS $XMPP_LIBS"
+    if test "x$ac_use_autopackage" = xyes; then
+      LIBS="$LIBS -lgloox -lstdc++"
+    else
+      LIBS="$LIBS $XMPP_LIBS"
+    fi
   fi
 fi
 
@@ -561,22 +583,8 @@ if test "x$MICQ_EXTRAVERSION" != "x"; then
     AC_DEFINE_UNQUOTED(EXTRAVERSION,"$MICQ_EXTRAVERSION",[Extra version information like the distribution used])
 fi
 
-if test "x$ac_arg_use_autopackage" = xyes; then
-    enable_binreloc=auto
-    rk_BINRELOC
-    if test "x$br_cv_binreloc" = xyes; then
-        AC_CHECK_PROGS(RELAYTOOL, relaytool, :)
-        old_LIBS=$LIBS
-        LIBS=
-        AC_SEARCH_LIBS([dlopen], [dl])
-        LIBS="$old_LIBS $LIBS"
-        if test "x$RELAYTOOL" != x:; then
-            LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $LIBS"'`'
-            AC_DEFINE(ENABLE_AUTOPACKAGE,1,[Use autopackage to check libraries at run time])
-        fi
-    fi
-else
-    AC_SUBST(BINRELOC_LIBS,[ ])
+if test "x$ac_use_autopackage" = xyes; then
+    LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $LIBS"'`'
 fi
 
 AC_MSG_CHECKING([whether to enable XMPP chat network (BETA)])
