@@ -1259,6 +1259,7 @@ UBYTE PeerSendMsg (Connection *list, Contact *cont, UDWORD type, const char *tex
     Message *msg = MsgC ();
     
     msg->send_message = strdup (text);
+    msg->cont = cont;
     msg->type = type;
     ret = PeerSendMsgFat (list, cont, msg);
     if (!RET_IS_OK (ret))
