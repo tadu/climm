@@ -1,5 +1,5 @@
 # $Id$ English (English)
-#  EN: __.i18n,v 1.87 2007-05-29 22:58:40 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.88 2007-06-06 18:30:49 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:en
 1002:en_US
@@ -1278,13 +1278,13 @@
 2641:Message for %s could not be encrypted and was NOT sent!
 2642:util_otr: no connection found for account %s and protocol %s
 2643:util_otr: no contact %s found
-2645:Could not read OTR private key from %s\n
+2645:Could not read OTR private key from %s.\n
 2646:Writing OTR fingerprints failed!
 2648:No OTR is allowed as long as policy is set to %s.\n
 2651:No active fingerprint set - start OTR session first.\n
 2652:Delete existing key first!\n
 2653:util_otr: "%s" not a policy (use never|try|manual|always)
-2654:OTR: generating new key for %s (%s)\nthis may take a while...
+2654:Generating new OTR key for %s account %s. This may take a while...
 2655:failed.\n
 2656:successfull.\n
 2659:otr_inject: message injection for contact %s failed

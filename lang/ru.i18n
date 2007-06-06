@@ -1,5 +1,5 @@
 # $Id$ English (English)
-#  EN: __.i18n,v 1.86 2007-04-17 20:58:31 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.88 2007-06-06 18:30:49 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:ru
 1002:ru_RU
@@ -46,7 +46,7 @@
 1060:Уровень подробности: %ld.\n
 1061:"%s" не признан как ник.\n
 1062:Список бойкота:
-1063:Введите пароль:
+1063.Введите пароль:
 1064:Автоматически меняю статус: %s.\n
 1078:Нет перевода.
 1079:Перевод (%s, %s) от %s, последние изменения %s %s, для mICQ %d.%d.%d%s.\n
@@ -657,8 +657,8 @@
 1889:сервер
 1890:один-на-один
 1891.Соединение %ld уже открыто.\n
-1892:conn                  Показать доступные соединения.\n
-1893:conn login <номер>    Открыть соединение <номер>.\n
+1892:conn                       Показать доступные соединения.\n
+1893:conn login <номер> [pass]  Открыть соединение <номер>.\n
 1894:Нет соединения с номером %ld.\n
 1895:Логин не прошёл:\n
 1896:Сервер закрыл соединения:\n
@@ -785,7 +785,7 @@
 2058:getauto na     <ник> - Получить ответ для "отсутствую".\n
 2059:getauto dnd    <ник> - Получить ответ для "не беспокоить".\n
 2060:getauto ffc    <ник> - Получить ответ для "готов пообщаться".\n
-2063:Вам нужно сохранить Ваш пароль в ~/.micq/micqrc.\n
+2063.Вам нужно сохранить Ваш пароль в ~/.micq/micqrc.\n
 2065:Неизвестная TCP_MSG_GREET_ команда %04x.\n
 2066:Неизвестная TCP_MSG_ команда %04x.\n
 2067:файловый ввод/вывод
@@ -805,12 +805,12 @@
 2090:прямая передача файлов
 2091:Помещаю в очередь %s, как %s для передачи.\n
 2092:TCP-сообщение %s отклонено - потеря сессии.\n
-2094:conn login            Открыть первое/текущее серверное соединение.\n
-2095:conn remove <номер>   Удалить соединение <номер>.\n
-2097:conn select <номер>   Выбрать соединение под <номером> серверным.\n
+2094:conn login [pass]          Открыть первое/текущее серверное соединение.\n
+2095:conn remove <номер>        Удалить соединение <номер>.\n
+2097:conn select <номер>        Выбрать соединение под <номером> серверным.\n
 2098:Соединение %ld не является серверным.\n
 2099.Выбрано соединение %ld (версия %d, UIN %ld) как текущее соединение.\n
-2100:conn select <uin>  Выбрать соединение с <uin>-ом серверным.\n
+2100:conn select <uin>          Выбрать соединение с <uin>-ом серверным.\n
 2101:Полностью отключаю соединение %ld и всё, что с ним связано.\n
 2102:Соединение %ld является сконфигурированным подключением.\n
 2103:contact show    Показать серверный список контактов.\n
@@ -852,7 +852,7 @@
 2148.Добавлен псевдоним "%s" для "%s" (%ld).\n
 2149.Удалён псевдоним "%s" для "%s" (%ld).\n
 2150.Удалён контакт "%s" (%ld).\n
-2156:conn close <номер>    Закрыть соединение <номер>.\n
+2156:conn close <номер>         Закрыть соединение <номер>.\n
 2157:Молдова
 2158:Не указано имя файла.\n
 2159:Несколько файлов.
@@ -946,6 +946,7 @@
 #-#2282:    uinprompt:  устанавливать последний ник в строку ввода.\n
 #+#2282:    uinprompt:  have the last nick in the prompt.\n
 # #2282:    prompt:     type of the prompt: user, uin, simple\n
+#2282:    prompt:     type of the prompt: user, uin, simple\n
 2283:    autosave:   автоматически сохранять micqrc.\n
 2284:    autofinger: автоматически запрашивать информацию о новых UIN'ах.\n
 2285:    linebreak:  способ переноса строк: simple, break, indent, smart.\n
@@ -1037,7 +1038,7 @@
 2397:Не найдено серверных сессий.\n
 2398:Задать или показать глобальные параметры или параметры для контакта (группы контактов).\n
 2399:Запросить SSL-соединение.
-2400:Не загружен перевод (%s), (%d записей).\n
+2400.Не загружен перевод (%s), (%d записей).\n
 2401:Автоответы теперь - параметры контакта, смотрите команду %s.\n
 2402:Глобальный флаг автоответов обрабатывается командой %s.\n
 2403:msg>
@@ -1238,7 +1239,7 @@
 2596:Удалён псевдоним "%s" для "%s" (%s).\n
 2597:%02d %-15s версия %d%s для %s (%s), на %s:%ld %s\n
 #2598:There is no connection number %ld and no connection for UIN %s.\n
-#2599:There is no connection for UIN %s.\n
+#2599:There is no connection for %s.\n
 #2600:No connection selected.\n
 #2601:Connection for %s is already open.\n
 #2602:Don't know how to open connection type %s for %s.\n
@@ -1273,6 +1274,56 @@
 #2631:uin
 #2632:simple
 #2633:Note: You need to 'save' to write new user prompt to disc.\n
+#2634:Install libOTR 3.0.0 or newer and enjoy off-the-record encrypted messages!\n
+#2635:otr                           - Off-the-Record Messaging\n
+#2636:otr list [<contact>]          - List OTR connection states\n
+#2637:otr start|stop <contact>      - Start/Stop OTR session\n
+#2638:otr trust <contact> [<trust>] - Set/Show trust for active fingerprint\n
+#2639:otr genkey                    - Generate private key\n
+#2640:otr keys                      - List private keys\n
+#2641:Message for %s could not be encrypted and was NOT sent!
+#2642:util_otr: no connection found for account %s and protocol %s
+#2643:util_otr: no contact %s found
+#2645:Could not read OTR private key from %s.\n
+#2646:Writing OTR fingerprints failed!
+#2648:No OTR is allowed as long as policy is set to %s.\n
+#2651:No active fingerprint set - start OTR session first.\n
+#2652:Delete existing key first!\n
+#2653:util_otr: "%s" not a policy (use never|try|manual|always)
+#2654:Generating new OTR key for %s account %s. This may take a while...
+#2655:failed.\n
+#2656:successfull.\n
+#2659:otr_inject: message injection for contact %s failed
+#2660:new OTR fingerprint: %s.\n
+#2661:secure OTR channel established.\n
+#2662:secure OTR channel closed.\n
+#2663:secure OTR channel reestablished.\n
+#2664:reestablished secure OTR channel.\n
+#2665:plaintext
+#2666:encrypted
+#2667:finished
+#2668:unknown state
+#2669:no offer sent
+#2670:offer sent
+#2671:offer accepted
+#2672:offer rejected
+#2673:unknown auth
+#2674:awaiting D-H key
+#2675:awaiting reveal signature
+#2676:awaiting signature
+#2677:v1 setup
+#2678:never
+#2679:try
+#2680:manual
+#2681:always
+#2682:unknown
+#2683:trusted
+#2684:untrusted
+#2685:Could not find context for %s.\n
+#2686:Use %s to change.\n
+#2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
+#2688:No password given for %s.\n
+#2689:Enter password for %s account %s: 
 3010:Туплю [Автоотмазчик]
 3011:Слинял [Автоотмазчик]
 3012:Трудяга [Автоотмазчик]
@@ -1311,7 +1362,7 @@
 3060:Уровень детализации: %ld.\n
 3061:"%s" не признан за суслика.\n
 3062:Список бойкота:
-3063:Введите пароль:
+3063.Введите пароль:
 3064:Автоматом принял позу: %s.\n
 3078:Нет перевода.
 3079:Перевод (%s, %s) от %s, последние изменения %s %s, для mICQ %d.%d.%d%s.\n
@@ -1918,8 +1969,12 @@
 3889:сервер
 3890:баш-на-баш
 3891.Соединение %ld уже открыто.\n
-3892:conn                  Показать доступные соединения.\n
-3893:conn login <номер>    Открыть соединение <номер>.\n
+#-#3892:conn                  Показать доступные соединения.\n
+#+#3892:conn               List available connections.\n
+# #3892:conn                    List available connections.\n
+#-#3893:conn login <номер>    Открыть соединение <номер>.\n
+#+#3893:conn login <nr>    Open connection <nr>.\n
+# #3893:conn login <nr> [pass]  Open connection <nr>.\n
 3894:Нет соединения с номером %ld.\n
 3895:Логин не прошёл:\n
 3896:Сервер закрыл соединения:\n
@@ -2048,7 +2103,7 @@
 4058:getauto na     <суслик> - Получить ответ для позы "слинял".\n
 4059:getauto dnd    <суслик> - Получить ответ для позы "не кантовать".\n
 4060:getauto ffc    <суслик> - Получить ответ для позы "желаю, чтобы все".\n
-4063:Вам нужно сохранить Ваш пароль в ~/.micq/micqrc.\n
+4063.Вам нужно сохранить Ваш пароль в ~/.micq/micqrc.\n
 4065:Неизвестная TCP_MSG_GREET_ команда %04x.\n
 4066:Неизвестная TCP_MSG_ команда %04x.\n
 4067:файловый ввод/вывод
@@ -2068,12 +2123,20 @@
 4090:прямая передача файлов
 4091:Помещаю в очередь %s, как %s для передачи.\n
 4092:TCP-сообщение %s отклонено - потеря сессии.\n
-4094:conn login            Открыть первое/текущее серверное соединение.\n
-4095:conn remove <номер>   Удалить соединение <номер>.\n
-4097:conn select <номер>   Выбрать соединение под <номером> серверным.\n
+#-#4094:conn login            Открыть первое/текущее серверное соединение.\n
+#+#4094:conn login         Open current/first server connection.\n
+# #4094:conn login [pass]       Open current/first server connection.\n
+#-#4095:conn remove <номер>   Удалить соединение <номер>.\n
+#+#4095:conn remove <nr>   Remove connection <nr>.\n
+# #4095:conn remove <nr>        Remove connection <nr>.\n
+#-#4097:conn select <номер>   Выбрать соединение под <номером> серверным.\n
+#+#4097:conn select <nr>   Select connection <nr> as server connection.\n
+# #4097:conn select <nr>        Select connection <nr> as server connection.\n
 4098:Соединение %ld не является серверным.\n
 4099.Выбрано соединение %ld (версия %d, UIN %ld) как текущее соединение.\n
-4100:conn select <uin>  Выбрать соединение с <uin>-ом серверным.\n
+#-#4100:conn select <uin>  Выбрать соединение с <uin>-ом серверным.\n
+#+#4100:conn select <uin>  Select connection with UIN <uin> as server connection.\n
+# #4100:conn select <uin>       Select connection with UIN <uin> as server connection.\n
 4101:Полностью отключаю соединение %ld и всё, что с ним связано.\n
 4102:Соединение %ld является сконфигурированным подключением.\n
 4103:contact show    Показать серверный список сусликов.\n
@@ -2115,7 +2178,9 @@
 4148.Добавлен псевдоним "%s" для "%s" (%ld).\n
 4149.Удалён псевдоним "%s" для "%s" (%ld).\n
 4150.Удалён суслик "%s" (%ld).\n
-4156:conn close <номер>    Закрыть соединение <номер>.\n
+#-#4156:conn close <номер>    Закрыть соединение <номер>.\n
+#+#4156:conn close <nr>    Close connection <nr>.\n
+# #4156:conn close <nr>         Close connection <nr>.\n
 4157:Молдова
 4158:Не указано имя файла.\n
 4159:Несколько файлов.
@@ -2302,7 +2367,7 @@
 4397:Не найдено серверных сессий.\n
 4398:Задать или показать тотальные фишки или фишки для суслика (группы сусликов).\n
 4399:Запросить SSL-соединение.
-4400:Не загружен перевод (%s), (%d записей).\n
+4400.Не загружен перевод (%s), (%d записей).\n
 4401:Автоотмазки теперь - фишки для суслика, смотрите команду %s.\n
 4402:Глобальный флаг автоотмазок обрабатывается командой %s.\n
 4403:nuwu>
@@ -2411,7 +2476,9 @@
 4505:Использован устаревший параметр -f. Используйте -b вместо него.\n
 4506:На этой консоли установлена кодировка %s.\n
 4507:Перевод %s%s%s не найден. Не хотели бы Вы перевести Маську на этот язык?\n
-4508:Русский (%s) перевод загружен (%s%d%s записей).\n
+#-#4508:Русский (%s) перевод загружен (%s%d%s записей).\n
+#+#4508:English (%s) translation loaded (%s%d%s entries).\n
+# #4508:No translation (%s) loaded (%s%d%s entries).\n
 4509:WSAStartup() для WinSocks 1.1 не удался
 4510:Открываю v5 подключение к %s:%s%ld%s... 
 4511:Перенаправлен на сервер %s:%s%ld%s... 

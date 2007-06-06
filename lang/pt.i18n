@@ -1,5 +1,5 @@
 # $Id$ Português (Brazillian)
-#  EN: __.i18n,v 1.86 2007-04-17 20:58:31 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.88 2007-06-06 18:30:49 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:pt
 1002:pt_BR
@@ -46,7 +46,7 @@
 1060:Nível de informação verbal ajustado para %ld.\n
 1061:'%s' não reconhecido como um apelido.\n
 1062:Usuários ignorados:
-1063:Entre com a senha:
+1063.Entre com a senha:
 1064:Estado mudado automaticamente para %s.\n
 1078:Nenhuma tradução disponível.
 1079:Tradução (%s, %s) de %s, última modificação em %s por %s, para mICQ %d.%d.%d%s.\n
@@ -657,8 +657,8 @@
 1889:servidor
 1890:ponto-a-ponto
 1891.Conexão %ld já está aberta.\n
-1892:conn               Lista conexões disponíveis.\n
-1893:conn login <nr>    Abre conexão <nr>.\n
+1892:conn                    Lista conexões disponíveis.\n
+1893:conn login <nr> [pass]  Abre conexão <nr>.\n
 1894:Não há conexão número %ld.\n
 1895:Login falhou:\n
 1896:Conexão encerrada com o servidor:\n
@@ -785,7 +785,7 @@
 2058:getauto na     <apelido> - Busca a auto-resposta para não disponível do contato.\n
 2059:getauto dnd    <apelido> - Busca a auto-resposta para do não perturbe do contato.\n
 2060:getauto ffc    <apelido> - Busca a auto-resposta para livre para bate papo do contato.\n
-2063:Você precisa salvar sua senha no seu arquivo ~/.micq/micqrc.\n
+2063.Você precisa salvar sua senha no seu arquivo ~/.micq/micqrc.\n
 2065:Comando TCP_MSG_GREET_ %04x desconhecido.\n
 2066:Comando TCP_MSG_ %04x desconhecido.\n
 2067:e/s arquivo
@@ -805,12 +805,12 @@
 2090:arquivo ponto-a-ponto
 2091:Colocando %s na fila como %s para transferência.\n
 2092:Mensagem TCP %s descartada - sessão perdida.\n
-2094:conn login         Abre atual/primeira conexão com o servidor.\n
-2095:conn remove <nr>   Remove conexão <nr>.\n
-2097:conn select <nr>   Seleciona conexão <nr> como conexão servidor.\n
+2094:conn login [pass]       Abre atual/primeira conexão com o servidor.\n
+2095:conn remove <nr>        Remove conexão <nr>.\n
+2097:conn select <nr>        Seleciona conexão <nr> como conexão servidor.\n
 2098:Conexão %ld não é uma conexão servidor.\n
 2099.Selecionada conexão %ld (versão %d, UIN %ld) como conexão atual.\n
-2100:conn select <uin>  Seleciona conexão com UIN <uin> como conexão servidor.\n
+2100:conn select <uin>       Seleciona conexão com UIN <uin> como conexão servidor.\n
 2101:Removendo conexão %ld e seus dependentes completamente.\n
 2102:Conexão %ld é uma conexão configurada.\n
 2103:contact show    Mostra lista de contatos baseada no servidor.\n
@@ -852,7 +852,7 @@
 2148.Adicionado '%s' como um alias para '%s' (%ld).\n
 2149.Removido alias '%s' para '%s' (%ld).\n
 2150.Removido contato '%s' (%ld).\n
-2156:conn close <nr>    Fecha conexão <nr>.\n
+2156:conn close <nr>         Fecha conexão <nr>.\n
 2157:Moldova
 2158:Nenhum nome de arquivo dado.\n
 2159:Alguns arquivos.
@@ -937,6 +937,7 @@
 #-#2266:Ter o último apelido no prompt está %s%s%s.\n
 #+#2266:Having the last nick in the prompt is %s%s%s.\n
 # #2266:Type of the prompt is %s%s%s.\n
+#2266:Type of the prompt is %s%s%s.\n
 2267:Salvar automaticamente está %s%s%s.\n
 2268:'Finger' automático de novos UINs está %s%s%s.\n
 2269:break
@@ -948,6 +949,7 @@
 #-#2282:    uinprompt:  ter o último apelido no prompt.\n
 #+#2282:    uinprompt:  have the last nick in the prompt.\n
 # #2282:    prompt:     type of the prompt: user, uin, simple\n
+#2282:    prompt:     type of the prompt: user, uin, simple\n
 2283:    autosave:   automaticamente salvar o micqrc.\n
 2284:    autofinger: automaticamente 'finger' novos UINs.\n
 2285:    linebreak:  estilo para quebra de linha das mensagens: simple, break, indent, smart.\n
@@ -1039,7 +1041,7 @@
 2397:Nenhum servidor de sessão encontrado.\n
 2398:Ajusta ou mostra opções para um grupo de contatos, um contato ou global.\n
 2399:Pede conexão SSL.
-2400:Nenhuma tradução (%s) lida (%d entradas).\n
+2400.Nenhuma tradução (%s) lida (%d entradas).\n
 2401:Mensagens de auto resposta estão agora nas opções de contatos, veja o comando %s.\n
 2402:A flag de auto resposta é manipulada pelo comando %s.\n
 2403:msg>
@@ -1148,7 +1150,7 @@
 2505:Opção depreciada -f usada. Por favor use o similar -b ao invés.\n
 2506:Este console usa a codificação %s.\n
 2507:Tranduções %s%s%s não encontradas. Você gostaria de traduzir o mICQ para a sua língua?\n
-2508:(%s) tranduções do inglês lidas (%s%d%s entradas).\n
+2508:(%s) tranduções do (you forgot to replace english here by spanish) lidas (%s%d%s entradas).\n
 2509:WSAStartup() para WinSocks 1.1 falhou
 2510:Abrindo conexão v5 com %s:%s%ld%s... 
 2511:Redirecionando ao servidor %s:%s%ld%s... 
@@ -1239,7 +1241,7 @@
 2596:Removido alias '%s' para '%s' (%s).\n
 #2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
 #2598:There is no connection number %ld and no connection for UIN %s.\n
-#2599:There is no connection for UIN %s.\n
+#2599:There is no connection for %s.\n
 #2600:No connection selected.\n
 #2601:Connection for %s is already open.\n
 #2602:Don't know how to open connection type %s for %s.\n
@@ -1274,3 +1276,53 @@
 #2631:uin
 #2632:simple
 #2633:Note: You need to 'save' to write new user prompt to disc.\n
+#2634:Install libOTR 3.0.0 or newer and enjoy off-the-record encrypted messages!\n
+#2635:otr                           - Off-the-Record Messaging\n
+#2636:otr list [<contact>]          - List OTR connection states\n
+#2637:otr start|stop <contact>      - Start/Stop OTR session\n
+#2638:otr trust <contact> [<trust>] - Set/Show trust for active fingerprint\n
+#2639:otr genkey                    - Generate private key\n
+#2640:otr keys                      - List private keys\n
+#2641:Message for %s could not be encrypted and was NOT sent!
+#2642:util_otr: no connection found for account %s and protocol %s
+#2643:util_otr: no contact %s found
+#2645:Could not read OTR private key from %s.\n
+#2646:Writing OTR fingerprints failed!
+#2648:No OTR is allowed as long as policy is set to %s.\n
+#2651:No active fingerprint set - start OTR session first.\n
+#2652:Delete existing key first!\n
+#2653:util_otr: "%s" not a policy (use never|try|manual|always)
+#2654:Generating new OTR key for %s account %s. This may take a while...
+#2655:failed.\n
+#2656:successfull.\n
+#2659:otr_inject: message injection for contact %s failed
+#2660:new OTR fingerprint: %s.\n
+#2661:secure OTR channel established.\n
+#2662:secure OTR channel closed.\n
+#2663:secure OTR channel reestablished.\n
+#2664:reestablished secure OTR channel.\n
+#2665:plaintext
+#2666:encrypted
+#2667:finished
+#2668:unknown state
+#2669:no offer sent
+#2670:offer sent
+#2671:offer accepted
+#2672:offer rejected
+#2673:unknown auth
+#2674:awaiting D-H key
+#2675:awaiting reveal signature
+#2676:awaiting signature
+#2677:v1 setup
+#2678:never
+#2679:try
+#2680:manual
+#2681:always
+#2682:unknown
+#2683:trusted
+#2684:untrusted
+#2685:Could not find context for %s.\n
+#2686:Use %s to change.\n
+#2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
+#2688:No password given for %s.\n
+#2689:Enter password for %s account %s: 

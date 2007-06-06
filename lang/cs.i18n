@@ -1,5 +1,5 @@
 # $Id$ Czech
-#  EN: __.i18n,v 1.86 2007-04-17 20:58:31 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.88 2007-06-06 18:30:49 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:cs
 1002:cs_CZ
@@ -46,7 +46,7 @@
 1060:Úroveň hlášení (verbosity level) je %ld.\n
 1061:Nebyla nalezena přezdívka '%s'.\n
 1062:Ignorovaní uživatelé:
-1063:Zadejte heslo:
+1063.Zadejte heslo:
 1064:Status byl automaticky změněn na %s.\n
 1078:Překlad není k dispozici.
 1079:Překlad (%s, %s) od %s, naposledy změněn %s, upravil %s, pro mICQ %d.%d.%d%s.\n
@@ -657,8 +657,8 @@
 1889:server
 1890:peer-to-peer
 1891.Spojení %ld je již otevřeno.\n
-1892:conn               Seznam dostupných spojení.\n
-1893:conn login <nr>    Otevírá spojení <nr>.\n
+1892:conn                    Seznam dostupných spojení.\n
+1893:conn login <nr> [pass]  Otevírá spojení <nr>.\n
 1894:Neexistuje spojení s číslem %ld.\n
 1895:Přihlašování selhalo:\n
 1896:Server ukončil spojení:\n
@@ -785,7 +785,7 @@
 2058:getauto na     <nick> - Získá automatickou odpověď pro status 'not available' od kontaktu.\n
 2059:getauto dnd    <nick> - Získá automatickou odpověď pro status 'do not disturb' od kontaktu.\n
 2060:getauto ffc    <nick> - Získá automatickou odpověď pro status 'free for chat' od kontaktu.\n
-2063:Potřebujete si uložit vaše heslo do souboru ~/.micq/micqrc.\n
+2063.Potřebujete si uložit vaše heslo do souboru ~/.micq/micqrc.\n
 2065:Neznámý TCP_MSG_GREET_ příkaz %04x.\n
 2066:Neznámý TCP_MSG_ příkaz %04x.\n
 2067:soubor io
@@ -805,12 +805,12 @@
 #2090:file peer-to-peer
 2091:Ve frontě čeká %s jako %s pro přenos.\n
 2092:TCP zpráva %s zahozena - ztráta sezení.\n
-2094:conn login         Otevře současné/první spojení se serverem.\n
-2095:conn remove <nr>   Odstraní spojení <nr>.\n
-2097:conn select <nr>   Vybere spojení <nr> jako spojení se serverem.\n
+2094:conn login [pass]       Otevře současné/první spojení se serverem.\n
+2095:conn remove <nr>        Odstraní spojení <nr>.\n
+2097:conn select <nr>        Vybere spojení <nr> jako spojení se serverem.\n
 2098:Spojení %ld není spojení se serverem.\n
 2099.Vybrané spojení %ld (verze %d, UIN %ld) jako současné spojení.\n
-2100:conn select <uin>  Vybere spojení s UIN <uin> jako spojení se serverem.\n
+2100:conn select <uin>       Vybere spojení s UIN <uin> jako spojení se serverem.\n
 2101:Odstranění spojení %ld a jeho závislostí je kompletní.\n
 2102:Spojení %ld je nastavené spojení.\n
 2103:contact show    Zobrazí kontakty na straně serveru.\n
@@ -851,7 +851,7 @@
 2148.Přidáno '%s' jako alias pro '%s' (%ld).\n
 2149.Odstraněn alias '%s' pro '%s' (%ld).\n
 2150.Odstraněn kontakt '%s' (%ld).\n
-2156:conn close <nr>    Zavření spojení <nr>.\n
+2156:conn close <nr>         Zavření spojení <nr>.\n
 2157:Moldavsko
 2158:Nebylo určeno jméno souboru.\n
 2159:Nějaké soubory.
@@ -935,6 +935,7 @@
 #-#2266:Zobrazování posledního nicku v promptu je %s%s%s.\n
 #+#2266:Having the last nick in the prompt is %s%s%s.\n
 # #2266:Type of the prompt is %s%s%s.\n
+#2266:Type of the prompt is %s%s%s.\n
 2267:Automatické ukládání je %s%s%s.\n
 2268:Automatické zobrazování detailů nových UIN je %s%s%s.\n
 2269:break
@@ -946,6 +947,7 @@
 #-#2282:    uinprompt:  zobrazovat poslední nick v promptu.\n
 #+#2282:    uinprompt:  have the last nick in the prompt.\n
 # #2282:    prompt:     type of the prompt: user, uin, simple\n
+#2282:    prompt:     type of the prompt: user, uin, simple\n
 2283:    autosave:   automaticky ukládat soubor micqrc.\n
 2284:    autofinger: automatický finger (zobrazit info) o nových UIN.\n
 2285:    linebreak:  styl zalamování řádků zpráv: simple, break, indent, smart.\n
@@ -1037,7 +1039,7 @@
 2397:Nebylo nalezeno serverové sezení.\n
 2398:Nastaví nebo zobrazí volby pro skupinu, kontakt nebo globální nastavení.\n
 2399:Žádost o SSL spojení.
-2400:Žádný překlad (%s) nebyl načten (%d položek).\n
+2400.Žádný překlad (%s) nebyl načten (%d položek).\n
 2401:Automatické odpovědi jsou nyní v nastavení kontaktů, mrkněte se na příkaz %s.\n
 2402:Globální příznak pro automatickou odpověď je nyní spravován příkazem %s.\n
 2403:zprava>
@@ -1237,7 +1239,7 @@
 2596:Odstraněn alias '%s' pro '%s' (%s).\n
 #2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
 #2598:There is no connection number %ld and no connection for UIN %s.\n
-#2599:There is no connection for UIN %s.\n
+#2599:There is no connection for %s.\n
 #2600:No connection selected.\n
 #2601:Connection for %s is already open.\n
 #2602:Don't know how to open connection type %s for %s.\n
@@ -1272,3 +1274,53 @@
 #2631:uin
 #2632:simple
 #2633:Note: You need to 'save' to write new user prompt to disc.\n
+#2634:Install libOTR 3.0.0 or newer and enjoy off-the-record encrypted messages!\n
+#2635:otr                           - Off-the-Record Messaging\n
+#2636:otr list [<contact>]          - List OTR connection states\n
+#2637:otr start|stop <contact>      - Start/Stop OTR session\n
+#2638:otr trust <contact> [<trust>] - Set/Show trust for active fingerprint\n
+#2639:otr genkey                    - Generate private key\n
+#2640:otr keys                      - List private keys\n
+#2641:Message for %s could not be encrypted and was NOT sent!
+#2642:util_otr: no connection found for account %s and protocol %s
+#2643:util_otr: no contact %s found
+#2645:Could not read OTR private key from %s.\n
+#2646:Writing OTR fingerprints failed!
+#2648:No OTR is allowed as long as policy is set to %s.\n
+#2651:No active fingerprint set - start OTR session first.\n
+#2652:Delete existing key first!\n
+#2653:util_otr: "%s" not a policy (use never|try|manual|always)
+#2654:Generating new OTR key for %s account %s. This may take a while...
+#2655:failed.\n
+#2656:successfull.\n
+#2659:otr_inject: message injection for contact %s failed
+#2660:new OTR fingerprint: %s.\n
+#2661:secure OTR channel established.\n
+#2662:secure OTR channel closed.\n
+#2663:secure OTR channel reestablished.\n
+#2664:reestablished secure OTR channel.\n
+#2665:plaintext
+#2666:encrypted
+#2667:finished
+#2668:unknown state
+#2669:no offer sent
+#2670:offer sent
+#2671:offer accepted
+#2672:offer rejected
+#2673:unknown auth
+#2674:awaiting D-H key
+#2675:awaiting reveal signature
+#2676:awaiting signature
+#2677:v1 setup
+#2678:never
+#2679:try
+#2680:manual
+#2681:always
+#2682:unknown
+#2683:trusted
+#2684:untrusted
+#2685:Could not find context for %s.\n
+#2686:Use %s to change.\n
+#2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
+#2688:No password given for %s.\n
+#2689:Enter password for %s account %s: 

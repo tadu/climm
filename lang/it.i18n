@@ -1,5 +1,5 @@
 # $Id$ Italiano (Italian)
-#  EN: __.i18n,v 1.86 2007-04-17 20:58:31 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.88 2007-06-06 18:30:49 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:it
 1002:it_IT
@@ -46,7 +46,7 @@
 1060:Verbosity level is %ld.\n
 1061:'%s' non riconosciuto come nick name.\n
 1062:Utenti ignorati: 
-1063:Inserisci la password: 
+1063.Inserisci la password: 
 1064:Automaticamente ho cambiato lo stato in %s.\n
 1078:Nessuna traduzione disponibile.
 1079:Traduzione (%s, %s) da %s, ultima modifica su %s fatta da %s, per mICQ %d.%d.%d%s.\n
@@ -682,8 +682,8 @@
 1889:server
 1890:peer-to-peer
 1891.La connessione %ld e' gia' aperta.\n
-1892:conn               Elenca le connessioni disponibili.\n
-1893:conn login <nr>    Apre la connessione <nr>.\n
+1892:conn                    Elenca le connessioni disponibili.\n
+1893:conn login <nr> [pass]  Apre la connessione <nr>.\n
 1894:Non c'e' il numero di connessione %ld.\n
 1895:Login fallito:\n
 1896:Il server ha chiuso la connessione:\n
@@ -815,7 +815,7 @@
 2058:getauto na     <nick> - Ottieni la risposta automatica per 'non disponibile' dal contatto.\n
 2059:getauto dnd    <nick> - Ottieni la risposta automatica per 'non disturbare' dal contatto.\n
 2060:getauto ffc    <nick> - Ottieni la risposta automatica per 'libero per chattare' dal contatto.\n
-2063:Devi salvare la tua password nel tuo file ~/.micq/micqrc\n
+2063.Devi salvare la tua password nel tuo file ~/.micq/micqrc\n
 2065:Comando TCP_MSG_GREET_ %04x sconosciuto.\n
 2066:Comando TCP_MSG_ %04x sconosciuto.\n
 2067:file io
@@ -837,14 +837,12 @@
 2090:file peer-to-peer
 2091:Metto in coda %s come %s per il trasferimento.\n
 2092:Messaggio TCP %s scartato - sessione persa.\n
-#-#2094:conn login         Apre il primo server di connessione.\n
-#+#2094:conn login         Open first server connection.\n
-#2094:conn login         Open current/first server connection.\n
-2095:conn remove <nr>   Rimuove la connessione <nr>.\n
-2097:conn select <nr>   Scegli connessione <nr> come server di connessione.\n
+2094:conn login [pass]       Apre il primo server di connessione.\n
+2095:conn remove <nr>        Rimuove la connessione <nr>.\n
+2097:conn select <nr>        Scegli connessione <nr> come server di connessione.\n
 2098:Connessione %ld non e' un server di connessione.\n
 2099.Seleziona la connessione %ld (versione %d, UIN %ld) come connessione corrente.\n
-2100:conn select <uin>  Seleziona la connessione con UIN <uin> come server di connessione.\n
+2100:conn select <uin>       Seleziona la connessione con UIN <uin> come server di connessione.\n
 2101:Rimuovo la connessione %ld e le sue dipendenze completamente.\n
 2102:La connessione %ld e' una connessione configurata.\n
 #-#2103:contact show    Mostra la lista contatti da parte del server.\n
@@ -904,7 +902,7 @@
 2148.Aggiunto '%s' come alias per '%s' (%ld).\n
 2149.Rimosso l'alias '%s' per '%s' (%ld).\n
 2150.Rimosso il contatto '%s' (%ld).\n
-2156:conn close <nr>    Chiudi connessione <nr>.\n
+2156:conn close <nr>         Chiudi connessione <nr>.\n
 2157:Moldova
 #-#2158:Nessun file dato.\n
 #+#2158:No file given.\n
@@ -1020,6 +1018,7 @@
 #-#2266:Avere l'ultimo nick nel prompt è %s%s%s.\n
 #+#2266:Having the last nick in the prompt is %s%s%s.\n
 # #2266:Type of the prompt is %s%s%s.\n
+#2266:Type of the prompt is %s%s%s.\n
 2267:I salvataggi automatici sono %s%s%s.\n
 2268:Richiesta automatica dei dati dei nuovi UIN (fingering) è %s%s%s.\n
 2269:interruzione
@@ -1132,7 +1131,6 @@
 #2397:No server session found.\n
 #2398:Set or display options for a contact group, a contact or global.\n
 #2399:Request SSL connection.
-#2400:No translation (%s) loaded (%d entries).\n
 #2401:Auto reply messages are now contact options, see the %s command.\n
 #2402:The global auto reply flag is handled by the %s command.\n
 #2403:msg>
@@ -1237,7 +1235,7 @@
 #2505:Deprecated option -f used. Please use the similar -b instead.\n
 #2506:This console uses encoding %s.\n
 #2507:Translation %s%s%s not found. Would you like to translate mICQ into your language?\n
-#2508:English (%s) translation loaded (%s%d%s entries).\n
+#2508:No translation (%s) loaded (%s%d%s entries).\n
 #2509:WSAStartup() for WinSocks 1.1 failed
 #2510:Opening v5 connection to %s:%s%ld%s... 
 #2511:Redirect to server %s:%s%ld%s... 
@@ -1328,7 +1326,7 @@
 2596:Rimosso l'alias '%s' per '%s' (%s).\n
 #2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
 #2598:There is no connection number %ld and no connection for UIN %s.\n
-#2599:There is no connection for UIN %s.\n
+#2599:There is no connection for %s.\n
 #2600:No connection selected.\n
 #2601:Connection for %s is already open.\n
 #2602:Don't know how to open connection type %s for %s.\n
@@ -1363,3 +1361,53 @@
 #2631:uin
 #2632:simple
 #2633:Note: You need to 'save' to write new user prompt to disc.\n
+#2634:Install libOTR 3.0.0 or newer and enjoy off-the-record encrypted messages!\n
+#2635:otr                           - Off-the-Record Messaging\n
+#2636:otr list [<contact>]          - List OTR connection states\n
+#2637:otr start|stop <contact>      - Start/Stop OTR session\n
+#2638:otr trust <contact> [<trust>] - Set/Show trust for active fingerprint\n
+#2639:otr genkey                    - Generate private key\n
+#2640:otr keys                      - List private keys\n
+#2641:Message for %s could not be encrypted and was NOT sent!
+#2642:util_otr: no connection found for account %s and protocol %s
+#2643:util_otr: no contact %s found
+#2645:Could not read OTR private key from %s.\n
+#2646:Writing OTR fingerprints failed!
+#2648:No OTR is allowed as long as policy is set to %s.\n
+#2651:No active fingerprint set - start OTR session first.\n
+#2652:Delete existing key first!\n
+#2653:util_otr: "%s" not a policy (use never|try|manual|always)
+#2654:Generating new OTR key for %s account %s. This may take a while...
+#2655:failed.\n
+#2656:successfull.\n
+#2659:otr_inject: message injection for contact %s failed
+#2660:new OTR fingerprint: %s.\n
+#2661:secure OTR channel established.\n
+#2662:secure OTR channel closed.\n
+#2663:secure OTR channel reestablished.\n
+#2664:reestablished secure OTR channel.\n
+#2665:plaintext
+#2666:encrypted
+#2667:finished
+#2668:unknown state
+#2669:no offer sent
+#2670:offer sent
+#2671:offer accepted
+#2672:offer rejected
+#2673:unknown auth
+#2674:awaiting D-H key
+#2675:awaiting reveal signature
+#2676:awaiting signature
+#2677:v1 setup
+#2678:never
+#2679:try
+#2680:manual
+#2681:always
+#2682:unknown
+#2683:trusted
+#2684:untrusted
+#2685:Could not find context for %s.\n
+#2686:Use %s to change.\n
+#2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
+#2688:No password given for %s.\n
+#2689:Enter password for %s account %s: 

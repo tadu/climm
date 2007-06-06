@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.87 2007-05-29 22:58:40 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.88 2007-06-06 18:30:49 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -1294,7 +1294,7 @@
 2651:Kein aktiver Fingerabdruck gesetzt, da keine OTR-Sitzung gestartet ist.\n
 2652:Es existiert bereits ein privater Schlüssel.\n
 #2653:util_otr: "%s" not a policy (use never|try|manual|always)
-#2654:OTR: generating new key for %s (%s)\nthis may take a while...
+#2654:Generating new OTR key for %s account %s. This may take a while...
 #2655:failed.\n
 #2656:successfull.\n
 #2659:otr_inject: message injection for contact %s failed
