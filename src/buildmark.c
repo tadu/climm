@@ -151,7 +151,7 @@ const char *BuildAttribution (void)
     char *name;
     const char *full;
     
-    name = strdup (s_sprintf ("%s 1998-2000 %sMatthew D. Smith%s, %s 2001-2005 %sR%sdiger Kuhlmann%s.\n",
+    name = strdup (s_sprintf ("%s 1998-2000 %sMatthew D. Smith%s, %s 2001-2007 %sR%sdiger Kuhlmann%s.\n",
                    ConvTranslit ("\xc2\xa9", "(c)"), COLQUOTE, COLNONE,
                    ConvTranslit ("\xc2\xa9", "(c)"), COLQUOTE,
                    ConvTranslit ("\xc3\xbc", "ue"), COLNONE));
