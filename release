@@ -78,8 +78,6 @@ export MICQ_EXTRAVERSION="Official Autopackage"
 ./configure
 ./config.status --file autopackage/micq.apspec:autopackage/micq.apspec.in
 makeinstaller autopackage/micq.apspec
-make -C src
-makeinstaller autopackage/micq.apspec
 mv mICQ-$VERSION.x86.package ..
 cd ..
 rm -rf micq-$VERSION
@@ -106,7 +104,7 @@ unset DEB_BUILD_OPTIONS
 #
 # final
 #
-mv micq-$VERSION.tgz WEBDIR/source/
+mv micq-$VERSION.tgz $WEBDIR/source/
 cd $WEBDIR
 find . -name "*[-_]$VERSION*" -exec md5sum  {} \; | sed "s/^/md5sum /"
 find . -name "*[-_]$VERSION*" -exec sha1sum {} \; | sed "s/^/sha1sum /"
