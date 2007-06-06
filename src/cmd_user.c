@@ -3957,7 +3957,8 @@ static JUMP_F(CmdUserConn)
         else if (s_parsekey (&args, "remove")) data = 4;
         else if (s_parsekey (&args, "close"))  data = 5;
         else if (s_parsekey (&args, "logoff")) data = 5;
-        else                                   data = 0;
+        else if (s_parserem (&args))           data = 0;
+        else                                   data = 1;
     }
      
     switch (data)
@@ -4024,17 +4025,20 @@ static JUMP_F(CmdUserConn)
             else if ((par = s_parse (&args)))
             {
                 connl = ConnectionFindScreen (TYPEF_ANY_SERVER, par->txt);
-                if (!connl)
+                if (!connl && s_parserem (&args))
                 {
                     if (nr)
                         rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
                     else
                         rl_printf (i18n (2599, "There is no connection for %s.\n"), par->txt);
+                    break;
                 }
+                if (!connl)
+                    args = targs;
             }
-            else
+            if (!connl)
             {
-                if (ConnectionFindNr (uiG.conn))
+                if (ConnectionFindNr (uiG.conn) != (UDWORD)-1)
                     connl = uiG.conn;
                 else
                     connl = ConnectionFind (TYPEF_ANY_SERVER, NULL, 0);
