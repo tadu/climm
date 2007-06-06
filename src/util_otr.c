@@ -321,6 +321,8 @@ static void print_keys ()
 void OTRInit ()
 {
     gcry_error_t ret;
+    Connection *conn;
+    int i;
 
     if (!libotr_is_present)
     {
@@ -341,11 +343,15 @@ void OTRInit ()
 
     /* get privat keys */
     ret = otrl_privkey_read (userstate, keyfile.txt);
-    if (ret && uiG.conn->screen)
-    {
-        rl_printf (i18n (2645, "Could not read OTR private key from %s\n"), keyfile.txt);
-        cb_create_privkey (NULL, uiG.conn->screen, proto_name (uiG.conn->type));
-    }
+    if (ret)
+        rl_printf (i18n (2645, "Could not read OTR private key from %s.\n"), keyfile.txt);
+    
+    for (i = 0; (conn = ConnectionNr (i)); i++)
+        if (conn->type & TYPEF_ANY_SERVER &&
+            !otrl_privkey_find (userstate, conn->screen, proto_name (conn->type)))
+        {
+            cb_create_privkey (NULL, conn->screen, proto_name (conn->type));
+        }
 
     /* get fingerprints */
     otrl_privkey_read_fingerprints (userstate, fprfile.txt, add_app_data_find, NULL);
@@ -630,9 +636,11 @@ static OtrlPolicy cb_policy (void *opdata, ConnContext *context)
 static void cb_create_privkey (void *opdata, const char *accountname, const char *protocol)
 {
     gcry_error_t ret;
+    char *prot = strdup (s_qquote (prot));
 
-    rl_printf (i18n (2654, "OTR: generating new key for %s (%s)\nthis may take a while..."),
-               accountname, protocol);
+    rl_printf (i18n (2654, "Generating new OTR key for %s account %s. This may take a while..."),
+               prot, s_qquote (accountname));
+    s_free (prot);
     ret = otrl_privkey_generate (userstate, keyfile.txt, accountname, protocol);
     if (ret)
         rl_print (i18n (2655, "failed.\n"));
