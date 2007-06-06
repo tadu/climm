@@ -1,7 +1,7 @@
-Summary:		text/line based ICQ client with many features%{?_without_tcl: [no Tcl]}%{?_without_ssl: [no SSL]}
+Summary:		text/line based ICQ client with many features%{?_without_tcl: [no Tcl]}%{?_without_ssl: [no SSL]}%{?_without_xmpp: [no XMPP]}
 Name:			micq
 Version:		0.5.4
-Release:		1%{?_without_tcl:.notcl}%{?_without_ssl:.nossl}
+Release:		1%{?_without_tcl:.notcl}%{?_without_ssl:.nossl}%{?_without_xmll:.noxmpp}
 Source:			micq-%{version}.tgz
 URL:			http://www.micq.org/
 Group:			Networking/ICQ
@@ -12,6 +12,7 @@ Prefix:			%{_prefix}
 
 %{!?_without_ssl:BuildRequires: gnutls-devel}
 %{!?_without_tcl:BuildRequires: tcl-devel}
+%{!?_without_xmpp:BuildRequires: libgloox-devel}
 
 %description
 mICQ is a portable, small, yet powerful console based ICQ client. It
@@ -20,6 +21,7 @@ file transfer, acknowledged messages, SMS, client identification, logging,
 scripting, transcoding, multi-UIN usage and other features that makes it a
 very complete yet simple internationalized client supporting the current
 ICQ v8 protocol.
+It now also supports the XMPP protocol as well as OTR encrypted messages.
 
 It has leading support for (ICQ2002+/ICQ Lite/ICQ2go) unicode encoded
 messages unreached by other ICQ clones.
@@ -104,6 +106,7 @@ test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
 %configure --disable-dependency-tracking CFLAGS=-O4 \
 	%{!?_without_tcl:--enable-tcl}%{?_without_tcl:--disable-tcl} \
 	%{!?_without_ssl:--enable-ssl}%{?_without_ssl:--disable-ssl} \
+	%{!?_without_xmpp:--enable-xmpp}%{?_without_xmpp:--disable-xmpp} \
 	--enable-autopackage
 make
 

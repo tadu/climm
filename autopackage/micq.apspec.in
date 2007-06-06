@@ -21,6 +21,7 @@ file transfer, acknowledged messages, SMS, client identification, logging,
 scripting, transcoding, multi-UIN usage and other features that makes it a
 very complete yet simple internationalized client supporting the current
 ICQ v8 protocol.
+It now also supports the XMPP protocol as well as OTR encrypted messages.
 .
 It has leading support for (ICQ2002+/ICQ Lite/ICQ2go) unicode encoded
 messages unreached by other ICQ clones.
@@ -38,6 +39,7 @@ Transkodieren, mehrere Kontos, und andere Eigenschaften, die es
 zu einem ziemlich vollständigen, aber einfachen internationalisierten
 ICQ-Programm mit Unterstützung für das aktuelle ICQ-Protokoll Version 8
 machen.
+Es unterstützt jetzt auch das XMPP-Protokoll und OTR-verschlüsselte Nachrichten.
 .
 Es ist führend bei Unicode-Nachrichten (wie ICQ2002+/ICQ Lite/ICQ2go)
 und darin von anderen unoffiziellen ICQ-Programmen unerreicht.

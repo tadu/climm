@@ -30,10 +30,10 @@ ifneq (,$(findstring notcl,$(DEB_BUILD_OPTIONS)))
 else
         CONFIGURE_OPTIONS += --enable-tcl
 endif
-ifneq (,$(findstring yesxmpp,$(DEB_BUILD_OPTIONS)))
-	CONFIGURE_OPTIONS += --enable-xmpp
+ifneq (,$(findstring noxmpp,$(DEB_BUILD_OPTIONS)))
+	CONFIGURE_OPTIONS += --disable-xmpp
 else
-        CONFIGURE_OPTIONS += --disable-xmpp
+        CONFIGURE_OPTIONS += --enable-xmpp
 endif
 ifneq (,$(findstring autopackage,$(DEB_BUILD_OPTIONS)))
 	CONFIGURE_OPTIONS += --enable-autopackage

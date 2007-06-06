@@ -15,6 +15,7 @@ file transfer, acknowledged messages, SMS, client identification, logging,
 scripting, transcoding, multi-UIN usage and other features that makes it a
 very complete yet simple internationalized client supporting the current
 ICQ v8 protocol.
+It now also supports the XMPP protocol as well as OTR encrypted messages.
 
 It has leading support for (ICQ2002+/ICQ Lite/ICQ2go) unicode encoded
 messages unreached by other ICQ clones.

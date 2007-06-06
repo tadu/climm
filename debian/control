@@ -2,7 +2,7 @@ Source: micq
 Section: net
 Priority: optional
 Maintainer: Rüdiger Kuhlmann <micq@ruediger-kuhlmann.de>
-Build-Depends: debhelper (>= 4.0.0), tcl8.4-dev | tcl8.3-dev, libgnutls7-dev | libgnutls10-dev | libgnutls11-dev | libgnutls-dev
+Build-Depends: debhelper (>= 4.0.0), tcl8.4-dev | tcl8.3-dev, libgnutls7-dev | libgnutls10-dev | libgnutls11-dev | libgnutls-dev, libgloox-dev
 Standards-Version: 3.5.9
 
 Package: micq
@@ -17,6 +17,7 @@ Description: text/line based ICQ client with many features
  scripting, transcoding, multi-UIN usage and other features that makes it a
  very complete yet simple internationalized client supporting the current
  ICQ v8 protocol.
+ It now also supports the XMPP protocol as well as OTR encrypted messages.
  .
  It has leading support for (ICQ2002+/ICQ Lite/ICQ2go) unicode encoded
  messages unreached by other ICQ clones.
