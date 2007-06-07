@@ -1113,7 +1113,7 @@ static JUMP_F(CmdUserPeer)
             rl_print (i18n (2320, "peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n"));
             rl_print (i18n (2368, "peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n"));
 #ifdef ENABLE_SSL
-            rl_print (i18n (2378, "peer ssl <nick>   - initiate SSL handshake."));
+            rl_print (i18n (2378, "peer ssl <nick>   - initiate SSL handshake.\n"));
 #endif
             return 0;
         }
