@@ -1534,6 +1534,7 @@ static void TCPCallBackResend (Event *event)
         {
             IMCliReMsg (cont, msg);
             event->data = NULL;
+            msg = NULL;
         }
         else
             rl_printf (i18n (1844, "TCP message %04x discarded after timeout.\n"), PacketReadAt2 (pak, 4 + delta));
