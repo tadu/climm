@@ -1,5 +1,5 @@
 # $Id$ <Japanese in Japanese> (Japanese)
-#  EN: __.i18n,v 1.88 2007-06-06 18:30:49 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.89 2007-06-07 21:22:30 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:ja
 1002:ja_JP
@@ -1114,7 +1114,7 @@
 #2375:SSL handshake ok.\n
 2376:%s [ERR=%d] から SSL 読み込み: %s
 2377:%s [ERR=%d] へ SSL 書き込み: %s
-2378:peer ssl <ニックネーム>   - SSL ハンドシェイクの初期化。
+2378:peer ssl <ニックネーム>   - SSL ハンドシェイクの初期化。\n
 2381:mICQの著者をあなたが便利なようにあなたのコンタクトリストに加えます。この機会を悪用しないでください。質問をする前に、ヘルプコマンドを使ったり、真面目にmanページやFAQを読もうとしてください。\n連づけられませんでした。破棄します。\n
 2383:<ユーザ>からの最後のメッセージを見ます。'h' は短縮されたコマンドです。
 2384:<ユーザ>のログファイルで<パターン>を大文字と小文字の区別をしないで検索します。

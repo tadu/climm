@@ -1,5 +1,5 @@
 # $Id$ Czech
-#  EN: __.i18n,v 1.88 2007-06-06 18:30:49 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.89 2007-06-07 21:22:30 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:cs
 1002:cs_CZ
@@ -1022,7 +1022,7 @@
 2375:SSL handshake ok.\n
 2376:SSL čtení z %s [ERR=%d]: %s
 2377:SSL zápis do %s [ERR=%d]: %s
-2378:peer ssl <nick>   - zahájí SSL handshake.
+2378:peer ssl <nick>   - zahájí SSL handshake.\n
 2381:Přidám autora mICQ do vašeho seznamu kontaktů pro vaši potřebu. Nezneužívejte tuto výhodu - prosím používejte příkaz help a snažte se číst manuálové stránky (man micq) a FAQ před kladením zbytečných dotazů.\n
 2383:Zobrazí vaše poslední zprávy pro/od <contact>. Použijte 'h' jako zkratku příkazu.
 2384:Case insensitive vyhledání vzoru <pattern> v log souboru kontaktu <contact>.

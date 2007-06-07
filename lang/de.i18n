@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.88 2007-06-06 18:30:49 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.89 2007-06-07 21:22:30 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -1028,7 +1028,7 @@
 2375:SSL-Handschlag ok.\n
 2376:SSL-Lesefehler von %s: (%d) %s.
 2377:SSL-Schreibfehler zu %s: (%d) %s.
-2378:peer ssl <nick>   - baue eine gesicherte (SSL) Verbindung auf.
+2378:peer ssl <nick>   - baue eine gesicherte (SSL) Verbindung auf.\n
 2381:Ich füge den Autor von mICQ zur Kontaktliste hinzu. Diese Gelegenheit sollte man nicht mißbrauchen - bitte erst den "help"-Befehl benutzen und einen ernsthaften Versuch machen, die Hilfeseiten und die FAQ (häufig gestellte Fragen) zu lesen, und erst danach fragen.\n
 2383:Zeigt die letzten Nachrichten von <contact> an. Kann zu "h" abgekürzt werden.
 2384:Suche nach <pattern> in der Log-Datei von <contact> (ignoriere Großschreibung).

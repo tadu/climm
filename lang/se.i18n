@@ -1,5 +1,5 @@
 # $Id$ (Swedish)
-#  EN: __.i18n,v 1.88 2007-06-06 18:30:49 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v 1.89 2007-06-07 21:22:30 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:sv
 1002:sv_SE
@@ -1113,7 +1113,7 @@
 #2375:SSL handshake ok.\n
 2376:SSL läsning från %s [FEL=%d]: %s
 2377:SSL skrivning till %s [FEL=%d]: %s
-2378:peer ssl <namn>   - initalisera SSL handskakning.
+2378:peer ssl <namn>   - initalisera SSL handskakning.\n
 2381:Jag lägger till utvecklaren av mICQ på din lista. Missbruka inte denna möjlighet - vänligen använd hjälpkommandot och gör ett allvarligt försök att läsa mansidan och FAQ innan du ställer frågor.\n
 #2383:View your last messages of <contact>. Type 'h' as short command.
 #2384:Case insensitive search of <pattern> in log file of <contact>.
