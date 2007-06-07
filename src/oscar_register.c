@@ -205,6 +205,7 @@ JUMP_SNAC_F(SnacSrvLoginkey)
     char hash[16];
     ssl_md5ctx_t *ctx;
     int rc;
+    size_t len = strlen (serv->passwd);
     strc_t key;
     
     assert (serv->passwd);
@@ -221,7 +222,7 @@ JUMP_SNAC_F(SnacSrvLoginkey)
     if (!ctx)
         return;
     ssl_md5_write (ctx, key->txt, key->len);
-    ssl_md5_write (ctx, serv->passwd, strlen (serv->passwd));
+    ssl_md5_write (ctx, serv->passwd, len > 8 ? 8 : len);
     ssl_md5_write (ctx, AIM_MD5_STRING, strlen (AIM_MD5_STRING));
     rc = ssl_md5_final (ctx, hash);
     if (rc)
