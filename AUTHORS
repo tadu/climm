@@ -4,7 +4,7 @@ Authors:
         Matthew D. Smith
             micq development up to 0.4.7
 
-        Rüdiger Kuhlman        <info__at__ruediger-kuhlmann__dot__de>
+        Rüdiger Kuhlman        <http://www.ruediger-kuhlmann.de>
             mICQ development since 0.4.8
 
 Contributors:
@@ -19,7 +19,7 @@ Contributors:
             SSL and TCL extensions
 
         Robert Bartel		<r.bartel__at__gmx__dot__net
-            OTR support
+            OTR support, md5 login
 
 	Maxim Komar		<komar__at__ukr__dot__net>
 	    configurable prompt
@@ -44,6 +44,7 @@ Current Translators:
 
 	Maxim Komar		<komar__at__ukr__dot__net>
 	    updated russian (ru) man pages to 0.5.3
+	    updated russian (ru) translation to 0.5.4
 
 	Tomáš Bambas		<conyx__at__seznam__dot__cz>
 	    czech (cs_CZ) translation 0.5.0.4

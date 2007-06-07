@@ -91,7 +91,6 @@ tar -zxf micq-$VERSION.tgz
 cd micq-$VERSION
 sed -i "1s/$VERSION-0/$VERSION-2feisty0/" debian/changelog
 sed -i "/Build-Depends:/s/$/| libgloox-dev/" debian/control
-export DEB_BUILD_OPTIONS=yesxmpp
 export MICQ_EXTRAVERSION="Official deb (feisty)"
 fakeroot dpkg-buildpackage -tc -us -uc
 cd /tmp
