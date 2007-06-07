@@ -194,16 +194,19 @@ void SnacCallbackIgnore (Event *event)
 /*
  * CLI_SENDMSG - SNAC(4,6)
  */
-static UBYTE SnacCliSendmsg1 (Connection *serv, Contact *cont, Message *msg)
+static UBYTE SnacCliSendmsg1 (Connection *serv, Message *msg)
 {
     Packet *pak;
     Event *event;
+    Contact *cont;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     int remenc;
     strc_t str;
     int enc = ENC_LATIN1, icqenc = 0, icqcol;
 
     assert (serv);
+    assert (msg);
+    cont = msg->cont;
     assert (cont);
     
     pak = SnacC (serv, 4, 6, 0, 0);
@@ -268,14 +271,17 @@ static UBYTE SnacCliSendmsg1 (Connection *serv, Contact *cont, Message *msg)
     return RET_OK;
 }
 
-static UBYTE SnacCliSendmsg4 (Connection *serv, Contact *cont, Message *msg)
+static UBYTE SnacCliSendmsg4 (Connection *serv, Message *msg)
 {
     Packet *pak;
     Event *event;
     const char *text;
+    Contact *cont;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     
     assert (serv);
+    assert (msg);
+    cont = msg->cont;
     assert (cont);
     
     text = c_out_to_split (msg->send_message, cont);
@@ -393,16 +399,18 @@ static void SnacCallbackType2 (Event *event)
     EventD (event);
 }
 
-static UBYTE SnacCliSendmsg2 (Connection *serv, Contact *cont, Message *msg)
+static UBYTE SnacCliSendmsg2 (Connection *serv, Message *msg)
 {
     Packet *pak;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
     BOOL peek = 0;
+    Contact *cont;
     const char *text;
     
     assert (serv);
-    assert (cont);
     assert (msg);
+    cont = msg->cont;
+    assert (cont);
     
     if (msg->type == MSG_GET_PEEK)
     {
@@ -499,6 +507,7 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, UBYTE format, Message *ms
     assert (serv);
     assert (cont);
     assert (msg);
+    assert (msg->cont == cont);
     
     if (format == 2 && !msg->force)
     {
@@ -578,11 +587,11 @@ UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, UBYTE format, Message *ms
     }
     
     if (format == 1)
-        return SnacCliSendmsg1 (serv, cont, msg);
+        return SnacCliSendmsg1 (serv, msg);
     else if (format == 4)
-        return SnacCliSendmsg4 (serv, cont, msg);
+        return SnacCliSendmsg4 (serv, msg);
     else if (format == 2)
-        return SnacCliSendmsg2 (serv, cont, msg);
+        return SnacCliSendmsg2 (serv, msg);
     return RET_DEFER;
 }
 
