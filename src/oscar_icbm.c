@@ -264,10 +264,12 @@ static UBYTE SnacCliSendmsg1 (Connection *serv, Message *msg)
     PacketWriteB2 (pak, 0);
     PacketWriteB2 (pak, 6);
     PacketWriteB2 (pak, 0);
-    SnacSend (serv, pak);
 
     event = QueueEnqueueData2 (serv, QUEUE_TYPE1_RESEND_ACK, pak->ref, 120, msg, &SnacCallbackIgnore, NULL);
     event->cont = cont;
+
+    SnacSend (serv, pak);
+
     return RET_OK;
 }
 
@@ -394,8 +396,8 @@ static void SnacCallbackType2 (Event *event)
         return;
     }
     
-    IMCliReMsg (cont, msg);
     event->data = NULL;
+    IMCliReMsg (cont, msg);
     EventD (event);
 }
 
