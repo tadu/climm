@@ -1608,8 +1608,8 @@ static JUMP_F(CmdUserVerbose)
             rl_printf (i18n (2115, "'%s' is not an integer.\n"), args);
             return 0;
         }
+        prG->verbose = i;
     }
-    prG->verbose = i;
     rl_printf (i18n (1060, "Verbosity level is %ld.\n"), prG->verbose);
     return 0;
 }
