@@ -1567,7 +1567,7 @@ static JUMP_F (CmdUserMessage)
  */
 static JUMP_F(CmdUserVerbose)
 {
-    UDWORD i = 0;
+    UDWORD i = 0, j;
 
     while (args && *args)
     {
@@ -1578,8 +1578,8 @@ static JUMP_F(CmdUserVerbose)
                 | DEB_TCP | DEB_IO | DEB_SSL;
         else if (s_parsekey (&args, "xmpp"))
             i |= DEB_XMPPIN | DEB_XMPPOUT | DEB_XMPPOTHER;
-        else if (s_parseint (&args, &i))
-            break;
+        else if (s_parseint (&args, &j))
+            i |= j;
 #if WIP
         else if (s_parsekey (&args, "SSL"))     i |= DEB_SSL;
         else if (s_parsekey (&args, "PRO"))     i |= DEB_PROTOCOL;
