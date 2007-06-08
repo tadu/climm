@@ -63,7 +63,7 @@ static Cap caps[CAP_MAX] =
     { CAP_AIM_GAMES,   16, cap_aim "\x4a" cap_mid cap_id,       "CAP_AIM_GAMES",   NULL },
     { CAP_AIM_SBUD,    16, cap_aim "\x4b" cap_mid cap_id,       "CAP_AIM_SBUD",    NULL },
     { CAP_AIM_INTER,   16, cap_aim "\x4d" cap_mid cap_id,       "CAP_AIM_INTER",   NULL },
-    { CAP_AVATAR,      16, cap_aim "\x4c" cap_mid cap_id,       "CAP_AVATAOR",     NULL },
+    { CAP_AVATAR,      16, cap_aim "\x4c" cap_mid cap_id,       "CAP_AVATAR",      NULL },
     { CAP_UTF8,        16, cap_aim "\x4e" cap_mid cap_id,       "CAP_UTF8",        NULL },
     /* ICQ capabilities */
     { CAP_RTFMSGS,     16, "\x97\xb1\x27\x51\x24\x3c\x43\x34\xad\x22\xd6\xab\xf7\x3f\x14\x92", "CAP_RTFMSGS",     NULL },
