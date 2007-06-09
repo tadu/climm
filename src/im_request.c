@@ -154,7 +154,7 @@ UBYTE IMCliMsg (Contact *cont, UDWORD type, const char *text, Opt *opt)
     if (!msg)
         return RET_FAIL;
     ret = IMCliReMsg (cont, msg);
-    while (ret == RET_DEFER && msg->maxsize && !msg->plain_message)
+    while (!RET_IS_OK(ret) && msg->maxsize && !msg->otrinjected && !msg->otrencrypted)
     {
         strc_t str = s_split (&text, msg->maxenc, msg->maxsize);
         s_repl (&msg->send_message, str->txt);
@@ -178,7 +178,7 @@ UBYTE IMCliMsg (Contact *cont, UDWORD type, const char *text, Opt *opt)
             msg->otrinjected = tmp;
         ret = IMCliReMsg (cont, msg);                                                            
     }
-    if (ret == RET_DEFER && msg->maxsize && msg->plain_message)
+    if (!RET_IS_OK(ret) && msg->maxsize && (msg->otrinjected || msg->otrencrypted))
     {
         str_s str = { NULL, 0, 0 };
         UDWORD fragments, frag;
@@ -246,7 +246,7 @@ UBYTE IMCliMsg (Contact *cont, UDWORD type, const char *text, Opt *opt)
 
 UBYTE IMCliReMsg (Contact *cont, Message *msg)
 {
-    UBYTE ret;
+    UBYTE ret = RET_FAIL;
 
     assert (cont);
     assert (msg);
@@ -297,7 +297,7 @@ UBYTE IMCliReMsg (Contact *cont, Message *msg)
             if (RET_IS_OK (ret = XMPPSendmsg (cont->serv, cont, msg)))
                 return ret;
 #endif
-    return RET_FAIL;
+    return ret;
 }
 
 void IMCliInfo (Connection *conn, Contact *cont, int group)
