@@ -3177,9 +3177,10 @@ static JUMP_F(CmdUserAuth)
         else if (s_parsekey (&args, "req"))   data = 3;
         else if (s_parsekey (&args, "add"))   data = 4;
         else if (s_parsekey (&args, "grant")) data = 5;
-        else                                  data = 5;
+        else if (*args)                       data = 5;
+        else                                  data = 0;
     }
-    if (!*args && !data)
+    if (!data)
     {
         rl_print (i18n (2119, "auth [grant] <contacts>    - grant authorization.\n"));
         rl_print (i18n (2120, "auth deny <contacts> <msg> - refuse authorization.\n"));
