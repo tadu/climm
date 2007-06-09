@@ -4138,6 +4138,7 @@ static JUMP_F(CmdUserContact)
 {
     strc_t par;
     OPENCONN;
+    UDWORD i;
 
     if (uiG.conn->type != TYPE_SERVER)
     {
@@ -4151,6 +4152,11 @@ static JUMP_F(CmdUserContact)
         else if (!strcasecmp (par->txt, "activate"))
         {
             SnacCliRosterack (uiG.conn);
+            return 0;
+        }
+        else if (!strcasecmp (par->txt, "security") && s_parseint (&args, &i))
+        {
+            SnacCliSetvisibility (uiG.conn, i);
             return 0;
         }
         else if (!strcasecmp (par->txt, "show"))     data = IMROSTER_SHOW;

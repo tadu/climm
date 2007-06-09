@@ -563,21 +563,20 @@ JUMP_SNAC_F(SnacSrvRosterupdate)
 }
 
 /*
- * CLI_ROSTERUPDATE - SNAC(13,9)
+ * CLI_ROSTERADD/UPDATE - SNAC(13,8)
  */
-void SnacCliSetvisibility (Connection *serv)
+void SnacCliSetvisibility (Connection *serv, char value)
 {
     Packet *pak;
     
-    pak = SnacC (serv, 19, 9, 0, 0);
+    pak = SnacC (serv, 19, 8, 0, 0);
     PacketWriteStrB     (pak, "");
     PacketWriteB2       (pak, 0);
     PacketWriteB2       (pak, 0x4242);
     PacketWriteB2       (pak, 4);
     PacketWriteBLen     (pak);
-//    PacketWriteB2       (pak, 5);
     PacketWriteTLV      (pak, TLV_PRIVACY);
-    PacketWrite1        (pak, 4);
+    PacketWrite1        (pak, value);
     PacketWriteTLVDone  (pak);
     PacketWriteBLenDone (pak);
     SnacSend (serv, pak);
