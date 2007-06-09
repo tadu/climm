@@ -81,7 +81,8 @@ if test "x$ac_arg_use_autopackage" = xyes; then
             old_LIBS=$LIBS
             LIBS=
             AC_SEARCH_LIBS([dlopen], [dl])
-            LIBS="$old_LIBS $LIBS"
+            AC_SUBST(BINRELOC_LIBS, [$LIBS])
+            LIBS="$old_LIBS"
             ac_use_autopackage=yes
             AC_DEFINE(ENABLE_AUTOPACKAGE,1,[Use autopackage to check libraries at run time])
         fi
@@ -98,9 +99,11 @@ if test "x$ac_arg_use_dc" != "xno"; then
       AM_PATH_LIBGCRYPT(, , ac_use_ssl=no)
       AC_CHECK_HEADERS([gcrypt.h], , ac_use_ssl=no)
       if test "x$ac_use_ssl" = "xgnutls"; then
-        LIBS="$LIBGNUTLS_LIBS $LIBGCRYPT_LIBS $LIBS"
         CFLAGS="$LIBGNUTLS_CFLAGS $LIBGCRYPT_CFLAGS $CFLAGS"
+        temp_LIBS="$LIBS"
+        LIBS="$LIBGNUTLS_LIBS $LIBGCRYPT_LIBS $LIBS"
         AC_CHECK_FUNC(gnutls_dh_params_generate2, [AC_DEFINE(HAVE_DH_GENPARAM2, 1, [Whether new DH prime generator is available])],)
+        LIBS="$temp_LIBS"
       fi
     fi
     if test "x$ac_use_ssl" = "xno"; then
@@ -135,43 +138,49 @@ if test "x$ac_arg_use_otr" != "xno"; then
     temp_CFLAGS="$CFLAGS"
     if test "x$ac_arg_use_ssl" != "xgnutls"; then
         AM_PATH_LIBGCRYPT(, ac_use_otr=maybe, ac_use_otr=no)
-        LIBS="$LIBGCRYPT_LIBS $LIBS"
         CFLAGS="$LIBGCRYPT_CFLAGS $CFLAGS"
     else
         ac_use_otr=maybe
     fi
+    LIBS="$LIBGCRYPT_LIBS $LIBS"
     if test "x$ac_use_otr" != "xno"; then
         AM_PATH_LIBOTR(, ac_use_otr=yes, ac_use_otr=no)
     fi
     if test "x$ac_use_otr" = "xyes"; then
-        LIBS="$LIBOTR_LIBS $LIBS"
         CFLAGS="$LIBOTR_CFLAGS $CFLAGS"
         ac_arg_use_otr=yes
     else
         if test "x$ac_arg_use_otr" = "xyes"; then
             AC_MSG_FAILURE([OTR support requested, but no usable libotr found!])
         fi
-        LIBS="$temp_LIBS"
         CFLAGS="$temp_CFLAGS"
         ac_arg_use_otr=no
     fi
+    LIBS="$temp_LIBS"
 fi
 
 if test "x$ac_arg_use_tcl" != "xno"; then
   ac_use_tcl=no
+  temp_LIBS="$LIBS"
+  LIBS=""
+  LIBTCL_LIBS=""
   if test "x$ac_arg_use_autopackage" = xyes; then
     AC_CHECK_HEADERS([tcl8.4/tcl.h tcl.h], [ac_use_tcl=yes
                                             break])
     if test "x$ac_use_tcl" = "xyes"; then
-      AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4], [ac_use_tcl=yes], [ac_use_tcl=no])
+      AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4], [ac_use_tcl=yes
+                                                    LIBTCL_LIBS=$LIBS], [ac_use_tcl=no], [$temp_LIBS])
     fi
   else
     AC_CHECK_HEADERS([tcl8.4/tcl.h tcl8.3/tcl.h tcl.h], [ac_use_tcl=yes
                                                          break])
     if test "x$ac_use_tcl" = "xyes"; then
-      AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4 tcl8.3], [ac_use_tcl=yes], [ac_use_tcl=no])
+      AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4 tcl8.3], [ac_use_tcl=yes
+                                                           LIBTCL_LIBS=$LIBS], [ac_use_tcl=no], [$temp_LIBS])
     fi
   fi
+  LIBS="$temp_LIBS"
+  AC_SUBST(LIBTCL_LIBS, [$LIBTCL_LIBS])
   if test "x$ac_usl_tcl$ac_arg_use_tcl" = "xnoyes"; then
     AC_MSG_FAILURE([cannot find a suitable Tcl interpreter library])
   fi
@@ -369,9 +378,7 @@ if test "x$ac_arg_use_xmpp" != "xno"; then
     AC_SUBST(L_LIBXMPP, "-L. -lmicqxmpp", [Static lib link option to link if XMPP is enabled])
     AC_DEFINE(ENABLE_XMPP, 1, [Enable XMPP chat network using libgloox])
     if test "x$ac_use_autopackage" = xyes; then
-      LIBS="$LIBS -lgloox -lstdc++"
-    else
-      LIBS="$LIBS $XMPP_LIBS"
+      XMPP_LIBS="-lgloox -lstdc++"
     fi
   fi
 fi
@@ -585,6 +592,11 @@ fi
 
 if test "x$ac_use_autopackage" = xyes; then
     LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $LIBS"'`'
+    LIBGCRYPT_LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $LIBGCRYPT_LIBS"'`'
+    LIBGNUTLS_LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $LIBGNUTLS_LIBS"'`'
+    LIBOTR_LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $LIBOTR_LIBS"'`'
+    LIBTCL_LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $LIBTCL_LIBS"'`'
+    XMPP_LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $XMPP_LIBS"'`'
 fi
 
 AC_MSG_CHECKING([whether to enable XMPP chat network (BETA)])

@@ -26,7 +26,9 @@ libmicqmsn_a_SOURCES = msn_base.cpp
 
 libmicqxmpp_a_SOURCES = jabber_base.cpp
 
-micq_LDADD = @LIBOBJS@ @LIBICONV@ @BINRELOC_LIBS@ @L_LIBMSN@ @L_LIBXMPP@
+micq_LDADD = @LIBOBJS@ @LIBICONV@ @BINRELOC_LIBS@ @L_LIBMSN@ @L_LIBXMPP@ \
+	@LIBOTR_LIBS@ @LIBGNUTLS_LIBS@ @LIBGCRYPT_LIBS@ @XMPP_LIBS@ @LIBTCL_LIBS@
+
 $(micq_SOURCES): @LIBOBJS@ @LIBMSN@
 
 snprintf.o: snprintf.c
