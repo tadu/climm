@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-bin_PROGRAMS = micq
+bin_PROGRAMS = micq icqsyn
 
 AM_CFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include
 
@@ -16,6 +16,8 @@ micq_SOURCES = autopackage_prefix.c conv.c file_util.c im_response.c micq.c \
        oscar_service.c oscar_location.c oscar_contact.c oscar_icbm.c \
        oscar_bos.c oscar_roster.c oscar_oldicq.c oscar_register.c  \
        remote.c os.c util_tcl.c util_ssl.c im_icq8.c buildmark.c util_otr.c
+
+icqsyn_SOURCES = icqsyn.c conv.c packet.c util_str.c util_syntax.c
 
 EXTRA_LIBRARIES = libmicqmsn.a libmicqxmpp.a
 noinst_LIBRARIES = @LIBMSN@ @LIBXMPP@
