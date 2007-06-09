@@ -279,6 +279,28 @@ JUMP_SNAC_F(SnacSrvReplyroster)
                     s_repl (&roster->ICQTIC, re->tlv[j].str.txt);
                 break;
             case roster_visibility:
+                j = TLVGet (re->tlv, TLV_PRIVACY);
+                if (j != (UWORD)-1)
+                {
+                    rl_printf ("# privacy mode: (%d)\n", *re->tlv[j].str.txt);
+                    if (*re->tlv[j].str.txt == 1)
+                        rl_printf ("#     always visible to all users\n");
+                    else if (*re->tlv[j].str.txt == 2)
+                        rl_printf ("#     never visible to anyone\n");
+                    else if (*re->tlv[j].str.txt == 3)
+                        rl_printf ("#     only visible to always visible contacts\n");
+                    else if (*re->tlv[j].str.txt == 4)
+                        rl_printf ("#     always visible except to invisible contacts\n");
+                    else if (*re->tlv[j].str.txt == 5)
+                        rl_printf ("#     normal visible to contacts except invisible, but always to visible contacts\n");
+                    else
+                        rl_printf ("#     unknown/invalid privacy mode\n");
+                    if (*re->tlv[j].str.txt != 5)
+                        rl_printf ("# change with 'contact delid %d %d' and then 'contact security <mode>'.\n",
+                                   re->tag, re->id);
+                }
+                break;
+            
             case roster_presence:
             case roster_noncont:
                 /* TLV_UNKNIDLE   */
