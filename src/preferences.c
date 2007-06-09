@@ -125,6 +125,33 @@ const char *PrefUserDirReal (Preferences *pref)
     return pref->basedir;
 }
 
+/*
+ * Expand ~ and make absolute path.
+ */
+const char *PrefRealPath (const char *path)
+{
+    char *f = NULL;
+
+    if (!*path)
+        path = "";
+    if (*path == '~' && path[1] == '/' && getenv ("HOME"))
+        return s_sprintf ("%s%s", getenv ("HOME"), path + 1);
+    if (*path == '/')
+        return path;
+#ifdef AMIGA
+    if (strchr (path, ':') && (!strchr (path, '/') || strchr (path, '/') > strchr (path, ':')))
+        return path;
+#endif
+    path = s_sprintf ("%s%s", PrefUserDir (prG), f = strdup (path));
+    free (f);
+    if (*path != '~' || path[1] != '/' || !getenv ("HOME"))
+        return path;
+    path = s_sprintf ("%s%s", getenv ("HOME"), (f = strdup (path)) + 1);
+    free (f);
+    return path;
+}
+
+
 #ifndef SYS_NMLN
 #define SYS_NMLN 200
 #endif

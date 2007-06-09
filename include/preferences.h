@@ -68,6 +68,8 @@ const char *PrefSetColorScheme (UBYTE scheme);
 const char *PrefDefUserDirReal (Preferences *pref);
 const char *PrefUserDirReal (Preferences *pref);
 const char *PrefLogNameReal (Preferences *pref);
+const char *PrefRealPath (const char *path);
+#define s_realpath PrefRealPath
 
 #define FLAG_DELBS      (1 <<  0)
 #define FLAG_DEP_CONVRUSS   (1 <<  1)

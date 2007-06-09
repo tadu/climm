@@ -755,32 +755,6 @@ const char *s_dumpnd (const UBYTE *data, UWORD len)
     return t.txt;
 }
 
-/*
- * Expand ~ and make absolute path.
- */
-const char *s_realpath (const char *path)
-{
-    char *f = NULL;
-
-    if (!*path)
-        path = "";
-    if (*path == '~' && path[1] == '/' && getenv ("HOME"))
-        return s_sprintf ("%s%s", getenv ("HOME"), path + 1);
-    if (*path == '/')
-        return path;
-#ifdef AMIGA
-    if (strchr (path, ':') && (!strchr (path, '/') || strchr (path, '/') > strchr (path, ':')))
-        return path;
-#endif
-    path = s_sprintf ("%s%s", PrefUserDir (prG), f = strdup (path));
-    free (f);
-    if (*path != '~' || path[1] != '/' || !getenv ("HOME"))
-        return path;
-    path = s_sprintf ("%s%s", getenv ("HOME"), (f = strdup (path)) + 1);
-    free (f);
-    return path;
-}
-
 #define SUPERSAFE "%*+-_.:=@/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 /*
