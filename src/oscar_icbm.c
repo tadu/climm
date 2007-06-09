@@ -308,10 +308,12 @@ static UBYTE SnacCliSendmsg4 (Connection *serv, Message *msg)
     PacketWriteTLVDone (pak);
     PacketWriteB2 (pak, 6);
     PacketWriteB2 (pak, 0);
-    SnacSend (serv, pak);
 
     event = QueueEnqueueData2 (serv, QUEUE_TYPE4_RESEND_ACK, pak->ref, 120, msg, &SnacCallbackIgnore, NULL);
     event->cont = cont;
+
+    SnacSend (serv, pak);
+
     return RET_OK;
 }
 
