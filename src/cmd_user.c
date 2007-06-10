@@ -4138,8 +4138,8 @@ static JUMP_F(CmdUserConn)
 static JUMP_F(CmdUserContact)
 {
     strc_t par;
-    OPENCONN;
     UDWORD i;
+    OPENCONN;
 
     if (uiG.conn->type != TYPE_SERVER)
     {
