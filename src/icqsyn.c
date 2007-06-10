@@ -156,7 +156,7 @@ static SNAC SNACS[] = {
     { 23,  2, "CLI_MD5LOGIN",        NULL},
     { 23,  4, "CLI_REGISTERUSER",    NULL},
     { 23,  6, "CLI_REQLOGIN",        NULL},
-    {  0,  0, "unknown",             NULL}
+    {  0,  0, "_unknown",             NULL}
 };
 
 /*
@@ -168,14 +168,14 @@ const char *SnacName (UWORD fam, UWORD cmd)
 
     for (s = SNACS; s->fam; s++)
         if (s->fam == fam && s->cmd == cmd)
-            return s->name;
+            return strchr (s->name, '_') + 1;
     return s->name;
 }
 
 /*
  * Print a given SNAC.
  */
-void SnacPrint (Packet *pak)
+void SnacPrint (Packet *pak, int out)
 {
     UWORD fam, cmd, flag, opos = pak->rpos;
     UDWORD ref, len;
@@ -187,30 +187,30 @@ void SnacPrint (Packet *pak)
     ref  = PacketReadB4 (pak);
     len  = PacketReadAtB2 (pak, pak->rpos);
 
-    printf ("    %s %sSNAC     (%x,%x) [%s] flags %x ref %lx",
+    printf ("  %s %sSNAC     (%x,%x) [%s_%s] flags %x ref %lx",
              s_dumpnd (pak->data + 6, flag & 0x8000 ? 10 + len + 2 : 10),
-             COLDEBUG, fam, cmd, SnacName (fam, cmd), flag, ref);
+             COLDEBUG, fam, cmd,
+             out ? "CLI" : "SRV",
+             SnacName (fam, cmd), flag, ref);
     if (flag & 0x8000)
     {
-        printf ("     extra (%ld)", len);
+        printf ("   extra (%ld)", len);
         pak->rpos += len + 2;
     }
     printf ("%s\n", COLNONE);
 
     {
-        char *f, *ff, *syn = strdup (s_sprintf ("gs%dx%ds", fam, cmd));
+        char *f, *syn = strdup (s_sprintf ("gs%dx%ds", fam, cmd));
         f = PacketDump (pak, syn, COLDEBUG, COLNONE);
         free (syn);
-        ff = strdup (s_ind (f));
+        printf (s_ind (f));
         free (f);
-        printf (s_ind (ff));
-        free (ff);
     }
 
     pak->rpos = opos;
 }
 
-void FlapPrint (Packet *pak)
+void FlapPrint (Packet *pak, int out)
 {
     UWORD opos = pak->rpos;
     UBYTE ch;
@@ -221,17 +221,15 @@ void FlapPrint (Packet *pak)
     seq = PacketReadB2 (pak);
     len = PacketReadB2 (pak);
 
-    printf ("%s\n  %s %sFLAP  ch %d seq %08x length %04x%s\n",
-              COLNONE, s_dumpnd (pak->data, 6), COLDEBUG, ch, seq, len, COLNONE);
+    printf ("%s\n  %s %sFLAP %s ch %d seq %08x length %04x%s\n",
+              COLNONE, s_dumpnd (pak->data, 6), COLDEBUG,
+              out ? ">>>" : "<<<",
+              ch, seq, len, COLNONE);
 
     if (ch == 2)
-        SnacPrint (pak);
+        SnacPrint (pak, out);
     else
-    {
-        char *f = strdup (s_ind (s_dump (pak->data + 6, pak->len - 6)));
-        printf ("%s", s_ind (f));
-        free (f);
-    }
+        printf ("%s", s_ind (s_dump (pak->data + 6, pak->len - 6)));
 
     pak->rpos = opos;
 }
@@ -244,6 +242,9 @@ int main (int argc, char **argv)
     ConvInit ();
     Packet *pak[2];
     FILE *f = stdin;
+    int nooffset = 0;
+    int out = 0;
+    const char *l = NULL;
     
     pak[0] = PacketC ();
     pak[1] = PacketC ();
@@ -263,29 +264,38 @@ int main (int argc, char **argv)
     
     while ((line = UtilIOReadline (f)))
     {
-        const char *l = line->txt;
-        int out = *l == ' ' ? 0 : 1;
+        l = line->txt;
+        if (!nooffset)
+            out = *l == ' ' ? 0 : 1;
         int i;
         UDWORD hex;
-
+        if (!*l)
+            continue;
+        if (!strncmp (l, "Incoming", 8) || !strncmp (l, "Outgoing", 8))
+        {
+            nooffset = 1;
+            out = !strncmp (l, "Outgoing", 8);
+            continue;
+        }
         while (*l == ' ')
             l++;
-        while (strchr ("0123456789abcdefABCDEF", *l))
+        while (!nooffset && strchr ("0123456789abcdefABCDEF", *l))
             l++;
         for (i = 0; i < 16; i++)
         {
             if (*l == ' ') l++;
             if (*l == ' ') l++;
-            if (*l == ' ') break;
+            if (!*l || !strchr ("0123456789abcdefABCDEF", *l))
+                break;
             if      (*l >= '0' && *l <= '9')  hex = *l - '0';
             else if (*l >= 'a' && *l <= 'f')  hex = *l - 'a' + 10;
-            else if (*l >= 'A' && *l <= 'A')  hex = *l - 'A' + 10;
+            else if (*l >= 'A' && *l <= 'F')  hex = *l - 'A' + 10;
             else assert (0);
             hex *= 16;
             l++;
             if      (*l >= '0' && *l <= '9')  hex += *l - '0';
             else if (*l >= 'a' && *l <= 'f')  hex += *l - 'a' + 10;
-            else if (*l >= 'A' && *l <= 'A')  hex += *l - 'A' + 10;
+            else if (*l >= 'A' && *l <= 'F')  hex += *l - 'A' + 10;
             else assert (0);
             l++;
             PacketWrite1 (pak[out], hex);
@@ -294,7 +304,9 @@ int main (int argc, char **argv)
                 UWORD l = PacketReadAtB2 (pak[out], 4);
                 if (PacketWritePos (pak[out]) >= 6 + l)
                 {
-                    FlapPrint (pak[out]);
+                    printf (out ? "Outgoing v8 server packet:" : "Incoming v8 server packet:");
+                    
+                    FlapPrint (pak[out], out);
                     pak[out]->wpos = 0;
                     pak[out]->rpos = 0;
                     pak[out]->len = 0;
