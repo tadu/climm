@@ -71,6 +71,7 @@ static const char *syntable[] = {
     "s4x5s",   "W-",
     "s4x6s",   "DDW[1uT[2T[257WW]-]-][2uT[5WDDCT[10001(wCwdbw)wwdddwwwLDDS]-]-][4uT[5DWL]-]",
     "s4x7s",   "DDW[1uWWT[2T[257WW]-]-][2uWWT[5WDDCT[10001(wCwdbw)wwdddwwwLDDS]-]-][4uWWT[5DWL]-]",
+    "s4x10s",  "WuWW{T}WW",
     "s4x11s",  "DDwuW(wCwdbw)wwdddwwwLDD",
     "s4x12s",  "DDwu",
     "s9x2s",   "",

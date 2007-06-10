@@ -73,6 +73,7 @@ static SNAC SNACS[] = {
     {  4,  1, "SRV_ICBMERR",         SnacSrvIcbmerr},
     {  4,  5, "SRV_REPLYICBM",       SnacSrvReplyicbm},
     {  4,  7, "SRV_RECVMSG",         SnacSrvRecvmsg},
+    {  4, 10, "SRV_MISSEDICBM",      NULL },
     {  4, 11, "SRV/CLI_ACKMSG",      SnacSrvAckmsg},
     {  4, 12, "SRV_SRVACKMSG",       SnacSrvSrvackmsg},
     {  9,  1, "SRV_BOSERR",          SnacSrvBoserr},
