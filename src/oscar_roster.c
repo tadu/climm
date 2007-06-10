@@ -328,11 +328,11 @@ JUMP_SNAC_F(SnacSrvReplyroster)
             SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, roster_icqtic, TLV_ICQTIC, "3608,0,0,0,60,null", 18);
         if (!serv->privacy_tag)
         {
-            SnacCliRosterentryadd (serv, "", 0, 0x4242, roster_visibility, TLV_PRIVACY, "\x03", 1);
-            serv->privacy_tag = 0x4242;
+            serv->privacy_tag = random () % 0x8000;
+            SnacCliRosterentryadd (serv, "", 0, serv->privacy_tag, roster_visibility, TLV_PRIVACY, "\x03", 1);
             serv->privacy_value = 3;
         }
-
+        SnacCliSetvisibility (serv, serv->privacy_value);
         if (~serv->connect & CONNECT_OK)
         {
             SnacCliSetstatus (serv, serv->status, 3);
@@ -834,6 +834,22 @@ JUMP_SNAC_F(SnacSrvRosterok)
     }
     if (!roster->ICQTIC)
         SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, roster_icqtic, TLV_ICQTIC, "3608,0,0,0,60,null", 18);
+    if (!serv->privacy_tag)
+    {
+        serv->privacy_tag = random () % 0x8000;
+        SnacCliRosterentryadd (serv, "", 0, serv->privacy_tag, roster_visibility, TLV_PRIVACY, "\x03", 1);
+        serv->privacy_value = 3;
+    }
+    SnacCliSetvisibility (serv, serv->privacy_value);
+    if (~serv->connect & CONNECT_OK)
+    {
+        SnacCliSetstatus (serv, serv->status, 3);
+        SnacCliReady (serv);
+        SnacCliAddcontact (serv, NULL, serv->contacts);
+        SnacCliReqofflinemsgs (serv);
+        SnacCliReqinfo (serv);
+    }
+
     event2->callback (event2);
     if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
     {
