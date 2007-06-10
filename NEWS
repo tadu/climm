@@ -34,3 +34,4 @@
                    upon certain login errors
 2007-06-05: 0.5.4: OTR (for ICQ and XMPP), md5 login, no more assertion failed on too long messages,
                    ask for all not given passwords before trying to do any login, bug fixes
+2007-06-10: 0.5.4.1: lots of bug fixes

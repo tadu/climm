@@ -2,7 +2,7 @@
 /*
  * Send ICQ commands, using protocol version 5.
  *
- * mICQ Copyright (C) © 2001,2002,2003 Rüdiger Kuhlmann
+ * mICQ Copyright (C) © 2001-2007 Rüdiger Kuhlmann
  *
  * mICQ is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by

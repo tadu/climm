@@ -1,7 +1,7 @@
 /*
  * Line editing code.
  *
- * mICQ Copyright (C) © 2001,2002,2003,2004 Rüdiger Kuhlmann
+ * mICQ Copyright (C) © 2001-2007 Rüdiger Kuhlmann
  *
  * mICQ is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by

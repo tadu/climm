@@ -1,6 +1,57 @@
 -*- coding: utf-8 -*-
 
+
+2007-06-10 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix typo in packet.c
+	* fix splitting of messages
+	* undocumented command contact security to _add_ (not update)
+	  security settings
+	* move s_realpath() to preferences.c as PrefRealPath()
+	* fix auth command without args
+	* add simple tool icqsyn to decode wireshark hex dumps into ICQ
+	  decoded packets
+	* add (untranslatable) notice about privacy mode
+	* don't accumulate all libs in LIBS, place in distinct variables so
+	  that icqsyn won't be linked against all those
+	* small improvements to icqsyn, is now idempotent
+	* tiny syntax update for util_syntax.c
+	* need to explicitly set privacy mode for invisibility to work
+	* add little dumb ICQ proxy for determining timings
+	* do not build additional tools by default
+	* print privacy mode message only if != 3 and 4
+	* 0.5.4.1
+
+2007-06-07 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix failed assertion in tcp.c
+	* fix parsing bugs: conn without args should list connections
+	* + [conn] login without connection should use arg as password
+	* fix segfault in util_otr
+	* generate OTR keys for all connections, and improve output
+	* fix copyright year
+	* automatic i18n update
+	* packaging description and rules updates
+	* ru.i18n update from Max Komar
+	* add msg->cont == cont assertion already in SnacCliSendmsg
+	* fix 2 mem read after free that is usually optimzed away
+	* fix double-free in tcp.c
+	* fix verbose resetting verbosity 
+	* limit md5 passwords to 8 characters
+	* fix missing newline hiding peer ssl help
+
 2007-06-05 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* non-c99 compile fix thanks to rtc
+	* ignore trailing white space _after_ OTR processing
+	* don't write (non-ack) pseudo-ack at timeout, until I think of a way
+	  how to handle that more intelligently
+	* fix uninitialized variable in im_request.c
+	* fix _msg command (message type parsing)
+	* fix potentially uninitialized variable in im_response.c
+	* correction if no ICQ message format is given
+	* fix include for replacement code
+	* try to enable xmpp if we can find libgloox
+	* relax test in binreloc.m4 for same prefix some more for !/&%$%Â§" rpm
+	* make some functions private that do not need to be public
+	* get autopackage working with xmpp
 	* 0.5.4
 
 2007-05-23 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>

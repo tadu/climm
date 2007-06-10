@@ -2,7 +2,7 @@
  * Handles incoming and creates outgoing SNAC packets
  * for the family 1 (service) commands.
  *
- * mICQ Copyright (C) © 2001,2002,2003 Rüdiger Kuhlmann
+ * mICQ Copyright (C) © 2001-2007 Rüdiger Kuhlmann
  *
  * mICQ is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
