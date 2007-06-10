@@ -82,6 +82,8 @@ struct Connection_s
     Connection            *parent; /* parent session               */
     
     SOK_T     logfd;
+    UWORD     privacy_tag;         /* F*cking ICQ needs to change the value */
+    UBYTE     privacy_value;       /* when switching between visible and invisible */
     
     UDWORD    stat_real_pak_sent;
     UDWORD    stat_real_pak_rcvd;

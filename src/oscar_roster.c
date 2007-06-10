@@ -113,11 +113,6 @@ JUMP_SNAC_F(SnacSrvReplylists)
 {
     Connection *serv = event->conn;
 
-    SnacCliSetstatus (serv, serv->status, 3);
-    SnacCliReady (serv);
-    SnacCliAddcontact (serv, NULL, serv->contacts);
-    SnacCliReqofflinemsgs (serv);
-    SnacCliReqinfo (serv);
     if (serv->flags & CONN_WIZARD)
     {
         IMRoster (serv, IMROSTER_IMPORT);
@@ -131,7 +126,7 @@ JUMP_SNAC_F(SnacSrvReplylists)
             SnacCliMetasetmore (serv, cont);
         }
     }
-    else if (ContactGroupPrefVal (serv->contacts, CO_WANTSBL))
+    else
         IMRoster (serv, IMROSTER_DIFF);
 }
 
@@ -279,9 +274,11 @@ JUMP_SNAC_F(SnacSrvReplyroster)
                     s_repl (&roster->ICQTIC, re->tlv[j].str.txt);
                 break;
             case roster_visibility:
+                serv->privacy_tag = re->id;
                 j = TLVGet (re->tlv, TLV_PRIVACY);
                 if (j != (UWORD)-1)
                 {
+                    serv->privacy_value = *re->tlv[j].str.txt;
                     rl_printf ("# privacy mode: (%d)\n", *re->tlv[j].str.txt);
                     if (*re->tlv[j].str.txt == 1)
                         rl_printf ("#     always visible to all users\n");
@@ -328,6 +325,22 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         }
         if (!roster->ICQTIC)
             SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, roster_icqtic, TLV_ICQTIC, "3608,0,0,0,60,null", 18);
+        if (!serv->privacy_tag)
+        {
+            SnacCliRosterentryadd (serv, "", 0, 0x4242, roster_visibility, TLV_PRIVACY, "\x03", 1);
+            serv->privacy_tag = 0x4242;
+            serv->privacy_value = 3;
+        }
+
+        if (~serv->connect & CONNECT_OK)
+        {
+            SnacCliSetstatus (serv, serv->status, 3);
+            SnacCliReady (serv);
+            SnacCliAddcontact (serv, NULL, serv->contacts);
+            SnacCliReqofflinemsgs (serv);
+            SnacCliReqinfo (serv);
+        }
+
         event2->callback (event2);
         if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
         {
@@ -591,17 +604,18 @@ void SnacCliSetvisibility (Connection *serv, char value)
 {
     Packet *pak;
     
-    pak = SnacC (serv, 19, 8, 0, 0);
+    pak = SnacC (serv, 19, 9, 0, 0);
     PacketWriteStrB     (pak, "");
     PacketWriteB2       (pak, 0);
-    PacketWriteB2       (pak, 0x4242);
-    PacketWriteB2       (pak, 4);
+    PacketWriteB2       (pak, serv->privacy_tag);
+    PacketWriteB2       (pak, roster_visibility);
     PacketWriteBLen     (pak);
     PacketWriteTLV      (pak, TLV_PRIVACY);
     PacketWrite1        (pak, value);
     PacketWriteTLVDone  (pak);
     PacketWriteBLenDone (pak);
     SnacSend (serv, pak);
+    serv->privacy_value = value;
 }
 
 /*
