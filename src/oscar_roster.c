@@ -279,22 +279,23 @@ JUMP_SNAC_F(SnacSrvReplyroster)
                 if (j != (UWORD)-1)
                 {
                     serv->privacy_value = *re->tlv[j].str.txt;
-                    rl_printf ("# privacy mode: (%d)\n", *re->tlv[j].str.txt);
-                    if (*re->tlv[j].str.txt == 1)
-                        rl_printf ("#     always visible to all users\n");
-                    else if (*re->tlv[j].str.txt == 2)
-                        rl_printf ("#     never visible to anyone\n");
-                    else if (*re->tlv[j].str.txt == 3)
-                        rl_printf ("#     only visible to always visible contacts\n");
-                    else if (*re->tlv[j].str.txt == 4)
-                        rl_printf ("#     always visible except to invisible contacts\n");
-                    else if (*re->tlv[j].str.txt == 5)
-                        rl_printf ("#     normal visible to contacts except invisible, but always to visible contacts\n");
-                    else
-                        rl_printf ("#     unknown/invalid privacy mode\n");
-                    if (*re->tlv[j].str.txt != 5)
-                        rl_printf ("# change with 'contact delid %d %d' and then 'contact security <mode>'.\n",
-                                   re->tag, re->id);
+                    if (*re->tlv[j].str.txt != 3 && *re->tlv[j].str.txt != 4)
+                    {
+                        rl_printf ("# privacy mode: (%d)\n", *re->tlv[j].str.txt);
+                        if (*re->tlv[j].str.txt == 1)
+                            rl_printf ("#     always visible to all users\n");
+                        else if (*re->tlv[j].str.txt == 2)
+                            rl_printf ("#     never visible to anyone\n");
+                        else if (*re->tlv[j].str.txt == 3)
+                            rl_printf ("#     only visible to always visible contacts\n");
+                        else if (*re->tlv[j].str.txt == 4)
+                            rl_printf ("#     always visible except to invisible contacts\n");
+                        else if (*re->tlv[j].str.txt == 5)
+                            rl_printf ("#     always visible to all contacts\n");
+                        else
+                            rl_printf ("#     unknown/invalid privacy mode\n");
+                        rl_printf ("# change with 'contact security <mode>' (to 3 or 4).\n");
+                    }
                 }
                 break;
             
