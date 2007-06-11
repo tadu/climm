@@ -767,7 +767,7 @@ static int __IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWOR
     
     if (ContactPrefVal (cont, CO_IGNORE)
         || (!ContactPrefVal (cont, CO_SHOWONOFF)  && (old == ims_offline || status == ims_offline))
-        || (!ContactPrefVal (cont, CO_SHOWCHANGE) && old != ims_offline)
+        || (!ContactPrefVal (cont, CO_SHOWCHANGE) && old != ims_offline && status != ims_offline)
         || (cont->serv && ~cont->serv->connect & CONNECT_OK))
         hide |= hide_hide;
     
