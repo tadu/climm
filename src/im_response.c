@@ -138,7 +138,7 @@ static int cb_status_exec (Contact *cont, parentmode_t pm, change_t ch, const ch
 static int cb_srv_msg_exec (Contact *cont, parentmode_t pm, time_t stamp, fat_srv_msg_t *msg)
 {
     if (prG->event_cmd && *prG->event_cmd)
-        EventExec (cont, prG->event_cmd, ev_msg, msg->type, cont->status, msg->orig_data);
+        EventExec (cont, prG->event_cmd, ev_msg, msg->type, cont->status, msg->msgtext);
     return 0;
 }
 #endif /* MSGEXEC */
