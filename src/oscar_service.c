@@ -171,7 +171,7 @@ JUMP_SNAC_F(SnacSrvRates)
     SnacSend (serv, pak);
 
     if (!(serv->connect & CONNECT_OK))
-        serv->connect++;
+        serv->connect += 16;
 
     SnacCliReqlocation  (serv);
     SnacCliReqbuddy     (serv);
@@ -259,7 +259,7 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     /* TLV 1 c f 2 3 ignored */
     TLVD (tlv);
     
-    if (~serv->connect & CONNECT_OK)
+    if (~serv->connect & CONNECT_OK && (serv->connect & CONNECT_MASK) >= 60)
     {
         if (prG->chat > 0)
             SnacCliSetrandom (serv, prG->chat);
@@ -320,7 +320,7 @@ JUMP_SNAC_F(SnacSrvFamilies2)
     }
 
     if (!(serv->connect & CONNECT_OK))
-        serv->connect++;
+        serv->connect += 16;
     SnacCliRatesrequest (serv);
 }
 

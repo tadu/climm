@@ -335,6 +335,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         SnacCliSetvisibility (serv, serv->privacy_value);
         if (~serv->connect & CONNECT_OK)
         {
+            serv->connect += 16;
             SnacCliSetstatus (serv, serv->status, 3);
             SnacCliReady (serv);
             SnacCliAddcontact (serv, NULL, serv->contacts);
@@ -843,6 +844,7 @@ JUMP_SNAC_F(SnacSrvRosterok)
     SnacCliSetvisibility (serv, serv->privacy_value);
     if (~serv->connect & CONNECT_OK)
     {
+        serv->connect += 16;
         SnacCliSetstatus (serv, serv->status, 3);
         SnacCliReady (serv);
         SnacCliAddcontact (serv, NULL, serv->contacts);
