@@ -205,7 +205,7 @@ Connection *ConnectionFindScreen (UWORD type, const char *screen)
     for (cl = &slist; cl; cl = cl->more)
         for (i = 0; i < ConnectionListLen; i++)
             if ((conn = cl->conn[i]) && (conn->type & type) == type
-                && !strcmp (conn->screen, screen))
+                && conn->screen && !strcmp (conn->screen, screen))
                 return conn;
 
     return NULL;
