@@ -292,7 +292,7 @@ static int cb_status_auto (Contact *cont, parentmode_t pm, change_t ch, const ch
         }
 
         if (cdata)
-            IMCliMsg (cont, cdata, "\xff", OptSetVals (NULL, CO_FORCE, 1, 0));
+            IMCliMsg (cont, cdata, "\xff", NULL);
     }
     return 0;
 }

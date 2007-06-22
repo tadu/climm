@@ -1049,7 +1049,7 @@ static JUMP_F(CmdUserGetAuto)
                     default:          continue;
                 }
             }
-            IMCliMsg (cont, cdata, "\xff", OptSetVals (NULL, CO_FORCE, 1, 0));
+            IMCliMsg (cont, cdata, "\xff", NULL);
         }
 
     if (data || one)
