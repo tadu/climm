@@ -33,8 +33,9 @@ extern "C" {
 extern "C" {
     static jump_conn_f XMPPCallbackDispatch;
     static jump_conn_f XMPPCallbackReconn;
-    static jump_conn_err_f XMPPCallbackError;
     static jump_conn_f XMPPCallbackClose;
+    static jump_conn_err_f XMPPCallbackError;
+    static void XMPPCallBackDoReconn (Event *event);
 }
 
 class MICQXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
@@ -128,27 +129,30 @@ void MICQXMPP::onDisconnect (gloox::ConnectionError e)
     switch (e)
     {
         case gloox::ConnNoError:
-            rl_printf ("onDisconnect: NoError.\n");
+            rl_printf ("#onDisconnect: NoError.\n");
             break;
         case gloox::ConnStreamError:
             {
                 std::string sET = m_client->streamErrorText();
-                rl_printf ("onDisconnect: Error %d: ConnStreamError: Error %d: %s\n",
+                rl_printf ("#onDisconnect: Error %d: ConnStreamError: Error %d: %s\n",
                            e, m_client->streamError(), sET.c_str());
             }
             break;
-        case gloox::ConnStreamClosed:         rl_printf ("onDisconnect: Error StreamClosed %d.\n", e); break;
-        case gloox::ConnIoError:              rl_printf ("onDisconnect: Error IoError %d.\n", e); break;
-        case gloox::ConnOutOfMemory:          rl_printf ("onDisconnect: Error OutOfMemory %d.\n", e); break;
-        case gloox::ConnNoSupportedAuth:      rl_printf ("onDisconnect: Error NoSupportedAuth %d.\n", e); break;
-        case gloox::ConnTlsFailed:            rl_printf ("onDisconnect: Error TlsFailed %d.\n", e); break;
-        case gloox::ConnAuthenticationFailed: rl_printf ("onDisconnect: Error AuthenticationFailed %d.\n", e);
+        case gloox::ConnStreamClosed:
+        case gloox::ConnIoError:
+            XMPPCallbackReconn (m_conn);
+            return;
+        
+        case gloox::ConnOutOfMemory:          rl_printf ("#onDisconnect: Error OutOfMemory %d.\n", e); break;
+        case gloox::ConnNoSupportedAuth:      rl_printf ("#onDisconnect: Error NoSupportedAuth %d.\n", e); break;
+        case gloox::ConnTlsFailed:            rl_printf ("#onDisconnect: Error TlsFailed %d.\n", e); break;
+        case gloox::ConnAuthenticationFailed: rl_printf ("#onDisconnect: Error AuthenticationFailed %d.\n", e);
             s_repl (&m_conn->passwd, NULL);
             break;
-        case gloox::ConnUserDisconnected:     rl_printf ("onDisconnect: Error UserDisconnected %d.\n", e); break;
-        case gloox::ConnNotConnected:         rl_printf ("onDisconnect: Error NotConnected %d.\n", e); break;
+        case gloox::ConnUserDisconnected:     return;
+        case gloox::ConnNotConnected:         rl_printf ("#onDisconnect: Error NotConnected %d.\n", e); break;
         default:
-            rl_printf ("onDisconnect: Error %d.\n", e);
+            rl_printf ("#onDisconnect: Error %d.\n", e);
     }
 }
 
@@ -918,6 +922,8 @@ Event *ConnectionInitXMPPServer (Connection *serv)
         jid = s_sprintf ("%s@%s", serv->screen, serv->server);
         s_repl (&serv->screen, jid);
     }
+    
+    XMPPCallbackClose (serv);
 
     sp = s_sprintf ("%s", s_wordquote (s_sprintf ("%s:%lu", serv->server, serv->port)));
     rl_printf (i18n (2620, "Opening XMPP connection for %s at %s...\n"),
@@ -963,7 +969,7 @@ void XMPPCallbackDispatch (Connection *conn)
     MICQXMPP *j = getXMPPClient (conn);
     if (!j)
     {
-        rl_printf ("Avoid spinning.\n");
+        rl_printf ("#Avoid spinning.\n");
         conn->sok = -1;
         return;
     }
@@ -971,35 +977,73 @@ void XMPPCallbackDispatch (Connection *conn)
     j->getClient()->recv (0);
 }
 
-void XMPPCallbackReconn (Connection *conn)
+static void XMPPCallbackReconn (Connection *conn)
 {
-    rl_printf ("XMPPCallbackReconn: %p\n", conn);
+
+    ContactGroup *cg = conn->contacts;
+    Event *event;
+    Contact *cont;
+    int i;
+
+    if (!(cont = conn->cont))
+        return;
+
+    if (!(event = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
+    {
+        ConnectionInitXMPPServer (conn);
+        return;
+    }
+
+    conn->connect = 0;
+    rl_log_for (cont->nick, COLCONTACT);
+    if (event->attempts < 5)
+    {
+        rl_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << event->attempts);
+        event->due = time (NULL) + (10 << event->attempts);
+        event->callback = &XMPPCallBackDoReconn;
+        QueueEnqueue (event);
+    }
+    else
+    {
+        rl_print (i18n (2031, "Connecting failed too often, giving up.\n"));
+        EventD (event);
+    }
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+        cont->status = ims_offline;
+}
+
+static void XMPPCallBackDoReconn (Event *event)
+{
+    if (event->conn && event->conn->type == TYPE_XMPP_SERVER)
+    {
+        QueueEnqueue (event);
+        ConnectionInitXMPPServer (event->conn);
+    }
+    else
+        EventD (event);
 }
 
 void XMPPCallbackClose (Connection *conn)
 {
-    rl_printf ("XMPPCallbackClose: %p %d\n", conn, conn->sok);
-    
     if (conn->sok == -1)
         return;
 
     MICQXMPP *j = getXMPPClient (conn);
     if (!j)
     {
-        rl_printf ("Avoid spinning.\n");
+        rl_printf ("#Avoid spinning.\n");
         conn->sok = -1;
         return;
     }
     
     j->getClient()->disconnect ();
-    rl_printf ("Disconnected.\n");
     delete j;
     conn->xmpp_private = NULL;
 }
 
 BOOL XMPPCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
 {
-    rl_printf ("XMPPCallbackError: %p %lu %lu\n", conn, rc, flags);
+    rl_printf ("#XMPPCallbackError: %p %lu %lu\n", conn, rc, flags);
     return 0;
 }
 
