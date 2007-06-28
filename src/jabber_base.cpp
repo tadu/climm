@@ -46,12 +46,15 @@ class MICQXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
         char *m_stamp;
 
         void handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string tof, std::string id, gloox::StanzaSubType subtype);
+        void handleXEP8 (gloox::Tag *t);
         bool handleXEP22 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id);
         void handleXEP22a (gloox::Tag *XEP22, Contact *cfrom);
         void handleXEP22b (gloox::Tag *XEP22, gloox::JID from, std::string tof, std::string id);
         void handleXEP22c (gloox::JID from, std::string tof, std::string id, std::string type);
         void handleXEP71 (gloox::Tag *t);
         void handleXEP85 (gloox::Tag *t);
+        void handleXEP115 (gloox::Tag *t, Contact *contr);
+        void handleXEP153 (gloox::Tag *t);
         void handleGoogleNosave (gloox::Tag *t);
         void handleXEP136 (gloox::Tag *t);
         time_t handleXEP91 (gloox::Tag *t);
@@ -295,6 +298,20 @@ static void GetBothContacts (const gloox::JID &j, Connection *conn, Contact **b,
 }
 
 
+void MICQXMPP::handleXEP8 (gloox::Tag *t)
+{
+    if (gloox::Tag *avatar = t->findChild ("x", "xmlns", "jabber:x:avatar"))
+    {
+        if (gloox::Tag *hash = avatar->findChild ("hash"))
+        {
+            DropCData (hash);
+            CheckInvalid (hash);
+        }
+        DropAttrib (avatar, "xmlns");
+        CheckInvalid (avatar);
+    }
+}
+
 void MICQXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
 {
     std::string refid;
@@ -469,13 +486,37 @@ time_t MICQXMPP::handleXEP91 (gloox::Tag *t)
     return date;
 }
 
-void MICQXMPP::handleGoogleNosave (gloox::Tag *t)
+void MICQXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
 {
-    if (gloox::Tag *nosave = t->findChild ("nos:x", "xmlns:nos", "google:nosave"))
+    if (gloox::Tag *caps = t->findChild ("c", "xmlns", "http://jabber.org/protocol/caps"))
     {
-        DropAttrib (nosave, "xmlns:nos");
-        DropAttrib (nosave, "value");
-        CheckInvalid (nosave);
+        std::string node = caps->findAttribute ("node");
+        std::string ver = caps->findAttribute ("ver");
+        std::string ext = caps->findAttribute ("ext");
+        if (ext.empty())
+            s_repl (&contr->version, s_sprintf ("%s (%s)", node.c_str(), ver.c_str()));
+        else
+            s_repl (&contr->version, s_sprintf ("%s (%s) [%s]", node.c_str(), ver.c_str(), ext.c_str()));
+        DropAttrib (caps, "xmlns");
+        DropAttrib (caps, "ver");
+        DropAttrib (caps, "ext");
+        DropAttrib (caps, "node");
+        CheckInvalid (caps);
+    }
+    else if (gloox::Tag *caps = t->findChild ("caps:c", "xmlns:caps", "http://jabber.org/protocol/caps"))
+    {
+        std::string node = caps->findAttribute ("node");
+        std::string ver = caps->findAttribute ("ver");
+        std::string ext = caps->findAttribute ("ext");
+        if (ext.empty())
+            s_repl (&contr->version, s_sprintf ("%s (%s)", node.c_str(), ver.c_str()));
+        else
+            s_repl (&contr->version, s_sprintf ("%s (%s) [%s]", node.c_str(), ver.c_str(), ext.c_str()));
+        DropAttrib (caps, "xmlns:caps");
+        DropAttrib (caps, "ver");
+        DropAttrib (caps, "ext");
+        DropAttrib (caps, "node");
+        CheckInvalid (caps);
     }
 }
 
@@ -486,6 +527,30 @@ void MICQXMPP::handleXEP136 (gloox::Tag *t)
         DropAttrib (arc, "xmlns:arc");
         DropAttrib (arc, "otr");
         CheckInvalid (arc);
+    }
+}
+
+void MICQXMPP::handleXEP153 (gloox::Tag *t)
+{
+    if (gloox::Tag *vcard = t->findChild ("x", "xmlns", "vcard-temp:x:update"))
+    {
+        if (gloox::Tag *photo = vcard->findChild ("photo"))
+        {
+            DropCData (photo);
+            CheckInvalid (photo);
+        }
+        DropAttrib (vcard, "xmlns");
+        CheckInvalid (vcard);
+    }
+}
+
+void MICQXMPP::handleGoogleNosave (gloox::Tag *t)
+{
+    if (gloox::Tag *nosave = t->findChild ("nos:x", "xmlns:nos", "google:nosave"))
+    {
+        DropAttrib (nosave, "xmlns:nos");
+        DropAttrib (nosave, "value");
+        CheckInvalid (nosave);
     }
 }
 
@@ -559,51 +624,11 @@ void MICQXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, s
     }
     
     delay = handleXEP91 (s);
-    
-    // XEP-115
-    if (gloox::Tag *caps = s->findChild ("c", "xmlns", "http://jabber.org/protocol/caps"))
-    {
-        std::string node = caps->findAttribute ("node");
-        std::string ver = caps->findAttribute ("ver");
-        std::string ext = caps->findAttribute ("ext");
-        if (ext.empty())
-            s_repl (&contr->version, s_sprintf ("%s (%s)", node.c_str(), ver.c_str()));
-        else
-            s_repl (&contr->version, s_sprintf ("%s (%s) [%s]", node.c_str(), ver.c_str(), ext.c_str()));
-        DropAttrib (caps, "xmlns");
-        DropAttrib (caps, "ver");
-        DropAttrib (caps, "ext");
-        DropAttrib (caps, "node");
-        CheckInvalid (caps);
-    }
-    else if (gloox::Tag *caps = s->findChild ("caps:c", "xmlns:caps", "http://jabber.org/protocol/caps"))
-    {
-        std::string node = caps->findAttribute ("node");
-        std::string ver = caps->findAttribute ("ver");
-        std::string ext = caps->findAttribute ("ext");
-        if (ext.empty())
-            s_repl (&contr->version, s_sprintf ("%s (%s)", node.c_str(), ver.c_str()));
-        else
-            s_repl (&contr->version, s_sprintf ("%s (%s) [%s]", node.c_str(), ver.c_str(), ext.c_str()));
-        DropAttrib (caps, "xmlns:caps");
-        DropAttrib (caps, "ver");
-        DropAttrib (caps, "ext");
-        DropAttrib (caps, "node");
-        CheckInvalid (caps);
-    }
-    
-    if (gloox::Tag *vcard = s->findChild ("x", "xmlns", "vcard-temp:x:update"))
-    {
-        // %%FIXME%%
-        if (gloox::Tag *photo = vcard->findChild ("photo"))
-        {
-            DropCData (photo);
-            CheckInvalid (photo);
-        }
-        DropAttrib (vcard, "xmlns");
-        CheckInvalid (vcard);
-    }
 
+    handleXEP115 (s, contr); // entity capabilities (used also for client version)
+    handleXEP153 (s);        // vcard-based avatar
+    handleXEP8 (s);          // iq-based avatar (obsolete)
+    
     if (s->hasAttribute ("type", "unavailable"))
     {
         status = ims_offline;
@@ -642,6 +667,7 @@ void MICQXMPP::handlePresence (gloox::Stanza *s)
     if (t->hasAttribute ("xmlns", "jabber:client"))
         DropAttrib (t, "xmlns");
     DropAllChilds (t, "status");
+    
     if (!CheckInvalid (t))
     {
         std::string txml = t->xml();
