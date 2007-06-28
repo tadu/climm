@@ -51,6 +51,7 @@ class MICQXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
         void handleXEP22a (gloox::Tag *XEP22, Contact *cfrom);
         void handleXEP22b (gloox::Tag *XEP22, gloox::JID from, std::string tof, std::string id);
         void handleXEP22c (gloox::JID from, std::string tof, std::string id, std::string type);
+        void handleXEP27 (gloox::Tag *t);
         void handleXEP71 (gloox::Tag *t);
         void handleXEP85 (gloox::Tag *t);
         void handleXEP115 (gloox::Tag *t, Contact *contr);
@@ -429,6 +430,16 @@ bool MICQXMPP::handleXEP22 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std:
     return false;
 }
 
+void MICQXMPP::handleXEP27 (gloox::Tag *t)
+{
+    if (gloox::Tag *sig = t->findChild ("x", "xmlns", "jabber:x:signed"))
+    {
+        DropCData (sig);
+        DropAttrib (sig, "xmlns");
+        CheckInvalid (sig);
+    }
+}
+
 void MICQXMPP::handleXEP71 (gloox::Tag *t)
 {
     if (gloox::Tag *xhtmlim = t->findChild ("html", "xmlns", "http://jabber.org/protocol/xhtml-im"))
@@ -634,6 +645,7 @@ void MICQXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, s
 
     handleXEP115 (s, contr); // entity capabilities (used also for client version)
     handleXEP153 (s, contb); // vcard-based avatar, nickname
+    handleXEP27 (s);         // OpenPGP signature (obsolete)
     handleXEP8 (s);          // iq-based avatar (obsolete)
     
     if (s->hasAttribute ("type", "unavailable"))
