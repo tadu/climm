@@ -54,7 +54,7 @@ class MICQXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
         void handleXEP71 (gloox::Tag *t);
         void handleXEP85 (gloox::Tag *t);
         void handleXEP115 (gloox::Tag *t, Contact *contr);
-        void handleXEP153 (gloox::Tag *t);
+        void handleXEP153 (gloox::Tag *t, Contact *contr);
         void handleGoogleNosave (gloox::Tag *t);
         void handleXEP136 (gloox::Tag *t);
         time_t handleXEP91 (gloox::Tag *t);
@@ -530,7 +530,7 @@ void MICQXMPP::handleXEP136 (gloox::Tag *t)
     }
 }
 
-void MICQXMPP::handleXEP153 (gloox::Tag *t)
+void MICQXMPP::handleXEP153 (gloox::Tag *t, Contact *contr)
 {
     if (gloox::Tag *vcard = t->findChild ("x", "xmlns", "vcard-temp:x:update"))
     {
@@ -538,6 +538,13 @@ void MICQXMPP::handleXEP153 (gloox::Tag *t)
         {
             DropCData (photo);
             CheckInvalid (photo);
+        }
+        if (gloox::Tag *nick = vcard->findChild ("nickname"))
+        {
+            std::string nickname = nick->cdata();
+            ContactAddAlias (contr, nickname.c_str());
+            DropCData (nick);
+            CheckInvalid (nick);
         }
         DropAttrib (vcard, "xmlns");
         CheckInvalid (vcard);
@@ -626,7 +633,7 @@ void MICQXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, s
     delay = handleXEP91 (s);
 
     handleXEP115 (s, contr); // entity capabilities (used also for client version)
-    handleXEP153 (s);        // vcard-based avatar
+    handleXEP153 (s, contb); // vcard-based avatar, nickname
     handleXEP8 (s);          // iq-based avatar (obsolete)
     
     if (s->hasAttribute ("type", "unavailable"))
