@@ -687,8 +687,10 @@ strc_t PacketReadL2Str (Packet *pak, str_t str)
     assert (str->max >= len + 2);
 
     PacketReadData (pak, str, len);
-    str->txt[str->len = len - 1] = '\0';
-
+    if (str->txt[len - 1])
+        str->txt[str->len = len] = '\0';
+    else
+        str->len = len - 1;
     return str;
 }
 
@@ -873,7 +875,10 @@ strc_t PacketReadAtL2Str (const Packet *pak, UWORD at, str_t str)
     assert (str->max >= len + 2);
 
     PacketReadAtData (pak, at + 2, str, len);
-    str->txt[str->len = len - 1] = '\0';
+    if (str->txt[len - 1])
+        str->txt[str->len = len] = '\0';
+    else
+        str->len = len - 1;
 
     return str;
 }
