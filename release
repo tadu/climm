@@ -35,6 +35,7 @@ DEB_BUILD_OPTIONS=autopackage fakeroot dpkg-buildpackage -tc -us -uc
 cd /tmp
 rm -rf micq-$VERSION
 mv micq_$VERSION-0_i386.deb $WEBDIR/binary/
+mv micq_$VERSION* $WEBDIR/deb/dists/sid/main/source/
 
 
 #
