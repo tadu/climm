@@ -332,15 +332,10 @@ JUMP_SNAC_F(SnacSrvReplyroster)
             SnacCliRosterentryadd (serv, "", 0, serv->privacy_tag, roster_visibility, TLV_PRIVACY, "\x03", 1);
             serv->privacy_value = 3;
         }
-        SnacCliSetvisibility (serv, serv->privacy_value);
         if (~serv->connect & CONNECT_OK)
         {
             serv->connect += 16;
-            SnacCliSetstatus (serv, serv->status, 3);
-            SnacCliReady (serv);
-            SnacCliAddcontact (serv, NULL, serv->contacts);
-            SnacCliReqofflinemsgs (serv);
-            SnacCliReqinfo (serv);
+            SnacCliSetvisibility (serv, serv->privacy_value, 1);
         }
 
         event2->callback (event2);
@@ -599,10 +594,42 @@ JUMP_SNAC_F(SnacSrvRosterupdate)
         SnacSrvUnknown (event);
 }
 
+static JUMP_SNAC_F(cb_LoginVisibilitySet)
+{
+    Connection *serv = event->conn;
+    UWORD err;
+
+    if (!event->pak)
+    {
+        EventD (event);
+        return;
+    }
+    if (event->pak->ref != 19) /* family */
+        return;
+    if (event->pak->cmd != 14) /* command */
+        return;
+
+    err = PacketReadB2 (event->pak);
+    PacketD (event->pak);
+    event->pak = NULL;
+    
+    if (event->data)
+    {
+        SnacCliAddcontact (serv, NULL, serv->contacts);
+        SnacCliSetstatus (serv, serv->status, 3);
+        SnacCliReady (serv);
+        SnacCliReqofflinemsgs (serv);
+        SnacCliReqinfo (serv);
+    }
+    
+    if (err)
+        rl_printf (i18n (2325, "Warning: server based contact list change failed with error code %d.\n"), err);
+}
+
 /*
- * CLI_ROSTERADD/UPDATE - SNAC(13,8)
+ * CLI_ROSTERADD/UPDATE - SNAC(13,9)
  */
-void SnacCliSetvisibility (Connection *serv, char value)
+void SnacCliSetvisibility (Connection *serv, char value, char islogin)
 {
     Packet *pak;
     
@@ -616,7 +643,7 @@ void SnacCliSetvisibility (Connection *serv, char value)
     PacketWrite1        (pak, value);
     PacketWriteTLVDone  (pak);
     PacketWriteBLenDone (pak);
-    SnacSend (serv, pak);
+    SnacSendR (serv, pak, cb_LoginVisibilitySet, islogin ? cb_LoginVisibilitySet : NULL);
     serv->privacy_value = value;
 }
 
@@ -729,60 +756,60 @@ JUMP_SNAC_F(SnacSrvUpdateack)
     Event *event2;
     UWORD err;
     
-    if (PacketReadLeft (event->pak))
-    {
-        err = PacketReadB2 (event->pak);
-        SnacSrvUpdateack (event);
+    if (!PacketReadLeft (event->pak))
+        return;
 
-        event2 = QueueDequeue (serv, QUEUE_CHANGE_ROSTER, event->pak->ref);
-        cont = event2 ? event2->cont : NULL;
-        
-        switch (err)
-        {
-            case 0xe:
-                if (cont)
-                {
-                    cont->oldflags |= CONT_REQAUTH;
-                    OptSetVal (&cont->copts, CO_ISSBL, 0);
-                    SnacCliRosteradd (serv, serv->contacts, cont);
-                }
-                break;
-            case 10:
-                if (cont)
-                {
-                    cont->oldflags |= CONT_REQAUTH;
-                    OptSetVal (&cont->copts, CO_ISSBL, 0);
-                    rl_printf (i18n (2565, "Contact upload for %s%s%s failed, authorization required.\n"),
-                              COLCONTACT, s_quote (cont->nick), COLNONE);
-                }
-                else
-                    rl_printf (i18n (2537, "Contact upload failed, authorization required.\n"));
-                break;
-            case 3:
-                if (cont)
-                {
-                    rl_printf (i18n (2566, "Contact upload for %s%s%s failed, already on server.\n"),
-                               COLCONTACT, s_quote (cont->nick), COLNONE);
-                }
-                else
-                    rl_printf (i18n (2538, "Contact upload failed, already on server.\n"));
-                break;
-            case 0:
-                if (cont)
-                {
-                    OptSetVal (&cont->copts, CO_ISSBL, 1);
-                    rl_printf (i18n (2567, "Contact upload for %s%s%s succeeded.\n"),
-                               COLCONTACT, s_quote (cont->nick), COLNONE);
-                }
-                else
-                    rl_printf (i18n (2539, "Contact upload succeeded.\n"));
-                break;
-            default:
-                rl_printf (i18n (2325, "Warning: server based contact list change failed with error code %d.\n"), err);
-        }
-        if (event2)
-            EventD (event2);
+    err = PacketReadB2 (event->pak);
+    SnacSrvUpdateack (event);
+
+    event2 = QueueDequeue (serv, QUEUE_CHANGE_ROSTER, event->pak->ref);
+    cont = event2 ? event2->cont : NULL;
+    
+    switch (err)
+    {
+        case 0xe:
+            if (cont)
+            {
+                cont->oldflags |= CONT_REQAUTH;
+                OptSetVal (&cont->copts, CO_ISSBL, 0);
+                SnacCliRosteradd (serv, serv->contacts, cont);
+            }
+            break;
+        case 10:
+            if (cont)
+            {
+                cont->oldflags |= CONT_REQAUTH;
+                OptSetVal (&cont->copts, CO_ISSBL, 0);
+                rl_printf (i18n (2565, "Contact upload for %s%s%s failed, authorization required.\n"),
+                          COLCONTACT, s_quote (cont->nick), COLNONE);
+            }
+            else
+                rl_printf (i18n (2537, "Contact upload failed, authorization required.\n"));
+            break;
+        case 3:
+            if (cont)
+            {
+                rl_printf (i18n (2566, "Contact upload for %s%s%s failed, already on server.\n"),
+                           COLCONTACT, s_quote (cont->nick), COLNONE);
+            }
+            else
+                rl_printf (i18n (2538, "Contact upload failed, already on server.\n"));
+            break;
+        case 0:
+            if (cont)
+            {
+                OptSetVal (&cont->copts, CO_ISSBL, 1);
+                rl_printf (i18n (2567, "Contact upload for %s%s%s succeeded.\n"),
+                           COLCONTACT, s_quote (cont->nick), COLNONE);
+            }
+            else
+                rl_printf (i18n (2539, "Contact upload succeeded.\n"));
+            break;
+        default:
+            rl_printf (i18n (2325, "Warning: server based contact list change failed with error code %d.\n"), err);
     }
+    if (event2)
+        EventD (event2);
 }
 
 /*
@@ -841,15 +868,10 @@ JUMP_SNAC_F(SnacSrvRosterok)
         SnacCliRosterentryadd (serv, "", 0, serv->privacy_tag, roster_visibility, TLV_PRIVACY, "\x03", 1);
         serv->privacy_value = 3;
     }
-    SnacCliSetvisibility (serv, serv->privacy_value);
     if (~serv->connect & CONNECT_OK)
     {
         serv->connect += 16;
-        SnacCliSetstatus (serv, serv->status, 3);
-        SnacCliReady (serv);
-        SnacCliAddcontact (serv, NULL, serv->contacts);
-        SnacCliReqofflinemsgs (serv);
-        SnacCliReqinfo (serv);
+        SnacCliSetvisibility (serv, serv->privacy_value, 1);
     }
 
     event2->callback (event2);

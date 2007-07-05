@@ -65,6 +65,7 @@ void        QueuePrint (void);
 
 #define QUEUE_PEER_RESEND       46
 #define QUEUE_PEER_FILE         60
+#define QUEUE_OSCAR_REF         51
 #define QUEUE_UDP_RESEND        43
 #define QUEUE_TCP_RESEND        42
 #define QUEUE_TYPE2_RESEND      41

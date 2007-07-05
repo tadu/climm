@@ -62,7 +62,7 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont);
 void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs);
 void SnacCliRosterentryadd (Connection *serv, const char *name, UWORD tag, UWORD id, UWORD type, UWORD tlv, void *data, UWORD len);
 void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont);
-void SnacCliSetvisibility (Connection *serv, char value);
+void SnacCliSetvisibility (Connection *serv, char value, char islogin);
 void SnacCliSetlastupdate (Connection *serv);
 void SnacCliRosterdeletegroup (Connection *serv, ContactGroup *cg);
 void SnacCliRosterdeletecontact (Connection *serv, Contact *cont);

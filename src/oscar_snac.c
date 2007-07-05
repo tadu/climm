@@ -143,6 +143,7 @@ void SnacCallback (Event *event)
     Packet  *pak  = event->pak;
     SNAC *s;
     UWORD family;
+    Event *refevent;
     
     ASSERT_SERVER(event->conn);
     
@@ -153,6 +154,21 @@ void SnacCallback (Event *event)
     
     if (pak->flags & 0x8000)
         PacketReadData (pak, NULL, PacketReadB2 (pak));
+    
+    refevent = QueueDequeue (event->conn, QUEUE_OSCAR_REF, pak->ref);
+    if (refevent)
+    {
+        UDWORD seq = pak->ref;
+        pak->ref = family;
+        refevent->pak = event->pak;
+        refevent->callback (refevent);
+        event->pak = refevent->pak;
+        refevent->pak = NULL;
+        EventD (refevent);
+        if (!event->pak)
+            return;
+        pak->ref = seq;
+    }
     
     for (s = SNACS; s->fam; s++)
         if (s->fam == family && s->cmd == pak->cmd)
@@ -261,4 +277,15 @@ JUMP_SNAC_F(SnacSrvSetinterval)
     if (prG->verbose & DEB_PROTOCOL)
         rl_printf (i18n (1918, "Ignored server request for a minimum report interval of %d.\n"), 
             interval);
+}
+
+static JUMP_SNAC_F(cb_SnacRefCancel)
+{
+    EventD (event);
+}
+
+void SnacSendR (Connection *serv, Packet *pak, jump_snac_f *f, void *data)
+{
+    QueueEnqueueData2 (serv, QUEUE_OSCAR_REF, pak->ref, 600, data, f, &cb_SnacRefCancel);
+    SnacSend (serv, pak);
 }

@@ -347,9 +347,9 @@ void SnacCliSetstatus (Connection *serv, status_t status, UWORD action)
     if (serv->privacy_value != 1 && serv->privacy_value != 2 && serv->privacy_value != 5)
     {
         if (ContactIsInv (status) && serv->privacy_value != 3)
-            SnacCliSetvisibility (serv, 3);
+            SnacCliSetvisibility (serv, 3, 0);
         else if (!ContactIsInv (status) && serv->privacy_value != 4)
-            SnacCliSetvisibility (serv, 4);
+            SnacCliSetvisibility (serv, 4, 0);
     }
     
     pak = SnacC (serv, 1, 0x1e, 0, 0);
