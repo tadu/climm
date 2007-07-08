@@ -636,7 +636,7 @@ static OtrlPolicy cb_policy (void *opdata, ConnContext *context)
 static void cb_create_privkey (void *opdata, const char *accountname, const char *protocol)
 {
     gcry_error_t ret;
-    char *prot = strdup (s_qquote (prot));
+    char *prot = strdup (s_qquote (protocol));
 
     rl_printf (i18n (2654, "Generating new OTR key for %s account %s. This may take a while..."),
                prot, s_qquote (accountname));
