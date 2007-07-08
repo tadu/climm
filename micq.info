@@ -1,5 +1,5 @@
 Package: micq
-Version: 0.5.4.1
+Version: 0.5.4.2
 Revision: 1
 ConfigureParams: --mandir='$(prefix)/share/man' --enable-ssl --enable-tcl CFLAGS=-O3
 Source: http://www.micq.org/source/micq-%v.tgz

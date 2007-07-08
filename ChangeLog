@@ -1,5 +1,28 @@
 -*- coding: utf-8 -*-
 
+2007-07-08 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* ru.i18n update from Maxim Komar
+	* 0.5.4.2
+
+2007-07-06 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix login problems:
+	+ force wait until visibility attribute update has returned
+	+ SnacCliAddcontact() before SnacCliSetstatus() and SnacCliReady()
+
+2007-06-28 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* no need for force flag for getauto messages
+	* handle XEP153 avatar like XEP8 by ignoring
+	* grab nickname from presence tag if given
+	* handle XEP-27 by ignoring presence signatures
+	* re-login to XMPP automatically
+	* cope with licq's not-null-terminated
+	  LNTS (Long Null-Terminated Strings)
+
+2007-06-16 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* pass on decoded message text to scripts
+	* showchange off was hiding people going offline as well
+	* fix login sequence
+	* fix potential segfault in OTR code
 
 2007-06-10 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* fix typo in packet.c
