@@ -82,7 +82,9 @@ binary-arch: build install
 	install -D -m 644 doc/micq@16x16.png debian/micq/usr/share/icons/hicolor/16x16/apps/micq.png
 	dh_installmenu
 	
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	dh_strip
+endif
 	dh_compress
 	dh_fixperms
 	dh_installdeb
