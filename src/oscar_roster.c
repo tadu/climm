@@ -328,7 +328,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
             SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, roster_icqtic, TLV_ICQTIC, "3608,0,0,0,60,null", 18);
         if (!serv->privacy_tag)
         {
-            serv->privacy_tag = random () % 0x8000;
+            serv->privacy_tag = rand () % 0x8000;
             SnacCliRosterentryadd (serv, "", 0, serv->privacy_tag, roster_visibility, TLV_PRIVACY, "\x03", 1);
             serv->privacy_value = 3;
         }
@@ -864,7 +864,7 @@ JUMP_SNAC_F(SnacSrvRosterok)
         SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, roster_icqtic, TLV_ICQTIC, "3608,0,0,0,60,null", 18);
     if (!serv->privacy_tag)
     {
-        serv->privacy_tag = random () % 0x8000;
+        serv->privacy_tag = rand () % 0x8000;
         SnacCliRosterentryadd (serv, "", 0, serv->privacy_tag, roster_visibility, TLV_PRIVACY, "\x03", 1);
         serv->privacy_value = 3;
     }
