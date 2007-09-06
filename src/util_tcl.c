@@ -281,7 +281,7 @@ void TCLEvent (Contact *cont, const char *type, const char *data)
     {
         char *cdata = strdup (data);
         Tcl_ResetResult (tinterp);
-        Tcl_Eval (tinterp, s_sprintf ("%s {%s} %s %s", tcl_events->cmd, type, cont->screen, cdata));
+        Tcl_Eval (tinterp, s_sprintf ("%s {%s} {%s} %s", tcl_events->cmd, type, cont->screen, cdata));
         result = Tcl_GetStringResult (tinterp);
         if (strlen (result) > 0)
             rl_printf ("%s\n", Tcl_GetStringResult (tinterp));
