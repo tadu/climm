@@ -57,7 +57,7 @@ mv /usr/src/rpm/SRPMS/micq-$VERSION-1.src.rpm $WEBDIR/source/
 tar -zxf micq-$VERSION.tgz
 cd micq-$VERSION
 export MICQ_EXTRAVERSION="Official AmigaOS"
-PATH=$PATH:$HOME/Work/install/bin/ ./configure --prefix=/usr --mandir=\${prefix}/share/man/ --host=m68k-unknown-amigaos --disable-dependency-tracking --disable-tcl --disable-ssl
+PATH=$PATH:$HOME/Work/install/bin/ ./configure --prefix=/usr --mandir=\${prefix}/share/man/ --host=m68k-unknown-amigaos --disable-dependency-tracking --disable-tcl --disable-ssl --disable-otr
 PATH=$PATH:$HOME/Work/install/bin/ make
 DESTDIR=/tmp/micq-$VERSION/bla
 rm -rf $DESTDIR
