@@ -30,7 +30,7 @@ static int cb_status_tcl (Contact *cont, parentmode_t pm, change_t ch, const cha
     if (cont->parent)
         return 0;
 #endif
-    TCLEvent (cont, "status", ch == st_off ? "logged_off" : s_status (cont->status, cont->nativestatus));
+    TCLEvent (cont, "status", s_sprintf ("{%s}", ContactStatusStr (cont->status)));
     return 0;
 }
 
