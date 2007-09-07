@@ -8,7 +8,7 @@
  * $Id$
  */
 
-#include "micq.h"
+#include "climm.h"
 #include "util_ui.h"
 #include "util_io.h"
 #include "file_util.h"

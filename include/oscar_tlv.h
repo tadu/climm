@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_OSCAR_TLV_H
-#define MICQ_OSCAR_TLV_H
+#ifndef CLIMM_OSCAR_TLV_H
+#define CLIMM_OSCAR_TLV_H
 
 typedef struct { UWORD tag; UDWORD nr; str_s str; } TLV;
 

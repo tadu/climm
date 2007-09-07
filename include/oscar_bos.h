@@ -1,6 +1,6 @@
 
-#ifndef MICQ_OSCAR_BOS_H
-#define MICQ_OSCAR_BOS_H
+#ifndef CLIMM_OSCAR_BOS_H
+#define CLIMM_OSCAR_BOS_H
 
 jump_snac_f SnacSrvBoserr, SnacSrvReplybos;
 

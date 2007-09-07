@@ -1,6 +1,6 @@
 #ifdef ENABLE_TCL
-#ifndef MICQ_UTIL_TCL_H
-#define MICQ_UTIL_TCL_H
+#ifndef CLIMM_UTIL_TCL_H
+#define CLIMM_UTIL_TCL_H
 
 typedef struct tcl_hook_st {
     char *filter;
@@ -28,5 +28,5 @@ void TCLMessage (Contact *from, const char *text);
 #include "cmd_user.h"
 jump_f CmdUserTclScript;
 
-#endif /* MICQ_UTIL_TCL_H */
+#endif /* CLIMM_UTIL_TCL_H */
 #endif

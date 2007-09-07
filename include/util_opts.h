@@ -1,6 +1,6 @@
 
-#ifndef MICQ_UTIL_OPTS_H
-#define MICQ_UTIL_OPTS_H 1
+#ifndef CLIMM_UTIL_OPTS_H
+#define CLIMM_UTIL_OPTS_H 1
 
 #define OPT_TABLESIZE 4
 
@@ -91,7 +91,7 @@ extern struct OptEntry_s OptList[];
 
 #define CO_TIMESEEN      (COF_NUMERIC | COF_CONTACT| 0x08UL) /* time contact was last seen            */
 #define CO_TIMEONLINE    (COF_NUMERIC | COF_CONTACT| 0x09UL) /* time since contact is online          */
-#define CO_TIMEMICQ      (COF_NUMERIC | COF_CONTACT| 0x0aUL) /* time contact last used mICQ           */
+#define CO_TIMECLIMM     (COF_NUMERIC | COF_CONTACT| 0x0aUL) /* time contact last used climm           */
 
 #define CO_REVEALTIME    (COF_NUMERIC | CO_CONTACT | 0x0bUL) /* time to reveal invisibility to contact*/
 
@@ -124,7 +124,7 @@ extern struct OptEntry_s OptList[];
 #define CO_COLORINCOMING (COF_COLOR   | CO_CONTACT | 0x8aUL) /* the escape sequence to print for incoming messages     */
 #define CO_COLORCONTACT  (COF_COLOR   | CO_CONTACT | 0x8bUL) /* the escape sequence to print for contacts              */
 
-#define CO_MICQCOMMAND   (COF_STRING               | 0x30UL) /* the mICQ command to execute */
+#define CO_CLIMMCOMMAND  (COF_STRING               | 0x30UL) /* the climm command to execute */
 
 #define CO_MSGTEXT       (COF_STRING               | 0x20UL) /* the message text */
 #define CO_MSGTYPE       (COF_NUMERIC              | 0x21UL) /* the message type */

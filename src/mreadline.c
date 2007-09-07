@@ -6,7 +6,7 @@
  * Originally placed in the public domain by Sergey Shkonda Nov 27, 1998
  *****************************************************/
 
-#include "micq.h"
+#include "climm.h"
 
 #ifdef USE_MREADLINE
 

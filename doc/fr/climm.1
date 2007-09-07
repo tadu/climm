@@ -1,0 +1,111 @@
+.\" $Id: climm.1 1035 2003-01-06 03:31:00Z kuhlmann $ -*- nroff -*-
+.\"  EN: climm.1,v 1.12 2002/09/30 21:26:12
+.\"      ^^ <version of English man page this is in sync with>
+.TH CLIMM 1 climm FR
+.SH NOM
+.BR climm
+\- Un petit client ICQ en mode texte
+.SH SYNOPSIS
+.BR climm
+.I [\-v[level]]
+.I [\-f nom_fichier]
+.br
+.SH NOTE - THIS FILE HAS NOT YET BEEN UPDATED FOR climm 0.4.10.
+.SH DESCRIPTION
+.BR climm
+est un client ICQ en mode texte qui supporte de nombreuses caract\('eristiques parmi celles fournies par le client de Mirabilis.
+Clim permet de changer le mot de passe de l'utilisateur, de cr\('eer de nouveaux comptes, d'actualiser les informations de 
+l'utilisateur, de rechercher d'autres utilisateurs, etc.
+.SH OPTIONS
+
+.TP
+.BI \-v [verbosit\('e]
+Active le mode verbeux, ou param\(`etre le niveau de verbosit\('e \(`a 
+.IR verbosit\('e .
+.TP
+.BI \-f \ nom_fichier
+Utilise le fichier 
+.IR nom_fichier
+comme fichier de configuration.
+.TP
+.BI \-l \ fichier|r\('epertoire
+Utilise
+.IR fichier
+comme fichier journal, ou utilise
+.IR r\('epertoire
+comme r\('epertoire dans lequel cr\('eer des fichiers journaux par utilisateur.
+.TP
+.BI \-?,\ \-h
+Affiche l'aide.
+
+
+.SH CARACTERISTIQUES
+.BR climm
+est tr\(`es portable et tourne sous Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD 
+et tout autre syst\(`eme de type Unix moderne.
+
+La version
+.B 0.4.9 de climm 
+tourne sous Linux, AIX, HPUX, Tru64, partiellement sous BeOS et d'autres unices.  
+Cependant, les autres portages peuvent ne pas fonctionner et toute personne souhaitant 
+les tester est la bienvenue.
+
+.SH HISTORIQUE
+.TP
+16 Ao\(^ut 1998
+Matthew D. Smith publie climm au monde. 
+Cela sera suivit par 12 publications jusqu'au 25 Septembre 1998.
+.TP
+05 Janvier 2001
+Matthew D. Smith est d\('ec\('ed\('e d'un accident de voiture. 
+Les utilisateurs de climm ont repris le projet o\(`u Matthew l'a quitt\('e, 
+ont opt\('e pour la licence BSD et relanc\('e le d\('eveloppement de
+.BR climm .
+.TP
+10 Juin 2002
+La version 0.4.9 est publi\('ee par R\(:udiger Kuhlmann dans les termes de la licence GPL, 
+et impl\('emente la nouvelle version du protocole ICQ (version 8).
+.SH LISTE DE DISCUSSION
+La liste de discussion de climm est
+.IR climm\-list@climm.org .
+Les informations concernant l'abonnement  et les archives sont disponibles \(`a
+.IR http://www.climm.org/pipermail/climm\-list/ .
+.SH TELECHARGEMENT
+Par HTTP \(`a
+.IR http://www.climm.org/download .
+Pour obtenir la derni\(`ere version par CVS, entrez:
+.sp
+cvs \-d:pserver:anonymous@climm.org:/usr/local/cvsroot co climm
+.SH VOIR AUSSI
+.BR climmrc (5),
+.BR climm (7)
+.SH FICHIERS
+
+.TP
+.I ~/.climmrc
+Ancien fichier de configuration de climm, obsol\(`ete.
+.TP
+.I ~/.climm/climmrc
+Fichier de configuration de climm.
+.TP
+.I PREFIXE/share/climm/*.i18n
+Fichiers de traduction contenant les traductions de toutes les cha\(^ines de 
+caract\(`eres que climm affiche.
+.TP
+.I ~/.climm/i18n/*.i18n
+Substituts locaux pour les fichiers de traduction mentionn\('es ci-dessus.
+.TP
+.I ~/.climm/history/
+Chemin par d\('efaut du r\('epertoire o\(`u les fichiers journaux sont cr\('e\('es.
+
+.SH BUGS
+Envoyez les rapports de bugs et commentaires \(`a R\(:udiger Kuhlmann
+<climm@ruediger\-kuhlmann.de> (en allemand ou en anglais).
+.SH AUTEUR
+Cette page de manuel a \('et\('e \('ecrite par James Morrison
+.IR <ja2morrison@student.math.uwaterloo.ca>
+\(`a partir de la page de manuel minimale \('ecrite par Jordi Mallach
+.IR <jordi@sindominio.net>
+pour le syst\(`eme d'exploitation Debian GNU/Linux.
+Cette page de manuel a \('et\('e traduite par Julien Gilli 
+.IR <jgilli@nerim.fr> .

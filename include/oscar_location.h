@@ -1,6 +1,6 @@
 
-#ifndef MICQ_OSCAR_LOCATION_H
-#define MICQ_OSCAR_LOCATION_H
+#ifndef CLIMM_OSCAR_LOCATION_H
+#define CLIMM_OSCAR_LOCATION_H
 
 jump_snac_f SnacSrvLocationerr, SnacSrvReplylocation, SnacSrvUserinfo;
 

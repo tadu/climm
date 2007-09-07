@@ -1,19 +1,19 @@
 /*
  * Provides a build mark with the current version and current time of compilation.
  *
- * mICQ Copyright (C) © 2001-2007 Rüdiger Kuhlmann
+ * climm Copyright (C) © 2001-2007 Rüdiger Kuhlmann
  *
- * mICQ is free software; you can redistribute it and/or modify it
+ * climm is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 dated June, 1991.
  *
- * mICQ is distributed in the hope that it will be useful, but WITHOUT
+ * climm is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
  * In addition, as a special exception permission is granted to link the
- * code of this release of mICQ with the OpenSSL project's "OpenSSL"
+ * code of this release of climm with the OpenSSL project's "OpenSSL"
  * library, and distribute the linked executables.  You must obey the GNU
  * General Public License in all respects for all of the code used other
  * than "OpenSSL".  If you modify this file, you may extend this exception
@@ -29,14 +29,15 @@
  * $Id$
  */
 
-/*                        0.5.4.2 */
-#define MICQ_BUILD_NUM 0x00050402
+/*                         0.6.0.0 */
+#define CLIMM_BUILD_NUM 0x00060000
 
-#include "micq.h"
+#include "climm.h"
 #include "buildmark.h"
 #include "conv.h"
 #include "contact.h"
 #include "preferences.h"
+#include "util_rl.h"
 #include ".cvsupdate"
 
 #ifdef __AMIGA__
@@ -142,34 +143,38 @@ const char  *BuildPlatformStr = EXTRAVERSION_DEF;
 
 const char *BuildVersion (void)
 {
-    return s_sprintf (i18n (2327, "%smICQ (Matt's ICQ clone)%s version %s%s%s\n"),
-            COLSERVER, COLNONE, COLSERVER, MICQ_VERSION " (" CVSUPDATE ")", COLNONE);
+    return s_sprintf (i18n (2327, "%sclimm%s - CLI-based Multi-Messenger%s version %s%s%s\n"),
+            COLERROR, COLSERVER, COLNONE, COLSERVER, CLIMM_VERSION " (" CVSUPDATE ")", COLNONE);
 }
 
 const char *BuildAttribution (void)
 {
     char *name;
+    int baselen = 79;
     const char *full;
+    const char *c = ConvTranslit ("\xc2\xa9", "(c)");
+    const char *ue = ConvTranslit ("\xc3\xbc", "ue");
     
-    name = strdup (s_sprintf ("%s 1998-2000 %sMatthew D. Smith%s, %s 2001-2007 %sR%sdiger Kuhlmann%s.\n",
-                   ConvTranslit ("\xc2\xa9", "(c)"), COLQUOTE, COLNONE,
-                   ConvTranslit ("\xc2\xa9", "(c)"), COLQUOTE,
-                   ConvTranslit ("\xc3\xbc", "ue"), COLNONE));
+    baselen += 2 * (*c == '(' ? 2 : 0) + (*ue == 'u' ? 1 : 0);
+    
+    name = strdup (s_sprintf ("%s 2001-2007 %sR%sdiger Kuhlmann%s %smicq %s 1998-2000 %sMatthew D. Smith%s\n",
+                   c, COLQUOTE, ue, COLNONE, (rl_columns > baselen ? "based on " : ""),
+                   c, COLQUOTE, COLNONE));
     full = s_sprintf (i18n (2574, "%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n"),
                    name, COLQUOTE, COLNONE);
     free (name);
     return full;
 }                  
 
-const UDWORD BuildVersionNum = MICQ_BUILD_NUM;
-const char *BuildVersionText = "$VER: mICQ " VERSION " " EV EXTRAVERSION "\n(" CVSUPDATE " build " BUILDDATE ")";
-const char *BuildVersionStr  = VERSION MICQ_IS_CVS;
+const UDWORD BuildVersionNum = CLIMM_BUILD_NUM;
+const char *BuildVersionText = "$VER: climm " VERSION " " EV EXTRAVERSION "\n(" CVSUPDATE " build " BUILDDATE ")";
+const char *BuildVersionStr  = VERSION CLIMM_IS_CVS;
 
 /*
  i18n (1000, "UTF-8")            charset used
  i19n (1001, "en")               locale
  i19n (1002, "en_US")            locale 
- i19n (1003, "0-4-10")           MICQ_BUILD_NUM
+ i19n (1003, "0-4-10")           CLIMM_BUILD_NUM
  i19n (1004, "Ruediger Kuhlmann") all contributors
  i19n (1005, "Ruediger Kuhlmann") last contributor
  i19n (1006, "2002-05-02")       last change

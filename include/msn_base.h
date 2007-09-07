@@ -1,6 +1,6 @@
 
-#ifndef MICQ_MSN_BASE_H
-#define MICQ_MSN_BASE_H
+#ifndef CLIMM_MSN_BASE_H
+#define CLIMM_MSN_BASE_H
 
 Event *ConnectionInitMSNServer (Connection *serv);
 

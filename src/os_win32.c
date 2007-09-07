@@ -280,7 +280,7 @@ int os_DetectLockedWorkstation()
 
 static const char *os_packagesubdir (const char *sub)
 {
-    const char *key = "Software\\mICQ";
+    const char *key = "Software\\climm";
     char *result = NULL;
     HKEY reg_key = NULL;
     DWORD type;
@@ -347,7 +347,7 @@ const char *os_packagedatadir (void)
     static const char *datadir = NULL;
     if (!datadir)
         datadir = os_packagesubdir ("share");
-    return datadir ? datadir : "C:\\mICQ";
+    return datadir ? datadir : "C:\\climm";
 }
 
 const char *os_packagehomedir (void)

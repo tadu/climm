@@ -1,6 +1,6 @@
 
-#ifndef MICQ_XMPP_BASE_H
-#define MICQ_XMPP_BASE_H
+#ifndef CLIMM_XMPP_BASE_H
+#define CLIMM_XMPP_BASE_H
 
 #include "im_request.h"
 

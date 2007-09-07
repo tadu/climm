@@ -1,5 +1,5 @@
-#ifndef MICQ_OS_H
-#define MICQ_OS_H
+#ifndef CLIMM_OS_H
+#define CLIMM_OS_H
 
 #if defined(_WIN32) || (defined(__CYGWIN__) && defined(_X86_))
 
@@ -26,7 +26,7 @@ const char *os_packagehomedir (void);
 
 #define os_DetectLockedWorkstation() -1
 #if ENABLE_BINRELOC
-#define os_packagedatadir() BR_DATADIR ("micq")
+#define os_packagedatadir() BR_DATADIR ("climm")
 #else
 #define os_packagedatadir() PKGDATADIR
 #endif
@@ -34,4 +34,4 @@ const char *os_packagehomedir (void);
 
 #endif /* !_WIN32 && (!__CYGWIN__ || !_X86) */
 
-#endif /* MICQ_OS_H */
+#endif /* CLIMM_OS_H */

@@ -5,12 +5,12 @@ Authors:
             micq development up to 0.4.7
 
         Rüdiger Kuhlman        <http://www.ruediger-kuhlmann.de>
-            mICQ development since 0.4.8
+            climm/mICQ development since 0.4.8
 
 Contributors:
 
         Rico Glöckner          <mc__at__ukeer__dot__de>
-            hosts micq.org and the mailinglist
+            hosts climm.org and the mailinglist
 
         Peter Backes            <rtc__at__helen__dot__PLASMA__dot__Xg8__dot__DE>
             v8: info stuff; code cleanup; log file format and helper scripts

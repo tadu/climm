@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_UTIL_STR_H
-#define MICQ_UTIL_STR_H
+#ifndef CLIMM_UTIL_STR_H
+#define CLIMM_UTIL_STR_H
 
 typedef struct str_s str_s;
 typedef struct strc_s strc_s;
@@ -66,4 +66,4 @@ const char *s_mquote      (const char *input, const char *color, BOOL allownl);
 #define s_free(old)     do { char *_p_p_ = old; if (_p_p_) free (_p_p_); } while (0)
 #define s_now           s_time (NULL)
 
-#endif /* MICQ_UTIL_STR_H */
+#endif /* CLIMM_UTIL_STR_H */

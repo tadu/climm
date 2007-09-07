@@ -1,6 +1,6 @@
 
-#ifndef MICQ_OSCAR_SERVICE_H
-#define MICQ_OSCAR_SERVICE_H
+#ifndef CLIMM_OSCAR_SERVICE_H
+#define CLIMM_OSCAR_SERVICE_H
 
 jump_snac_f SnacSrvServiceerr, SnacSrvFamilies, SnacSrvRates, SnacSrvRateexceeded,
     SnacServerpause, SnacSrvReplyinfo, SnacSrvFamilies2, SnacSrvMotd;

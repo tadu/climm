@@ -24,11 +24,11 @@ Windows (MingW):
   The binary was stripped afterwards.
   
   NOTE since 0.5.0.3+ for previous users:
-  * the micqrc file is now taken from %USERPROFILE% (if defined), %HOME% (if defined),
-    {HKEY_CURRENT_USER\Software\mICQ\InstallationDirectory}\etc (if key is set),
-    {HKEY_LOCAL_MACHINE\Software\mICQ\InstallationDirectory}\etc (if key is set),
-    the directory etc under the directory where micq.exe is located (if w32 gives this info),
-    or C:\mICQ\etc\.
+  * the climmrc file is now taken from %USERPROFILE% (if defined), %HOME% (if defined),
+    {HKEY_CURRENT_USER\Software\climm\InstallationDirectory}\etc (if key is set),
+    {HKEY_LOCAL_MACHINE\Software\climm\InstallationDirectory}\etc (if key is set),
+    the directory etc under the directory where climm.exe is located (if w32 gives this info),
+    or C:\climm\etc\.
 
   NOTE:
   * This binary is still HIGHLY EXPERIMENTAL.
@@ -69,7 +69,7 @@ AmigaOS:
     - if you want to code an AREXX port instead, let me know
 
 BeOS:
-  The last mICQ build is quite outdated. If you want to create a newer,
+  The last climm build is quite outdated. If you want to create a newer,
   feel free to contribute.
 
 MacOS X:

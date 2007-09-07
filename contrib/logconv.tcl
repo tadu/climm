@@ -1,6 +1,6 @@
 #! /usr/bin/tclsh
 
-# logconv.tcl -- Converts old micq log files to new unified format.
+# logconv.tcl -- Converts old climm log files to new unified format.
 
 if {[set servtype [lindex $argv 0]] == "" 
     || [set locspec [lindex $argv 1]] == ""
@@ -68,7 +68,7 @@ proc typeconv {args} {
 	return $result
 }
 
-foreach file {~/.micq/micqrc ~/.micq/alter} {
+foreach file {~/.climm/climmrc ~/.climm/alter} {
 	if {![file exists $file]} \
 		continue
 	set fd [open $file r]

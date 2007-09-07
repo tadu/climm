@@ -2,7 +2,7 @@
 #ifndef UTIL_OTR
 #define UTIL_OTR
 
-#include "micq.h"
+#include "climm.h"
 
 #include "im_response.h"
 

@@ -1,0 +1,172 @@
+.\" $Id: climm.1 1892 2005-02-07 21:59:54Z kuhlmann $ -*- nroff -*-
+.\"  EN: climm.1,v 1.2 2005/01/08 20:30:12
+.TH CLIMM 1 climm
+.SH N\['A]ZOV
+.B climm
+\- mal\['y], kompaktn\['y] textov\['y] ICQ klient
+.SH SYNOPSA
+.B climm
+.I [\-h]
+.I [\-c]
+.I [\-b <basedir>]
+.I [\-i <locale>]
+.I [\-v[level]]
+.I [\-l <logplace>]
+.I [\-u <UIN>]
+.I [\-p <passwd>]
+.I [\-s <status>]
+.I [\-C <commands>]
+.SH POPIS
+.B climm
+je textov\['y] ICQ klient podporuj\['u]ci mnoho funkci\['i] a mo¾ností
+pôvodn\['e]ho klienta od Mirabilis. climm umo¾òuje meni» heslo u¾\['i]vateµa,
+zaklada» nov\['e] \['u]èty, aktualizova» inform\['a]cie, vyhµad\['a]va»,
+posiela» SMS, nadv\(:azova» priame spojenia, posiela» potvrdzuj\['u]ce spr\['a]vy
+, pren\['a]¹a» s\['u]bory, identifikova» klientov in\['y]ch u¾\['i]vateµov, posiela»
+spr\['a]vy v UTF-8 k\['o]dovan\['i], vykon\['a]va» a sp\['u]¹»a» pr\['i]kazy udalos»ami
+atï.
+.SH OPTIONS
+.TP
+.BI \-h|\-\-help
+Zobraz\['i] kr\['a]tky pomocn\['y] text a skonè\['i].
+.TP
+.BI \-c|\-\-nocolor
+Zak\['a]¾e pou¾\['i]vanie farieb.
+.TP
+.BI \-b|\-\-basedir \ <basedir>
+Urè\['i]
+.I basedir
+ako hlavn\['y] adres\['a]r, vyhraden\['y] pre s\['u]bory climm, napr\['i]klad s\['u]bor climmrc.
+.TP
+.BI \-i|\-\-i18n \ <locale>
+Pou¾ije lokalizáciu
+.I locale
+namiesto tej, ktor\['a] bola zvolen\['a] podµa syst\['e]mov\['y]ch premenn\['y]ch.
+.TP
+.BI \-v|\-\-verbose [level]
+Zapne hl\['a]senia alebo nastav\['i] \['u]roveò hl\['a]sen\['i] na
+.IR level .
+.TP
+.BI \-l|\-\-logplace \ file|dir
+Pou¾ije
+.I file
+ako s\['u]bor pre logovanie, alebo pou¾ije
+.I dir
+ako adres\['a]r pre logovacie s\['u]bory podµa u¾\['i]vateµov.
+.TP
+.BI \-u|\-\-uin \ <uin>
+Prihlási len 
+.I uin
+u¾ívateµa. Mô¾e sa opakova».
+.TP
+.BI \-p|\-\-passwd \ <passwd>
+Prihlásenie s heslom
+.I passwd
+. Mô¾e sa opakova» pre ka¾dý
+.I \-u
+prepínaè, alebo mô¾e by» pou¾ité len raz.
+.TP
+.BI \-s|\-\-status \ <status>
+Prihlásenie so stavom
+.I status
+, zadaným èíselne alebo 
+.BR inv ,
+.BR dnd ,
+.BR occ ,
+.BR na ,
+.BR away ,
+.BR ffc ,
+or
+.BR off[line] .
+.TP
+.BI \-C|\-\-cmd \ <commands>
+Vykoná príkazy climm
+.I cmds
+po prihlásení namiesto zvyèajného
+.I eg
+príkazu.
+.SH DETAILY
+.B climm
+je v\['y]borne portovateµn\['y] a be¾\['i] v OS Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD a
+akomkoµvek inom modernom unixovom syst\['e]me.  
+.B climm version 0.4.10
+zaruèene pracuje v OS Linux, AIX, HPUX, Tru64, AmigaOS, èiastoène v BeOS a ïal¹\['i]ch unixoch.
+Tak¾e niektor\['e] porty sú alebo mô¾u by» st\['a]le vo v\['y]voji a ka¾d\['y],
+kto chce pomôc» s testovan\['i]m, je v\['i]tan\['y].
+.SH HIST\['O]RIA
+.TP
+16 Aug 1998
+Matthew D. Smith uvoµòuje climm do sveta. 
+Nasleduje ïal¹\['i]ch 12 releases do 25 Sept 1998.
+.TP
+05 Jan 2001
+Matthew D. Smith zomiera pri automobilovej nehode.
+U¾\['i]vatelia pokraèujú tam, kde Matthew climm zanechal, formuluj\['u] climm pod BSD 
+licenciou a obnovuj\['u] v\['y]voj
+.BR climm .
+.TP
+10 June 2002
+Verzia 0.4.9 je uvoµnen\['a] pod GPL licenciou, je ukonèen\['a]
+implement\['a]cia novej verzie 8 protokolu ICQ R\(:udigerom Kuhlmannom.
+.SH MAILING-LIST
+climm mailing list je
+.IR climm\-list@climm.org .
+Inform\['a]cie t\['y]kaj\['u]ce sa posielania a archivovania s\['u] na 
+.IR http://www.climm.org/pipermail/climm\-list/ .
+.SH DOWNLOAD
+Prostredníctvom HTTP z
+.IR http://www.climm.org/download .
+.br
+Pre z\['i]skanie najnov¹ej verzie z CVS pou¾ite:
+.br
+cvs \-d:pserver:anonymous@climm.org:/var/lib/cvs co climm
+.br
+.SH POZRITE E©TE
+.BR climmrc (5),
+.BR climm (7)
+.SH S\['U]BORY
+.TP
+.I ~/.climmrc
+Povodn\['y] konfiguraèn\['y] s\['u]bor climm \- zastaral\['y].
+.TP
+.I ~/.climm/
+Default adres\['a]r pre s\['u]bory climm.
+.TP
+.I BASE/climmrc
+Konfiguraèn\['y] s\['u]bor climm.
+.TP
+.I BASE/i18n/*.i18n
+Lok\['a]lne preklady climm.
+.TP
+.I BASE/contacts/
+Adres\['a]r pre meta data o kontaktoch.
+.TP
+.I BASE/history/
+Default adres\['a]r pre logovacie s\['u]bory .
+.TP
+.I BASE/files/
+Adres\['a]r pre prich\['a]dzaj\['u]ce s\['u]bory.
+.TP
+.I BASE/remote-control
+Pôvodné umiestnenie FIFO pou¾\['i]van\['e]ho pre diaµkov\['e] ovl\['a]danie. Premenované, aby zmiatlo luserov.
+.TP
+.I BASE/scripting
+Default umiestnenie FIFO pou¾\['i]van\['e]ho pre diaµkov\['e] ovl\['a]danie.
+.TP
+.I PREFIX/share/climm/*.i18n
+Lokalizaèn\['e] s\['u]bory obsahuj\['u]ce preklady v¹etk\['y]ch textov\['y]ch v\['y]stupov climm.
+.SH CHYBY
+Posielajte chybov\['e] hl\['a]senia alebo pripomienky R\(:udigerovi Kuhlmannovi
+.I <climm@ruediger\-kuhlmann.de>
+(v nemèine alebo angliètine). Chyby a pripomienky k slovenskej lokaliz\['a]cii posielajte
+J\['a]novi Stan\['i]kovi
+.I <morb@genesys.sk>
+v slovenèine alebo angliètine.
+.SH AUTORI
+Tento manu\['a]l bol prelo¾en\['y] J\['a]nom Stan\['i]kom
+.I <morb@genesys.sk>
+z manu\['a]lu p\['i]san\['e]ho Jamessom Morrisonnom
+.I <ja2morrison@student.math.uwaterloo.ca>
+z mini-manu\['a]lu nap\['i]san\['e]ho Jordim Mallachom
+.I <jordi@sindominio.net>
+pre syst\['e]m Debian GNU/Linux.

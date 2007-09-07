@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_CONTACT_H
-#define MICQ_CONTACT_H
+#ifndef CLIMM_CONTACT_H
+#define CLIMM_CONTACT_H
 
 #include "util_opts.h"
 
@@ -210,7 +210,7 @@ static inline BOOL ContactIsInv (status_t inv) { return (inv & ims_inv) ? TRUE :
 #define CONTACT_OBSOLETE(cont) ((cont)->meta_obsolete ? (cont)->meta_obsolete : ((cont)->meta_obsolete = calloc (1, sizeof (MetaObsolete))))
 #define CONTACT_DC(cont)       ((cont)->dc            ? (cont)->dc            : ((cont)->dc            = calloc (1, sizeof (ContactDC))))
 
-#define CONT_UTF8(cont,mt) (HAS_CAP((cont)->caps, CAP_UTF8) && (((mt) == 1) || HAS_CAP((cont)->caps, CAP_MICQ)))
+#define CONT_UTF8(cont,mt) (HAS_CAP((cont)->caps, CAP_UTF8) && (((mt) == 1) || HAS_CAP((cont)->caps, CAP_MICQ) || HAS_CAP((cont)->caps, CAP_CLIMM)))
 
 #define CONT_SEENAUTO  32UL /* has seen auto response. */
 #define CONT_ISEDITED  64UL /* meta data was edited by hand. */
@@ -241,4 +241,4 @@ static inline BOOL ContactIsInv (status_t inv) { return (inv & ims_inv) ? TRUE :
                          | UPF_ABOUT    | UPF_INTEREST  | UPF_BACKGROUND  \
                          | UPF_EMAIL    | UPF_OBSOLETE  | UPF_AFFILIATION)
 
-#endif /* MICQ_CONTACT_H */
+#endif /* CLIMM_CONTACT_H */

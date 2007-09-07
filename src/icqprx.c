@@ -20,7 +20,7 @@
  * $Id$
  */
 
-#include "micq.h"
+#include "climm.h"
 #include <errno.h>
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h>

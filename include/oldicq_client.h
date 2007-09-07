@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_OLDICQ_CLIENT_H
-#define MICQ_OLDICQ_CLIENT_H
+#ifndef CLIMM_OLDICQ_CLIENT_H
+#define CLIMM_OLDICQ_CLIENT_H
 
 void   CmdPktCmdAck          (Connection *conn, UDWORD seq);
 void   CmdPktCmdSendMessage  (Connection *conn, Contact *cont, const char *text, UDWORD type);
@@ -29,4 +29,4 @@ void   CmdPktCmdInvisList    (Connection *conn);
 void   CmdPktCmdVisList      (Connection *conn);
 void   CmdPktCmdUpdateList   (Connection *conn, Contact *cont, int which, BOOL add);
 
-#endif /* MICQ_ICQV5_CLI_H */
+#endif /* CLIMM_ICQV5_CLI_H */

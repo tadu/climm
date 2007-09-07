@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_UTIL_UI_H
-#define MICQ_UTIL_UI_H
+#ifndef CLIMM_UTIL_UI_H
+#define CLIMM_UTIL_UI_H
 
 void UtilUIDisplayMeta (Contact *cont);
 BOOL DebugReal (UDWORD level, const char *str, ...) __attribute__ ((format (__printf__, 2, 3)));
@@ -29,4 +29,4 @@ BOOL DebugReal (UDWORD level, const char *str, ...) __attribute__ ((format (__pr
 
 #define AVPFMT "%s%-15s%s %s\n"
 
-#endif /* MICQ_UTIL_UI_H */
+#endif /* CLIMM_UTIL_UI_H */

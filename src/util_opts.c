@@ -1,19 +1,19 @@
 /*
- * Option handling within mICQ.
+ * Option handling within climm.
  *
- * mICQ Copyright (C) © 2003-2007 Rüdiger Kuhlmann
+ * climm Copyright (C) © 2003-2007 Rüdiger Kuhlmann
  *
- * mICQ is free software; you can redistribute it and/or modify it
+ * climm is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 dated June, 1991.
  *
- * mICQ is distributed in the hope that it will be useful, but WITHOUT
+ * climm is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
  * In addition, as a special exception permission is granted to link the
- * code of this release of mICQ with the OpenSSL project's "OpenSSL"
+ * code of this release of climm with the OpenSSL project's "OpenSSL"
  * library, and distribute the linked executables.  You must obey the GNU
  * General Public License in all respects for all of the code used other
  * than "OpenSSL".  If you modify this file, you may extend this exception
@@ -29,7 +29,7 @@
  * $Id$
  */
                              
-#include "micq.h"
+#include "climm.h"
 #include <assert.h>
 #include <stdarg.h>
 #include "util_opts.h"
@@ -90,7 +90,7 @@ struct OptEntry_s OptList[] = {
   { "tabspool",      CO_TABSPOOL      },
   { "timeseen",      CO_TIMESEEN      },
   { "timeonline",    CO_TIMEONLINE    },
-  { "timemicq",      CO_TIMEMICQ      },
+  { "timeclimm",     CO_TIMECLIMM     },
 #ifdef ENABLE_OTR
   { "otrpolicy",     CO_OTRPOLICY     },
 #endif

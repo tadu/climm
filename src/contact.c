@@ -1,19 +1,19 @@
 /*
  * This file implements the contact list and basic operations on it.
  *
- * mICQ Copyright (C) © 2001-2007 Rüdiger Kuhlmann
+ * climm Copyright (C) © 2001-2007 Rüdiger Kuhlmann
  *
- * mICQ is free software; you can redistribute it and/or modify it
+ * climm is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 dated June, 1991.
  *
- * mICQ is distributed in the hope that it will be useful, but WITHOUT
+ * climm is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
  * In addition, as a special exception permission is granted to link the
- * code of this release of mICQ with the OpenSSL project's "OpenSSL"
+ * code of this release of climm with the OpenSSL project's "OpenSSL"
  * library, and distribute the linked executables.  You must obey the GNU
  * General Public License in all respects for all of the code used other
  * than "OpenSSL".  If you modify this file, you may extend this exception
@@ -34,7 +34,7 @@
 #include <sys/types.h>
 #include <assert.h>
 
-#include "micq.h"
+#include "climm.h"
 #include "contact.h"
 #include "connection.h"
 #include "util_ui.h"       /* for Debug() and DEB_CONTACT */
@@ -1342,7 +1342,7 @@ void ContactSetCap (Contact *cont, Cap *cap)
                 CLR_CAP (cont->caps, CAP_UTF8);
         }
     }
-    else if (cap->var && (cap->id == CAP_MICQ || cap->id == CAP_SIMNEW
+    else if (cap->var && (cap->id == CAP_MICQ || cap->id == CAP_CLIMM || cap->id == CAP_SIMNEW
                        || cap->id == CAP_KOPETE || cap->id == CAP_LICQNEW))
     {
         cont->v1 = cap->var[12];
@@ -1404,10 +1404,18 @@ void ContactSetVersion (Contact *cont)
     
     ver = dc->id1 & 0xffff;
     
-    if (HAS_CAP (cont->caps, CAP_MICQ))
+    if (HAS_CAP (cont->caps, CAP_CLIMM))
+    {
+        new = "climm";
+        OptSetVal (&cont->copts, CO_TIMECLIMM, time (NULL));
+        if (cont->v1 & 0x80)
+            tail = " cvs";
+        cont->v1 &= ~0x80;
+    }
+    else if (HAS_CAP (cont->caps, CAP_MICQ))
     {
         new = "mICQ";
-        OptSetVal (&cont->copts, CO_TIMEMICQ, time (NULL));
+        OptSetVal (&cont->copts, CO_TIMECLIMM, time (NULL));
         if (cont->v1 & 0x80)
             tail = " cvs";
         cont->v1 &= ~0x80;
@@ -1505,9 +1513,9 @@ void ContactSetVersion (Contact *cont)
             case 0xffffff8fUL:
                 new = "StrICQ";
                 break;
-            case BUILD_MICQ:
-                OptSetVal (&cont->copts, CO_TIMEMICQ, time (NULL));
-                new = "mICQ";
+            case BUILD_CLIMM:
+                OptSetVal (&cont->copts, CO_TIMECLIMM, time (NULL));
+                new = (cont->v1 || cont->v2 >= 6) ? "climm" : "mICQ";
                 if (dc->id2 & 0x80000000)
                     tail = " cvs";
                 break;

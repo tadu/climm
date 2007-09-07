@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_ICQV5_UTIL_H
-#define MICQ_ICQV5_UTIL_H
+#ifndef CLIMM_ICQV5_UTIL_H
+#define CLIMM_ICQV5_UTIL_H
 
 Packet *PacketCv5 (Connection *conn, UWORD cmd);
 void PacketEnqueuev5 (Packet *pak, Connection *conn);
@@ -53,4 +53,4 @@ const char *CmdPktCmdName (UWORD cmd);
 #define CMD_VIS_LIST            1710
 #define CMD_UPDATE_LIST         1720
 
-#endif /* MICQ_ICQV5_UTIL_H */
+#endif /* CLIMM_ICQV5_UTIL_H */

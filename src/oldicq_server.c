@@ -3,7 +3,7 @@
  * $Id$
  */
 
-#include "micq.h"
+#include "climm.h"
 #include "oldicq_base.h"
 #include "oldicq_compat.h"
 #include "oldicq_client.h"

@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_UTIL_PARSE_H
-#define MICQ_UTIL_PARSE_H
+#ifndef CLIMM_UTIL_PARSE_H
+#define CLIMM_UTIL_PARSE_H
 
 strc_t        s_parse_s     (const char **input, const char *sep);
 Contact      *s_parsenick_s (const char **input, const char *sep, Connection *serv);
@@ -29,4 +29,4 @@ int is_valid_msn_name  (char *user);
 #define s_parseint(i,p)     s_parseint_s  (i, p, DEFAULT_SEP)
 #define s_parsekey(i,k)     s_parsekey_s  (i, k, DEFAULT_SEP)
 
-#endif /* MICQ_UTIL_PARSE_H */
+#endif /* CLIMM_UTIL_PARSE_H */

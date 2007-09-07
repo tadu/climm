@@ -2,19 +2,19 @@
  * Handles incoming and creates outgoing SNAC packets
  * for the family 9 (bos) commands.
  *
- * mICQ Copyright (C) © 2001-2007 Rüdiger Kuhlmann
+ * climm Copyright (C) © 2001-2007 Rüdiger Kuhlmann
  *
- * mICQ is free software; you can redistribute it and/or modify it
+ * climm is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 dated June, 1991.
  *
- * mICQ is distributed in the hope that it will be useful, but WITHOUT
+ * climm is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
  * In addition, as a special exception permission is granted to link the
- * code of this release of mICQ with the OpenSSL project's "OpenSSL"
+ * code of this release of climm with the OpenSSL project's "OpenSSL"
  * library, and distribute the linked executables.  You must obey the GNU
  * General Public License in all respects for all of the code used other
  * than "OpenSSL".  If you modify this file, you may extend this exception
@@ -30,7 +30,7 @@
  * $Id$
  */
 
-#include "micq.h"
+#include "climm.h"
 #include "oscar_base.h"
 #include "oscar_snac.h"
 #include "oscar_bos.h"

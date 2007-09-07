@@ -1,6 +1,6 @@
 
-#ifndef MICQ_OSCAR_ICBM_H
-#define MICQ_OSCAR_ICBM_H
+#ifndef CLIMM_OSCAR_ICBM_H
+#define CLIMM_OSCAR_ICBM_H
 
 jump_snac_f SnacSrvIcbmerr, SnacSrvReplyicbm, SnacSrvRecvmsg,
     SnacSrvAckmsg, SnacSrvSrvackmsg;

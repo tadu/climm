@@ -2,7 +2,7 @@
  * $Id$
  */
 
-#include "micq.h"
+#include "climm.h"
 #include <assert.h>
 #include <errno.h>
 #include "util_io.h"

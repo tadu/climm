@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_DATATYPE_H
-#define MICQ_DATATYPE_H
+#ifndef CLIMM_DATATYPE_H
+#define CLIMM_DATATYPE_H
 
 #if HAVE_UNISTD_H
    #include <unistd.h>
@@ -125,4 +125,4 @@ typedef int SOK_T;
 
 #define STR_DOT        "\xc2\xb7"
 
-#endif /* MICQ_DATATYPE_H */
+#endif /* CLIMM_DATATYPE_H */

@@ -1,7 +1,7 @@
 /* $Id$ */
 /* Copyright: This file may be distributed under version 2 of the GPL licence. */
 
-#include "micq.h"
+#include "climm.h"
 #include <assert.h>
 #include "im_response.h"
 #include "oldicq_compat.h"
@@ -547,7 +547,7 @@ static int cb_srv_msg_tui (Contact *ocont, parentmode_t pm, time_t stamp, fat_sr
         uiG.idle_msgs++;
         ReadLinePromptSet (s_sprintf ("[%s%ld%s%s]%s%s",
                            COLINCOMING, uiG.idle_msgs, uiG.idle_uins,
-                           COLNONE, COLSERVER, i18n (2467, "mICQ>")));
+                           COLNONE, COLSERVER, i18n (2467, "climm>")));
     }
 
     if (!msg->otrencrypted)

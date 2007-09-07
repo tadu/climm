@@ -1,6 +1,6 @@
 
-#ifndef MICQ_UTIL_ALIAS_H
-#define MICQ_UTIL_ALIAS_H 1
+#ifndef CLIMM_UTIL_ALIAS_H
+#define CLIMM_UTIL_ALIAS_H 1
 
 typedef struct alias_s {
   const struct alias_s *next;

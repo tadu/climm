@@ -1,6 +1,6 @@
 
 extern "C" {
-#include "micq.h"
+#include "climm.h"
 #include "msn_base.h"
 #include "connection.h"
 #include "contact.h"
@@ -10,7 +10,7 @@ extern "C" {
 #include "msn/msn.h"
 #include "msn/externals.h"
 
-class MICQMSN : public MSN::Callbacks
+class CLIMMMSN : public MSN::Callbacks
 {
   public:
     MSN::NotificationServerConnection *mainConnection;
@@ -61,29 +61,29 @@ extern "C" {
     static jump_conn_f MsnCallbackConnectedStub;
 }
 
-static inline MICQMSN *MyCallbackFromMSN (MSN::Connection *msnconn)
+static inline CLIMMMSN *MyCallbackFromMSN (MSN::Connection *msnconn)
 {
-    return (MICQMSN *)msnconn->user_data;
+    return (CLIMMMSN *)msnconn->user_data;
 }
 
-static inline void MyCallbackSetMSN (MSN::Connection *msnconn, MICQMSN *msn)
+static inline void MyCallbackSetMSN (MSN::Connection *msnconn, CLIMMMSN *msn)
 {
     msnconn->user_data = (void *)msn;
 }
 
-static inline MICQMSN *MyCallbackFromMICQ (Connection *conn)
+static inline CLIMMMSN *MyCallbackFromClimm (Connection *conn)
 {
-    return (MICQMSN *)conn->tlv;
+    return (CLIMMMSN *)conn->tlv;
 }
 
-static inline void MyCallbackSetMICQ (Connection *conn, MICQMSN *msn)
+static inline void MyCallbackSetClimm (Connection *conn, CLIMMMSN *msn)
 {
     conn->tlv = (void *)msn;
 }
 
 Event *ConnectionInitMSNServer (Connection *serv)
 {
-    MICQMSN *cb = new MICQMSN;
+    CLIMMMSN *cb = new CLIMMMSN;
     
     assert (serv->type = TYPE_MSN_SERVER);
     if (!serv->screen || !serv->passwd)
@@ -100,7 +100,7 @@ Event *ConnectionInitMSNServer (Connection *serv)
         serv->port = 1863;
     
     cb->serv = serv;
-    MyCallbackSetMICQ (serv, cb);
+    MyCallbackSetClimm (serv, cb);
     serv->open = &ConnectionInitMSNServer;
     serv->reconnect = &MsnCallbackReconn;
     serv->error = &MsnCallbackError;
@@ -121,7 +121,7 @@ void MsnCallbackDispatch (Connection *conn)
     if (s == -1)
         return;
     
-    MICQMSN *cb = MyCallbackFromMICQ (conn);
+    CLIMMMSN *cb = MyCallbackFromClimm (conn);
     MSN::Connection *c = cb->mainConnection->connectionWithSocket (conn->sok);
     
     if (!c)
@@ -149,7 +149,7 @@ void MsnCallbackClose (Connection *conn)
     if (conn->sok == -1)
         return;
 
-    MICQMSN *cb = MyCallbackFromMICQ (conn);
+    CLIMMMSN *cb = MyCallbackFromClimm (conn);
     MSN::Connection *c = cb->mainConnection->connectionWithSocket (conn->sok);
 
     if (!c)
@@ -162,7 +162,7 @@ BOOL MsnCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
 {
     rl_printf ("MsnCallbackError: %p %lu %lu\n", conn, rc, flags);
 
-    MICQMSN *cb = MyCallbackFromMICQ (conn);
+    CLIMMMSN *cb = MyCallbackFromClimm (conn);
     MSN::Connection *c = cb->mainConnection->connectionWithSocket (conn->sok);
 
     if (!c)
@@ -171,9 +171,9 @@ BOOL MsnCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
     return 0;
 }
 
-void MICQMSN::registerSocket (int s, int read, int write)
+void CLIMMMSN::registerSocket (int s, int read, int write)
 {
-    rl_printf ("MICQMSN::registerSocket %d %d %d...", s, read, write);
+    rl_printf ("CLIMMMSN::registerSocket %d %d %d...", s, read, write);
     assert (s != -1);
     
     ::Connection *conn;
@@ -188,7 +188,7 @@ void MICQMSN::registerSocket (int s, int read, int write)
                 conn->connect |= CONNECT_SELECT_R;
             if (write)
                 conn->connect |= CONNECT_SELECT_W;
-            MyCallbackSetMICQ (conn, this);
+            MyCallbackSetClimm (conn, this);
             return;
         }
 
@@ -203,13 +203,13 @@ void MICQMSN::registerSocket (int s, int read, int write)
         conn->connect |= CONNECT_SELECT_R;
     if (write)
         conn->connect |= CONNECT_SELECT_W;
-    MyCallbackSetMICQ (conn, this);
+    MyCallbackSetClimm (conn, this);
     rl_printf (" %p (new)\n", conn);
 }
 
-void MICQMSN::unregisterSocket (int s)
+void CLIMMMSN::unregisterSocket (int s)
 {
-    rl_printf ("MICQMSN::unregisterSocket %d...", s);
+    rl_printf ("CLIMMMSN::unregisterSocket %d...", s);
     ::Connection *conn;
     for (int i = 0; (conn = ConnectionNr (i)); i++)
         if (conn->sok == s)
@@ -225,7 +225,7 @@ void MICQMSN::unregisterSocket (int s)
 
 void MsnCallbackConnected (Connection *conn)
 {
-    MICQMSN *cb = MyCallbackFromMICQ (conn);
+    CLIMMMSN *cb = MyCallbackFromClimm (conn);
 
     rl_printf ("MsnCallbackConnected %p %p\n", conn, cb);
     conn->dispatch = &MsnCallbackDispatch;
@@ -241,155 +241,155 @@ void MsnCallbackConnectedStub (Connection *conn)
     rl_printf ("MsnCallbackConnectedStub %p\n", conn);
 }
 
-void MICQMSN::showError (MSN::Connection * msnconn, std::string msg)
+void CLIMMMSN::showError (MSN::Connection * msnconn, std::string msg)
 {
-    rl_printf ("MICQMSN::showError %p {%s}\n", (void *)msnconn, msg.c_str ());
+    rl_printf ("CLIMMMSN::showError %p {%s}\n", (void *)msnconn, msg.c_str ());
 }
 
-void MICQMSN::log (int writing, const char* buf)
+void CLIMMMSN::log (int writing, const char* buf)
 {
     char *line = strdup (buf);
     size_t len = strlen (line);
     while (len && strchr ("\r\n", line[len - 1]))
         line[--len] = 0;
-    rl_printf ("MICQMSN::log %d {%s}\n", writing, line);
+    rl_printf ("CLIMMMSN::log %d {%s}\n", writing, line);
     free (line);
 }
 
-void MICQMSN::buddyChangedStatus (MSN::Connection * msnconn, MSN::Passport buddy, std::string friendlyname, MSN::BuddyStatus state)
+void CLIMMMSN::buddyChangedStatus (MSN::Connection * msnconn, MSN::Passport buddy, std::string friendlyname, MSN::BuddyStatus state)
 {
-    rl_printf ("MICQMSN::buddyChangedStatus %p %p {%s} %u\n", (void *)msnconn, (void *)&buddy, friendlyname.c_str(), state);
+    rl_printf ("CLIMMMSN::buddyChangedStatus %p %p {%s} %u\n", (void *)msnconn, (void *)&buddy, friendlyname.c_str(), state);
 }
 
-void MICQMSN::buddyOffline (MSN::Connection * msnconn, MSN::Passport buddy)
+void CLIMMMSN::buddyOffline (MSN::Connection * msnconn, MSN::Passport buddy)
 {
-    rl_printf ("MICQMSN::buddyOffline %p %p\n", (void *)msnconn, (void *)&buddy);
+    rl_printf ("CLIMMMSN::buddyOffline %p %p\n", (void *)msnconn, (void *)&buddy);
 }
 
-void MICQMSN::gotFriendlyName (MSN::Connection *msnconn, std::string friendlyname)
+void CLIMMMSN::gotFriendlyName (MSN::Connection *msnconn, std::string friendlyname)
 {
-    rl_printf ("MICQMSN::gotFriendlyName %p {%s}\n", (void *)msnconn, friendlyname.c_str());
+    rl_printf ("CLIMMMSN::gotFriendlyName %p {%s}\n", (void *)msnconn, friendlyname.c_str());
     Connection *serv = MyCallbackFromMSN (msnconn->myNotificationServer())->serv;
     serv->cont = ContactScreen (serv, friendlyname.c_str());
 }
 
-void MICQMSN::gotBuddyListInfo (MSN::NotificationServerConnection * msnconn, MSN::ListSyncInfo * data)
+void CLIMMMSN::gotBuddyListInfo (MSN::NotificationServerConnection * msnconn, MSN::ListSyncInfo * data)
 {
-    rl_printf ("MICQMSN::gotBuddyListInfo %p %p\n", (void *)msnconn, (void *)&data);
+    rl_printf ("CLIMMMSN::gotBuddyListInfo %p %p\n", (void *)msnconn, (void *)&data);
     // !!
 }
 
-void MICQMSN::gotLatestListSerial (MSN::Connection * msnconn, int serial)
+void CLIMMMSN::gotLatestListSerial (MSN::Connection * msnconn, int serial)
 {
-    rl_printf ("MICQMSN::gotLatestListSerial %p %d\n", (void *)msnconn, serial);
+    rl_printf ("CLIMMMSN::gotLatestListSerial %p %d\n", (void *)msnconn, serial);
 //        mainConnection->addToGroup (MSN::Passport ("Msnsucks@gmx.dE"), 0);
 //        mainConnection->addToList ("TolleList", MSN::Passport ("mucky@gmx.de"));
-//        mainConnection->addGroup ("mICQGroupi");
+//        mainConnection->addGroup ("climmGroupi");
 }
 
-void MICQMSN::gotGTC (MSN::Connection * msnconn, char c)
+void CLIMMMSN::gotGTC (MSN::Connection * msnconn, char c)
 {
-    rl_printf ("MICQMSN::gotGTC %p %02x {%c}\n", (void *)msnconn, c, c);
+    rl_printf ("CLIMMMSN::gotGTC %p %02x {%c}\n", (void *)msnconn, c, c);
 }
 
-void MICQMSN::gotBLP (MSN::Connection * msnconn, char c)
+void CLIMMMSN::gotBLP (MSN::Connection * msnconn, char c)
 {
-    rl_printf ("MICQMSN::gotBLP %p %02x {%c}\n", (void *)msnconn, c, c);
+    rl_printf ("CLIMMMSN::gotBLP %p %02x {%c}\n", (void *)msnconn, c, c);
 }
 
-void MICQMSN::gotNewReverseListEntry (MSN::Connection * msnconn, MSN::Passport buddy, std::string friendlyname)
+void CLIMMMSN::gotNewReverseListEntry (MSN::Connection * msnconn, MSN::Passport buddy, std::string friendlyname)
 {
-    rl_printf ("MICQMSN::gotNewReverseListEntry %p {%s} {%s}\n", (void *)msnconn, buddy.c_str(), friendlyname.c_str());
+    rl_printf ("CLIMMMSN::gotNewReverseListEntry %p {%s} {%s}\n", (void *)msnconn, buddy.c_str(), friendlyname.c_str());
 }
 
-void MICQMSN::addedListEntry (MSN::Connection * msnconn, std::string list, MSN::Passport buddy, int groupID)
+void CLIMMMSN::addedListEntry (MSN::Connection * msnconn, std::string list, MSN::Passport buddy, int groupID)
 {
-    rl_printf ("MICQMSN::addedListEntry %p {%s} %p %d\n", (void *)msnconn, list.c_str(), (void *)&buddy, groupID);
+    rl_printf ("CLIMMMSN::addedListEntry %p {%s} %p %d\n", (void *)msnconn, list.c_str(), (void *)&buddy, groupID);
 }
 
-void MICQMSN::removedListEntry (MSN::Connection * msnconn, std::string list, MSN::Passport buddy, int groupID)
+void CLIMMMSN::removedListEntry (MSN::Connection * msnconn, std::string list, MSN::Passport buddy, int groupID)
 {
-    rl_printf ("MICQMSN::removedListEntry %p {%s} %p %d\n", (void *)msnconn, list.c_str(), (void *)&buddy, groupID);
+    rl_printf ("CLIMMMSN::removedListEntry %p {%s} %p %d\n", (void *)msnconn, list.c_str(), (void *)&buddy, groupID);
 }
 
-void MICQMSN::addedGroup (MSN::Connection * msnconn, std::string groupName, int groupID)
+void CLIMMMSN::addedGroup (MSN::Connection * msnconn, std::string groupName, int groupID)
 {
-    rl_printf ("MICQMSN::addedGroup %p {%s} %d\n", (void *)msnconn, groupName.c_str(), groupID);
+    rl_printf ("CLIMMMSN::addedGroup %p {%s} %d\n", (void *)msnconn, groupName.c_str(), groupID);
 }
 
-void MICQMSN::removedGroup (MSN::Connection * msnconn, int groupID)
+void CLIMMMSN::removedGroup (MSN::Connection * msnconn, int groupID)
 {
-    rl_printf ("MICQMSN::removedGroup %p %d\n", (void *)msnconn, groupID);
+    rl_printf ("CLIMMMSN::removedGroup %p %d\n", (void *)msnconn, groupID);
 }
 
-void MICQMSN::renamedGroup (MSN::Connection * msnconn, int groupID, std::string newGroupName)
+void CLIMMMSN::renamedGroup (MSN::Connection * msnconn, int groupID, std::string newGroupName)
 {
-    rl_printf ("MICQMSN::renamedGroup %p %d {%s}\n", (void *)msnconn, groupID, newGroupName.c_str ());
+    rl_printf ("CLIMMMSN::renamedGroup %p %d {%s}\n", (void *)msnconn, groupID, newGroupName.c_str ());
 }
 
-void MICQMSN::gotSwitchboard (MSN::SwitchboardServerConnection * msnconn, const void * tag)
+void CLIMMMSN::gotSwitchboard (MSN::SwitchboardServerConnection * msnconn, const void * tag)
 {
-    rl_printf ("MICQMSN::gotSwitchboard %p %p\n", (void *)msnconn, tag);
+    rl_printf ("CLIMMMSN::gotSwitchboard %p %p\n", (void *)msnconn, tag);
 }
 
-void MICQMSN::buddyJoinedConversation (MSN::SwitchboardServerConnection * msnconn, MSN::Passport buddy, std::string friendlyname, int is_initial)
+void CLIMMMSN::buddyJoinedConversation (MSN::SwitchboardServerConnection * msnconn, MSN::Passport buddy, std::string friendlyname, int is_initial)
 {
-    rl_printf ("MICQMSN::buddyJoinedConversation %p %p {%s} %d\n", (void *)msnconn, (void *)&buddy, friendlyname.c_str(), is_initial);
+    rl_printf ("CLIMMMSN::buddyJoinedConversation %p %p {%s} %d\n", (void *)msnconn, (void *)&buddy, friendlyname.c_str(), is_initial);
 }
 
-void MICQMSN::buddyLeftConversation (MSN::SwitchboardServerConnection * msnconn, MSN::Passport buddy)
+void CLIMMMSN::buddyLeftConversation (MSN::SwitchboardServerConnection * msnconn, MSN::Passport buddy)
 {
-    rl_printf ("MICQMSN::buddyLeftConversation %p %p\n", (void *)msnconn, (void *)&buddy);
+    rl_printf ("CLIMMMSN::buddyLeftConversation %p %p\n", (void *)msnconn, (void *)&buddy);
 }
 
-void MICQMSN::gotInstantMessage (MSN::SwitchboardServerConnection * msnconn, MSN::Passport buddy, std::string friendlyname, MSN::Message * msg)
+void CLIMMMSN::gotInstantMessage (MSN::SwitchboardServerConnection * msnconn, MSN::Passport buddy, std::string friendlyname, MSN::Message * msg)
 {
-    rl_printf ("MICQMSN::gotInstantMessage %p %p {%s} %p\n", (void *)msnconn, (void *)&buddy, friendlyname.c_str(), (void *)&msg);
+    rl_printf ("CLIMMMSN::gotInstantMessage %p %p {%s} %p\n", (void *)msnconn, (void *)&buddy, friendlyname.c_str(), (void *)&msg);
 }
 
-void MICQMSN::failedSendingMessage (MSN::Connection * msnconn)
+void CLIMMMSN::failedSendingMessage (MSN::Connection * msnconn)
 {
-    rl_printf ("MICQMSN::failedSendingMessage %p\n", (void *)msnconn);
+    rl_printf ("CLIMMMSN::failedSendingMessage %p\n", (void *)msnconn);
 }
 
-void MICQMSN::buddyTyping (MSN::Connection * msnconn, MSN::Passport buddy, std::string friendlyname)
+void CLIMMMSN::buddyTyping (MSN::Connection * msnconn, MSN::Passport buddy, std::string friendlyname)
 {
-    rl_printf ("MICQMSN::buddyTyping %p %p {%s}\n", (void *)msnconn, (void *)&buddy, friendlyname.c_str());
+    rl_printf ("CLIMMMSN::buddyTyping %p %p {%s}\n", (void *)msnconn, (void *)&buddy, friendlyname.c_str());
 }
 
-void MICQMSN::gotInitialEmailNotification (MSN::Connection * msnconn, int unread_inbox, int unread_folders)
+void CLIMMMSN::gotInitialEmailNotification (MSN::Connection * msnconn, int unread_inbox, int unread_folders)
 {
-    rl_printf ("MICQMSN::gotInitialEmailNotification %p %d %d\n", (void *)msnconn, unread_inbox, unread_folders);
+    rl_printf ("CLIMMMSN::gotInitialEmailNotification %p %d %d\n", (void *)msnconn, unread_inbox, unread_folders);
 }
 
-void MICQMSN::gotNewEmailNotification (MSN::Connection * msnconn, std::string from, std::string subject)
+void CLIMMMSN::gotNewEmailNotification (MSN::Connection * msnconn, std::string from, std::string subject)
 {
-    rl_printf ("MICQMSN::gotNewEmailNotification %p {%s} {%s}\n", (void *)msnconn, from.c_str(), subject.c_str());
+    rl_printf ("CLIMMMSN::gotNewEmailNotification %p {%s} {%s}\n", (void *)msnconn, from.c_str(), subject.c_str());
 }
 
-void MICQMSN::gotFileTransferInvitation (MSN::Connection * msnconn, MSN::Passport buddy, std::string friendlyname, MSN::FileTransferInvitation * i)
+void CLIMMMSN::gotFileTransferInvitation (MSN::Connection * msnconn, MSN::Passport buddy, std::string friendlyname, MSN::FileTransferInvitation * i)
 {
-    rl_printf ("MICQMSN::gotFileTransferInvitation %p %p {%s} %p\n", (void *)msnconn, (void *)&buddy, friendlyname.c_str(), (void *)&i);
+    rl_printf ("CLIMMMSN::gotFileTransferInvitation %p %p {%s} %p\n", (void *)msnconn, (void *)&buddy, friendlyname.c_str(), (void *)&i);
 }
 
-void MICQMSN::fileTransferProgress (MSN::FileTransferInvitation * inv, std::string status, unsigned long recv, unsigned long total)
+void CLIMMMSN::fileTransferProgress (MSN::FileTransferInvitation * inv, std::string status, unsigned long recv, unsigned long total)
 {
-    rl_printf ("MICQMSN::fileTransferProgress %p {%s} %lu %lu\n", inv, status.c_str(), recv, total);
+    rl_printf ("CLIMMMSN::fileTransferProgress %p {%s} %lu %lu\n", inv, status.c_str(), recv, total);
 }
 
-void MICQMSN::fileTransferFailed (MSN::FileTransferInvitation * inv, int error, std::string message)
+void CLIMMMSN::fileTransferFailed (MSN::FileTransferInvitation * inv, int error, std::string message)
 {
-    rl_printf ("MICQMSN::fileTransferFailed %p %d {%s}\n", inv, error, message.c_str());
+    rl_printf ("CLIMMMSN::fileTransferFailed %p %d {%s}\n", inv, error, message.c_str());
 }
 
-void MICQMSN::fileTransferSucceeded (MSN::FileTransferInvitation * inv)
+void CLIMMMSN::fileTransferSucceeded (MSN::FileTransferInvitation * inv)
 {
-    rl_printf ("MICQMSN::fileTransferSucceeded %p\n", (void *)&inv);
+    rl_printf ("CLIMMMSN::fileTransferSucceeded %p\n", (void *)&inv);
 }
 
-void MICQMSN::gotNewConnection (MSN::Connection * msnconn)
+void CLIMMMSN::gotNewConnection (MSN::Connection * msnconn)
 {
-    rl_printf ("MICQMSN::gotNewConnection %p ...", (void *)msnconn);
+    rl_printf ("CLIMMMSN::gotNewConnection %p ...", (void *)msnconn);
 
     ::Connection *conn;
     for (int i = 0; (conn = ConnectionNr (i)); i++)
@@ -419,25 +419,25 @@ void MICQMSN::gotNewConnection (MSN::Connection * msnconn)
     return;
 }
 
-void MICQMSN::closingConnection (MSN::Connection * msnconn)
+void CLIMMMSN::closingConnection (MSN::Connection * msnconn)
 {
-    rl_printf ("MICQMSN::closingConnection %p\n", (void *)msnconn);
+    rl_printf ("CLIMMMSN::closingConnection %p\n", (void *)msnconn);
 }
 
-void MICQMSN::changedStatus (MSN::Connection * msnconn, MSN::BuddyStatus state)
+void CLIMMMSN::changedStatus (MSN::Connection * msnconn, MSN::BuddyStatus state)
 {
-    rl_printf ("MICQMSN::changedStatus %p %u\n", (void *)msnconn, state);
+    rl_printf ("CLIMMMSN::changedStatus %p %u\n", (void *)msnconn, state);
 }
 
-int MICQMSN::connectToServer (std::string server, int port, bool *connected)
+int CLIMMMSN::connectToServer (std::string server, int port, bool *connected)
 {
-    rl_printf ("MICQMSN:%p:connectToServer {%s} %d %p %d\n", this, server.c_str(), port, connected, *connected);
+    rl_printf ("CLIMMMSN:%p:connectToServer {%s} %d %p %d\n", this, server.c_str(), port, connected, *connected);
     *connected = 0;
 
     ::Connection *conn = ConnectionC (TYPE_MSN_TEMP);
     conn->connect = 0;
     conn->port = port;
-    MyCallbackSetMICQ (conn, this);
+    MyCallbackSetClimm (conn, this);
     s_repl (&conn->server, server.c_str());
     conn->dispatch = &MsnCallbackConnectedStub;
     UtilIOConnectTCP (conn);
@@ -456,20 +456,20 @@ int MICQMSN::connectToServer (std::string server, int port, bool *connected)
     return conn->sok;
 }
 
-int MICQMSN::listenOnPort (int port)
+int CLIMMMSN::listenOnPort (int port)
 {
-    rl_printf ("MICQMSN::listenOnPort %d\n", port);
+    rl_printf ("CLIMMMSN::listenOnPort %d\n", port);
     return -1;
 }
 
-std::string MICQMSN::getOurIP (void)
+std::string CLIMMMSN::getOurIP (void)
 {
-    rl_printf ("MICQMSN::getOurIP\n");
+    rl_printf ("CLIMMMSN::getOurIP\n");
     return "<getOutIP>";
 }
 
-std::string MICQMSN::getSecureHTTPProxy (void)
+std::string CLIMMMSN::getSecureHTTPProxy (void)
 {
-    rl_printf ("MICQMSN::getSecureHTTPProxy\n");
+    rl_printf ("CLIMMMSN::getSecureHTTPProxy\n");
     return "";
 }

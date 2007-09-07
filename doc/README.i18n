@@ -5,13 +5,13 @@ The *.i18n files follow a simple file format. All empty lines or lines
 starting with a hash sign (#) are comments and thus ignored. All other lines
 should be translation entries, that consist of a four digit number, a colon
 or dot, and the translated string. The order of the strings does not matter
-for mICQ, but it does matter for the scripts updating these files. The first
+for climm, but it does matter for the scripts updating these files. The first
 10 entries contain meta data:
 
   1000: character encoding used for this file.
   1001: the ISO 3166 country code, e.g. de for German.
   1002: the current locale, e.g. de_DE for German/Germany.
-  1003: mICQ version this file was last updated for, e.g. 0-4-9-4.
+  1003: climm version this file was last updated for, e.g. 0-4-9-4.
   1004: maintainers and contributors to this translation
   1005: maintainer who last updated this file
   1006: date of last update
@@ -22,7 +22,7 @@ for mICQ, but it does matter for the scripts updating these files. The first
 CREATING A NEW TRANSLATION WITHOUT CVS
 
 If you want to make a new translation, lets assume for Danish (language
-code: da), you start by copying the C.i18n file from the latest mICQ source
+code: da), you start by copying the C.i18n file from the latest climm source
 package to a new file, da.i18n. Add a hash sign in front of every line of
 this file. Then translate each line, and for each line done, remove the
 leading hash sign. This way, all untranslated lines are commented out, while
@@ -33,12 +33,12 @@ this on, follow the directions for translation updates.
 
 UPDATING A TRANSLATION WITHOUT CVS
 
-Download the current translation file from the mICQ web page, namely from
-<URL:http://www.micq.org/documentation.shtml>, which is for the example
-given the file <URL:http://www.micq.org/doc/da.i18n>. DO THIS EVEN IF YOU
+Download the current translation file from the climm web page, namely from
+<URL:http://www.climm.org/documentation.shtml>, which is for the example
+given the file <URL:http://www.climm.org/doc/da.i18n>. DO THIS EVEN IF YOU
 HAVE A PREVIOUS VERSION OF THIS FILE. If I have made changes since you sent
 me the file the last time that you don't agree with, undo them now, but for
-heavens sake work on the file you downloaded from micq.org. Then update
+heavens sake work on the file you downloaded from climm.org. Then update
 whatever needs updating. Often, same strings have changed. Then, instead of
 your translation, the file will now contain three lines: a line preceded by
 "#-#" containing your previous translation, a line preceded by "+"
@@ -51,7 +51,7 @@ When finished, mail the file to me as usual.
 
 CREATING A NEW TRANSLATION WITH CVS
 
-Get the newest CVS check-out from mICQ. Type "./i18n-template <cc>.i18n",
+Get the newest CVS check-out from climm. Type "./i18n-template <cc>.i18n",
 where <cc> is the language code of the language you're going to translate
 to.
 

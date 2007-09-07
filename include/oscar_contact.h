@@ -1,6 +1,6 @@
 
-#ifndef MICQ_OSCAR_CONTACT_H
-#define MICQ_OSCAR_CONTACT_H
+#ifndef CLIMM_OSCAR_CONTACT_H
+#define CLIMM_OSCAR_CONTACT_H
 
 jump_snac_f SnacSrvContacterr, SnacSrvReplybuddy, SnacSrvUseronline,
     SnacSrvContrefused, SnacSrvUseroffline;

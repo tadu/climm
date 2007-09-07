@@ -1,19 +1,19 @@
 /*
  * Provides a time sorted queue, with callback for due events.
  *
- * mICQ Copyright (C) © 2001-2007 Rüdiger Kuhlmann
+ * climm Copyright (C) © 2001-2007 Rüdiger Kuhlmann
  *
- * mICQ is free software; you can redistribute it and/or modify it
+ * climm is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 dated June, 1991.
  *
- * mICQ is distributed in the hope that it will be useful, but WITHOUT
+ * climm is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
  * In addition, as a special exception permission is granted to link the
- * code of this release of mICQ with the OpenSSL project's "OpenSSL"
+ * code of this release of climm with the OpenSSL project's "OpenSSL"
  * library, and distribute the linked executables.  You must obey the GNU
  * General Public License in all respects for all of the code used other
  * than "OpenSSL".  If you modify this file, you may extend this exception
@@ -34,7 +34,7 @@
 
 #include <assert.h>
 #include <limits.h>
-#include "micq.h"
+#include "climm.h"
 #include "msg_queue.h"
 #include "util_ui.h"
 #include "contact.h" /* for cont->screen */
@@ -621,7 +621,7 @@ const char *QueueType (UDWORD type)
         case QUEUE_ACKNOWLEDGE:    return "ACKNOWLEDGE";
         case QUEUE_USERFILEACK:    return "USERFILEACK";
         case QUEUE_REQUEST_ROSTER: return "REQUEST_ROSTER";
-        case QUEUE_MICQ_COMMAND:   return "MICQ_COMMAND";
+        case QUEUE_CLIMM_COMMAND:  return "CLIMM_COMMAND";
         case QUEUE_DEP_WAITLOGIN:  return "DEP_WAITLOGIN";
     }
     return s_sprintf ("%lx", type);

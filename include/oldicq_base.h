@@ -1,6 +1,6 @@
 
-#ifndef MICQ_OLDICQ_BASE_H
-#define MICQ_OLDICQ_BASE_H
+#ifndef CLIMM_OLDICQ_BASE_H
+#define CLIMM_OLDICQ_BASE_H
 
 Event *ConnectionInitServerV5 (Connection *conn);
 void CallBackServerInitV5 (Event *event);

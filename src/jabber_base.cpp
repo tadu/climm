@@ -1,6 +1,6 @@
 
 extern "C" {
-#include "micq.h"
+#include "climm.h"
 #include <sys/types.h>
 #if HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -38,7 +38,7 @@ extern "C" {
     static void XMPPCallBackDoReconn (Event *event);
 }
 
-class MICQXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
+class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
                  public gloox::PresenceHandler,    public gloox::SubscriptionHandler,
                  public gloox::LogHandler {
     private :
@@ -63,8 +63,8 @@ class MICQXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
         void handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, std::string msg);
 
     public :
-                      MICQXMPP (Connection *serv);
-        virtual       ~MICQXMPP ();
+                      CLIMMXMPP (Connection *serv);
+        virtual       ~CLIMMXMPP ();
         virtual void  onConnect ();
         virtual void  onDisconnect (gloox::ConnectionError e);
         virtual void  onResourceBindError (gloox::ResourceBindError error);
@@ -80,7 +80,7 @@ class MICQXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
         void  XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, const char *msg);
 };
 
-MICQXMPP::MICQXMPP (Connection *serv)
+CLIMMXMPP::CLIMMXMPP (Connection *serv)
 {
     m_conn = serv;
     m_stamp = (char *)malloc (15);
@@ -89,7 +89,7 @@ MICQXMPP::MICQXMPP (Connection *serv)
     assert (serv->passwd);
     assert (*serv->passwd);
     m_client = new gloox::Client (gloox::JID (serv->screen), serv->passwd, serv->port);
-    m_client->setResource ("mICQ");
+    m_client->setResource ("climm");
     if (serv->server)
         m_client->setServer (serv->server);
 
@@ -99,7 +99,7 @@ MICQXMPP::MICQXMPP (Connection *serv)
     m_client->registerSubscriptionHandler (this);
     m_client->registerPresenceHandler (this);
     m_client->logInstance ().registerLogHandler (gloox::LogLevelDebug,   gloox::LogAreaAll, this);
-    m_client->disco()->setVersion ("mICQ", BuildVersionStr, BuildPlatformStr);
+    m_client->disco()->setVersion ("climm", BuildVersionStr, BuildPlatformStr);
     m_client->disco()->setIdentity ("client", "console");
     m_client->setAutoPresence (true);
     m_client->setInitialPriority (5);
@@ -109,18 +109,18 @@ MICQXMPP::MICQXMPP (Connection *serv)
     serv->sok = m_client->fileDescriptor ();
 }
 
-MICQXMPP::~MICQXMPP ()
+CLIMMXMPP::~CLIMMXMPP ()
 {
     s_free (m_stamp);
 }
 
-void MICQXMPP::onConnect ()
+void CLIMMXMPP::onConnect ()
 {
     m_conn->connect = CONNECT_OK | CONNECT_SELECT_R;
 //    m_client->send (gloox::Stanza::createPresenceStanza (gloox::JID (""), "", gloox::PresenceChat));
 }
 
-void MICQXMPP::onDisconnect (gloox::ConnectionError e)
+void CLIMMXMPP::onDisconnect (gloox::ConnectionError e)
 {
     m_conn->connect = 0;
     if (m_conn->sok != -1)
@@ -156,17 +156,17 @@ void MICQXMPP::onDisconnect (gloox::ConnectionError e)
     }
 }
 
-void MICQXMPP::onResourceBindError (gloox::ResourceBindError e)
+void CLIMMXMPP::onResourceBindError (gloox::ResourceBindError e)
 {
     rl_printf ("onResourceBindError: Error %d.\n", e);
 }
 
-void MICQXMPP::onSessionCreateError (gloox::SessionCreateError e)
+void CLIMMXMPP::onSessionCreateError (gloox::SessionCreateError e)
 {
     rl_printf ("onSessionCreateError: Error %d.\n", e);
 }
 
-bool MICQXMPP::onTLSConnect (const gloox::CertInfo &info)
+bool CLIMMXMPP::onTLSConnect (const gloox::CertInfo &info)
 {
     return TRUE;
 }
@@ -303,7 +303,7 @@ static void GetBothContacts (const gloox::JID &j, Connection *conn, Contact **b,
 }
 
 
-void MICQXMPP::handleXEP8 (gloox::Tag *t)
+void CLIMMXMPP::handleXEP8 (gloox::Tag *t)
 {
     if (gloox::Tag *avatar = t->findChild ("x", "xmlns", "jabber:x:avatar"))
     {
@@ -317,7 +317,7 @@ void MICQXMPP::handleXEP8 (gloox::Tag *t)
     }
 }
 
-void MICQXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
+void CLIMMXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
 {
     std::string refid;
     int ref = -1;
@@ -384,7 +384,7 @@ void MICQXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
     CheckInvalid (XEP22);
 }
 
-void MICQXMPP::handleXEP22c (gloox::JID from, std::string tof, std::string id, std::string type)
+void CLIMMXMPP::handleXEP22c (gloox::JID from, std::string tof, std::string id, std::string type)
 {
     gloox::Stanza *msg = gloox::Stanza::createMessageStanza (from, "");
     msg->addAttribute ("id", s_sprintf ("ack-%s-%x", m_stamp, m_conn->our_seq++));
@@ -397,7 +397,7 @@ void MICQXMPP::handleXEP22c (gloox::JID from, std::string tof, std::string id, s
     m_client->send (msg);
 }
 
-void MICQXMPP::handleXEP22b (gloox::Tag *XEP22, gloox::JID from, std::string tof, std::string id)
+void CLIMMXMPP::handleXEP22b (gloox::Tag *XEP22, gloox::JID from, std::string tof, std::string id)
 {
     if (gloox::Tag *dotag = XEP22->findChild ("delivered"))
     {
@@ -419,7 +419,7 @@ void MICQXMPP::handleXEP22b (gloox::Tag *XEP22, gloox::JID from, std::string tof
     }
 }
 
-bool MICQXMPP::handleXEP22 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id)
+bool CLIMMXMPP::handleXEP22 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id)
 {
     if (gloox::Tag *XEP22 = t->findChild ("x", "xmlns", "jabber:x:event"))
     {
@@ -434,7 +434,7 @@ bool MICQXMPP::handleXEP22 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std:
     return false;
 }
 
-void MICQXMPP::handleXEP27 (gloox::Tag *t)
+void CLIMMXMPP::handleXEP27 (gloox::Tag *t)
 {
     if (gloox::Tag *sig = t->findChild ("x", "xmlns", "jabber:x:signed"))
     {
@@ -444,7 +444,7 @@ void MICQXMPP::handleXEP27 (gloox::Tag *t)
     }
 }
 
-void MICQXMPP::handleXEP71 (gloox::Tag *t)
+void CLIMMXMPP::handleXEP71 (gloox::Tag *t)
 {
     if (gloox::Tag *xhtmlim = t->findChild ("html", "xmlns", "http://jabber.org/protocol/xhtml-im"))
     {
@@ -454,7 +454,7 @@ void MICQXMPP::handleXEP71 (gloox::Tag *t)
     }
 }
 
-void MICQXMPP::handleXEP85 (gloox::Tag *t)
+void CLIMMXMPP::handleXEP85 (gloox::Tag *t)
 {
     if (gloox::Tag *active = t->findChild ("active", "xmlns", "http://jabber.org/protocol/chatstates"))
     {
@@ -483,7 +483,7 @@ void MICQXMPP::handleXEP85 (gloox::Tag *t)
     }
 }
 
-time_t MICQXMPP::handleXEP91 (gloox::Tag *t)
+time_t CLIMMXMPP::handleXEP91 (gloox::Tag *t)
 {
     time_t date = NOW;
     if (gloox::Tag *delay = t->findChild ("x", "xmlns", "jabber:x:delay"))
@@ -501,7 +501,7 @@ time_t MICQXMPP::handleXEP91 (gloox::Tag *t)
     return date;
 }
 
-void MICQXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
+void CLIMMXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
 {
     if (gloox::Tag *caps = t->findChild ("c", "xmlns", "http://jabber.org/protocol/caps"))
     {
@@ -535,7 +535,7 @@ void MICQXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
     }
 }
 
-void MICQXMPP::handleXEP136 (gloox::Tag *t)
+void CLIMMXMPP::handleXEP136 (gloox::Tag *t)
 {
     if (gloox::Tag *arc = t->findChild ("arc:record", "xmlns:arc", "http://jabber.org/protocol/archive"))
     {
@@ -545,7 +545,7 @@ void MICQXMPP::handleXEP136 (gloox::Tag *t)
     }
 }
 
-void MICQXMPP::handleXEP153 (gloox::Tag *t, Contact *contr)
+void CLIMMXMPP::handleXEP153 (gloox::Tag *t, Contact *contr)
 {
     if (gloox::Tag *vcard = t->findChild ("x", "xmlns", "vcard-temp:x:update"))
     {
@@ -566,7 +566,7 @@ void MICQXMPP::handleXEP153 (gloox::Tag *t, Contact *contr)
     }
 }
 
-void MICQXMPP::handleGoogleNosave (gloox::Tag *t)
+void CLIMMXMPP::handleGoogleNosave (gloox::Tag *t)
 {
     if (gloox::Tag *nosave = t->findChild ("nos:x", "xmlns:nos", "google:nosave"))
     {
@@ -576,7 +576,7 @@ void MICQXMPP::handleGoogleNosave (gloox::Tag *t)
     }
 }
 
-void MICQXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string tof, std::string id, gloox::StanzaSubType subtype)
+void CLIMMXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string tof, std::string id, gloox::StanzaSubType subtype)
 {
     Contact *cto = ContactScreen (m_conn, tof.c_str());
     std::string subtypeval = t->findAttribute ("type");
@@ -607,7 +607,7 @@ void MICQXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string to
         CheckInvalid (x);
 }
 
-void MICQXMPP::handleMessage (gloox::Stanza *s)
+void CLIMMXMPP::handleMessage (gloox::Stanza *s)
 {
     assert (s);
     assert (s->type() == gloox::StanzaMessage);
@@ -628,7 +628,7 @@ void MICQXMPP::handleMessage (gloox::Stanza *s)
     delete t;
 }
 
-void MICQXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, std::string msg)
+void CLIMMXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, std::string msg)
 {
     ContactGroup *tcg;
     Contact *contb, *contr, *c;
@@ -676,7 +676,7 @@ void MICQXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, s
     IMOnline (contr, status, imf_none, status, NULL);
 }
 
-void MICQXMPP::handlePresence (gloox::Stanza *s)
+void CLIMMXMPP::handlePresence (gloox::Stanza *s)
 {
     assert (s);
     assert (s->type() == gloox::StanzaPresence);
@@ -699,7 +699,7 @@ void MICQXMPP::handlePresence (gloox::Stanza *s)
     delete t;
 }
 
-void MICQXMPP::handleSubscription (gloox::Stanza *s)
+void CLIMMXMPP::handleSubscription (gloox::Stanza *s)
 {
     assert (s);
     assert (s->type() == gloox::StanzaS10n);
@@ -711,7 +711,7 @@ void MICQXMPP::handleSubscription (gloox::Stanza *s)
                s->xml().c_str());
 }
 
-void MICQXMPPSave (Connection *serv, const char *text, bool in)
+void CLIMMXMPPSave (Connection *serv, const char *text, bool in)
 {
     const char *data;
     
@@ -734,7 +734,7 @@ void MICQXMPPSave (Connection *serv, const char *text, bool in)
     write (serv->logfd, "\n", 1);
 }
 
-void MICQXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message)
+void CLIMMXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message)
 {
     const char *lt = "";
     const char *la = "";
@@ -759,13 +759,13 @@ void MICQXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std:
     if (area == gloox::LogAreaXmlIncoming)
     {
         if (ConnectionPrefVal (m_conn, CO_LOGSTREAM))
-            MICQXMPPSave (m_conn, message.c_str(), 1);
+            CLIMMXMPPSave (m_conn, message.c_str(), 1);
         DebugH (DEB_XMPPIN, "%s/%s: %s", lt, la, message.c_str());
     }
     else if (area == gloox::LogAreaXmlOutgoing)
     {
         if (ConnectionPrefVal (m_conn, CO_LOGSTREAM))
-            MICQXMPPSave (m_conn, message.c_str(), 0);
+            CLIMMXMPPSave (m_conn, message.c_str(), 0);
         DebugH (DEB_XMPPOUT, "%s/%s: %s", lt, la, message.c_str());
     }
     else
@@ -810,7 +810,7 @@ static void SnacCallbackXmppCancel (Event *event)
     EventD (event);
 }
 
-UBYTE MICQXMPP::XMPPSendmsg (Connection *serv, Contact *cont, Message *msg)
+UBYTE CLIMMXMPP::XMPPSendmsg (Connection *serv, Contact *cont, Message *msg)
 {
     assert (serv == m_conn);
 
@@ -841,7 +841,7 @@ UBYTE MICQXMPP::XMPPSendmsg (Connection *serv, Contact *cont, Message *msg)
     return RET_OK;
 }
 
-void MICQXMPP::XMPPSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg)
+void CLIMMXMPP::XMPPSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg)
 {
     gloox::Presence p;
     gloox::JID j = cont ? gloox::JID (cont->screen) : gloox::JID ();
@@ -863,7 +863,7 @@ void MICQXMPP::XMPPSetstatus (Connection *serv, Contact *cont, status_t status, 
     {
         gloox::Tag *vers = new gloox::Tag (pres, "c");
         vers->addAttribute ("xmlns", "http://jabber.org/protocol/caps");
-        vers->addAttribute ("node", "http://www.mICQ.org/xmpp/caps");
+        vers->addAttribute ("node", "http://www.climm.org/xmpp/caps");
         vers->addAttribute ("ver", BuildVersionStr);
         // vers->addAttribute ("ext", "ext1 ext2");
     }
@@ -872,7 +872,7 @@ void MICQXMPP::XMPPSetstatus (Connection *serv, Contact *cont, status_t status, 
     m_conn->nativestatus = p;
 }
 
-void MICQXMPP::XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, const char *msg)
+void CLIMMXMPP::XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, const char *msg)
 {
     gloox::JID j = gloox::JID (cont->screen);
     gloox::Tag *pres = new gloox::Tag ("presence");
@@ -949,16 +949,16 @@ Event *ConnectionInitXMPPServer (Connection *serv)
         event = QueueEnqueueData (serv, QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 5,
                                   NULL, serv->cont, NULL, &XMPPCallBackTimeout);
 
-    MICQXMPP *l = new MICQXMPP (serv);
+    CLIMMXMPP *l = new CLIMMXMPP (serv);
     serv->xmpp_private = l;
     serv->connect |= CONNECT_SELECT_R;
     
     return event;
 }
 
-static inline MICQXMPP *getXMPPClient (Connection *conn)
+static inline CLIMMXMPP *getXMPPClient (Connection *conn)
 {
-    return conn ? (MICQXMPP *)conn->xmpp_private : NULL;
+    return conn ? (CLIMMXMPP *)conn->xmpp_private : NULL;
 }
 
 void XMPPCallbackDispatch (Connection *conn)
@@ -966,7 +966,7 @@ void XMPPCallbackDispatch (Connection *conn)
     if (conn->sok == -1)
         return;
 
-    MICQXMPP *j = getXMPPClient (conn);
+    CLIMMXMPP *j = getXMPPClient (conn);
     if (!j)
     {
         rl_printf ("#Avoid spinning.\n");
@@ -1028,7 +1028,7 @@ void XMPPCallbackClose (Connection *conn)
     if (conn->sok == -1)
         return;
 
-    MICQXMPP *j = getXMPPClient (conn);
+    CLIMMXMPP *j = getXMPPClient (conn);
     if (!j)
     {
         rl_printf ("#Avoid spinning.\n");
@@ -1049,21 +1049,21 @@ BOOL XMPPCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
 
 UBYTE XMPPSendmsg (Connection *serv, Contact *cont, Message *msg)
 {
-    MICQXMPP *j = getXMPPClient (serv);
+    CLIMMXMPP *j = getXMPPClient (serv);
     assert (j);
     return j->XMPPSendmsg (serv, cont, msg);
 }
 
 void XMPPSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg)
 {
-    MICQXMPP *j = getXMPPClient (serv);
+    CLIMMXMPP *j = getXMPPClient (serv);
     assert (j);
     j->XMPPSetstatus (serv, cont, status, msg);
 }
 
 void XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, const char *msg)
 {
-    MICQXMPP *j = getXMPPClient (serv);
+    CLIMMXMPP *j = getXMPPClient (serv);
     assert (j);
     assert (cont);
     j->XMPPAuthorize (serv, cont, how, msg);

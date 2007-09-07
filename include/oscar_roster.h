@@ -1,6 +1,6 @@
 
-#ifndef MICQ_OSCAR_ROSTER_H
-#define MICQ_OSCAR_ROSTER_H
+#ifndef CLIMM_OSCAR_ROSTER_H
+#define CLIMM_OSCAR_ROSTER_H
 
 #include "oscar_tlv.h"
 

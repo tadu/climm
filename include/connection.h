@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_UTIL_CONNECTION_H
-#define MICQ_UTIL_CONNECTION_H
+#ifndef CLIMM_UTIL_CONNECTION_H
+#define CLIMM_UTIL_CONNECTION_H
 
 #if ENABLE_SSL
 typedef enum {
@@ -195,4 +195,4 @@ val_t          ConnectionPrefVal (Connection *conn, UDWORD flag);
 #define CONN_CONFIGURED  4
 #define CONN_INITWP      8
 
-#endif /* MICQ_UTIL_CONNECTION_H */
+#endif /* CLIMM_UTIL_CONNECTION_H */

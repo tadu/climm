@@ -20,7 +20,7 @@
  * $Id$
  */
 
-#include "micq.h"
+#include "climm.h"
 #include <assert.h>
 #include "util_syntax.h"
 #include "conv.h"

@@ -1,6 +1,6 @@
 
-#ifndef MICQ_UTIL_RL_H
-#define MICQ_UTIL_RL_H 1
+#ifndef CLIMM_UTIL_RL_H
+#define CLIMM_UTIL_RL_H 1
 
 extern UDWORD rl_columns;
 extern volatile UBYTE rl_signal;

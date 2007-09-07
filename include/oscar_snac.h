@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_OSCAR_SNAC_H
-#define MICQ_OSCAR_SNAC_H
+#ifndef CLIMM_OSCAR_SNAC_H
+#define CLIMM_OSCAR_SNAC_H
 
 void SnacCallback (Event *event);
 const char *SnacName (UWORD fam, UWORD cmd);

@@ -6,14 +6,16 @@ WEBDIR=~/Work/ICQ/micq-web
 # setup
 #
 cd /tmp
-rm -rf micq
-rm -rf micq-* micq_*
-cvs -d :pserver:anonymous@micq.org:/var/lib/cvs co -r ${1:-stable-0-4-12} micq
-cd micq
+rm -rf climm
+rm -rf climm-* climm_*
+svn co http://svn.climm.org/climm-${1}/
+mv trunk climm
+#cvs -d :pserver:anonymous@climm.org:/var/lib/cvs co -r ${1:-stable-0-4-12} micq
+cd climm-$1
 ./prepare
 rm -rf autom4te.cache web doc/html
 rm prepare
-rm -rf `find -type d -name CVS`
+rm -rf `find -type d -name CVS` `find -type d -name .svn`
 find -type f -name .cvsignore -exec rm -rf {} \;
 cp lang/Makefile.am lang/Makefile
 #make -C lang maintainer
@@ -22,89 +24,89 @@ rm lang/Makefile
 eval `grep ^\ VERSION configure`
 echo "$VERSION" > .is_release
 cd ..
-mv micq micq-$VERSION
-tar -zcf micq-$VERSION.tgz micq-$VERSION
+mv climm-$1 climm-$VERSION
+tar -zcf climm-$VERSION.tgz climm-$VERSION
 
 #
 # debian (generic)
 #
-cp micq-$VERSION.tgz micq_$VERSION.orig.tar.gz
-cd micq-$VERSION
-export MICQ_EXTRAVERSION="Official deb (generic)"
+cp climm-$VERSION.tgz climm_$VERSION.orig.tar.gz
+cd climm-$VERSION
+export CLIMM_EXTRAVERSION="Official deb (generic)"
 DEB_BUILD_OPTIONS=autopackage fakeroot dpkg-buildpackage -tc -us -uc
 cd /tmp
-rm -rf micq-$VERSION
-mv micq_$VERSION-0_i386.deb $WEBDIR/binary/
-mv micq_$VERSION* $WEBDIR/deb/dists/sid/main/source/
+rm -rf climm-$VERSION
+mv climm_$VERSION-0_i386.deb $WEBDIR/binary/
+mv climm_$VERSION* $WEBDIR/deb/dists/sid/main/source/
 
 
 #
 # rpm
 #
 rm -rf /usr/src/rpm 2>/dev/null
-tar -zxvf micq-$VERSION.tgz micq-$VERSION/micq.spec
-export MICQ_EXTRAVERSION="Official rpm (generic)"
-cp micq-$VERSION/micq.spec /usr/src/rpm/SPECS/
-cp micq-$VERSION.tgz /usr/src/rpm/SOURCES/
-rpmbuild --clean --nodeps -ba /usr/src/rpm/SPECS/micq.spec
-#rpm --clean -ta micq-$VERSION.tgz
-mv /usr/src/rpm/RPMS/i386/micq-$VERSION-1.i386.rpm $WEBDIR/binary/
-mv /usr/src/rpm/SRPMS/micq-$VERSION-1.src.rpm $WEBDIR/source/
+tar -zxvf climm-$VERSION.tgz climm-$VERSION/climm.spec
+export CLIMM_EXTRAVERSION="Official rpm (generic)"
+cp climm-$VERSION/climm.spec /usr/src/rpm/SPECS/
+cp climm-$VERSION.tgz /usr/src/rpm/SOURCES/
+rpmbuild --clean --nodeps -ba /usr/src/rpm/SPECS/climm.spec
+#rpm --clean -ta climm-$VERSION.tgz
+mv /usr/src/rpm/RPMS/i386/climm-$VERSION-1.i386.rpm $WEBDIR/binary/
+mv /usr/src/rpm/SRPMS/climm-$VERSION-1.src.rpm $WEBDIR/source/
 
 #
 # AmigaOS
 #
-tar -zxf micq-$VERSION.tgz
-cd micq-$VERSION
-export MICQ_EXTRAVERSION="Official AmigaOS"
+tar -zxf climm-$VERSION.tgz
+cd climm-$VERSION
+export CLIMM_EXTRAVERSION="Official AmigaOS"
 PATH=$PATH:$HOME/Work/install/bin/ ./configure --prefix=/usr --mandir=\${prefix}/share/man/ --host=m68k-unknown-amigaos --disable-dependency-tracking --disable-tcl --disable-ssl --disable-otr
 PATH=$PATH:$HOME/Work/install/bin/ make
-DESTDIR=/tmp/micq-$VERSION/bla
+DESTDIR=/tmp/climm-$VERSION/bla
 rm -rf $DESTDIR
 PATH=$PATH:$HOME/Work/install/bin/ make install DESTDIR=$DESTDIR
-m68k-unknown-amigaos-strip $DESTDIR/usr/bin/micq
-mkdir -p $DESTDIR/usr/share/doc/micq/
-cp -a NEWS README AUTHORS TODO doc/README.i18n doc/README.logformat doc/icq091.txt doc/icqv7.txt $DESTDIR/usr/share/doc/micq/
-tar -zcf ../micq-$VERSION-AmigaOS.tgz -C $DESTDIR .
+m68k-unknown-amigaos-strip $DESTDIR/usr/bin/climm
+mkdir -p $DESTDIR/usr/share/doc/climm/
+cp -a NEWS README AUTHORS TODO doc/README.i18n doc/README.logformat doc/icq091.txt doc/icqv7.txt $DESTDIR/usr/share/doc/climm/
+tar -zcf ../climm-$VERSION-AmigaOS.tgz -C $DESTDIR .
 cd /tmp
-rm -rf micq-$VERSION
-mv micq-$VERSION-AmigaOS.tgz $WEBDIR/binary/
+rm -rf climm-$VERSION
+mv climm-$VERSION-AmigaOS.tgz $WEBDIR/binary/
 
 #
 # Autopackage
 #
-tar -zxf micq-$VERSION.tgz
-cd micq-$VERSION
-export MICQ_EXTRAVERSION="Official Autopackage"
+tar -zxf climm-$VERSION.tgz
+cd climm-$VERSION
+export CLIMM_EXTRAVERSION="Official Autopackage"
 ./configure
-./config.status --file autopackage/micq.apspec:autopackage/micq.apspec.in
-makeinstaller autopackage/micq.apspec
-mv mICQ-$VERSION.x86.package ..
+./config.status --file autopackage/climm.apspec:autopackage/climm.apspec.in
+makeinstaller autopackage/climm.apspec
+mv climm-$VERSION.x86.package ..
 cd ..
-rm -rf micq-$VERSION
-mv mICQ-$VERSION.x86.package $WEBDIR/binary/
+rm -rf climm-$VERSION
+mv climm-$VERSION.x86.package $WEBDIR/binary/
 
 #
 # Debian Feisty
 #
-cp micq-$VERSION.tgz micq_$VERSION.orig.tar.gz
-tar -zxf micq-$VERSION.tgz
-cd micq-$VERSION
+cp climm-$VERSION.tgz climm_$VERSION.orig.tar.gz
+tar -zxf climm-$VERSION.tgz
+cd climm-$VERSION
 sed -i "1s/$VERSION-0/$VERSION-2feisty0/" debian/changelog
 sed -i "/Build-Depends:/s/$/| libgloox-dev/" debian/control
-export MICQ_EXTRAVERSION="Official deb (feisty)"
+export CLIMM_EXTRAVERSION="Official deb (feisty)"
 fakeroot dpkg-buildpackage -tc -us -uc
 cd /tmp
-rm -rf micq-$VERSION
-mv micq_$VERSION-2feisty0_i386.deb $WEBDIR/deb/dists/feisty/main/binary-i386/
-mv micq_$VERSION-2feisty0* micq_$VERSION.orig.tar.gz $WEBDIR/deb/dists/feisty/main/source/
+rm -rf climm-$VERSION
+mv climm_$VERSION-2feisty0_i386.deb $WEBDIR/deb/dists/feisty/main/binary-i386/
+mv climm_$VERSION-2feisty0* climm_$VERSION.orig.tar.gz $WEBDIR/deb/dists/feisty/main/source/
 unset DEB_BUILD_OPTIONS
 
 
 #
 # final
 #
-mv micq-$VERSION.tgz $WEBDIR/source/
+mv climm-$VERSION.tgz $WEBDIR/source/
 cd $WEBDIR
 find . -name "*[-_]$VERSION*" -exec md5sum  {} \; | sed "s/^/md5sum /"
 find . -name "*[-_]$VERSION*" -exec sha1sum {} \; | sed "s/^/sha1sum /"

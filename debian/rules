@@ -39,10 +39,10 @@ ifneq (,$(findstring autopackage,$(DEB_BUILD_OPTIONS)))
 	CONFIGURE_OPTIONS += --enable-autopackage
 endif
 
-ifeq (,$(MICQ_EXTRAVERSION))
-	MICQ_EXTRAVERSION = Debian hand compiled
+ifeq (,$(CLIMM_EXTRAVERSION))
+	CLIMM_EXTRAVERSION = Debian hand compiled
 endif
-export MICQ_EXTRAVERSION
+export CLIMM_EXTRAVERSION
 
 configure: configure-stamp
 configure-stamp:

@@ -1,6 +1,6 @@
 
-#ifndef MICQ_OSCAR_OLDICQ_H
-#define MICQ_OSCAR_OLDICQ_H
+#ifndef CLIMM_OSCAR_OLDICQ_H
+#define CLIMM_OSCAR_OLDICQ_H
 
 #include "oldicq_compat.h"
 

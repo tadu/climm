@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_ICQV8_FLAP_H
-#define MICQ_ICQV8_FLAP_H
+#ifndef CLIMM_ICQV8_FLAP_H
+#define CLIMM_ICQV8_FLAP_H
 
 #define CLI_HELLO 1
 

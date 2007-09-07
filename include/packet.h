@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_PACKET_H
-#define MICQ_PACKET_H
+#ifndef CLIMM_PACKET_H
+#define CLIMM_PACKET_H
 
 #define PacketMaxData 1024 * 8
 
@@ -35,7 +35,7 @@ typedef enum {
   CAP_UTF8, CAP_RTFMSGS, CAP_IS_2001, CAP_STR_2001,
   CAP_STR_2002, CAP_AIM_CHAT, CAP_TYPING, CAP_XTRAZ,
   CAP_TRILL_CRYPT, CAP_TRILL_2, CAP_LICQ, CAP_LICQNEW, CAP_SIM, CAP_SIMNEW,
-  CAP_MACICQ, CAP_MICQ, CAP_KXICQ, CAP_KOPETE,
+  CAP_MACICQ, CAP_CLIMM, CAP_MICQ, CAP_KXICQ, CAP_KOPETE,
   CAP_IMSECURE, CAP_ARQ, CAP_MIRANDA, CAP_QIP, CAP_IM2,
   CAP_UTF8ii,
   CAP_WIERD1, CAP_WIERD3, CAP_WIERD4, CAP_WIERD5, CAP_WIERD7,
@@ -121,4 +121,4 @@ Cap        *PacketCap         (UBYTE id);
 #define PacketWriteStrB(pak,str)             do { PacketWriteB2 (pak, strlen (str)); PacketWriteStr (pak, str);                           } while (0)
 #define PacketWriteBLen(pak) PacketWriteLen(pak)
 
-#endif /* MICQ_PACKET_H */
+#endif /* CLIMM_PACKET_H */

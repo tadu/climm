@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_UTIL_TABS_H
-#define MICQ_UTIL_TABS_H
+#ifndef CLIMM_UTIL_TABS_H
+#define CLIMM_UTIL_TABS_H
 
 void           TabInit (void);
 void           TabAddIn  (const Contact *cont);
@@ -10,4 +10,4 @@ const Contact *TabGet    (int nr);
 time_t         TabTime   (int nr);
 int            TabHas    (const Contact *cont);
 
-#endif /* MICQ_UTIL_TABS_H */
+#endif /* CLIMM_UTIL_TABS_H */

@@ -1,19 +1,19 @@
 /*
  * This file handles incoming and outgoing file requests.
  *
- * mICQ Copyright (C) © 2001-2007 Rüdiger Kuhlmann
+ * climm Copyright (C) © 2001-2007 Rüdiger Kuhlmann
  *
- * mICQ is free software; you can redistribute it and/or modify it
+ * climm is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 dated June, 1991.
  *
- * mICQ is distributed in the hope that it will be useful, but WITHOUT
+ * climm is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
  * In addition, as a special exception permission is granted to link the
- * code of this release of mICQ with the OpenSSL project's "OpenSSL"
+ * code of this release of climm with the OpenSSL project's "OpenSSL"
  * library, and distribute the linked executables.  You must obey the GNU
  * General Public License in all respects for all of the code used other
  * than "OpenSSL".  If you modify this file, you may extend this exception
@@ -29,7 +29,7 @@
  * $Id$
  */
 
-#include "micq.h"
+#include "climm.h"
 
 #ifdef ENABLE_PEER2PEER
 
@@ -469,7 +469,7 @@ void PeerFileDispatch (Connection *fpeer)
             {
                 ReadLinePromptUpdate (s_sprintf ("[%s%ld %02d%%%s] %s%s",
                               COLINCOMING, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
-                              COLNONE, COLSERVER, i18n (2467, "mICQ>")));
+                              COLNONE, COLSERVER, i18n (2467, "climm>")));
             }
             PacketD (pak);
             return;
@@ -525,7 +525,7 @@ static BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags)
                 if (fpeer->assoc->len)
                     ReadLinePromptUpdate (s_sprintf ("[%s%ld:%02d%%%s] %s%s",
                                   COLCONTACT, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
-                                  COLNONE, COLSERVER, i18n (2467, "mICQ>")));
+                                  COLNONE, COLSERVER, i18n (2467, "climm>")));
                 return 1;
             }
     }
@@ -659,11 +659,11 @@ void PeerFileResend (Event *event)
                 if (fpeer->assoc->len)
                     ReadLinePromptUpdate (s_sprintf ("[%s%ld %02d%%%s] %s%s",
                                   COLCONTACT, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
-                                  COLNONE, COLSERVER, i18n (2467, "mICQ>")));
+                                  COLNONE, COLSERVER, i18n (2467, "climm>")));
                 else
                     ReadLinePromptUpdate (s_sprintf ("[%s%ld%s] %s%s",
                                   COLCONTACT, fpeer->assoc->done,
-                                  COLNONE, COLSERVER, i18n (2467, "mICQ>")));
+                                  COLNONE, COLSERVER, i18n (2467, "climm>")));
                 event->attempts = 0;
                 QueueEnqueue (event);
                 return;

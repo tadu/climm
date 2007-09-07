@@ -1,0 +1,110 @@
+.\" $Id: climm.1 1111 2003-01-22 01:04:04Z kuhlmann $ -*- nroff -*-
+.\"  EN: climm.1,v 1.12 2002/08/21 08:50:56
+.\"      ^^ <version of English man page this is in sync with>
+.TH CLIMM 1 climm ES
+.SH NOMBRE
+.B climm
+\- un ligero cliente ICQ en modo texto
+.SH SINOPSIS
+.B climm
+.I [\-v[nivel]]
+.I [\-f archivo]
+.SH NOTE - THIS FILE HAS NOT YET BEEN UPDATED FOR climm 0.4.10.
+.SH DESCRIPCI\('ON
+.B climm
+es un cliente ICQ en modo texto que soporta muchas de las caracteristicas
+ofrecidas por el cliente de Mirabilis. climm permite cambiar la clave del
+usuario, crear nuevas cuentas, actualizar la informacion del usuario, buscar
+otros usuarios, etc.
+.SH OPCIONES
+.TP
+.BI \-v \ [nivel]
+Activa el nivel de salida, seteandolo opcionalmente al numero indicado en
+.IR nivel .
+.TP
+.BI \-f \ archivo
+Usa
+.I archivo
+como el archivo rc (el de configuracion).
+.TP
+.BI \-l \ archivo|dir
+Usa
+.I archivo
+como el archivo donde escribir el log, o usa
+.I dir
+como el directorio en donde crear archivos de log por usuario.
+.TP
+.B \-?, \-h
+Muestran la ayuda.
+
+
+.SH CARACTERISTICAS
+.B climm
+es muy portable y ha sido ejecutado en Linux, DOS, OS/2, Win32, BeOS, AmigaOS,
+GNU HURD y cualquier otro sistema unix moderno.
+.B climm version 0.4.9.2
+fue probado y testeado en Linux, AIX, HPUX, Tru64, AmigaOS, parcialmente BeOS
+y otros unixes; sin embargo los otros ports pueden o no funcionar, y
+cualquiera que quiera probar es bienvenido.
+.SH HISTORIA
+.TP
+16 Ago 1998
+Matthew D. Smith publica climm al mundo. 
+Siguieron 12 releases hasta el 25 de Septiembre de 1998.
+.TP
+05 Ene 2001
+Matthew D. Smith muere en un accidente de auto.
+Los usuarios continuan basandose en el codigo de Matthew,
+formalizan climm bajo la licencia BSD y reinician el desarrollo.
+.TP
+10 Jun 2002
+La version 0.4.9 es publicada bajo la licencia GPL, finalmente implementando
+la nueva version 8 del protocolo ICQ, escrita por R\(:udiger Kuhlmann.
+.SH MAILING-LIST
+La lista de correo de climm es
+.IR climm\-list@climm.org .
+Mas informacion (metodos de suscripcion y archivos) se encuentra disponible en
+.IR http://www.climm.org/pipermail/climm\-list/ .
+.SH DOWNLOAD
+Via HTTP de
+.IR http://www.climm.org/download .
+.br
+Para obtener la ultima version del CVS, utilizar el comando:
+.br
+
+cvs \-d:pserver:anonymous@climm.org:/usr/local/cvsroot co climm
+.br
+.SH VER TAMBIEN
+.BR climmrc (5),
+.BR climm (7)
+.SH ARCHIVOS
+.TP
+.I ~/.climmrc
+Viejo archivo de configuracion \- obsoleto.
+.TP
+.I ~/.climm/climmrc
+Archivo de configuracion para climm.
+.TP
+.I PREFIX/share/climm/*.i18n
+Archivos de internacionalizacion, contienen las traducciones de las salidas de
+climm.
+.TP
+.I ~/.climm/i18n/*.i18n
+Versiones locales de los archivos recien mencionados.
+.TP
+.I ~/.climm/history/
+Ubicacion por default donde los archivos de log son creados.
+
+.SH BUGS
+or favor, enviar reportes de bugs o comentarios a R\(:udiger Kuhlmann
+.I <climm@ruediger\-kuhlmann.de>
+(en Aleman o en Ingles).
+.SH AUTOR
+Este manual fue derivado por James Morrison
+.I <ja2morrison@student.math.uwaterloo.ca>
+del minimo escrito por Jordi Mallach
+.I <jordi@sindominio.net>
+para Debian GNU/Linux.
+Este manual fue traducido por Alberto Bertogli
+.IR <albertogli@telpin.com.ar> .
+

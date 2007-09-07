@@ -2,11 +2,11 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-bin_PROGRAMS = micq # icqsyn icqprx
+bin_PROGRAMS = climm # icqsyn icqprx
 
 AM_CFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include
 
-micq_SOURCES = autopackage_prefix.c conv.c file_util.c im_response.c micq.c \
+climm_SOURCES = autopackage_prefix.c conv.c file_util.c im_response.c climm.c \
        im_request.c util.c util_opts.c util_ui.c mreadline.c \
        msg_queue.c tabs.c i18n.c util_table.c contact.c tcp.c packet.c \
        cmd_user.c preferences.c util_io.c util_str.c util_parse.c \
@@ -20,16 +20,16 @@ micq_SOURCES = autopackage_prefix.c conv.c file_util.c im_response.c micq.c \
 icqsyn_SOURCES = icqsyn.c conv.c packet.c util_str.c util_syntax.c
 icqprx_SOURCES = icqprx.c
 
-EXTRA_LIBRARIES = libmicqmsn.a libmicqxmpp.a
+EXTRA_LIBRARIES = libclimmmsn.a libclimmxmpp.a
 noinst_LIBRARIES = @LIBMSN@ @LIBXMPP@
 
-libmicqmsn_a_SOURCES = msn_base.cpp
+libclimmmsn_a_SOURCES = msn_base.cpp
 
-libmicqxmpp_a_SOURCES = jabber_base.cpp
+libclimmxmpp_a_SOURCES = jabber_base.cpp
 
-micq_LDADD = @LIBOBJS@ @LIBICONV@ @L_LIBMSN@ @L_LIBXMPP@ @LIBOTR_LIBS@ @LIBGNUTLS_LIBS@ @LIBGCRYPT_LIBS@ @XMPP_LIBS@ @LIBTCL_LIBS@ @BINRELOC_LIBS@
+climm_LDADD = @LIBOBJS@ @LIBICONV@ @L_LIBMSN@ @L_LIBXMPP@ @LIBOTR_LIBS@ @LIBGNUTLS_LIBS@ @LIBGCRYPT_LIBS@ @XMPP_LIBS@ @LIBTCL_LIBS@ @BINRELOC_LIBS@
 
-$(micq_SOURCES): @LIBOBJS@ @LIBMSN@
+$(climm_SOURCES): @LIBOBJS@ @LIBMSN@
 
 snprintf.o: snprintf.c
 snprintf.c: snprintf.h

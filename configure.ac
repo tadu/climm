@@ -4,8 +4,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([micq], [0.5.4.2])
-AC_CONFIG_SRCDIR([include/micq.h])
+AC_INIT([climm], [0.6])
+AC_CONFIG_SRCDIR([include/climm.h])
 AC_CONFIG_LIBOBJ_DIR(replace)
 AC_CONFIG_HEADER(include/config.h)
 AC_CANONICAL_HOST
@@ -19,12 +19,12 @@ PKG_PROG_PKG_CONFIG
 AM_INIT_AUTOMAKE(1.9)
 AM_MAINTAINER_MODE
 
-AC_DEFINE(MICQ_VERSION,VERSION,[mICQ's current version])
+AC_DEFINE(CLIMM_VERSION,VERSION,[climm's current version])
 
 if test -f $srcdir/.is_release; then
-  AC_DEFINE(MICQ_IS_CVS, "")
+  AC_DEFINE(CLIMM_IS_CVS, "")
 else
-  AC_DEFINE(MICQ_IS_CVS, " CVS " BUILDDATE, whether we are CVS or not)
+  AC_DEFINE(CLIMM_IS_CVS, " CVS " BUILDDATE, whether we are CVS or not)
 fi
 
 # Checks for programs.
@@ -349,8 +349,8 @@ fi
 AC_LANG([C++])
 AC_PROG_CXX
 if test "x$ac_arg_use_msn" = "xyes"; then
-  AC_SUBST(LIBMSN, "libmicqmsn.a", [Static lib to link if MSN is enabled])
-  AC_SUBST(L_LIBMSN, "-L. -lmicqmsn -lmsn -lstdc++", [Static lib link option to link if MSN is enabled])
+  AC_SUBST(LIBMSN, "libclimmmsn.a", [Static lib to link if MSN is enabled])
+  AC_SUBST(L_LIBMSN, "-L. -lclimmmsn -lmsn -lstdc++", [Static lib link option to link if MSN is enabled])
   AC_DEFINE(ENABLE_MSN, 1, [Enable MSN chat network using libmsn])
   AC_CHECK_HEADERS(sstream,,
     [AC_CHECK_HEADERS(strstream,,
@@ -374,8 +374,8 @@ if test "x$ac_arg_use_xmpp" != "xno"; then
   fi
   ac_arg_use_xmpp=$ac_use_xmpp;
   if test "x$ac_arg_use_xmpp" = "xyes"; then
-    AC_SUBST(LIBXMPP, "libmicqxmpp.a", [Static lib to link if XMPP is enabled])
-    AC_SUBST(L_LIBXMPP, "-L. -lmicqxmpp", [Static lib link option to link if XMPP is enabled])
+    AC_SUBST(LIBXMPP, "libclimmxmpp.a", [Static lib to link if XMPP is enabled])
+    AC_SUBST(L_LIBXMPP, "-L. -lclimmxmpp", [Static lib link option to link if XMPP is enabled])
     AC_DEFINE(ENABLE_XMPP, 1, [Enable XMPP chat network using libgloox])
     if test "x$ac_use_autopackage" = xyes; then
       XMPP_LIBS="-lgloox -lstdc++"
@@ -481,7 +481,7 @@ if test "x$ac_cv_func_select" != "xyes"; then
             int *i;
             select (1, fds, fds, fds, tm);
             socket (1, 1, 1);
-            gethostbyname ("www.micq.org");
+            gethostbyname ("www.climm.org");
             ioctlsocket(1, 1, i);]])],
         [ac_cv_search_select=ws2_32],
         [ac_cv_search_select=no])])
@@ -586,8 +586,8 @@ else
     AC_DEFINE(__Dbn__,-1)
 fi
 
-if test "x$MICQ_EXTRAVERSION" != "x"; then
-    AC_DEFINE_UNQUOTED(EXTRAVERSION,"$MICQ_EXTRAVERSION",[Extra version information like the distribution used])
+if test "x$CLIMM_EXTRAVERSION" != "x"; then
+    AC_DEFINE_UNQUOTED(EXTRAVERSION,"$CLIMM_EXTRAVERSION",[Extra version information like the distribution used])
 fi
 
 if test "x$ac_use_autopackage" = xyes; then

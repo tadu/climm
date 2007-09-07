@@ -7,7 +7,7 @@
  * $Id$
  */
 
-#include "micq.h"
+#include "climm.h"
 #include "packet.h"
 #include "connection.h"
 #include "oldicq_compat.h"

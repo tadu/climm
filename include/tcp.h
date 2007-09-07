@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_PEER_H
-#define MICQ_PEER_H
+#ifndef CLIMM_PEER_H
+#define CLIMM_PEER_H
 
 #include "contact.h"
 
@@ -38,4 +38,4 @@ void       TCPDispatchConn    (Connection *peer);
 void       TCPClose           (Connection *peer);
 void       TCPPrint           (Packet *pak, Connection *peer, BOOL out);
 
-#endif /* MICQ_PEER_H */
+#endif /* CLIMM_PEER_H */

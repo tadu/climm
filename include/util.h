@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_UTIL_H
-#define MICQ_UTIL_H
+#ifndef CLIMM_UTIL_H
+#define CLIMM_UTIL_H
 
 typedef enum {
    ev_msg    = 1, /* a message has arrived */
@@ -17,4 +17,4 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
 
 void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype, status_t status, const char *text);
 
-#endif /* MICQ_UTIL_H */
+#endif /* CLIMM_UTIL_H */

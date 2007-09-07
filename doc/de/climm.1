@@ -1,0 +1,211 @@
+.\" $Id: climm.1 1853 2005-01-09 16:02:38Z kuhlmann $ -*- nroff -*-
+.\"  EN: climm.1,v 1.20
+.TH CLIMM 1 climm DE
+.SH NAME
+.B climm
+\- ein kleines ICQ-Programm, das im Text-Modus l\(:auft
+.SH \(:UBERSICHT
+.B climm
+.I [\-h]
+.I [\-c]
+.I [\-b <basedir>]
+.I [\-i <locale>]
+.I [\-v[level]]
+.I [\-l <logplace>]
+.I [\-u <UIN>]
+.I [\-p <passwd>]
+.I [\-s <status>]
+.I [\-C <commands>]
+.SH BESCHREIBUNG
+.I climm
+ist ein text-basiertes ICQ-Programm, das viele Eigenschaften
+des von Mirabilis erstellten ICQ unterst\(:utzt. Mit climm kann man
+das Pa\(sswort \(:andern, neue Benutzernumern erzeugen, die
+Benutzerinformationen aktualisieren, andere Benutzer suchen,
+SMS verschicken, direkte Verbindungen aufbauen, Dateien \(:ubertragen,
+das von anderen Benutzern verwendete ICQ-Programm herausfinden,
+UTF-8-kodierte Nachrichten verschicken, bei Ereignissen beliebiege
+Kommandos ausf\(:uhren,
+und so weiter.
+.SH OPTIONEN
+.TP
+.BI \-h|\-\-help
+Zeigt einen kurzen Hilfe-Text an und beendet.
+.TP
+.BI \-c|\-\-nocolor
+Verwende keine Farben.
+.TP
+.BI \-b|\-\-basedir \ <basedir>
+Verwendet
+.I basedir
+als das Basisverzeichnis, in dem climm nach seinen Dateien sucht, insbesondere
+seiner Konfigurationsdatei climmrc.
+.TP
+.BI \-i|\-\-i18n \ <locale>
+Verwendet die Lokalisierung
+.I locale
+anstatt der in den Umgebungsvariablen angegebenen.
+.TP
+.BI \-f|\-\-config \ <configfile>
+Verwendet
+.I configfile
+als Konfigurationsdatei.
+.TP
+.BI \-v|\-\-verbose [<level>]
+W\(:ahlt den ausf\(:uhrlichen Modus bzw. setzt wie Ausf\(:uhrlichkeit auf
+.IR level .
+.TP
+.BI \-l|\-\-logplace \ <Datei>|<Verzeichnis>
+Benutzt
+.I Datei
+als Log-Datei, bzw. benutzt
+.IR Verzeichnis ,
+um dort die nach Benutzern getrennte Log-Dateien abzulegen.
+.TP
+.BI \-u|\-\-uin \ <uin>
+Nur mit der Benutzernummer
+.I uin
+einloggen. Kann beliebig oft angegeben werden.
+.TP
+.BI \-p|\-\-passwd \ <passwd>
+Mit dem Pa\(sswort
+.I passwd
+einloggen. Kann f\(:ur jede
+.I \-u
+angegeben werden, oder alleinestehend.
+.TP
+.BI \-s|\-\-status \ <status>
+Mit dem Status
+.I status
+einloggen, welcher numerisch oder als
+.BR inv ,
+.BR dnd ,
+.BR occ ,
+.BR na ,
+.BR away ,
+.BR ffc ,
+oder
+.BR off[line]
+angegeben werden kann.
+.TP
+.BI \-C|\-\-cmd \ <commands>
+F\(:uhre die climm-Kommandos
+.I commands
+nach dem Einloggen anstatt des Befehls
+.I eg
+aus.
+.SH BENUTZUNG
+Beim ersten Start (je Basisverzeichnis) wird climm nach einer
+Benutzernummer (UIN) fragen, oder eine neue erschaffen.
+Nach dem ersten Einloggen wird die server-basierte Kontaktliste
+automatisch importiert.
+.br
+Grundlegende Kommandos sind
+.IR msg ,
+um anderen Kontakten eine Nachricht zu schicken (dr\(:uckt man die Tabulator-Taste
+mehrermals auf einer vorher leeren Eingabezeile, werden nacheinander
+msg-Kommandos erzeugt, um Nachrichten an Kontakte zu schicken, mit denen man
+vorher kommuniziert hat),
+.IR add ,
+um neue Kontakte hinzuzuf\(:ugen,
+.IR update ,\  other ,\ und\  about ,
+um die Meta-Daten auf dem ICQ-Server zu aktualisieren,
+und nat\(:urlich
+.I help
+f\(:ur die Hilfe. Eine komplette Liste der Kommandos gibt es
+in der Hilfeseite
+.BR climm (7).
+.SH EIGENSCHAFTEN
+.B climm
+ist sehr portabel und l\(:auft unter Linux, DOS, OS/2, Win32, BeOS, AmigaOS, GNU HURD
+und jedem anderen modernen Unix-artigen System.
+.B climm version 0.5
+l\(:auft unter Linux, AIX, HPUX, Tru64, AmigaOS, teilweise BeOS und anderen
+Unix-artigen Systemen. Andere Portierungen funktionieren
+m\(:oglicherweise ebenfalls noch, und jeder, der dies
+testen m\(:ochte, sei dazu aufgerufen.
+.SH GESCHICHTE
+.TP
+16. August 1998
+Matthew D. Smith gibt die erste Version von climm frei,
+gefolgt von 12 datierten Freigaben bis zum 25. Septembet 1998.
+.TP
+5. Januar 2001
+Matthew D. Smith stirb in einem Autounfall.
+Die Benutzer fahren dort fort, wo Matthew aufgeh\(:ort hat,
+formieren
+.B climm
+unter der BSD-Lizenz neu und nehmen
+die Entwicklung von
+.B climm
+wieder auf.
+.TP
+10. Juni 2002
+Version 0.4.9 wird unter der GPL-Lizenz freigegeben und implementiert
+endlich die neue Version 8 des ICQ-Protokolls, und wurde von R\(:udiger
+Kuhlmann gemacht.
+.SH MAILINGLISTE
+Die climm-Mailingliste ist
+.IR climm\-list@climm.org .
+Informationen \(:uber die Anmeldung und Archive \(finden sich unter
+.IR http://www.climm.org/pipermail/climm\-list/ .
+.SH HERUNTERLADEN
+\(:Uber HTTP von
+.IR http://www.climm.org/download .
+Um die neueste Version aus dem CVS zu bekommen, gebe man ein:
+.br
+cvs \-d:pserver:anonymous@climm.org:/var/lib/cvs co climm
+.SH SIEHE AUCH
+.BR climmrc (5),
+.BR climm (7)
+.SH DATEIEN
+.TP
+.I ~/.climmrc
+Alte Kon\(figurationsdatei f\(:ur climm \- veraltet.
+.TP
+.I ~/.climm/
+Standardm\(:assiges Basisverzeichnis f\(:ur climm's Dateien.
+.TP
+.I BASIS/climmrc
+Kon\(figurationsdatei f\(:ur climm. Enth\(:alt die globale  Konfiguration.
+.TP
+.I BASIS/status
+Kon\(figurationsdatei f\(:ur climm. Enth\(:alt die Kontaktliste und
+die Optionen der Kontakte.
+.TP
+.I BASIS/i18n/*.i18n
+Benutzer-\(:Anderungen zu climm's \(:Ubersetzungsdateien.
+.TP
+.I ~/.climm/i18n/*.i18n
+Benutzer-\(:Anderungen zu climm's \(:Ubersetzungsdateien.
+.TP
+.I BASIS/contacts/
+Verzeichnis f\(:ur Metadaten zu Kontakten.
+.TP
+.I BASIS/history/
+Standardverzeichnis f\(:ur Log-Dateien.
+.TP
+.I BASIS/files/
+Verzeichnis, in dem climm Dateien von eingehende Datei\(:ubertragungen speichert.
+.TP
+.I BASE/remote\-control
+Veralteter Standardort f\(:ur die FIFO-Warteschlange, die f\(:ur die Fernbedienung verwendet wird.
+Wurde umbenannt, da es unbedarfte Benutzer irritiert hat.
+.TP
+.I BASE/scripting
+Standardort f\(:ur die FIFO-Warteschlange, die f\(:ur die Fernbedienung verwendet wird.
+.TP
+.I PREFIX/share/climm/*.i18n
+\(:Ubersetzungsdateien mit \(:Ubersetzungen von alle Texten, die climm ausgibt.
+.SH FEHLERBERICHTE
+Fehlerberichte oder Kommentare bitte an R\(:udiger Kuhlmann
+<climm@ruediger\-kuhlmann.de> (auf Deutsch oder Englisch) schicken.
+.SH AUTOR
+Diese Hilfeseite basiert auf einer von James Morrison
+.IR <ja2morrison@student.math.uwaterloo.ca> ,
+die aus der minimalen Hilfeseite hervorging, die Jordi Mallach
+.I <jordi@sindominio.net>
+f\(:ur das  Debian-GNU/Linux-System geschrieben hat,
+und wurde danach von R\(:udiger Kuhlmann
+.IR <climm@ruediger\-kuhlmann.de>
+aktuell gehalten sowie ins Deutsche \(:ubersetzt.

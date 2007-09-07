@@ -3,14 +3,14 @@
 typedef struct ssl_md5ctx_s ssl_md5ctx_t;
 
 #ifdef ENABLE_SSL
-#ifndef MICQ_UTIL_SSL_H
-#define MICQ_UTIL_SSL_H
+#ifndef CLIMM_UTIL_SSL_H
+#define CLIMM_UTIL_SSL_H
 
-/* Number of bits mICQ uses for Diffie-Hellman key exchange of
+/* Number of bits climm uses for Diffie-Hellman key exchange of
  * incoming direct connections. You may change this value.
  */
 #define DH_OFFER_BITS       768
-/* Number of bits mICQ enforces as a minimum for DH of outgoing 
+/* Number of bits climm enforces as a minimum for DH of outgoing 
  * direct connections. 
  * This value must be less than or equal to 512 in order to work with licq.
  */
@@ -46,7 +46,7 @@ int           ssl_md5_final (ssl_md5ctx_t *ctx, char *buf);
 #define dc_close    ssl_close
 #define dc_strerror ssl_strerror
 
-#endif /* MICQ_UTIL_SSL_H */
+#endif /* CLIMM_UTIL_SSL_H */
 #else
 #define ssl_md5_init()       NULL
 #define ssl_md5_write(c,b,l) { }

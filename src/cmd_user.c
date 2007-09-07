@@ -8,7 +8,7 @@
  * $Id$
  */
 
-#include "micq.h"
+#include "climm.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -332,7 +332,7 @@ static JUMP_F(CmdUserRandom)
         rl_printf ("  %2d %s\n",  9, i18n (1712, "50+"));
         rl_printf ("  %2d %s\n", 10, i18n (1713, "Seeking women"));
         rl_printf ("  %2d %s\n", 11, i18n (1714, "Seeking men"));
-        rl_printf ("  %2d %s\n", 49, i18n (1715, "mICQ"));
+        rl_printf ("  %2d %s\n", 49, i18n (1715, "climm"));
     }
     else
         IMCliInfo (uiG.conn, NULL, arg1);
@@ -361,7 +361,7 @@ static JUMP_F(CmdUserRandomSet)
         rl_printf ("  %2d %s\n",  9, i18n (1712, "50+"));
         rl_printf ("  %2d %s\n", 10, i18n (1713, "Seeking women"));
         rl_printf ("  %2d %s\n", 11, i18n (1714, "Seeking men"));
-        rl_printf ("  %2d %s\n", 49, i18n (1715, "mICQ"));
+        rl_printf ("  %2d %s\n", 49, i18n (1715, "climm"));
     }
     else
     {
@@ -395,7 +395,7 @@ static JUMP_F(CmdUserHelp)
         _i18n (1445, "Commands relating to your ICQ account."),
         "pass, update, other, about, setr, reg", NULL },
       { _i18n (1447, "Client"), "client",
-        _i18n (1443, "Commands relating to mICQ displays and configuration."),
+        _i18n (1443, "Commands relating to climm displays and configuration."),
         "verbose, clear, sound, prompt, autoaway, auto, alias, unalias, lang, uptime, set, opt, optcontact, optgroup, optconnection, optglobal, save, q = quit = exit, x, !", NULL },
       { _i18n (2171, "Advanced"), "advanced",
         _i18n (2172, "Advanced commands."),
@@ -610,7 +610,7 @@ static JUMP_F(CmdUserHelp)
         else if (!strcasecmp (par->txt, "lang"))
             CMD_USER_HELP  ("lang [<lang|nr>...]", i18n (1800, "Change the working language (and encoding) to <lang> or display string <nr>."));
         else if (!strcasecmp (par->txt, "uptime"))
-            CMD_USER_HELP  ("uptime", i18n (1719, "Shows how long mICQ has been running and some statistics."));
+            CMD_USER_HELP  ("uptime", i18n (1719, "Shows how long climm has been running and some statistics."));
         else if (!strcasecmp (par->txt, "set"))
             CMD_USER_HELP  ("set <option> <value>", i18n (2044, "Set, clear or display an <option>: color, delbs, auto, prompt, autosave, autofinger, linebreak, funny."));
         else if (!strcasecmp (par->txt, "opt"))
@@ -996,7 +996,7 @@ static JUMP_F(CmdUserTrans)
             s_parseint (&arg2, &v3);
             s_parseint (&arg2, &v4);
             
-            /* i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n") */
+            /* i18n (1079, "Translation (%s, %s) from %s, last modified on %s by %s, for climm %d.%d.%d%s.\n") */
             rl_printf (i18n (-1, s),
                      i18n (1001, "<lang>"), i18n (1002, "<lang_cc>"), i18n (1004, "<translation authors>"),
                      i18n (1006, "<last edit date>"), i18n (1005, "<last editor>"),
@@ -1693,8 +1693,8 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data, const ch
     time_t tseen;
     val_t vseen;
 #ifdef WIP
-    time_t tmicq;
-    val_t vmicq;
+    time_t tclimm;
+    val_t vclimm;
 #endif
     char tbuf[100];
     
@@ -1710,9 +1710,9 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data, const ch
         vseen = -1;
     tseen = vseen;
 #ifdef WIP
-    if (!OptGetVal (&cont->copts, CO_TIMEMICQ, &vmicq))
-        vmicq = -1;
-    tmicq = vmicq;
+    if (!OptGetVal (&cont->copts, CO_TIMECLIMM, &vclimm))
+        vclimm = -1;
+    tclimm = vclimm;
 #endif
 
     if (tseen != (time_t)-1 && data & 2)
@@ -1723,9 +1723,9 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data, const ch
         tbuf[0] = '\0';
 
 #ifdef WIP
-    if (tmicq != (time_t)-1 && data & 2)
+    if (tclimm != (time_t)-1 && data & 2)
         strftime (tbuf + strlen (tbuf), sizeof (tbuf) - strlen (tbuf),
-                  " %Y-%m-%d %H:%M:%S", localtime (&tmicq));
+                  " %Y-%m-%d %H:%M:%S", localtime (&tclimm));
 #endif
     
 #ifdef CONFIG_UNDERLINE
@@ -2474,7 +2474,7 @@ static JUMP_F(CmdUserSet)
         rl_print (i18n (1815, "    funny:      use funny messages for output.\n"));
         rl_print (i18n (2281, "    auto:       send auto-replies.\n"));
         rl_print (i18n (2282, "    prompt:     type of the prompt: user, uin, simple\n"));
-        rl_print (i18n (2283, "    autosave:   automatically save the micqrc.\n"));
+        rl_print (i18n (2283, "    autosave:   automatically save the climmrc.\n"));
         rl_print (i18n (2284, "    autofinger: automatically finger new UINs.\n"));
         rl_print (i18n (2285, "    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n"));
         rl_print (i18n (2540, "    sound:      how to beep: off, on = beep, event.\n"));
@@ -3894,7 +3894,7 @@ static JUMP_F(CmdUserFind)
 }
 
 /*
- * Shows mICQ's uptime.
+ * Shows climm's uptime.
  */
 static JUMP_F(CmdUserUptime)
 {
@@ -3911,7 +3911,7 @@ static JUMP_F(CmdUserUptime)
     TimeDiff = TimeDiff / 24.0;
     Days = TimeDiff;
 
-    rl_printf ("%s ", i18n (1687, "mICQ has been running for"));
+    rl_printf ("%s ", i18n (1687, "climm has been running for"));
     if (Days != 0)
         rl_printf ("%s%02d%s %s, ", COLQUOTE, Days, COLNONE, i18n (1688, "days"));
     if (Hours != 0)
@@ -4209,7 +4209,7 @@ static JUMP_F(CmdUserContact)
 }
 
 /*
- * Exits mICQ.
+ * Exits climm.
  */
 static JUMP_F(CmdUserQuit)
 {
@@ -4808,7 +4808,7 @@ void CmdUserCallbackTodo (Event *event)
     strc_t par;
     
     if (event && event->conn && event->conn->type & TYPEF_ANY_SERVER
-        && OptGetStr (event->opt, CO_MICQCOMMAND, &args))
+        && OptGetStr (event->opt, CO_CLIMMCOMMAND, &args))
     {
         tconn = uiG.conn;
         uiG.conn = event->conn;

@@ -1,7 +1,7 @@
 /*
  * TCL scripting extension.
  *
- * mICQ TCL extension Copyright (C) © 2007 Roman Hoog Antink
+ * climm TCL extension Copyright (C) © 2007 Roman Hoog Antink
  *
  * This extension is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * License for more details.
  *
  * In addition, as a special exception permission is granted to link the
- * code of this release of mICQ with the OpenSSL project's "OpenSSL"
+ * code of this release of climm with the OpenSSL project's "OpenSSL"
  * library, and distribute the linked executables.  You must obey the GNU
  * General Public License in all respects for all of the code used other
  * than "OpenSSL".  If you modify this file, you may extend this exception
@@ -29,7 +29,7 @@
  * $Id$
  */
 
-#include "micq.h"
+#include "climm.h"
 #include <signal.h>
 #include "util_tcl.h"
 
@@ -106,13 +106,13 @@ TCL_COMMAND (TCL_command_help)
     if (argc <= 2)
     {
         rl_printf (i18n (2346, "The following Tcl commands are supported:\n"));
-        CMD_USER_HELP ("micq receive <script> [<contact>]", i18n (2348, "Install hook to receive messages from UIN or nick, or all if omitted."));
-        CMD_USER_HELP ("micq unreceive [<contact>]", i18n (2351, "Uninstall message hook for UIN or nick."));
-        CMD_USER_HELP ("micq event <script>", i18n (2353, "Install event hook. Callback arguments: type ..."));
-        CMD_USER_HELP ("micq unevent", i18n (2355, "Uninstall event hook."));
-        CMD_USER_HELP ("micq hooks", i18n (2356, "List all installed hooks. Format: <type> <command> <filter>."));
-        CMD_USER_HELP ("micq exec <cmd>", i18n (2358, "Execute micq command."));
-        CMD_USER_HELP ("micq nick <uin>", i18n (2360, "Find nick from <uin>."));
+        CMD_USER_HELP ("climm receive <script> [<contact>]", i18n (2348, "Install hook to receive messages from UIN or nick, or all if omitted."));
+        CMD_USER_HELP ("climm unreceive [<contact>]", i18n (2351, "Uninstall message hook for UIN or nick."));
+        CMD_USER_HELP ("climm event <script>", i18n (2353, "Install event hook. Callback arguments: type ..."));
+        CMD_USER_HELP ("climm unevent", i18n (2355, "Uninstall event hook."));
+        CMD_USER_HELP ("climm hooks", i18n (2356, "List all installed hooks. Format: <type> <command> <filter>."));
+        CMD_USER_HELP ("climm exec <cmd>", i18n (2358, "Execute climm command."));
+        CMD_USER_HELP ("climm nick <uin>", i18n (2360, "Find nick from <uin>."));
         return TCL_OK;
     }
     else
@@ -130,7 +130,7 @@ TCL_COMMAND (TCL_command_help)
         } \
     }
 
-TCL_COMMAND (TCL_command_micq)
+TCL_COMMAND (TCL_command_climm)
 {
     if (argc < 2)
     {
@@ -233,7 +233,7 @@ TCL_COMMAND (TCL_command_micq)
         if (prG->tclout)
         {
             Tcl_SetResult (tinterp, 
-                (char *)i18n (2363, "Error: recursive 'micq exec' not allowed."),
+                (char *)i18n (2363, "Error: recursive 'climm exec' not allowed."),
                 TCL_VOLATILE);
             return TCL_ERROR;
         }
@@ -339,7 +339,7 @@ void TCLInit ()
 
     if (!libtcl8_4_is_present)
     {
-        rl_printf (i18n (2582, "Install the Tcl 8.4 library and enjoy scripting in mICQ!\n"));
+        rl_printf (i18n (2582, "Install the Tcl 8.4 library and enjoy scripting in climm!\n"));
         return;
     }
 
@@ -355,18 +355,26 @@ void TCLInit ()
 
     tinterp = Tcl_CreateInterp ();   
 
-    Tcl_CreateCommand (tinterp, "micq", TCL_command_micq, 
+    Tcl_CreateCommand (tinterp, "climm", TCL_command_climm,
+        (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+    Tcl_CreateCommand (tinterp, "micq", TCL_command_climm,
         (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
     Tcl_CreateCommand (tinterp, "help", TCL_command_help, 
         (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
     Tcl_SetVar (tinterp, "micq_basedir", prG->basedir, 0);
-    Tcl_SetVar (tinterp, "micq_version", MICQ_VERSION, 0);
+    Tcl_SetVar (tinterp, "micq_version", CLIMM_VERSION, 0);
+    Tcl_SetVar (tinterp, "climm_basedir", prG->basedir, 0);
+    Tcl_SetVar (tinterp, "climm_version", CLIMM_VERSION, 0);
 
     for (i = 0; (conn = ConnectionNr (i)); i++)
         if (conn->type & TYPEF_ANY_SERVER)
+        {
+            Tcl_SetVar (tinterp, "climm_uin", conn->screen,
+                        TCL_LIST_ELEMENT | TCL_APPEND_VALUE);
             Tcl_SetVar (tinterp, "micq_uin", conn->screen,
                         TCL_LIST_ELEMENT | TCL_APPEND_VALUE);
+        }
 
     tcl_events = NULL;
     tcl_msgs = NULL;
@@ -398,7 +406,7 @@ JUMP_F (CmdUserTclScript)
     
     if (!tcl_inited)
     {
-        rl_printf (i18n (2582, "Install the Tcl 8.4 library and enjoy scripting in mICQ!\n"));
+        rl_printf (i18n (2582, "Install the Tcl 8.4 library and enjoy scripting in climm!\n"));
         return 0;
     }
 

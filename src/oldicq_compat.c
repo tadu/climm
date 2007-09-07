@@ -2,7 +2,7 @@
  * $Id$
  */
 
-#include "micq.h"
+#include "climm.h"
 #include <assert.h>
 #include "oldicq_compat.h"
 #include "contact.h"

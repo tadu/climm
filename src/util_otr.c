@@ -1,7 +1,7 @@
 /*
  * Off-the-Record communication support.
  *
- * mICQ OTR extension Copyright (C) © 2007 Robert Bartel
+ * climm OTR extension Copyright (C) © 2007 Robert Bartel
  *
  * This extension is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * License for more details.
  *
  * In addition, as a special exception permission is granted to link the
- * code of this release of mICQ with the OpenSSL project's "OpenSSL"
+ * code of this release of climm with the OpenSSL project's "OpenSSL"
  * library, and distribute the linked executables.  You must obey the GNU
  * General Public License in all respects for all of the code used other
  * than "OpenSSL".  If you modify this file, you may extend this exception
@@ -29,7 +29,7 @@
  * $Id$
  */
 
-#include "micq.h"
+#include "climm.h"
 #include "util_otr.h"
 
 #ifdef ENABLE_OTR

@@ -1,6 +1,6 @@
 
-#ifndef MICQ_IM_ICQ8
-#define MICQ_IM_ICQ8
+#ifndef CLIMM_IM_ICQ8
+#define CLIMM_IM_ICQ8
 
 UBYTE IMRoster (Connection *conn, int mode);
 UBYTE IMDeleteID (Connection *conn, int tag, int id, const char *name);

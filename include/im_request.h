@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_IM_CLI_H
-#define MICQ_IM_CLI_H
+#ifndef CLIMM_IM_CLI_H
+#define CLIMM_IM_CLI_H
 
 typedef enum {
     auth_req = 1,
@@ -37,4 +37,4 @@ UBYTE IMCliReMsg  (Contact *cont, Message *msg); /* no log */
 void  IMCliInfo   (Connection *serv, Contact *cont, int group);
 void  IMCliAuth   (Contact *cont, const char *msg, auth_t how);
 
-#endif /* MICQ_IM_CLI_H */
+#endif /* CLIMM_IM_CLI_H */

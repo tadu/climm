@@ -1,0 +1,1056 @@
+.\" $Id: climm.7 1892 2005-02-07 21:59:54Z kuhlmann $ -*- nroff -*-
+.\"  EN: climm.7,v 1.40 2004/12/05 00:53:15
+.TH CLIMM 7 climm
+.SH N\['A]ZOV
+climm - pr\['i]kazy programu
+.SH POPIS
+T\['a]to manov\['a] str\['a]nka popisuje pr\['i]kazy climm.  T\['a]to str\['a]nka obsahuje
+tie ist\['e] inform\['a]cie ako online help, ale podrobnej¹ie a rozsiahlej¹ie.
+Konvencia: hranaté zátvorky
+.RB ( [] )
+sú urèené pre voliteµné argumenty, kým znaky
+.RB ( <> )
+popisujú argumenty (hodnoty argumentov, opaène definujú kµúèové slová).
+Konkrétne,
+.I <uin>
+urèuje konkrétne UIN,
+a
+.I <contacts>
+èiarkami oddelený zoznam kontaktov, èo mô¾u by» UIN alebo
+prezývky (nick). Ak sú posledným argumentom, kontakty mô¾u by» oddeµované medzerami.
+.SH PRÍKAZY PRE POSIELANIE SPRÁV
+.TP
+.BI msg \ <contacts>\ [<message>]
+Po¹le správu kontaktom (kontaktu)
+.IR contacts .
+Bez
+.IR message ,
+alebo s
+.I message
+konèiacou obráteným lomítkom
+.RB ( \(rs ),
+sa zapne re¾im pre viacriadkovú správu.  Pre odoslanie takejto správy napí¹te
+bodku
+.RB ( . )
+na samostatný riadok.  Pre zru¹enie správy napí¹te hash znak
+.RB ( # )
+na samostatný riadok.
+.br
+Odchádzajúce a prichádzajúce správy sú rozdielne znaèené podµa spôsobu doruèenia.
+.B \(Fo\(Fo\(Fo
+a
+.B \(Fc\(Fc\(Fc
+oznaèuje správy posielané cez priame spojenie.
+.B \(Fo%\(Fo
+a
+.B \(Fc%\(Fc
+oznaèuje správy posielané cez priame kryptované spojenie (vy¾aduje
+GnuTLS alebo OpenSSL zapnuté pri kompilácii).
+.B \(Fo<<
+a
+.B >>\(Fc
+oznaèujú icq8 (tie¾ nazývané type\-2) správy.
+Napokon,
+.B <<<
+a
+.B >>>
+oznaèujú icq5 správy, tie¾ nazývané type\-1, type\-4 alebo offline
+správy. Tento druh správ nie je povrdzovaný.
+.br
+Správa je najskôr posielaná cez existujúce priame spojenie; ak nie je
+e¹te ¾iadne andviazané, vytvorí sa jedno na pozadí pre ïal¹ie správy.
+Ak nie je otvorené priame spojenie, alebo ak nie je správa istý èas
+potvrdená, spojenie je neplatné a vy¹le sa ïal¹í pokus: type\-2 správa.
+Tento krok sa preskakuje ak vzdialená strana nemá dostatoèné mo¾nosti
+prija» ju. Ak je vynechaný, vypr¹aním èasu alebo návratovou chybou, napríklad
+druhá strana zmenila stav na offline poèas doruèovania, správa je posielaná
+ako ordinárny typ type\-4 správy.
+.br
+Ak vzdialená strana doká¾e prija» správy, správy sú posielané v UTF\-8
+kódovaní a dostatoène oznaèené. Inak, správy sú posielané v kódovaní vzdialeného
+klienta alebo, ak nie je nastavené, v default kódovaní.
+type\-1, type\-4 a offline správy nemô¾u by» kódované,
+a úspech prenosu non\-USASCII\-znakov je závislé od správnej konfigurácie
+a heuristiky.
+.TP
+.BI a \ [<message>]
+Po¹le správu osobe, ktorej ste naposledy posielali správu.  Viï
+.B msg
+pre ïal¹ie detaily.
+.TP
+.BI r \ [<message>]
+Odpovie na poslednú prijatú správu. Viï
+.B msg
+pre ïal¹ie detaily.
+.TP
+.BI url \ <contacts>\ <url>\ <message>
+Po¹le správy
+.I message
+ako 
+.I url
+v¹etkým kontaktom
+.IR contacts .
+.TP
+.BI sms \ [<nick>]\ [<cell>]\ <message>
+Po¹le SMS správu
+.I message
+na mobilné telefónne èíslo
+.IR cell ,
+v tvare +<country code><number>,
+alebo na mobilné telefónne èíslo kontaktu
+.IR nick ,
+ktoré bude nastavené na 
+.IR cell
+ak e¹te nie je nastavené. Nemusíte ¹pecifikova»
+.IR cell
+alebo
+.IR nick
+ak u¾ je mobilné telefónne èíslo zadané. Nesprávne èísla budú odstránené z
+.IR nick \'s
+metadata.
+.TP
+.BI getauto \ [auto|away|na|dnd|occ|ffc]\ [<contacts>]
+Po¾iada o automatickú odpoveï od kontaktov
+.IR contacts
+pre zadaný stav, kde
+.B away
+je pre Preè,
+.B na
+pre Nedostupný,
+.B dnd
+pre Neru¹i»,
+.B occ
+pre Zaneprázdnený a
+.B ffc
+pre Voµný k rozhovoru. Ak
+.B auto
+alebo niè nie je zadané, vy¾iada sa automatická správa od
+kontaktov pre ich aktuálny stav. Kontakty nevyhovoujúce stavu budú
+ignorované
+Novinka on 0.4.10.
+.TP
+.BI auth \ [req|grant|deny|add]\ <contacts>
+Povol\('i alebo zak\('a¾e v¹etk\('ym kontaktom
+.I contacts
+prid\('ava» v\('as do ich zoznamov, po¾iada v¹etky kontakty
+.I contacts
+o pr\('avo prida» ich do v\('a¹ho zoznamu alebo ozn\('ami kontaktom
+.I contacts
+inform\('aciu o tom, ¾e ste ich pridali do v\('a¹ho zoznamu.
+.TP
+.BI resend \ <contacts>
+Rozpo¹le posledn\('u spr\('avu viacer\('ym kontaktom
+.IR contacts .
+.TP
+.BI last \ [<contacts>]
+Zobraz\('i posledn\('u spr\('avu prija\('u od 
+.IR contact ,
+alebo od kohokoµvek, kto u¾ poslal spr\('avu.
+.TP
+.BI h \ <contact>\ [<last>\ [<count>]]
+.TP
+.BI history \ <contact>\ [<last>\ [<count>]]
+Zobrazí správy od
+.I <contact>
+z log súborov. Zaène
+.I last
+poslednou správou, alebo ak
+.I \-last
+kde 
+.I last
+je záporné, zaène 20 poslednou správou,
+a zobrazí
+.I count
+správ, default 20 ak nie je urèené.
+.TP
+.BI historyd \ <contact>\ [<date>\ [<count>]]
+Zobrazí správy od 
+.I <contact>
+z log súborov. Zaène dátumom
+.IR date ,
+zadanom v ISO 8601 formáte, buï
+YYYY\-MM\-DD alebo YYYY\-MM\-DDTHH:MM:SS,
+a zobrazí
+.I count
+správ, default 20 ak nie je urèené.
+.TP
+.BI find\ <contact>\ <pattern>
+Vyhµadá vzor
+.I pattern
+bez ohµadu na veµkos» písmen v log súbore kontaktu
+.IR contact .
+.TP
+.BI finds\ <contact>\ <pattern>
+Vyhµadá vzor
+.I pattern
+s prihliadnutím na veµkos» písmen v log súbore kontaktu
+.IR contact .
+.TP
+.B tabs 
+Zobrazí zoznam u¾ívateµov, ktorých mô¾ete prepína».
+.SH PRÍKAZY SÚVISIACE SO STAVMI
+.TP
+.B login
+Skratka pre
+.IR conn\ login .
+Otvorí prvé serverové spojenie.
+.TP
+.B online
+Zmení stav na Online.
+.TP
+.BI away \ [<message>]
+Zmení stav na Preè. Voliteµne nastaví doèasnú správu pre tento stav na
+.IR message .
+.TP
+.BI na \ [<message>]
+Zmení stav na Nedostupný. Voliteµne nastaví doèasnú správu pre tento stav na
+.IR message .
+.TP
+.BI occ \ [<message>]
+Nastaví stan na Zaneprázdnený. Voliteµne nastaví doèasnú správu pre tento stav na
+.IR message .
+.TP
+.BI dnd \ [<message>]
+Zmení stav na Neru¹i». Voliteµne nastaví doèasnú správu pre tento stav na
+.IR message .
+.TP
+.BI ffc \ [<message>]
+Zmení stav na Voµný k rozhovoru. Voliteµne nastaví doèasnú správu pre tento stav na
+.IR message .
+.TP
+.B inv
+Zmení stav na Neviditeµný.
+.TP
+.BI change \ [<number>\ [<message>]]
+Zmení stav na
+.IR number .
+Bez number zobrazí zoznam dostupných re¾imov. Voliteµne nastaví doèasnú správu pre tento stav na
+.IR message .
+.SH PRÍKAZY SÚVISIACE S VYH¥ADÁVANÍM A ZOBRAZOVANÍM INÝCH U®ÍVATE¥OV
+.TP
+.BI f \ <contacts>
+.TP
+.BI finger \ <contacts>
+Zobrazí podrobné informácie pre kontakty
+.IR <contacts> .
+.TP
+.BI ss \ <contacts>
+Zobrazí v¹etky ulo¾ené podrobné informácie pre kontakty
+.IR <contacts> .
+.TP
+.B i
+Zobrazí v¹etkých vo va¹om zozname ignorovaných.
+.TP
+.BI s \ [<contacts>]
+Zobrazí vá¹ aktuálny stav alebo stav v¹ekých kontaktov
+.I contacts 
+podrobne, vrátane v¹etkých aliasov.
+.TP
+.BR e ,\  ee ,\  eg ,\  eeg ,\  ev ,\  eev ,\  egv ,\  eegv ,\  w ,\  ww ,\  wg ,\  wwg ,\  wv ,\  wwv ,\  wgv ,\  wwgv
+Zobrazí èas» vá¹ho zoznamu kontaktov. Nasledujúce príznaky sú zobrazené v prvom ståpci:
+.RS
+.TP
+.B +
+Nie je skutoèný kontakt, len alias niektorého. Len pre
+.BR ww .
+.TP
+.B #
+Tento záznam nie je vo va¹om zozname kontaktov, ale UIN u¾ bolo niekedy pou¾ité. Len pre
+.B w
+a
+.BR ww .
+.TP
+.B *
+Tento kontakt mô¾e vidie» vá¹ stav, ak ste Neviditeµný.
+.TP
+.B \-
+Tento kontakt vás nemô¾e vôbec vidie».
+.TP
+.B ^
+Tento kontakt je ignorovaný: ¾iadne správy, ¾iadne zmeny stavu.
+.PP
+Príkazy
+.B ww*
+a
+.B ee*
+sú skupinou príkazov pre zobrazenie ïal¹ieho ståpca s príznakmi priameho spojenia. Ak je prvý ståpec prázdny, je tento príznak zobrazený pre prvý kontakt vyhovujúci príkazom, okrem
+.BR ^ .
+.TP
+.B &
+Priame spojenie je nadviazané.
+.TP
+.B \(ba
+Priame spojenie zlyhalo.
+.TP
+.B :
+Priame spojenie je práve nadväzované.
+.TP
+.B ^
+Nie je otvorené priame spojenie, ale sú známe IP adresa a èíslo portu.
+.PP
+Ïal¹í ståpec pridaný pre
+.B ww*
+a
+.B ee*
+skupinu kontaktov zobrazuje stav zodpovedajúci serverovému zoznamu kontaktov:
+.TP
+.B S
+Kontakt je v zozname na serveri, a má tam by».
+.TP
+.B s
+Kontakt je v zozname na server ale nemá tam by».
+.TP
+.B .
+Kontakt nie je v zozname na serveri, ale mal by tam by». Zvyèajne to znamená "authorization required".
+.TP
+.B \'\ \'
+Kontakt nie je v zozname na serveri a ani tam nemá by».
+.RE
+.TP
+.BI e \ [<group>]
+Zobrazí v¹etky online kontakty z vá¹ho zoznamu. Zobrazí aj vá¹ stav.
+.TP
+.BI ee \ [<group>]
+Zobrazí podrobne v¹etky online kontakty z vá¹ho zoznamu.
+.TP
+.BR eg ,\  eeg
+Ako vy¹¹ie, zoradené podµa skupín. Novinka v 0.4.10.
+.TP
+.BR w ,\  ww ,\  wg ,\  wwg
+Ako vy¹¹ie, ale vrátane offline kontaktov.
+.TP
+.BR ev ,\  eev ,\  egv ,\  eegv ,\  wv ,\  wwv ,\  wgv ,\  wwgv
+Ako vy¹¹ie, ale vrátane skrytých kontaktov (s voµbou
+.B shadow
+priamo nastavenou). Novinka v 0.5.
+.TP
+.B ewide
+©iroký zoznam online kontaktov z vá¹ho zoznamu.
+.TP
+.B wide
+©iroký zoznam v¹etkých z vá¹ho zoznamu.
+.TP
+.B search
+.TP
+.BI search \ <em@il>
+.TP
+.BI search \ <contact>
+.TP
+.BI search \ <first>\ <last>
+Vyhlad\('a u¾\('ivatela s emailovou adresou
+.I em@il
+, alebo nickom
+.I nick
+(nesmie obsahova» @), alebo podµa krstn\('eho mena
+.I first
+, alebo priezviska
+.IR last .
+Bez argumentu bude pr\('ikaz spusten\('y v dial\('ogu, ktor\('y po¾iada o
+nick, meno, priezvisko, emailov\('u adresu a ïalsie \('udaje, podµa ktor\('ych
+bude vyhµad\('avat.
+.TP
+.BI rand \ [<number>]
+Vyberie náhodne u¾ívateµa zo záujmovej skupiny
+.IR number .
+Ak
+.I number
+nie je zadané, zobrazí záujmové skupiny.
+.SH PRÍKAZY PRE ZOZNAM KONTAKTOV
+.TP
+.BI add \ <uin>\ <nickname>
+Pridá
+.I uin
+do vá¹ho zoznamu kontaktov ako
+.IR nickname .
+.TP
+.BI add \ <contact>\ <alias>
+.br
+Poznámka: musíte pou¾i» príkaz
+.B save
+aby sa zmena stala trvalou.
+.TP
+.BI addalias \ <contact>\ <alias>
+Pridá alias
+.IR alias
+pre
+.IR nickname .
+Novinka (addalias) v 0.4.10.
+.br
+Poznámka: musíte pou¾i» príkaz
+.B save
+aby sa zmena stala trvalou.
+.TP
+.BI add \ [<group>\ [<contacts>]
+.TP
+.BI addgroup \ <group>\ [<contacts>]
+Prid\('a v¹etky kontakty
+.IR contacts
+do skupiny
+.IR group ,
+ktor\('a bude vytvoren\('a, ak e¹te neexistuje v pr\('ipade pou¾itia
+.BI addgroup .
+Novinka v 0.4.10.
+.br
+Pozn\('amka: mus\('ite pou¾i»
+.B save
+, aby sa zmeny stali trval\('ymi.
+.TP
+.BI rem \ [all]\ <contacts>
+.TP
+.BI remalias \ [all]\ <contacts>
+Odstráni aliasy pre
+.IR contacts .
+Ak je nejaký nick podledným aliasom, alebo ak je zadané if
+.B all
+, odstráni kompletne celý kontakt.
+.br
+Novinka (remalias) v 0.4.10.
+Pozn\('amka: mus\('ite pou¾i»
+.B save
+, aby sa zmeny stali trval\('ymi.
+.TP
+.BI rem \ [all]\ <group>
+.TP
+.BI rem \ <group>\ <contacts>
+.TP
+.BI remgroup \ [all]\ <group>
+.TP
+.BI remgroup \ <group>\ <contacts>
+Odstráni v¹etky kontakty
+.IR contacts
+zo skupiny
+.IR group ,
+alebo odstráni celú skupinu ak
+.B all
+je zadané.
+Novinka v 0.4.10.
+Pozn\('amka: mus\('ite pou¾i»
+.B save
+, aby sa zmeny stali trval\('ymi.
+.TP
+.BI togig \ <contacts>
+Prepína pre
+.IR contact \'s
+ignorovanie správ a zmien stavu.
+.TP
+.BI toginv \ <contacts>
+Prepína viditeµnos» pre
+.IR contacts .
+.TP
+.BI togvis \ <contacts>
+Prepína, èi
+.I contacts
+vás mô¾u vidie», ak ste Neviditeµný.
+.SH PRÍKAZY SÚVISIACE S VA©IM ICQ ÚÈTOM
+.TP
+.BI pass \ <password>
+Zmení heslo pre vá¹ ICQ úèet na
+.IR password . 
+.br
+Poznámka: heslo nesmie zaèína» na \('o (byte 0xf3).
+.br
+Poznámka: musíte pou¾i»
+.B save
+aby sa heslo zapísalo do konfiguraèného súboru
+.I ~/.climm/climmrc
+(viï.
+.BR climmrc (7)),
+inak heslo nebude súhlasi» pri ïal¹om logine.
+.TP
+.B update
+Aktualizuje va¹e základné údaje (email, nickname, atï.).
+.TP
+.B other
+Aktualizuje ïal¹ie údajeako vek a pohlavie.
+.TP
+.B about
+Aktualizuje informácie o vás.
+.TP
+.BI setr \ [<number>]
+Nastaví náhodnú skupinu na
+.IR number .
+Bez argumentu zobrazí zoznam záujmových skupín.
+.TP
+.BI reg \ <password>
+Vytvorí nový ICQ úèet s heslom
+.IR password .
+.SH PRÍKAZY PRE KONFIGURÁCIU KLIENTA CLIMM
+.TP
+.BI verbose \ [<level>]
+Nastaví úroveò hlasitosti na
+.IR level ,
+alebo zobrazí aktuálnu úroveò. Úroveò je súbor príznakov:
+.RS
+.TP
+.B 8
+Zobrazuje chyby protokolu.
+.TP
+.B 16
+Zobrazuje tvorbu a odstraòovanie paketov.
+.TP
+.B 32
+Zobrazuje po¾iadavky na front.
+.TP
+.B 64
+Zobrazuje vytvorené a odstránené spojenia.
+.TP
+.B 256
+Zobrazuje v6 pakety a ich obsah.
+.TP
+.B 4096
+Zobrazuje v7/v8 pakety.
+.TP
+.B 8192
+Zobrazuje hexdump v7/v8 paketov.
+.TP
+.B 16284
+Ukladá tieto pakety na disk.
+.TP
+.B 65536
+Zobrazuje peer\-to\-peer pakety.
+.TP
+.B 131072
+Zobrazujehexdump peer\-to\-peer paketov.
+.TP
+.B 262144
+Ukladá tieto pakety na disk.
+.TP
+.B 2097152
+Zobrazuje peer\-to\-peer handshake (výmenu).
+.TP
+.B 4194304
+Zobrazuje I/O nastavenie spojenia.
+.PP
+Tak¾e ka¾d\('a nenulov\('a \('uroveò hl\('asen\('i zobrazuje viac inform\('aci\('i,
+a ka¾d\('a \('uroveò vy¹¹ia ne¾ 1 ïal¹ie.
+.RE
+.TP
+.B clear
+Vyma¾e obrazovku.
+.TP
+.BI sound\ [on|off|event]
+Prep\('ina zvuk
+.B on
+alebo
+.BR off ,
+alebo nastav\('i skript udalosti
+.B event
+pre p\('ipnutie. Nov\('a syntax pre 0.4.10.
+.TP
+.BI autoaway \ [<timeout>|on|off]
+Nastav\('i timeout na
+.IR timeout ,
+alebo zapne automatick\('y stav Preè
+.I on
+s pou¾it\('im naposledy nastaven\('eho èasu, alebo vypne automatick\('y stav Preè
+.IR off ,
+zachov\('avaj\('uc naposledy nastaven\('y èas. Timeout 0 je ekvivalentn\('y
+.IR off .
+Ak nie je vlo¾en\('y ¾iaden argument, zobraz\('i aktu\('alne nastavenie.
+.TP
+.BI auto \ [on|off]
+Zap\('ina alebo vyp\('ina automatick\('e odpovede. Bez parametru zobraz\('i
+automatick\('e spr\('avy.
+.TP
+.BI auto \ <status>\ <message>
+Zmen\('i automatick\('u odpoveï pre stav
+.I status
+na
+.IR message .
+.TP
+.BI alias \ [<alias>\ <expansion>]
+Vytvor\('i nov\('y alias
+.I alias
+nahradzuj\('uci
+.IR expansion .
+Bez parametrov vyp\('i¹e v¹etky s\('uèasn\('e aliasy. Ak sa
+v re»azci
+.IR expansion 
+nachádza re»azec %s, tento bude nahradený ïal¹ími argumentami ak bol zadaný alias,
+inak tieto re»azce budú pripojené. 
+Novinka v 0.4.10.
+.TP
+.BI unalias \ <alias>
+Odstr\('ani alias
+.IR alias .
+Novinka v 0.4.10.
+.TP
+.BI lang \ [<lang>|<nr>]\ ...
+Prepne jazyk a kódovanie na
+.IR lang ,
+urèený IDO kódom alebo re»azcom
+.IR nr .
+Pre výber nastavení z premenných prostredia
+.BR LANG ,
+.B LC_ALL
+a
+.BR LC_MESSAGES ,
+pou¾ite
+.BR ! ,
+.B auto
+alebo
+.BR default .
+Pre zakázanie prekladov pou¾ite
+.BR . ,
+.B none
+o
+.BR unload .
+Pre ladiace informácie zaraïte pre príkaz
+.BR debug .
+Pre zábavné správy zaraïte za príkaz
+.BR @fun .
+.sp
+Súbory v ~/.climm/i18n/*.i18n majú prednos» pred globálnymi,
+kým "funny" (zábavné) majú prednos» pred ¹tandartnými.
+.sp
+Mô¾ete ¹pecifikova» toµko argumentov, koµko si prajete, to znamená.
+¾e pre preklad jediného re»azca è. 117 v nemèine a prepnutie spä»
+mô¾ete pou¾i» "trans de 117 default".
+.TP
+.B uptime
+Zobraz\('i ako dlho climm be¾\('i a ¹tatistiku.
+.TP
+.BI set \ <option>\ <value>
+Nastav\('i voµbu
+.I option
+na
+.I on
+alebo
+.IR off ,
+alebo nastav\('i voµbu
+.I option
+urèen\('ym zoznamom hodnôt
+.IR value .
+.I option
+mo¾e by»:
+.RS
+.TP
+.BR color :
+pou¾íva» farby,
+.TP
+.BR delbs :
+delete znak ako backspace,
+.TP
+.BR funny :
+pou¾íva» zábavné správy,
+.TP
+.BR auto :
+posiela» automatické odpovede, ak ste napr. Preè,
+.TP
+.BR uinprompt :
+zobrazi» posledný nick v shell výzve,
+.TP
+.BR autosave :
+automaticky uklada»,
+.TP
+.BR autofinger :
+automatický finger nových UIN,
+.TP
+.BR linebreak :
+nastavuje ¹týl zalamovania riadkov v správach na
+.BR simple ,
+pre jednoduchý výpis správy za nick-om a zalomenie,
+.BR break ,
+pre pridanie prázdneho riadku pred ka¾dú prichádzajúcu správu,
+.BR indent ,
+v¹etky riadky správy umiestni pod nick, alebo
+.BR smart ,
+pridá zalomenie riadku len ak sa správa nezmestí do riadku
+obrazovky;
+.PP
+Novinky v 0.4.10. Voµby hermit, log, logonoff, silent, tabs boli odstránené pre 0.5;
+pou¾ite príkaz
+.B opt
+pre ne.
+.RE
+.TP
+.BI opt \ [<contact>|<contact\ group>|connection|global\ [<option>\ [<value>]]]
+Nastavenie
+.I option
+pre kontakt
+.IR contact ,
+skupinu kontaktov
+.IR contact\ group ,
+pre aktuálne spojenie alebo globálne na hodnotu
+.IR value ,
+alebo zobrazí aktuálne nastavenie alebo zobrazí v¹etky nastavenia a ich hodnoty.
+.br
+Keï sa vyhodnocujú nastavenia pre kontakty, pou¾ije sa nastavenie samotného kontaktu,
+ak je nastavené; inak, ak kontakt nále¾í do skupiny, pou¾ije sa nastavenie skupiny,
+ak je nastavené; inak, ak kontakt nále¾í serverovému spojeniu (ktoré nie je e¹te
+odstránené, pou¾ije sa nastavenie tohoto spojenia; inak sa pou¾ije globálne nastavenie.
+Ïalej sú default hodnoty pre integer 0, FALSE pre boolean, farba "no color", ak nie je
+nastavená kliantom a prázdny re»azec pre string.
+.br
+Poèas vyhodnocovania nastavení skupiny kontaktov, platí to isté ako
+vy¹¹ie, nastavenia sa dedia zo spojenia, alebo z globálnych nastavení.
+.br
+Nasledujúce nastavenia sú prítomné, s typom a pou¾iteµnos»ou:
+.RS
+.TP
+.BI colorscheme \ integer\ global
+Èíslo farebnej schémy pre pou¾itie. Nastavte 0 na zakázanie a pou¾ite farby definované ni¾¹ie.
+.TP
+.BI colornone \ color\ global
+Definícia farieb pre obyèajný text. Kµúèové slová
+.BR black ,
+.BR red ,
+.BR green ,
+.BR yellow ,
+.BR blue ,
+.BR magenta ,
+.BR cyan ,
+.BR white ,
+.BR none ,
+a
+.BR bold
+sú programom rozpoznané a nahradené ANSI sekvenciami.
+Pamätajte, ¾e ka¾dá farba zahàòa
+.BR none ,
+tak¾e ¹pecifikujte
+.B bold
+v¾dy za farbou. Ka¾dý text je interpretovaný ako escape sekvencia.
+.TP
+.BI colorserver \ color\ global
+Farba pre serverové výstupy.
+.TP
+.BI colorclient \ color\ global
+Farba pre výstupy klienta.
+.TP
+.BI colorinvchar \ color\ global
+Farba pre nesprávne znaky daného kódovania.
+.TP
+.BI colorerror \ color\ global
+Farba pre chybové hlásenia.
+.TP
+.BI colordebug \ color\ global
+Farba pre ladiace informácie.
+.TP
+.BI colorquote \ color\ global
+Farba pre citovaný text.
+.TP
+.BI webaware \ boolean\ connection
+Viditeµnos» na webe.
+.TP
+.BI hideip \ boolean\ connection
+Skrývanie IP adresy klienta.
+.TP
+.BI dcauth \ boolean\ connection
+Viditeµnos» IP adresy autorizovanými kontaktami.
+.TP
+.BI dccont \ boolean\ connection
+Viditeµnos» IP adresy kontaktami.
+.TP
+.BI obeysbl \ boolean\ connection
+Naèítavanie zoznamu kontaktov zo serveru pri logine. Toto nevy¾aduje
+autorizáciu, ktorá je ignorovaná pre lokálne kontakty.
+.TP
+.BI ignore \ boolean\ contact
+Ignorovanie správ od tohoto kontaktu.
+.TP
+.BI hidefrom \ boolean\ contact
+Viditeµnos» pre tento kontakt.
+.TP
+.BI intimate \ boolean\ contact
+V¾dy viditeµný pre tento kontakt.
+.TP
+.BI logonoff \ boolean\ contact
+Logova» online a offline stavy kontaktu.
+.TP
+.BI logchange \ boolean\ contact
+Logova» zmeny stavu pre kontakt.
+.TP
+.BI logmess \ boolean\ contact
+Logova» správy pre tento kontakt.
+.TP
+.BI showonoff \ boolean\ contact
+Zobrazova» online a offline zmeny stavu pre kontakt.
+.TP
+.BI showchange \ boolean\ contact
+Zobrazova» zmeny stavu pre tento kontakt.
+.TP
+.BI wantsbl \ boolean\ contact
+Zaradi» kontakt do serverového zoznamu kontaktov.
+.TP
+.BI shadow \ boolean\ contact
+Skrýva» kontakt pri výpise *v skupinou príkazov.
+.TP
+.BI local \ boolean\ contact
+Kontakt nie je skutoèný kontakt, ale len alias pre niektorý.
+.TP
+.BI encoding \ string\ contact
+Kódovanie pre správy, ktorých ktorých kódovanie nie je definované.
+.TP
+.BI tabspool \ integer\ contact
+Prida» kontakt do výpisu pri ¹tarte.
+.TP
+.BI autoaway \ string\ contact
+Správa pre stav Preè kontaktu.
+.TP
+.BI autona \ string\ contact
+Správa pre stav Nedostupný kontaktu.
+.TP
+.BI autoocc \ string\ contact
+Správa pre stav Zaneprázdnený kontaktu.
+.TP
+.BI autodnd \ string\ contact
+Správa pre stav Neru¹i» kontaktu.
+.TP
+.BI autoffc \ string\ contact
+Správa pre stav Voµný k rozhovoru kontaktu.
+.TP
+.BI colormessage \ string\ contact
+Farba správ pre tento kontakt.
+.TP
+.BI colorsent \ string\ contact
+Farba odoslaných správ pre kontakt.
+.TP
+.BI colorack \ string\ contact
+Farba potvrdených správ pre kontakt.
+.TP
+.BI colorincoming \ string\ contact
+Farba prijatých správ od kontaktu.
+.TP
+.BI colorcontact \ string\ contact
+Farba pre iný alias.
+.PP
+Novinka v 0.5.
+.RE
+.TP
+.BI optcontact \ <contact>\ [<option>\ [<value>]]
+Nastaví alebo zobrazí nastavenie
+.I option
+alebo v¹etky nastavenia kontaktu
+.IR contact .
+Novinka v 0.5.
+.TP
+.BI optgroup \ <group>\ [<option>\ [<value>]]
+Nastaví alebo zobrazí nastavenie
+.I option
+alebo v¹etky nastavenia skupiny
+.IR group .
+Novinka v 0.5.
+.TP
+.BI optconnection \ [<option>\ [<value>]]
+Nastaví alebo zobrazí nastavenie spojenia
+.IR option .
+Novinka v 0.5.
+.TP
+.BI optglobal \ [<option>\ [<value>]]
+Nastaví alebo zobrazí globálne nastavenie
+.IR option .
+Novinka v 0.5.
+.TP
+.B save
+Ulo¾í aktuálne nastavenia do konfiguraèného súboru
+.IR ~/.climm/climmrc ,
+ak nie je ¹pecifikovaný iný.
+Výstraha: odstráni v¹etky poznámky zo súboru.
+.TP
+.B q
+.TP
+.B quit
+.TP
+.B exit
+Ukonèí climm.
+Aliasy quit a exit sú novinkou od 0.4.10.
+.TP
+.B x
+Ukonèí climm bez ulo¾enia nastavení.
+Novinka v 0.5.
+.SH COMMANDS CONCERNING ADVANCED FEATURES
+.TP
+.BI meta \ [show|load|save|set|get|rget]\ <contacts>
+Spracuje meta data pre kontakty contacts. Podpr\('ikazy:
+.RS
+.TP
+.B show
+Zobraz\('i metadata v¹etk\('ych kontaktov
+.I contacts
+.
+.TP
+.B load
+Naè\('ita meta data pre v¹etky kontakty
+.I contacts
+z disku a zobraz\('i ich.
+.TP
+.B save
+Ulo¾\('i meta data v¹etk\('ych kontaktov
+.I contacts
+na disk.
+.TP
+.B set
+Uploaduje va¹e meta data na server.
+.TP
+.B get
+Stiahne v¹etky meta data pre v¹etky kontakty
+.I contacts
+zo serveru a zobraz\('i ich.
+.TP
+.B getr
+Z\('iska meta data pre kontakt, ktor\('y poslal posledn\('u spr\('avu
+zo severu a zobraz\('i ich.
+.PP
+Novinka v 0.4.10.
+.RE
+.TP
+.BI file \ [...]
+Alias pre pr\('ikaz
+.BR peer\ file .
+Novinka v 0.4.10.
+.TP
+.BI accept \ [...]
+Alias pre
+.BR peer\ accept .
+Novinka v 0.4.10.4.
+.TP
+.BI peer \ <command>\ <uin|nick>
+Vykoná príkaz
+.I command
+pre u¾ívateµa urèeného UIN
+.I uin
+alebo prezývkou
+.IR nick .
+.RS
+.TP
+.B open
+Nadvia¾e peer-to-peer spojenie prostredn\('ictvom TCP pre u¾ívateµa.
+.TP
+.B close
+Ukonè\('i a zresetuje peer-to-peer spojenie s u¾ívateµom.
+.TP
+.B off
+Vypne pokusy o vytvorenie spojenia pre posielanie správ
+kým nie je výhradne povolené alebo nastavené.
+.TP
+.BI file \ <file>\ <description>
+Po¹le s\('ubor
+.I file
+s popisom
+.IR description .
+.TP
+.BI files \ [<file>\ <as>]...\ <description>
+Po¹le viac súborov kontaktu contact. Pre ka¾dú dvojicu
+názov fyzického súboru
+.I file
+a jeho mena
+.IR as ,
+ktoré sa zobrazí príjemcovi.
+Ak
+.IR as
+je
+.RB ' / ',
+meno súboru bez cesty je odoslané, a ak je alias súboru
+.RB ' . '
+po¹le sa zhodné meno.
+.TP
+.BR accept \ [<contact>]\ [<id>]
+Prija» prichádzajúci súbor od kontaktu
+.IR contact
+s urèeným ID
+.IR id .
+Ak je len jedna po¾iadavka na príjem súboru, argumenty
+.IR contact \ and\  id
+mô¾u by» vybechané, inak nie je mo¾né urèi» ktorý príjem je
+autorizovaný.
+.TP
+.BR deny \ [<contact>]\ [<id>]\ [<reason>]
+Zaká¾e príjem súboru od kontaktu
+.IR contact
+s urèeným ID
+.IR id
+so zdôvodnením
+.IR reason .
+.RE
+.TP
+.BI login \ [...]
+Alias pre
+.BR conn\ login .
+Novinka v 0.4.10.4.
+.TP
+.BI conn \ [<command>\ <nr>]
+Zobrazí v¹etky spojenia alebo vykoná príkaz
+.I command
+na spojení
+.IR nr .
+.RS
+.TP
+.B open
+Otvorí zadané alebo prvé serverové spojenie.
+.TP
+.B login
+Otvorí zadané alebo prvé serverové spojenie.
+.TP
+.B close
+Ukonèí zadané spojenie. Týmto sa odstránia aj doèasné spojenia.
+.TP
+.B remove
+Ukonè\('i a odstr\('ani zadan\('e (doèasn\('e) spojenie.
+.TP
+.B select
+Vyberie zadan\('e serverov\('e spojenie ako aktu\('alne.
+.I nr
+mô¾e by» è\('islo spojenia alebo UIN pou¾it\('e pre spojenie.
+.RE
+.TP
+.BI contact \ [<command>]
+Pracuje so zoznamom kontaktov na serveri:
+.RS
+.TP
+.B show
+Stiahne zoznam kontaktov zo serveru a zobraz\('i ho.
+.TP
+.B diff
+Stiahne zoznam kontaktov zo serveru a zobraz\('i len kontakty (dvojice uin/nick),
+ktor\('e nie s\('u v lok\('alnom zozname kontaktov.
+.TP
+.B import
+Stiahne zoznam kontaktov zo serveru a prida\('a v¹etky kontakty do lok\('alneho
+zoznamu.
+.PP
+Zatiaµ nie je mo¾nos» uploadu zoznamu kontaktov.
+.RE
+.TP
+.BI peek \ <contacts>
+Zistí pre ka¾dý kontakt
+.O contact
+informáciu o online stave.
+Kvôli nedostatku v ICQ protokole nie je mo¾né získa» ïal¹ie informácie týmto 
+príkazom.
+.br
+Poznámka: takmer nikdy to nefunguje.
+.TP
+.BI as \ <nr|uin>\ <cmd>
+Vykoná príkaz climm
+.I cmd
+pre spojenie
+.I nr
+alebo pre kontakt
+.I uin
+.
+.SH PR\('IKAZY PRE SKRIPTOVANIE
+.TP
+.BI tclscript \ <file>
+Spustí tcl skript
+.IR file ,
+ktorý mô¾e ma» relatívnu cestu vzhµadom k základnému adresáru climm.
+.TP
+.BI tcl \ <string>
+Spust\('i pr\('ikaz TCL
+.IR string .
+Napí¹te
+.I tcl climm help
+pre získanie ïal¹ích climm príkazov týkajúcich sa TCL.
+.SH POZRITE E©TE
+.BR climm (1),
+.BR climmrc (5)
+.SH AUTORI
+T\('ato manov\('a str\('anka bola prelo¾en\('a J\('anom Stan\('ikom
+.I <morb@genesys.sk>
+z manovej str\('anky vytvorenej Jamesom Morrisonom
+.I <ja2morrison@student.math.uwaterloo.ca>
+(ako z\('akladn\('a referenèn\('a pr\('iruèka interakt\('ivnych pr\('ikazov
+.BR climm 
+) a upravenej do súèasnej podoby R\(:udigerom Kuhlmannom
+.IR <climm@ruediger-kuhlmann.de> .
+.

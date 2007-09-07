@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n,v 1.89 2007-06-07 21:22:30 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n,v  <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -49,7 +49,7 @@
 1063.Bitte Passwort eingeben: 
 1064:Automatischer Statuswechsel nach %s.\n
 1078:Keine Übersetzung verfügbar.
-1079:Übersetzung (%s, %s) von %s, zuletzt geändert am %s von %s, für mICQ %d.%d.%d%s.\n
+1079:Übersetzung (%s, %s) von %s, zuletzt geändert am %s von %s, für climm %d.%d.%d%s.\n
 1082:Versuche, neu zu verbinden... [Versuch %d von %d]\n
 1085:an
 1086:aus
@@ -371,7 +371,7 @@
 1418:Setzt den Grad der Ausführlichkeit auf <nr>, oder zeigt Grad der Ausführlichkeit an.
 1419:Löscht den Bildschirm.
 1420:Schaltet das Piepsen beim Erhalt von Nachrichten an/aus, oder benutzt das Ereignis-Skrip ("event").
-1422:Logt aus und beendet mICQ.
+1422:Logt aus und beendet climm.
 1424:Aktiviert bzw. deaktiviert automatische Antworten.
 1425:Ändert die automatische Antwort im Status <status> auf <message>.
 1426:Erzeugt eine neue Benutzernummer mit dem Paßwort <password>.
@@ -391,7 +391,7 @@
 1440:Zufälliger Benutzer:
 1441:äußere IP:
 1442:Bitte wähle eines der Hilfe-Themen.
-1443:Kommandos, um mICQ zu konfigurieren.
+1443:Kommandos, um climm zu konfigurieren.
 1444:Kommandos, um andere User zu sehen oder finden.
 1445:Kommandos, um Einstellungen am ICQ-Konto vorzunehmen.
 1446:Kommandos, um anderen Benutzern Nachrichten zu schicken.
@@ -558,7 +558,7 @@
 1679:Leider ist das Speichern Ihrer persönlichen Einstellungen fehlgeschlagen!\n
 1680:Ihre persönlichen Einstellungen wurden gespeichert!\n
 1682:Sie haben Nachrichten empfangen von:\n
-1687:mICQ läuft seit
+1687:climm läuft seit
 1688:Tagen
 1689:Stunden
 1690:Minuten
@@ -576,10 +576,10 @@
 1712:über 50
 1713:Männlein sucht Weiblein
 1714:Weiblein sucht Männlein
-1715:mICQ
+1715:climm
 1716:Keine
 1717:Führe Shell-Kommando <cmd> aus (z.B. "!ls", "!dir", "!mkdir temp").
-1719:Zeigt, wie lange mICQ schon läuft, und ein paar Statistiken.
+1719:Zeigt, wie lange climm schon läuft, und ein paar Statistiken.
 1721:Bei einer leeren Nachricht können mehrere Zeilen eingegeben werden.\nDabei bedeutet eine Zeile nur mit . das Ende der Nachricht.\nEbenso verwirft eine Zeile nur mit # die Nachricht.
 1741:Man muß erst eine Nachricht empfangen.\n
 1742:Man muß erst eine Nachricht schreiben.\n
@@ -795,7 +795,7 @@
 2058:getauto na    <nick> - Hole die automatische Antwort für "nicht verfügbar" von diesem Kontakt.\n
 2059:getauto dnd   <nick> - Hole die automatische Antwort für "nicht stören" von diesem Kontakt.\n
 2060:getauto ffc   <nick> - Hole die automatische Antwort für "für Plaudereien frei" von diesem Kontakt.\n
-2063.Sie müssen Ihr Paßwort in Ihrem ~/.micq/micqrc speichern.\n
+2063.Sie müssen Ihr Paßwort in Ihrem ~/.climm/climmrc speichern.\n
 2065:Unbekanntes TCP_MSG_GREET_-Kommando %04x.\n
 2066:Unbekanntes TCP_MSG_-Kommando %04x.\n
 2067:Dateiein-/ausgabe
@@ -908,9 +908,9 @@
 2212:ist jetzt %s
 2213:hat sich eingeloggt (%s)
 2214:Informationen über %s%lu%s:\n
-2215:Dieses mICQ kann nicht zwischen SJIS oder EUC und Unicode konvertieren.\n
-2216:Dieses mICQ kennt die Kodierung "%s" nicht.\n
-2217:Dieses mICQ kann nicht zwischen "%s" und Unicode konvertieren.\n
+2215:Dieses climm kann nicht zwischen SJIS oder EUC und Unicode konvertieren.\n
+2216:Dieses climm kennt die Kodierung "%s" nicht.\n
+2217:Dieses climm kann nicht zwischen "%s" und Unicode konvertieren.\n
 2218:UIN: %s\n
 2220:mehrere
 2222:Skript-Kommando "%s" fehlgeschlagen: %s (%d).\n
@@ -954,7 +954,7 @@
 2278:    delbs:      interpretiere das Lösch-Zeichen als Rückschritt.\n
 2281:    auto:       sende automatische Antworten.\n
 2282:    prompt:     Typ des Promptes: user, uin, simple.\n
-2283:    autosave:   speichere automatisch das micqrc.\n
+2283:    autosave:   speichere automatisch das climmrc.\n
 2284:    autofinger: fingere automatisch neue Benutzernummern.\n
 2285:    linebreak:  Stil für mehrzeilige Nachrichten: simple, break, indent, smart.\n
 2288:Stil für mehrzeilige Nachrichten ist %s%s%s.\n
@@ -988,7 +988,7 @@
 2324:contact upload  Füge lokale Kontakte zur Server-basierte Kontaktliste hinzu.\n
 2325:Warnung: Änderung an der Server-basierten Kontaktliste mit Fehlerkode %d fehlgeschlagen.\n
 2326:Die Server-basierte Kontaktliste wird erst ab Protokoll 8 unterstützt.\n
-2327:%smICQ (Matts ICQ-Klon)%s Version %s%s%s\n
+2327:%sclimm%s - CLI-basierter Multi-Messenger%s Version %s%s%s\n
 2328:Zu häufig eingeloggt, bitte 30 Minuten warten.\n
 2329:Syntax-Fehler
 2330:Entfernen eines Nicht-Kontaktes
@@ -1002,7 +1002,7 @@
 2338:  get  - frage den Server nach Meta-Daten\n
 2339:  rget - frage den Server nach den Meta-Daten des letzten Kontaktes\n
 2342:Skript
-2343:Fortgeschrittene Kommandos, um mICQ per Skript zu steuern.
+2343:Fortgeschrittene Kommandos, um climm per Skript zu steuern.
 2344:Führe Tcl-Skript aus Datei <file> aus.
 2345:Führe Tcl-Befehle <string> aus.
 2346:Die folgenden Tcl-Befehle werden unterstützt:\n
@@ -1011,11 +1011,11 @@
 2353:Installiere Rückruf für Ereignisse.
 2355:Entferne Rückruf für Ereignisse.
 2356:Liste alle installierten Rückrufe. Format: <Typ> <Kommando> <Filter>.
-2358:Führe mICQ-Kommando <befehl> aus.
+2358:Führe climm-Kommando <befehl> aus.
 2360:Finde den Spitznamen vom Benutzer mit der Nummer <uin>.
 2361:Falsche Anzahl an Argumenten für den Befehl "%s %s", erwartet wurden %d.\n
 2362:Falsche Anzahl an Argumenten. Versuche "help".
-2363:Fehler: rekursives "micq exec" ist nicht erlaubt.
+2363:Fehler: rekursives "climm exec" ist nicht erlaubt.
 2364:Keine Verbindung gefunden.
 2365:Unbekannter Befehl: %s
 2366:TCL-Fehler in Datei %s: %s\n
@@ -1029,7 +1029,7 @@
 2376:SSL-Lesefehler von %s: (%d) %s.
 2377:SSL-Schreibfehler zu %s: (%d) %s.
 2378:peer ssl <nick>   - baue eine gesicherte (SSL) Verbindung auf.\n
-2381:Ich füge den Autor von mICQ zur Kontaktliste hinzu. Diese Gelegenheit sollte man nicht mißbrauchen - bitte erst den "help"-Befehl benutzen und einen ernsthaften Versuch machen, die Hilfeseiten und die FAQ (häufig gestellte Fragen) zu lesen, und erst danach fragen.\n
+2381:Ich füge den Autor von climm zur Kontaktliste hinzu. Diese Gelegenheit sollte man nicht mißbrauchen - bitte erst den "help"-Befehl benutzen und einen ernsthaften Versuch machen, die Hilfeseiten und die FAQ (häufig gestellte Fragen) zu lesen, und erst danach fragen.\n
 2383:Zeigt die letzten Nachrichten von <contact> an. Kann zu "h" abgekürzt werden.
 2384:Suche nach <pattern> in der Log-Datei von <contact> (ignoriere Großschreibung).
 2385:Konnte %s nicht zum Lesen öffnen: %s (%d).\n
@@ -1111,7 +1111,7 @@
 2464:Akzeptiere Dateiübertragung %s (%s%ld%s Byte).
 2465:Lehne Dateiübertragung %s (%s%ld%s Byte) ab: %s.
 2466:Lehne Chat-Anfrage (%s/%s) von %s%s%s ab.
-2467:mICQ>
+2467:climm>
 2468:möchte Dateiübertragung %s mit %s%ld%s Byte (Sequenz %s%ld%s) starten.\n
 2469:URL:
 2470:wünscht Autorisierung: %s\n
@@ -1136,14 +1136,14 @@
 2489:Server: Gruppe %s Kontakt %s/%s (#%d) <sichtbar>\n
 2490:normal
 2491:Differenzen in %d Kontaktgruppen, dabei insgesamt %d Kontakten, %d ignoriert, %d versteckt, %d sichtbar, %d lokal.\n
-2492:Benutzung: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
+2492:Benutzung: climm [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
 2494:  -u, --user     mit diesem Benutzer/UIN einloggen statt der konfigurierten\n
 2495:  -p, --passwd   ... und nehme dieses Paßwort\n
 2496:  -s, --status   ... und setze diesen Status\n
-2497:  -C, --cmd      ... und führe dieses mICQ-Kommando aus\n
-2498:Die Zeichenkodierung %s%s%s wird von diesem mICQ nicht unterstützt.\n
-2499:Bitte mICQ mit der Konfigurationsoption '--enable-iconvrepl' neu übersetzen.\n
+2497:  -C, --cmd      ... und führe dieses climm-Kommando aus\n
+2498:Die Zeichenkodierung %s%s%s wird von diesem climm nicht unterstützt.\n
+2499:Bitte climm mit der Konfigurationsoption '--enable-iconvrepl' neu übersetzen.\n
 2500:Manuelle locale-Einstellung %s ignoriert - benutze stattdessen eine richtige locale.\n
 2501:Es ist keine locale ausgewählt. Mit der Kommandozeilenoption %s--i18n%s oder einer der Umgebungsvariablen %sLC_ALL%s, %sLC_MESSAGES%s, oder %sLANG%s kann eine locale ausgewählt werden.\n
 2502:Die locale-Einstellung %s ist keiner richtige locale und vermutlich nicht das gewünschte.\n
@@ -1205,8 +1205,8 @@
 2558:Setze oder zeige Option für einen Kontakt an.
 2559:Setze oder zeige Option für eine Kontaktgruppe an.
 2560:Setze oder zeige globale Option an.
-2561:Loggt aus und beendet mICQ, ohne zu speichern.
-2562:Führe mICQ-Kommando <cmd> für Verbindung <nr> oder Verbindung für UIN <uin> als Server-Verbindung aus.
+2561:Loggt aus und beendet climm, ohne zu speichern.
+2562:Führe climm-Kommando <cmd> für Verbindung <nr> oder Verbindung für UIN <uin> als Server-Verbindung aus.
 2563:Setze oder zeige Option für Verbindung an.
 2564:Der Kontakt konnte nicht als verbunden erkannt werden.\n
 2565:Hochladen von Kontakt %s%s%s fehlgeschlagen, Autorisierung erforderlich.\n
@@ -1257,11 +1257,11 @@
 2610:Informationen über %s%s%s (%s):\n
 2611: adnof__iiiiiiii
 2612:Kein gültiger Benutzer-Konto gefunden. Der Einrichtungs-Assistent wird Ihnen dabei helfen, eines einzurichten.\n
-2613:Zuerst müssen Sie ein Benutzer-Konto angeben, daß sie benutzen wollen. Dieses mICQ unterstützt die folgenden Protokolle:\n
+2613:Zuerst müssen Sie ein Benutzer-Konto angeben, daß sie benutzen wollen. Dieses climm unterstützt die folgenden Protokolle:\n
 2614:%s, geben Sie z.B. %s ein\n
 2615:Benutzer-Konto:
 2616:Kann %s nicht als gültiges Benutzer-Konto verstehen. Versuchen Sie's nochmal!\n
-2617:Als nächstes können Sie mICQ erlauben, Ihr Paßwort für das %s-Konto %s zu speichen. Geben Sie nichts ein, falls Sie das Paßwort nicht speichern wollen.\n
+2617:Als nächstes können Sie climm erlauben, Ihr Paßwort für das %s-Konto %s zu speichen. Geben Sie nichts ein, falls Sie das Paßwort nicht speichern wollen.\n
 2618:Sie können noch weitere Benutzer-Konten einrichten. Geben Sie nichts ein, falls Sie kein weiteres einrichten wollen.\n
 2619: mit %s%s%s
 2620:Baue XMPP-Verbindung für %s mit %s auf...\n

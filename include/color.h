@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_COLOR_H
-#define MICQ_COLOR_H
+#ifndef CLIMM_COLOR_H
+#define CLIMM_COLOR_H
 
 #define ESC "\x1b"
 #define ESCC '\x1b'

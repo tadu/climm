@@ -1,17 +1,17 @@
-mICQ 0.4.10.2, released 2003-03-07.
+climm 0.4.10.2, released 2003-03-07.
 
-mICQ is (c) Matt Smith, Rüdiger Kuhlmann, and released under version 2 of the GPL.
+climm is (c) Matt Smith, Rüdiger Kuhlmann, and released under version 2 of the GPL.
 
 Note: This package requires libiconv. Get it from <URL:http://www.bebits.com/app/2971/>.
 
 Note 2: This package requires a properly set locale. If you don't understand this, enter
-"export LC_ALL=en_US.UTF-8" before you start mICQ, or edit your micqrc to contain
+"export LC_ALL=en_US.UTF-8" before you start climm, or edit your climmrc to contain
 a line "encoding local UTF-8".
 
-Note 3: I do develop mICQ, but I am not a BeOS developer. If you have BeOS-specific
+Note 3: I do develop climm, but I am not a BeOS developer. If you have BeOS-specific
 questions, ask someone else. If you're a BeOS developer, you might want to help porting.
 
-Note 4: There is a mailing list for mICQ, go to <URL:http://www.micq.org/> and subscribe.
+Note 4: There is a mailing list for climm, go to <URL:http://www.climm.org/> and subscribe.
 
 Note 5: Don't ask me to make a version for SKELETONs. Access to this software is illegal
 for me. If you do have access, then you're able to compile from source. Consider note 4.

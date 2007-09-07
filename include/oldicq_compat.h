@@ -1,6 +1,6 @@
 
-#ifndef MICQ_OLDICQ_COMPAT
-#define MICQ_OLDICQ_COMPAT
+#ifndef CLIMM_OLDICQ_COMPAT
+#define CLIMM_OLDICQ_COMPAT
 
 typedef struct
 {

@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_UTIL_CONV
-#define MICQ_UTIL_CONV
+#ifndef CLIMM_UTIL_CONV
+#define CLIMM_UTIL_CONV
 
 extern UBYTE conv_error;
 
@@ -59,4 +59,4 @@ strc_t      ConvToLen      (const char *in, UBYTE enc, size_t len);
 
 #define ENC(enc_x) (prG->enc_x & ~ENC_FLAGS)
 
-#endif /* MICQ_UTIL_CONV */
+#endif /* CLIMM_UTIL_CONV */

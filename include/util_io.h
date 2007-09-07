@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_UTIL_IO_H
-#define MICQ_UTIL_IO_H
+#ifndef CLIMM_UTIL_IO_H
+#define CLIMM_UTIL_IO_H
 
 void    UtilIOConnectUDP (Connection *conn);
 void    UtilIOConnectTCP (Connection *conn DEBUGPARAM);
@@ -26,4 +26,4 @@ void    UtilIOSelect     (void);
 
 #define UtilIOConnectTCP(c) UtilIOConnectTCP(c DEBUGARGS)
 
-#endif /* MICQ_UTIL_IO_H */
+#endif /* CLIMM_UTIL_IO_H */

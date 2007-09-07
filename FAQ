@@ -2,16 +2,16 @@
 
 Q: How do I report bugs?
 
-A: You first make sure that you have the latest and greatest version of mICQ
+A: You first make sure that you have the latest and greatest version of climm
    - the bug might have already been fixed. Also check the mailing list
    archive if it's mentioned there, and, of course, this FAQ. You might also
    check the version in CVS, or this page in English. If you still thing
    you've found a new bug, please report it to me, and please report as much
    detail about your setup as possible. If you can provide a fix, that would
-   be appreciated very much, but, because of the speed mICQ evolves, if
+   be appreciated very much, but, because of the speed climm evolves, if
    possible create a diff against the current CVS.
 
-Q: I have a bug in mICQ 0.4.2, ...
+Q: I have a bug in climm 0.4.2, ...
 
 A: Go away. I'm not interested in bug reports for old versions, because
    they probably will already be fixed. Upgrade to the newest version,
@@ -26,32 +26,32 @@ Q: My friend uses Trillian, and sometimes he can't send messages.
 
 A: That's a well-known stupid bug on Trillian's side. It is unable to send
    a message in the old type-1 or type-4 format if sending as type-2 fails.
-   This shouldn't happen with mICQ as the destination anymore because now
-   mICQ broadcasts its ability to receive those properly.
+   This shouldn't happen with climm as the destination anymore because now
+   climm broadcasts its ability to receive those properly.
 
 Q: When I send someone a message, it gives me some failed connections errors.
 
-A: mICQ tries to send the messages directly if it can, so as soon as mICQ
+A: climm tries to send the messages directly if it can, so as soon as climm
    knows the target's IP address and port, the next message will cause it
    to try to open a connection to the target. It will try the external
    and the internal IP address, so you might get two error messages if it
    fails. It is harmless, because it will route the message through the
    server if it fails (we're not Trillain, are we?).
-   Update: Current mICQ will display this only in verbose mode.
+   Update: Current climm will display this only in verbose mode.
 
-Q: When I start mICQ, I get lines like those:
+Q: When I start climm, I get lines like those:
 
 07:33:10  Incoming v8 server packet: FLAP seq 000065e2 length 001a channel 2
  SNAC (15,1) [unknown] flags 0 ref eee0dc
 
-A: The server for some reason gives an error when mICQ acknowledges the
+A: The server for some reason gives an error when climm acknowledges the
    receipt of offline messages. This happens only for some servers you
    might be connected to. The message is harmless - you should just
    ignore it.
-   If you wonder why mICQ still prints it then it's because it doesn't
-   handle this packets yet and mICQ always prints unknown packets. This
+   If you wonder why climm still prints it then it's because it doesn't
+   handle this packets yet and climm always prints unknown packets. This
    is so that I get feedback for new packets.
-   If you get them every 30s, upgrade your mICQ.
+   If you get them every 30s, upgrade your climm.
 
 Q: When I try to login, I get an error 24.
 
@@ -90,19 +90,19 @@ A: The former are used when a direct connection to the contact is
 Q: How can I set a specific encoding for a given user?
 
 A: In the file BASEDIR/contacts/icq-<ICQ#>, edit the line "b_enc none" into
-   "b_enc <encoding>". Note that mICQ may overwrite this file on exit.  You
-   can force mICQ to save the file with "meta save <ICQ#>". To make the
+   "b_enc <encoding>". Note that climm may overwrite this file on exit.  You
+   can force climm to save the file with "meta save <ICQ#>". To make the
    change active, type "meta load <ICQ#>" to load the file.
 
-Q: Does mICQ support the webaware feature?
+Q: Does climm support the webaware feature?
 
-A: Yes, partially. As of mICQ 0.4.10.2, you could use the change command to
+A: Yes, partially. As of climm 0.4.10.2, you could use the change command to
    set your status, with the appropriate flags 0x10000 set, and then use
-   aliases for these values. As of mICQ 0.4.10.3, it is supported, but yet
+   aliases for these values. As of climm 0.4.10.3, it is supported, but yet
    undocumented: you can "set" the options "webaware", "hideip", "dcauth"
-   and "dccont", which then will also be saved to your micqrc.
+   and "dccont", which then will also be saved to your climmrc.
 
-Q: mICQ claims my iconv() is broken, but doesn't detect my replacement libiconv. What do I do?
+Q: climm claims my iconv() is broken, but doesn't detect my replacement libiconv. What do I do?
 
 A: Do ./configure LDFLAGS=-liconv instead. If your libiconv lib and includes
    dir is not found, try ./configure "LDFLAGS=-liconv -L/path/to/libiconv/lib"
@@ -112,7 +112,7 @@ Q: Are there any known bugs in 0.4.10?
 
 A: No, not yet.
 
-Q: Are there known bugs in older versions of mICQ?
+Q: Are there known bugs in older versions of climm?
 
 A: Of course. It takes time to clean up all the mess. ;-)
 
@@ -123,7 +123,7 @@ A: Of course. It takes time to clean up all the mess. ;-)
 
   * 0.4.9.3 and earlier: reception of web messages, sms messages and some
     other types where a 'þ' is expected as separator between message parts
-    but none is given, will crash mICQ.
+    but none is given, will crash climm.
 
   * 0.4.9.2: request of auto messages will accidently free them, leading to
     memory corruption.

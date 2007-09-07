@@ -3,19 +3,19 @@
  *
  * Note: Most stuff is still in file_util.c
  *
- * mICQ Copyright (C) © 2001-2007 Rüdiger Kuhlmann
+ * climm Copyright (C) © 2001-2007 Rüdiger Kuhlmann
  *
- * mICQ is free software; you can redistribute it and/or modify it
+ * climm is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 dated June, 1991.
  *
- * mICQ is distributed in the hope that it will be useful, but WITHOUT
+ * climm is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
  * In addition, as a special exception permission is granted to link the
- * code of this release of mICQ with the OpenSSL project's "OpenSSL"
+ * code of this release of climm with the OpenSSL project's "OpenSSL"
  * library, and distribute the linked executables.  You must obey the GNU
  * General Public License in all respects for all of the code used other
  * than "OpenSSL".  If you modify this file, you may extend this exception
@@ -31,7 +31,7 @@
  * $Id$
  */
 
-#include "micq.h"
+#include "climm.h"
 #include <assert.h>
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -106,11 +106,11 @@ const char *PrefDefUserDirReal (Preferences *pref)
             home = _OS_PREFPATH;
 
         if (!home || !*home)
-            pref->defaultbasedir = strdup (".micq" _OS_PATHSEPSTR);
+            pref->defaultbasedir = strdup (".climm" _OS_PATHSEPSTR);
         else if (home[strlen (home) - 1] != _OS_PATHSEP)
-            pref->defaultbasedir = strdup (s_sprintf ("%s%c.micq%c", home, _OS_PATHSEP, _OS_PATHSEP));
+            pref->defaultbasedir = strdup (s_sprintf ("%s%c.climm%c", home, _OS_PATHSEP, _OS_PATHSEP));
         else
-            pref->defaultbasedir = strdup (s_sprintf ("%s.micq%c", home, _OS_PATHSEP));
+            pref->defaultbasedir = strdup (s_sprintf ("%s.climm%c", home, _OS_PATHSEP));
     }
     return pref->defaultbasedir;
 }
@@ -121,7 +121,17 @@ const char *PrefDefUserDirReal (Preferences *pref)
 const char *PrefUserDirReal (Preferences *pref)
 {
     if (!pref->basedir)
+    {
         pref->basedir = strdup (PrefDefUserDirReal (pref));
+        if (access (pref->basedir, F_OK))
+        {
+            char *oldbase = strdup (pref->basedir);
+            char *p = strrchr (oldbase, 'c');
+            strcpy (p, "micq");
+            if (!access (oldbase, F_OK))
+                rename (oldbase, pref->basedir);
+        }
+    }
     return pref->basedir;
 }
 
@@ -204,8 +214,23 @@ const char *PrefLogNameReal (Preferences *pref)
  */
 static FILE *PrefOpenRC (Preferences *pref)
 {
+    FILE *f = NULL;
     if (!pref->rcfile)
-        pref->rcfile = strdup (s_sprintf ("%smicqrc", PrefUserDir (pref)));
+    {
+        pref->rcfile = strdup (s_sprintf ("%sclimmrc", PrefUserDir (pref)));
+        f = fopen (pref->rcfile, "r");
+        if (!f)
+        {
+            char *oldrc = strdup (pref->rcfile);
+            char *p = strrchr (oldrc, 'l') - 1;
+            strcpy (p, "micqrc");
+            if (!access (oldrc, F_OK))
+                rename (oldrc, pref->rcfile);
+        }
+        else
+            return f;
+        
+    }
     
     return fopen (pref->rcfile, "r");
 }

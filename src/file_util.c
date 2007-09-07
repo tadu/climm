@@ -1,7 +1,7 @@
 /* $Id$ */
 /* Copyright: This file may be distributed under version 2 of the GPL licence. */
 
-#include "micq.h"
+#include "climm.h"
 #include <stdarg.h>
 #include <assert.h>
 #include <ctype.h>
@@ -87,12 +87,12 @@ Connection *PrefNewConnection (UDWORD servertype, const char *user, const char *
         
         cont = ContactUIN (conn, 82274703);
         ContactCreate (conn, cont);
-        ContactAddAlias (cont, "mICQ");
+        ContactAddAlias (cont, "climm");
         ContactAddAlias (cont, "Tadu");
         OptSetStr (&cont->copts, CO_COLORINCOMING, OptC2S ("red bold"));
         OptSetStr (&cont->copts, CO_COLORMESSAGE, OptC2S ("red bold"));
         rl_print ("\n");
-        rl_printf (i18n (2381, "I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n"));
+        rl_printf (i18n (2381, "I'll add the author of climm to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n"));
         rl_print ("\n");
     }
 #ifdef ENABLE_XMPP
@@ -125,12 +125,12 @@ Connection *PrefNewConnection (UDWORD servertype, const char *user, const char *
         
         cont = ContactScreen (conn, "RKuhlmann@gmail.com");
         ContactCreate (conn, cont);
-        ContactAddAlias (cont, "mICQ");
+        ContactAddAlias (cont, "climm");
         ContactAddAlias (cont, "Tadu");
         OptSetStr (&cont->copts, CO_COLORINCOMING, OptC2S ("red bold"));
         OptSetStr (&cont->copts, CO_COLORMESSAGE, OptC2S ("red bold"));
         rl_print ("\n");
-        rl_printf (i18n (2381, "I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n"));
+        rl_printf (i18n (2381, "I'll add the author of climm to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n"));
         rl_print ("\n");
     }
 #endif
@@ -177,7 +177,7 @@ void Initialize_RC_File ()
 
     rl_print ("\n");
     rl_print (i18n (2612, "No valid user account found. The setup wizard will guide you through the process of setting one up.\n"));
-    rl_print (i18n (2613, "You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n"));
+    rl_print (i18n (2613, "You first need to enter a user account you want to use. This climm supports the following chat protocols:\n"));
     rl_print ("  *  ");
     rl_printf (i18n (2614, "%s, enter i.e. %s\n"), "ICQ", "12345678");
 #ifdef ENABLE_XMPP
@@ -227,7 +227,7 @@ void Initialize_RC_File ()
         user = strdup (line->txt);
         
         rl_print ("\n");
-        rl_printf (i18n (2617, "Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n"),
+        rl_printf (i18n (2617, "Next you can allow climm to store your password for %s account %s. Enter nothing to not save the password.\n"),
             ConnectionServerType (servertype), user);
         
         rl_printf ("%s ", i18n (1795, "Password:"));
@@ -455,7 +455,7 @@ int Read_RC_File (FILE *rcf)
                     if (!what)
                     {
                         rl_printf ("%s%s%s ", COLERROR, i18n (2251, "Error:"), COLNONE);
-                        rl_printf (i18n (2216, "This mICQ doesn't know the '%s' encoding.\n"), cmd);
+                        rl_printf (i18n (2216, "This climm doesn't know the '%s' encoding.\n"), cmd);
                         ERROR;
                     }
                     if (what & ENC_FERR)
@@ -467,7 +467,7 @@ int Read_RC_File (FILE *rcf)
                                 rl_printf ("%s%s%s ", COLERROR, i18n (2251, "Error:"), COLNONE);
                             else
                                 rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                            rl_printf (i18n (2217, "This mICQ can't convert between '%s' and unicode.\n"), cmd);
+                            rl_printf (i18n (2217, "This climm can't convert between '%s' and unicode.\n"), cmd);
                         }
                         what &= ~ENC_FLAGS;
                     }
@@ -776,7 +776,7 @@ int Read_RC_File (FILE *rcf)
                                 OptSetStr (&prG->copts, CO_ENCODINGSTR, ConvEncName (ENC_SJIS));
 #ifndef ENABLE_ICONV
                                 rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                                rl_print (i18n (2215, "This mICQ can't convert between SJIS or EUC and unicode.\n"));
+                                rl_print (i18n (2215, "This climm can't convert between SJIS or EUC and unicode.\n"));
 #endif
                             }
                             else if (which == FLAG_DEP_LOG)
@@ -1622,7 +1622,7 @@ int PrefWriteStatusFile (void)
     }
 
     t = time (NULL);
-    fprintf (stf, "# This file was generated by mICQ " MICQ_VERSION " of %s %s\n", __TIME__, __DATE__);
+    fprintf (stf, "# This file was generated by climm " CLIMM_VERSION " of %s %s\n", __TIME__, __DATE__);
     fprintf (stf, "# This file was generated on %s\n", ctime (&t));
     fprintf (stf, "format 3\n\n");
 
@@ -1698,7 +1698,7 @@ int PrefWriteConfFile (void)
 #endif
 
     if (!prG->rcfile)
-        prG->rcfile = strdup (s_sprintf ("%smicqrc", PrefUserDir (prG)));
+        prG->rcfile = strdup (s_sprintf ("%sclimmrc", PrefUserDir (prG)));
     rl_printf (i18n (2048, "Saving preferences to %s.\n"), prG->rcfile);
     rcfn = strdup (s_sprintf ("%s.##", prG->rcfile));
     rcf = fopen (rcfn, "w");
@@ -1728,12 +1728,12 @@ int PrefWriteConfFile (void)
     }
 
     t = time (NULL);
-    fprintf (rcf, "# This file was generated by mICQ " MICQ_VERSION " of %s %s\n", __TIME__, __DATE__);
+    fprintf (rcf, "# This file was generated by climm " CLIMM_VERSION " of %s %s\n", __TIME__, __DATE__);
     fprintf (rcf, "# This file was generated on %s\n", ctime (&t));
 
     fprintf (rcf, "encoding file UTF-8 # do not modify\n");
     fprintf (rcf, "# Local character encodings: auto, ISO-8859-1, KOI8-u, ...\n");
-    fprintf (rcf, "# Setting this explicitly will render mICQ unable to determine character widths.\n");
+    fprintf (rcf, "# Setting this explicitly will render climm unable to determine character widths.\n");
     fprintf (rcf, "%sencoding local %s%s\n",
              prG->enc_loc & ENC_FLAGS ? "# " : "", s_quote (ConvEncName (prG->enc_loc)),
              prG->enc_loc & ENC_FLAGS ? "" : " # please set your locale correctly instead");
@@ -1813,7 +1813,7 @@ int PrefWriteConfFile (void)
     fprintf (rcf, "set prompt  %s # type of prompt (user, uin, simple)\n",
                     prG->flags & FLAG_USERPROMPT ? "user " : 
                     prG->flags & FLAG_UINPROMPT ? "uin " : "simple");
-    fprintf (rcf, "set autosave   %s # whether the micqrc should be automatically saved on exit\n",
+    fprintf (rcf, "set autosave   %s # whether the climmrc should be automatically saved on exit\n",
                     prG->flags & FLAG_AUTOSAVE ? "on " : "off");
     fprintf (rcf, "set autofinger %s # whether new UINs should be fingered automatically\n",
                     prG->flags & FLAG_AUTOFINGER ? "on " : "off");
@@ -1825,7 +1825,7 @@ int PrefWriteConfFile (void)
     
     fprintf (rcf, "%s\n\n", OptString (&prG->copts));
 
-    fprintf (rcf, "chat %d          # random chat group; -1 to disable, 49 for mICQ\n",
+    fprintf (rcf, "chat %d          # random chat group; -1 to disable, 49 for climm\n",
                   prG->chat);
 
     fprintf (rcf, "autoupdate %d    # level of automatic preference updates\n\n",

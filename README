@@ -1,13 +1,13 @@
-micq - a portable ICQ Console Client
+climm - cli-based multi-messenger
 $Id$ -*- coding: utf-8 -*-
 
-current stable version: 0.5.4.2
+current stable version: 0.6
 ====================================
 
-a) About mICQ
+a) About climm
 
-mICQ is a very portable ICQ Console Client originally written by Matthew D.
-Smith. mICQ is known to compile on many systems, including (but not limited
+climm is a very portable ICQ Console Client originally written by Matthew D.
+Smith. climm is known to compile on many systems, including (but not limited
 to) Linux, BSD, AIX, HPUX, BeOS, Windows and AmigaOS.
 
 When the Author passed away 2001-01-05, some of us users overtook the
@@ -15,15 +15,15 @@ When the Author passed away 2001-01-05, some of us users overtook the
 freaks.
 
 For some time, Rico Glöckner <rg@micq.org> maintained the code. He also set
-up the mailing list and hosts www.micq.org.
+up the mailing list and hosts www.climm.org.
 
 Right now, Rüdiger Kuhlmann maintains the code. All code to implement the
-new v8 ICQ protocol is from him. In fact, huge parts of mICQ have been
+new v8 ICQ protocol is from him. In fact, huge parts of climm have been
 rewritten completely by him.
 
 b) Features
 
-Features of mICQ include:
+Features of climm include:
 
    * login          - login with both the old v6 and the new v8 protocol
    * register       - register new uins and setup configuration with an easy to
@@ -54,7 +54,7 @@ Features of mICQ include:
    * tcp            - full support of v8 direct connections
    * auto messages  - auto replys if away, request and send auto messages
    * file transfer  - v6, v7, v8 file transfer
-   * identification - recognizes mICQ, licq, Miranda, StrICQ, &RQ, vICQ
+   * identification - recognizes mICQ/climm, licq, Miranda, StrICQ, &RQ, vICQ
                       including version number, and YSM, Trillian, Kopete,
                       sim and some of the official client versions
    * history        - writes a log of all messages to and from a user
@@ -71,7 +71,7 @@ Features of mICQ include:
 
 c) Translations
 
-mICQ, its man page and the www.micq.org website are translated into several
+climm, its man page and the www.climm.org website are translated into several
 languages, including English, German, Spanish and Russian. See the web page
 for downloads of new translations.
 
@@ -92,9 +92,9 @@ Currently you:
 
 e) Download
 
-Download mICQ sources and binaries from
+Download climm sources and binaries from
 
-    <URL:http://www.micq.org/>
+    <URL:http://www.climm.org/>
 
 f) CVS
 
@@ -136,13 +136,13 @@ $ su
 
 h) Usage
 
-Although mICQ has some command line options, for a quick start just type
-'micq'. If you don't have a valid configuration, the setup wizard will guide
+Although climm has some command line options, for a quick start just type
+'climm'. If you don't have a valid configuration, the setup wizard will guide
 you through the process of creating one for you.
 
 i) NOTE!
 
-mICQ is in a phase of being re-organized, thus things may change
-very fast. When in doubt, have a Look at http://www.micq.org/ or
+climm is in a phase of being re-organized, thus things may change
+very fast. When in doubt, have a Look at http://www.climm.org/ or
 the mailing list or contact me via ICQ.
 However, look out for announcements on Freshmeat.net.

@@ -1,0 +1,202 @@
+.\" $Id: climm.1 1934 2005-02-20 12:39:28Z kuhlmann $ -*- nroff -*-
+.\"  EN: climm.1,v 1.20 2005/01/09 16:01:55
+.TH CLIMM 1 climm PT_BR
+.SH NOME
+.B climm
+\- um cliente ICQ leve em modo texto
+.SH SINOPSE
+.B climm
+.I [\-h]
+.I [\-c]
+.I [\-b <diret\('orio base>>]
+.I [\-i <locale>]
+.I [\-v[n\('ivel]]
+.I [\-l <logplace>]
+.I [\-u <UIN>]
+.I [\-p <senha>]
+.I [\-s <estado>]
+.I [\-C <comandos>]
+.SH DESCRI\(,C\(~AO
+.B climm
+\('e um cliente ICQ em modo texto que possui muitos dos recursos providos pelos
+clientes de ICQ da Mirabillis. climm permite que se mude a senha do usu\('ario,
+crie novas contas, atualize as informa\(,c\(~oes pessoais, procure por outros
+usu\('arios, envie SMS, abra conex\(~oes diretas, envie mensagens conhecidas,
+transfira arquivos, detecte o cliente de outros usu\('arios, envie mensagens
+com codifica\(,c\(~ao UTF-8, execute comandos arbitr\('arios para qualquer
+evento, etc.
+.SH OP\(,C\(~OES
+.TP
+.BI \-h|\-\-help
+Mostra uma curta mensagem de ajuda e encerra.
+.TP
+.BI \-c|\-\-nocolor
+Desabilita o uso de cores.
+.TP
+.BI \-b|\-\-basedir \ <diret\('orio>
+Especifica um
+.I diret\('orio
+como o diret\('orio base onde climm procurar\('a seus arquivos, em particular
+seu arquivo climmrc.
+.TP
+.BI \-i|\-\-i18n \ <locale>
+Usa o locale
+.I locale
+ao inv\('es do obtido pelas vari\('aveis do ambiente.
+.TP
+.BI \-v|\-\-verbose [n\('ivel]
+Inicia ou ajusta o n\('ivel de informa\(,c\(~ao verbal para
+.IR n\('ivel .
+.TP
+.BI \-l|\-\-logplace \ <arquivo>|<dir>
+Usa
+.I arquivo
+como um arquivo de log, ou use
+.I dir
+como um diret\('orio para criar os logs por usu\('ario individual.
+.TP
+.BI \-u|\-\-uin \ <uin>
+Logar como
+.I uin
+apenas. Pode repetir.
+.TP
+.BI \-p|\-\-passwd \ <senha>
+Logar com
+.I senha
+como senha. Pode repetir para cada op\(,c\(~ao
+.I \-u
+, ou uma \('unica vez.
+.TP
+.BI \-s|\-\-status \ <estado>
+Logar com
+.I estado
+como estado, que pode ser dado numericamente ou
+.BR inv ,
+.BR dnd ,
+.BR occ ,
+.BR na ,
+.BR away ,
+.BR ffc ,
+ou
+.BR off[line] .
+.TP
+.BI \-C|\-\-cmd \ <comandos>
+Executar comandos do climm
+.I cmds
+ap\('os o login ao invés do comando padr\(~ao
+.I eg
+.SH USO
+Na primeira inicializa\(,c\(~ao (para o diret\('orio base dado), climm
+perguntar\('a por um UIN, ou criar\('a um novo. Ap\('os o primeiro login, a
+lista de contatos baseada no servidor ser\('a importada automaticamente.
+.br
+Comandos b\('asicos incluem
+.I msg
+para comunicar-se com outros contatos (tente pressionar a tecla <tab> diversas
+vezes em uma linha de entrada vazia para trazer comandos msg para comunicar-se
+com contatos recentemente falados),
+.I add
+para adicionar novos contatos,
+.IR update ,\  other ,\ and\  about
+para alterar seus meta dados no servidor ICQ, e, \('e claro,
+.I help
+para ajuda online. Uma lista completa de comandos est\('a dispon\('ivel na
+p\('agina de manual
+.BR climm (7)
+.
+.SH RECURSOS
+.B climm
+\('e muito port\('avel e funciona em Linux, DOS, OS/2, Win32, BeOS, AmigaOS,
+GNU HURD e quaisquer outros sistemas Unix modernos.
+Sabe-se que
+.B climm vers\(~ao 0.5
+roda em Linux, AIX, HPUX, Tru64, AmigaOS, parcialmente BeOS
+e outros sabores de Unix.
+No entanto, os outros sabores de Unix podem ou n\(~ao funcionar, e qualquer
+pessoa ser\('a bem-vinda a testar e nos avisar.
+.SH HIST\('ORICO
+.TP
+16 de Agosto de 1998
+Matthew D. Smith publica o primeiro climm para o mundo.
+Seguido por 12 "releases" at\('e 25 de Setembro de 1998.
+.TP
+05 de Janeiro de 2001
+Matthew D. Smith morre em um acidente de carro.
+Os usu\('arios continuam de onde Matthew parou, passam o climm para a
+licen\(,ca BSD e reiniciam o desenvolvimento do
+.BR climm .
+.TP
+10 de Junho de 2002
+A vers\(~ao 0.4.9 e publicada sobre a licen\(,ca GPL, finalmente implementando
+a nova vers\(~ao 8 do protocolo ICQ, por R\(:udiger Kuhlmann.
+.SH MAILING-LIST - LISTAS DE DISCUSS\(~AO
+A lista de discuss\(~ao oficial do climm \('e
+.IR climm\-list@climm.org .
+Informa\(,c\(~oes sobre subscri\(,c\(~ao e arquivos est\(~ao dispon\('iveis
+no endere\(,co
+.IR http://www.climm.org/pipermail/climm\-list/ .
+.SH DOWNLOAD
+Via HTTP no site
+.IR http://www.climm.org/download .
+.br
+Para obter a mais nova vers\(~ao via CVS, acesse:
+.br
+cvs \-d:pserver:anonymous@climm.org:/var/lib/cvs co climm
+.br
+.SH VEJA TAMB\('EM
+.BR climmrc (5),
+.BR climm (7)
+.SH ARQUIVOS
+.TP
+.I ~/.climmrc
+Antigo arquivo de configura\(,c\(~ao do climm \- obsoleto.
+.TP
+.I ~/.climm/
+Diret\('orio padr\(~ao onde climm procura por seus arquivos.
+.TP
+.I BASE/climmrc
+Arquivo de configura\(,c\(~ao do climm. Cont\('em a configura\(,c\(~ao global.
+.TP
+.I BASE/status
+Arquivo de configura\(,c\(~ao do climm. Cont\('em a lista de contatos e
+op\(,c\(~oes para os contatos.
+.TP
+.I BASE/i18n/*.i18n
+Arquivo de Internacionaliza\(,c\(~ao local que sobrep\(~oe os arquivos de
+Internacionaliza\(,c\(~ao do climm.
+.TP
+.I ~/.climm/i18n/*.i18n
+Arquivo de Internacionaliza\(,c\(~ao local que sobrep\(~oe os arquivos de
+Internacionaliza\(,c\(~ao do climm.
+.TP
+.I BASE/history
+Diret\('orio padr\(~ao para os arquivos de log do climm.
+.TP
+.I BASE/files
+Diret\('orio onde arquivos de transfer\(^encia recebidos s\(~ao salvos.
+.TP
+.I BASE/remote-control
+Antigo local padrão para o FIFO usado para scripting. Renomeado pois confundia
+usu\('arios.
+.TP
+.I BASE/scripting
+Local padrão para o FIFO usado para scripting.
+.TP
+.I PREFIXO/share/climm/*.i18n
+Arquivos de Internacionaliza\(,c\(~ao contendo tradu\(,c\(~oes das mensagens e
+informa\(,c\(~oes de todos os textos do climm.
+.SH BUGS - PROBLEMAS
+Envie relat\('orios de Bugs/Problemas ou coment\('arios para R\(:udiger Kuhlmann
+.I <climm@ruediger\-kuhlmann.de>
+(em alem\(~ao ou ingl\(^es).
+.SH AUTHOR
+Esta man-page foi derivada por James Morrison
+.I <ja2morrison@student.math.uwaterloo.ca>
+da p\('agina original m\('inima escrita por Jordi Mallach
+.I <jordi@sindominio.net>
+para o sistema Debian GNU/Linux e posteriormente atualizado por
+.IR <climm@ruediger\-kuhlmann.de>
+Traduzido por Deives Michellis
+.IR <dmichellis@yahoo.com> ,
+e atualizado por Leonardo Rosa
+.IR <leorosa@feq.unicamp.br> .

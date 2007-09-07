@@ -1,7 +1,7 @@
 /*
  * TLS Diffie Hellmann extension.
  *
- * mICQ TLS extension Copyright (C) © 2003-2007 Roman Hoog Antink
+ * climm TLS extension Copyright (C) © 2003-2007 Roman Hoog Antink
  *
  * This extension is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * License for more details.
  *
  * In addition, as a special exception permission is granted to link the
- * code of this release of mICQ with the OpenSSL project's "OpenSSL"
+ * code of this release of climm with the OpenSSL project's "OpenSSL"
  * library, and distribute the linked executables.  You must obey the GNU
  * General Public License in all respects for all of the code used other
  * than "OpenSSL".  If you modify this file, you may extend this exception
@@ -29,7 +29,7 @@
  * $Id$
  */
 
-#include "micq.h"
+#include "climm.h"
 #include <assert.h>
 
 #if ENABLE_SSL
@@ -355,13 +355,13 @@ int ssl_supported (Connection *conn DEBUGPARAM)
     
     /* check for peer capabilities
      * Note: we never initialize SSL for incoming direct connections yet
-     *        in order to avoid mutual SSL init trials among mICQ peers.
+     *        in order to avoid mutual SSL init trials among climm peers.
      */
     if (!cont)
         return 0;
 
     if (!(HAS_CAP (cont->caps, CAP_SIMNEW) || HAS_CAP (cont->caps, CAP_MICQ)
-          || HAS_CAP (cont->caps, CAP_LICQNEW)
+          || HAS_CAP (cont->caps, CAP_CLIMM) || HAS_CAP (cont->caps, CAP_LICQNEW)
           || (cont->dc && (cont->dc->id1 & 0xFFFF0000) == LICQ_WITHSSL)))
     {
         Debug (DEB_SSL, "%s (%s) is no SSL candidate", cont->nick, cont->screen);

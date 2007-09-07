@@ -1,20 +1,21 @@
 
+
 /*
  * Assemble outgoing and dissect incoming packets.
  *
- * mICQ Copyright (C) © 2001-2007 Rüdiger Kuhlmann
+ * climm Copyright (C) © 2001-2007 Rüdiger Kuhlmann
  *
- * mICQ is free software; you can redistribute it and/or modify it
+ * climm is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 dated June, 1991.
  *
- * mICQ is distributed in the hope that it will be useful, but WITHOUT
+ * climm is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
  * In addition, as a special exception permission is granted to link the
- * code of this release of mICQ with the OpenSSL project's "OpenSSL"
+ * code of this release of climm with the OpenSSL project's "OpenSSL"
  * library, and distribute the linked executables.  You must obey the GNU
  * General Public License in all respects for all of the code used other
  * than "OpenSSL".  If you modify this file, you may extend this exception
@@ -32,7 +33,7 @@
  * Note: alle read strings need to be free()ed.
  */
 
-#include "micq.h"
+#include "climm.h"
 #include "packet.h"
 #include "preferences.h"
 #include "util_ui.h"
@@ -82,6 +83,7 @@ static Cap caps[CAP_MAX] =
     { CAP_SIMNEW,      12, "SIM client  \x00\x00\x00\x00",      "CAP_SIMNEW",      NULL },
     { CAP_MACICQ,      16, "\xdd\x16\xf2\x02\x84\xe6\x11\xd4\x90\xdb\x00\x10\x4b\x9b\x4b\x7d", "CAP_MACICQ",      NULL },
     { CAP_MICQ,        12, "mICQ \xa9 R.K. \x00\x00\x00\x00",   "CAP_MICQ",        NULL },
+    { CAP_CLIMM,       12, "climm\xa9 R.K. \x00\x00\x00\x00",   "CAP_CLIMM",       NULL },
     { CAP_KXICQ,       16, "\x09\x49\x13\x44" cap_mid cap_id,   "CAP_KXICQ",       NULL },
     { CAP_KOPETE,      12, "Kopete ICQ  \x00\x00\x00\x00",      "CAP_KOPETE",      NULL },
     { CAP_IMSECURE,    12, "IMsecureCphr\x00\x00\x00\x00",      "CAP_IMSECURE",    NULL },
@@ -241,7 +243,7 @@ void PacketWriteCapID (Packet *pak, UBYTE id)
     
     if (caps[id].id == id)
     {
-        if (id == CAP_MICQ)
+        if (id == CAP_CLIMM || id == CAP_MICQ)
         {
             PacketWriteData (pak, (const char *)caps[id].cap, 12);
             PacketWriteB4   (pak, BuildVersionNum);

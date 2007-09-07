@@ -1,0 +1,528 @@
+.\" $Id: climm.7 1035 2003-01-06 03:31:00Z kuhlmann $ -*- nroff -*-
+.\"  EN: climm.7,v 1.28 2002/09/30 21:26:12
+.\"      ^^ <version of English man page this is in sync with>
+.TH CLIMM 7 climm ES
+.SH NOMBRE
+climm - comandos interactivos
+.SH NOTE - THIS FILE HAS NOT YET BEEN UPDATED FOR climm 0.4.10.
+.SH DESCRIPCION
+Este manual describe los comandos que pueden ser utilizados dentro de climm. Esta
+pagina contiene la misma informacion que la ayuda online.
+.SH COMANDOS
+.TP
+.BI trans \ [leng|nr\ ...]
+Cambia al lenguaje
+.IR leng ,
+dado por codigo ISO, o numero de cadena de traduccion
+.IR nr .
+Para seleccionar el lenguaje por default dado por las variables de entorno
+.BR LANG ,
+.B LC_ALL
+y
+.BR LC_MESSAGES ,
+usa
+.BR ! ,
+.B auto
+o
+.BR default .
+Para desactivar la traduccion, usa
+.BR . ,
+.B none
+o
+.BR unload .
+Para obtener informacion de debugging, utiliza como prefijo al lenguaje
+.BR debug .
+Para obtener los mensajes graciosos, utiliza el sufijo
+.BR _fun .
+.sp
+Los archivos de ~/.climm/i18n/*.i18n tienen precedencia sobre los globales,
+mientras que los "graciosos" tienen precedencia sobre los comunes.
+.sp
+De hecho podes especificar cuantos argumentos quieras, por ejemplo para mostrar
+el string numero 117 en Aleman y luego utilizar el lenguaje por default, usa
+"trans de 117 default".
+.TP
+.B tabs 
+Muestra una lista de los usuarios que podes pasar con la tecla TAB.
+.TP
+.B save
+Guarda la configuracion actual en el archivo de configuracion, el cual es
+.IR ~/.climm/climmrc ,
+salvo que se especifique lo contrario
+Hay que tener cuidado, ya que este comando sobreescribe los comentarios en dicho
+archivo.
+.TP
+.BI r \ [mensaje]
+Contesta al ultimo mensaje recibido. Sin
+.I mensaje
+el modo de mensaje multi-linea es activado. Para enviar un mensaje multi-linea,
+pone un punto
+.RB ( . )
+solo en una linea; y para cancelar el mensaje un numeral
+.RB ( # )
+tambien solo en una linea.
+.TP
+.BI a \ [mensaje]
+Envia un mensaje a la ultima persona a quien le enviaste un mensaje. Ver
+.B r
+para el comportamiento de no incluirse el
+.IR mensaje .
+.TP
+.BI msg \ uin|nickname\ [mensaje]
+Envia un mensaje a
+.IR uin|nickname .
+Ver
+.B r 
+para el comportamiento de no incluirse el
+.IR message .
+.TP
+.BI url \ uin|nickname\ url\ mensaje
+Envia un
+.I mensaje
+acerca de un
+.I url
+a
+.IR uin|nickname .
+.TP
+.BI sms \ cell\ mensaje
+Envia un
+.I mensaje
+SMS a un telefono celular con el numero
+.IR cell ,
+el cual debe ser de la forma +<codigo de pais><numero>.
+.TP
+.B msga
+Envia un mensaje multi-linea a todos en tu lista. Para ver el uso referirse al
+.B r
+.TP
+.BI resend \ uin|nickname \fR...
+Reenvia el ultimo mensaje al
+.I uin
+o
+.IR nickname .
+Pueden especificarse cuantos remitentes se necesiten.
+.TP
+.B uptime
+Muestra el tiempo que climm ha estado corriendo, y algunas estadisticas.
+.TP
+.BI last \ [contacto]
+Muestra el ultimo mensaje recibido de
+.IR contacto ,
+el cual puede ser un
+.I uin
+o un
+.IR nickname ,
+o de todos los que te enviaron mensajes.
+.TP
+.BI verbose \ [verb]
+Configura el nivel de salida de climm a
+.IR verb ,
+o muestra el nivel actual. El nivel se compone de las siguientes flags:
+.RS
+.TP
+.B 8
+Muestra errores del protocolo.
+.TP
+.B 16
+Muestra la creacion y eliminacion de paquetes.
+.TP
+.B 32
+Muestra los eventos de agregar y sacar de la cola.
+.TP
+.B 64
+Muestra las conexiones iniciadas y eliminadas.
+.TP
+.B 256
+Muestra los paquetes v6 y sus datos.
+.TP
+.B 4096
+Muestra los paquetes v7/v8.
+.TP
+.B 8192
+Hace un dump hexadecimal de los paquetes v7/v8.
+.TP
+.B 16284
+Guarda dichos paquetes al disco.
+.TP
+.B 65536
+Muestra los paquetes par-a-par.
+.TP
+.B 131072
+Hace un dump hexadecimal de los paquetes par-a-par.
+.TP
+.B 262144
+Guarda dichos paquetes al disco.
+.TP
+.B 2097152
+Muestra el establecimiento de una conexion par-a-par.
+.TP
+.B 4194304
+Muestra el setup de la conexion I/O.
+.RE
+
+.RS
+De hecho, cualquier nivel distinto de cero causa que se muestre mas
+informacion, y en especial cualquier nivel mayor a 1.
+.RE
+.TP
+.BI clear
+Limpia la pantalla.
+.TP
+.BI sound \ [comando]
+Activa o desactiva el sonido, o lo setea en
+.IR comando .
+.TP
+.BI soundonline \ [command]
+Activa o desactiva el sonido cuando un usuario se conecta, o lo setea en
+.IR comando .
+.TP
+.BI soundoffline \ [command]
+Activa o desactiva el sonido cuando un usuario se desconecta, o lo setea en
+.IR comando .
+.TP
+.B q
+Sale de climm.
+.TP
+.BI auto \ [on|off]
+Activa o desactiva la respuesta automatica de mensajes. Si no se dan parametros,
+se muestran los mensajes de respuesta configurados
+.TP
+.BI auto \ status\ message
+Cambia el mensaje de respuesta automatica en el estado
+.I status
+al mensaje
+.IR message .
+.TP
+.BI autoaway \ [timeout|on|off]
+Configura el tiempo luego del cual se pondra en away el estado a
+.IR timeout 
+segundos, o activa (con
+.I on
+) usando el ultimo tiempo configurado (o el default de no haberse especificado
+ninguno), o lo desactiva (con
+.I off
+guardando el tiempo utilizado. Un timeout de 0 es equivalente a
+.IR off .
+Si no se pasan argumentos, la configuracion actual es mostrada.
+.TP
+.BI alter \ comando\ nuevo
+Cambia un comando, conocido internamente o anteriormente como
+.I comando
+por uno ahora conocido como
+.IR new .
+.TP
+.BI auth \ [req|grant|deny|add]\ uin|nickname
+Concede o niega el permiso a
+.I uin|nickname
+para agregarte a su lista de contactos, pide a
+.I uin|nickname
+autorizacion para agregarlos a tu lista, o le dice a
+.I uin|nickname
+que los agregaste a tu lista.
+.TP
+.BI rand \ number
+Encuentra un usuario al azar en el grupo de interes numero
+.IR number .
+.TP
+.BI pass \ password
+Cambia tu clave de ICQ a
+.IR password . 
+.br
+Nota: necesitas grabar con
+.B save
+para hacer este cambio persistente en el caso de que almacenes tu clave en el
+archivo
+.I ~/.climm/climmrc
+(ver
+.BR climmrc (7)),
+o sino tendras un error de clave la proxima vez que te loguees.
+.TP
+.B search
+.TP
+.BI search \ email
+.TP
+.BI search \ nick
+.TP
+.BI search \ first\ last
+Busca un usuario con
+.I email
+como direccion de correo electronico, con
+.I nick
+como su nick (el cual no debe contener una @), o con
+.I first
+como su nombre, y 
+.I last
+como su apellido. Si no se dan argumentos, se pregunta por un nick, un nombre,
+un apellido, una direccion de email y otros datos adicionales que utilizar como
+parametros para la busqueda.
+.TP
+.BI add \ nickname\ alias
+.TP
+.BI add \ uin\ [nickname]
+Agrega a
+.I uin
+a tu lista de contactos como
+.IR nickname ,
+o agrega un alias
+.IR alias
+para
+.IR nickname .
+Si no se da un
+.I nickname
+is not given, use
+.I uin
+como nickname.
+.br
+Nota: tenes que grabar (con
+.BR save )
+para hacer este cambio persistente.
+.TP
+.BI rem \ alias
+Remueve de tu lista de contactos a
+.IR alias .
+Si
+.IR alias
+es el ultimo alias para este contacto, remueve el contacto completamente.
+.br
+Nota: tenes que grabar (con
+.BR save )
+para hacer este cambio persistente.
+.TP
+.BI togvis \ nickname
+Cambia la configuracion que hace que el usuario
+.I nickname
+pueda verte aun si estas invisible.
+.TP
+.BI toginvis \ nickname
+Cambia la configuracion que hace que el usuario
+.I nickname 
+te vea siempre offline.
+.TP
+.BI togig \ nickname
+Cambia la configuracion que hace que los cambios de estado y los mensajes del usuario
+.I nickname
+sean ignorados.
+.TP
+.BI f[inger] \ uin|nickname
+.TP
+.BI info \ uin|nickname
+Muestra la informacion del usuario
+.IR uin|nickname .
+.TP
+.B e
+Muestra todas las personas de tu lista de contactos que estan conectadas.
+.TP
+.B w
+Muestra todas las personas de tu lista de contactos.
+.TP
+.B ee
+Muestra todas las personas de tu lista de contactos que estan conectadas, con
+mayor detalle.
+.TP
+.B ww
+Muestra todas las personas de tu lista de contactos, con mayor detalle.
+Tambien muestra los alias.
+.TP
+.B wide
+Muestra todas las personas de tu lista de contactos en formato ancho.
+.TP
+.B ewide
+Muestra todas las personas de tu lista de contactos que estan conectadas en
+formato ancho.
+.TP
+.B s \ [nickname]
+Muestra tu estado actual, o el del nick dado, en detalle, incluyendo los alias.
+.TP
+.B i
+Muestra las personas que estan siendo ignoradas.
+.TP
+.BI status \ [nickname]
+Muestra el estado de
+.IR nickname .
+Esto incluye la direccion IP, la version del protocolo ICQ y el tipo de
+conexion; o lista brevemente el UIN, el nick, el estado y la fecha y hora en la
+cual estuvieron conectados por ultima vez para todos tus contactos.
+.sp
+Nota: Este comando es obsoleto, usa
+.B s
+o
+.B ww
+en cambio.
+.TP
+.BI reg \ password
+Crea una nueva cuenta con la clave
+.IR password .
+.TP
+.BI change \ [numero\ [mensaje]]
+Cambia tu estado a
+.IR numero .
+Sin un numero, lista los modos disponibles. Opcionalmente cambia el mensaje de
+respuesta automatica a
+.IR mensaje .
+.TP
+.B online
+Cambia tu estado a "online".
+.TP
+.BI away \ [mensaje]
+Cambia tu estado a "away" (lejos). Opcionalmente cambia el mensaje de
+respuesta automatica a
+.IR mensaje .
+.TP
+.BI na \ [mensaje]
+Cambia tu estado a "not available" (no disponible). Opcionalmente cambia el
+mensaje de respuesta automatica a
+.IR mensaje .
+.TP
+.BI occ \ [mensaje]  
+Cambia tu estado a "occupied" (ocupado). Opcionalmente cambia el mensaje de
+respuesta automatica a
+.IR mensaje .
+.TP
+.BI dnd \ [mensaje]
+Cambia tu estado a "do not disturb" (no molestar). Opcionalmente cambia el
+mensaje de respuesta automatica a
+.IR mensaje .
+.TP
+.BI ffc \ [mensaje] 
+Cambia tu estado a "free for chat" (libre para hablar). Opcionalmente cambia
+el mensaje de respuesta automatica a
+.IR mensaje .
+.TP
+.B inv
+Cambia tu estado a "invisible".
+.TP
+.B update
+Actualiza tu informacion basica (email, nickname, etc.).
+.TP
+.B other
+Actualiza otro tipo de informacion, tal como tu edad o genero.
+.TP
+.B about
+Actualiza el texto de tu informacion adicional (info/about).
+.TP
+.BI set \ opcion\ valor
+Configura la
+.I opcion
+a activado (
+to either
+.IR on
+u
+.IR off ).
+.I opcion
+puede ser
+.BR color ,
+.B funny
+o
+.BR quiet .
+.TP
+.BI peek \ nick
+Revisa si 
+.I nick
+esta realmente online o no. Se aprovecha de un bug en el protocolo ICQ para
+obtener esta informacion, la cual solamente indica si el usuario esta conectado
+o no.
+.TP
+.BI setr\ [numero]
+Configura tu grupo de usuarios al azar al grupo determinado por el
+.I numero
+indicado. Sin argumentos, lista los posibles grupos con sus respectivos numeros.
+.TP
+.BI peer \ comando\ uin|nick
+Opera el 
+.I comando
+sobre el usuario determinado por el
+.I uin
+o
+.IR nick .
+El
+.I comando
+puede ser
+.B open
+para abrir una conexion par a par TCP hacia el usuario,
+.B close
+para cerrar y resetear una conexion de ese tipo, 
+.B off
+para desactivar el establecimiento automatico de conexiones cuando se envian
+mensajes, dejando solo este medio para iniciar una conexion; o
+.B auto
+para obtener la respuesta automatica del usuario, o
+.BR away ,
+.BR na ,
+.BR dnd ,
+.B occ
+o
+.B ffc
+para obtener la respuesta automatica del usuario para tal estado.
+.TP
+.BI file \ file\ description
+Envia el archivo
+.I file
+con la descripcion
+.IR description .
+.TP
+.BI files \ [file\ as]...\ description
+Envia archvios al usuario. Puede haber, arbitrariamente, muchos pares de
+nombres de un mismo archivo de nombre 
+.I file
+y el nombre como el cual se le presentara a la otra punta,
+.IR as .
+Si
+.IR as
+es
+.RB ' / ',
+se utilizara el nombre del archivo sin el path, y si es
+.RB ' . '
+se utilizara el mismo nombre, completo.
+.RE
+.TP
+.BI conn \ [comando\ nr]
+muestra las conexiones, u opera el
+.I comando
+en la conexion numero
+.IR nr .
+.RS
+.TP
+.B open
+Abre la conexion dada, o la primer conexion con el servidor.
+.TP
+.B login
+Abre la conexion dada, o la primer conexion con el servidor.
+.TP
+.B close
+Cierra la conexion dada. Esto tambien remueve las conexiones temporarias.
+.TP
+.B remove
+Cierra y remueve la conexion dada (temporaria).
+.TP
+.B select
+Selecciona la conexion dada como la conexion principal con el servidor.
+.I nr
+puede ser un numero de conexion o el UIN utilizado por la conexion.
+.RE
+.TP
+.BI contact \ [comando]
+Maneja la lista de contactos almacenada en el servidor:
+.RS
+.TP
+.B show
+Muestra la lista de contactos almacenada en el servidor.
+.TP
+.B diff
+Muestra los contactos que estan en el servidor y no estan en la lista local.
+.TP
+.B import
+Trae los contactos de la lista en el servidor y los agrega a la lista de
+contactos local.
+.RE
+
+.SH VER TAMBIEN
+.BR climm (1),
+.BR climmrc (5)
+.SH AUTOR
+Este manual fue creado por James Morrison
+.I <ja2morrison@student.math.uwaterloo.ca>
+para referencia de todos los comandos interactivos en
+.BR climm .
+Este manual fue traducido por Alberto Bertogli
+.IR <albertogli@telpin.com.ar> .
+

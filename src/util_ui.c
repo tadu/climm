@@ -1,7 +1,7 @@
 /* $Id$ */
 /* Copyright: This file may be distributed under version 2 of the GPL licence. */
 
-#include "micq.h"
+#include "climm.h"
 #include <stdarg.h>
 #include "util_ui.h"
 #include "util_table.h"

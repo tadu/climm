@@ -1,7 +1,7 @@
 /* $Id$ */
 
-#ifndef MICQ_PREFERENCES_H
-#define MICQ_PREFERENCES_H
+#ifndef CLIMM_PREFERENCES_H
+#define CLIMM_PREFERENCES_H
 
 #include "util_opts.h"
 #include "util_tcl.h"
@@ -31,7 +31,7 @@ struct Preferences_s
     UDWORD away_time;   /* time after which to be away automatically; 0 = disable */
     
     char  *defaultbasedir;  /* the default base dir */
-    char  *basedir;     /* the base dir where micqrc etc. reside in */
+    char  *basedir;     /* the base dir where climmrc etc. reside in */
     char  *rcfile;      /* the preference file to load */
     char  *statfile;    /* the status file to load */
     char  *logplace;    /* where to log to */
@@ -95,5 +95,5 @@ const char *PrefRealPath (const char *path);
 #define SFLAG_BEEP          1
 #define SFLAG_EVENT         2
 
-#endif /* MICQ_PREFERENCES_H */
+#endif /* CLIMM_PREFERENCES_H */
 

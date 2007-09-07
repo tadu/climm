@@ -1,0 +1,123 @@
+#!/bin/sh
+
+UPDATE=""
+
+MSGUPD="\\
+##############################################################################
+#                  Automatic upgrade notice:
+#            Get climm 0.5.0.2 from http://www.climm.org/!
+# 
+#       If you aren't interested in climm anymore, please reply with
+#              \"unsubscribe\" and I won't bother you again.
+##############################################################################
+."
+MSGSUB="Subscribed $2 to climm update notification service."
+MSGUNS="Removed $2 from update notification service."
+MSGLAT="Latest version of climm is: climm 0.5.0.2."
+MSGHELP="\\
+### subscribe
+###   Subscribe to the climm update notification service. If a new version of
+###   climm is released and you're seen online, you'll receive a message.
+### unsubscribe
+###   Unsubscribe from the climm update notification service. This will also
+###   remove you from my contact list.
+### check
+###   Query the latest released climm version.
+."
+MSGHILF="\\
+### subscribe
+###   Den climm-Aktualisierungs-Hinweisdienst abonnieren. Wenn eine neue
+###   Version von climm herausgeben wird, bekommt man dann eine Nachricht,
+###   sobald man gesehen wird.
+### unsubscribe
+###   Den climm-Aktualisierungs-Hinweisdienst abbestellen. Dies wird einen
+###   auch von meiner Kontaktliste entfernen.
+### check
+###   Die aktuelle Version von climm abfragen.
+."
+MSGHELO="\\
+(EN) Welcome to my ICQ answering machine, and probably welcome to climm as well.
+### You can subscribe to the climm update notification service with \"subscribe\",
+### or issue the following commands: help subscribe unsubscribe check.
+### Don't ask me who I am - use your own brain to figure it out. Feel free to
+### ask question about climm, but don't try to abuse me as a man page reader.
+(DE) Willkommen zu meinem ICQ-Anrufbeantworter, und Willkommen zu climm.
+### Ich verstehe diese Kommandos: hilfe subscribe unsubscribe check.
+."
+
+case "$1-$2-$3-$4-$5-$6-$7-$8" in
+   icq-uin-nick-group-action-msgtype-msg-uagent)
+     echo "example" ;;
+   *-*--*-beep-*-*)
+     xkbbell ;;
+   *-*-*-*-msg-*-hilfe-*)
+     echo "msg notab $2 $MSGHILF" >> $HOME/.climm/scripting &
+     ;;
+   *-*-*-*-msg-*-help-*)
+     echo "msg notab $2 $MSGHELP" >> $HOME/.climm/scripting &
+     ;;
+   *-*-*-*-msg-*-unsubscribe-*)
+     touch "$HOME/.climm/blacklist/$2"
+     rm -f "$HOME/.climm/subscriber/$2"
+     (
+      echo "rem $2 m:$2"
+      echo "rem $2 new:$2"
+      echo "msg notab $2 $MSGUNS"
+     ) >> $HOME/.climm/scripting &
+     ;;
+   *-*-*-*-msg-*-subscribe-*)
+     rm -f "$HOME/.climm/blacklist/$2"
+     touch "$HOME/.climm/subscriber/$2"
+     (
+      echo "add $2 m:$2"
+      echo "rem $2 new:$2"
+      echo "msg notab $2 $MSGSUB"
+     ) >> $HOME/.climm/scripting &
+     ;;
+   *-*-*-*-msg-*-check-*)
+     if [ -f "$HOME/.climm/subscriber/$2" ]
+     then
+       echo "msg notab $2 $MSGLAT $MSGSUB" >> $HOME/.climm/scripting &
+     else
+       echo "msg notab $2 $MSGLAT $MSGUNS" >> $HOME/.climm/scripting &
+     fi
+     ;;
+   *-*-m:*-*-msg-*-*Zone*Labs*message*blocked*not*on*$2*contact*list*)
+     # idiot
+     touch "$HOME/.climm/blacklist/$2"
+     (
+       echo "rem $2"
+       echo "msg notab $2 Removed from contact list."
+     ) >> $HOME/.climm/scripting &
+     ;;
+   *-*-m:*-*-msg-*-contact?remove?$2*)
+     touch "$HOME/.climm/blacklist/$2"
+     (
+       echo "rem $2"
+       echo "msg notab $2 Removed from contact list."
+     ) >> $HOME/.climm/scripting &
+     ;;
+   *-*-$2-*-msg-*)
+     [ $2 -ge 1000 ] && (
+      echo "add $2 new:$2" >> $HOME/.climm/scripting
+      sleep 1
+      echo "msg notab $2 $MSGHELO" >> $HOME/.climm/scripting
+     ) &
+     ;;
+   *-*-*-*-on-*-climm\ 0.4.*)
+     UPDATE=0.5.0.2 ;;
+   *-*-*-*-on-*-climm\ 0.5.0.[01])
+     UPDATE=0.5.0.2 ;;
+   *-*-*-*-on-*-climm\ 0.5.0.2)
+     UPDATE= ;;
+   *-*-m:*-*-on-*-climm*)
+     UPDATE= ;;
+   *-*-m:*-*-on-*-*)
+     UPDATE=0.5.0.2 ;;
+esac
+
+if [ -n "$UPDATE" -a ! -f "$HOME/.climm/update-$UPDATE/$2" -a ! -f "$HOME/.climm/blacklist/$2" ]
+then
+  touch "$HOME/.climm/update-$UPDATE/$2"
+  echo "msg notab $2 $MSGUPD" >> $HOME/.climm/scripting &
+fi

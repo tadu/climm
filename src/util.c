@@ -5,7 +5,7 @@
  * that better be rewritten. Or moved to a better place.
  */
 
-#include "micq.h"
+#include "climm.h"
 #include "util.h"
 #include "contact.h"
 #include "connection.h"
@@ -166,7 +166,7 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     }
 
     /* Write the log entry as a single chunk to cope with concurrent writes 
-     * of multiple mICQ instances.
+     * of multiple climm instances.
      */
     fputs (t.txt, logfile);
     s_done (&t);
@@ -195,11 +195,12 @@ void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype
     mygroup =  strdup (cont && cont->group && cont->group->name ? cont->group->name : "global");
 
 #if HAVE_SETENV
-    setenv ("MICQ_TEXT", mytext, 1);
-    setenv ("MICQ_NICK", mynick, 1);
-    setenv ("MICQ_AGENT", myagent, 1);
-    setenv ("MICQ_GROUP", mygroup, 1);
-    setenv ("MICQ_TYPE", mytype, 1);
+    setenv ("CLIMM_TEXT", mytext, 1);   setenv ("MICQ_TEXT", mytext, 1);
+    setenv ("CLIMM_NICK", mynick, 1);   setenv ("MICQ_NICK", mynick, 1);
+    setenv ("CLIMM_AGENT", myagent, 1); setenv ("MICQ_AGENT", myagent, 1);
+    setenv ("CLIMM_GROUP", mygroup, 1); setenv ("MICQ_GROUP", mygroup, 1);
+    setenv ("CLIMM_TYPE", mytype, 1);   setenv ("MICQ_TYPE", mytype, 1);
+    setenv ("CLIMM_STATUS", ContactStatusStr (status), 1);
     setenv ("MICQ_STATUS", ContactStatusStr (status), 1);
 #endif
 

@@ -1,14 +1,14 @@
 /* $Id$
  *
- * mICQ version functions and ICQ client identifiers.
+ * climm version functions and ICQ client identifiers.
  */
 
-#ifndef MICQ_BUILDMARK_H
-#define MICQ_BUILDMARK_H
+#ifndef CLIMM_BUILDMARK_H
+#define CLIMM_BUILDMARK_H
 
-#define MICQ_VERSION VERSION
+#define CLIMM_VERSION VERSION
 
-#define BUILD_MICQ     0xffffff42L
+#define BUILD_CLIMM    0xffffff42L
 #define BUILD_MICQ_OLD 0x7d0001eaL
 
 #define BUILD_PLATFORM_OTHER 0x01000000
@@ -37,6 +37,6 @@ extern const UDWORD BuildVersionNum;         /* e.g. 0x00050100, put into ICQ ve
 extern const char  *BuildVersionStr;         /* e.g. "0.5.1" or "0.5.2 CVS 2007-04-06 12:01:02 UTC", put into XMPP version */
 extern const UDWORD BuildPlatformID;         /* one of BUILD_PLATFORM_*, put into ICQ version time stamps */
 extern const char  *BuildPlatformStr;        /* e.g. "Debian" or "AmigaOS", put into XMPP OS */
-extern const char  *BuildVersionText;        /* e.g. "$VER: mICQ 0.5.2 SSL P2P Linux hand compiled" */
+extern const char  *BuildVersionText;        /* e.g. "$VER: climm 0.5.2 SSL P2P Linux hand compiled" */
 
-#endif /* MICQ_BUILDMARK_H */
+#endif /* CLIMM_BUILDMARK_H */
