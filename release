@@ -8,9 +8,8 @@ WEBDIR=~/Work/ICQ/climm-web
 cd /tmp
 rm -rf climm
 rm -rf climm-* climm_*
-svn co http://svn.climm.org/climm-${1}/
-mv trunk climm
-cd climm-$1
+svn co http://svn.climm.org/climm${1:+-}${1}/
+cd climm${1:+-}$1
 ./prepare
 rm -rf autom4te.cache web doc/html
 rm prepare
@@ -23,7 +22,7 @@ rm lang/Makefile
 eval `grep ^\ VERSION configure`
 echo "$VERSION" > .is_release
 cd ..
-mv climm-$1 climm-$VERSION
+mv climm${1:+-}$1 climm-$VERSION
 tar -zcf climm-$VERSION.tgz climm-$VERSION
 
 #
