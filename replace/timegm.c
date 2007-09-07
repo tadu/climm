@@ -34,7 +34,7 @@ time_t portable_timegm (struct tm *tm)
         envblank = strdup ("TZ=");
     if (!envset)
     {
-        tz = getenv ("TZ"); /* mICQ doesn't change TZ */
+        tz = getenv ("TZ"); /* climm doesn't change TZ */
         envset = malloc (strlen (tz) + 4);
         strcpy (envset, "TZ=");
         strcat (envset, tz);

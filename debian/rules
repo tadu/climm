@@ -67,7 +67,7 @@ clean:
 install:
 	dh_clean -k
 	dh_testroot
-	$(MAKE) install DESTDIR=`pwd`/debian/micq
+	$(MAKE) install DESTDIR=`pwd`/debian/climm
 
 binary-indep: build install
 
@@ -76,10 +76,10 @@ binary-arch: build install
 	dh_installdocs
 	
 	dh_installchangelogs ChangeLog
-	install -D -m 644 doc/micq.xpm debian/micq/usr/share/pixmaps/micq.xpm
-	install -D -m 644 doc/micq@48x48.png debian/micq/usr/share/icons/hicolor/48x48/apps/micq.png
-	install -D -m 644 doc/micq@32x32.png debian/micq/usr/share/icons/hicolor/32x32/apps/micq.png
-	install -D -m 644 doc/micq@16x16.png debian/micq/usr/share/icons/hicolor/16x16/apps/micq.png
+	install -D -m 644 doc/climm.xpm debian/climm/usr/share/pixmaps/climm.xpm
+	install -D -m 644 doc/climm@48x48.png debian/climm/usr/share/icons/hicolor/48x48/apps/climm.png
+	install -D -m 644 doc/climm@32x32.png debian/climm/usr/share/icons/hicolor/32x32/apps/climm.png
+	install -D -m 644 doc/climm@16x16.png debian/climm/usr/share/icons/hicolor/16x16/apps/climm.png
 	dh_installmenu
 	
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))

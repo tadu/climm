@@ -49,7 +49,7 @@
 1063.Vložte heslo:
 1064:Automaticky zmenený stav na %s.\n
 1078:Nie je k dispozícii preklad.
-1079:Preklad (%s, %s) od %s, naposledy upravovaný %s, upravil %s, pre verziu mICQ %d.%d.%d%s.\n
+1079:Preklad (%s, %s) od %s, naposledy upravovaný %s, upravil %s, pre verziu climm %d.%d.%d%s.\n
 1082:Pokúšam sa o obnovenie spojenia... [pokus %d z %d]\n
 1085:on
 1086:off
@@ -381,7 +381,7 @@
 1440:Náhodný užívateľ:
 1441:vzdialená IP:
 1442:Vyberte prosím jednu zo sekcií pomoci.
-1443:Príkazy pre mICQ zobrazenie a nastavenia.
+1443:Príkazy pre climm zobrazenie a nastavenia.
 1444:Príkazy pre vyhľadávanie a prezeranie iných užívateľov.
 1445:Príkazy pre váš ICQ účet.
 1446:Príkazy pre posielanie správ.
@@ -549,7 +549,7 @@
 1679:Uloženie vašich osobných automatických odpovedí zlyhalo, ľutujem!\n
 1680:Vaše nastavenia boli uložené!\n
 1682:Dostali ste správy od:\n
-1687:mICQ je spustené už
+1687:climm je spustené už
 1688:dni
 1689:hodiny
 1690:minúty
@@ -567,10 +567,10 @@
 1712:50+
 1713:Hľadá ženu
 1714:Hľadá muža
-1715:mICQ
+1715:climm
 #1716:None
 1717:Vykoná príkaz shell-u <cmd> (napr. '!ls', '!dir', '!mkdir temp').
-1719:Zobrazí ako dlho je mICQ spustené a ďalšie štatistiky.
+1719:Zobrazí ako dlho je climm spustené a ďalšie štatistiky.
 1721:Zaslanie prázdnej správy prepne klient do multiriadkového režimu.\nPoužite . v samostatnom riadku pre uzavretie správy.\nPoužite # v samostatnom riadku pre zrušenie správy.
 1741:Najskôr musíte prijať správu.\n
 1742:Najskôr musíte napísať správu.\n
@@ -786,7 +786,7 @@
 2058:getauto na     <nick> - Získa automatickú odpoveď od kontaktu pre stav Nedostupný.\n
 2059:getauto dnd    <nick> - Získa automatickú odpoveď od kontaktu pre stav Nerušiť.\n
 2060:getauto ffc    <nick> - Získa automatickú odpoveď od kontaktu pre stav Voľný k rozhovoru.\n
-2063.Mali by ste uložiť heslo do súboru ~/.micq/micqrc.\n
+2063.Mali by ste uložiť heslo do súboru ~/.climm/climmrc.\n
 2065:Neznámy príkaz TCP_MSG_GREET_ %04x.\n
 2066:Neznámy príkaz TCP_MSG_ %04x.\n
 2067:súbor io
@@ -899,9 +899,9 @@
 2212:stav zmenený na %s
 2213:prihlásený (%s)
 2214:Info pre %s%lu%s:\n
-2215:Toto mICQ nedokáže konvertovať medzi SJIS alebo EUC a unicode.\n
-2216:Toto mICQ nedokáže rozpoznať '%s' kódovanie.\n
-2217:Toto mICQ nedokáže konvertovať medzi'%s' a unicode.\n
+2215:Toto climm nedokáže konvertovať medzi SJIS alebo EUC a unicode.\n
+2216:Toto climm nedokáže rozpoznať '%s' kódovanie.\n
+2217:Toto climm nedokáže konvertovať medzi'%s' a unicode.\n
 2218:UIN: %s\n
 2220:niekoľko
 2222:Príkaz skriptu '%s' zlyhal: %s (%d).\n
@@ -951,7 +951,7 @@
 #+#2282:    uinprompt:  have the last nick in the prompt.\n
 # #2282:    prompt:     type of the prompt: user, uin, simple\n
 #2282:    prompt:     type of the prompt: user, uin, simple\n
-2283:    autosave:   automaticky ukladať súbor micqrc.\n
+2283:    autosave:   automaticky ukladať súbor climmrc.\n
 2284:    autofinger: autofinger (info) o nových UIN.\n
 #2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
 #2288:Indentation style is %s%s%s.\n
@@ -985,7 +985,7 @@
 2324:contact upload  Pridá lokálne kontakty do kontaktov na serveri.\n
 2325:Varovanie: zmena kontaktov na serveri zlyhala s chybovým kódom %d.\n
 2326:Zoznam kontaktov na serveri je podporovaný len pre ICQ v8.\n
-2327:%smICQ (Mattov klon ICQ)%s verzia %s%s%s\n
+2327:%sclimm (Mattov klon ICQ)%s verzia %s%s%s\n
 2328:Prihlasovali ste sa príliš často, počkajte 30 minút do ďalšieho pokusu o prihlásenie.\n
 2329:chyba syntaxe
 2330:odstránenie non-kontaktov
@@ -1008,11 +1008,11 @@
 2353:Inštalovat správcu udalosti (event hook). Návratové hodnoty: type ...
 2355:Odinštalovať správcu udalosti (event hook).
 2356:Zoznam všetkých inštalovaných správcov (hooks). Formát: <type> <command> <filter>.
-2358:Spustí príkaz mICQ.
+2358:Spustí príkaz climm.
 2360:Nájdené nick-name pre <uin>.
 2361:Nesprávny počet parametrov pre príkaz '%s %s'. Očakáva sa %d.\n
 2362:Nesprávny počet parametrov. Skúste 'help'.
-2363:Chyba: rekurzívny príkaz 'micq exec' nie je povolený.
+2363:Chyba: rekurzívny príkaz 'climm exec' nie je povolený.
 2364:Neboli zistené spojenia.
 2365:neznámy príkaz: %s
 2366:TCL chyba v súbore %s: %s\n
@@ -1026,7 +1026,7 @@
 2376:SSL čítanie z %s [ERR=%d]: %s
 2377:SSL zápis do %s [ERR=%d]: %s
 2378:peer ssl <nick>   - začne SSL výmenu (handshake).\n
-2381:Pridám autora mICQ do vášho zoznamu kontaktov pre vašu potrebu. Nezneužívajte túto výhodu, použite najskôr príkaz 'help' a snažte sa prečítať stránky man a FAQ pred akoukoľvek otázkou.\n
+2381:Pridám autora climm do vášho zoznamu kontaktov pre vašu potrebu. Nezneužívajte túto výhodu, použite najskôr príkaz 'help' a snažte sa prečítať stránky man a FAQ pred akoukoľvek otázkou.\n
 2383:Zobrazí vaše posledné správy kontaktu <contact>. Použite 'h' ako skratku príkazu.
 2384:Case insensitive vyhľadávanie vzoru <pattern> v log súbore kontaktu <contact>.
 2385:Nemôžem otvoriť %s pre čítanie: %s (%d).\n
@@ -1107,7 +1107,7 @@
 2464:Prijatie prenosu súboru %s (%s%ld%s bajtov).
 2465:Odmietnutie prijatia súboru %s (%s%ld%s bajtov): %s.
 2466:Odmietnutie žiadosti o chat (%s/%s) s %s%s%s.
-#2467:mICQ>
+#2467:climm>
 2468:žiada o prenos súboru %s z %s%ld%s bajtov (sekvencia %s%ld%s).\n
 #2469:URL:
 2470:žiada autorizáciu: %s\n
@@ -1132,7 +1132,7 @@
 2489:Server: Skupina %s Kontakt %s/%s (#%d) <intimate>\n
 #2490:normal
 2491:Rozdiely v  %d skupinách, celkom %d kontaktov, %d ignorovaných, %d skrytých, %d intimate, %d lokálnych.\n
-2492:Použitie: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
+2492:Použitie: climm [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
 #-#2494:  -u, --uin      prihlásiť s týmto UIN namiesto nakonfigurovaného\n
 #+#2494:  -u, --uin      login with this UIN instead of those configured\n
@@ -1140,8 +1140,8 @@
 #2494:  -u, --user     login with this user/UIN instead of those configured\n
 2495:  -p, --passwd   ... a použiť toto heslo\n
 2496:  -s, --status   ... a nastaviť tento stav\n
-2497:  -C, --cmd      ... a vykonať tento príkaz mICQ\n
-2498:Kódovanie %s%s%s nie je podporované touto verziou mICQ.\n
+2497:  -C, --cmd      ... a vykonať tento príkaz climm\n
+2498:Kódovanie %s%s%s nie je podporované touto verziou climm.\n
 2499:Prosím, prekompilujte ho s použitím '--enable-iconvrepl' konfigurácie.\n
 2500:Ručné nastavenie lokalizácie %s je ignorované - používam skutočné nastavenie.\n
 2501:Vaša lokalizácia nie je nastavená. Použite, prosím, parameter %s--i18n%s v príkazovom riadku alebo nastavte systémové premenné %sLC_ALL%s, %sLC_MESSAGES%s, alebo %sLANG%s pre vašu lokalizáciu.\n
@@ -1152,7 +1152,7 @@
 2504:Nemôžem otvoriť konfiguračný súbor %s%s%s.
 2505:Je použitá zastaralá voľba -f. Použite, prosím, podobnú voľbu -b namiesto nej.\n
 2506:Táto konzola používa kódovanie %s.\n
-2507:Preklad %s%s%s nebol nájdený. Nechete preložiť mICQ do vášho jazyka?\n
+2507:Preklad %s%s%s nebol nájdený. Nechete preložiť climm do vášho jazyka?\n
 2508:Slovenský (%s) preklad načítaný (%s%d%s položiek).\n
 #2509:WSAStartup() for WinSocks 1.1 failed
 2510:Otváram v5 spojenie na %s:%s%ld%s... 
@@ -1227,7 +1227,7 @@
 #2579:contact delid   Delete server based contact list entry (experts only).\n
 #2580:ignore
 #2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
-#2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
+#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
 #2583:Location error: %d.\n
 #2584:msn temp
 #2585:msn server
@@ -1258,11 +1258,11 @@
 2610:Informácia pre %s%s%s (%s):\n
 #2611: adnof__iiiiiiii
 #2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
-#2613:You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n
+#2613:You first need to enter a user account you want to use. This climm supports the following chat protocols:\n
 #2614:%s, enter i.e. %s\n
 #2615:User account ID:
 #2616:Cannot parse %s as a valid user ID. Try again!\n
-#2617:Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n
+#2617:Next you can allow climm to store your password for %s account %s. Enter nothing to not save the password.\n
 #2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
 #2619: with %s%s%s
 #2620:Opening XMPP connection for %s at %s...\n

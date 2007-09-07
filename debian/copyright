@@ -1,5 +1,5 @@
 
-mICQ can be downloaded from http://www.micq.org/download.shtml or from CVS.
+climm can be downloaded from http://www.climm.org/download.shtml or from CVS.
 
 Authors: Matthew D. Smith (deceased)
          Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
@@ -7,11 +7,11 @@ Authors: Matthew D. Smith (deceased)
 Copyright (C) © 1998-99   Matthew D. Smith,
 Copyright (C) © 2001-2006 Rüdiger Kuhlmann.
 
-mICQ is free software; you can redistribute it and/or modify
+climm is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; version 2 dated June, 1991.
 
-mICQ is distributed in the hope that it will be useful,
+climm is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
@@ -25,7 +25,7 @@ Debian GNU/Linux users may find the full text of the GPL version 2 in
 /usr/share/common-licenses/GPL-2.
 
 In addition, as a special exception permission is granted to link the
-code of this release of mICQ with the OpenSSL project's "OpenSSL"
+code of this release of climm with the OpenSSL project's "OpenSSL"
 library, and distribute the linked executables.  You must obey the GNU
 General Public License in all respects for all of the code used other
 than "OpenSSL".  If you modify this file, you may extend this exception

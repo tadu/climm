@@ -49,7 +49,7 @@
 1063.Ingrese su clave:
 1064:Su estado se cambio automaticamente a %s.\n
 1078:No hay traducción disponible
-1079:Traducción (%s, %s) por %s, ultima modificación el %s por %s, para mICQ %d.%d.%d%s.\n
+1079:Traducción (%s, %s) por %s, ultima modificación el %s por %s, para climm %d.%d.%d%s.\n
 1082:Intentando reconectar... [intento %d de %d]\n
 1085:activado
 1086: desactivado
@@ -401,7 +401,7 @@
 1440:Usuario al azar:
 1441:IP remota:
 1442:Por favor seleccione uno de los temas de ayuda.
-1443:Comandos relacionados con mICQ y su configuración.
+1443:Comandos relacionados con climm y su configuración.
 #-#1444:Comandos relacionados con la busqueda de otros usuarios.
 #+#1444:Commands relating to finding and seeing other users.
 # #1444:Commands relating to seeing and finding other users.
@@ -581,7 +581,7 @@
 1679:Error al grabar tus respuestas automaticas personales\n
 1680:Tu configuración personal ha sido grabada!\n
 1682:Recibiste mensajes de:\n
-1687:mICQ ha estado corriendo por
+1687:climm ha estado corriendo por
 1688:dias
 1689:horas
 1690:minutos
@@ -599,17 +599,17 @@
 1712:50+
 1713:Buscando mujeres
 1714:Buscando hombres
-1715:mICQ
+1715:climm
 1716:Ninguno
 #-#1717:'!' como primer caracter de una linea la ejecutara como un comando de shell (por ejemplo '!ls', '!dir', '!mkdir temp')
 #+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
 # #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
-#-#1719:Muestra por cuanto tiempo ha estado corriendo mICQ.
-#+#1719:Shows how long mICQ has been running.
+#-#1719:Muestra por cuanto tiempo ha estado corriendo climm.
+#+#1719:Shows how long climm has been running.
 #-#1720:uin puede sar tanto un numero como el nick de un usuario.
 #+#1720:uin can be either a number or the nickname of the user.
 #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
-#1719:Shows how long mICQ has been running and some statistics.
+#1719:Shows how long climm has been running and some statistics.
 1721:Enviar un mensaje en blanco pondra al programa en modo multilinea.\nEscribi . en una linea vacia para terminar el mensaje.\nUsa # en una linea vacia para cancelar el mensaje.
 1741:Tenes que recibir un comando primero.\n
 1742:Tenes que mandar un comando primero.\n
@@ -859,7 +859,7 @@
 #2058:getauto na     <nick> - Get the auto-response for not available from the contact.\n
 #2059:getauto dnd    <nick> - Get the auto-response for do not disturb from the contact.\n
 #2060:getauto ffc    <nick> - Get the auto-response for free for chat from the contact.\n
-2063.Necesitas guardar tu clave en tu archivo ~/.micq/micqrc.\n
+2063.Necesitas guardar tu clave en tu archivo ~/.climm/climmrc.\n
 2065:Comando TCP_MSG_GREET_ desconocido: %04x.\n
 2066:Comando TCP_MSG_ desconocido: %04x.\n
 2067:entrada y salida de archivos
@@ -1020,9 +1020,9 @@
 2212:cambio de estado a %s
 2213:se conecto (%s)
 2214:Informacion para %s%lu%s:\n
-2215:Este mICQ no puede convertir entre SJIS o EUC y unicode.\n
-2216:Este mICQ no conoce el encoding '%s'.\n
-2217:Este mICQ no puede convertir entre '%s' y unicode.\n
+2215:Este climm no puede convertir entre SJIS o EUC y unicode.\n
+2216:Este climm no conoce el encoding '%s'.\n
+2217:Este climm no puede convertir entre '%s' y unicode.\n
 2218:UIN: %s\n
 2220:varios
 2222:Fallo el script '%s': %s (%d).\n
@@ -1076,7 +1076,7 @@
 #2278:    delbs:      interpret delete characters as backspace.\n
 #2281:    auto:       send auto-replies.\n
 #2282:    prompt:     type of the prompt: user, uin, simple\n
-#2283:    autosave:   automatically save the micqrc.\n
+#2283:    autosave:   automatically save the climmrc.\n
 #2284:    autofinger: automatically finger new UINs.\n
 #2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
 #2288:Indentation style is %s%s%s.\n
@@ -1109,7 +1109,7 @@
 #2324:contact upload  Add local contacts to server based contact list.\n
 #2325:Warning: server based contact list change failed with error code %d.\n
 #2326:Server side contact list only supported for ICQ v8.\n
-2327:%smICQ (Clon de ICQ de Matt)%s versión %s%s%s\n
+2327:%sclimm (Clon de ICQ de Matt)%s versión %s%s%s\n
 #2328:You logged in too frequently, please wait 30 minutes before trying again.\n
 #2329:syntax error
 #2330:removing non-contact
@@ -1132,11 +1132,11 @@
 #2353:Install event hook. Callback arguments: type ...
 #2355:Uninstall event hook.
 #2356:List all installed hooks. Format: <type> <command> <filter>.
-#2358:Execute micq command.
+#2358:Execute climm command.
 #2360:Find nick from <uin>.
 #2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
 #2362:Wrong number of arguments. Try 'help'.
-#2363:Error: recursive 'micq exec' not allowed.
+#2363:Error: recursive 'climm exec' not allowed.
 #2364:No connection found.
 #2365:unknown command: %s
 #2366:TCL error in file %s: %s\n
@@ -1150,7 +1150,7 @@
 #2376:SSL read from %s [ERR=%d]: %s
 #2377:SSL write to %s [ERR=%d]: %s
 #2378:peer ssl <nick>   - initiate SSL handshake.\n
-#2381:I'll add the author of mICQ to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+#2381:I'll add the author of climm to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
 #2383:View your last messages of <contact>. Type 'h' as short command.
 #2384:Case insensitive search of <pattern> in log file of <contact>.
 #2385:Couldn't open %s for reading: %s (%d).\n
@@ -1229,7 +1229,7 @@
 #2464:Accepting file %s (%s%ld%s bytes).
 #2465:Refusing file request %s (%s%ld%s bytes): %s.
 #2466:Refusing chat request (%s/%s) from %s%s%s.
-#2467:mICQ>
+#2467:climm>
 #2468:requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n
 #2469:URL:
 #2470:requests authorization: %s\n
@@ -1254,13 +1254,13 @@
 #2489:Server: Group %s Contact %s/%s (#%d) <intimate>\n
 #2490:normal
 #2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
-#2492:Usage: micq [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
+#2492:Usage: climm [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 #2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
 #2494:  -u, --user     login with this user/UIN instead of those configured\n
 #2495:  -p, --passwd   ... and override password\n
 #2496:  -s, --status   ... and override status\n
-#2497:  -C, --cmd      ... and execute mICQ command\n
-#2498:Encoding %s%s%s is not supported by this mICQ.\n
+#2497:  -C, --cmd      ... and execute climm command\n
+#2498:Encoding %s%s%s is not supported by this climm.\n
 #2499:Please recompile using the '--enable-iconvrepl' configure option.\n
 #2500:Manual locale setting %s ignored - use a real locale instead.\n
 #2501:Your locale is unset. Please use the %s--i18n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n
@@ -1269,7 +1269,7 @@
 #2504:Could not open configuration file %s%s%s.
 #2505:Deprecated option -f used. Please use the similar -b instead.\n
 #2506:This console uses encoding %s.\n
-#2507:Translation %s%s%s not found. Would you like to translate mICQ into your language?\n
+#2507:Translation %s%s%s not found. Would you like to translate climm into your language?\n
 #2508:No translation (%s) loaded (%s%d%s entries).\n
 #2509:WSAStartup() for WinSocks 1.1 failed
 #2510:Opening v5 connection to %s:%s%ld%s... 
@@ -1344,7 +1344,7 @@
 #2579:contact delid   Delete server based contact list entry (experts only).\n
 #2580:ignore
 #2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
-#2582:Install the Tcl 8.4 library and enjoy scripting in mICQ!\n
+#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
 #2583:Location error: %d.\n
 #2584:msn temp
 #2585:msn server
@@ -1375,11 +1375,11 @@
 2610:Información para %s%s%s (%s):\n
 #2611: adnof__iiiiiiii
 #2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
-#2613:You first need to enter a user account you want to use. This mICQ supports the following chat protocols:\n
+#2613:You first need to enter a user account you want to use. This climm supports the following chat protocols:\n
 #2614:%s, enter i.e. %s\n
 #2615:User account ID:
 #2616:Cannot parse %s as a valid user ID. Try again!\n
-#2617:Next you can allow mICQ to store your password for %s account %s. Enter nothing to not save the password.\n
+#2617:Next you can allow climm to store your password for %s account %s. Enter nothing to not save the password.\n
 #2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
 #2619: with %s%s%s
 #2620:Opening XMPP connection for %s at %s...\n

@@ -1,6 +1,6 @@
 #!/bin/bash -x
 
-WEBDIR=~/Work/ICQ/micq-web
+WEBDIR=~/Work/ICQ/climm-web
 
 #
 # setup
@@ -10,7 +10,6 @@ rm -rf climm
 rm -rf climm-* climm_*
 svn co http://svn.climm.org/climm-${1}/
 mv trunk climm
-#cvs -d :pserver:anonymous@climm.org:/var/lib/cvs co -r ${1:-stable-0-4-12} micq
 cd climm-$1
 ./prepare
 rm -rf autom4te.cache web doc/html

@@ -1,6 +1,6 @@
 # $Id$
 
-langdir = $(datadir)/micq
+langdir = $(datadir)/climm
 lang_DATA = C.i18n \
          cs.i18n de.i18n de_CH.i18n en.i18n \
          es.i18n fr.i18n ru.i18n ja.i18n ro.i18n \

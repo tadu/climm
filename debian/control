@@ -1,17 +1,19 @@
-Source: micq
+Source: climm
 Section: net
 Priority: optional
-Maintainer: Rüdiger Kuhlmann <micq@ruediger-kuhlmann.de>
+Maintainer: Rüdiger Kuhlmann <climm@ruediger-kuhlmann.de>
 Build-Depends: debhelper (>= 4.0.0), tcl8.4-dev | tcl8.3-dev, libgnutls7-dev | libgnutls10-dev | libgnutls11-dev | libgnutls-dev, libgloox-dev
 Standards-Version: 3.5.9
 
-Package: micq
+Package: climm
 Architecture: any
 Depends: ${shlibs:Depends}
 Recommends: popularity-contest
-Provides: micq-ssl
+Provides: micq,micq-ssl
+Replaces: micq,micq-ssl
+
 Description: text/line based ICQ client with many features
- mICQ is a portable, small, yet powerful console based ICQ client. It
+ climm is a portable, small, yet powerful console based ICQ client. It
  supports password changing, auto-away, creation of new accounts, searching,
  file transfer, acknowledged messages, SMS, client identification, logging,
  scripting, transcoding, multi-UIN usage and other features that makes it a
@@ -22,5 +24,5 @@ Description: text/line based ICQ client with many features
  It has leading support for (ICQ2002+/ICQ Lite/ICQ2go) unicode encoded
  messages unreached by other ICQ clones.
  .
- A lot of other ICQ clients are based in spirit on mICQ, nevertheless
- mICQ is still _the_ console based ICQ client.
+ A lot of other ICQ clients are based in spirit on climm, nevertheless
+ climm is still _the_ console based ICQ client.

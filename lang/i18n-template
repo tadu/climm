@@ -2,7 +2,7 @@
 
 my %nrval, %tain, $max, $tainted, $ignored, $preserved, $added, $ignerr, $uname, $name, $pref;
 
-$cvs = ':pserver:anonymous@micq.org:/var/lib/cvs';
+$cvs = ':pserver:anonymous@climm.org:/var/lib/svn';
 
 sub ReadTrans($)
 {
@@ -143,7 +143,7 @@ while ($uname = shift)
     }
     print "Old version tag: $ver.\n";
     
-    stat ".C.$ver" || system "cvs -d $cvs rdiff -u -r $ver -r HEAD micq/lang/C.i18n > .C.$ver";
+    stat ".C.$ver" || system "cvs -d $cvs rdiff -u -r $ver -r HEAD climm/lang/C.i18n > .C.$ver";
     system "grep \"^-[0-9]\" < .C.$ver | sed \"s,^-,,\" | sort -n -t : -k 1,1 -u -o .$uname.tainted";
     ReadTainted ("$uname");
 
