@@ -581,7 +581,7 @@ int main (int argc, char *argv[])
     Connection *conn;
     int i;
     
-
+    umask (077);
     Init (argc, argv);
     while (!uiG.quit)
     {
