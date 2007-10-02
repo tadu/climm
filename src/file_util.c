@@ -66,7 +66,7 @@ Connection *PrefNewConnection (UDWORD servertype, const char *user, const char *
     if (servertype == TYPE_SERVER)
     {
         conn = ConnectionC (servertype);
-        conn->open = &ConnectionInitServer;
+        conn->c_open = &ConnectionInitServer;
         
         conn->flags |= CONN_AUTOLOGIN;
         conn->pref_server = strdup ("login.icq.com");
@@ -101,7 +101,7 @@ Connection *PrefNewConnection (UDWORD servertype, const char *user, const char *
         const char *serverpart = strchr (user, '@') + 1;
     
         conn = ConnectionC (servertype);
-        conn->open = &ConnectionInitXMPPServer;
+        conn->c_open = &ConnectionInitXMPPServer;
         
         conn->flags |= CONN_AUTOLOGIN;
         if (!strcmp (serverpart, "gmail.com") || !strcmp (serverpart, "gmail.com"))
@@ -138,7 +138,7 @@ Connection *PrefNewConnection (UDWORD servertype, const char *user, const char *
     else if (servertype == TYPE_MSN_SERVER)
     {
         conn = ConnectionC (servertype);
-        conn->open = &ConnectionInitMSNServer;
+        conn->c_open = &ConnectionInitMSNServer;
         
         conn->flags |= CONN_AUTOLOGIN;
         conn->pref_server = strdup (strchr (user, '@') + 1);
@@ -310,7 +310,7 @@ void Initialize_RC_File ()
     }
 #ifdef ENABLE_REMOTECONTROL
     conns = ConnectionC (TYPE_REMOTE);
-    conns->open = &RemoteOpen;
+    conns->c_open = &RemoteOpen;
     conns->flags |= CONN_AUTOLOGIN;
     conns->pref_server = strdup ("scripting");
     conns->server = strdup (conns->pref_server);
@@ -1231,35 +1231,35 @@ int Read_RC_File (FILE *rcf)
         switch (conn->type)
         {
             case TYPE_SERVER:
-                conn->open = &ConnectionInitServer;
+                conn->c_open = &ConnectionInitServer;
                 break;
             case TYPE_SERVER_OLD:
-                conn->open = &ConnectionInitServerV5;
+                conn->c_open = &ConnectionInitServerV5;
                 break;
 #ifdef ENABLE_MSN
             case TYPE_MSN_SERVER:
-                conn->open = &ConnectionInitMSNServer;
+                conn->c_open = &ConnectionInitMSNServer;
                 break;
 #endif
 #ifdef ENABLE_XMPP
             case TYPE_XMPP_SERVER:
-                conn->open = &ConnectionInitXMPPServer;
+                conn->c_open = &ConnectionInitXMPPServer;
                 break;
 #endif
 #ifdef ENABLE_PEER2PEER
             case TYPE_MSGLISTEN:
-                conn->open = &ConnectionInitPeer;
+                conn->c_open = &ConnectionInitPeer;
                 break;
 #endif
 #ifdef ENABLE_REMOTECONTROL
             case TYPE_REMOTE:
-                conn->open = &RemoteOpen;
+                conn->c_open = &RemoteOpen;
                 connr = conn;
                 break;
 #endif
             default:
                 conn->type = 0;
-                conn->open = NULL;
+                conn->c_open = NULL;
                 break;
         }
         if (format < 2 && !conn->contacts && conn->type & TYPEF_SERVER)
@@ -1275,7 +1275,7 @@ int Read_RC_File (FILE *rcf)
     if (!connr)
     {
         connr = ConnectionC (TYPE_REMOTE);
-        connr->open = &RemoteOpen;
+        connr->c_open = &RemoteOpen;
         connr->pref_server = strdup ("scripting");
         connr->parent = NULL;
         connr->server = strdup (connr->pref_server);

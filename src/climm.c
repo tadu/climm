@@ -467,7 +467,7 @@ static void Init (int argc, char *argv[])
     }
 
     for (i = 0; (conn = ConnectionNr (i)); i++)
-        if (conn->open && conn->flags & CONN_AUTOLOGIN)
+        if (conn->c_open && conn->flags & CONN_AUTOLOGIN)
             if (conn->type & TYPEF_ANY_SERVER)
                 conn->status = conn->pref_status;
 
@@ -505,7 +505,7 @@ static void Init (int argc, char *argv[])
                     conn->status = arg_ss;
                 if (arg_p)
                     s_repl (&conn->passwd, arg_p);
-                if (conn->passwd && *conn->passwd && (!arg_s || arg_ss != ims_offline) && (loginevent = conn->open (conn)))
+                if (conn->passwd && *conn->passwd && (!arg_s || arg_ss != ims_offline) && (loginevent = conn->c_open (conn)))
                     QueueEnqueueDep (conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, conn->cont,
                                      OptSetVals (NULL, CO_CLIMMCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                      &CmdUserCallbackTodo);
@@ -538,7 +538,7 @@ static void Init (int argc, char *argv[])
     
     if (!uingiven)
         for (i = 0; (conn = ConnectionNr (i)); i++)
-            if (conn->open && conn->flags & CONN_AUTOLOGIN)
+            if (conn->c_open && conn->flags & CONN_AUTOLOGIN)
                 if (conn->type & TYPEF_ANY_SERVER)
                     if (!conn->passwd || !*conn->passwd)
                     {
@@ -554,17 +554,17 @@ static void Init (int argc, char *argv[])
     if (!uingiven)
     {
         for (i = 0; (conn = ConnectionNr (i)); i++)
-            if (conn->open && conn->flags & CONN_AUTOLOGIN)
+            if (conn->c_open && conn->flags & CONN_AUTOLOGIN)
             {
                 if (conn->type & TYPEF_ANY_SERVER)
                 {
-                    if (conn->passwd && *conn->passwd && conn->status != ims_offline && (loginevent = conn->open (conn)))
+                    if (conn->passwd && *conn->passwd && conn->status != ims_offline && (loginevent = conn->c_open (conn)))
                          QueueEnqueueDep (conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, conn->cont,
                                           OptSetVals (NULL, CO_CLIMMCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                           &CmdUserCallbackTodo);
                 }
                 else
-                    conn->open (conn);
+                    conn->c_open (conn);
             }
     }
     s_done (&arg_C);

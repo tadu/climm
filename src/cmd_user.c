@@ -4008,7 +4008,7 @@ static JUMP_F(CmdUserConn)
                     rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), connl, connl->parent, connl->assoc);
 #endif
                     rl_printf (i18n (2454, "    open %p reconn %p close %p err %p dispatch %p\n"),
-                              connl->open, connl->reconnect, connl->close, connl->error, connl->dispatch);
+                              connl->c_open, connl->reconnect, connl->close, connl->error, connl->dispatch);
                     free (t1);
                     free (t2);
                     free (t3);
@@ -4052,13 +4052,13 @@ static JUMP_F(CmdUserConn)
                 s_repl (&connl->passwd, targs);
             if (connl->connect & CONNECT_OK)
                 rl_printf (i18n (2601, "Connection for %s is already open.\n"), connl->screen);
-            else if (!connl->open)
+            else if (!connl->c_open)
                 rl_printf (i18n (2602, "Don't know how to open connection type %s for %s.\n"),
                     ConnectionType (connl), connl->screen);
             else if (!connl->passwd || !*connl->passwd)
                 rl_printf (i18n (2688, "No password given for %s.\n"), connl->screen);
             else
-                connl->open (connl);
+                connl->c_open (connl);
             break;
 
         case 3:

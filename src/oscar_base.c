@@ -625,7 +625,7 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
         return NULL;
     }
     news->assoc = newl;
-    newl->open = &ConnectionInitPeer;
+    newl->c_open = &ConnectionInitPeer;
     if (conn && conn->assoc)
     {
         newl->version = conn->assoc->version;
@@ -665,7 +665,7 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
     news->server = strdup (news->pref_server);
     news->port = news->pref_port;
     news->passwd = strdup (pass);
-    news->open = &ConnectionInitServer;
+    news->c_open = &ConnectionInitServer;
     return news;
 }
 

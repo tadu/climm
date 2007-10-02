@@ -66,7 +66,7 @@ Event *RemoteOpen (Connection *remo)
 
     remo->connect     = 0;
     remo->our_seq     = 0;
-    remo->open        = &RemoteOpen;
+    remo->c_open      = &RemoteOpen;
     remo->dispatch    = &RemoteDispatch;
     remo->reconnect   = NULL;
     remo->close       = &RemoteClose;
@@ -97,7 +97,7 @@ static void RemoteClose (Connection *remo)
     sockclose (remo->sok);
     remo->sok = -1;
     remo->connect = 0;
-    remo->open = &RemoteOpen;
+    remo->c_open = &RemoteOpen;
     unlink (remo->server);
 }
 

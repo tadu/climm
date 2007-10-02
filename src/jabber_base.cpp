@@ -932,7 +932,7 @@ Event *ConnectionInitXMPPServer (Connection *serv)
     if (!serv->port)
         serv->port = -1UL;
     
-    serv->open = &ConnectionInitXMPPServer;
+    serv->c_open = &ConnectionInitXMPPServer;
     serv->reconnect = &XMPPCallbackReconn;
     serv->error = &XMPPCallbackError;
     serv->close = &XMPPCallbackClose;

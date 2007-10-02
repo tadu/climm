@@ -154,10 +154,10 @@ JUMP_SNAC_F(SnacSrvNewuin)
     serv->flags |= CONN_CONFIGURED;
     if (serv->flags & CONN_WIZARD)
     {
-        assert (serv->open);
+        assert (serv->c_open);
 #ifdef ENABLE_PEER2PEER
         assert (serv->assoc);
-        assert (serv->assoc->open);
+        assert (serv->assoc->c_open);
         serv->assoc->flags |= CONN_AUTOLOGIN;
 #endif
         serv->flags |= CONN_AUTOLOGIN;
@@ -172,9 +172,9 @@ JUMP_SNAC_F(SnacSrvNewuin)
         if (Save_RC () == -1)
             rl_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
 #ifdef ENABLE_PEER2PEER
-        serv->assoc->open (serv->assoc);
+        serv->assoc->c_open (serv->assoc);
 #endif
-        serv->open (serv);
+        serv->c_open (serv);
     }
     else
         rl_print (i18n (2518, "You need to 'save' to write your new UIN to disc.\n"));
