@@ -462,7 +462,7 @@ val_t OptUndef (Opt *opt, UDWORD flag DEBUGPARAM)
     }
     for (cotold = cot; cotold->next; )
         cotold = cotold->next;
-    for (m = OPT_TABLESIZE - 1; m >= 0; m--)
+    for (m = OPT_TABLESIZE - 1; m > 0; m--)
         if (cotold->tags[m])
             break;
     old = cot->vals[k];
