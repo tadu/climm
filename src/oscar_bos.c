@@ -39,6 +39,7 @@
 #include "contact.h"
 #include "connection.h"
 #include "util_ui.h"
+#include "oscar_roster.h"
 
 /*
  * SRV_BOSERR - SNAC(1,1)
@@ -69,7 +70,8 @@ JUMP_SNAC_F (SnacSrvBoserr)
  */
 JUMP_SNAC_F(SnacSrvReplybos)
 {
-    /* ignore */
+    Connection *serv = event->conn;
+    SnacCliReqlists     (serv);
 }
 
 /*

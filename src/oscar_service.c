@@ -177,7 +177,6 @@ JUMP_SNAC_F(SnacSrvRates)
     SnacCliReqbuddy     (serv);
     SnacCliReqicbm      (serv);
     SnacCliReqbos       (serv);
-    SnacCliReqlists     (serv);
 }
 
 
