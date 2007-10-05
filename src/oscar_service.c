@@ -147,7 +147,12 @@ JUMP_SNAC_F(SnacSrvFamilies)
             continue;
         }
     }
+    if (serv->connect & CONNECT_OK)
+        return;
+    /* Step 1: (1,3) received) */
+    serv->connect += 16;
     SnacCliFamilies (serv);
+    SnacCliRatesrequest (serv); /* triggers step 2 */
 }
 
 /*
@@ -169,14 +174,6 @@ JUMP_SNAC_F(SnacSrvRates)
         PacketWriteB2 (pak, grp);
     }
     SnacSend (serv, pak);
-
-    if (!(serv->connect & CONNECT_OK))
-        serv->connect += 16;
-
-    SnacCliReqlocation  (serv);
-    SnacCliReqbuddy     (serv);
-    SnacCliReqicbm      (serv);
-    SnacCliReqbos       (serv);
 }
 
 
@@ -318,9 +315,15 @@ JUMP_SNAC_F(SnacSrvFamilies2)
             rl_printf (i18n (1904, "Server doesn't understand ver %d (only %d) for family %d!\n"), s->cmd, ver, fam);
     }
 
-    if (!(serv->connect & CONNECT_OK))
-        serv->connect += 16;
-    SnacCliRatesrequest (serv);
+    if (serv->connect & CONNECT_OK)
+        return;
+    /* Step 2: (1,24)=(1,18) received */
+    serv->connect += 16;
+    SnacCliReqlocation  (serv);
+    SnacCliReqbuddy     (serv);
+    SnacCliReqicbm      (serv);
+    SnacCliReqinfo      (serv);
+    SnacCliReqbos       (serv); /* triggers step 3 */
 }
 
 /*

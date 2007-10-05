@@ -334,8 +334,12 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         }
         if (~serv->connect & CONNECT_OK)
         {
+            /* Step 4: (13,6)=(19,6) received */
             serv->connect += 16;
-            SnacCliSetvisibility (serv, serv->privacy_value, 1);
+            SnacCliAddcontact (serv, NULL, serv->contacts);
+            SnacCliSetstatus (serv, serv->status, 3);
+            SnacCliReady (serv);
+            SnacCliReqofflinemsgs (serv);
         }
 
         event2->callback (event2);
@@ -596,7 +600,6 @@ JUMP_SNAC_F(SnacSrvRosterupdate)
 
 static JUMP_SNAC_F(cb_LoginVisibilitySet)
 {
-    Connection *serv = event->conn;
     UWORD err;
 
     if (!event->pak)
@@ -612,15 +615,6 @@ static JUMP_SNAC_F(cb_LoginVisibilitySet)
     err = PacketReadB2 (event->pak);
     PacketD (event->pak);
     event->pak = NULL;
-    
-    if (event->data)
-    {
-        SnacCliAddcontact (serv, NULL, serv->contacts);
-        SnacCliSetstatus (serv, serv->status, 3);
-        SnacCliReady (serv);
-        SnacCliReqofflinemsgs (serv);
-        SnacCliReqinfo (serv);
-    }
     
     if (err)
         rl_printf (i18n (2325, "Warning: server based contact list change failed with error code %d.\n"), err);
@@ -643,7 +637,7 @@ void SnacCliSetvisibility (Connection *serv, char value, char islogin)
     PacketWrite1        (pak, value);
     PacketWriteTLVDone  (pak);
     PacketWriteBLenDone (pak);
-    SnacSendR (serv, pak, cb_LoginVisibilitySet, islogin ? cb_LoginVisibilitySet : NULL);
+    SnacSendR (serv, pak, cb_LoginVisibilitySet, NULL);
     serv->privacy_value = value;
 }
 

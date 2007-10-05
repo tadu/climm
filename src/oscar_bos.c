@@ -71,7 +71,11 @@ JUMP_SNAC_F (SnacSrvBoserr)
 JUMP_SNAC_F(SnacSrvReplybos)
 {
     Connection *serv = event->conn;
-    SnacCliReqlists     (serv);
+    if (serv->connect & CONNECT_OK)
+        return;
+    /* Step 3: (9,3) received */
+    serv->connect += 16;
+    SnacCliReqlists     (serv); /* triggers step 4 */
 }
 
 /*
