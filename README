@@ -14,7 +14,7 @@ When the Author passed away 2001-01-05, some of us users overtook the
 "leadership" of the project and its now actively developed by some of us
 freaks.
 
-For some time, Rico Glöckner <rg@micq.org> maintained the code. He also set
+For some time, Rico Glöckner <rg@climm.org> maintained the code. He also set
 up the mailing list and hosts www.climm.org.
 
 Right now, Rüdiger Kuhlmann maintains the code. All code to implement the
@@ -77,17 +77,17 @@ for downloads of new translations.
 
 d) Mailinglist
 
-They are hosted by <rg@micq.org>.
+They are hosted by <rg@climm.org>.
 
 Currently you:
     post	   
-                                           <micq-list@micq.org>
+                                           <climm-list@climm.org>
 
     subscribe, unsubscribe, help
-                   <URL:http://micq.org/mailman/listinfo/micq-list>
+                   <URL:http://climm.org/mailman/listinfo/climm-list>
 
     An Archive might be found at:
-                   <URL:http://micq.org/pipermail/micq-list/>
+                   <URL:http://climm.org/pipermail/climm-list/>
 
 
 e) Download
@@ -96,12 +96,12 @@ Download climm sources and binaries from
 
     <URL:http://www.climm.org/>
 
-f) CVS
+f) SVN (subversion)
 
-Required is the cvs client, autoconf 2.59 or greater and automake 1.9 or
-greater. automake 1.9.5 is recommended, however.
+Required is the svn client, autoconf 2.59 or greater and automake 1.9 or
+greater. automake 1.10 is recommended, however.
 
-cvs -d :pserver:anonymous@micq.org:/var/lib/cvs co -r stable-0-5 micq
+svn co http://svn.climm.org/climm/
 
 To prepare the maintainer generated files:
 
@@ -109,19 +109,19 @@ $ ./prepare
 
 This will run aclocal, autoheader, automake -ac and autoconf.
 
-Note that if you don't have current autotools, there is a CVS snapshot that
+Note that if you don't have current autotools, there is a SVN snapshot that
 you can download the includes the generated files just like in the release.
-It does, however, contain CVS directories, so you can still use "cvs up" to
+It does, however, contain .svn directories, so you can still use "svn up" to
 update the checkout. Usually I upload a new snapshot when I make changes
 to configure.ac or any of the Makefile.am files.
 
 If that isn't enough because you made too much changes, you can link the
 generated files from a CVS snapshot to a CVS checkout like this:
 
-  cd micq  # the CVS check-out
-  ln -s ../micq-cvs/{install-sh,config.guess,config.sub,configure,depend,mkinstalldirs} .
-  cd ../micq-cvs  # the CVS snapshot
-  find . -name "*.in" -exec ln -s ../micq-cvs/\{\} ../micq/\{\}
+  cd climm  # the SVN check-out
+  ln -s ../climm-svn/{install-sh,config.guess,config.sub,configure,depend,mkinstalldirs} .
+  cd ../climm-svn  # the CVS snapshot
+  find . -name "*.in" -exec ln -s ../climm-svn/\{\} ../climm/\{\}
 
 g) Compile
 
