@@ -165,7 +165,7 @@ int do_accept (int fd)
 
 int do_server (const char *hostname, int port)
 {
-    int rc, rce, sok, ip;
+    int rc, rce, sok, ip = -1;
     socklen_t length;
     struct sockaddr_in sin;
     struct hostent *host;
@@ -235,28 +235,20 @@ int read_all_data (int fd, char *buf, int *index, int *reported, int size, int o
     if (fd < 0)
         return 1;
 
-    printf ("Reading all from %s.\n", out ? "server" : "client");    
     while (1)
     {
         ret = wait_fd (fd, 1, 250000);
         if (!ret)
-        {
-            printf ("No more data from %s.\n", out ? "server" : "client");
             return 0;
-        }
+
         assert (size > *index + 10);
         len = read (fd, buf + *index, size - *index);
         if (!len)
-        {
-            printf ("EOF from %s.\n", out ? "server" : "client");
             return 1;
-        }
+
         ret = errno;
         if (len == -1 && ret == ECONNRESET)
-        {
-            printf ("EOF2 from %s.\n", out ? "server" : "client");
-            return 1;
-        }
+
         assert (len > 0);
         *index += len;
         assert (*index >= *reported);
@@ -330,7 +322,7 @@ int send_packet (int tofd, char *buf, int *index, int *reported, int port, int o
             buf[len++] = 5;
             buf[len++] = 0;
             buf[len++] = 14;
-            memcpy (buf + len, "127.0.0.1:1234", 14);
+            memcpy (buf + len, "127.0.0.1:5190", 14);
             len += 14 - 6;
             *index += 18;
             *reported += 18;
@@ -360,7 +352,7 @@ int send_packet (int tofd, char *buf, int *index, int *reported, int port, int o
             buf[len++] = 5;
             buf[len++] = 0;
             buf[len++] = 14;
-            memcpy (buf + len, "127.0.0.1:1234", 14);
+            memcpy (buf + len, "127.0.0.1:5190", 14);
             len += 14 - 6;
             *index += 18;
             *reported += 18;
@@ -383,7 +375,7 @@ int send_packet (int tofd, char *buf, int *index, int *reported, int port, int o
     return 1;
 }
 
-void do_exchange (int fd_cli, int fd_srv, int port)
+void do_exchange (int fd_cli, int fd_srv, int port, int single)
 {
     char from_cli_buf[1024*1024];
     char to_cli_buf[1024*1024];
@@ -394,18 +386,29 @@ void do_exchange (int fd_cli, int fd_srv, int port)
     while (1)
     {
         ret = read_all_data (fd_cli, from_cli_buf, &from_cli_index, &from_cli_reported, 1024*1024, 0);
-        if (ret)
+        if (!ret)
+            printf ("No more data from client.\n");
+        if (ret > 0)
         {
+            printf ("EOF %d from client.\n", ret);
             while (send_packet (fd_srv, from_cli_buf, &from_cli_index, &from_cli_reported, port, 1))
                 ;
             close (fd_cli);
             close (fd_srv);
             return;
         }
-        send_packet (fd_srv, from_cli_buf, &from_cli_index, &from_cli_reported, port, 1);
+        
+        if (single)
+            send_packet (fd_srv, from_cli_buf, &from_cli_index, &from_cli_reported, port, 1);
+        else
+            while (send_packet (fd_srv, from_cli_buf, &from_cli_index, &from_cli_reported, port, 1))
+                ;
         ret = read_all_data (fd_srv, to_cli_buf, &to_cli_index, &to_cli_reported, 1024*1024, 1);
-        if (ret)
+        if (!ret)
+            printf ("No more data from server.\n");
+        if (ret > 0)
         {
+            printf ("EOF %d from server.\n", ret);
             while (send_packet (fd_cli, to_cli_buf, &to_cli_index, &to_cli_reported, port, 0))
                 ;
             close (fd_cli);
@@ -419,7 +422,7 @@ void do_exchange (int fd_cli, int fd_srv, int port)
 int main (int argc, char **argv)
 {
     int fd_cli = -1, fd_lis = -1, fd_srv = -1;
-    int port = 1234;
+    int port = 5190;
 
     fd_lis = do_listen (&port);
     while (1)
@@ -427,11 +430,11 @@ int main (int argc, char **argv)
         printf ("Waiting for connections... (login)\n");
         fd_cli = do_accept (fd_lis);
         fd_srv = do_server ("login.icq.com", 5190);
-        do_exchange (fd_cli, fd_srv, 1234);
+        do_exchange (fd_cli, fd_srv, port, argc < 2);
         printf ("Waiting for connections... (session)\n");
         fd_cli = do_accept (fd_lis);
         fd_srv = do_server (use_host, use_port);
-        do_exchange (fd_cli, fd_srv, 1234);
+        do_exchange (fd_cli, fd_srv, port, argc < 2);
         fflush (stdout);
     }
     return 0;
