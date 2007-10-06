@@ -47,6 +47,7 @@
 #include "preferences.h"
 #include "buildmark.h"
 #include "util_ui.h"
+#include "util_rl.h"
 
 static void SrvCallBackKeepalive (Event *event);
 
@@ -249,6 +250,7 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
         {
             serv->status = status;
             serv->nativestatus = ostat;
+            ReadLinePromptReset ();
             rl_printf ("%s %s\n", s_now, s_status (serv->status, ostat));
         }
     }
