@@ -85,13 +85,13 @@ static void Idle_Check (Connection *conn)
     }
     
     now = time (NULL);
-    
+
     if (!prG->away_time)
     {
         if (!uiG.idle_val)
             uiG.idle_val = now;
 
-        delta = now - uiG.idle_val;
+        delta = os_DetermineIdleTime (now, uiG.idle_val);
 
         if (delta > 10 && uiG.idle_val)
         {
@@ -135,7 +135,7 @@ static void Idle_Check (Connection *conn)
             return;
     }
     else
-        delta = uiG.idle_val ? now - uiG.idle_val : 0;
+        delta = uiG.idle_val ? os_DetermineIdleTime (now, uiG.idle_val) : 0;
 
     if (!uiG.idle_val)
         uiG.idle_val = now;

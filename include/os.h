@@ -19,19 +19,25 @@
  *       bit 16:  init mode active (please ignore this)
  */
 int os_DetectLockedWorkstation();
+
 const char *os_packagedatadir (void);
 const char *os_packagehomedir (void);
 
 #else /* !_WIN32 && (!__CYGWIN__ || !_X86) */
-
 #define os_DetectLockedWorkstation() -1
+#endif /* !_WIN32 && (!__CYGWIN__ || !_X86) */
+
+#if defined(HAVE_GETUTENT)
+UDWORD os_DetermineIdleTime(time_t now, time_t last);
+#else
+#define os_DetermineIdleTime(n,l) ((n)-(l))
+#endif
+
 #if ENABLE_BINRELOC
 #define os_packagedatadir() BR_DATADIR ("climm")
 #else
 #define os_packagedatadir() PKGDATADIR
 #endif
 
-
-#endif /* !_WIN32 && (!__CYGWIN__ || !_X86) */
 
 #endif /* CLIMM_OS_H */
