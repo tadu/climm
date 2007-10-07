@@ -333,14 +333,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
             serv->privacy_value = 3;
         }
         if (~serv->connect & CONNECT_OK)
-        {
-            /* Step 4: (13,6)=(19,6) received */
-            serv->connect += 16;
-            SnacCliAddcontact (serv, NULL, serv->contacts);
-            SnacCliSetstatus (serv, serv->status, 3);
-            SnacCliReady (serv);
-            SnacCliReqofflinemsgs (serv);
-        }
+            CliFinishLogin (serv);
 
         event2->callback (event2);
         if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
@@ -863,10 +856,7 @@ JUMP_SNAC_F(SnacSrvRosterok)
         serv->privacy_value = 3;
     }
     if (~serv->connect & CONNECT_OK)
-    {
-        serv->connect += 16;
-        SnacCliSetvisibility (serv, serv->privacy_value, 1);
-    }
+        CliFinishLogin (serv);
 
     event2->callback (event2);
     if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))

@@ -84,6 +84,28 @@ static void SrvCallBackKeepalive (Event *event)
     EventD (event);
 }
 
+void CliFinishLogin (Connection *serv)
+{
+    Event *event;
+
+    /* Step 4: (13,6)=(19,6) received */
+    serv->connect += 16;
+    SnacCliAddcontact (serv, NULL, serv->contacts);
+    SnacCliSetstatus (serv, serv->status, 3);
+    SnacCliReady (serv);
+    SnacCliReqofflinemsgs (serv);
+    if (prG->chat > 0)
+        SnacCliSetrandom (serv, prG->chat);
+    serv->connect = CONNECT_OK | CONNECT_SELECT_R;
+    QueueEnqueueData (serv, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
+        NULL, serv->cont, NULL, &SrvCallBackKeepalive);
+    if ((event = QueueDequeue2 (serv, QUEUE_DEP_WAITLOGIN, 0, NULL)))
+    {
+        event->due = time (NULL) + 5;
+        QueueEnqueue (event);
+    }
+}
+
 /*
  * SRV_SERVICEERR - SNAC(1,1)
  */
@@ -256,20 +278,6 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     }
     /* TLV 1 c f 2 3 ignored */
     TLVD (tlv);
-    
-    if (~serv->connect & CONNECT_OK && (serv->connect & CONNECT_MASK) >= 60)
-    {
-        if (prG->chat > 0)
-            SnacCliSetrandom (serv, prG->chat);
-        serv->connect = CONNECT_OK | CONNECT_SELECT_R;
-        QueueEnqueueData (serv, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
-                          NULL, event->cont, NULL, &SrvCallBackKeepalive);
-        if ((event = QueueDequeue2 (serv, QUEUE_DEP_WAITLOGIN, 0, NULL)))
-        {
-            event->due = time (NULL) + 5;
-            QueueEnqueue (event);
-        }
-    }
 }
 
 /*
