@@ -34,9 +34,11 @@
 #include "oscar_base.h"
 #include "oscar_snac.h"
 #include "oscar_location.h"
+#include "oscar_tlv.h"
 #include "conv.h"
 #include "contact.h"
 #include "packet.h"
+#include "im_response.h"
 
 #define PEEK_REFID  0x1eadbeef
 #define PEEK_REFID2 0x2eadbeef
@@ -93,30 +95,48 @@ void SnacCliSetuserinfo (Connection *serv)
 }
 
 /*
- * SRV_USERINFO - SNAC(2,5)
- */
-JUMP_SNAC_F(SnacSrvUserinfo)
-{
-    Connection *serv = event->conn;
-    Contact *cont = PacketReadCont (event->pak, serv);
-        
-    if (event->pak->ref == PEEK_REFID || event->pak->ref == PEEK_REFID2)
-    {
-        rl_log_for (cont->nick, COLCONTACT);
-        rl_print (i18n (2017, "The user is online, but possibly invisible.\n"));
-    }
-}
-
-/*
  * CLI_REQUSERINFO - SNAC(2,5)
  */
 void SnacCliRequserinfo (Connection *serv, Contact *victim, UWORD type)
 {
     Packet *pak;
     
-    pak = SnacC (serv, 2, 5, 0, type == (UWORD)-1 ? PEEK_REFID2 : PEEK_REFID);
-    PacketWriteB2 (pak, type == (UWORD)-1 ? 2 : type);
+    pak = SnacC (serv, 2, 5, 0, type == (UWORD)-1 ? PEEK_REFID2
+                              : type == (UWORD)-2 ? PEEK_REFID : 0);
+    PacketWriteB2 (pak, type == (UWORD)-1 || type == (UWORD)-2 ? 2 : type);
     PacketWriteCont (pak, victim);
     SnacSend (serv, pak);
+}
+
+/*
+ * SRV_USERINFO - SNAC(2,6)
+ */
+JUMP_SNAC_F(SnacSrvUserinfo)
+{
+    Connection *serv = event->conn;
+    Packet *pak = event->pak;
+    Contact *cont = PacketReadCont (pak, serv);
+    TLV *tlv;
+    UWORD warn, count, awaynr;
+        
+    if (pak->ref == PEEK_REFID || pak->ref == PEEK_REFID2)
+    {
+        rl_log_for (cont->nick, COLCONTACT);
+        rl_print (i18n (2017, "The user is online, but possibly invisible.\n"));
+    }
+    warn = PacketReadB2 (pak);
+    count = PacketReadB2 (pak);
+    
+    tlv = TLVRead (pak, -1, count);
+    /* FIXME: do something with the info here */
+    TLVD (tlv);
+    
+    tlv = TLVRead (pak, PacketReadLeft (pak), -1);
+    awaynr = TLVGet (tlv, 4);
+    if (awaynr != (UWORD)-1)
+        /* FIXME: read #3 for encoding information and strip stupid HTML */
+        /* FIXME: it is not necessary for _away_, but also for na etc. */
+        IMSrvMsg (cont, NOW, CV_ORIGIN_v8, MSGF_GETAUTO | MSG_GET_AWAY, tlv[awaynr].str.txt);
+    TLVD (tlv);
 }
 

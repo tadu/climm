@@ -908,7 +908,7 @@ static JUMP_F(CmdUserPeek)
     
     if ((cg = s_parselistrem (&args, uiG.conn)))
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            SnacCliRequserinfo (uiG.conn, cont, 2);
+            SnacCliRequserinfo (uiG.conn, cont, -2);
     
     if (data || s_parsekey (&args, "all"))
         for (i = 0, cg = uiG.conn->contacts; (cont = ContactIndex (cg, i)); i++)
@@ -917,7 +917,7 @@ static JUMP_F(CmdUserPeek)
 
     if ((cg = s_parselistrem (&args, uiG.conn)))
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            SnacCliRequserinfo (uiG.conn, cont, 2);
+            SnacCliRequserinfo (uiG.conn, cont, -2);
     
     return 0;
 }
@@ -1050,6 +1050,7 @@ static JUMP_F(CmdUserGetAuto)
                 }
             }
             IMCliMsg (cont, cdata, "\xff", NULL);
+            SnacCliRequserinfo (uiG.conn, cont, 3);
         }
 
     if (data || one)
