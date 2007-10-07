@@ -209,12 +209,6 @@ static UBYTE SnacCliSendmsg1 (Connection *serv, Message *msg)
     cont = msg->cont;
     assert (cont);
     
-    pak = SnacC (serv, 4, 6, 0, 0);
-    PacketWriteB4 (pak, mtime);
-    PacketWriteB4 (pak, mid);
-    PacketWriteB2 (pak, 1 /* format */);
-    PacketWriteCont (pak, cont);
-    
     remenc = ContactPrefVal (cont, CO_ENCODING);
     
     if (cont->status != ims_offline &&
@@ -247,6 +241,12 @@ static UBYTE SnacCliSendmsg1 (Connection *serv, Message *msg)
         return RET_DEFER;
     }
 
+    pak = SnacC (serv, 4, 6, 0, 0);
+    PacketWriteB4 (pak, mtime);
+    PacketWriteB4 (pak, mid);
+    PacketWriteB2 (pak, 1 /* format */);
+    PacketWriteCont (pak, cont);
+    
     PacketWriteTLV     (pak, 2);
     PacketWriteTLV     (pak, 1281);
     if (icqenc == 2)
