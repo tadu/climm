@@ -1047,6 +1047,7 @@ void IMSrvMsgFat (Contact *cont, time_t stamp, Opt *opt)
     if (msg.type == MSG_NORM && libotr_is_present)
         if (OTRMsgIn (cont, &msg))
         {
+            free (msg.msgtext);
             OptD (opt);
             return; /* no msg ack/logging? */
         }
