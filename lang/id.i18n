@@ -386,8 +386,7 @@
 1443:Perintah-perintah yang berhubungan dengan tampilan climm dan konfigurasi.
 #-#1444:Perintah-perintah yang berhubungan dengan pencarian dan melihat user lain.
 #+#1444:Commands relating to finding and seeing other users.
-# #1444:Commands relating to seeing and finding other users.
-#1444:Commands relating to seeing and finding other users.
+#_#1444:Commands relating to seeing and finding other users.
 1445:Perintah-perintah yang berhubungan dengan account ICQ Anda.
 1446:Perintah-perintah yang berhubungan dengan pengiriman pesan.
 1447:Klien
@@ -585,8 +584,7 @@
 1716:Tidak Ada
 #-#1717:'!' sebagai karakter pertama perintah akan menjalankan perintah shell (contoh: '!ls', '!dir', '!mkdir temp')
 #+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
-# #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
-#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
+#_#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Menampilkan berapa lama climm telah menyala dan beberapa statistik.
 #-#1720:<contacts> adalah daftar UIN dan nickname dari user yang terpisah dengan koma.
 #+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
@@ -628,8 +626,7 @@
 1799:SMU
 #-#1800:Mengubah bahasa aktif ke <lang> atau tampilkan karakter <nr>.
 #+#1800:Change the working language to <lang> or display string <nr>.
-# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
-#1800:Change the working language (and encoding) to <lang> or display string <nr>.
+#_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Menampilkan daftar orang pada daftar kontak Anda dengan format layar melebar.
 1807:Pesan masuk dibatalkan (seq %04x) dari %s\n
 1808:Kuliah
@@ -798,8 +795,7 @@
 2037:Membuka atau menutup koneksi peer-to-peer, atau non-aktifkan penggunaan koneksi peer-to-peer untuk <uin> atau <nick>.
 #-#2038:Membuka koneksi nomor <nr>, atau koneksi pertama server.
 #+#2038:Opens connection number <nr>, or the first server connection.
-# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
-#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
+#_#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 2039:Mengirim pesan ke telepon (<nick>'s) <cell>.
 2042:Menampilkan daftar orang yang online pada daftar kontak dengan menggunakan format layar lebar.
 2043:Menghapus semua kontak di <contacts> dari grup kontak <group>.
@@ -928,12 +924,11 @@
 2171:Tambahan
 #-#2172:Perintah untuk fitur tambahan.
 #+#2172:Commands for advanced features.
-# #2172:Advanced commands.
+#_#2172:Advanced commands.
 #-#2176:Menampilkan secara lengkap status saat ini dari setiap orang yang ada pada daftar kontak Anda.
 #+#2176:Displays verbose the current status of everyone on your contact list.
 #-#2177:Menampilkan secara lengkap status saat ini dari orang yang online pada daftar kontak Anda.
 #+#2177:Displays verbose the current status of online people on your contact list.
-#2172:Advanced commands.
 #2176:Displays verbosely the current status of everyone on your contact list.
 #2177:Displays verbosely the current status of online people on your contact list.
 2179:Mengirim semua <contacts> sebagai file tunggal.
@@ -941,13 +936,11 @@
 2181:Menutup atau menghapus nomor koneksi <nr>.
 #-#2182:Memilih nomor koneksi server <nr> sebagai koneksi saat ini.
 #+#2182:Select server connection number <nr> as current server connection.
-# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
-#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+#_#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 2183:Cek semua <contacts> meskipun mereka offline ataupun tidak nampak.
 #-#2184:%s%-10s%s - %s\n
 #+#2184:%s%-10s%s - %s\n
-# #2184:%s%-14s%s - %s\n
-#2184:%s%-14s%s - %s\n
+#_#2184:%s%-14s%s - %s\n
 2185:Menutup koneksi %ld.\n
 2188:Anda mengirim data terlalu cepat - berhenti mengetik sekarang, atau server akan memutus hubungan!\n
 2191:Kesalahan pesan instan: %d.\n
@@ -977,12 +970,10 @@
 2222:Perintah skrip '%s' gagal: %s (%d).\n
 #-#2223:Membuka pengendali jarak jauh FIFO pada %s...
 #+#2223:Opening remote control FIFO at %s... 
-# #2223:Opening scripting FIFO at %s... 
+#_#2223:Opening scripting FIFO at %s... 
 #-#2225:pengendali jarak jauh
 #+#2225:remote control
-# #2225:scripting
-#2223:Opening scripting FIFO at %s... 
-#2225:scripting
+#_#2225:scripting
 2226:Tidak dapat membuat FIFO
 2227:Tidak dapat membuka FIFO
 2228:Tidak dapat men-set FIFO nonblocking
@@ -1017,8 +1008,7 @@
 2265:Jawaban otomatis %s%s%s.\n
 #-#2266:Menggunakan nick terakhir pada prompt %s%s%s.\n
 #+#2266:Having the last nick in the prompt is %s%s%s.\n
-# #2266:Type of the prompt is %s%s%s.\n
-#2266:Type of the prompt is %s%s%s.\n
+#_#2266:Type of the prompt is %s%s%s.\n
 2267:Penyimpanan otomatisnya %s%s%s.\n
 2268:Finger otomatis dari UIN baru adalah %s%s%s.\n
 2269:break

@@ -51,6 +51,7 @@
 1063.請輸入密碼:
 1064:自動改變狀態為 %s。\n
 1078:沒有翻譯。
+#1079:Translation (%s, %s) from %s, last modified on %s by %s, for climm %d.%d.%d%s.\n
 1082:嘗試再次連線中... [%d 次嘗試中的第 %d 次]\n
 1085:開啟
 1086:關閉
@@ -387,8 +388,7 @@
 1443:與 climm 之顯示及設定有關的指令。
 #-#1444:與找尋及觀察其他用戶有關的指令。
 #+#1444:Commands relating to finding and seeing other users.
-# #1444:Commands relating to seeing and finding other users.
-#1444:Commands relating to seeing and finding other users.
+#_#1444:Commands relating to seeing and finding other users.
 1445:與閣下 ICQ 賬戶有關的指令。
 1446:與送出訊息有關的指令。
 1447:Client
@@ -586,8 +586,7 @@
 1716:無
 #-#1717:指令的第一個字為 '!' 會執行 shell 指令 (例如 '!ls', '!dir', '!mkdir temp')
 #+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
-# #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
-#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
+#_#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:顯示 climm 已跑了多久及一些統計數據。
 #-#1720:<contacts> 是一行以逗號分隔的用戶 UINs 與 nick names。
 #+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
@@ -629,8 +628,7 @@
 1799:中學
 #-#1800:把語言轉為 <lang> 或顯示 <nr>。
 #+#1800:Change the working language to <lang> or display string <nr>.
-# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
-#1800:Change the working language (and encoding) to <lang> or display string <nr>.
+#_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:以螢幕闊度格式顯示閣下好友列表上的人。
 ###1807:取消了從 %s 進來的訊息 (seq %04x)\n
 #1807:Cancelled incoming message (seq %04x) from %s\n
@@ -801,8 +799,7 @@
 2037:開啟或關閉 peer-to-peer 連線，或停止使用 peer-to-peer 連線于 <uin> 或 <nick>。
 #-#2038:開啟連線編號 <nr>，或第一個伺服器連線。
 #+#2038:Opens connection number <nr>, or the first server connection.
-# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
-#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
+#_#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 2039:傳送訊息給 (<nick> 的) <cell> 手機。
 2042:用螢幕闊度的格式來顯示閣下之好友列表上在線的人。
 2043:從好友組別 <group> 中移除 <contacts> 內的所有好友。
@@ -931,12 +928,11 @@
 2171:Advanced
 #-#2172:進階工能的指令。
 #+#2172:Commands for advanced features.
-# #2172:Advanced commands.
+#_#2172:Advanced commands.
 #-#2176:Displays verbose the current status of everyone on your contact list.
 #+#2176:Displays verbose the current status of everyone on your contact list.
 #-#2177:Displays verbose the current status of online people on your contact list.
 #+#2177:Displays verbose the current status of online people on your contact list.
-#2172:Advanced commands.
 #2176:Displays verbosely the current status of everyone on your contact list.
 #2177:Displays verbosely the current status of online people on your contact list.
 2179:傳送一個檔案給所有 <contacts>。
@@ -944,13 +940,11 @@
 2181:關閉或移除連線 <nr>。
 #-#2182:選取伺服器連線 <nr> 為目前的伺服器連線。
 #+#2182:Select server connection number <nr> as current server connection.
-# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
-#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+#_#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 2183:檢查全部 <contacts> 是否離線還是隱形。
 #-#2184:%s%-10s%s - %s\n
 #+#2184:%s%-10s%s - %s\n
-# #2184:%s%-14s%s - %s\n
-#2184:%s%-14s%s - %s\n
+#_#2184:%s%-14s%s - %s\n
 2185:正在關閉連線 %ld。\n
 2188:資料傳送太快了 - 請立刻停止，否則會被伺服器斷線﹗\n
 2191:即時訊息錯誤: %d。\n
@@ -982,12 +976,10 @@
 2222:Script command '%s' failed: %s (%d).\n
 #-#2223:正在開啟遙控 FIFO 於 %s... 
 #+#2223:Opening remote control FIFO at %s... 
-# #2223:Opening scripting FIFO at %s... 
+#_#2223:Opening scripting FIFO at %s... 
 #-#2225:remote control
 #+#2225:remote control
-# #2225:scripting
-#2223:Opening scripting FIFO at %s... 
-#2225:scripting
+#_#2225:scripting
 2226:無法建立 FIFO
 2227:無法開啟 FIFO
 2228:無法設定 FIFO nonblocking
@@ -1022,8 +1014,7 @@
 2265:自動回覆是 %s%s%s。\n
 #-#2266:於 prompt 顯示上一個好友是 %s%s%s。\n
 #+#2266:Having the last nick in the prompt is %s%s%s.\n
-# #2266:Type of the prompt is %s%s%s.\n
-#2266:Type of the prompt is %s%s%s.\n
+#_#2266:Type of the prompt is %s%s%s.\n
 2267:自動儲存是 %s%s%s。\n
 2268:自動 finger 新 UINs 是 %s%s%s。\n
 2269:break

@@ -1005,10 +1005,9 @@
 2220:flera
 #-#2225:fjärrkontroll
 #+#2225:remote control
-# #2225:scripting
+#_#2225:scripting
 #2222:Script command '%s' failed: %s (%d).\n
 #2223:Opening scripting FIFO at %s... 
-#2225:scripting
 #2226:Couldn't create FIFO
 #2227:Couldn't open FIFO
 #2228:Couldn't set FIFO nonblocking

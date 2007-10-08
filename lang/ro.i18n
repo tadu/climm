@@ -388,8 +388,7 @@
 1443:Comenzi ce tin de display si configurare.
 #-#1444:Comenzi ce tin de gasirea si vederea altor utilizatori.
 #+#1444:Commands relating to finding and seeing other users.
-# #1444:Commands relating to seeing and finding other users.
-#1444:Commands relating to seeing and finding other users.
+#_#1444:Commands relating to seeing and finding other users.
 1445:Comenzi ce tin de contul d-stra ICQ.
 1446:Comenzi ce tin de trimiterea mesajelor.
 1447:Client
@@ -585,8 +584,7 @@
 1716:Nimic
 #-#1717:daca '!' este primul caracter al unei comenzi, se executa comanda shell (exemple: '!ls', '!dir', '!mkdir temp')
 #+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
-# #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
-#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
+#_#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Arata de cat timp ruleaza climm si ceva statistica.
 #-#1720:<contacts> este o lista de UINuri si nickuri separate prin virgula.
 #+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
@@ -628,8 +626,7 @@
 1799:Scoala suprema
 #-#1800:Schimba limba curenta in <lang> sau afiseaza sirul <nr>.
 #+#1800:Change the working language to <lang> or display string <nr>.
-# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
-#1800:Change the working language (and encoding) to <lang> or display string <nr>.
+#_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Afiseaza o lista a oamenilor din lista de contacte intr-un format de ecran larg.
 1807:Am anulat un mesaj care vine (seq %04x) de la %s\n
 1808:Colegiu
@@ -796,8 +793,7 @@
 2037:Deschide sau inchide o conexiune peer-to-peer, sau inceteaza utilizarea conexiunilor peer-to-peer pentru <uin> sau <nick>.
 #-#2038:Deschide conexiunea <nr>, sau prima conexiune server.
 #+#2038:Opens connection number <nr>, or the first server connection.
-# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
-#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
+#_#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 2039:Trimite un mesaj catre numarul <cell> (al <nick>).
 2042:Afiseaza o lista a oamenilor conectati intr-un format ecran larg.
 2043:Sterge toate contactele <contacts> din grupul de contacte <group>.
@@ -924,12 +920,11 @@
 2171:Avansat
 #-#2172:Comenzi pentru facilitati avansate.
 #+#2172:Commands for advanced features.
-# #2172:Advanced commands.
+#_#2172:Advanced commands.
 #-#2176:Afiseaza cu detalii starea curenta a fiecarui din lista de contacte.
 #+#2176:Displays verbose the current status of everyone on your contact list.
 #-#2177:Afiseaza cu detalii starea curenta a fiecaruia conectat din lista de contacte.
 #+#2177:Displays verbose the current status of online people on your contact list.
-#2172:Advanced commands.
 #2176:Displays verbosely the current status of everyone on your contact list.
 #2177:Displays verbosely the current status of online people on your contact list.
 2179:Trimite la toti <contacts> un singur fisier.
@@ -937,8 +932,7 @@
 2181:Inchide sau sterge conexiunea cu numarul <nr>.
 #-#2182:Selecteaza conexiunea server cu numarul <nr> pentru a fi conexiune server curenta.
 #+#2182:Select server connection number <nr> as current server connection.
-# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
-#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+#_#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 2183:Verifica toate <contacts> daca sint deconectati sau invizibili.
 #2184:%s%-14s%s - %s\n
 2185:Inchid conexiunea %ld.\n
@@ -970,8 +964,7 @@
 2222:Comanda din script '%s' a esuat: %s (%d).\n
 #-#2223:Deschid FIFO de ghidare de la distantza la %s... 
 #+#2223:Opening remote control FIFO at %s... 
-# #2223:Opening scripting FIFO at %s... 
-#2223:Opening scripting FIFO at %s... 
+#_#2223:Opening scripting FIFO at %s... 
 #2225:scripting
 2226:N-am putut crea FIFO
 2227:N-am putut deschide FIFO
@@ -1007,8 +1000,7 @@
 2265:Raspunsurile automate sint %s%s%s.\n
 #-#2266:Prezenta ultimului nick in prompt este %s%s%s.\n
 #+#2266:Having the last nick in the prompt is %s%s%s.\n
-# #2266:Type of the prompt is %s%s%s.\n
-#2266:Type of the prompt is %s%s%s.\n
+#_#2266:Type of the prompt is %s%s%s.\n
 2267:Salvarile automate sunt %s%s%s.\n
 2268:Finger-ul automat la UINurile noi este %s%s%s.\n
 #2269:break

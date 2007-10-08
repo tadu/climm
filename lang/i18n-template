@@ -1,8 +1,6 @@
 #!/usr/bin/perl
 
-my %nrval, %tain, $max, $tainted, $ignored, $preserved, $added, $ignerr, $uname, $name, $pref;
-
-$cvs = ':pserver:anonymous@climm.org:/var/lib/svn';
+my %nrval, %tain, %have, $max, $tainted, $ignored, $preserved, $added, $ignerr, $uname, $name, $pref;
 
 sub ReadTrans($)
 {
@@ -15,9 +13,9 @@ sub ReadTrans($)
     open (TMPL, "<:bytes", $name) || die "Could not open file $name.";
     while (<TMPL>)
     {
-        if (m=^# \$Id: C.i18n,v ([0-9.]* 20..[-/]..[-/].. ..:..:..).*=)
+        if (m=^# \$Id: C.i18n ([0-9.]* 20..[-/]..[-/].. ..:..:..).*=)
         {
-            $version = $1;
+            $revision = $1;
         }
         elsif (m/^([0-9]{1,4})[.:](.*)/)
         {
@@ -61,14 +59,16 @@ sub ProcessLine($)
     
     if ($line =~ m/^#  EN:/)
     {
-        print OUT "#  EN: __.i18n,v $version <-- NEVER TOUCH THIS - it's updated automatically\n";
+        print OUT "#  EN: __.i18n $revision <-- NEVER TOUCH THIS - it's updated automatically\n";
     }
     elsif ($line =~ m/^#[0-9][0-9]*:/)
     {
     }
-    elsif ($line =~ m/^# #[0-9][0-9]*:/)
+    elsif ($line =~ m/^#[ _]#([0-9][0-9]*):/)
     {
-       print OUT "$line\n";
+       $have{$1} = 1;
+       print OUT "#_#$1:$nrval{$1}\n";
+       $tainted++;
     }
     elsif ($line =~ m/^#/)
     {
@@ -82,8 +82,8 @@ sub ProcessLine($)
         {
             $last = sprintf ("%04d", $last);
             next unless defined $nrval{$last};
-            print OUT "#$last:$nrval{$last}\n";
-            $added++;
+            print OUT "#$last:$nrval{$last}\n" unless defined $have{$last};
+            $added++ unless defined $have{$last};
         }
         print "Error: $last $neu" if $last != $neu;
         $last = $mod = sprintf ("%04d", $last);
@@ -94,7 +94,7 @@ sub ProcessLine($)
             {
                 print OUT "#-#$line\n";
                 print OUT "#+#$last:$tain{$mod}\n";
-                print OUT "# #$last:$nrval{$mod}\n";
+                print OUT "#_#$last:$nrval{$mod}\n";
                 $tainted++;
             }
             else
@@ -123,28 +123,29 @@ sub ProcessLine($)
     }
 }
 
-system "rm .C.*";
 ReadTrans ("C");
 
-print "File		Comments Junk	Old	Changed	New\n";
+print "File		OVers Comments Junk	Old	Changed	New\n";
 while ($uname = shift)
 {
     next unless $uname cmp "C.i18n";
 
-    $ver = `grep -a "# *EN:" $uname | sed "s/.*EN://;s/.*,v //;s/ .*//"`;
-    chomp $ver;
-    if (!length ($ver))
+    $rev = `grep -a "# *EN:" $uname | sed "s/.*EN://;s/.*,v //;s/.*\.i18n //;s/ .*//"`;
+    chomp $rev;
+    if (!length ($rev))
     {
-        $ver = `grep ^1003 $uname`;
-        $ver =~ s/^1003://;
-        chomp $ver;
-        $ver = 0 unless length ($ver);
-        $ver = "i18n-$ver";
+        $rev = `grep ^1003 $uname`;
+        $rev =~ s/^1003://;
+        chomp $rev;
+        $rev = 0 unless length ($rev);
+        $rev = "i18n-$rev";
     }
-    print "Old version tag: $ver.\n";
+    print "Old revision tag: $rev.\n";
     
-    stat ".C.$ver" || system "cvs -d $cvs rdiff -u -r $ver -r HEAD climm/lang/C.i18n > .C.$ver";
-    system "grep \"^-[0-9]\" < .C.$ver | sed \"s,^-,,\" | sort -n -t : -k 1,1 -u -o .$uname.tainted";
+    stat ".C.$rev" || system "svn cat -r $rev http://svn.climm.org/climm/lang/C.i18n > .C.$rev";
+    system "svn cat http://svn.climm.org/climm/lang/C.i18n > .C.head";
+    system "diff -u .C.$rev .C.head > .C.diff";
+    system "grep \"^-[0-9]\" < .C.diff | sed \"s,^-,,\" | sort -n -t : -k 1,1 -u -o .$uname.tainted";
     ReadTainted ("$uname");
 
     $name = $pref . $uname;
@@ -159,12 +160,13 @@ while ($uname = shift)
     $ignerr = 0;
     $tainted = 0;
     $last = -1;
+    %have = ();
     while (<IN>)
     {
         chomp;
         ProcessLine ($_);
     }
     ProcessLine ("9999:");
-    print "$name 	$ignored	 $ignerr	$preserved	$tainted	$added\n";
+    print "$name 	$rev  $ignored	 $ignerr	$preserved	$tainted	$added\n";
 }
 print "Finished.\n";

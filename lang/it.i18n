@@ -386,8 +386,7 @@
 1443:(help client) Comandi riguardanti climm e la sua configurazione.
 #-#1444:(help utente) Comandi per cercare altri utenti.
 #+#1444:Commands relating to finding and seeing other users.
-# #1444:Commands relating to seeing and finding other users.
-#1444:Commands relating to seeing and finding other users.
+#_#1444:Commands relating to seeing and finding other users.
 1445:(help accout) Comandi relativi al tuo account ICQ.
 1446:(help messaggi) Comandi per spedire i messaggi.
 1447:Client
@@ -585,8 +584,7 @@
 1716:Niente
 #-#1717:'!' messo come primo carattere esegue i comandi della shell (es. '!ls', '!dir', '!mkdir temp')
 #+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
-# #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
-#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
+#_#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Mostra per quanto tempo climm e' riamsto attivo e altre statistiche.
 #-#1720:<contatti> è una lista di UIN e nickname di utenti separati da una virgola.
 #+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
@@ -628,8 +626,7 @@
 1799:Scuole superiori
 #-#1800:Cambia la lingua di lavoro in <lang> o mostra le stringhe <nr>.
 #+#1800:Change the working language to <lang> or display string <nr>.
-# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
-#1800:Change the working language (and encoding) to <lang> or display string <nr>.
+#_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Mostra una lista di persone nella tua Lista Contatti in un formato di tipo schermo ampio.
 1807:Ho cancellato i messaggi in arrivo (seq %04x) da %s\n
 1808:College
@@ -798,8 +795,7 @@
 2037:Apri o chiudi una connessione peer-to-peer, o disabilita l'uso delle connessioni peer-to-peer per  <uin> o <nick>.
 #-#2038:Apre la connessione numero <nr>, o il primo server di connessione.
 #+#2038:Opens connection number <nr>, or the first server connection.
-# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
-#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
+#_#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 2039:Manda un messaggio al <cellulare> di <nick>.
 2042:Mostra una lista di gente in linea nella tua lista contatti in un formato a schermo largo.
 2043:Rimuove tutti i contatti in <contatti> dal gruppo contatti in <gruppo>.
@@ -928,12 +924,11 @@
 2171:Avanzate
 #-#2172:(help avanzate) Comandi per caratteristiche avanzate.
 #+#2172:Commands for advanced features.
-# #2172:Advanced commands.
+#_#2172:Advanced commands.
 #-#2176:Mostra in maniera prolissa lo stato di tutti quelli che sono nella tua lista contatti.
 #+#2176:Displays verbose the current status of everyone on your contact list.
 #-#2177:Mostra in maniera prolissa lo stato di tutti quelli che sono in linea nella tua lista contatti.
 #+#2177:Displays verbose the current status of online people on your contact list.
-#2172:Advanced commands.
 #2176:Displays verbosely the current status of everyone on your contact list.
 #2177:Displays verbosely the current status of online people on your contact list.
 2179:Invia a tutti i <contatti> un singolo file.
@@ -941,13 +936,11 @@
 2181:Chiudi o rimuovi la connessione numero <nr>.
 #-#2182:Scegli il server di connessione numero <nr> come server di connessione corrente.
 #+#2182:Select server connection number <nr> as current server connection.
-# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
-#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+#_#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 2183:Controlla tutti i <contatti> anche se non sono in linea o sono invisibli.
 #-#2184:%s%-10s%s - %s\n
 #+#2184:%s%-10s%s - %s\n
-# #2184:%s%-14s%s - %s\n
-#2184:%s%-14s%s - %s\n
+#_#2184:%s%-14s%s - %s\n
 2185:Chiudo la connessione %ld.\n
 2188:Stai inviando dati troppo velocemente - smetti di scrivere subito, o il server si disconnettera'!\n
 2191:Errore del massaggio immediato: %d.\n
@@ -977,12 +970,10 @@
 2222:Esecuzione dello script '%s' fallita: %s (%d).\n
 #-#2223:Apro il controllo remoto FIFO a %s... 
 #+#2223:Opening remote control FIFO at %s... 
-# #2223:Opening scripting FIFO at %s... 
+#_#2223:Opening scripting FIFO at %s... 
 #-#2225:controllo remoto
 #+#2225:remote control
-# #2225:scripting
-#2223:Opening scripting FIFO at %s... 
-#2225:scripting
+#_#2225:scripting
 2226:Non riesco a creare FIFO
 2227:Non riesco ad aprire FIFO
 2228:Non riesco ad impostare FIFO in non bloccaggio
@@ -1017,8 +1008,7 @@
 2265:Le risposte automatiche sono %s%s%s.\n
 #-#2266:Avere l'ultimo nick nel prompt è %s%s%s.\n
 #+#2266:Having the last nick in the prompt is %s%s%s.\n
-# #2266:Type of the prompt is %s%s%s.\n
-#2266:Type of the prompt is %s%s%s.\n
+#_#2266:Type of the prompt is %s%s%s.\n
 2267:I salvataggi automatici sono %s%s%s.\n
 2268:Richiesta automatica dei dati dei nuovi UIN (fingering) è %s%s%s.\n
 2269:interruzione
@@ -1084,8 +1074,7 @@
 2342:Scripting
 #-#2343:Estensioni dello scripting.
 #+#2343:Scripting extensions.
-# #2343:Advanced commands for scripting.
-#2343:Advanced commands for scripting.
+#_#2343:Advanced commands for scripting.
 2344:Esegue uno script Tcl dal <file>.
 2345:Esegue uno script Tcl nella <stringa>.
 2346:I comandi Tcl supportati sono i seguenti:\n
@@ -1110,8 +1099,7 @@
 2374:Errore SSL: %s [%d]\n
 #-#2375:Stretta di mano SSL avvenuta\n
 #+#2375:SSL handshake ok\n
-# #2375:SSL handshake ok.\n
-#2375:SSL handshake ok.\n
+#_#2375:SSL handshake ok.\n
 2376:Lettura SSL da %s [ERR=%d]: %s
 2377:Scrittura SSL a %s [ERR=%d]: %s
 2378:peer ssl <nick>   - inizia una stretta di mano SSL.\n

@@ -436,8 +436,7 @@
 1443:Commandes relatives à climm et à sa configuration.
 #-#1444:Commandes relatives a la recherche d'un autre utilisateur.
 #+#1444:Commands relating to finding and seeing other users.
-# #1444:Commands relating to seeing and finding other users.
-#1444:Commands relating to seeing and finding other users.
+#_#1444:Commands relating to seeing and finding other users.
 1445:Commandes relatives à votre compte ICQ.
 1446:Commandes relatives à l'envoi de messages.
 1447:client
@@ -707,8 +706,7 @@
 1799:Grande école
 #-#1800:Change la langue courante en <lang> ou affiche une chaine.
 #+#1800:Change the working language to <lang> or display string <nr>.
-# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
-#1800:Change the working language (and encoding) to <lang> or display string <nr>.
+#_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Affiche la liste des personnes présentes dans votre liste de contacts.
 1807:Message annulé arrivant (seq %04x) de %s\n
 1808:College
@@ -929,10 +927,9 @@
 2037:Ouvre et ferme une connection peer-to-peer, ou désactive l'utilisation de la connection peer-to-peer pour cet UIN ou Nickname.
 #-#2038:Ouvre une connection numero <nr>, ou la premiere connection du server.
 #+#2038:Opens connection number <nr>, or the first server connection.
-# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
+#_#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 #-#2039:Envoie un message a un telephone cellulaire.
 #+#2039:Sends a message to a cell phone.
-#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 #2039:Sends a message to a (<nick>'s) <cell> phone.
 2042:Affiche la liste des personnes connectées dans votre liste de contacts dans un format d'ecran large.
 #-#2043:Efface un alias <alias> ou <uin>, ou retire le contact.
@@ -1109,14 +1106,13 @@
 2171:Avancé
 #-#2172:Commandes pour les options avancées.
 #+#2172:Commands for advanced features.
-# #2172:Advanced commands.
+#_#2172:Advanced commands.
 #-#2176:Affiche l'etat actuel de toutes les personnes connectées de votre contact-list.
 #+#2176:Displays verbose the current status of everyone on your contact list.
 #-#2177:Affiche l'etat actuel des personnes connectées de votre contact-list.
 #+#2177:Displays verbose the current status of online people on your contact list.
 #-#2179:Envoie a <uin> ou <nick> un seul fichier.
 #+#2179:Send <uin> or <nick> a single file.
-#2172:Advanced commands.
 #2176:Displays verbosely the current status of everyone on your contact list.
 #2177:Displays verbosely the current status of online people on your contact list.
 #2179:Send all <contacts> a single file.
@@ -1124,19 +1120,17 @@
 2181:Ferme ou enleve le nombre de connection <nr>.
 #-#2182:Choisie le nombre <nr> de connection du server comme connection au server actuelle.
 #+#2182:Select server connection number <nr> as current server connection.
-# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+#_#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 #-#2183:Verifie si <uin> ou <nickname> est déconnecté ou invisible.
 #+#2183:Check whether <uin> or <nick> is offline or invisible.
 #-#2184:%s%-10s%s - %s\n
 #+#2184:%s%-10s%s - %s\n
-# #2184:%s%-14s%s - %s\n
+#_#2184:%s%-14s%s - %s\n
 #-#2185:Ferme la connection %d.\n
 #+#2185:Closing connection %d.\n
 #-#2186:Accepte le fichier '%s' (%d bytes).\n
 #+#2186:Accepting file '%s' (%d bytes).\n
-#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 #2183:Check all <contacts> whether they are offline or invisible.
-#2184:%s%-14s%s - %s\n
 #2185:Closing connection %ld.\n
 #2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
 #2191:Instant message error: %d.\n

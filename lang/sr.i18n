@@ -386,8 +386,7 @@
 1443:Команде које се односе на изглед и конфигурацију climm-а.
 #-#1444:Команде које се односе на тражење и посматрање других корисника.
 #+#1444:Commands relating to finding and seeing other users.
-# #1444:Commands relating to seeing and finding other users.
-#1444:Commands relating to seeing and finding other users.
+#_#1444:Commands relating to seeing and finding other users.
 1445:Команде које се односе на ваш ICQ налог.
 1446:Команде које се односе на слање порука.
 1447:Клијент
@@ -585,8 +584,7 @@
 1716:нема
 #-#1717:'|' као први карактер у команди значи извршавање шел (shell) команде (нпр. '!ls', '!dir', '!mkdir temp')
 #+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
-# #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
-#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
+#_#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Приказивање колико дуго climm ради и неких статистика.
 #-#1720:<contacts> је зарезима раздвојен списак UIN-а и надимака корисника.
 #+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
@@ -628,8 +626,7 @@
 1799:висока школа
 #-#1800:Мењање радног језика у <lang> или приказивање реченице број <nr>.
 #+#1800:Change the working language to <lang> or display string <nr>.
-# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
-#1800:Change the working language (and encoding) to <lang> or display string <nr>.
+#_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Приказивање списка особа са ваше контакт-листе у широком формату.
 1807:Прекинута долазећа порука (seq %04x) од %s\n
 1808:Колеџ
@@ -798,8 +795,7 @@
 2037:Отварање или затварање везе један-на-један, или обустава један-на-један веза за <uin> или <nick>.
 #-#2038:Отварање везе број <nr> или прве серверске везе.
 #+#2038:Opens connection number <nr>, or the first server connection.
-# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
-#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
+#_#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 2039:Слање поруке на <nick>-ов мобилни телефон <cell>.
 2042:Приказивање списка особа на вези са ваше контакт-листе у широком формату.
 2043:Брисање свих контаката у <contacts> из контакт-групе <group>.
@@ -928,12 +924,11 @@
 2171:Шире
 #-#2172:Команде за шире захтеве.
 #+#2172:Commands for advanced features.
-# #2172:Advanced commands.
+#_#2172:Advanced commands.
 #-#2176:Опширно приказивање тренутног статуса свих са ваше контакт-листе.
 #+#2176:Displays verbose the current status of everyone on your contact list.
 #-#2177:Опширно приказивање тренутног статуса особа са ваше контакт-листе које су на вези.
 #+#2177:Displays verbose the current status of online people on your contact list.
-#2172:Advanced commands.
 #2176:Displays verbosely the current status of everyone on your contact list.
 #2177:Displays verbosely the current status of online people on your contact list.
 2179:Слање једног фајла свим контактима <contacts>.
@@ -941,13 +936,11 @@
 2181:Затварање или уклањање везе број <nr>.
 #-#2182:Селектовање серверске везе број <nr> као важеће серверске везе.
 #+#2182:Select server connection number <nr> as current server connection.
-# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
-#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+#_#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 2183:Проверавање свих контаката <contacts> да ли су невидљиви или стварно нису на вези.
 #-#2184:%s%-10s%s - %s\n
 #+#2184:%s%-10s%s - %s\n
-# #2184:%s%-14s%s - %s\n
-#2184:%s%-14s%s - %s\n
+#_#2184:%s%-14s%s - %s\n
 2185:Затварање везе %ld.\n
 2188:Шаљете податке пребрзо - прекините куцање или ће сервер прекинути везу!\n
 2191:Грешка у инстант-поруци: %d.\n
@@ -977,12 +970,10 @@
 2222:Скрипт-команда '%s' пропала: %s (%d).\n
 #-#2223:Отварање FIFO-а за даљинску контролу на %s... 
 #+#2223:Opening remote control FIFO at %s... 
-# #2223:Opening scripting FIFO at %s... 
+#_#2223:Opening scripting FIFO at %s... 
 #-#2225:даљинска контрола
 #+#2225:remote control
-# #2225:scripting
-#2223:Opening scripting FIFO at %s... 
-#2225:scripting
+#_#2225:scripting
 2226:Није могуће направити FIFO
 2227:Није могуће отворити FIFO
 2228:Није могуће поставити FIFO да буде без блокирања
@@ -1017,8 +1008,7 @@
 2265:Аутоматски одговори: %s%s%s.\n
 #-#2266:Исписивање последњег надимка на промпту: %s%s%s.\n
 #+#2266:Having the last nick in the prompt is %s%s%s.\n
-# #2266:Type of the prompt is %s%s%s.\n
-#2266:Type of the prompt is %s%s%s.\n
+#_#2266:Type of the prompt is %s%s%s.\n
 2267:Аутоматска снимања: %s%s%s.\n
 2268:Аутоматско фингеровање нових UIN-а: %s%s%s.\n
 2269:прекидни

@@ -937,8 +937,7 @@
 2265:Automatické odpovede sú %s%s%s.\n
 #-#2266:Posledný nick z konzoly je %s%s%s.\n
 #+#2266:Having the last nick in the prompt is %s%s%s.\n
-# #2266:Type of the prompt is %s%s%s.\n
-#2266:Type of the prompt is %s%s%s.\n
+#_#2266:Type of the prompt is %s%s%s.\n
 2267:Automatické ukladanie je %s%s%s.\n
 2268:Automatické detaily nových UIN je %s%s%s.\n
 #2269:break
@@ -949,8 +948,7 @@
 2281:    auto:       posielať automatické odpovede.\n
 #-#2282:    uinprompt:  zobraziť posledný nick v konzole.\n
 #+#2282:    uinprompt:  have the last nick in the prompt.\n
-# #2282:    prompt:     type of the prompt: user, uin, simple\n
-#2282:    prompt:     type of the prompt: user, uin, simple\n
+#_#2282:    prompt:     type of the prompt: user, uin, simple\n
 2283:    autosave:   automaticky ukladať súbor climmrc.\n
 2284:    autofinger: autofinger (info) o nových UIN.\n
 #2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
@@ -1136,8 +1134,7 @@
 2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
 #-#2494:  -u, --uin      prihlásiť s týmto UIN namiesto nakonfigurovaného\n
 #+#2494:  -u, --uin      login with this UIN instead of those configured\n
-# #2494:  -u, --user     login with this user/UIN instead of those configured\n
-#2494:  -u, --user     login with this user/UIN instead of those configured\n
+#_#2494:  -u, --user     login with this user/UIN instead of those configured\n
 2495:  -p, --passwd   ... a použiť toto heslo\n
 2496:  -s, --status   ... a nastaviť tento stav\n
 2497:  -C, --cmd      ... a vykonať tento príkaz climm\n
@@ -1147,7 +1144,7 @@
 2501:Vaša lokalizácia nie je nastavená. Použite, prosím, parameter %s--i18n%s v príkazovom riadku alebo nastavte systémové premenné %sLC_ALL%s, %sLC_MESSAGES%s, alebo %sLANG%s pre vašu lokalizáciu.\n
 2502:Nastavenie lokalizácie %s ingorované - používam skutočné nastavenie.\n
 #+#2502:Locale setting %s ignored - use a real locale instead.\n
-# #2502:Locale setting %s is no real locale and probably not what you want.\n
+#_#2502:Locale setting %s is no real locale and probably not what you want.\n
 2503:Váš systém nemôže rospoznať %s lokalizáciu - použite %slocale -a%s.\n
 2504:Nemôžem otvoriť konfiguračný súbor %s%s%s.
 2505:Je použitá zastaralá voľba -f. Použite, prosím, podobnú voľbu -b namiesto nej.\n

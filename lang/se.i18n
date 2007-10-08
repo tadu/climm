@@ -388,8 +388,7 @@
 1443:Kommandon relaterade till climm.se's uppvisning och konfiguration.
 #-#1444:Kommandon relaterade till att hitta andra användare.
 #+#1444:Commands relating to finding and seeing other users.
-# #1444:Commands relating to seeing and finding other users.
-#1444:Commands relating to seeing and finding other users.
+#_#1444:Commands relating to seeing and finding other users.
 1445:Kommandon relaterade till ditt ICQ konto.
 1446:Kommandon relaterade till att skicka meddelanden.
 1447:Klient
@@ -587,8 +586,7 @@
 1716:Ingen
 #-#1717:! som det första tecknet av ett kommando kommer köra ett skalkommando (t.ex. "!ls"  "!dir" "!mkdir temp").
 #+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
-# #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
-#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
+#_#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Visar hur länge climm varit igång samt lite statistik.
 #-#1720:<kontakter> är en kommaseparerad lista på UINs och psuedonymer/alias.
 #+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
@@ -630,8 +628,7 @@
 1799:Högstadiet/gymnasiet
 #-#1800:Ändra språk till <språk> eller visa sträng <nr>.
 #+#1800:Change the working language to <lang> or display string <nr>.
-# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
-#1800:Change the working language (and encoding) to <lang> or display string <nr>.
+#_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Visar en lista på folk från din kontaktlista i ett skärmbrett format.
 1807:Avbröt inkommande meddelande (seq %04x) från %s\n
 1808:Högskola
@@ -799,8 +796,7 @@
 2037:Öppna eller stäng en partner-till-partner-anslutning, eller slå av användning av partner-till-partner-anslutningar för <uin> eller <namn>.
 #-#2038:Öppnar anslutning nummer <nr>, eller den första server-anslutningen.
 #+#2038:Opens connection number <nr>, or the first server connection.
-# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
-#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
+#_#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 2039:Sänder ett meddelande till en (<namn>'s) <mobil> mobiltelefon.
 2042:Visar en lista över de på din kontaktlista som är online i brett format.
 2043:Tar gort alla kontakter i <kontakter> från kontaktgrupp <grupp>.
@@ -929,12 +925,11 @@
 2171:Avancerat
 #-#2172:Kommandon för de mer avancerade funktionerna.
 #+#2172:Commands for advanced features.
-# #2172:Advanced commands.
+#_#2172:Advanced commands.
 #-#2176:Visar utförligt nuvarande status för alla på din kontaktlista.
 #+#2176:Displays verbose the current status of everyone on your contact list.
 #-#2177:Visar utförligt nuvarande status för alla på din kontaktlista som är online.
 #+#2177:Displays verbose the current status of online people on your contact list.
-#2172:Advanced commands.
 #2176:Displays verbosely the current status of everyone on your contact list.
 #2177:Displays verbosely the current status of online people on your contact list.
 2179:Skicka en fil till <kontakter>.
@@ -942,13 +937,11 @@
 2181:Stänger eller tar bort anslutning nummer <nr>.
 #-#2182:Välj server-anslutning nummer <nr> som aktiv server-anslutning.
 #+#2182:Select server connection number <nr> as current server connection.
-# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
-#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+#_#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 2183:Kontrollera om alla <kontakter> är offline eller osynliga.
 #-#2184:%s%-10s%s - %s\n
 #+#2184:%s%-10s%s - %s\n
-# #2184:%s%-14s%s - %s\n
-#2184:%s%-14s%s - %s\n
+#_#2184:%s%-14s%s - %s\n
 2185:Stänger anslutning %ld.\n
 2188:Du skickar data för snabbt - sluta skriv nu, annars kommer servern koppla ner dig!\n
 2191:Omedelbart-meddelande-fel: %d.\n
@@ -978,12 +971,10 @@
 2222:Skriptkommandot '%s' misslyckades: %s (%d).\n
 #-#2223:Öppnar fjärrkontrolls-FIFO på %s... 
 #+#2223:Opening remote control FIFO at %s... 
-# #2223:Opening scripting FIFO at %s... 
+#_#2223:Opening scripting FIFO at %s... 
 #-#2225:fjärrkontroll
 #+#2225:remote control
-# #2225:scripting
-#2223:Opening scripting FIFO at %s... 
-#2225:scripting
+#_#2225:scripting
 2226:Kunde inte skapa FIFO
 2227:Kunde inte öppna FIFO
 2228:Kunde inte ställa in FIFO som icke-blockerande
@@ -1018,8 +1009,7 @@
 2265:Automatiska svar är %s%s%s.\n
 #-#2266:Att ha det senste namnet i uppmaningen är %s%s%s.\n
 #+#2266:Having the last nick in the prompt is %s%s%s.\n
-# #2266:Type of the prompt is %s%s%s.\n
-#2266:Type of the prompt is %s%s%s.\n
+#_#2266:Type of the prompt is %s%s%s.\n
 2267:Automatiska sparningar är %s%s%s.\n
 2268:Automatisk information om nya UIN är %s%s%s.\n
 2269:bryt
@@ -1085,8 +1075,7 @@
 2342:Skriptning
 #-#2343:Skriptningsutökningar.
 #+#2343:Scripting extensions.
-# #2343:Advanced commands for scripting.
-#2343:Advanced commands for scripting.
+#_#2343:Advanced commands for scripting.
 2344:Exekvera Tcl skript från <file>.
 2345:Exekvera Tcl skript i <string>.
 2346:Följande Tcl kommando stödjs:\n
@@ -1111,8 +1100,7 @@
 2374:SSL-fel: %s [%d]\n
 #-#2375:SSL handskakning ok\n
 #+#2375:SSL handshake ok\n
-# #2375:SSL handshake ok.\n
-#2375:SSL handshake ok.\n
+#_#2375:SSL handshake ok.\n
 2376:SSL läsning från %s [FEL=%d]: %s
 2377:SSL skrivning till %s [FEL=%d]: %s
 2378:peer ssl <namn>   - initalisera SSL handskakning.\n

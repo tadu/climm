@@ -404,8 +404,7 @@
 1443:Comandos relacionados con climm y su configuración.
 #-#1444:Comandos relacionados con la busqueda de otros usuarios.
 #+#1444:Commands relating to finding and seeing other users.
-# #1444:Commands relating to seeing and finding other users.
-#1444:Commands relating to seeing and finding other users.
+#_#1444:Commands relating to seeing and finding other users.
 1445:Comandos relacionados tu cuenta de ICQ.
 1446:Comandos relacionados con el envio de mensajes.
 1447:Cliente
@@ -603,12 +602,11 @@
 1716:Ninguno
 #-#1717:'!' como primer caracter de una linea la ejecutara como un comando de shell (por ejemplo '!ls', '!dir', '!mkdir temp')
 #+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
-# #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
+#_#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 #-#1719:Muestra por cuanto tiempo ha estado corriendo climm.
 #+#1719:Shows how long climm has been running.
 #-#1720:uin puede sar tanto un numero como el nick de un usuario.
 #+#1720:uin can be either a number or the nickname of the user.
-#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 #1719:Shows how long climm has been running and some statistics.
 1721:Enviar un mensaje en blanco pondra al programa en modo multilinea.\nEscribi . en una linea vacia para terminar el mensaje.\nUsa # en una linea vacia para cancelar el mensaje.
 1741:Tenes que recibir un comando primero.\n
@@ -652,8 +650,7 @@
 1799:Escuela secundaria/Polimodal
 #-#1800:Cambia el lenguaje a <lang>, o muestra el string <nr>.
 #+#1800:Change the working language to <lang> or display string <nr>.
-# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
-#1800:Change the working language (and encoding) to <lang> or display string <nr>.
+#_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Muestra una lista de las personas en tu lista de contactos en formato ancho.
 1807:Mensaje (seq %04x) entrante de %s cancelado\n
 1808:Colegio
@@ -824,10 +821,9 @@
 2037:Abre o cierra una conexión par-a-par, o desactiva el uso de conexiones par-a-par para el <uin> o <nick> determinado.
 #-#2038:Abre la conexión numero <nr>, o la primera conexión con el servidor.
 #+#2038:Opens connection number <nr>, or the first server connection.
-# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
+#_#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 #-#2039:Envia un mensaje a un telefono celular.
 #+#2039:Sends a message to a cell phone.
-#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 #2039:Sends a message to a (<nick>'s) <cell> phone.
 2042:Muestra una lista de las personas conectadas en formato ancho.
 #-#2043:Elimina un alias <alias> o <uin>, o elimina un contacto.
@@ -975,14 +971,13 @@
 2171:Avanzado
 #-#2172:Comandos para caracteristicas avanzadas.
 #+#2172:Commands for advanced features.
-# #2172:Advanced commands.
+#_#2172:Advanced commands.
 #-#2176:Muestra detalladamente el estado actual de todas las personas de tu lista de contactos.
 #+#2176:Displays verbose the current status of everyone on your contact list.
 #-#2177:Muestra detalladamente el estado actual de todas las personas conectadas de tu lista de contactos.
 #+#2177:Displays verbose the current status of online people on your contact list.
 #-#2179:Envia a <uin> o <nick> un archivo.
 #+#2179:Send <uin> or <nick> a single file.
-#2172:Advanced commands.
 #2176:Displays verbosely the current status of everyone on your contact list.
 #2177:Displays verbosely the current status of online people on your contact list.
 #2179:Send all <contacts> a single file.
@@ -990,15 +985,13 @@
 2181:Cierra o remueve la conexión numero <nr>.
 #-#2182:Selecciona la conexión con el servidor numero <nr> como la actual.
 #+#2182:Select server connection number <nr> as current server connection.
-# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+#_#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 #-#2183:Revisa si <uin> o <nick> esta realmente conectado o desconectado.
 #+#2183:Check whether <uin> or <nick> is offline or invisible.
 #-#2184:%s%-10s%s - %s\n
 #+#2184:%s%-10s%s - %s\n
-# #2184:%s%-14s%s - %s\n
-#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+#_#2184:%s%-14s%s - %s\n
 #2183:Check all <contacts> whether they are offline or invisible.
-#2184:%s%-14s%s - %s\n
 2185:Cerrando conexión %ld.\n
 2188:Estas enviando datos demasiado rapido, por favor para de escribir o el servidor te desconectará\n
 2191:Error en mensaje instantáneo: %d.\n
@@ -1028,12 +1021,10 @@
 2222:Fallo el script '%s': %s (%d).\n
 #-#2223:Abriendo FIFO para control remoto en %s... 
 #+#2223:Opening remote control FIFO at %s... 
-# #2223:Opening scripting FIFO at %s... 
+#_#2223:Opening scripting FIFO at %s... 
 #-#2225:control remoto
 #+#2225:remote control
-# #2225:scripting
-#2223:Opening scripting FIFO at %s... 
-#2225:scripting
+#_#2225:scripting
 2226:No se pudo crear el FIFO
 2227:No se pudo abrir el FIFO
 2228:No se pudo configurar el FIFO a nonblocking.

@@ -386,8 +386,7 @@
 1443:Команди конфігурації та налаштувань дисплею.
 #-#1444:Команди, що відносяться до пошуку користувачів.
 #+#1444:Commands relating to finding and seeing other users.
-# #1444:Commands relating to seeing and finding other users.
-#1444:Commands relating to seeing and finding other users.
+#_#1444:Commands relating to seeing and finding other users.
 1445:Команди, що стосуються вашого ICQ номеру.
 1446:Команди відсилання повідомлень.
 1447:client - Клієнт
@@ -585,8 +584,7 @@
 1716:Немає
 #-#1717:'!' як перший символ команди виконає команду оболонки (типу '!ls', '!dir', '!mkdir temp')
 #+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
-# #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
-#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
+#_#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Показує, як довго працює climm та деяку статистику.
 #-#1720:<контакти> - це розділені комами список UIN-ів та ніків користувачів.
 #+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
@@ -628,8 +626,7 @@
 1799:ВУЗ
 #-#1800:Змінити робочу мову на <lang> або показати номер <nr>.
 #+#1800:Change the working language to <lang> or display string <nr>.
-# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
-#1800:Change the working language (and encoding) to <lang> or display string <nr>.
+#_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Виводить контакт-ліст у широкоформатному режимі.
 1807:Скасовано повідомлення (seq %04x), отримане від %s\n
 1808:Коледж
@@ -798,8 +795,7 @@
 2037:Відкрити або закрити з'єднання один-на-один, або відключити використання з'єднань один-на-один для <uin> чи <nick>.
 #-#2038:Відкриває з'єднання з номером <nr>, або перше серверне з'єднання.
 #+#2038:Opens connection number <nr>, or the first server connection.
-# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
-#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
+#_#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 2039:Посилає повідомлення на <номер> сотового телефону <ніка>.
 2042:Виводить список людей в ефірі з вашого контакт-лісту в широкоформатному вигляді.
 2043:Знищити всі контакти в <контактах> з <групи>.
@@ -928,12 +924,11 @@
 2171:advanced - Розширені команди
 #-#2172:Команди для розширених можливостей.
 #+#2172:Commands for advanced features.
-# #2172:Advanced commands.
+#_#2172:Advanced commands.
 #-#2176:Виводить детальний поточний статус кожного з вашого контакт-лісту.
 #+#2176:Displays verbose the current status of everyone on your contact list.
 #-#2177:Виводить детальний поточний статус кожного, хто в ефірі з вашого контакт-лісту.
 #+#2177:Displays verbose the current status of online people on your contact list.
-#2172:Advanced commands.
 #2176:Displays verbosely the current status of everyone on your contact list.
 #2177:Displays verbosely the current status of online people on your contact list.
 2179:Надіслати всім <контактам> один файл.
@@ -941,13 +936,11 @@
 2181:Закриває або знищує з'єднання номер <nr>.
 #-#2182:Виберіть серверне з'єднання номер <nr> як поточне.
 #+#2182:Select server connection number <nr> as current server connection.
-# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
-#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+#_#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 2183:Перевірити чи всі <контакти> відключені чи просто невидимі.
 #-#2184:%s%-10s%s - %s\n
 #+#2184:%s%-10s%s - %s\n
-# #2184:%s%-14s%s - %s\n
-#2184:%s%-14s%s - %s\n
+#_#2184:%s%-14s%s - %s\n
 2185:Закриваю з'єднання %ld.\n
 2188:Ви надсилаєте дані надто швидко - припиніть друкувати або сервер вас від'єднає!\n
 2191:Помилка повідомлення: %d.\n
@@ -977,12 +970,10 @@
 2222:Команда скрипту '%s' виконана неуспішно: %s (%d).\n
 #-#2223:Відкривається віддалене керування FIFO на %s...
 #+#2223:Opening remote control FIFO at %s... 
-# #2223:Opening scripting FIFO at %s... 
+#_#2223:Opening scripting FIFO at %s... 
 #-#2225:віддалене керування
 #+#2225:remote control
-# #2225:scripting
-#2223:Opening scripting FIFO at %s... 
-#2225:scripting
+#_#2225:scripting
 2226:Не вдалося створити FIFO
 2227:Не вдалося відкрити FIFO
 2228:Не вдалося зробити FIFO неблокуючим
@@ -1017,8 +1008,7 @@
 2265:Автоматичні відповіді %s%s%s.\n
 #-#2266:Виведення останній ніку у запрошенні %s%s%s.\n
 #+#2266:Having the last nick in the prompt is %s%s%s.\n
-# #2266:Type of the prompt is %s%s%s.\n
-#2266:Type of the prompt is %s%s%s.\n
+#_#2266:Type of the prompt is %s%s%s.\n
 2267:Автоматичне збереження %s%s%s.\n
 2268:Автоматичний вивід інформації про нові UIN-и %s%s%s.\n
 2269:"розбиваючий"

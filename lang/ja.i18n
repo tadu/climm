@@ -386,8 +386,7 @@
 1443:climm の設定に関するコマンドについて
 #-#1444:他のユーザの情報や検索、ステータスの表示などのコマンドについて
 #+#1444:Commands relating to finding and seeing other users.
-# #1444:Commands relating to seeing and finding other users.
-#1444:Commands relating to seeing and finding other users.
+#_#1444:Commands relating to seeing and finding other users.
 1445:あなたのユーザ情報に関するコマンドについて
 1446:メッセージの送信に関するコマンドについて
 1447:Client
@@ -585,8 +584,7 @@
 1716:無し
 #-#1717:"!"をつけたコマンドはshellで実行されます。(例:"!ls"、"!dir"、"!mkdir temp")
 #+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
-# #1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
-#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
+#_#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:climm の動作時間を表示します。
 #-#1720:UIN は数字で指定してください。もしくは、ユーザのニックネームを指定します。
 #+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
@@ -628,8 +626,7 @@
 1799:高校生
 #-#1800:<lang> または <nr> に表示言語を変更します。
 #+#1800:Change the working language to <lang> or display string <nr>.
-# #1800:Change the working language (and encoding) to <lang> or display string <nr>.
-#1800:Change the working language (and encoding) to <lang> or display string <nr>.
+#_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:幅広フォーマットでコンタクトリストの人たち表示します。
 1807:受信メッセージ(seq %04x)が取り消されました。%s からでした。\n
 1808:大学
@@ -798,8 +795,7 @@
 2037:ピア・ツー・ピア 接続を開始したり閉じたり、もしくは <UIN> か <ニックネーム>  へのピア・ツー・ピア 接続を使用不可能にします。
 #-#2038:接続番号 <nr> か、最初のサーバ接続を開始します。
 #+#2038:Opens connection number <nr>, or the first server connection.
-# #2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
-#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
+#_#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
 2039:<ニックネーム> もしくは <携帯番号> へメッセージを送ります。
 2042:幅広スクリーンフォーマットでコンタクトリストにあるオンラインの人のリストを表示します。
 2043:コンタクトグループ <groups> から <contacts> を削除します。
@@ -928,12 +924,11 @@
 2171:Advanced
 #-#2172:高度な機能のためのコマンドです。
 #+#2172:Commands for advanced features.
-# #2172:Advanced commands.
+#_#2172:Advanced commands.
 #-#2176:コンタクトリストにある全員の現在の状況を詳細に表示します。
 #+#2176:Displays verbose the current status of everyone on your contact list.
 #-#2177:コンタクトリストにあるオンラインの人の現在の状況を詳細に表示します。
 #+#2177:Displays verbose the current status of online people on your contact list.
-#2172:Advanced commands.
 #2176:Displays verbosely the current status of everyone on your contact list.
 #2177:Displays verbosely the current status of online people on your contact list.
 2179:全ての <contacts> にファイルを送信します。
@@ -941,13 +936,11 @@
 2181:接続番号 <nr> を閉じたり取り除いたりします。
 #-#2182:サーバ接続番号 <nr> を現在のサーバ接続として選択します。
 #+#2182:Select server connection number <nr> as current server connection.
-# #2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
-#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+#_#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 2183:全ての <contacts> についてオフラインか不可視になっているかどうか調べます。
 #-#2184:%s%-10s%s - %s\n
 #+#2184:%s%-10s%s - %s\n
-# #2184:%s%-14s%s - %s\n
-#2184:%s%-14s%s - %s\n
+#_#2184:%s%-14s%s - %s\n
 2185:接続 %ld を閉じています。\n
 2188:データを速く送りすぎています。入力をやめないと、サーバは切断します!\n
 2191:インスタントメッセージのエラー: %d。\n
@@ -977,12 +970,10 @@
 2222:スクリプトコマンド「%s」は失敗しました: %s (%d) 。\n
 #-#2223:%s でリモートコントロール FIFO を開いています...
 #+#2223:Opening remote control FIFO at %s... 
-# #2223:Opening scripting FIFO at %s... 
+#_#2223:Opening scripting FIFO at %s... 
 #-#2225:リモートコントロール
 #+#2225:remote control
-# #2225:scripting
-#2223:Opening scripting FIFO at %s... 
-#2225:scripting
+#_#2225:scripting
 2226:FIFO を作成できません
 2227:FIFO を開くことができません
 2228:FIFO を非ブロッキングに設定できません
@@ -1017,8 +1008,7 @@
 2265:自動応答機能は %s%s%s です。\n
 #-#2266:プロンプトにある最後のニックネームは %s%s%s です。\n
 #+#2266:Having the last nick in the prompt is %s%s%s.\n
-# #2266:Type of the prompt is %s%s%s.\n
-#2266:Type of the prompt is %s%s%s.\n
+#_#2266:Type of the prompt is %s%s%s.\n
 2267:自動保存機能は %s%s%s です。\n
 2268:新しい UIN についての自動情報取得機能は %s%s%s です。\n
 2269:break
@@ -1084,8 +1074,7 @@
 2342:Scripting
 #-#2343:スクリプト拡張機能。
 #+#2343:Scripting extensions.
-# #2343:Advanced commands for scripting.
-#2343:Advanced commands for scripting.
+#_#2343:Advanced commands for scripting.
 2344:<ファイル> から Tcl スクリプトを実行します。
 2345:<文字列> の Tcl スクリプトを実行します。
 2346:次の Tcl 命令はサポートされています:\n
@@ -1110,8 +1099,7 @@
 2374:SSL エラー: %s [%d]\n
 #-#2375:SSL ハンドシェイク OK\n
 #+#2375:SSL handshake ok\n
-# #2375:SSL handshake ok.\n
-#2375:SSL handshake ok.\n
+#_#2375:SSL handshake ok.\n
 2376:%s [ERR=%d] から SSL 読み込み: %s
 2377:%s [ERR=%d] へ SSL 書き込み: %s
 2378:peer ssl <ニックネーム>   - SSL ハンドシェイクの初期化。\n
@@ -1135,8 +1123,7 @@
 2395: 眺めは <ニックネーム> からメッセージを受け取った、<日付> から。
 #-#2396:変数 '%s' に間違った日付表示形式、それが ISO 8601 の標準形式でなければならないある。試みの '2004-31-01' か '2004-31-01T23:12:05' ください。\n
 #+#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
-# #2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
-#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
+#_#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
 #2397:No server session found.\n
 #2398:Set or display options for a contact group, a contact or global.\n
 #2399:Request SSL connection.

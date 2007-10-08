@@ -934,8 +934,7 @@
 2265:Používání automatických odpovědí je %s%s%s.\n
 #-#2266:Zobrazování posledního nicku v promptu je %s%s%s.\n
 #+#2266:Having the last nick in the prompt is %s%s%s.\n
-# #2266:Type of the prompt is %s%s%s.\n
-#2266:Type of the prompt is %s%s%s.\n
+#_#2266:Type of the prompt is %s%s%s.\n
 2267:Automatické ukládání je %s%s%s.\n
 2268:Automatické zobrazování detailů nových UIN je %s%s%s.\n
 2269:break
@@ -946,8 +945,7 @@
 2281:    auto:       posílat automatické odpovědi.\n
 #-#2282:    uinprompt:  zobrazovat poslední nick v promptu.\n
 #+#2282:    uinprompt:  have the last nick in the prompt.\n
-# #2282:    prompt:     type of the prompt: user, uin, simple\n
-#2282:    prompt:     type of the prompt: user, uin, simple\n
+#_#2282:    prompt:     type of the prompt: user, uin, simple\n
 2283:    autosave:   automaticky ukládat soubor climmrc.\n
 2284:    autofinger: automatický finger (zobrazit info) o nových UIN.\n
 2285:    linebreak:  styl zalamování řádků zpráv: simple, break, indent, smart.\n
@@ -1133,8 +1131,7 @@
 2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
 #-#2494:  -u, --uin      přihlásí se s tímto UIN místo nakonfigurovaného\n
 #+#2494:  -u, --uin      login with this UIN instead of those configured\n
-# #2494:  -u, --user     login with this user/UIN instead of those configured\n
-#2494:  -u, --user     login with this user/UIN instead of those configured\n
+#_#2494:  -u, --user     login with this user/UIN instead of those configured\n
 2495:  -p, --passwd   ... a použije toto heslo\n
 2496:  -s, --status   ... a přihlásí se s tímto statutem (stavem)\n
 2497:  -C, --cmd      ... a spustí climm příkaz\n
