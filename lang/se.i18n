@@ -1,5 +1,5 @@
 # $Id$ (Swedish)
-#  EN: __.i18n,v 1.89 2007-06-07 21:22:30 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2392 2007-09-07 22:41:40 <-- NEVER TOUCH THIS - it's updated automatically
 #1000:UTF-8
 1001:sv
 1002:sv_SE
@@ -49,7 +49,9 @@
 1063.Ange lösenord:
 1064:Ändrade automatiskt status till
 1078:Finns ingen tillgänglig översättning.
-1079:Ingen översättning, använder standardspråk.\n
+#-#1079:Ingen översättning, använder standardspråk.\n
+#+#1079:Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n
+#_#1079:Translation (%s, %s) from %s, last modified on %s by %s, for climm %d.%d.%d%s.\n
 1082:Försöker återansluta... [försök %d av %d]\n
 1085:på
 1086:av
@@ -1067,7 +1069,7 @@
 #2324:contact upload  Add local contacts to server based contact list.\n
 #2325:Warning: server based contact list change failed with error code %d.\n
 #2326:Server side contact list only supported for ICQ v8.\n
-2327:%sclimm (Matt's ICQ klon)%s version %s%s%s\n
+2327:%sclimm (CLI-based Multi-Messenger)%s version %s%s%s\n
 2328:Du loggade in för ofta, vänligen vänta 30 minuter innan du försöker igen.\n
 2329:syntax-fel
 2330:tar bort icke-kontakt

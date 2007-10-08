@@ -1,5 +1,5 @@
 # $Id$ Chinese/Taiwan (中文)
-#  EN: __.i18n,v 1.89 2007-06-07 21:22:30 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2392 2007-09-07 22:41:40 <-- NEVER TOUCH THIS - it's updated automatically
 #-#1000:big5
 #+#1000:iso-8859-1
 #1000:UTF-8
@@ -51,7 +51,6 @@
 1063.請輸入密碼:
 1064:自動改變狀態為 %s。\n
 1078:沒有翻譯。
-1079:Translation (%s, %s) from %s, last modified on %s by %s, for climm %d.%d.%d%s.\n
 1082:嘗試再次連線中... [%d 次嘗試中的第 %d 次]\n
 1085:開啟
 1086:關閉
@@ -1074,7 +1073,7 @@
 #2324:contact upload  Add local contacts to server based contact list.\n
 #2325:Warning: server based contact list change failed with error code %d.\n
 #2326:Server side contact list only supported for ICQ v8.\n
-2327:%sclimm (Matt's ICQ clone)%s version %s%s%s\n
+2327:%sclimm (CLI-based Multi-Messenger)%s version %s%s%s\n
 2328:閣下登入得太頻密，請在 30 分鐘後再嘗試。\n
 2329:syntax error
 2330:正在移除非好友

@@ -1,5 +1,5 @@
 # $Id$ (Croatian)
-#  EN: __.i18n,v 1.89 2007-06-07 21:22:30 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2392 2007-09-07 22:41:40 <-- NEVER TOUCH THIS - it's updated automatically
 #-#1010:User is Away [Auto-Message]
 #1000:UTF-8
 #1001:<lang>
@@ -1078,7 +1078,7 @@
 #2324:contact upload  Add local contacts to server based contact list.\n
 #2325:Warning: server based contact list change failed with error code %d.\n
 #2326:Server side contact list only supported for ICQ v8.\n
-#2327:%sclimm (Matt's ICQ clone)%s version %s%s%s\n
+#2327:%sclimm - CLI-based Multi-Messenger%s version %s%s%s\n
 #2328:You logged in too frequently, please wait 30 minutes before trying again.\n
 #2329:syntax error
 #2330:removing non-contact
