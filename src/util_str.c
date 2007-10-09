@@ -649,6 +649,30 @@ strc_t s_split (const char **input, UBYTE enc, int len)
     return &str;
 }
 
+/*
+ * Replace all occurrences of a substring by another
+ */
+void s_strrepl (str_t str, const char *old, const char *news)
+{
+    char *e;
+    size_t d = 0, olen = strlen (old), nlen = strlen (news);
+    
+    if (str->len >= str->max)
+        s_blow (str, 1);
+    str->txt[str->len] = 0;
+    while ((e = strstr (str->txt + d, old)))
+    {
+        if (str->len + nlen - olen >= str->max)
+            s_blow (str, nlen - olen);
+        d = e - str->txt;
+        memmove (e + nlen, e + olen, str->len - d - olen + 1);
+        memmove (e, news, nlen);
+        str->len += nlen - olen;
+        if (nlen >= olen)
+            d++; /* prevent endless loops */
+    }
+}
+
 
 #define noctl(x) ((((x & 0x60) && x != 0x7f)) ? ConvUTF8 (x) : ".")
 

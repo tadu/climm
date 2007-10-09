@@ -50,6 +50,7 @@ UDWORD      s_strlen  (const char *str);
 UDWORD      s_strnlen (const char *str, UDWORD len);
 UDWORD      s_offset  (const char *str, UDWORD offset);
 strc_t      s_split   (const char **str, UBYTE enc, int len);
+void        s_strrepl (str_t str, const char *olds, const char *news);
 
 const char *s_quote       (const char *input);
 const char *s_cquote      (const char *input, const char *color);

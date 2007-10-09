@@ -117,7 +117,7 @@ JUMP_SNAC_F(SnacSrvUserinfo)
     Packet *pak = event->pak;
     Contact *cont = PacketReadCont (pak, serv);
     TLV *tlv;
-    UWORD warn, count, awaynr;
+    UWORD warn, count, awaynr, awaymimenr;
         
     if (pak->ref == PEEK_REFID || pak->ref == PEEK_REFID2)
     {
@@ -133,10 +133,11 @@ JUMP_SNAC_F(SnacSrvUserinfo)
     
     tlv = TLVRead (pak, PacketReadLeft (pak), -1);
     awaynr = TLVGet (tlv, 4);
-    if (awaynr != (UWORD)-1)
-        /* FIXME: read #3 for encoding information and strip stupid HTML */
+    awaymimenr = TLVGet (tlv, 3);
+    if (awaynr != (UWORD)-1 && awaymimenr != (UWORD)-1)
         /* FIXME: it is not necessary for _away_, but also for na etc. */
-        IMSrvMsg (cont, NOW, CV_ORIGIN_v8, MSGF_GETAUTO | MSG_GET_AWAY, tlv[awaynr].str.txt);
+        IMSrvMsg (cont, NOW, CV_ORIGIN_v8, MSGF_GETAUTO | MSG_GET_AWAY,
+                  ConvFromMime (tlv[awaymimenr].str.txt, tlv[awaynr].str.txt)->txt);
     TLVD (tlv);
 }
 
