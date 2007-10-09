@@ -235,7 +235,6 @@ UBYTE IMCliMsg (Contact *cont, UDWORD type, const char *text, Opt *opt)
             frag++;
         }
         s_done (&str);
-        MsgD (msg);
         return RET_OK;
     }
 

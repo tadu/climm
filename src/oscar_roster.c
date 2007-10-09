@@ -96,6 +96,7 @@ void OscarRosterD (Roster *roster)
     OscarRosterEntryD (roster->visible);
     OscarRosterEntryD (roster->invisible);
     OscarRosterEntryD (roster->ignore);
+    s_free (roster->ICQTIC);
     s_free (roster->delname);
     free (roster);
 }

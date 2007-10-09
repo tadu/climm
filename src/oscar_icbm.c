@@ -825,6 +825,8 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                                      (time_t)-1, p, cont, NULL, &SnacSrvCallbackSendack);
                         SrvReceiveAdvanced (serv, event, pp, newevent);
                     }
+                    else
+                        PacketD (p);
                     PacketD (pp);
                     TLVD (tlv);
                     return;
