@@ -295,7 +295,6 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
                     
                     PacketD (p);
                     p = NULL;
-                    free (sub);
                     free (tmp);
                 }
                 else
@@ -305,6 +304,7 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
                     s_cat  (&str, s_ind (s_dump (pak->data + pak->rpos + 4, len)));
                 }
                 pak->rpos += len + 4;
+                s_free (sub);
                 continue;
             case 't': /* brain dead */
                 nr  = PacketReadAt2 (pak, pak->rpos);
@@ -360,7 +360,6 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
                     
                     PacketD (p);
                     p = NULL;
-                    free (sub);
                     free (tmp);
                 }
                 else
@@ -369,6 +368,7 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
                     s_catf (&str, " %stlv (%2lx)%s\n", coldebug, nr, colnone);
                     s_cat  (&str, s_ind (s_dump (pak->data + pak->rpos + 4, len)));
                 }
+                s_free (sub);
                 pak->rpos += len + 4;
                 continue;
             case '{':
