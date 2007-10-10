@@ -35,7 +35,7 @@ strc_t      ConvTo         (const char *in, UBYTE enc);
 strc_t      ConvToSplit    (const char *in, UBYTE enc);
 strc_t      ConvToLen      (const char *in, UBYTE enc, size_t len);
 
-strc_t      ConvFromMime   (const char *mime, const char *text);
+strc_t      ConvFromMime   (strc_t mime, strc_t text);
 
 #define CHAR_NOT_AVAILABLE '?'
 #define CHAR_INCOMPLETE    '_'

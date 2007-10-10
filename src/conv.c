@@ -180,6 +180,7 @@ void ConvInit (void)
     conv_encs[ENC_WIN1251].encc = "CP-1251";
     conv_encs[ENC_UCS2BE].enca = "UCS-2BE";
     conv_encs[ENC_UCS2BE].encb = "UNICODEBIG";
+    conv_encs[ENC_UCS2BE].encc = "UNICODE-2-0"; /* ICQ sucks */
     conv_encs[ENC_WIN1257].enca = "CP1257";
     conv_encs[ENC_WIN1257].encb = "WINDOWS-1257";
     conv_encs[ENC_WIN1257].encc = "CP-1257";
@@ -513,14 +514,13 @@ strc_t ConvTo (const char *ctext, UBYTE enc)
     return ConvToLen (ctext, enc, ctext ? strlen (ctext) : 0);
 }
 
-strc_t ConvFromMime (const char *mime, const char *text)
+strc_t ConvFromMime (strc_t mime, strc_t text)
 {
     static str_s out;
-    str_s str;
     strc_t o;
     UBYTE enc = ENC_ASCII;
     const char *e;
-    if ((e = strstr (mime, "charset=")))
+    if ((e = strstr (mime->txt, "charset=")))
     {
         char *ee = strdup (e + 8);
         e = ee;
@@ -536,19 +536,15 @@ strc_t ConvFromMime (const char *mime, const char *text)
         if (!enc || ENC_FERR & enc)
             enc = ENC_ASCII;
         free (ee);
-        if (enc != ENC_ASCII && enc != ENC_UTF8 && ConvIsUTF8 (text))
+        if (enc != ENC_ASCII && enc != ENC_UTF8 && ConvIsUTF8 (text->txt) && text->len == strlen (text->txt))
             enc = ENC_UTF8; /* ICQ 5.10, Build 3000 send l1 even though it _is_ utf8 */
     }
-
-    str.txt = (char *)text;
-    str.len = strlen (str.txt);
-    str.max = 0;
-    o = ConvFrom (&str, enc);
+    o = ConvFrom (text, enc);
     s_init (&out, o->txt, 0); 
 
-    if (   (!strncmp (mime, "text/x-aolrtf", 13) && (!mime[13] || mime[13] == ';'))
-        || (!strncmp (mime, "text/aolrtf", 11)   && (!mime[11] || mime[11] == ';'))
-        || (!strncmp (mime, "text/html", 9)      && (!mime[9]  || mime[9]  == ';')) )
+    if (   (!strncmp (mime->txt, "text/x-aolrtf", 13) && (!mime->txt[13] || mime->txt[13] == ';'))
+        || (!strncmp (mime->txt, "text/aolrtf", 11)   && (!mime->txt[11] || mime->txt[11] == ';'))
+        || (!strncmp (mime->txt, "text/html", 9)      && (!mime->txt[9]  || mime->txt[9]  == ';')) )
     {
         /* more or less html */
         s_strrepl (&out, "<html>", "");
@@ -558,14 +554,14 @@ strc_t ConvFromMime (const char *mime, const char *text)
         s_strrepl (&out, "<br/>", "\n");
         s_strrepl (&out, "<br>", "\n");
     }
-    else if (!strncmp (mime, "text/plain", 10)   && (!mime[10] || mime[10] == ';'))
+    else if (!strncmp (mime->txt, "text/plain", 10)   && (!mime->txt[10] || mime->txt[10] == ';'))
     {
         /* nothing to do */
     }
     else
     {
         /* unknown */
-        s_insn (&out, 0, mime, strlen (mime));
+        s_insn (&out, 0, mime->txt, mime->len);
     }
     return &out;
 }

@@ -137,7 +137,7 @@ JUMP_SNAC_F(SnacSrvUserinfo)
     if (awaynr != (UWORD)-1 && awaymimenr != (UWORD)-1)
         /* FIXME: it is not necessary for _away_, but also for na etc. */
         IMSrvMsg (cont, NOW, CV_ORIGIN_v8, MSGF_GETAUTO | MSG_GET_AWAY,
-                  ConvFromMime (tlv[awaymimenr].str.txt, tlv[awaynr].str.txt)->txt);
+                  ConvFromMime (&tlv[awaymimenr].str, &tlv[awaynr].str)->txt);
     TLVD (tlv);
 }
 
