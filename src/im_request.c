@@ -124,26 +124,28 @@ Message *cb_msg_revealinv (Message *msg)
 UBYTE IMCliMsg (Contact *cont, UDWORD type, const char *text, Opt *opt)
 {
     Message *msg;
-    UDWORD tmp;
     UBYTE ret = RET_FAIL;
+    UDWORD m_trans, m_force, m_otrinject;
     
-    if (!cont || !cont->serv)
+    if (!cont || !cont->serv || !(msg = MsgC ()))
     {
         OptD (opt);
         return RET_FAIL;
     }
-    msg = MsgC ();
-    if (!msg)
-        return RET_FAIL;
+    if (!opt || !OptGetVal (opt, CO_MSGTRANS, &m_trans))
+        m_trans = CV_MSGTRANS_ANY;
+    if (!opt || !OptGetVal (opt, CO_FORCE, &m_force))
+        m_force = 0;
+    if (!opt || !OptGetVal (opt, CO_OTRINJECT, &m_otrinject))
+        m_otrinject = 0;
+    OptD (opt);
+
     msg->cont = cont;
     msg->type = type;
     msg->send_message = strdup (text);
-    if (!opt || !OptGetVal (opt, CO_MSGTRANS, &msg->trans))
-        msg->trans = CV_MSGTRANS_ANY;
-    if (opt && OptGetVal (opt, CO_FORCE, &tmp))
-        msg->force = tmp;
-    if (opt && OptGetVal (opt, CO_OTRINJECT, &tmp))
-        msg->otrinjected = tmp;
+    msg->trans = m_trans;
+    msg->force = m_force;
+    msg->otrinjected = m_otrinject;
 
 #ifdef ENABLE_OTR
     msg = cb_msg_otr (msg);
@@ -159,8 +161,7 @@ UBYTE IMCliMsg (Contact *cont, UDWORD type, const char *text, Opt *opt)
         strc_t str = s_split (&text, msg->maxenc, msg->maxsize);
         s_repl (&msg->send_message, str->txt);
         msg->maxsize = 0;
-        if (!opt || !OptGetVal (opt, CO_MSGTRANS, &msg->trans))
-            msg->trans = CV_MSGTRANS_ANY;
+        msg->trans = m_trans;
         ret = IMCliReMsg (cont, msg);
         if (!RET_IS_OK (ret))
             break;
@@ -170,12 +171,9 @@ UBYTE IMCliMsg (Contact *cont, UDWORD type, const char *text, Opt *opt)
         msg->cont = cont;
         msg->type = type;
         msg->send_message = strdup (text);
-        if (!opt || !OptGetVal (opt, CO_MSGTRANS, &msg->trans))
-            msg->trans = CV_MSGTRANS_ANY;
-        if (opt && OptGetVal (opt, CO_FORCE, &tmp))
-            msg->force = tmp;
-        if (opt && OptGetVal (opt, CO_OTRINJECT, &tmp))
-            msg->otrinjected = tmp;
+        msg->trans = m_trans;
+        msg->force = m_force;
+        msg->otrinjected = m_otrinject;
         ret = IMCliReMsg (cont, msg);                                                            
     }
     if (!RET_IS_OK(ret) && msg->maxsize && (msg->otrinjected || msg->otrencrypted))
@@ -221,8 +219,7 @@ UBYTE IMCliMsg (Contact *cont, UDWORD type, const char *text, Opt *opt)
             else
             {
                 s_repl (&msg->send_message, str.txt);
-                if (!opt || !OptGetVal (opt, CO_MSGTRANS, &msg->trans))
-                    msg->trans = CV_MSGTRANS_ANY;
+                msg->trans = m_trans;
                 msg->otrinjected = 0;
                 ret = IMCliReMsg (cont, msg);
                 if (!RET_IS_OK (ret))
