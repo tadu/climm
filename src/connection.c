@@ -255,8 +255,8 @@ void ConnectionD (Connection *conn DEBUGPARAM)
     conn->sok     = -1;
     conn->connect = 0;
     conn->parent  = NULL;
-    if (conn->server)
-        free (conn->server);
+    s_free (conn->server);
+    s_free (conn->screen);
     conn->server  = NULL;
 
     for (cl = &slist; cl; cl = cl->more)
