@@ -113,7 +113,9 @@ strc_t s_parse_s (const char **input, const char *sep)
 
 int is_valid_icq_name (char *t)
 {
-    for (t++; *t; t++)
+    if (!*t)
+        return 0;
+    for ( ; *t; t++)
         if (*t < '0' || *t > '9')
             return 0;
     return 1;
@@ -121,6 +123,8 @@ int is_valid_icq_name (char *t)
 
 int is_valid_aim_name (char *t)
 {
+    if (!*t)
+        return 0;
     if (*t >= '0' && *t <= '9')
         return 0;
     for ( ; *t; t++)
@@ -137,6 +141,8 @@ int is_valid_xmpp_name (char *txt)
 {
     char *at, *slash;
     
+    if (!*txt)
+        return 0;
     if (!(at = strchr (txt, '@')))
         return 0;
     if (strchr (at + 1, '@'))
@@ -151,6 +157,8 @@ int is_valid_msn_name (char *txt)
 {
     char *at;
     
+    if (!*txt)
+        return 0;
     if (!(at = strchr (txt, '@')))
         return 0;
     if (strchr (at + 1, '@'))
@@ -161,7 +169,7 @@ int is_valid_msn_name (char *txt)
 /*
  * Parses a nick, UIN or screen name.
  */
-Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
+Contact *s_parsenick_s (const char **input, const char *sep, BOOL any, Connection *serv)
 {
     ContactGroup *cg;
     Contact *r, *parsed;
@@ -189,9 +197,7 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
     {
         p += 4;
         t = s_parse (&p);
-        if (!t)
-            return NULL;
-        if (is_valid_aim_name (t->txt))
+        if (t && is_valid_aim_name (t->txt))
         {
             *input = p;
             return ContactScreen (serv, t->txt);
@@ -203,9 +209,7 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
     {
         p += 4;
         t = s_parse (&p);
-        if (!t)
-            return NULL;
-        if (is_valid_msn_name (t->txt))
+        if (t && is_valid_msn_name (t->txt))
         {
             *input = p;
             return ContactScreen (serv, t->txt);
@@ -218,9 +222,7 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
     {
         p += (*p == 'J') ? 7 : 5;
         t = s_parse (&p);
-        if (!t)
-            return NULL;
-        if (is_valid_xmpp_name (t->txt))
+        if (t && is_valid_xmpp_name (t->txt))
         {
             *input = p;
             return ContactScreen (serv, t->txt);
@@ -232,9 +234,7 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
         && !strncasecmp (p, "ICQ:", 4))
     {
         t = s_parse (&p);
-        if (!t)
-            return NULL;
-        if (is_valid_icq_name (t->txt))
+        if (t && is_valid_icq_name (t->txt))
         {
             *input = p;
             return ContactScreen (serv, t->txt);
@@ -294,6 +294,13 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
         *input = p;
         return ContactScreen (serv, t->txt);
     }
+    
+    if (!any)
+        return NULL;
+
+    for (i = 0; (serv = ConnectionNr (i)); i++)
+        if ((r = s_parsenick_s (input, sep, 0, serv)))
+            return r;
 
     return NULL;
 }
@@ -301,7 +308,7 @@ Contact *s_parsenick_s (const char **input, const char *sep, Connection *serv)
 /*
  * Parses a contact group by name.
  */
-ContactGroup *s_parsecg_s (const char **input, const char *sep, Connection *serv)
+ContactGroup *s_parsecg_s (const char **input, const char *sep, BOOL any, Connection *serv)
 {
     ContactGroup *cg;
     const char *p = *input;
@@ -340,13 +347,20 @@ ContactGroup *s_parsecg_s (const char **input, const char *sep, Connection *serv
             return cg;
         }
     }
+    if (!any)
+        return NULL;
+    
+    for (i = 0; (serv = ConnectionNr (i)); i++)
+        if ((cg = s_parsecg_s (input, sep, 0, serv)))
+            return cg;
+    
     return NULL;
 }
 
 /*
  * Parses nicks and contact groups.
  */
-ContactGroup *s_parselist_s (const char **input, BOOL rem, Connection *serv)
+ContactGroup *s_parselist_s (const char **input, BOOL rem, BOOL any, Connection *serv)
 {
     static ContactGroup *scg = NULL;
     ContactGroup *cg;
@@ -363,13 +377,24 @@ ContactGroup *s_parselist_s (const char **input, BOOL rem, Connection *serv)
     {
         while (*p && strchr (DEFAULT_SEP, *p))
             p++;
-        if ((cg = s_parsecg_s (&p, MULTI_SEP, serv)))
+        if ((cg = s_parsecg_s (&p, MULTI_SEP, 0, serv)))
         {
             for (i = 0; (cont = ContactIndex (cg, i)); i++)
                 if (!ContactHas (scg, cont))
                     ContactAdd (scg, cont);
         }
-        else if ((cont = s_parsenick_s (&p, MULTI_SEP, serv)))
+        else if ((cont = s_parsenick_s (&p, MULTI_SEP, 0, serv)))
+        {
+            if (!ContactHas (scg, cont))
+                ContactAdd (scg, cont);
+        }
+        else if (any && (cg = s_parsecg_s (&p, MULTI_SEP, 1, serv)))
+        {
+            for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                if (!ContactHas (scg, cont))
+                    ContactAdd (scg, cont);
+        }
+        else if (any && (cont = s_parsenick_s (&p, MULTI_SEP, 1, serv)))
         {
             if (!ContactHas (scg, cont))
                 ContactAdd (scg, cont);

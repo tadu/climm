@@ -102,8 +102,6 @@ static jump_t jump[] = {
     { &CmdUserUnalias,       "unalias",      0,   0 },
     { &CmdUserAnyMess,       "_msg",         0,   0 },
     { &CmdUserMessage,       "msg",          0,   1 },
-/*    { &CmdUserMessage,       "r",            0,   2 },
-    { &CmdUserMessage,       "a",            0,   4 },*/
     { &CmdUserMessage,       "chat",         0,   8 },
     { &CmdUserGetAuto,       "getauto",      0,   0 },
     { &CmdUserResend,        "resend",       0,   0 },
@@ -1433,40 +1431,13 @@ static JUMP_F (CmdUserMessage)
         if (s_parsekey (&args, "notab"))
             tab = 0;
 
-        switch (data)
-        {
-            case 1:
-            case 8:
-                if (!(cg = s_parselist (&args, uiG.conn)))
-                    return 0;
-                tcg = ContactGroupC (NULL, 0, NULL);
-                for (i = 0; (cont = ContactIndex (cg, i)); i++)
-                    ContactAdd (tcg, cont);
-                cg = tcg;
-                break;
-/*
-            case 2:
-                if (!uiG.last_rcvd)
-                {
-                    rl_print (i18n (1741, "Must receive a message first.\n"));
-                    return 0;
-                }
-                cg = ContactGroupC (NULL, 0, NULL);
-                ContactAdd (cg, uiG.last_rcvd);
-                break;
-            case 4:
-                if (!uiG.last_sent)
-                {
-                    rl_print (i18n (1742, "Must write a message first.\n"));
-                    return 0;
-                }
-                cg = ContactGroupC (NULL, 0, NULL);
-                ContactAdd (cg, uiG.last_sent);
-                break;
-*/
-            default:
-                assert (0);
-        }
+        if (!(cg = s_parseanylist (&args, uiG.conn)))
+            return 0;
+        tcg = ContactGroupC (NULL, 0, NULL);
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            ContactAdd (tcg, cont);
+        cg = tcg;
+
         arg1 = s_parserem (&args);
         if (arg1 && (arg1[strlen (arg1) - 1] != '\\'))
         {
