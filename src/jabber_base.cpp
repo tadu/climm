@@ -58,6 +58,8 @@ class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler
         void handleXEP115 (gloox::Tag *t, Contact *contr);
         void handleXEP153 (gloox::Tag *t, Contact *contr);
         void handleGoogleNosave (gloox::Tag *t);
+        void handleGoogleSig (gloox::Tag *t);
+        void handleGoogleChatstate (gloox::Tag *t);
         void handleXEP136 (gloox::Tag *t);
         time_t handleXEP91 (gloox::Tag *t);
         void handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, std::string msg);
@@ -576,6 +578,26 @@ void CLIMMXMPP::handleGoogleNosave (gloox::Tag *t)
     }
 }
 
+void CLIMMXMPP::handleGoogleSig (gloox::Tag *t)
+{
+    if (gloox::Tag *sig = t->findChild ("met:google-mail-signature", "xmlns:met", "google:metadata"))
+    {
+        DropAttrib (sig, "xmlns:met");
+        DropCData (sig);
+        CheckInvalid (sig);
+    }
+}
+
+void CLIMMXMPP::handleGoogleChatstate(gloox::Tag *t)
+{
+    if (gloox::Tag *chat = t->findChild ("cha:active", "xmlns:cha", "http://jabber.org/protocol/chatstates"))
+    {
+        DropAttrib (chat, "xmlns:cha");
+        CheckInvalid (chat);
+    }
+}
+        
+
 void CLIMMXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string tof, std::string id, gloox::StanzaSubType subtype)
 {
     Contact *cto = ContactScreen (m_conn, tof.c_str());
@@ -591,6 +613,8 @@ void CLIMMXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string t
     handleXEP71 (t);
     handleXEP85 (t);
     handleGoogleNosave (t);
+    handleGoogleSig (t);
+    handleGoogleChatstate (t);
     handleXEP136 (t);
     if (handleXEP22 (t, contr, from, tof, id))
         return;
