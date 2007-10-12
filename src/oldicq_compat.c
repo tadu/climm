@@ -35,6 +35,7 @@
 #define META_SRV_WP_LAST_USER   430
 #define META_SRV_RANDOM         870
 #define META_SRV_RANDOM_UPDATE  880
+#define META_SRV_METATLV_UPDATE 3135
 
 /* test in this order */
 #define STATUSF_ICQINV       0x00000100
@@ -155,6 +156,11 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
                          COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
                          : i18n (1394, "unsuccessful"), COLNONE);
             break;
+        case META_SRV_METATLV_UPDATE:
+            rl_printf (i18n (2690, "Meta info change was %s%s%s.\n"),
+                     COLCLIENT, result == META_SUCCESS ? i18n (1393, "successful")
+                     : i18n (1394, "unsuccessful"), COLNONE);
+            break;
     }
 
     switch (result) /* default error handling */
@@ -186,6 +192,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
         case META_SRV_GEN_UPDATE:
         case META_SRV_PASS_UPDATE:
         case META_SRV_RANDOM_UPDATE:
+        case META_SRV_METATLV_UPDATE:
             return;
         case META_SRV_INFO:
         case META_SRV_GEN:

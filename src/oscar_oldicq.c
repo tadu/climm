@@ -47,10 +47,11 @@
 static Packet *SnacMetaC (Connection *serv, UWORD sub, UWORD type, UWORD ref);
 static void SnacMetaSend (Connection *serv, Packet *pak);
 
-#define PacketWriteMetaLNTS(p,t,s) { PacketWrite2 (p, t); PacketWriteLen (p); PacketWriteLNTS (p, s); PacketWriteLenDone (p); }
-#define PacketWriteMeta1(p,t,i)    { PacketWrite2 (p, t); PacketWrite2 (p, 1); PacketWrite1 (p, i); }
-#define PacketWriteMeta2(p,t,i)    { PacketWrite2 (p, t); PacketWrite2 (p, 2); PacketWrite2 (p, i); }
-#define PacketWriteMeta4(p,t,i)    { PacketWrite2 (p, t); PacketWrite2 (p, 4); PacketWrite4 (p, i); }
+#define PacketWriteMetaLNTS(p,t,s)  { PacketWrite2 (p, t); PacketWriteLen (p); PacketWriteLNTS (p, s); PacketWriteLenDone (p); }
+#define PacketWriteMeta1(p,t,i)     { PacketWrite2 (p, t); PacketWrite2 (p, 1); PacketWrite1 (p, i); }
+#define PacketWriteMeta2(p,t,i)     { PacketWrite2 (p, t); PacketWrite2 (p, 2); PacketWrite2 (p, i); }
+#define PacketWriteMeta4(p,t,i)     { PacketWrite2 (p, t); PacketWrite2 (p, 4); PacketWrite4 (p, i); }
+#define PacketWriteMeta6(p,t,i,j,k) { PacketWrite2 (p, t); PacketWrite2 (p, 6); PacketWrite2 (p, i); PacketWrite2 (p, j); PacketWrite2 (p, k); }
 
 #define META_TAG_UIN         310 /* LE32 */
 #define META_TAG_FIRST       320
@@ -367,6 +368,7 @@ void SnacCliMetasetmore (Connection *serv, Contact *cont)
 {
     Packet *pak;
     
+#if 0
     pak = SnacMetaC (serv, 2000, META_SET_MORE_INFO, 0);
     if (cont->meta_more)
     {
@@ -392,6 +394,31 @@ void SnacCliMetasetmore (Connection *serv, Contact *cont)
         PacketWrite1    (pak, 0);
         PacketWrite1    (pak, 0);
     }
+#else
+    pak = SnacMetaC (serv, 2000, META_SAVE_INFO, 0);
+    if (cont->meta_more)
+    {
+        PacketWriteMeta2    (pak, META_TAG_AGE, cont->meta_more->age);
+        PacketWriteMeta1    (pak, META_TAG_GENDER, cont->meta_more->sex);
+        PacketWriteMetaLNTS (pak, META_TAG_HP_URL, c_out (cont->meta_more->homepage));
+        PacketWriteMeta6    (pak, META_TAG_BIRTHDAY, cont->meta_more->year, cont->meta_more->month, cont->meta_more->day);
+        PacketWriteMeta1    (pak, META_TAG_LANG, cont->meta_more->lang1);
+        PacketWriteMeta1    (pak, META_TAG_LANG, cont->meta_more->lang2);
+        PacketWriteMeta1    (pak, META_TAG_LANG, cont->meta_more->lang3);
+    }
+    else
+    {
+        PacketWriteMeta2    (pak, META_TAG_AGE, 0);
+        PacketWriteMeta1    (pak, META_TAG_GENDER, 0);
+        PacketWriteMetaLNTS (pak, META_TAG_HP_URL, "");
+        PacketWriteMeta6    (pak, META_TAG_BIRTHDAY, 0, 0, 0);
+        PacketWriteMeta1    (pak, META_TAG_LANG, 0);
+        PacketWriteMeta1    (pak, META_TAG_LANG, 0);
+        PacketWriteMeta1    (pak, META_TAG_LANG, 0);
+    }
+
+
+#endif
     SnacMetaSend    (serv, pak);
 }
 
