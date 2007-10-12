@@ -1408,7 +1408,7 @@ void ContactSetVersion (Contact *cont)
         new = "climm";
         OptSetVal (&cont->copts, CO_TIMECLIMM, time (NULL));
         if (cont->v1 & 0x80)
-            tail = " cvs";
+            tail = " svn";
         cont->v1 &= ~0x80;
     }
     else if (HAS_CAP (cont->caps, CAP_MICQ))
