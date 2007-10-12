@@ -116,11 +116,11 @@ update the checkout. Usually I upload a new snapshot when I make changes
 to configure.ac or any of the Makefile.am files.
 
 If that isn't enough because you made too much changes, you can link the
-generated files from a CVS snapshot to a CVS checkout like this:
+generated files from a SVN snapshot to a SVN checkout like this:
 
   cd climm  # the SVN check-out
   ln -s ../climm-svn/{install-sh,config.guess,config.sub,configure,depend,mkinstalldirs} .
-  cd ../climm-svn  # the CVS snapshot
+  cd ../climm-svn  # the SVN snapshot
   find . -name "*.in" -exec ln -s ../climm-svn/\{\} ../climm/\{\}
 
 g) Compile
