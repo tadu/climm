@@ -109,7 +109,7 @@ ContactGroup *ContactGroupIndex (int i)
 {
     if (!cnt_groups)
         ContactGroupInit ();
-    if (i >= 0 && i + 1 < cnt_count && cnt_groups[i + 1])
+    if (i >= 0 && i + 1 < cnt_count)
         return cnt_groups[i + 1];
     return NULL;
 }
@@ -178,6 +178,8 @@ void ContactGroupD (ContactGroup *group DEBUGPARAM)
     
     if (!cnt_groups)
         ContactGroupInit ();
+    if (!group)
+        return;
     for (i = 1; i < cnt_count && cnt_groups[i]; i++)
         if (cnt_groups[i] == group)
         {
@@ -498,8 +500,7 @@ Contact *ContactScreen (Connection *serv, const char *screen DEBUGPARAM)
 
     if ((cont = ContactFindScreen (serv->contacts, screen)))
         return cont;
-    if (!cnt_groups)
-        ContactGroupInit ();
+
     if ((cont = ContactFindSScreen (CONTACTGROUP_NONCONTACTS, serv, screen)))
         return cont;
 
@@ -533,8 +534,7 @@ Contact *ContactScreenP (Connection *serv, Contact *parent, const char *screen D
 
     if ((cont = ContactFindScreenP (serv->contacts, parent, screen)))
         return cont;
-    if (!cnt_groups)
-        ContactGroupInit ();
+
     if ((cont = ContactFindSScreenP (CONTACTGROUP_NONCONTACTS, serv, parent, screen)))
         return cont;
 
@@ -563,8 +563,7 @@ Contact *ContactUIN (Connection *serv, UDWORD uin DEBUGPARAM)
 
     if ((cont = ContactFindUIN (serv->contacts, uin)))
         return cont;
-    if (!cnt_groups)
-        ContactGroupInit ();
+
     if ((cont = ContactFindSUIN (CONTACTGROUP_NONCONTACTS, serv, uin)))
         return cont;
 
