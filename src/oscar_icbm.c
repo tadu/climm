@@ -1210,11 +1210,15 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 /* UWORD port, port2, pad; */
                 char *gtext;
                 char id[20];
-                str_s t = { 0, 0, 0 };
-                t.txt = id;
-                
                 cmd    = PacketRead2 (inc_pak);
+                {
+                    str_s t = { 0, 0, 0 };
+                    s_init (&t, "", 20);
                          PacketReadData (inc_pak, &t, 16);
+                    memcpy (id, t.txt, 16);
+                    id[17] = 0;
+                    s_done (&t);
+                }
                          PacketRead2 (inc_pak);
                 ctext  = PacketReadL4Str (inc_pak, NULL);
                          PacketReadData (inc_pak, NULL, 15);
