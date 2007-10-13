@@ -1,4 +1,4 @@
-# $Id$ strings extracted from mICQ sources
+# $Id$ strings extracted from climm sources
 1000:UTF-8
 1001:<lang>
 1002:<lang_cc>
@@ -565,8 +565,6 @@
 1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Shows how long climm has been running and some statistics.
 1721:Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message.
-1741:Must receive a message first.\n
-1742:Must write a message first.\n
 1743:Size mismatch in packet lengths.\n
 1744:server (v5)
 1745:unknown
@@ -946,7 +944,7 @@
 2324:contact upload  Add local contacts to server based contact list.\n
 2325:Warning: server based contact list change failed with error code %d.\n
 2326:Server side contact list only supported for ICQ v8.\n
-2327:%sclimm - CLI-based Multi-Messenger%s version %s%s%s\n
+2327:%sclimm%s - CLI-based Multi-Messenger%s version %s%s%s\n
 2328:You logged in too frequently, please wait 30 minutes before trying again.\n
 2329:syntax error
 2330:removing non-contact
@@ -1283,3 +1281,4 @@
 2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
 2688:No password given for %s.\n
 2689:Enter password for %s account %s: 
+2690:Meta info change was %s%s%s.\n
