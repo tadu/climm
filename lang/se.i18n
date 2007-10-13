@@ -1059,7 +1059,7 @@
 #2324:contact upload  Add local contacts to server based contact list.\n
 #2325:Warning: server based contact list change failed with error code %d.\n
 #2326:Server side contact list only supported for ICQ v8.\n
-2327:%sclimm (CLI-based Multi-Messenger)%s version %s%s%s\n
+2327:%sclimm%s (CLI-based Multi-Messenger)%s version %s%s%s\n
 2328:Du loggade in för ofta, vänligen vänta 30 minuter innan du försöker igen.\n
 2329:syntax-fel
 2330:tar bort icke-kontakt

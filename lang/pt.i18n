@@ -982,7 +982,7 @@
 2324:contact upload  Adiciona contatos locais à lista de contatos baseada no servidor.\n
 2325:Cuidado: alteração da lista de contatos baseada no servidor falhou com código de erro %d.\n
 2326:Lista de contatos do servidor suportada apenas para ICQ v8.\n
-2327:%sclimm (CLI-based Multi-Messenger%s)%s versão %s%s%s\n
+2327:%sclimm%s (CLI-based Multi-Messenger)%s versão %s%s%s\n
 2328:Você logou muito freqüentemente, por favor espere 30 minutos antes de tentar novamente\n
 2329:erro de sintaxe
 2330:removendo não-contato

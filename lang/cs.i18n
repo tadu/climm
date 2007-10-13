@@ -980,7 +980,7 @@
 2324:contact upload  Přidá lokální kontakty do seznamu kontaktů na serveru.\n
 2325:Varování: změna seznamu kontaktů na serveru selhala s chybovým kódem %d.\n
 2326:Seznam kontaktů na serveru je podporován jen pro ICQ v8.\n
-2327:%sclimm (CLI-based Multi-Messenger)%s verze %s%s%s\n
+2327:%sclimm%s (CLI-based Multi-Messenger)%s verze %s%s%s\n
 2328:Přihlašovali jste se příliš často, prosím počkejte 30 minut než to zkusíte znovu.\n
 2329:chyba syntaxe
 2330:odstraňování non-kontaktů

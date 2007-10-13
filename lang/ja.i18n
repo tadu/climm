@@ -1058,7 +1058,7 @@
 #2324:contact upload  Add local contacts to server based contact list.\n
 #2325:Warning: server based contact list change failed with error code %d.\n
 #2326:Server side contact list only supported for ICQ v8.\n
-2327:%sclimm (マットのICQ クローン)%s バージョン %s%s%s\n
+2327:%sclimm%s (CLI-based Multi-Messenger)%s バージョン %s%s%s\n
 2328:余りに頻繁にログインしました。30分待ってから再度試してください。\n
 2329:文法エラー
 2330:コンタクトリストにいない人を削除

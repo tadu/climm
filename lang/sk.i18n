@@ -983,7 +983,7 @@
 2324:contact upload  Pridá lokálne kontakty do kontaktov na serveri.\n
 2325:Varovanie: zmena kontaktov na serveri zlyhala s chybovým kódom %d.\n
 2326:Zoznam kontaktov na serveri je podporovaný len pre ICQ v8.\n
-2327:%sclimm (CLI-based Multi-Messenger)%s verzia %s%s%s\n
+2327:%sclimm%s (CLI-based Multi-Messenger)%s verzia %s%s%s\n
 2328:Prihlasovali ste sa príliš často, počkajte 30 minút do ďalšieho pokusu o prihlásenie.\n
 2329:chyba syntaxe
 2330:odstránenie non-kontaktov
