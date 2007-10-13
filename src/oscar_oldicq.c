@@ -359,6 +359,7 @@ void SnacCliMetasetabout (Connection *serv, const char *text)
     PacketWriteMetaLNTS (pak, META_TAG_ABOUT, c_out (text));
 #endif
     SnacMetaSend    (serv, pak);
+    SnacCliSetlastupdate (serv);
 }
 
 /*
@@ -420,6 +421,7 @@ void SnacCliMetasetmore (Connection *serv, Contact *cont)
 
 #endif
     SnacMetaSend    (serv, pak);
+    SnacCliSetlastupdate (serv);
 }
 
 /*
@@ -583,7 +585,7 @@ void SnacCliSendsms (Connection *serv, const char *target, const char *text)
     time_t t = time (NULL);
     
     snprintf (buf, sizeof (buf), "<icq_sms_message><destination>%s</destination>"
-             "<text>%s (%s www.climm.org)</text><codepage>1252</codepage><senders_UIN>%s</senders_UIN>"
+             "<text>%s (%s www.climm.org)</text><codepage>utf8</codepage><senders_UIN>%s</senders_UIN>"
              "<senders_name>%s</senders_name><delivery_receipt>Yes</delivery_receipt>"
              "<time>%s</time></icq_sms_message>",
              target, text, serv->screen, serv->screen, "climm",
