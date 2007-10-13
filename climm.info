@@ -1,5 +1,5 @@
 Package: climm
-Version: 0.6
+Version: 0.6.1
 Revision: 1
 ConfigureParams: --mandir='$(prefix)/share/man' --enable-ssl --enable-tcl CFLAGS=-O3
 Source: http://www.climm.org/source/climm-%v.tgz

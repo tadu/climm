@@ -1,6 +1,6 @@
 Summary:		text/line based ICQ client with many features%{?_without_tcl: [no Tcl]}%{?_without_ssl: [no SSL]}%{?_without_xmpp: [no XMPP]}
 Name:			climm
-Version:		0.6
+Version:		0.6.1
 Release:		1%{?_without_tcl:.notcl}%{?_without_ssl:.nossl}%{?_without_xmll:.noxmpp}
 Source:			climm-%{version}.tgz
 URL:			http://www.climm.org/
@@ -29,10 +29,66 @@ messages unreached by other ICQ clones.
 A lot of other ICQ clients are based in spirit on climm, nevertheless
 climm is still _the_ console based ICQ client.
       
-Authors: Matthew D. Smith (deceased)
-         Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+Authors: Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+         Matthew D. Smith (deceased; up to micq 0.4.8)
+
+%prep
+test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
+
+%setup -q -n climm-%{version}
+
+%build
+%configure --disable-dependency-tracking CFLAGS=-O4 \
+	%{!?_without_tcl:--enable-tcl}%{?_without_tcl:--disable-tcl} \
+	%{!?_without_ssl:--enable-ssl}%{?_without_ssl:--disable-ssl} \
+	%{!?_without_xmpp:--enable-xmpp}%{?_without_xmpp:--disable-xmpp} \
+	--enable-autopackage
+make
+
+%install
+
+make install DESTDIR=$RPM_BUILD_ROOT
+%if %{?update_menus:1}%{!?update_menus:0}
+%{__mkdir_p} $RPM_BUILD_ROOT%{_libdir}/menu
+cat << EOF > $RPM_BUILD_ROOT%{_libdir}/menu/climm
+?package(climm):needs=text section=Networking/ICQ \
+  title="climm" command="%{_bindir}/climm" hints="ICQ client"\
+  icon=%{_datadir}/pixmaps/climm.xpm
+EOF
+install -D -m 644 -p doc/climm.xpm $RPM_BUILD_ROOT%{_datadir}/pixmaps/climm.xpm
+%endif
+
+%clean
+test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root,0755)
+%doc NEWS AUTHORS FAQ README TODO COPYING COPYING-GPLv2
+%doc doc/README.i18n doc/README.logformat doc/README.ssl doc/example-climm-event-script
+%{_bindir}/*
+%{_datadir}/climm
+%if %{?update_menus:1}%{!?update_menus:0}
+%{_libdir}/menu/climm
+%{_datadir}/pixmaps/climm.xpm
+%endif
+%{_mandir}/man?/*
+%{_mandir}/*/man?/*
+
+%if %{?update_menus:1}%{!?update_menus:0}
+%post
+%{update_menus} || true
+
+%postun
+%{clean_menus} || true
+%endif
 
 %changelog
+* Sun Oct 14 2007 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream release 0.6.1
+
+* Mon Sep 10 2007 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream release 0.6
+
 * Mon Jun 04 2007 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream release 0.5.4
 
@@ -97,52 +153,3 @@ Authors: Matthew D. Smith (deceased)
 * Tue Jun 11 2002 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - first RPM
 
-%prep
-test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
-
-%setup -q -n climm-%{version}
-
-%build
-%configure --disable-dependency-tracking CFLAGS=-O4 \
-	%{!?_without_tcl:--enable-tcl}%{?_without_tcl:--disable-tcl} \
-	%{!?_without_ssl:--enable-ssl}%{?_without_ssl:--disable-ssl} \
-	%{!?_without_xmpp:--enable-xmpp}%{?_without_xmpp:--disable-xmpp} \
-	--enable-autopackage
-make
-
-%install
-
-make install DESTDIR=$RPM_BUILD_ROOT
-%if %{?update_menus:1}%{!?update_menus:0}
-%{__mkdir_p} $RPM_BUILD_ROOT%{_libdir}/menu
-cat << EOF > $RPM_BUILD_ROOT%{_libdir}/menu/climm
-?package(climm):needs=text section=Networking/ICQ \
-  title="climm" command="%{_bindir}/climm" hints="ICQ client"\
-  icon=%{_datadir}/pixmaps/climm.xpm
-EOF
-install -D -m 644 -p doc/climm.xpm $RPM_BUILD_ROOT%{_datadir}/pixmaps/climm.xpm
-%endif
-
-%clean
-test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
-
-%files
-%defattr(-,root,root,0755)
-%doc NEWS AUTHORS FAQ README TODO COPYING COPYING-GPLv2
-%doc doc/README.i18n doc/README.logformat doc/README.ssl doc/example-climm-event-script
-%{_bindir}/*
-%{_datadir}/climm
-%if %{?update_menus:1}%{!?update_menus:0}
-%{_libdir}/menu/climm
-%{_datadir}/pixmaps/climm.xpm
-%endif
-%{_mandir}/man?/*
-%{_mandir}/*/man?/*
-
-%if %{?update_menus:1}%{!?update_menus:0}
-%post
-%{update_menus} || true
-
-%postun
-%{clean_menus} || true
-%endif

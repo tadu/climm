@@ -4,7 +4,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([climm], [0.6])
+AC_INIT([climm], [0.6.1])
 AC_CONFIG_SRCDIR([include/climm.h])
 AC_CONFIG_LIBOBJ_DIR(replace)
 AC_CONFIG_HEADER(include/config.h)
