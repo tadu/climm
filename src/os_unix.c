@@ -17,6 +17,10 @@
 #include <ctype.h>
 #endif
 
+#if !defined(UT_NAMESIZE)
+#define UT_NAMESIZE 8
+#endif
+
 static int console_idle (time_t now, struct utmp *u)
 {
     struct stat sbuf;
