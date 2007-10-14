@@ -1,5 +1,5 @@
 # $Id$ English (English)
-#  EN: __.i18n 2392 2007-09-07 22:41:40 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2433 2007-10-13 11:44:11 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:en
 1002:en_US
@@ -571,8 +571,8 @@
 1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Shows how long climm has been running and some statistics.
 1721:Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message.
-1741:Must receive a message first.\n
-1742:Must write a message first.\n
+1741.Must receive a message first.\n
+1742.Must write a message first.\n
 1743:Size mismatch in packet lengths.\n
 1744:server (v5)
 1745:unknown
@@ -1318,6 +1318,7 @@
 2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
 2688:No password given for %s.\n
 2689:Enter password for %s account %s: 
+2690:Meta info change was %s%s%s.\n
 2999.max
 # Those are the funny messages. Substract 2000 to get the normal message.
 3082:But hey, let's just poke the server again... [try %d out of %d]\n

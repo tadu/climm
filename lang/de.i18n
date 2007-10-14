@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n 2392 2007-09-07 22:41:40 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2433 2007-10-13 11:44:11 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -581,8 +581,8 @@
 1717:Führe Shell-Kommando <cmd> aus (z.B. "!ls", "!dir", "!mkdir temp").
 1719:Zeigt, wie lange climm schon läuft, und ein paar Statistiken.
 1721:Bei einer leeren Nachricht können mehrere Zeilen eingegeben werden.\nDabei bedeutet eine Zeile nur mit . das Ende der Nachricht.\nEbenso verwirft eine Zeile nur mit # die Nachricht.
-1741:Man muß erst eine Nachricht empfangen.\n
-1742:Man muß erst eine Nachricht schreiben.\n
+1741.Man muß erst eine Nachricht empfangen.\n
+1742.Man muß erst eine Nachricht schreiben.\n
 1743:Längendifferenz in Paketlängenangaben.\n
 1744:Server (v5)
 1745:Unbekannt
@@ -1328,6 +1328,7 @@
 2687:<trust> muß trust, verify, oder mistrust, distrust, falsify sein.\n
 2688:Kein Paßwort für %s angegeben.\n
 2689:Gebe Paßwort für %s-Konto %s ein: 
+2690:Metainformations-Änderung war %s%s%s.\n
 2999.max.
 # Those are the funny messages. Substract 2000 to get the normal message.
 3620.Du hast zu viele Freunde, wie wär's mit mehr RL?
