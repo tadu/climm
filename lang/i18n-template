@@ -66,9 +66,34 @@ sub ProcessLine($)
     }
     elsif ($line =~ m/^#[ _]#([0-9][0-9]*):/)
     {
-       $have{$1} = 1;
+       $have{$1} |= 4;
        print OUT "#_#$1:$nrval{$1}\n";
        $tainted++;
+    }
+    elsif ($line =~ m/^#[-!+]#([0-9][0-9]*):/)
+    {
+        my $i = $1;
+        $neu = sprintf ("%04d", $i);
+        for ($last++ ; $last < $neu - 1; $last++)
+        {
+            $last = sprintf ("%04d", $last);
+            next unless defined $nrval{$last};
+            print OUT "#$last:$nrval{$last}\n" unless $have{$last};
+            $added++ unless $have{$last};
+        }
+        $last--;
+       if (defined $nrval{$i})
+       {
+           my $l = $i - 1;
+           $have{$i} |= 2;
+           if ($have{$l} == 2)
+           {
+               print OUT "#_#$l:$nrval{$l}\n";
+               $have{$l} = 6;
+           }
+           print OUT "$line\n";
+           $ignored++;
+       }
     }
     elsif ($line =~ m/^#/)
     {
@@ -82,8 +107,8 @@ sub ProcessLine($)
         {
             $last = sprintf ("%04d", $last);
             next unless defined $nrval{$last};
-            print OUT "#$last:$nrval{$last}\n" unless defined $have{$last};
-            $added++ unless defined $have{$last};
+            print OUT "#$last:$nrval{$last}\n" unless $have{$last} & 4;
+            $added++ unless $have{$last} & 4;
         }
         print "Error: $last $neu" if $last != $neu;
         $last = $mod = sprintf ("%04d", $last);
@@ -140,7 +165,7 @@ while ($uname = shift)
         $rev = 0 unless length ($rev);
         $rev = "i18n-$rev";
     }
-    print "Old revision tag: $rev.\n";
+#    print "Old revision tag: $rev.\n";
     
     stat ".C.$rev" || system "svn cat -r $rev http://svn.climm.org/climm/lang/C.i18n > .C.$rev";
     system "svn cat http://svn.climm.org/climm/lang/C.i18n > .C.head";
