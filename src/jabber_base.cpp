@@ -711,6 +711,7 @@ void CLIMMXMPP::handlePresence (gloox::Stanza *s)
     DropAttrib (t, "from");
     DropAttrib (t, "to");
     DropAttrib (t, "id");
+    DropAttrib (t, "xml:lang");
     if (t->hasAttribute ("xmlns", "jabber:client"))
         DropAttrib (t, "xmlns");
     DropAllChilds (t, "status");
