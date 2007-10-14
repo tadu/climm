@@ -449,4 +449,102 @@ void TCLPrefAppend (Tcl_type type, char *file)
     tpref->next = prG->tclscript;
     prG->tclscript = tpref;
 }
+
+static const char *s_escape_tcl (const char *str)
+{
+    static str_s s = { 0, 0, 0 };
+    s_init (&s, str, 0);
+    s_strrepl (&s, "\\", "\\\\");
+    s_strrepl (&s, "$", "\\$");
+    s_strrepl (&s, "[", "\\[");
+    s_strrepl (&s, "\"", "\\\"");
+    s_catc (&s, '\"');
+    s_insc (&s, 0, '\"');
+    return s.txt;
+}
+
+int cb_status_tcl (Contact *cont, parentmode_t pm, change_t ch, const char *text)
+{
+#if ENABLE_CONT_HIER
+    if (cont->parent)
+        return 0;
+#endif
+    TCLEvent (cont, "status", s_escape_tcl (ContactStatusStr (cont->status)));
+    return 0;
+}
+
+int cb_int_msg_tcl (Contact *cont, parentmode_t pm, time_t stamp, fat_int_msg_t *msg)
+{
+    return 0;
+}
+
+int cb_srv_msg_tcl (Contact *cont, parentmode_t pm, time_t stamp, fat_srv_msg_t *msg)
+{
+#if ENABLE_CONT_HIER
+    if (cont->parent)
+        return 0;
+#endif
+    switch (msg->type & ~MSGF_MASS)
+    {
+        case MSG_NORM_SUBJ:
+            if (msg->subj)
+            {
+                TCLEvent (cont, "message", s_escape_tcl (s_sprintf ("%s: %s", msg->subj, msg->msgtext)));
+                TCLMessage (cont, msg->subj);
+                TCLMessage (cont, msg->msgtext);
+                break;
+            }
+            /* fall-through */
+        case MSG_NORM:
+        default:
+            TCLEvent (cont, "message", s_sprintf ("{%s}", msg->msgtext));
+            TCLMessage (cont, msg->msgtext);
+            break;
+        case MSG_FILE:
+            TCLEvent (cont, "file_request", s_sprintf ("%s %ld %ld", s_escape_tcl (msg->msgtext), msg->bytes, msg->ref));
+            break;
+        case MSG_AUTO:
+        case MSGF_GETAUTO | MSG_GET_AWAY:
+        case MSGF_GETAUTO | MSG_GET_OCC:
+        case MSGF_GETAUTO | MSG_GET_NA:
+        case MSGF_GETAUTO | MSG_GET_DND:
+        case MSGF_GETAUTO | MSG_GET_FFC:
+        case MSGF_GETAUTO | MSG_GET_VER:
+        case MSG_URL:
+        case MSG_CONTACT:
+            break;
+        case MSG_AUTH_REQ:
+            TCLEvent (cont, "authorization", "request");
+            break;
+        case MSG_AUTH_DENY:
+            TCLEvent (cont, "authorization", "refused");
+            break;
+        case MSG_AUTH_GRANT:
+            TCLEvent (cont, "authorization", "granted");
+            break;
+        case MSG_AUTH_ADDED:
+            TCLEvent (cont, "contactlistadded", "");
+            break;
+        case MSG_EMAIL:
+        case MSG_WEB:
+            {
+                str_s s = { 0, 0, 0 };
+                s_init (&s, "", 128);
+                s_cat (&s, s_escape_tcl (msg->tmp[0]));
+                s_catc (&s, ' ');
+                s_cat (&s, s_escape_tcl (msg->tmp[3]));
+                s_catc (&s, ' ');
+                s_cat (&s, s_escape_tcl (msg->tmp[4]));
+                s_catc (&s, ' ');
+                s_cat (&s, s_escape_tcl (msg->tmp[5]));
+                if (msg->type == MSG_EMAIL)
+                    TCLEvent (cont, "mail", s.txt);
+                else
+                    TCLEvent (cont, "web", s.txt);
+            }
+            break;
+    }
+    return 0;
+}
+
 #endif /* ENABLE_TCL */
