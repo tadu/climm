@@ -26,6 +26,9 @@ extern "C" {
 #include <gloox/connectionlistener.h>
 #include <gloox/messagehandler.h>
 #include <gloox/subscriptionhandler.h>
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
+#include <gloox/connectiontcpbase.h>
+#endif
 #include <gloox/presencehandler.h>
 #include <gloox/stanza.h>
 #include <gloox/disco.h>
@@ -72,7 +75,11 @@ class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler
         virtual void  onResourceBindError (gloox::ResourceBindError error);
         virtual void  onSessionCreateError (gloox::SessionCreateError error);
         virtual bool  onTLSConnect (const gloox::CertInfo &info);
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
+        virtual void  handleMessage (gloox::Stanza *stanza, gloox::MessageSession *session = NULL);
+#else
         virtual void  handleMessage (gloox::Stanza *stanza);
+#endif
         virtual void  handlePresence (gloox::Stanza *stanza);
         virtual void  handleSubscription (gloox::Stanza *stanza);
         virtual void  handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message);
@@ -103,11 +110,19 @@ CLIMMXMPP::CLIMMXMPP (Connection *serv)
     m_client->logInstance ().registerLogHandler (gloox::LogLevelDebug,   gloox::LogAreaAll, this);
     m_client->disco()->setVersion ("climm", BuildVersionStr, BuildPlatformStr);
     m_client->disco()->setIdentity ("client", "console");
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
+    m_client->setPresence (gloox::PresenceAvailable, 5);
+#else
     m_client->setAutoPresence (true);
+#endif
     m_client->setInitialPriority (5);
 
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
+    // Yes http proxy is now avail in gloox, but not used in climm, so != NULL
+    serv->sok = dynamic_cast<gloox::ConnectionTCPBase *>(m_client->connectionImpl())->socket();
+#else
     m_client->connect (false);
-    
+#endif
     serv->sok = m_client->fileDescriptor ();
 }
 
@@ -144,7 +159,7 @@ void CLIMMXMPP::onDisconnect (gloox::ConnectionError e)
         case gloox::ConnIoError:
             XMPPCallbackReconn (m_conn);
             return;
-        
+
         case gloox::ConnOutOfMemory:          rl_printf ("#onDisconnect: Error OutOfMemory %d.\n", e); break;
         case gloox::ConnNoSupportedAuth:      rl_printf ("#onDisconnect: Error NoSupportedAuth %d.\n", e); break;
         case gloox::ConnTlsFailed:            rl_printf ("#onDisconnect: Error TlsFailed %d.\n", e); break;
@@ -185,7 +200,11 @@ static bool DropAttrib (gloox::Tag *s, const std::string &a)
 {
     if (s->children().size())
         s->setCData ("");
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
+    s->attributes().remove (gloox::Tag::Attribute (a, s->findAttribute (a)));
+#else
     s->attributes().erase (a);
+#endif
 }
 
 static bool DropCData (gloox::Tag *s)
@@ -259,7 +278,7 @@ static void GetBothContacts (const gloox::JID &j, Connection *conn, Contact **b,
     Contact *bb, *ff, **t;
     std::string jb = j.bare();
     std::string jr = j.resource();
-    
+
     if ((bb = ContactFindScreen (conn->contacts, jb.c_str())))
     {
         if (!(ff = ContactFindScreenP (conn->contacts, bb, jr.c_str())))
@@ -324,7 +343,7 @@ void CLIMMXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
     std::string refid;
     int ref = -1;
     int_msg_t type;
-    
+
     if (gloox::Tag *tid = XEP22->findChild ("id"))
     {
         refid = tid->cdata();
@@ -334,7 +353,7 @@ void CLIMMXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
     if (!strncmp (refid.c_str(), "xmpp-", 5) && !strncmp (refid.c_str() + 5, m_stamp, 14)
         && strlen (refid.c_str()) > 19 && refid.c_str()[19] == '-')
         sscanf (refid.c_str() + 20, "%x", &ref);
-    
+
     if (gloox::Tag *dotag = XEP22->findChild ("offline"))
     {
         type = INT_MSGOFF;
@@ -366,7 +385,7 @@ void CLIMMXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
         ref = -1;
 
     if (ref != -1)
-    {     
+    {
         Event *event = QueueDequeue (m_conn, QUEUE_XMPP_RESEND_ACK, ref);
         if (event)
         {
@@ -382,7 +401,7 @@ void CLIMMXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
             QueueEnqueue (event);
         }
     }
-    
+
     CheckInvalid (XEP22);
 }
 
@@ -596,7 +615,7 @@ void CLIMMXMPP::handleGoogleChatstate(gloox::Tag *t)
         CheckInvalid (chat);
     }
 }
-        
+
 
 void CLIMMXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string tof, std::string id, gloox::StanzaSubType subtype)
 {
@@ -607,7 +626,7 @@ void CLIMMXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string t
     DropAttrib (t, "type");
     time_t delay;
     Contact *contb, *contr;
-    
+
     GetBothContacts (from, m_conn, &contb, &contr, 0);
 
     handleXEP71 (t);
@@ -631,12 +650,20 @@ void CLIMMXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string t
         CheckInvalid (x);
 }
 
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
+void CLIMMXMPP::handleMessage (gloox::Stanza *s, gloox::MessageSession *session)
+#else
 void CLIMMXMPP::handleMessage (gloox::Stanza *s)
+#endif
 {
     assert (s);
     assert (s->type() == gloox::StanzaMessage);
-    
+
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
+    gloox::Stanza *t = new gloox::Stanza (s);
+#else
     gloox::Stanza *t = s->clone();
+#endif
     handleMessage2 (t, s->from(), s->to().full(), s->id(), s->subtype ());
 
     DropAttrib (t, "from");
@@ -661,26 +688,26 @@ void CLIMMXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, 
     time_t delay;
 
     GetBothContacts (from, m_conn, &contb, &contr, 1);
-    
+
     if (gloox::Tag *priority = s->findChild ("priority"))
     {
         pri = priority->cdata();
         DropCData (priority);
         CheckInvalid (priority);
     }
-    
+
     delay = handleXEP91 (s);
 
     handleXEP115 (s, contr); // entity capabilities (used also for client version)
     handleXEP153 (s, contb); // vcard-based avatar, nickname
     handleXEP27 (s);         // OpenPGP signature (obsolete)
     handleXEP8 (s);          // iq-based avatar (obsolete)
-    
+
     if (s->hasAttribute ("type", "unavailable"))
     {
         status = ims_offline;
         DropAttrib (s, "type");
-        
+
         IMOffline (contr);
     }
     else if (gloox::Tag *show = s->findChild ("show"))
@@ -696,7 +723,7 @@ void CLIMMXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, 
     }
     else
         status = ims_online;
-    
+
     IMOnline (contr, status, imf_none, status, NULL);
 }
 
@@ -704,8 +731,12 @@ void CLIMMXMPP::handlePresence (gloox::Stanza *s)
 {
     assert (s);
     assert (s->type() == gloox::StanzaPresence);
-    
+
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
+    gloox::Stanza *t = new gloox::Stanza(s);
+#else
     gloox::Stanza *t = s->clone();
+#endif
     handlePresence2 (t, s->from(), s->to(), s->status());
 
     DropAttrib (t, "from");
@@ -715,7 +746,7 @@ void CLIMMXMPP::handlePresence (gloox::Stanza *s)
     if (t->hasAttribute ("xmlns", "jabber:client"))
         DropAttrib (t, "xmlns");
     DropAllChilds (t, "status");
-    
+
     if (!CheckInvalid (t))
     {
         std::string txml = t->xml();
@@ -732,14 +763,18 @@ void CLIMMXMPP::handleSubscription (gloox::Stanza *s)
                s->from().full().c_str(), s->to().full().c_str(), s->subtype(),
                s->id().c_str(), s->status().c_str(), s->priority(),
                s->body().c_str(), s->subject().c_str(),
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
+               s->thread().c_str(), s->presence(),
+#else
                s->thread().c_str(), s->show(),
+#endif
                s->xml().c_str());
 }
 
 void CLIMMXMPPSave (Connection *serv, const char *text, bool in)
 {
     const char *data;
-    
+
     if (serv->logfd < 0)
     {
         const char *dir, *file;
@@ -766,7 +801,9 @@ void CLIMMXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std
     switch (area)
     {
         case gloox::LogAreaClassParser: la = "parser"; break;
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION < 0x000900
         case gloox::LogAreaClassConnection: la = "conn"; break;
+#endif
         case gloox::LogAreaClassClient: la = "client"; break;
         case gloox::LogAreaClassClientbase: la = "clbase"; break;
         case gloox::LogAreaClassComponent: la = "comp"; break;
@@ -849,7 +886,7 @@ UBYTE CLIMMXMPP::XMPPSendmsg (Connection *serv, Contact *cont, Message *msg)
 
     gloox::Stanza *msgs = gloox::Stanza::createMessageStanza (gloox::JID (cont->screen), msg->send_message);
     msgs->addAttribute ("id", s_sprintf ("xmpp-%s-%x", m_stamp, ++m_conn->our_seq));
-    
+
     std::string res = m_client->resource();
     msgs->addAttribute ("from", s_sprintf ("%s/%s", serv->screen, res.c_str()));
     gloox::Tag *x = new gloox::Tag (msgs, "x");
@@ -870,7 +907,7 @@ void CLIMMXMPP::XMPPSetstatus (Connection *serv, Contact *cont, status_t status,
 {
     gloox::Presence p;
     gloox::JID j = cont ? gloox::JID (cont->screen) : gloox::JID ();
-    
+
     switch (status)
     {
         case ims_online:   msg = NULL;
@@ -914,11 +951,11 @@ void CLIMMXMPP::XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, cons
         new gloox::Tag (pres, "status", msg);
     m_client->send (pres);
 }
-    
+
 static void XMPPCallBackTimeout (Event *event)
 {
     Connection *conn = event->conn;
-    
+
     if (!conn)
     {
         EventD (event);
@@ -934,9 +971,9 @@ Event *ConnectionInitXMPPServer (Connection *serv)
 {
     const char *sp;
     Event *event;
-    
+
     assert (serv->type == TYPE_XMPP_SERVER);
-    
+
     if (!serv->screen || !serv->passwd)
         return NULL;
     if (!strchr (serv->screen, '@'))
@@ -947,22 +984,22 @@ Event *ConnectionInitXMPPServer (Connection *serv)
         jid = s_sprintf ("%s@%s", serv->screen, serv->server);
         s_repl (&serv->screen, jid);
     }
-    
+
     XMPPCallbackClose (serv);
 
     sp = s_sprintf ("%s", s_wordquote (s_sprintf ("%s:%lu", serv->server, serv->port)));
     rl_printf (i18n (2620, "Opening XMPP connection for %s at %s...\n"),
         s_wordquote (serv->screen), sp);
-    
+
     if (!serv->port)
         serv->port = -1UL;
-    
+
     serv->c_open = &ConnectionInitXMPPServer;
     serv->reconnect = &XMPPCallbackReconn;
     serv->error = &XMPPCallbackError;
     serv->close = &XMPPCallbackClose;
     serv->dispatch = &XMPPCallbackDispatch;
-    
+
     if ((event = QueueDequeue2 (serv, QUEUE_DEP_WAITLOGIN, 0, NULL)))
     {
         event->attempts++;
@@ -977,7 +1014,7 @@ Event *ConnectionInitXMPPServer (Connection *serv)
     CLIMMXMPP *l = new CLIMMXMPP (serv);
     serv->xmpp_private = l;
     serv->connect |= CONNECT_SELECT_R;
-    
+
     return event;
 }
 
@@ -998,7 +1035,7 @@ void XMPPCallbackDispatch (Connection *conn)
         conn->sok = -1;
         return;
     }
-    
+
     j->getClient()->recv (0);
 }
 
@@ -1060,7 +1097,7 @@ void XMPPCallbackClose (Connection *conn)
         conn->sok = -1;
         return;
     }
-    
+
     j->getClient()->disconnect ();
     delete j;
     conn->xmpp_private = NULL;

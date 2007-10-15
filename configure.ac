@@ -377,6 +377,9 @@ if test "x$ac_arg_use_xmpp" != "xno"; then
     AC_SUBST(LIBXMPP, "libclimmxmpp.a", [Static lib to link if XMPP is enabled])
     AC_SUBST(L_LIBXMPP, "-L. -lclimmxmpp", [Static lib link option to link if XMPP is enabled])
     AC_DEFINE(ENABLE_XMPP, 1, [Enable XMPP chat network using libgloox])
+    ac_gloox_version=`pkg-config --modversion gloox | sed "s/^\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*/\1 \2 \3/"`
+    ac_gloox_version=`printf 0x%02x%02x%02x $ac_gloox_version`
+    AC_DEFINE_UNQUOTED(LIBGLOOX_VERSION, $ac_gloox_version, [libgloox version])
     if test "x$ac_use_autopackage" = xyes; then
       XMPP_LIBS="-lgloox -lstdc++"
     fi
