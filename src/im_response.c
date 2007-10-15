@@ -956,6 +956,9 @@ void IMSrvMsgFat (Contact *cont, time_t stamp, Opt *opt)
     if (!OptGetStr (opt, CO_MSGTEXT, &msg.orig_data))
         msg.orig_data = "";
     msg.msgtext = strdup (msg.orig_data);
+    
+    OptD (opt);
+    opt = NULL;
 
 #ifdef ENABLE_OTR
     /* process incomming messages for OTR decryption */
@@ -963,7 +966,6 @@ void IMSrvMsgFat (Contact *cont, time_t stamp, Opt *opt)
         if (OTRMsgIn (cont, &msg))
         {
             free (msg.msgtext);
-            OptD (opt);
             return; /* no msg ack/logging? */
         }
 #endif /* ENABLE_OTR */
@@ -1009,5 +1011,4 @@ void IMSrvMsgFat (Contact *cont, time_t stamp, Opt *opt)
     __IMSrvMsg (cont, stamp, &msg, 0);
     
     free (msg.msgtext);
-    OptD (opt);
 }
