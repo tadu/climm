@@ -319,6 +319,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
     stmp = PacketReadB4 (pak);
     if (stmp)
     {
+#if 0
         if (!roster->import)
         {
             time_t now = time (NULL);
@@ -333,6 +334,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
             SnacCliRosterentryadd (serv, "", 0, serv->privacy_tag, roster_visibility, TLV_PRIVACY, "\x03", 1);
             serv->privacy_value = 3;
         }
+#endif
         if (~serv->connect & CONNECT_OK)
             CliFinishLogin (serv);
 
@@ -621,18 +623,27 @@ void SnacCliSetvisibility (Connection *serv, char value, char islogin)
 {
     Packet *pak;
     
-    pak = SnacC (serv, 19, 9, 0, 0);
-    PacketWriteStrB     (pak, "");
-    PacketWriteB2       (pak, 0);
-    PacketWriteB2       (pak, serv->privacy_tag);
-    PacketWriteB2       (pak, roster_visibility);
-    PacketWriteBLen     (pak);
-    PacketWriteTLV      (pak, TLV_PRIVACY);
-    PacketWrite1        (pak, value);
-    PacketWriteTLVDone  (pak);
-    PacketWriteBLenDone (pak);
-    SnacSendR (serv, pak, cb_LoginVisibilitySet, NULL);
-    serv->privacy_value = value;
+    if (serv->privacy_tag)
+    {
+        pak = SnacC (serv, 19, 9, 0, 0);
+        PacketWriteStrB     (pak, "");
+        PacketWriteB2       (pak, 0);
+        PacketWriteB2       (pak, serv->privacy_tag);
+        PacketWriteB2       (pak, roster_visibility);
+        PacketWriteBLen     (pak);
+        PacketWriteTLV      (pak, TLV_PRIVACY);
+        PacketWrite1        (pak, value);
+        PacketWriteTLVDone  (pak);
+        PacketWriteBLenDone (pak);
+        SnacSendR (serv, pak, cb_LoginVisibilitySet, NULL);
+        serv->privacy_value = value;
+    }
+    else
+    {
+        serv->privacy_tag = rand () % 0x8000;
+        SnacCliRosterentryadd (serv, "", 0, serv->privacy_tag, roster_visibility, TLV_PRIVACY, value, 1);
+        serv->privacy_value = value;
+    }
 }
 
 /*
@@ -842,6 +853,7 @@ JUMP_SNAC_F(SnacSrvRosterok)
     count = PacketReadB2 (pak);          /* COUNT */
     stmp = PacketReadB4 (pak);
 
+#if 0
     if (!roster->import)
     {
         time_t now = time (NULL);
@@ -856,6 +868,7 @@ JUMP_SNAC_F(SnacSrvRosterok)
         SnacCliRosterentryadd (serv, "", 0, serv->privacy_tag, roster_visibility, TLV_PRIVACY, "\x03", 1);
         serv->privacy_value = 3;
     }
+#endif
     if (~serv->connect & CONNECT_OK)
         CliFinishLogin (serv);
 
