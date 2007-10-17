@@ -114,8 +114,8 @@ CLIMMXMPP::CLIMMXMPP (Connection *serv)
     m_client->setPresence (gloox::PresenceAvailable, 5);
 #else
     m_client->setAutoPresence (true);
-#endif
     m_client->setInitialPriority (5);
+#endif
 
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
     // Yes http proxy is now avail in gloox, but not used in climm, so != NULL
