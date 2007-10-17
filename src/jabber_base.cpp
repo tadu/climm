@@ -117,13 +117,13 @@ CLIMMXMPP::CLIMMXMPP (Connection *serv)
     m_client->setInitialPriority (5);
 #endif
 
+    m_client->connect (false);
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
     // Yes http proxy is now avail in gloox, but not used in climm, so != NULL
     serv->sok = dynamic_cast<gloox::ConnectionTCPBase *>(m_client->connectionImpl())->socket();
 #else
-    m_client->connect (false);
-#endif
     serv->sok = m_client->fileDescriptor ();
+#endif
 }
 
 CLIMMXMPP::~CLIMMXMPP ()
