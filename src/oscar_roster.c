@@ -641,7 +641,7 @@ void SnacCliSetvisibility (Connection *serv, char value, char islogin)
     else
     {
         serv->privacy_tag = rand () % 0x8000;
-        SnacCliRosterentryadd (serv, "", 0, serv->privacy_tag, roster_visibility, TLV_PRIVACY, value, 1);
+        SnacCliRosterentryadd (serv, "", 0, serv->privacy_tag, roster_visibility, TLV_PRIVACY, &value, 1);
         serv->privacy_value = value;
     }
 }
