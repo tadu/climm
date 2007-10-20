@@ -161,12 +161,16 @@ void SnacCallback (Event *event)
         UDWORD seq = pak->ref;
         pak->ref = family;
         refevent->pak = event->pak;
+        event->pak = NULL;
         refevent->callback (refevent);
         event->pak = refevent->pak;
         refevent->pak = NULL;
         EventD (refevent);
         if (!event->pak)
+        {
+            EventD (event);
             return;
+        }
         pak->ref = seq;
     }
     
