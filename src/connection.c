@@ -133,7 +133,7 @@ Connection *ConnectionNr (int i)
     for (cl = &slist; cl && i >= ConnectionListLen; cl = cl->more)
         i -= ConnectionListLen;
     
-    if (!cl)
+    if (!cl || i < 0)
         return NULL;
     
     return cl->conn[i];
