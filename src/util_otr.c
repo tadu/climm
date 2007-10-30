@@ -87,21 +87,21 @@ static void cb_log_message (void *opdata, const char *message);
 /* Callback structure */
 static OtrlMessageAppOps ops =
 {
-    policy:                 cb_policy,
-    create_privkey:         cb_create_privkey,
-    is_logged_in:           cb_is_logged_in,
-    inject_message:         cb_inject_message,
-    notify:                 cb_notify,
-    display_otr_message:    cb_display_otr_message,
-    update_context_list:    cb_update_context_list,
-    protocol_name:          cb_protocol_name,
-    protocol_name_free:     cb_protocol_name_free,
-    new_fingerprint:        cb_new_fingerprint,
-    write_fingerprints:     cb_write_fingerprints,
-    gone_secure:            cb_gone_secure,
-    gone_insecure:          cb_gone_insecure,
-    still_secure:           cb_still_secure,
-    log_message:            cb_log_message
+    .policy                = cb_policy,
+    .create_privkey        = cb_create_privkey,
+    .is_logged_in          = cb_is_logged_in,
+    .inject_message        = cb_inject_message,
+    .notify                = cb_notify,
+    .display_otr_message   = cb_display_otr_message,
+    .update_context_list   = cb_update_context_list,
+    .protocol_name         = cb_protocol_name,
+    .protocol_name_free    = cb_protocol_name_free,
+    .new_fingerprint       = cb_new_fingerprint,
+    .write_fingerprints    = cb_write_fingerprints,
+    .gone_secure           = cb_gone_secure,
+    .gone_insecure         = cb_gone_insecure,
+    .still_secure          = cb_still_secure,
+    .log_message           = cb_log_message
 };
 
 /* connection type to protocol name mapping */
