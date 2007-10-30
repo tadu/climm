@@ -17,10 +17,6 @@
 #include <ctype.h>
 #endif
 
-#if !defined(UT_NAMESIZE)
-#define UT_NAMESIZE 8
-#endif
-
 static int console_idle (time_t now, struct utmp *u)
 {
     struct stat sbuf;
@@ -65,7 +61,11 @@ UDWORD os_DetermineIdleTime (time_t now, time_t last)
         if (u->ut_type != USER_PROCESS)
             continue;
 
+#ifdef UT_NAMESIZE
         if (strncmp (u->ut_user, pass->pw_name, UT_NAMESIZE))
+#else
+        if (strncmp (u->ut_user, pass->pw_name, sizeof (u->ut_user))
+#endif
             continue;
         
         tmp = console_idle (now, u);
