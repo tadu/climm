@@ -1075,11 +1075,14 @@ static JUMP_F(CmdUserPeer)
     int i;
     ANYCONN;
 
-    if (!uiG.conn || !(list = uiG.conn->assoc))
-    {
-        rl_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
-        return 0;
-    }
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
+    if (uiG.conn->type != TYPE_XMPP_SERVER)
+#endif
+        if (!uiG.conn || !(list = uiG.conn->assoc))
+        {
+            rl_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
+            return 0;
+        }
 
     if (!data)
     {

@@ -2,6 +2,7 @@
 extern "C" {
 #include "climm.h"
 #include <sys/types.h>
+#include <errno.h>
 #if HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
@@ -12,15 +13,24 @@ extern "C" {
 #include "jabber_base.h"
 #include "connection.h"
 #include "contact.h"
+#include "conv.h"
+#include "tcp.h"
 #include "util_io.h"
 #include "im_response.h"
 #include "im_request.h"
 #include "util_ui.h"
+#include "util_rl.h"
 #include "buildmark.h"
 #include "preferences.h"
+#include "peer_file.h"
 }
 
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000907
+#define CLIMM_FILE_TRANSFER
+#endif
+
 #include <cassert>
+#include <map>
 #include <gloox/gloox.h>
 #include <gloox/client.h>
 #include <gloox/connectionlistener.h>
@@ -28,6 +38,12 @@ extern "C" {
 #include <gloox/subscriptionhandler.h>
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
 #include <gloox/connectiontcpbase.h>
+#endif
+#ifdef CLIMM_FILE_TRANSFER
+#include <gloox/socks5bytestream.h>
+#include <gloox/siprofilefthandler.h>
+#include <gloox/socks5bytestreamdatahandler.h>
+#include <gloox/siprofileft.h>
 #endif
 #include <gloox/presencehandler.h>
 #include <gloox/stanza.h>
@@ -39,15 +55,35 @@ extern "C" {
     static jump_conn_f XMPPCallbackClose;
     static jump_conn_err_f XMPPCallbackError;
     static void XMPPCallBackDoReconn (Event *event);
+#ifdef CLIMM_FILE_TRANSFER
+    static jump_conn_f XMPPFTCallbackDispatch;
+    static jump_conn_f XMPPFTCallbackClose;
+    static jump_conn_err_f XMPPFTCallbackError;
+    static void XMPPCallBackFileAccept (Event *event);
+#endif
+    //void PeerFileIODispatchClose (Connection *ffile);
 }
+
+#ifdef CLIMM_FILE_TRANSFER
+std::map<UWORD, std::string> l_tSeqTranslate;
+std::map<const std::string, std::string> sid2id;
+#endif
 
 class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
                  public gloox::PresenceHandler,    public gloox::SubscriptionHandler,
+#ifdef CLIMM_FILE_TRANSFER
+                 public gloox::SIProfileFTHandler,
+                 public gloox::SOCKS5BytestreamDataHandler,
+#endif
+
                  public gloox::LogHandler {
     private :
         Connection *m_conn;
         gloox::Client *m_client;
         char *m_stamp;
+#ifdef CLIMM_FILE_TRANSFER
+        gloox::SIProfileFT *m_pFT;
+#endif
 
         void handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string tof, std::string id, gloox::StanzaSubType subtype);
         void handleXEP8 (gloox::Tag *t);
@@ -79,6 +115,19 @@ class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler
         virtual void  handleMessage (gloox::Stanza *stanza, gloox::MessageSession *session = NULL);
 #else
         virtual void  handleMessage (gloox::Stanza *stanza);
+#endif
+#ifdef CLIMM_FILE_TRANSFER
+        virtual void  handleFTRequestError (gloox::Stanza *stanza);
+        virtual void  handleFTSOCKS5Bytestream (gloox::SOCKS5Bytestream *s5b);
+        virtual void handleFTRequest (const gloox::JID & from, const std::string & id, const std::string & sid,
+                const std::string & name, long size, const std::string & hash, const std::string & date,
+                const std::string & mimetype, const std::string & desc, int stypes, long offset, long length);
+        void XMPPAcceptDenyFT (gloox::JID contact, std::string id, std::string sid, const char *reason);
+        virtual void handleFTRequestError(gloox::Stanza*, const std::string&)  {}
+        virtual void handleSOCKS5Data (gloox::SOCKS5Bytestream *s5b, const std::string &data);
+        virtual void handleSOCKS5Error (gloox::SOCKS5Bytestream *s5b, gloox::Stanza *stanza);
+        virtual void handleSOCKS5Open (gloox::SOCKS5Bytestream *s5b);
+        virtual void handleSOCKS5Close (gloox::SOCKS5Bytestream *s5b);
 #endif
         virtual void  handlePresence (gloox::Stanza *stanza);
         virtual void  handleSubscription (gloox::Stanza *stanza);
@@ -112,6 +161,12 @@ CLIMMXMPP::CLIMMXMPP (Connection *serv)
     m_client->disco()->setIdentity ("client", "console");
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
     m_client->setPresence (gloox::PresenceAvailable, 5);
+
+#ifdef CLIMM_FILE_TRANSFER
+    m_pFT = new gloox::SIProfileFT ( m_client, this);
+    //m_pFT->addStreamHost (gloox::JID ("proxy.jabber.org"), "208.245.212.98", 7777);
+#endif
+
 #else
     m_client->setAutoPresence (true);
     m_client->setInitialPriority (5);
@@ -953,6 +1008,207 @@ void CLIMMXMPP::XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, cons
     m_client->send (pres);
 }
 
+#ifdef CLIMM_FILE_TRANSFER
+
+void CLIMMXMPP::handleSOCKS5Data (gloox::SOCKS5Bytestream *s5b, const std::string &data)
+{
+    Connection *fpeer = ConnectionFindScreen (TYPE_FILELISTEN, s5b->sid().c_str());
+    Contact *cont = fpeer->cont;
+    assert (fpeer);
+    int len = write (fpeer->assoc->sok, data.c_str(), data.length());
+    if (len != data.length())
+    {
+        rl_log_for (cont->screen, COLCONTACT);
+        rl_printf (i18n (2575, "Error writing to file (%lu bytes written out of %u).\n"), len, data.length());
+        //TCPClose (fpeer);
+    }
+    fpeer->assoc->done += len;
+    if (fpeer->assoc->len == fpeer->assoc->done)
+    {
+        ReadLinePromptReset ();
+        rl_log_for (cont->screen, COLCONTACT);
+        rl_print  (i18n (2166, "Finished receiving file.\n"));
+#if HAVE_FSYNC
+        fsync (fpeer->assoc->sok);
+#endif
+        close (fpeer->assoc->sok);
+        fpeer->assoc->sok = -1;
+    }
+    else if (fpeer->assoc->len)
+    {
+        ReadLinePromptUpdate (s_sprintf ("[%s%ld %02d%%%s] %s%s",
+                  COLINCOMING, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
+                  COLNONE, COLSERVER, i18n (2467, "climm>")));
+    }
+}
+
+void CLIMMXMPP::handleSOCKS5Error (gloox::SOCKS5Bytestream *s5b, gloox::Stanza *stanza)
+{
+    rl_printf (i18n (2234, "FT Error.\n"));
+}
+
+void CLIMMXMPP::handleSOCKS5Open (gloox::SOCKS5Bytestream *s5b)
+{
+    rl_printf ("Connected!\n");
+
+}
+
+void CLIMMXMPP::handleSOCKS5Close (gloox::SOCKS5Bytestream *s5b)
+{
+    Connection *conn = ConnectionFindScreen (TYPE_FILELISTEN, s5b->sid().c_str());
+    assert (conn);
+    ConnectionD (conn);
+}
+
+void CLIMMXMPP::handleFTRequestError (gloox::Stanza *stanza)
+{
+    rl_printf (i18n (2234, "Message %s discarded - lost session.\n"), stanza->errorText().c_str());
+}
+
+void CLIMMXMPP::handleFTSOCKS5Bytestream (gloox::SOCKS5Bytestream *s5b)
+{
+    strc_t name;
+    int len, off;
+    Contact *cont = ContactFindScreen (m_conn->contacts, s5b->initiator().bare().c_str());
+    s5b->registerSOCKS5BytestreamDataHandler (this);
+    //if (prG->verbose)
+        rl_printf (i18n (2519, "Opening file listener connection at %slocalhost%s:%s%lp%s... "),
+                  COLQUOTE, COLNONE, COLQUOTE, s5b->getConnectionImpl(), COLNONE);
+    if (s5b->connect())
+    {
+        rl_printf ("OK\n");
+        gloox::ConnectionTCPBase *conn = dynamic_cast<gloox::ConnectionTCPBase *>(s5b->getConnectionImpl());
+        if (!conn)
+            return;
+        Connection *child = ConnectionFindScreen (TYPE_FILELISTEN, s5b->sid().c_str());
+        if (!child)
+            return; //Failed
+
+        /**
+         * Insert socket into climms TCP handler
+         */
+        child->sok = conn->socket();
+        child->connect = CONNECT_OK | CONNECT_SELECT_R;
+        child->xmpp_private = s5b;
+    }
+}
+
+void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id, const std::string & sid,
+        const std::string & name, long size, const std::string & hash, const std::string & date,
+        const std::string & mimetype, const std::string & desc, int stypes, long offset, long length)
+{
+    Contact *cont, *contr;
+    // Build a nicer description
+    std::string pretty = name;
+
+    if (desc.size())
+        pretty += " (" + desc + ")";
+
+    UWORD seq = ++m_conn->our_seq;
+    l_tSeqTranslate[seq] = sid;
+    sid2id[sid] = id; //This will be changed in the 1.0 release of gloox :)
+    GetBothContacts (from, m_conn, &cont, &contr, 0);
+
+    Opt *opt2 = OptC ();
+    OptSetVal (opt2, CO_BYTES, size);
+    OptSetStr (opt2, CO_MSGTEXT, pretty.c_str());
+    OptSetVal (opt2, CO_REF, seq);
+    OptSetVal (opt2, CO_MSGTYPE, MSG_FILE);
+    IMSrvMsgFat (contr, NOW, opt2);
+    opt2 = OptC ();
+    OptSetVal (opt2, CO_FILEACCEPT, 0);
+    OptSetStr (opt2, CO_REFUSE, i18n (2514, "refused (ignored)"));
+    Event *e1 = QueueEnqueueData (m_conn, QUEUE_USERFILEACK, seq, time (NULL) + 120,
+                           NULL, contr, opt2, &PeerFileTO); //Timeout Handler
+    QueueEnqueueDep (m_conn, 0, seq, e1,
+                     NULL, contr, opt2, XMPPCallBackFileAccept); // Route whatever there ;)
+    
+    // Prepare a FileListener
+    Connection *child = ConnectionClone (m_conn, TYPE_FILELISTEN);
+    if (!child)
+        return; //Failed
+
+    /**
+     * Insert socket into climms TCP handler
+     */
+    child->sok = -1;
+    child->connect = CONNECT_FAIL;
+    child->dispatch = &XMPPFTCallbackDispatch;
+    child->reconnect = NULL;
+    child->error = &XMPPFTCallbackError;
+    child->close = &XMPPFTCallbackClose;
+    s_repl (&child->screen, sid.c_str());
+
+    /**
+     * Create the output file
+     */
+    Connection *ffile = ConnectionClone (child, TYPE_FILE);
+    char buf[200], *p;
+    str_s filename = { (char *)name.c_str(), name.length(), name.length() };
+    int pos = 0;
+
+    assert (ffile);
+    pos = snprintf (buf, sizeof (buf), "%sfiles" _OS_PATHSEPSTR "%s" _OS_PATHSEPSTR,
+                    PrefUserDir (prG), cont->screen);
+    snprintf (buf + pos, sizeof (buf) - pos, "%s", (ConvFrom (&filename, ENC_UTF8))->txt);
+    for (p = buf + pos; *p; p++)
+        if (*p == '/')
+            *p = '_';
+    child->assoc = ffile;
+    s_repl (&ffile->server, buf);
+    ffile->connect = CONNECT_FAIL;
+    ffile->len = size;
+    ffile->done = offset;
+    //ffile->close = &PeerFileIODispatchClose;
+}
+    
+void CLIMMXMPP::XMPPAcceptDenyFT (gloox::JID contact, std::string id, std::string sid, const char *reason)
+{
+    Connection *conn;
+    if (!reason) 
+        return m_pFT->acceptFT (contact, id, gloox::SIProfileFT::FTTypeS5B);
+
+    // We have done some preps 
+    // delete them
+    m_pFT->declineFT (contact, id, gloox::SIManager::RequestRejected, reason);
+    conn = ConnectionFindScreen (TYPE_FILELISTEN, sid.c_str());
+    // If it is not found e crash... Godd idea, cause this should not happen
+    TCPClose(conn);
+}
+
+void XMPPFTCallbackClose(Connection *conn)
+{
+    if (conn->sok == -1)
+        return;
+
+    gloox::SOCKS5Bytestream *s = (gloox::SOCKS5Bytestream *)(conn->xmpp_private);
+    conn->sok = -1;
+}
+
+BOOL XMPPFTCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
+{
+    XMPPFTCallbackClose(conn);
+    return 0;
+}
+
+void XMPPFTCallbackDispatch (Connection *conn)
+{
+    if (conn->sok == -1)
+        return;
+
+    gloox::SOCKS5Bytestream *s = (gloox::SOCKS5Bytestream *)(conn->xmpp_private);
+    if (!s)
+    {
+        rl_printf ("#Avoid spinning.\n");
+        conn->sok = -1;
+        return;
+    }
+
+    s->recv (0);
+}
+
+#endif
+
 static void XMPPCallBackTimeout (Event *event)
 {
     Connection *conn = event->conn;
@@ -1109,6 +1365,74 @@ BOOL XMPPCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
     rl_printf ("#XMPPCallbackError: %p %lu %lu\n", conn, rc, flags);
     return 0;
 }
+
+#ifdef CLIMM_FILE_TRANSFER
+void XMPPCallBackFileAccept (Event *event)
+{
+    Connection *conn = event->conn;
+    Contact *id, *res = NULL;
+    CLIMMXMPP *j = getXMPPClient (conn);
+    UDWORD opt_acc;
+    std::string seq, sid;
+    char *reason = NULL;
+
+    std::map<UWORD, std::string>::iterator l_it;
+    l_it = l_tSeqTranslate.find (event->seq);
+    if (l_it != l_tSeqTranslate.end())
+        sid = l_tSeqTranslate[event->seq];
+
+    seq = sid2id[sid];
+
+    if (!conn)
+    {
+        EventD (event);
+        return;
+    }
+    assert (conn->type == TYPE_XMPP_SERVER);
+    assert (event->cont);
+    assert (event->cont->parent);
+
+    res = event->cont;
+    id = res->parent;
+
+    assert (id);
+    
+    OptGetVal (event->opt, CO_FILEACCEPT, &opt_acc);
+    if (!opt_acc)
+        OptGetStr (event->opt, CO_REFUSE, (const char **)&reason);
+    else
+    {
+        Connection *conn = ConnectionFindScreen (TYPE_FILELISTEN, sid.c_str());
+        Connection *ffile = conn->assoc;
+        Contact *cont = res->parent;
+        assert (ffile->type == TYPE_FILE);
+        ffile->sok = open (ffile->server, O_CREAT | O_WRONLY | (ffile->done ? O_APPEND : O_TRUNC), 0660);
+        if (ffile->sok == -1)
+        {
+            int rc = errno;
+            if (rc == ENOENT)
+            {
+                mkdir (s_sprintf ("%sfiles", PrefUserDir (prG)), 0700);
+                mkdir (s_sprintf ("%sfiles" _OS_PATHSEPSTR "%s", PrefUserDir (prG), cont->screen), 0700);
+                ffile->sok = open (ffile->server, O_CREAT | O_WRONLY | (ffile->done ? O_APPEND : O_TRUNC), 0660);
+            }
+            if (ffile->sok == -1)
+            {
+                rl_log_for (cont->screen, COLCONTACT);
+                rl_printf (i18n (2083, "Cannot open file %s: %s (%d).\n"),
+                         ffile->server, strerror (rc), rc);
+                ConnectionD (conn);
+                return;
+            }
+        }
+        ffile->connect = CONNECT_OK;
+    }
+    j->XMPPAcceptDenyFT (gloox::JID (std::string (id->screen) + "/" + res->screen), seq, sid, reason);
+    event->opt = NULL;
+    EventD (QueueDequeueEvent (event->wait));
+    EventD (event);
+}
+#endif
 
 UBYTE XMPPSendmsg (Connection *serv, Contact *cont, Message *msg)
 {
