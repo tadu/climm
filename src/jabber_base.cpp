@@ -669,6 +669,7 @@ void CLIMMXMPP::handleMessage (gloox::Stanza *s)
     DropAttrib (t, "from");
     DropAttrib (t, "to");
     DropAttrib (t, "id");
+    DropAttrib (t, "xml:lang");
     if (t->hasAttribute ("xmlns", "jabber:client"))
         DropAttrib (t, "xmlns");
     if (!CheckInvalid (t))
