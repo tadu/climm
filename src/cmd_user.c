@@ -3333,30 +3333,35 @@ static JUMP_F(CmdUserLast)
  */
 static JUMP_F(CmdUserHistory)
 {
-    Contact *cont = NULL;
-
+    Contact *ra_cont = NULL, *cont = NULL;
     int msgCount;
-    int msgMin = DEFAULT_HISTORY_COUNT, msgNum = DEFAULT_HISTORY_COUNT, msgLines = 0;
+    int msgMin, msgNum, msgLines;
     time_t time, htime = (time_t)0;
     struct tm stamp, hstamp;
     const char *timeformat;
     strc_t par, p, line;
 
     FILE *logfile;
-    long *fposArray = NULL, fposLen = 0, len;
+    long *fposArray = NULL, fposLen, len;
     char buffer[LOG_MAX_PATH + 1], *target = buffer;
     const char *linep;
-    int fposCur = 0;
+    int fposCur;
     UDWORD parsetmp;
+
+    int ra_i, ra_first, ra_mode = 0,
+        ra_msgMin = DEFAULT_HISTORY_COUNT,
+        ra_msgNum = DEFAULT_HISTORY_COUNT;
 
     ANYCONN;
 
+    if (data == 1 && s_parsekey (&args, "*"))
+        ra_mode = 1;
+    else if (!(ra_cont = s_parsenick (&args, uiG.conn)))
     /*
      * check for nick/uin in contacts. If first parameter isn't a
      * contact then exit.
      * parse history parameters min and num
      */
-    if (!(cont = s_parsenick (&args, uiG.conn)))
     {
         if ((par = s_parse (&args)))
             rl_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), par->txt);
@@ -3381,7 +3386,7 @@ static JUMP_F(CmdUserHistory)
             hstamp.tm_mon--;
             hstamp.tm_year -= 1900;
             htime = timelocal (&hstamp);
-            msgMin = 0;
+            ra_msgMin = 0;
         }
         else
         {
@@ -3389,225 +3394,259 @@ static JUMP_F(CmdUserHistory)
             return 0;
         }
     }
+
     if (data != 1 && s_parseint (&args, &parsetmp))
-        msgMin = (SDWORD)parsetmp;
-    
-    if (msgMin >= 0)
-        msgNum = msgMin;
+        ra_msgMin = (SDWORD)parsetmp;
+
+    if (ra_msgMin >= 0)
+        ra_msgNum = ra_msgMin;
     
     if (s_parseint (&args, &parsetmp))
-        msgNum = parsetmp;
+        ra_msgNum = parsetmp;
 
     /*
      *  correct parameters min and num parameters
      */
-    if (msgMin == 0 && data != 1)
-        msgNum = 0;
-    if (msgNum < 0)
-        msgNum = -msgNum;
+    if (ra_msgMin == 0 && data != 1)
+        ra_msgNum = 0;
+    if (ra_msgNum < 0)
+        ra_msgNum = -ra_msgNum;
 
-    /*
-     * get filename of logfile and open it for reading.
-     */
-    if (!prG->logplace || !*prG->logplace)
-        prG->logplace = "history" _OS_PATHSEPSTR;
-
-    snprintf (buffer, sizeof (buffer), s_realpath (prG->logplace));
-    target += strlen (buffer);
-
-    if (target[-1] == _OS_PATHSEP)
-        snprintf (target, buffer + sizeof (buffer) - target, "%s.log", cont->screen);
-
-    /* try to open logfile for reading (no symlink file) */
-    if (!(logfile = fopen (buffer, "r")))
+    for (ra_i = 0; ra_i >= 0; ra_i++)
     {
-        rl_printf (i18n (2385, "Couldn't open %s for reading: %s (%d).\n"),
-                  buffer, strerror (errno), errno);
-        return 0;
-    }
+        if (ra_mode)
+        {
+            cont = ContactIndex(NULL, ra_i);
+            if (!cont)
+                break;
+            ra_first = 1;
+        }
+        else
+        {
+            if (cont)
+                break;
+            cont = ra_cont;
+        }
+            
+        msgMin = ra_msgMin;
+        msgNum = ra_msgNum;
 
-    memset (&stamp, 0, sizeof (struct tm));
+        /* reset to default */
+        msgLines = 0;
+        fposArray = NULL;
+        fposLen = 0;
+        target = buffer;
+        fposCur = 0;
+        
+        /*
+         * get filename of logfile and open it for reading.
+         */
+        if (!prG->logplace || !*prG->logplace)
+            prG->logplace = "history" _OS_PATHSEPSTR;
 
-    /* Get array of last file positions, reset memory to zeros */
-    if (msgMin > 0)
-    {
-        fposLen = msgMin;
-        fposArray = (long *) malloc (fposLen * sizeof (long));
-        if (!fposArray)
-            msgMin = 0;
-    }
+        snprintf (buffer, sizeof (buffer), s_realpath (prG->logplace));
+        target += strlen (buffer);
 
-    /*
-     * count messages only if history should dump only the last
-     * n message. Save the last n = msgMin file position of each
-     * message in fposArray[].
-     */
-    msgCount = 0;
-    if (msgMin > 0)
-    {
+        if (target[-1] == _OS_PATHSEP)
+            snprintf (target, buffer + sizeof (buffer) - target, "%s.log", cont->screen);
+
+        /* try to open logfile for reading (no symlink file) */
+        if (!(logfile = fopen (buffer, "r")))
+        {
+            rl_printf (i18n (2385, "Couldn't open %s for reading: %s (%d).\n"),
+                      buffer, strerror (errno), errno);
+            continue;
+        }
+
+        memset (&stamp, 0, sizeof (struct tm));
+
+        /* Get array of last file positions, reset memory to zeros */
+        if (msgMin > 0)
+        {
+            fposLen = msgMin;
+            fposArray = (long *) malloc (fposLen * sizeof (long));
+            if (!fposArray)
+                msgMin = 0;
+        }
+
+        /*
+         * count messages only if history should dump only the last
+         * n message. Save the last n = msgMin file position of each
+         * message in fposArray[].
+         */
+        msgCount = 0;
+        if (msgMin > 0)
+        {
+            while ((line = UtilIOReadline (logfile)))
+            {
+                linep = line->txt;
+                if (*linep == '#')
+                {
+                    /* get len to correct the file position to the
+                       beginning of line */
+                    len = (long)strlen (linep) + 1;
+                    linep++;
+                    if (!(p = s_parse (&linep)))
+                        continue;
+                    if (!(p = s_parse (&linep)))
+                        continue;
+                    if (!(p = s_parse (&linep)))
+                        continue;
+                    if ((p->txt[0] != '<' || p->txt[1] != '-') &&
+                        (p->txt[0] != '-' || p->txt[1] != '>'))
+                        continue;
+                    
+                    msgCount++;
+                    /* save corrected file position */
+                    fposArray[fposCur] = ftell (logfile) - len;
+                    if (++fposCur == fposLen)
+                        fposCur = 0;
+                }
+            }
+            /* reset file to the requested position. If message
+               count smaller than msgMin, set file position to the first
+               message. */
+            if (msgCount == 0)
+            {
+                s_free ((char *)fposArray);
+                continue;
+            }
+            if (msgCount < msgMin)
+            {
+                fposCur = 0;
+                fposLen = msgCount;
+            }
+            fseek (logfile, fposArray[fposCur], SEEK_SET);
+        }
+
+
+        /*
+         * if msgMin negativ, count from the beginning (-1 for first message).
+         */
+        if (msgMin > 0)
+        {
+            if (msgCount < msgMin)
+            {
+                msgNum = msgCount;
+                msgCount = 0;
+                msgMin = 1;
+            }
+            else
+            {
+                msgMin   = msgCount - msgMin + 1;
+                msgCount = msgMin - 1;
+            }
+        }
+        else
+            msgMin   = -msgMin;
+
+        timeformat = s_sprintf ("%s%s%s%s", COLDEBUG, i18n (2393, "%Y-%m-%d"),
+                                COLNONE, i18n (2394, " %I:%M %p"));
+
+        /*
+         * dump message.
+         * If file positions of messages are available (fposArray != NULL) and
+         * log entry isn't a message entry, jump to next message. If fseek()
+         * fails, remove position array.
+         */
         while ((line = UtilIOReadline (logfile)))
         {
             linep = line->txt;
-            if (*linep == '#')
+            if (msgLines && (msgLines > 0 || *linep != '#'))
             {
-                /* get len to correct the file position to the
-                   beginning of line */
-                len = (long)strlen (linep) + 1;
+                rl_printf ("%s%s\n", COLNONE, linep);
+                msgLines--;
+            }
+            else if (*linep == '#')
+            {
+                msgLines = 0;
+                /* evaluate requested history scope
+                   if all lines are dumped, exit */
+                if (msgNum > 0 && msgCount + 1 == msgMin + msgNum)
+                    break;
+
+                if (fposArray)
+                {
+                    len = strlen (linep) + 1;
+                    /* jump to next message according to fposArray[] */
+                    if (ftell (logfile) - len != fposArray[fposCur])
+                    {
+                        if (!fseek (logfile, fposArray[fposCur], SEEK_SET))
+                        {
+                            free (fposArray);
+                            fposArray = NULL;
+                        }
+                        continue;
+                    }
+                    if (++fposCur == fposLen)
+                        fposCur = 0;
+                }
                 linep++;
+
+                /* extract time from sent and received messages */
                 if (!(p = s_parse (&linep)))
                     continue;
+                sscanf (p->txt, "%4d%2d%2d%2d%2d%2d",
+                        &stamp.tm_year, &stamp.tm_mon, &stamp.tm_mday,
+                        &stamp.tm_hour, &stamp.tm_min, &stamp.tm_sec);
+
                 if (!(p = s_parse (&linep)))
                     continue;
+
                 if (!(p = s_parse (&linep)))
                     continue;
                 if ((p->txt[0] != '<' || p->txt[1] != '-') &&
                     (p->txt[0] != '-' || p->txt[1] != '>'))
                     continue;
-                
                 msgCount++;
-                /* save corrected file position */
-                fposArray[fposCur] = ftell (logfile) - len;
-                if (++fposCur == fposLen)
-                    fposCur = 0;
-            }
-        }
-        /* reset file to the requested position. If message
-           count smaller than msgMin, set file position to the first
-           message. */
-        if (msgCount == 0)
-        {
-            free (fposArray);
-            return 0;
-        }
-        if (msgCount < msgMin)
-        {
-            fposCur = 0;
-            fposLen = msgCount;
-        }
-        fseek (logfile, fposArray[fposCur], SEEK_SET);
-    }
-
-
-    /*
-     * if msgMin negativ, count from the beginning (-1 for first message).
-     */
-    if (msgMin > 0)
-    {
-        if (msgCount < msgMin)
-        {
-            msgNum = msgCount;
-            msgCount = 0;
-            msgMin = 1;
-        }
-        else
-        {
-            msgMin   = msgCount - msgMin + 1;
-            msgCount = msgMin - 1;
-        }
-    }
-    else
-        msgMin   = -msgMin;
-
-    timeformat = s_sprintf ("%s%s%s%s", COLDEBUG, i18n (2393, "%Y-%m-%d"),
-                            COLNONE, i18n (2394, " %I:%M %p"));
-
-    /*
-     * dump message.
-     * If file positions of messages are available (fposArray != NULL) and
-     * log entry isn't a message entry, jump to next message. If fseek()
-     * fails, remove position array.
-     */
-    while ((line = UtilIOReadline (logfile)))
-    {
-        linep = line->txt;
-        if (msgLines && (msgLines > 0 || *linep != '#'))
-        {
-            rl_printf ("%s%s\n", COLNONE, linep);
-            msgLines--;
-        }
-        else if (*linep == '#')
-        {
-            msgLines = 0;
-            /* evaluate requested history scope
-               if all lines are dumped, exit */
-            if (msgNum > 0 && msgCount + 1 == msgMin + msgNum)
-                break;
-
-            if (fposArray)
-            {
-                len = strlen (linep) + 1;
-                /* jump to next message according to fposArray[] */
-                if (ftell (logfile) - len != fposArray[fposCur])
-                {
-                    if (!fseek (logfile, fposArray[fposCur], SEEK_SET))
-                    {
-                        free (fposArray);
-                        fposArray = NULL;
-                    }
+                
+                if (msgCount < msgMin && data != 1)
                     continue;
-                }
-                if (++fposCur == fposLen)
-                    fposCur = 0;
-            }
-            linep++;
 
-            /* extract time from sent and received messages */
-            if (!(p = s_parse (&linep)))
-                continue;
-            sscanf (p->txt, "%4d%2d%2d%2d%2d%2d",
-                    &stamp.tm_year, &stamp.tm_mon, &stamp.tm_mday,
-                    &stamp.tm_hour, &stamp.tm_min, &stamp.tm_sec);
+                /* convert local time */
+                stamp.tm_mon--;
+                stamp.tm_year -= 1900;
+                time = timegm (&stamp);
 
-            if (!(p = s_parse (&linep)))
-                continue;
-
-            if (!(p = s_parse (&linep)))
-                continue;
-            if ((p->txt[0] != '<' || p->txt[1] != '-') &&
-                (p->txt[0] != '-' || p->txt[1] != '>'))
-                continue;
-            msgCount++;
-            
-            if (msgCount < msgMin && data != 1)
-                continue;
-
-            /* convert local time */
-            stamp.tm_mon--;
-            stamp.tm_year -= 1900;
-            time = timegm (&stamp);
-
-            if (time != -1)
-            {
-                localtime_r (&time, &stamp);
-                /* history date command */
-                if (data == 1 && difftime (time, htime) < 0)
+                if (time != -1)
                 {
-                    msgMin = msgCount + 1;
-                    break;
+                    localtime_r (&time, &stamp);
+                    /* history date command */
+                    if (data == 1 && difftime (time, htime) < 0)
+                    {
+                        msgMin = msgCount + 1;
+                        msgLines = 0;
+                        continue;
+                    }
                 }
+
+                if (ra_first)
+                {
+                    rl_printf("%s>>> %s%s\n", COLQUOTE, COLCONTACT, cont->nick);
+                    ra_first = 0;
+                }
+                rl_printf ("%s %s[%4d] ", s_strftime (&time, timeformat, 0), COLNONE, msgCount);
+                msgLines = -1;
+
+                if (*p->txt == '<')
+                    rl_printf ("%s<- ", COLINCOMING);
+                else
+                    rl_printf ("%s-> ", COLSENT);
+
+                linep = strrchr (linep, '+');
+                if (!linep)
+                    continue;
+                linep++;
+                /* parse number of lines of message */
+                if (s_parseint (&linep, &parsetmp))
+                    msgLines = (SDWORD)parsetmp;
+                if (msgLines <= 0)
+                    rl_printf ("%s\n", COLNONE);
             }
-
-            rl_printf ("%s %s[%4d] ", s_strftime (&time, timeformat, 0), COLNONE, msgCount);
-            msgLines = -1;
-
-            if (*p->txt == '<')
-                rl_printf ("%s<- ", COLINCOMING);
-            else
-                rl_printf ("%s-> ", COLSENT);
-
-            linep = strrchr (linep, '+');
-            if (!linep)
-                continue;
-            linep++;
-            /* parse number of lines of message */
-            if (s_parseint (&linep, &parsetmp))
-                msgLines = (SDWORD)parsetmp;
-            if (msgLines <= 0)
-                rl_printf ("%s\n", COLNONE);
         }
+        fclose (logfile);
+        s_free ((char *)fposArray);
     }
-    fclose (logfile);
-    free (fposArray);
     return 0;
 }
 
