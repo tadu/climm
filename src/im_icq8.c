@@ -67,7 +67,8 @@ static Contact *IMRosterCheckCont (Connection *serv, RosterEntry *rc)
     if (!cont)
         return NULL;
 
-    OptSetVal (&cont->copts, CO_ISSBL, 1);
+    if (rc->type == roster_normal)
+        OptSetVal (&cont->copts, CO_ISSBL, 1);
     ContactIDSet (cont, rc->type, rc->id, rc->tag);
     return cont;
 }
