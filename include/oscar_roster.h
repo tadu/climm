@@ -67,6 +67,7 @@ void SnacCliSetlastupdate (Connection *serv);
 void SnacCliRosterdeletegroup (Connection *serv, ContactGroup *cg);
 void SnacCliRosterdeletecontact (Connection *serv, Contact *cont);
 void SnacCliRosterentrydelete (Connection *serv, RosterEntry *entry);
+void SnacCliRosterdelete (Connection *serv, const char *name, UWORD tag, UWORD id, roster_t type);
 void SnacCliAddstart (Connection *serv);
 void SnacCliAddend (Connection *serv);
 void SnacCliGrantauth (Connection *serv, Contact *cont);

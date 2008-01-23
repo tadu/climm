@@ -2823,8 +2823,11 @@ static JUMP_F(CmdUserTogInvis)
                 OptSetVal (&cont->copts, CO_HIDEFROM, 0);
                 if (uiG.conn->type == TYPE_SERVER)
                 {
+                    ContactIDs *cid;
                     if (!ContactIsInv (uiG.conn->status))
                         SnacCliReminvis (uiG.conn, cont);
+                    if ((cid = ContactIDHas (cont, roster_invisible)) && cid->issbl)
+                        SnacCliRosterdelete (cont->serv, cont->screen, cid->tag, cid->id, roster_invisible);
                 }
                 else if (uiG.conn->type == TYPE_SERVER_OLD)
                     CmdPktCmdUpdateList (uiG.conn, cont, INV_LIST_UPDATE, FALSE);
@@ -2837,9 +2840,13 @@ static JUMP_F(CmdUserTogInvis)
                 OptSetVal (&cont->copts, CO_HIDEFROM, 1);
                 if (uiG.conn->type == TYPE_SERVER)
                 {
+                    ContactIDs *cid;
                     SnacCliAddinvis (uiG.conn, cont);
                     if (i || ContactIsInv (uiG.conn->status))
                         SnacCliSetstatus (uiG.conn, uiG.conn->status, 3);
+                    if ((cid = ContactIDHas (cont, roster_visible)) && cid->issbl)
+                        SnacCliRosterdelete (cont->serv, cont->screen, cid->tag, cid->id, roster_visible);
+                    SnacCliRosterentryadd (cont->serv, cont->screen, 0, ContactIDGet (cont, roster_invisible), roster_invisible, 0, NULL, 0);
                 }
                 else if (uiG.conn->type == TYPE_SERVER_OLD)
                     CmdPktCmdUpdateList (uiG.conn, cont, INV_LIST_UPDATE, TRUE);
@@ -2878,8 +2885,11 @@ static JUMP_F(CmdUserTogVisible)
                 OptSetVal (&cont->copts, CO_INTIMATE, 0);
                 if (uiG.conn->type == TYPE_SERVER)
                 {
+                    ContactIDs *cid;
                     if (ContactIsInv (uiG.conn->status))
                         SnacCliRemvisible (uiG.conn, cont);
+                    if ((cid = ContactIDHas (cont, roster_visible)) && cid->issbl)
+                        SnacCliRosterdelete (cont->serv, cont->screen, cid->tag, cid->id, roster_visible);
                 }
                 else if (uiG.conn->type == TYPE_SERVER_OLD)
                     CmdPktCmdUpdateList (uiG.conn, cont, VIS_LIST_UPDATE, FALSE);
@@ -2892,7 +2902,11 @@ static JUMP_F(CmdUserTogVisible)
                 OptSetVal (&cont->copts, CO_INTIMATE, 1);
                 if (uiG.conn->type == TYPE_SERVER)
                 {
+                    ContactIDs *cid;
                     SnacCliAddvisible (uiG.conn, cont);
+                    if ((cid = ContactIDHas (cont, roster_invisible)) && cid->issbl)
+                        SnacCliRosterdelete (cont->serv, cont->screen, cid->tag, cid->id, roster_invisible);
+                    SnacCliRosterentryadd (cont->serv, cont->screen, 0, ContactIDGet (cont, roster_visible), roster_visible, 0, NULL, 0);
                     if (i || !ContactIsInv (uiG.conn->status))
                         SnacCliSetstatus (uiG.conn, uiG.conn->status, 3);
                 }

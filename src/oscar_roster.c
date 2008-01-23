@@ -745,6 +745,22 @@ void SnacCliRosterentrydelete (Connection *serv, RosterEntry *re)
     SnacCliAddend (serv);
 }
 
+void SnacCliRosterdelete (Connection *serv, const char *name, UWORD tag, UWORD id, roster_t type)
+{
+    Packet *pak;
+
+    SnacCliAddstart (serv);
+    pak = SnacC (serv, 19, 10, 0, 0);
+    PacketWriteStrB     (pak, name);
+    PacketWriteB2       (pak, tag);
+    PacketWriteB2       (pak, id);
+    PacketWriteB2       (pak, type);
+    PacketWriteBLen     (pak);
+    PacketWriteBLenDone (pak);
+    SnacSend (serv, pak);
+    SnacCliAddend (serv);
+}
+
 /*
  * SRV_UPDATEACK - SNAC(13,e)
  */
