@@ -26,7 +26,7 @@ const char *os_packagehomedir (void);
 #else /* !_WIN32 && (!__CYGWIN__ || !_X86) */
 #define os_DetectLockedWorkstation() -1
 #if ENABLE_BINRELOC
-#define os_packagedatadir() BR_DATADIR ("climm")
+#define os_packagedatadir() BR_DATADIR (_OS_PATHSEPSTR "climm")
 #else
 #define os_packagedatadir() PKGDATADIR
 #endif
