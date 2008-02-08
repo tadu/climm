@@ -635,7 +635,7 @@ static void IMRosterDiff (Event *event)
         }
     }
     for (i = 0; (cont = ContactIndex (serv->contacts, i)); i++)    
-        if (ContactPrefVal (cont, CO_WANTSBL) && (ContactID (cont, roster_normal)->issbl || !ContactPrefVal (cont, CO_ISSBL)))
+        if (ContactPrefVal (cont, CO_WANTSBL) && (!ContactID (cont, roster_normal)->issbl || !ContactPrefVal (cont, CO_ISSBL)))
         {
             rl_printf (i18n (9999, "Contact %s/%s (#%d) exists only locally.\n"),
                        cont->screen, cont->nick, ContactIDGet (cont, roster_normal));
