@@ -392,6 +392,7 @@ void IMCliAuth (Contact *cont, const char *text, auth_t how)
             case auth_req:
                 if (!text)         /* FIXME: let it untranslated? */
                     text = "Please authorize my request and add me to your Contact List\n";
+                text = s_sprintf ("\xfe%s", text);
                 msgtype = MSG_AUTH_REQ;
                 break;
             case auth_add:
