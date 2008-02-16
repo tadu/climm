@@ -1869,6 +1869,13 @@ static JUMP_F(CmdUserStatusDetail)
         
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
+            char tbuf[100];
+            val_t vseen, vonl;
+            time_t tseen, tonl;
+#ifdef WIP
+            val_t vclimm;
+            time_t tclimm;
+#endif
 #ifdef CONFIG_UNDERLINE
             __showcontact (uiG.conn, cont, data, non_ul);
 #else
@@ -1886,6 +1893,38 @@ static JUMP_F(CmdUserStatusDetail)
                 free (t1);
                 free (t2);
             }
+
+            if (!OptGetVal (&cont->copts, CO_TIMESEEN, &vseen))
+                vseen = -1;
+            tseen = vseen;
+            if (!OptGetVal (&cont->copts, CO_TIMEONLINE, &vonl))
+                vonl = -1;
+            tonl = vonl;
+#ifdef WIP
+            if (!OptGetVal (&cont->copts, CO_TIMECLIMM, &vclimm))
+                vclimm = -1;
+            tclimm = vclimm;
+#endif
+            if (tseen != (time_t)-1)
+            {
+                strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&tseen));
+                rl_printf ("    %-15s %s", i18n (9999, "Last seen:"), tbuf);
+            }
+            if (tonl != (time_t)-1)
+            {
+                strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&tonl));
+                rl_printf ("    %-15s %s", i18n (9999, "Online since:"), tbuf);
+            }
+            if (tseen != (time_t)-1 || tonl != (time_t)-1)
+                rl_print ("\n");
+#ifdef WIP
+            if (tclimm != (time_t)-1)
+            {
+                strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&tclimm));
+                rl_printf ("    %-15s %s\n", i18n (9999, "Using climm:"), tbuf);
+            }
+#endif
+
             if (cont->ids)
             {
                 ContactIDs *ids;
