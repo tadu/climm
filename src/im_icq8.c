@@ -520,19 +520,19 @@ static void IMRosterDiff (Event *event)
         cg = IMRosterCheckGroup (serv, rg);
         if (!cg)
         {
-            rl_printf (i18n (9999, "Group %s (#%d) exists only on the server.\n"), rg->name, rg->id);
+            rl_printf (i18n (2694, "Group %s (#%d) exists only on the server.\n"), rg->name, rg->id);
             cnt_groups++;
         }
         else if (cg && strcmp (rg->name, cg->name))
         {
-            rl_printf (i18n (9999, "Group %s (#%d) on the server is group %s (#%d) locally.\n"), rg->name, rg->id, cg->name, cg->id);
+            rl_printf (i18n (2695, "Group %s (#%d) on the server is group %s (#%d) locally.\n"), rg->name, rg->id, cg->name, cg->id);
             cnt_groups++;
         }
     }
     for (i = 0; (cg = ContactGroupIndex (i)); i++)
         if (cg->serv == serv && !ContactGroupPrefVal (cg, CO_ISSBL))
         {
-            rl_printf (i18n (9999, "Group %s (#%d) exists only locally.\n"), cg->name, cg->id);
+            rl_printf (i18n (2696, "Group %s (#%d) exists only locally.\n"), cg->name, cg->id);
             cnt_groups++;
         }
     
@@ -543,7 +543,7 @@ static void IMRosterDiff (Event *event)
         rg = IMRosterGroup (roster, rc->tag);
         if (!cont || !cont->group || (!ContactPrefVal (cont, CO_IGNORE) && ContactPrefVal (cont, CO_WANTSBL)))
         {
-            rl_printf (i18n (9999, "Contact %s/%s exists only on the server as ignored (#%d).\n"),
+            rl_printf (i18n (2697, "Contact %s/%s exists only on the server as ignored (#%d).\n"),
                        rc->name, rc->nick ? rc->nick : rc->name, rc->id);
             cnt_ignored++;
         }
@@ -554,13 +554,13 @@ static void IMRosterDiff (Event *event)
         rg = IMRosterGroup (roster, rc->tag);
         if (!cont || !cont->group)
         {
-            rl_printf (i18n (9999, "Contact %s/%s exists only on the server as invisible (#%d).\n"),
+            rl_printf (i18n (2698, "Contact %s/%s exists only on the server as invisible (#%d).\n"),
                        rc->name, rc->nick ? rc->nick : rc->name, rc->id);
             cnt_hidden++;
         }
         else if (!ContactPrefVal (cont, CO_HIDEFROM) && ContactPrefVal (cont, CO_WANTSBL))
         {
-            rl_printf (i18n (9999, "Contact %s/%s is invisible (#%d) on the server, but locally (#%d) normal.\n"),
+            rl_printf (i18n (2699, "Contact %s/%s is invisible (#%d) on the server, but locally (#%d) normal.\n"),
                        rc->name, cont->screen, rc->id, ContactID (cont, roster_normal)->id);
             cnt_hidden++;
         }
@@ -571,13 +571,13 @@ static void IMRosterDiff (Event *event)
         rg = IMRosterGroup (roster, rc->tag);
         if (!cont || !cont->group)
         {
-            rl_printf (i18n (9999, "Contact %s/%s exists only on the server as visible (#%d).\n"),
+            rl_printf (i18n (2700, "Contact %s/%s exists only on the server as visible (#%d).\n"),
                        rc->name, rc->nick ? rc->nick : rc->name, rc->id);
             cnt_intimate++;
         }
         else if (!ContactPrefVal (cont, CO_INTIMATE) && ContactPrefVal (cont, CO_WANTSBL))
         {
-            rl_printf (i18n (9999, "Contact %s/%s is visible (#%d) on the server, but locally (#%d) normal.\n"),
+            rl_printf (i18n (2701, "Contact %s/%s is visible (#%d) on the server, but locally (#%d) normal.\n"),
                        rc->name, cont->screen, rc->id, ContactID (cont, roster_normal)->id);
             cnt_intimate++;
         }
@@ -589,7 +589,7 @@ static void IMRosterDiff (Event *event)
         rg = IMRosterGroup (roster, rc->tag);
         if (!cont || !cont->group)
         {
-            rl_printf (i18n (9999, "Contact %s/%s exists only on the server (#%d).\n"),
+            rl_printf (i18n (2702, "Contact %s/%s exists only on the server (#%d).\n"),
                        rc->name, rc->nick ? rc->nick : rc->name, rc->id);
             cnt_normal++;
             continue;
@@ -598,37 +598,37 @@ static void IMRosterDiff (Event *event)
             continue;
         if (strcmp (rc->name, cont->screen))
         {
-            rl_printf (i18n (9999, "Contact %s (#%d) is screen name %s (#%d) locally. Huh??\n"),
+            rl_printf (i18n (2703, "Contact %s (#%d) is screen name %s (#%d) locally. Huh??\n"),
                 rc->name, rc->id, cont->screen, ContactID (cont, roster_normal)->id);
             cnt_normal++;
         }
         if (strcmp (rc->nick ? rc->nick : rc->name, cont->nick))
         {
-            rl_printf (i18n (9999, "Contact %s is %s (#%d) on the server and %s (#%d) locally.\n"),
+            rl_printf (i18n (2704, "Contact %s is %s (#%d) on the server and %s (#%d) locally.\n"),
                 cont->screen, rc->nick ? rc->nick : rc->name, rc->id, cont->nick, ContactID (cont, roster_normal)->id);
             cnt_normal++;
         }
         if (ContactPrefVal (cont, CO_HIDEFROM) && !ContactID (cont, roster_invisible)->issbl)
         {
-            rl_printf (i18n (9999, "Contact %s/%s is normal (#%d) on the server, but invisible (#%d,#%d) locally.\n"),
+            rl_printf (i18n (2705, "Contact %s/%s is normal (#%d) on the server, but invisible (#%d,#%d) locally.\n"),
                        cont->screen, cont->nick, rc->id, ContactID (cont, roster_normal)->id, ContactID (cont, roster_invisible)->id);
             cnt_hidden++;
         }
         if (ContactPrefVal (cont, CO_INTIMATE) && !ContactID (cont, roster_visible)->issbl)
         {
-            rl_printf (i18n (9999, "Contact %s/%s is normal (#%d) on the server, but visible (#%d,#%d) locally.\n"),
+            rl_printf (i18n (2706, "Contact %s/%s is normal (#%d) on the server, but visible (#%d,#%d) locally.\n"),
                        cont->screen, cont->nick, rc->id, ContactID (cont, roster_normal)->id, ContactID (cont, roster_visible)->id);
             cnt_intimate++;
         }
         if (ContactPrefVal (cont, CO_IGNORE) && !ContactID (cont, roster_ignore)->issbl)
         {
-            rl_printf (i18n (9999, "Contact %s/%s is normal (#%d) on the server, but visible (#%d,#%d) locally.\n"),
+            rl_printf (i18n (2710, "Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n"),
                        cont->screen, cont->nick, rc->id, ContactID (cont, roster_normal)->id, ContactID (cont, roster_ignore)->id);
             cnt_ignored++;
         }
         if (rg->tag != cont->group->id)
         {
-            rl_printf (i18n (9999, "Contact %s/%s (#%d) is in group %s (#%d) on the server, but in group %s (#%d) locally.\n"),
+            rl_printf (i18n (2707, "Contact %s/%s (#%d) is in group %s (#%d) on the server, but in group %s (#%d) locally.\n"),
                        cont->screen, cont->nick, rc->id, rg && rg->name ? rg->name : "?", rg->tag,
                        cont->group == serv->contacts ? "(none)" : cont->group->name, cont->group->id);
             cnt_normal++;
@@ -637,7 +637,7 @@ static void IMRosterDiff (Event *event)
     for (i = 0; (cont = ContactIndex (serv->contacts, i)); i++)    
         if (ContactPrefVal (cont, CO_WANTSBL) && (!ContactID (cont, roster_normal)->issbl || !ContactPrefVal (cont, CO_ISSBL)))
         {
-            rl_printf (i18n (9999, "Contact %s/%s (#%d) exists only locally.\n"),
+            rl_printf (i18n (2708, "Contact %s/%s (#%d) exists only locally.\n"),
                        cont->screen, cont->nick, ContactID (cont, roster_normal)->id);
             cnt_more++;
         }

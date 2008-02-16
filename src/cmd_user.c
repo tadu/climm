@@ -1908,12 +1908,12 @@ static JUMP_F(CmdUserStatusDetail)
             if (tseen != (time_t)-1)
             {
                 strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&tseen));
-                rl_printf ("    %-15s %s", i18n (9999, "Last seen:"), tbuf);
+                rl_printf ("    %-15s %s", i18n (2691, "Last seen:"), tbuf);
             }
             if (tonl != (time_t)-1)
             {
                 strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&tonl));
-                rl_printf ("    %-15s %s", i18n (9999, "Online since:"), tbuf);
+                rl_printf ("    %-15s %s", i18n (2692, "Online since:"), tbuf);
             }
             if (tseen != (time_t)-1 || tonl != (time_t)-1)
                 rl_print ("\n");
@@ -1921,7 +1921,7 @@ static JUMP_F(CmdUserStatusDetail)
             if (tclimm != (time_t)-1)
             {
                 strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&tclimm));
-                rl_printf ("    %-15s %s\n", i18n (9999, "Using climm:"), tbuf);
+                rl_printf ("    %-15s %s\n", i18n (2693, "Using climm:"), tbuf);
             }
 #endif
 

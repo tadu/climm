@@ -163,7 +163,7 @@ CLIMMXMPP::CLIMMXMPP (Connection *serv)
     m_client->setPresence (gloox::PresenceAvailable, 5);
 
 #ifdef CLIMM_FILE_TRANSFER
-    m_pFT = new gloox::SIProfileFT ( m_client, this);
+    m_pFT = new gloox::SIProfileFT (m_client, this);
     //m_pFT->addStreamHost (gloox::JID ("proxy.jabber.org"), "208.245.212.98", 7777);
 #endif
 
@@ -1042,13 +1042,12 @@ void CLIMMXMPP::handleSOCKS5Data (gloox::SOCKS5Bytestream *s5b, const std::strin
 
 void CLIMMXMPP::handleSOCKS5Error (gloox::SOCKS5Bytestream *s5b, gloox::Stanza *stanza)
 {
-    rl_printf (i18n (2234, "FT Error.\n"));
+//    rl_printf (i1 8n (9999, "FT Error.\n"));
 }
 
 void CLIMMXMPP::handleSOCKS5Open (gloox::SOCKS5Bytestream *s5b)
 {
-    rl_printf ("Connected!\n");
-
+//    rl_printf ("Connected!\n");
 }
 
 void CLIMMXMPP::handleSOCKS5Close (gloox::SOCKS5Bytestream *s5b)
@@ -1070,11 +1069,11 @@ void CLIMMXMPP::handleFTSOCKS5Bytestream (gloox::SOCKS5Bytestream *s5b)
     Contact *cont = ContactFindScreen (m_conn->contacts, s5b->initiator().bare().c_str());
     s5b->registerSOCKS5BytestreamDataHandler (this);
     //if (prG->verbose)
-        rl_printf (i18n (2519, "Opening file listener connection at %slocalhost%s:%s%lp%s... "),
+        rl_printf (i18n (2709, "Opening file listener connection at %slocalhost%s:%s%lp%s... "),
                   COLQUOTE, COLNONE, COLQUOTE, s5b->getConnectionImpl(), COLNONE);
     if (s5b->connect())
     {
-        rl_printf ("OK\n");
+        rl_print (i18n (1634, "ok.\n"));
         gloox::ConnectionTCPBase *conn = dynamic_cast<gloox::ConnectionTCPBase *>(s5b->getConnectionImpl());
         if (!conn)
             return;
