@@ -579,30 +579,28 @@ time_t CLIMMXMPP::handleXEP91 (gloox::Tag *t)
 
 void CLIMMXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
 {
-    if (gloox::Tag *caps = t->findChild ("c", "xmlns", "http://jabber.org/protocol/caps"))
+    gloox::Tag *caps;
+    if ((caps = t->findChild ("c", "xmlns", "http://jabber.org/protocol/caps"))
+        || (caps = t->findChild ("caps:c", "xmlns:caps", "http://jabber.org/protocol/caps")))
     {
         std::string node = caps->findAttribute ("node");
         std::string ver = caps->findAttribute ("ver");
         std::string ext = caps->findAttribute ("ext");
+        if (!strcmp (node.c_str(), "http://www.climm.org/xmpp/caps"))
+            node = "climm";
+        else if (!strcmp (node.c_str(), "http://mail.google.com/xmpp/client/caps"))
+            node = "GoogleMail";
+        else if (!strcmp (node.c_str(), "http://www.google.com/xmpp/client/caps"))
+            node = "GoogleTalk";
+        else if (!strcmp (node.c_str(), "http://pidgin.im/caps"))
+            node = "Pidgin";
+        else if (!strcmp (node.c_str(), "http://kopete.kde.org/jabber/caps"))
+            node = "Kopete";
         if (ext.empty())
-            s_repl (&contr->version, s_sprintf ("%s (%s)", node.c_str(), ver.c_str()));
+            s_repl (&contr->version, s_sprintf ("%s %s", node.c_str(), ver.c_str()));
         else
-            s_repl (&contr->version, s_sprintf ("%s (%s) [%s]", node.c_str(), ver.c_str(), ext.c_str()));
+            s_repl (&contr->version, s_sprintf ("%s %s [%s]", node.c_str(), ver.c_str(), ext.c_str()));
         DropAttrib (caps, "xmlns");
-        DropAttrib (caps, "ver");
-        DropAttrib (caps, "ext");
-        DropAttrib (caps, "node");
-        CheckInvalid (caps);
-    }
-    else if (gloox::Tag *caps = t->findChild ("caps:c", "xmlns:caps", "http://jabber.org/protocol/caps"))
-    {
-        std::string node = caps->findAttribute ("node");
-        std::string ver = caps->findAttribute ("ver");
-        std::string ext = caps->findAttribute ("ext");
-        if (ext.empty())
-            s_repl (&contr->version, s_sprintf ("%s (%s)", node.c_str(), ver.c_str()));
-        else
-            s_repl (&contr->version, s_sprintf ("%s (%s) [%s]", node.c_str(), ver.c_str(), ext.c_str()));
         DropAttrib (caps, "xmlns:caps");
         DropAttrib (caps, "ver");
         DropAttrib (caps, "ext");
