@@ -11,6 +11,7 @@ $(DESTDIR)$(bindir)/micq:
 bin_PROGRAMS = climm # icqsyn icqprx
 
 AM_CFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include
+AM_CXXFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include
 
 climm_SOURCES = autopackage_prefix.c conv.c file_util.c im_response.c climm.c \
        im_request.c util.c util_opts.c util_ui.c mreadline.c \
