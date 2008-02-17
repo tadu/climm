@@ -1,5 +1,5 @@
 # $Id$ castellano (Spanish)
-#  EN: __.i18n 2392 2007-09-07 22:41:40 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2481 2008-02-16 23:31:15 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 1001:es
 1002:es
@@ -352,9 +352,9 @@
 1402:Actualiza tu información personal adicional.
 #-#1403:Muestra el ultimo mensaje recibido de <uin> o <nick>, de todos los que te enviaron al menos un mensaje.
 #+#1403:Displays the last message received from <uin> or <nick> or from everyone who has sent you at least one message.
+#_#1403:Displays the last message received from <contacts> or from everyone.
 #-#1404:Cambia entre ignorar y no ignorar el usuario.
 #+#1404:Toggles ignoring/unignoring <uin> or <nick>.
-#_#1403:Displays the last message received from <contacts> or from everyone.
 #_#1404:Toggles ignoring/unignoring the <contacts>.
 1405:Muestra la lista de nicks/uins ignorados.
 #-#1406:Hace que un usuario te vea, o no, cuando estas invisible.
@@ -364,9 +364,9 @@
 1408:Cambia tu clave a <clave>.
 #-#1409:Envia un mensaje a <uin> o <nick>.
 #+#1409:Sends a message to <uin> or <nick>.
+#_#1409:Sends a message to <contacts>.
 #-#1410:Envia una url y un mensaje a <uin> o <nick>.
 #+#1410:Sends a url and message to <uin> or <nick>.
-#_#1409:Sends a message to <contacts>.
 #_#1410:Sends a url and message to <contacts>.
 1412:Envia un mensaje a la ultima persona a la que le enviaste.
 1414:Responde a la ultima persona que te envio un mensaje.
@@ -539,7 +539,6 @@
 #+#1623:Doubled packet %04X\n
 #-#1632:\nConecxión inestable, cerrando...
 #+#1632:\nConnection unstable. Exiting....
-#_#1623:Double packet %04x.\n
 #_#1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:Can't bind socket to free port\n
@@ -605,12 +604,10 @@
 #_#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 #-#1719:Muestra por cuanto tiempo ha estado corriendo climm.
 #+#1719:Shows how long climm has been running.
-#-#1720:uin puede sar tanto un numero como el nick de un usuario.
-#+#1720:uin can be either a number or the nickname of the user.
 #_#1719:Shows how long climm has been running and some statistics.
 1721:Enviar un mensaje en blanco pondra al programa en modo multilinea.\nEscribi . en una linea vacia para terminar el mensaje.\nUsa # en una linea vacia para cancelar el mensaje.
-1741:Tenes que recibir un comando primero.\n
-1742:Tenes que mandar un comando primero.\n
+1741.Tenes que recibir un comando primero.\n
+1742.Tenes que mandar un comando primero.\n
 1743:Los tamaños de los mensajes no concuerdan.\n
 1744:servidor (v5)
 1745:desconocido
@@ -828,12 +825,12 @@
 2042:Muestra una lista de las personas conectadas en formato ancho.
 #-#2043:Elimina un alias <alias> o <uin>, o elimina un contacto.
 #+#2043:Remove alias <alias> or <uin>, or removes contact.
+#_#2043:Remove all contacts in <contacts> from contact group <group>.
 #-#2044:Activa o desactiva una opción.
 #+#2044:Set or clear an option.
+#_#2044:Set, clear or display an <option>: color, delbs, auto, prompt, autosave, autofinger, linebreak, funny.
 #-#2045:Cambia tu visibilidad con <uin> o <nick> cuando estas conectado.
 #+#2045:Toggles your visibility to <uin> or <nick> when you're online.
-#_#2043:Remove all contacts in <contacts> from contact group <group>.
-#_#2044:Set, clear or display an <option>: color, delbs, auto, prompt, autosave, autofinger, linebreak, funny.
 #_#2045:Toggles your visibility to <contacts> when you're online.
 2046:Probablemente quieras usar la versión 8 del protocolo para conexiones par-a-par.\n
 2047:Creando directorio %s.\n
@@ -842,18 +839,18 @@
 2055:El usuario esta "libre para hablar" y quiere hablar de cualquier cosa.
 #-#2056:peer auto  <nick> - Obtiene la respuesta automatica del contacto.\n
 #+#2056:peer auto  <nick> - Get the auto-response from the contact.\n
+#_#2056:getauto [auto] <nick> - Get the auto-response from the contact.\n
 #-#2057:peer away  <nick> - Obtiene la respuesta automatica del estado 'lejos' del contacto.\n
 #+#2057:peer away  <nick> - Get the auto-response for away from the contact.\n
+#_#2057:getauto away   <nick> - Get the auto-response for away from the contact.\n
 #-#2058:peer na    <nick> - Obtiene la respuesta automatica del estado 'no disponible' del contacto.\n
 #+#2058:peer na    <nick> - Get the auto-response for not available from the contact.\n
+#_#2058:getauto na     <nick> - Get the auto-response for not available from the contact.\n
 #-#2059:peer dnd   <nick> - Obtiene la respuesta automatica del estado 'no molestar' del contacto.\n
 #+#2059:peer dnd   <nick> - Get the auto-response for do not disturb from the contact.\n
+#_#2059:getauto dnd    <nick> - Get the auto-response for do not disturb from the contact.\n
 #-#2060:peer ffc   <nick> - Obtiene la respuesta automatica del estado 'libre para hablar' del contacto.\n
 #+#2060:peer ffc   <nick> - Get the auto-response for free for chat from the contact.\n
-#_#2056:getauto [auto] <nick> - Get the auto-response from the contact.\n
-#_#2057:getauto away   <nick> - Get the auto-response for away from the contact.\n
-#_#2058:getauto na     <nick> - Get the auto-response for not available from the contact.\n
-#_#2059:getauto dnd    <nick> - Get the auto-response for do not disturb from the contact.\n
 #_#2060:getauto ffc    <nick> - Get the auto-response for free for chat from the contact.\n
 2063.Necesitas guardar tu clave en tu archivo ~/.climm/climmrc.\n
 2065:Comando TCP_MSG_GREET_ desconocido: %04x.\n
@@ -887,12 +884,12 @@
 2102:La conexión %ld es una conexión configurada.\n
 #-#2103:contact show    Muestra la lista de contactos del lado del servidor.\n
 #+#2103:contact show    Show server side contact list.\n
+#_#2103:contact show    Show server based contact list.\n
 #-#2104:contact diff    Muestra los contactos que estan en el servidor y no estan en nuestra lista local.\n
 #+#2104:contact diff    Show server side contacts not on local contact list.\n
+#_#2104:contact diff    Show server based contacts not on local contact list.\n
 #-#2105:contact import  Agrega los contactos que estan en el servidor a nuestra lista local.\n
 #+#2105:contact import  Add server side contact list to local contact list.\n
-#_#2103:contact show    Show server based contact list.\n
-#_#2104:contact diff    Show server based contacts not on local contact list.\n
 #_#2105:contact import  Import server based contact list as local contact list.\n
 2106:Ultimo mensaje de %s%s%s (%s):\n
 2107:No se recibieron mensajes de %s%s%s.\n
@@ -907,23 +904,19 @@
 2118:Memoria insuficiente.\n
 #-#2119:auth [grant] <nick>    - otorga autorización.\n
 #+#2119:auth [grant] <nick>    - grant authorization.\n
+#_#2119:auth [grant] <contacts>    - grant authorization.\n
 #-#2120:auth deny <nick> <msg> - niega autorización.\n
 #+#2120:auth deny <nick> <msg> - refuse authorization.\n
+#_#2120:auth deny <contacts> <msg> - refuse authorization.\n
 #-#2121:auth req  <nick> <msg> - pide autorización.\n
 #+#2121:auth req  <nick> <msg> - request authorization.\n
-#_#2119:auth [grant] <contacts>    - grant authorization.\n
-#_#2120:auth deny <contacts> <msg> - refuse authorization.\n
 #_#2121:auth req  <contacts> <msg> - request authorization.\n
 2122:Nota: necesitas grabar mediante el comando 'save' para guardar la nueva clave al disco.\n
 #-#2123:%sError de sintaxis%s: muy pocos argumentos: '%s'\n
 #+#2123:%sSyntax error%s: Too few arguments: '%s'\n
+#_#2123:%sSyntax error%s: Too few arguments: %s\n
 #-#2124:%sError de sintaxis%s: '%s' no es un entero\n
 #+#2124:%sSyntax error%s: Not an integer: '%s'\n
-#-#2126:El usuario esta desconectado, el mensaje (%s#%08lx:%08lx%s) fue puesto en la cola de espera.\n
-#+#2126:User is offline, message (%s#%08lx:%08lx%s) queued.\n
-#-#2127:       URL: %s%s%s%s\n
-#+#2127:       URL: %s%s%s%s\n
-#_#2123:%sSyntax error%s: Too few arguments: %s\n
 #_#2124:%sSyntax error%s: Not an integer: %s\n
 2128: Descripción: %s%s%s\n
 2129: URL:         %s%s%s\n
@@ -974,11 +967,11 @@
 #_#2172:Advanced commands.
 #-#2176:Muestra detalladamente el estado actual de todas las personas de tu lista de contactos.
 #+#2176:Displays verbose the current status of everyone on your contact list.
+#_#2176:Displays verbosely the current status of everyone on your contact list.
 #-#2177:Muestra detalladamente el estado actual de todas las personas conectadas de tu lista de contactos.
 #+#2177:Displays verbose the current status of online people on your contact list.
 #-#2179:Envia a <uin> o <nick> un archivo.
 #+#2179:Send <uin> or <nick> a single file.
-#_#2176:Displays verbosely the current status of everyone on your contact list.
 #_#2177:Displays verbosely the current status of online people on your contact list.
 #_#2179:Send all <contacts> a single file.
 2180:Envia a <uin> o <nick> varios archivos.
@@ -988,10 +981,10 @@
 #_#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
 #-#2183:Revisa si <uin> o <nick> esta realmente conectado o desconectado.
 #+#2183:Check whether <uin> or <nick> is offline or invisible.
+#_#2183:Check all <contacts> whether they are offline or invisible.
 #-#2184:%s%-10s%s - %s\n
 #+#2184:%s%-10s%s - %s\n
 #_#2184:%s%-14s%s - %s\n
-#_#2183:Check all <contacts> whether they are offline or invisible.
 2185:Cerrando conexión %ld.\n
 2188:Estas enviando datos demasiado rapido, por favor para de escribir o el servidor te desconectará\n
 2191:Error en mensaje instantáneo: %d.\n
@@ -1100,7 +1093,9 @@
 #_#2324:contact upload  Add local contacts to server based contact list.\n
 #_#2325:Warning: server based contact list change failed with error code %d.\n
 #_#2326:Server side contact list only supported for ICQ v8.\n
-2327:%sclimm%s (CLI-based Multi-Messenger)%s versión %s%s%s\n
+#-#2327:%sclimm%s (CLI-based Multi-Messenger)%s versión %s%s%s\n
+#+#2327:%sclimm - CLI-based Multi-Messenger%s version %s%s%s\n
+#_#2327:%sclimm%s - CLI-based Multi-Messenger%s version %s%s%s\n
 #_#2328:You logged in too frequently, please wait 30 minutes before trying again.\n
 #_#2329:syntax error
 #_#2330:removing non-contact
@@ -1231,19 +1226,6 @@
 #_#2475:Showed %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
 #_#2476:Downloaded %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
 #_#2477:Uploading %d contact groups and %d contacts.\n
-#_#2478:Server: Group %s (#%d)\n
-#_#2479:Local:  Group %s (#%d)\n
-#_#2480:Server: Group %s Contact %s (#%d) <ignored>\n
-#_#2481:Server: Group %s Contact %s (#%d) <hidefrom>\n
-#_#2482:Server: Group %s Contact %s/%s (#%d) <hidefrom>\n
-#_#2483:Local:  Group %s Contact %s/%s (#%d)\n
-#_#2484:Server: Group %s Contact %s (#%d)\n
-#_#2485:Server: Group %s Contact %s/%s (#%d)\n
-#_#2486:Local:  Group %s Contact %s/%s (#%d) <%s>\n
-#_#2487:hidefrom
-#_#2488:intimate
-#_#2489:Server: Group %s Contact %s/%s (#%d) <intimate>\n
-#_#2490:normal
 #_#2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
 #_#2492:Usage: climm [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 #_#2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
@@ -1333,7 +1315,6 @@
 #_#2577:SBL ids:
 #_#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
 #_#2579:contact delid   Delete server based contact list entry (experts only).\n
-#_#2580:ignore
 #_#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
 #_#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
 #_#2583:Location error: %d.\n
@@ -1437,3 +1418,24 @@
 #_#2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
 #_#2688:No password given for %s.\n
 #_#2689:Enter password for %s account %s: 
+#_#2690:Meta info change was %s%s%s.\n
+#_#2691:Last seen:
+#_#2692:Online since:
+#_#2693:Using climm:
+#_#2694:Group %s (#%d) exists only on the server.\n
+#_#2695:Group %s (#%d) on the server is group %s (#%d) locally.\n
+#_#2696:Group %s (#%d) exists only locally.\n
+#_#2697:Contact %s/%s exists only on the server as ignored (#%d).\n
+#_#2698:Contact %s/%s exists only on the server as invisible (#%d).\n
+#_#2699:Contact %s/%s is invisible (#%d) on the server, but locally (#%d) normal.\n
+#_#2700:Contact %s/%s exists only on the server as visible (#%d).\n
+#_#2701:Contact %s/%s is visible (#%d) on the server, but locally (#%d) normal.\n
+#_#2702:Contact %s/%s exists only on the server (#%d).\n
+#_#2703:Contact %s (#%d) is screen name %s (#%d) locally. Huh??\n
+#_#2704:Contact %s is %s (#%d) on the server and %s (#%d) locally.\n
+#_#2705:Contact %s/%s is normal (#%d) on the server, but invisible (#%d,#%d) locally.\n
+#_#2706:Contact %s/%s is normal (#%d) on the server, but visible (#%d,#%d) locally.\n
+#_#2707:Contact %s/%s (#%d) is in group %s (#%d) on the server, but in group %s (#%d) locally.\n
+#_#2708:Contact %s/%s (#%d) exists only locally.\n
+#_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
+#_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n

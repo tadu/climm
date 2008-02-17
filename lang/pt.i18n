@@ -1,5 +1,5 @@
 # $Id$ Português (Brazillian)
-#  EN: __.i18n 2392 2007-09-07 22:41:40 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2481 2008-02-16 23:31:15 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:pt
 1002:pt_BR
@@ -571,8 +571,8 @@
 1717:Executa um comando shell <cmd> (p.ex. '!ls', '!dir', '!mkdir temp').
 1719:Mostra há quanto tempo climm está rodando e algumas estatísticas.
 1721:Enviando uma mensagem em branco colocará o cliente em modo multilinha.\nUse . em uma linha própria para encerrar a mensagem.\nUse # em uma linha própria para cancelar a mensagem.
-1741:Deve receber uma mensagem primeiro.\n
-1742:Deve receber uma mensagem primeiro.\n
+1741.Deve receber uma mensagem primeiro.\n
+1742.Deve receber uma mensagem primeiro.\n
 1743:Erro de tamanho no comprimento dos pacotes.\n
 1744:servidor (v5)
 1745:desconhecido
@@ -982,7 +982,9 @@
 2324:contact upload  Adiciona contatos locais à lista de contatos baseada no servidor.\n
 2325:Cuidado: alteração da lista de contatos baseada no servidor falhou com código de erro %d.\n
 2326:Lista de contatos do servidor suportada apenas para ICQ v8.\n
-2327:%sclimm%s (CLI-based Multi-Messenger)%s versão %s%s%s\n
+#-#2327:%sclimm%s (CLI-based Multi-Messenger)%s versão %s%s%s\n
+#+#2327:%sclimm - CLI-based Multi-Messenger%s version %s%s%s\n
+#_#2327:%sclimm%s - CLI-based Multi-Messenger%s version %s%s%s\n
 2328:Você logou muito freqüentemente, por favor espere 30 minutos antes de tentar novamente\n
 2329:erro de sintaxe
 2330:removendo não-contato
@@ -1115,19 +1117,19 @@
 2475:Mostrados %d grupos de contatos, juntos %d contatos, %d ignorados, %d ocultos, %d íntimos.\n
 2476:Baixados %d grupos de contatos, juntos %d contatos, %d ignorados, %d ocultos, %d íntimos.\n
 2477:Uploading %d grupo de contatoss and %d contatos.\n
-2478:Servidor: Grupo %s (#%d)\n
-2479:Local:    Grupo %s (#%d)\n
-2480:Servidor: Grupo %s contato %s (#%d) <ignorado>\n
-2481:Servidor: Grupo %s contato %s (#%d) <ocultode>\n
-2482:Servidor: Grupo %s contato %s/%s (#%d) <oculto>\n
-2483:Local:    Grupo %s contato %s/%s (#%d)\n
-2484:Servidor: Grupo %s contato %s (#%d)\n
-2485:Servidor: Grupo %s contato %s/%s (#%d)\n
-2486:Local:    Grupo %s contato %s/%s (#%d) <%s>\n
-2487:oculto
-2488:íntimo
-2489:Servidor: Grupo %s contato %s/%s (#%d) <íntimo>\n
-2490:normal
+2478.Servidor: Grupo %s (#%d)\n
+2479.Local:    Grupo %s (#%d)\n
+2480.Servidor: Grupo %s contato %s (#%d) <ignorado>\n
+2481.Servidor: Grupo %s contato %s (#%d) <ocultode>\n
+2482.Servidor: Grupo %s contato %s/%s (#%d) <oculto>\n
+2483.Local:    Grupo %s contato %s/%s (#%d)\n
+2484.Servidor: Grupo %s contato %s (#%d)\n
+2485.Servidor: Grupo %s contato %s/%s (#%d)\n
+2486.Local:    Grupo %s contato %s/%s (#%d) <%s>\n
+2487.oculto
+2488.íntimo
+2489.Servidor: Grupo %s contato %s/%s (#%d) <íntimo>\n
+2490.normal
 2491:Diferenças em %d grupos de contatos, juntos %d contatos, %d ignorados, %d ocultos, %d íntimos, %d locais.\n
 2492:Uso: climm [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
@@ -1219,7 +1221,6 @@
 #_#2577:SBL ids:
 #_#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
 #_#2579:contact delid   Delete server based contact list entry (experts only).\n
-#_#2580:ignore
 #_#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
 #_#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
 #_#2583:Location error: %d.\n
@@ -1323,3 +1324,24 @@
 #_#2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
 #_#2688:No password given for %s.\n
 #_#2689:Enter password for %s account %s: 
+#_#2690:Meta info change was %s%s%s.\n
+#_#2691:Last seen:
+#_#2692:Online since:
+#_#2693:Using climm:
+#_#2694:Group %s (#%d) exists only on the server.\n
+#_#2695:Group %s (#%d) on the server is group %s (#%d) locally.\n
+#_#2696:Group %s (#%d) exists only locally.\n
+#_#2697:Contact %s/%s exists only on the server as ignored (#%d).\n
+#_#2698:Contact %s/%s exists only on the server as invisible (#%d).\n
+#_#2699:Contact %s/%s is invisible (#%d) on the server, but locally (#%d) normal.\n
+#_#2700:Contact %s/%s exists only on the server as visible (#%d).\n
+#_#2701:Contact %s/%s is visible (#%d) on the server, but locally (#%d) normal.\n
+#_#2702:Contact %s/%s exists only on the server (#%d).\n
+#_#2703:Contact %s (#%d) is screen name %s (#%d) locally. Huh??\n
+#_#2704:Contact %s is %s (#%d) on the server and %s (#%d) locally.\n
+#_#2705:Contact %s/%s is normal (#%d) on the server, but invisible (#%d,#%d) locally.\n
+#_#2706:Contact %s/%s is normal (#%d) on the server, but visible (#%d,#%d) locally.\n
+#_#2707:Contact %s/%s (#%d) is in group %s (#%d) on the server, but in group %s (#%d) locally.\n
+#_#2708:Contact %s/%s (#%d) exists only locally.\n
+#_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
+#_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n

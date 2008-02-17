@@ -66,8 +66,9 @@ sub ProcessLine($)
     }
     elsif ($line =~ m/^#[ _]#([0-9][0-9]*):/)
     {
+       next unless defined $nrval{$1} and length($nrval{$1});
+       print OUT "#_#$1:$nrval{$1}\n" unless $have{$1} & 4;
        $have{$1} |= 4;
-       print OUT "#_#$1:$nrval{$1}\n";
        $tainted++;
     }
     elsif ($line =~ m/^#[-!+]#([0-9][0-9]*):/)
@@ -77,8 +78,8 @@ sub ProcessLine($)
         for ($last++ ; $last < $neu - 1; $last++)
         {
             $last = sprintf ("%04d", $last);
-            next unless defined $nrval{$last};
-            print OUT "#$last:$nrval{$last}\n" unless $have{$last};
+            next unless defined $nrval{$last} and length($nrval{$last});
+            print OUT "#_#$last:$nrval{$last}\n" unless $have{$last};
             $added++ unless $have{$last};
         }
         $last--;
@@ -106,8 +107,8 @@ sub ProcessLine($)
         for ($last++ ; $last < $neu; $last++)
         {
             $last = sprintf ("%04d", $last);
-            next unless defined $nrval{$last};
-            print OUT "#$last:$nrval{$last}\n" unless $have{$last} & 4;
+            next unless defined $nrval{$last} and length($nrval{$last});
+            print OUT "#_#$last:$nrval{$last}\n" unless $have{$last} & 4;
             $added++ unless $have{$last} & 4;
         }
         print "Error: $last $neu" if $last != $neu;

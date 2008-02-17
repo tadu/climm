@@ -1341,7 +1341,7 @@
 2700:Kontakt %s/%s existiert nur auf dem Server als sichtbar (#%d).\n
 2701:Kontakt %s/%s ist sichtbar (#%d) auf dem Server, aber lokal (#%d) normal.\n
 2702:Kontakt %s/%s existiert nur auf dem Server (#%d).\n
-#_#2703:Kontakt %s (#%d) is screen name %s (#%d) locally. Huh??\n
+#_#2703:Contact %s (#%d) is screen name %s (#%d) locally. Huh??\n
 2704:Kontakt %s ist %s (#%d) auf dem Server und %s (#%d) lokal.\n
 2705:Kontakt %s/%s ist normal (#%d) auf dem Server, aber unsichtbar (#%d,#%d) lokal.\n
 2706:Kontakt %s/%s ist normal (#%d) auf dem Server, aber sichtbar (#%d,#%d) lokal.\n

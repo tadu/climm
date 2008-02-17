@@ -1,5 +1,5 @@
 # $Id$ Romana (Romanian)
-#  EN: __.i18n 2392 2007-09-07 22:41:40 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2481 2008-02-16 23:31:15 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 1001:ro
 1002:ro_RO
@@ -523,7 +523,6 @@
 #+#1623:Doubled packet %04X\n
 #-#1632:\nConexiune instabila. Iesire....
 #+#1632:\nConnection unstable. Exiting....
-#_#1623:Double packet %04x.\n
 #_#1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:socketul nu poate fi legat de un port liber\n
@@ -586,11 +585,9 @@
 #+#1717:'!' as the first character of a command will execute a shell command (e.g. '!ls', '!dir', '!mkdir temp')
 #_#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
 1719:Arata de cat timp ruleaza climm si ceva statistica.
-#-#1720:<contacts> este o lista de UINuri si nickuri separate prin virgula.
-#+#1720:<contacts> is a comma seperated list of UINs and nick names of users.
 1721:Trimiterea unui mesaj fara continut va trece clientul in regim de\nmai multe randuri.\nUtilizati . singur intr-un rand pentru a termina mesajul.\nUtilizati # singur intr-un rand pentru a anula mesajul.
-1741:E necesar sa primiti un mesaj inainte.\n
-1742:E necesar sa scrieti un mesaj inainte.\n
+1741.E necesar sa primiti un mesaj inainte.\n
+1742.E necesar sa scrieti un mesaj inainte.\n
 1743:Marimea nu se incadreaza in limita lungimii pachetului.\n
 1744:server (v5)
 1745:necunoscut
@@ -839,12 +836,12 @@
 2102:Conexiunea %ld e una configurata.\n
 #-#2103:contact show    Arata lista de contacte de pe server.\n
 #+#2103:contact show    Show server side contact list.\n
+#_#2103:contact show    Show server based contact list.\n
 #-#2104:contact diff    Arata lista de contacte de pe server ce nu-s prezente in lista locala.\n
 #+#2104:contact diff    Show server side contacts not on local contact list.\n
+#_#2104:contact diff    Show server based contacts not on local contact list.\n
 #-#2105:contact import  Adauga lista de contacte de pe server in lista locala.\n
 #+#2105:contact import  Add server side contact list to local contact list.\n
-#_#2103:contact show    Show server based contact list.\n
-#_#2104:contact diff    Show server based contacts not on local contact list.\n
 #_#2105:contact import  Import server based contact list as local contact list.\n
 2106:Ultimul mesaj de la %s%s%s la %s:\n
 2107:Nici un mesaj primit de la %s%s%s.\n
@@ -859,19 +856,19 @@
 2118:Memoria este plina.\n
 #-#2119:auth [grant] <nick>    - autorizeaza.\n
 #+#2119:auth [grant] <nick>    - grant authorization.\n
+#_#2119:auth [grant] <contacts>    - grant authorization.\n
 #-#2120:auth deny <nick> <msg> - refuza autorizare.\n
 #+#2120:auth deny <nick> <msg> - refuse authorization.\n
+#_#2120:auth deny <contacts> <msg> - refuse authorization.\n
 #-#2121:auth req  <nick> <msg> - cere autorizare.\n
 #+#2121:auth req  <nick> <msg> - request authorization.\n
-#_#2119:auth [grant] <contacts>    - grant authorization.\n
-#_#2120:auth deny <contacts> <msg> - refuse authorization.\n
 #_#2121:auth req  <contacts> <msg> - request authorization.\n
 2122:Nota: Trebuie sa tastati 'save' pentru a scrie noua parola pe disc.\n
 #-#2123:%sGreseala sintactica%s: Prea putine argumente: '%s'\n
 #+#2123:%sSyntax error%s: Too few arguments: '%s'\n
+#_#2123:%sSyntax error%s: Too few arguments: %s\n
 #-#2124:%sEroare de sintaxa%s: Nu e intreg: '%s'\n
 #+#2124:%sSyntax error%s: Not an integer: '%s'\n
-#_#2123:%sSyntax error%s: Too few arguments: %s\n
 #_#2124:%sSyntax error%s: Not an integer: %s\n
 2126.e deconectat, mesaj pus in coada pe server.\n
 2128: Descriere: %s%s%s\n
@@ -923,9 +920,9 @@
 #_#2172:Advanced commands.
 #-#2176:Afiseaza cu detalii starea curenta a fiecarui din lista de contacte.
 #+#2176:Displays verbose the current status of everyone on your contact list.
+#_#2176:Displays verbosely the current status of everyone on your contact list.
 #-#2177:Afiseaza cu detalii starea curenta a fiecaruia conectat din lista de contacte.
 #+#2177:Displays verbose the current status of online people on your contact list.
-#_#2176:Displays verbosely the current status of everyone on your contact list.
 #_#2177:Displays verbosely the current status of online people on your contact list.
 2179:Trimite la toti <contacts> un singur fisier.
 2180:Trimite la <uin> sau <nick> mai multe fisiere.
@@ -1032,9 +1029,9 @@
 2308:Afiseaza starea curenta a fiecaruia din lista de contacte, sortate dupa grup.
 #-#2309:Afiseaza cu detalii starea curenta a oamenilor din lista de contacte, sortare dupa grup.
 #+#2309:Displays verbose the current status of online people on your contact list, sorted by contact group.
+#_#2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
 #-#2310:Afiseaza cu detalii starea curenta a fiecaruia din lista de contacte, sortare dupa grup.
 #+#2310:Displays verbose the current status of everyone on your contact list, sorted by contact group.
-#_#2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
 #_#2310:Displays verbosely the current status of everyone on your contact list, sorted by contact group.
 2311:Adauga <uin> ca <new nick> sau adauga alias <new nick> pentru <uin> sau <nick>.
 2312:Sterge toate aliasurile din <contacts>, sterge contactul daca 'all' e specificat.
@@ -1050,7 +1047,9 @@
 #_#2324:contact upload  Add local contacts to server based contact list.\n
 #_#2325:Warning: server based contact list change failed with error code %d.\n
 #_#2326:Server side contact list only supported for ICQ v8.\n
-2327:%sclimm%s (CLI-based Multi-Messenger)%s versiunea %s%s%s\n
+#-#2327:%sclimm%s (CLI-based Multi-Messenger)%s versiunea %s%s%s\n
+#+#2327:%sclimm - CLI-based Multi-Messenger%s version %s%s%s\n
+#_#2327:%sclimm%s - CLI-based Multi-Messenger%s version %s%s%s\n
 #_#2328:You logged in too frequently, please wait 30 minutes before trying again.\n
 #_#2329:syntax error
 #_#2330:removing non-contact
@@ -1181,19 +1180,6 @@
 #_#2475:Showed %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
 #_#2476:Downloaded %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
 #_#2477:Uploading %d contact groups and %d contacts.\n
-#_#2478:Server: Group %s (#%d)\n
-#_#2479:Local:  Group %s (#%d)\n
-#_#2480:Server: Group %s Contact %s (#%d) <ignored>\n
-#_#2481:Server: Group %s Contact %s (#%d) <hidefrom>\n
-#_#2482:Server: Group %s Contact %s/%s (#%d) <hidefrom>\n
-#_#2483:Local:  Group %s Contact %s/%s (#%d)\n
-#_#2484:Server: Group %s Contact %s (#%d)\n
-#_#2485:Server: Group %s Contact %s/%s (#%d)\n
-#_#2486:Local:  Group %s Contact %s/%s (#%d) <%s>\n
-#_#2487:hidefrom
-#_#2488:intimate
-#_#2489:Server: Group %s Contact %s/%s (#%d) <intimate>\n
-#_#2490:normal
 #_#2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
 #_#2492:Usage: climm [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 #_#2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
@@ -1283,7 +1269,6 @@
 #_#2577:SBL ids:
 #_#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
 #_#2579:contact delid   Delete server based contact list entry (experts only).\n
-#_#2580:ignore
 #_#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
 #_#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
 #_#2583:Location error: %d.\n
@@ -1387,3 +1372,24 @@
 #_#2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
 #_#2688:No password given for %s.\n
 #_#2689:Enter password for %s account %s: 
+#_#2690:Meta info change was %s%s%s.\n
+#_#2691:Last seen:
+#_#2692:Online since:
+#_#2693:Using climm:
+#_#2694:Group %s (#%d) exists only on the server.\n
+#_#2695:Group %s (#%d) on the server is group %s (#%d) locally.\n
+#_#2696:Group %s (#%d) exists only locally.\n
+#_#2697:Contact %s/%s exists only on the server as ignored (#%d).\n
+#_#2698:Contact %s/%s exists only on the server as invisible (#%d).\n
+#_#2699:Contact %s/%s is invisible (#%d) on the server, but locally (#%d) normal.\n
+#_#2700:Contact %s/%s exists only on the server as visible (#%d).\n
+#_#2701:Contact %s/%s is visible (#%d) on the server, but locally (#%d) normal.\n
+#_#2702:Contact %s/%s exists only on the server (#%d).\n
+#_#2703:Contact %s (#%d) is screen name %s (#%d) locally. Huh??\n
+#_#2704:Contact %s is %s (#%d) on the server and %s (#%d) locally.\n
+#_#2705:Contact %s/%s is normal (#%d) on the server, but invisible (#%d,#%d) locally.\n
+#_#2706:Contact %s/%s is normal (#%d) on the server, but visible (#%d,#%d) locally.\n
+#_#2707:Contact %s/%s (#%d) is in group %s (#%d) on the server, but in group %s (#%d) locally.\n
+#_#2708:Contact %s/%s (#%d) exists only locally.\n
+#_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
+#_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
