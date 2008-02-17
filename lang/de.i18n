@@ -1,12 +1,12 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n 2433 2007-10-13 11:44:11 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2481 2008-02-16 23:31:15 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
-1003:0-5-3
+1003:0-6-2
 1004:Rico -mc- Glöckner, Rüdiger Kuhlmann
 1005:Rüdiger Kuhlmann
-1006:2007-04-07
+1006:2008-02-17
 1008:iso-8859-1
 1010:[Automatische Nachricht] Benutzer ist nicht da (User is Away)
 1011:[Automatische Nachricht] Benutzer ist nicht verfügbar (User is not available)
@@ -1122,19 +1122,19 @@
 2475:%d Kontaktgruppen angezeigt, dabei insgesamt %d Kontakte, %d ignoriert, %d versteckt, %d sichtbar.\n
 2476:%d Kontaktgruppen heruntergeladen, dabei insgesamt %d Kontakte, %d ignoriert, %d versteckt, %d sichtbar.\n
 2477:Lade %d Kontaktgruppen und %d Kontakte hoch.\n
-2478:Server: Gruppe %s (#%d)\n
-2479:Lokal:  Gruppe %s (#%d)\n
-2480:Server: Gruppe %s Kontakt %s (#%d) <ignoriert>\n
-2481:Server: Gruppe %s Kontakt %s (#%d) <versteckt>\n
-2482:Server: Gruppe %s Kontakt %s/%s (#%d) <versteckt>\n
-2483:Lokal:  Gruppe %s Kontakt %s/%s (#%d)\n
-2484:Server: Gruppe %s Kontakt %s (#%d)\n
-2485:Server: Gruppe %s Kontakt %s/%s (#%d)\n
-2486:Lokal:  Gruppe %s Kontakt %s/%s (#%d) <%s>\n
-2487:versteckt
-2488:sichtbar
-2489:Server: Gruppe %s Kontakt %s/%s (#%d) <sichtbar>\n
-2490:normal
+2478.Server: Gruppe %s (#%d)\n
+2479.Lokal:  Gruppe %s (#%d)\n
+2480.Server: Gruppe %s Kontakt %s (#%d) <ignoriert>\n
+2481.Server: Gruppe %s Kontakt %s (#%d) <versteckt>\n
+2482.Server: Gruppe %s Kontakt %s/%s (#%d) <versteckt>\n
+2483.Lokal:  Gruppe %s Kontakt %s/%s (#%d)\n
+2484.Server: Gruppe %s Kontakt %s (#%d)\n
+2485.Server: Gruppe %s Kontakt %s/%s (#%d)\n
+2486.Lokal:  Gruppe %s Kontakt %s/%s (#%d) <%s>\n
+2487.versteckt
+2488.sichtbar
+2489.Server: Gruppe %s Kontakt %s/%s (#%d) <sichtbar>\n
+2490.normal
 2491:Differenzen in %d Kontaktgruppen, dabei insgesamt %d Kontakten, %d ignoriert, %d versteckt, %d sichtbar, %d lokal.\n
 2492:Benutzung: climm [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
@@ -1224,7 +1224,7 @@
 #2577:SBL ids:
 2578:%d Kontaktgruppen geändert, dabei insgesamt %d Kontakte, %d ignoriert, %d versteckt, %d sichtbar.\n
 2579:contact delid   Lösche Einträge der Server-seitigen Kontaktliste (nur für Experten).\n
-2580:ignorieren
+2580.ignorieren
 2581:Verschlüsselte Verbindungen zu Kontakten benötigt die GnuTLS-Bibliothek.\n
 2582:Tcl-Skriptausführung benötigt die Tcl-Bibliothek 8.4.\n
 2583:Fehler vom Location-Dienst: %d.\n
@@ -1329,6 +1329,26 @@
 2688:Kein Paßwort für %s angegeben.\n
 2689:Gebe Paßwort für %s-Konto %s ein: 
 2690:Metainformations-Änderung war %s%s%s.\n
+2691:Zuletzt gesehen:
+2692:Eingeloggt seit:
+2693:... mit climm:
+2694:Gruppe %s (#%d) existiert nur auf dem server.\n
+2695:Gruppe %s (#%d) auf dem Server ist lokal Gruppe %s (#%d).\n
+2696:Gruppe %s (#%d) existiert nur lokal.\n
+2697:Kontakt %s/%s existiert nur auf dem Server als ignoriert (#%d).\n
+2698:Kontakt %s/%s existiert nur auf dem Server als unsichtbar (#%d).\n
+2699:Kontakt %s/%s ist unsichtbar (#%d) auf dem Server, aber lokal (#%d) normal.\n
+2700:Kontakt %s/%s existiert nur auf dem Server als sichtbar (#%d).\n
+2701:Kontakt %s/%s ist sichtbar (#%d) auf dem Server, aber lokal (#%d) normal.\n
+2702:Kontakt %s/%s existiert nur auf dem Server (#%d).\n
+#2703:Kontakt %s (#%d) is screen name %s (#%d) locally. Huh??\n
+2704:Kontakt %s ist %s (#%d) auf dem Server und %s (#%d) lokal.\n
+2705:Kontakt %s/%s ist normal (#%d) auf dem Server, aber unsichtbar (#%d,#%d) lokal.\n
+2706:Kontakt %s/%s ist normal (#%d) auf dem Server, aber sichtbar (#%d,#%d) lokal.\n
+2707:Kontakt %s/%s (#%d) ist in Gruppe %s (#%d) auf dem Server, aber in Gruppe %s (#%d) lokal.\n
+2708:Kontakt %s/%s (#%d) existiert nur lokal.\n
+#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
+2710:Kontakt %s/%s ist normal (#%d) auf dem Server, aber ignoriert (#%d,#%d) lokal.\n
 2999.max.
 # Those are the funny messages. Substract 2000 to get the normal message.
 3620.Du hast zu viele Freunde, wie wär's mit mehr RL?
