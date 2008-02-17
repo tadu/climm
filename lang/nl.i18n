@@ -1,18 +1,18 @@
 # $Id$ (Dutch)
 #  EN: __.i18n 2392 2007-09-07 22:41:40 <-- NEVER TOUCH THIS - it's updated automatically
 #-#1010:Gebruiker is weg [Automatisch bericht]
-#1000:UTF-8
-#1001:<lang>
-#1002:<lang_cc>
-#1003:0
-#1004:<translation authors>
-#1005:<last editor>
-#1006:<last edit date>
+#_#1000:UTF-8
+#_#1001:<lang>
+#_#1002:<lang_cc>
+#_#1003:0
+#_#1004:<translation authors>
+#_#1005:<last editor>
+#_#1006:<last edit date>
 1008:iso-8859-1
-#1010:User is away [Auto-Message]
+#_#1010:User is away [Auto-Message]
 1011:Gebruiker is niet beschikbaar [Automatisch bericht]
 #-#1012:Gebruiker is bezet [Automatisch bericht]
-#1012:User is occupied [Auto-Message]
+#_#1012:User is occupied [Auto-Message]
 1014:None
 1015:Jan
 1016:Feb
@@ -23,7 +23,7 @@
 1021:Jul
 1022:Aug
 #-#1023:Sept
-#1023:Sep
+#_#1023:Sep
 1024:Oct
 1025:Nov
 1026:Dec
@@ -41,13 +41,13 @@
 #+#1038:Message canceled\n
 #-#1039:!\n
 #-#1040:Climm> 
-#1029:Please enter YES or NO!
-#1030:logged off
-#1032:debug: double packet #%04lx type %04x (%s)\n
-#1033:Incoming v8 server packet:
-#1034:Maximum number of tries reached. Giving up.
-#1038:Message canceled.\n
-#1039:The server claims we're not connected.\n
+#_#1029:Please enter YES or NO!
+#_#1030:logged off
+#_#1032:debug: double packet #%04lx type %04x (%s)\n
+#_#1033:Incoming v8 server packet:
+#_#1034:Maximum number of tries reached. Giving up.
+#_#1038:Message canceled.\n
+#_#1039:The server claims we're not connected.\n
 1043:Alle gebruikers gevonden.
 1044:Te veel gebruikers gevonden.
 1045:Klaar met zoeken.
@@ -55,7 +55,7 @@
 1047:Extra Data
 #-#1048:SEQ
 #-#1049:Ver
-#1048:Error code: %ld\n
+#_#1048:Error code: %ld\n
 1050:Login gelukt!
 #-#1052:Kon geen verbinding tot stand brengen\n
 1053:Verbonden met %s, wacht op antwoord\n
@@ -73,22 +73,22 @@
 #-#1071: Uw toestand is 
 #-#1072:Gebruikers offline: 
 #-#1073:Gebruikers online: 
-#1056:Socket created, attempting to connect.\n
-#1060:Verbosity level is %ld.\n
-#1061:'%s' not recognized as a nick name.\n
-#1062:Users ignored:
-#1064:Automatically changed status to %s.\n
-#1078:No translation available.
-#1079:Translation (%s, %s) from %s, last modified on %s by %s, for climm %d.%d.%d%s.\n
-#1082:Trying to reconnect... [try %d out of %d]\n
-#1085:on
-#1086:off
-#1089:Unloaded translation.
-#1094:SOCKS5 server:
-#1095:SOCKS5 port:
-#1096:SOCKS5 user name:
-#1097:SOCKS5 password:
-#1098:Display a list of nicknames that you can tab through.
+#_#1056:Socket created, attempting to connect.\n
+#_#1060:Verbosity level is %ld.\n
+#_#1061:'%s' not recognized as a nick name.\n
+#_#1062:Users ignored:
+#_#1064:Automatically changed status to %s.\n
+#_#1078:No translation available.
+#_#1079:Translation (%s, %s) from %s, last modified on %s by %s, for climm %d.%d.%d%s.\n
+#_#1082:Trying to reconnect... [try %d out of %d]\n
+#_#1085:on
+#_#1086:off
+#_#1089:Unloaded translation.
+#_#1094:SOCKS5 server:
+#_#1095:SOCKS5 port:
+#_#1096:SOCKS5 user name:
+#_#1097:SOCKS5 password:
+#_#1098:Display a list of nicknames that you can tab through.
 1101:Arabisch
 1102:Bhojpuri
 1103:Bulgaars
@@ -150,36 +150,36 @@
 1159:Armenian
 #-#1200:Niet ingebuld
 #+#1200:Not entered
-#1161:Academic
-#1162:Administrative
-#1163:Art/Entertainment
-#1164:College Student
-#1165:Computers
-#1166:Community & Social
-#1167:Education
-#1168:Engineering
-#1169:Financial Services
-#1170:Government
-#1171:High School Student
-#1172:Home
-#1173:ICQ - Providing Help
-#1174:Law
-#1175:Managerial
-#1176:Manufacturing
-#1177:Medical/Health
-#1178:Military
-#1179:Non-government Organization
-#1180:Professional
-#1181:Retail
-#1182:Retired
-#1183:Science & Research
-#1184:Sports
-#1185:Technical
-#1186:University Student
-#1187:Web Building
-#1188:Unrecognized command '%s' in configuration file, ignored.
-#1198:Other Services
-#1200:not entered
+#_#1161:Academic
+#_#1162:Administrative
+#_#1163:Art/Entertainment
+#_#1164:College Student
+#_#1165:Computers
+#_#1166:Community & Social
+#_#1167:Education
+#_#1168:Engineering
+#_#1169:Financial Services
+#_#1170:Government
+#_#1171:High School Student
+#_#1172:Home
+#_#1173:ICQ - Providing Help
+#_#1174:Law
+#_#1175:Managerial
+#_#1176:Manufacturing
+#_#1177:Medical/Health
+#_#1178:Military
+#_#1179:Non-government Organization
+#_#1180:Professional
+#_#1181:Retail
+#_#1182:Retired
+#_#1183:Science & Research
+#_#1184:Sports
+#_#1185:Technical
+#_#1186:University Student
+#_#1187:Web Building
+#_#1188:Unrecognized command '%s' in configuration file, ignored.
+#_#1198:Other Services
+#_#1200:not entered
 1201:Afghanistan
 1202:Albanie
 1203:Algerie
@@ -255,7 +255,7 @@
 1273:Finland
 1274:Frankrijk
 1275:Franse Antillen
-#1276:French Antilles
+#_#1276:French Antilles
 1277:Frans Guinea
 1278:Frans Polynesie
 1279:Gabon
@@ -412,50 +412,50 @@
 #-#1437:		Zet op Onzichtbaar.\n
 #-#1438:		Wijzig uw algemene informatie (email, nickname, etc.)\n
 #-#1439:		Stelt uw 'willekeurige gebruikers groep' in.\n
-#1393:successful
-#1394:unsuccessful
-#1400:Shows locally stored info on <uin> or <nick>, or on yourself.
-#1401:Updates more user info like age and sex.
-#1402:Updates your about user info.
-#1403:Displays the last message received from <contacts> or from everyone.
-#1404:Toggles ignoring/unignoring the <contacts>.
-#1405:Lists ignored nicks/uins.
-#1406:Toggles your visibility to <contacts> when you're invisible.
-#1407:Displays the current status of online people on your contact list.
-#1408:Changes your password to <password>.
-#1409:Sends a message to <contacts>.
-#1410:Sends a url and message to <contacts>.
-#1412:Sends a message to the last person you sent a message to.
-#1414:Replies to the last person to send you a message.
-#1415:Finds a random user in interest group <nr> or lists the groups.
-#1416:Displays the current status of everyone on your contact list.
-#1418:Set the verbosity level, or display verbosity level.
-#1419:Clears the screen.
-#1420:Switches beeping when receiving new messages on or off, or using the event script.
-#1422:Logs off and quits.
-#1424:Set whether autoreplying when not online, or displays setting.
-#1425:Sets the message to send as an auto reply for the status.
-#1426:Creates a new UIN with the specified password.
-#1427:Changes your status to the status number, or list the available modes.
-#1428:Adds all contacts in <contacts> to contact group <group>.
-#1429:Searches for an ICQ user.
-#1430:Displays general info on <uin> or <nick>.
-#1431:Set status to "online".
-#1432:Set status to "away".
-#1433:Set status to "not available".
-#1434:Set status to "occupied".
-#1435:Set status to "do not disturb".
-#1436:Set status to "free for chat".
-#1437:Set status to "invisible".
-#1438:Updates your basic info (email, nickname, etc.).
-#1439:Sets your random user group.
-#1440:Random User:
-#1441:remote IP:
+#_#1393:successful
+#_#1394:unsuccessful
+#_#1400:Shows locally stored info on <uin> or <nick>, or on yourself.
+#_#1401:Updates more user info like age and sex.
+#_#1402:Updates your about user info.
+#_#1403:Displays the last message received from <contacts> or from everyone.
+#_#1404:Toggles ignoring/unignoring the <contacts>.
+#_#1405:Lists ignored nicks/uins.
+#_#1406:Toggles your visibility to <contacts> when you're invisible.
+#_#1407:Displays the current status of online people on your contact list.
+#_#1408:Changes your password to <password>.
+#_#1409:Sends a message to <contacts>.
+#_#1410:Sends a url and message to <contacts>.
+#_#1412:Sends a message to the last person you sent a message to.
+#_#1414:Replies to the last person to send you a message.
+#_#1415:Finds a random user in interest group <nr> or lists the groups.
+#_#1416:Displays the current status of everyone on your contact list.
+#_#1418:Set the verbosity level, or display verbosity level.
+#_#1419:Clears the screen.
+#_#1420:Switches beeping when receiving new messages on or off, or using the event script.
+#_#1422:Logs off and quits.
+#_#1424:Set whether autoreplying when not online, or displays setting.
+#_#1425:Sets the message to send as an auto reply for the status.
+#_#1426:Creates a new UIN with the specified password.
+#_#1427:Changes your status to the status number, or list the available modes.
+#_#1428:Adds all contacts in <contacts> to contact group <group>.
+#_#1429:Searches for an ICQ user.
+#_#1430:Displays general info on <uin> or <nick>.
+#_#1431:Set status to "online".
+#_#1432:Set status to "away".
+#_#1433:Set status to "not available".
+#_#1434:Set status to "occupied".
+#_#1435:Set status to "do not disturb".
+#_#1436:Set status to "free for chat".
+#_#1437:Set status to "invisible".
+#_#1438:Updates your basic info (email, nickname, etc.).
+#_#1439:Sets your random user group.
+#_#1440:Random User:
+#_#1441:remote IP:
 1442:Kies een van de onderstaande helponderwerpen.
 #-#1443:Commando's die met climm schermen en configuratie van doen hebben.
 #-#1444:Commando's die met het zoeken naar andere gebruikers te maken hebben.
-#1443:Commands relating to climm displays and configuration.
-#1444:Commands relating to seeing and finding other users.
+#_#1443:Commands relating to climm displays and configuration.
+#_#1444:Commands relating to seeing and finding other users.
 1445:Commando's die met uw ICQ-account te maken hebben.
 1446:Commando's die met het versturen van berichten te maken hebben.
 1447:Client
@@ -518,281 +518,281 @@
 #-#1555:Geef een nieuwe achternaam : 
 #-#1556:Geef een nieuw Email-Adres : 
 #-#1557:Wilt u dat andere gebruikers om uw toestemming moeten vragen, voordat ze u op hun contact-list kunnen zetten? : 
-#1451:local  IP:
-#1452:Status:
-#1453:TCP version:
-#1454:Connection:
-#1455:Art
-#1456:Cars
-#1457:Celebrity Fans
-#1458:Collections
-#1459:Computers
-#1460:Culture & Literature
-#1461:Fitness
-#1462:Games
-#1463:Hobbies
-#1465:Internet
-#1466:Lifestyle
-#1467:Movies/TV
-#1468:Music
-#1469:Outdoor Activities
-#1470:Parenting
-#1471:Pets/Animals
-#1472:Religion
-#1473:Science/Technology
-#1474:Skills
-#1475:Sports
-#1476:Web Design
-#1477:Nature and Environment
-#1478:News & Media
-#1479:Government
-#1480:Business & Economy
-#1481:Mystics
-#1482:Travel
-#1483:Astronomy
-#1484:Space
-#1485:Clothing
-#1486:Parties
-#1487:Women
-#1488:Social science
-#1489:60's
-#1490:70's
-#1491:80's
-#1492:50's
-#1493:Peer-to-Peer
-#1494:Server Only
-#1495:No Random User Found
-#1497:failed
-#1499:Other
-#1500:Nickname:
-#1501:Name:
-#1505:Location:
-#1506:Phone:
-#1507:Fax:
-#1508:Street:
-#1509:Cellular:
-#1510:Zip:
-#1511:Country:
-#1512:Country code:
-#1513:Work Country Code:
-#1514:Work Country:
-#1515:Work Homepage:
-#1516:Occupation:
-#1517:Job Position:
-#1518:Department:
-#1519:Company Name:
-#1520:Work Zip:
-#1521:Work Fax:
-#1522:Work Address:
-#1523:Work Phone:
-#1524:Work Location:
-#1525:About:
-#1528:female
-#1529:male
-#1530:not specified
-#1531:Homepage:
-#1532:Born:
-#1533:Languages:
-#1534:Enter a language by number or L for a list:
-#1535:Enter new age:
-#1536:Enter new sex:
-#1537:Enter new homepage:
-#1538:Enter new year of birth (4 digits):
-#1539:Enter new month of birth:
-#1540:Enter new day of birth:
-#1544:Enter new city:
-#1545:Enter new state:
-#1546:Enter new phone number:
-#1547:Enter new fax number:
-#1548:Enter new street address:
-#1549:Enter new cellular number:
-#1550:Enter new zip code (must be numeric):
-#1551:Enter your country's phone ID number:
-#1552:Enter your time zone (+/- 0-12):
-#1553:Enter Your New Nickname:
-#1554:Enter your new first name:
-#1555:Enter your new last name:
-#1556:Enter your new email address:
-#1557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
-#1564:First name:
-#1565:Last name:
-#1566:Email address:
-#1570:City:
-#1574:State:
-#1575:Age:
-#1578:Enter country's phone ID number:
-#1579:Enter company: 
-#1587:Enter department: 
-#1595:\nContact List.\n============================================\n%d Contacts\n
-#1596:[SOCKS] Can't find hostname %s: %s.
-#1597:[SOCKS] Socket creation failed\n
-#1598:[SOCKS] Connection request refused
-#1599:[SOCKS] Authentication method incorrect
-#1600:[SOCKS] Authorization failure
-#1601:[SOCKS] General SOCKS server failure
-#1602:Enter a state:
-#1603:Enter position: 
-#1604:Should the users be online?
-#1605:Do you want your status to be available on the web? (YES/NO)
-#1606:Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
-#1612:This program was made without any help from Mirabilis or their consent.\n
-#1613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n
-#1619:Warning:
-#1621:users not returned.
-#1622:Do you want to apply these changes? (YES/NO)
-#1623:Double packet %04x.\n
-#1632:\nConnection unstable. Exiting....
-#1634:ok.\n
-#1637:Can't bind socket to free port\n
-#1638:Couldn't create socket
-#1640:Failed to update info.\n
-#1641:User info successfully updated.\n
-#1642:IP:
-#1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
-#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
-#1645:You entered an incorrect password.\n
-#1646:Server is busy.\n
-#1648:The response was %04x	
-#1649:The version was %x	
-#1650:\nThe SEQ was %04lx	
-#1651:The size was %d\n
-#1653:Offline
-#1654:Online
-#1655:Enter the user's e-mail address:
-#1656:Enter the user's nick name:
-#1657:Enter the user's first name:
-#1658:Enter the user's last name:
-#1659:Unknown section '%s' in configuration file.
-#1660:Invalid Command: %s\n
-#1661:Shell commands have been disabled.\n
-#1666:Unignored %s.\n
-#1667:Ignoring %s.\n
-#1670:Normal visible to %s now.\n
-#1671:Always visible to %s now.\n
-#1675:Ignored line:
-#1678:No URL given.\n
-#1679:Sorry saving your personal reply messages went wrong!\n
-#1680:Your personal settings have been saved!\n
-#1682:You have received messages from:\n
-#1687:climm has been running for
-#1688:days
-#1689:hours
-#1690:minutes
-#1691:seconds
-#1696:Sex:
-#1703:Status modes:\n
-#1704:Groups:\n
-#1705:General
-#1706:Romance
-#1707:Games
-#1708:Students
-#1709:20 something
-#1710:30 something
-#1711:40 something
-#1712:50+
-#1713:Seeking women
-#1714:Seeking men
-#1715:climm
-#1716:None
-#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
-#1719:Shows how long climm has been running and some statistics.
-#1721:Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message.
-#1741:Must receive a message first.\n
-#1742:Must write a message first.\n
-#1743:Size mismatch in packet lengths.\n
-#1744:server (v5)
-#1745:unknown
-#1746: nr type         sent/received packets/unique packets\n
-#1747:total
-#1754:Note: You need to 'save' to write new contact list to disc.\n
-#1755:has added you to their contact list.\n
-#1766:Changing status to away/not available after idling %s%ld%s seconds.\n
-#1767:Toggles auto cycling to away/not available.
-#1770:Resend your last message to <contacts>.
-#1771:You haven't sent a message to anyone yet!\n
-#1774:Incoming packet:
-#1775:Outgoing packet:
-#1784:If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n
-#1785:success.\n
-#1786:I also need the port the socks server listens on. If unsure, press return for the default port.\n
-#1787:You probably need to authenticate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n
-#1788:Now I also need the password for this user.\n
-#1789:Received malformed packet: (%d)
-#1790:Setup wizard finished. Congratulations to your new UIN!\n
-#1791:Setup wizard finished. Congratulations!\n
-#1792:I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.\n
-#1795:Password:
-#1797:Finance and corporate
-#1798:Elementary School
-#1799:High School
-#1800:Change the working language (and encoding) to <lang> or display string <nr>.
-#1801:Displays a list of people on your contact list in a screen wide format.
-#1807:Cancelled incoming message (seq %04x) from %s\n
-#1808:College
-#1810:University
-#1812:Past Work Place
-#1813:Past Organization
-#1814:Sent auto-response message to %s%s%s.\n
-#1815:    funny:      use funny messages for output.\n
-#1817:The event scripting feature is disabled.\n
-#1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
-#1820:%s <option> [on|off|<value>] - control simple options.\n
-#1822:    color:      use colored text output.\n
-#1823:Incoming partial packet:
-#1825:Discarded a %04x (%s) packet
-#1826:Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
-#1830:Discarding message to %s after %ld send attempts.  Message content:\n
-#1833:Peer to peer TCP connection established.\n
-#1842:Closing socket %d to %s.\n
-#1843:Closing socket %d.\n
-#1844:TCP message %04x discarded after timeout.\n
-#1846:Opens and closes direct (peer to peer) connections:\n
-#1847:peer open  <nick> - Opens direct connection.\n
-#1848:peer close <nick> - Closes/resets direct connection(s).\n
-#1849:Error on select: %s (%d)\n
-#1850:Timeout on connection with %s at %s:%ld\n
-#1855:TCP connection to %s at %s:%ld failed.\n
-#1856:Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n
-#1857:Do you want to hide your IP from other contacts? (YES/NO)
-#1867:Received a malformed (too short) packet - ignored.\n
-#1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.\n
-#1869:Protocol versions less than 5 are not supported anymore.\n
-#1870:peer off   <nick> - Closes direct connection(s) and don't try it again.\n
-#1872:failed: %s (%d)\n
-#1873:Work City:
-#1874:Work State:
-#1875:Personal interests:
-#1876:Personal past background:
-#1877:ok.\n
-#1878:Error while reading from socket: %s (%d, %d)\n
-#1879:Affiliations:
-#1881:FLAP channel 1 out of data.\n
-#1882:FLAP channel 1 cmd 1 extra data:\n
-#1883:FLAP channel 1 unknown command %d.\n
-#1884:FLAP with unknown channel %ld received.\n
-#1885:Connection v8 timed out.\n
-#1887:Connections:
-#1888:not webaware
-#1889:server
-#1890:peer-to-peer
-#1892:conn                    List available connections.\n
-#1893:conn login <nr> [pass]  Open connection <nr>.\n
-#1894:There is no connection number %ld.\n
-#1895:Login failed:\n
-#1896:Server closed connection:\n
-#1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
-#1899:Unknown family requested: %d\n
-#1900:It's readonly.
-#1901:has authorized you to add them to your contact list.\n
-#1903:Outgoing v8 server packet:
-#1904:Server doesn't understand ver %d (only %d) for family %d!\n
-#1911:connecting
-#1912:closed
-#1914:Can't allocate connection structure.\n
-#1915:Server says we're at %s.\n
-#1918:Ignored server request for a minimum report interval of %d.\n
-#1919:UIN mismatch: %ld vs %ld.\n
-#1920:Registration of new UIN refused.\n
+#_#1451:local  IP:
+#_#1452:Status:
+#_#1453:TCP version:
+#_#1454:Connection:
+#_#1455:Art
+#_#1456:Cars
+#_#1457:Celebrity Fans
+#_#1458:Collections
+#_#1459:Computers
+#_#1460:Culture & Literature
+#_#1461:Fitness
+#_#1462:Games
+#_#1463:Hobbies
+#_#1465:Internet
+#_#1466:Lifestyle
+#_#1467:Movies/TV
+#_#1468:Music
+#_#1469:Outdoor Activities
+#_#1470:Parenting
+#_#1471:Pets/Animals
+#_#1472:Religion
+#_#1473:Science/Technology
+#_#1474:Skills
+#_#1475:Sports
+#_#1476:Web Design
+#_#1477:Nature and Environment
+#_#1478:News & Media
+#_#1479:Government
+#_#1480:Business & Economy
+#_#1481:Mystics
+#_#1482:Travel
+#_#1483:Astronomy
+#_#1484:Space
+#_#1485:Clothing
+#_#1486:Parties
+#_#1487:Women
+#_#1488:Social science
+#_#1489:60's
+#_#1490:70's
+#_#1491:80's
+#_#1492:50's
+#_#1493:Peer-to-Peer
+#_#1494:Server Only
+#_#1495:No Random User Found
+#_#1497:failed
+#_#1499:Other
+#_#1500:Nickname:
+#_#1501:Name:
+#_#1505:Location:
+#_#1506:Phone:
+#_#1507:Fax:
+#_#1508:Street:
+#_#1509:Cellular:
+#_#1510:Zip:
+#_#1511:Country:
+#_#1512:Country code:
+#_#1513:Work Country Code:
+#_#1514:Work Country:
+#_#1515:Work Homepage:
+#_#1516:Occupation:
+#_#1517:Job Position:
+#_#1518:Department:
+#_#1519:Company Name:
+#_#1520:Work Zip:
+#_#1521:Work Fax:
+#_#1522:Work Address:
+#_#1523:Work Phone:
+#_#1524:Work Location:
+#_#1525:About:
+#_#1528:female
+#_#1529:male
+#_#1530:not specified
+#_#1531:Homepage:
+#_#1532:Born:
+#_#1533:Languages:
+#_#1534:Enter a language by number or L for a list:
+#_#1535:Enter new age:
+#_#1536:Enter new sex:
+#_#1537:Enter new homepage:
+#_#1538:Enter new year of birth (4 digits):
+#_#1539:Enter new month of birth:
+#_#1540:Enter new day of birth:
+#_#1544:Enter new city:
+#_#1545:Enter new state:
+#_#1546:Enter new phone number:
+#_#1547:Enter new fax number:
+#_#1548:Enter new street address:
+#_#1549:Enter new cellular number:
+#_#1550:Enter new zip code (must be numeric):
+#_#1551:Enter your country's phone ID number:
+#_#1552:Enter your time zone (+/- 0-12):
+#_#1553:Enter Your New Nickname:
+#_#1554:Enter your new first name:
+#_#1555:Enter your new last name:
+#_#1556:Enter your new email address:
+#_#1557:Do you want to require Mirabilis users to request your authorization? (YES/NO)
+#_#1564:First name:
+#_#1565:Last name:
+#_#1566:Email address:
+#_#1570:City:
+#_#1574:State:
+#_#1575:Age:
+#_#1578:Enter country's phone ID number:
+#_#1579:Enter company: 
+#_#1587:Enter department: 
+#_#1595:\nContact List.\n============================================\n%d Contacts\n
+#_#1596:[SOCKS] Can't find hostname %s: %s.
+#_#1597:[SOCKS] Socket creation failed\n
+#_#1598:[SOCKS] Connection request refused
+#_#1599:[SOCKS] Authentication method incorrect
+#_#1600:[SOCKS] Authorization failure
+#_#1601:[SOCKS] General SOCKS server failure
+#_#1602:Enter a state:
+#_#1603:Enter position: 
+#_#1604:Should the users be online?
+#_#1605:Do you want your status to be available on the web? (YES/NO)
+#_#1606:Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
+#_#1612:This program was made without any help from Mirabilis or their consent.\n
+#_#1613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n
+#_#1619:Warning:
+#_#1621:users not returned.
+#_#1622:Do you want to apply these changes? (YES/NO)
+#_#1623:Double packet %04x.\n
+#_#1632:\nConnection unstable. Exiting....
+#_#1634:ok.\n
+#_#1637:Can't bind socket to free port\n
+#_#1638:Couldn't create socket
+#_#1640:Failed to update info.\n
+#_#1641:User info successfully updated.\n
+#_#1642:IP:
+#_#1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
+#_#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
+#_#1645:You entered an incorrect password.\n
+#_#1646:Server is busy.\n
+#_#1648:The response was %04x	
+#_#1649:The version was %x	
+#_#1650:\nThe SEQ was %04lx	
+#_#1651:The size was %d\n
+#_#1653:Offline
+#_#1654:Online
+#_#1655:Enter the user's e-mail address:
+#_#1656:Enter the user's nick name:
+#_#1657:Enter the user's first name:
+#_#1658:Enter the user's last name:
+#_#1659:Unknown section '%s' in configuration file.
+#_#1660:Invalid Command: %s\n
+#_#1661:Shell commands have been disabled.\n
+#_#1666:Unignored %s.\n
+#_#1667:Ignoring %s.\n
+#_#1670:Normal visible to %s now.\n
+#_#1671:Always visible to %s now.\n
+#_#1675:Ignored line:
+#_#1678:No URL given.\n
+#_#1679:Sorry saving your personal reply messages went wrong!\n
+#_#1680:Your personal settings have been saved!\n
+#_#1682:You have received messages from:\n
+#_#1687:climm has been running for
+#_#1688:days
+#_#1689:hours
+#_#1690:minutes
+#_#1691:seconds
+#_#1696:Sex:
+#_#1703:Status modes:\n
+#_#1704:Groups:\n
+#_#1705:General
+#_#1706:Romance
+#_#1707:Games
+#_#1708:Students
+#_#1709:20 something
+#_#1710:30 something
+#_#1711:40 something
+#_#1712:50+
+#_#1713:Seeking women
+#_#1714:Seeking men
+#_#1715:climm
+#_#1716:None
+#_#1717:Execute shell command <cmd> (e.g. '!ls', '!dir', '!mkdir temp').
+#_#1719:Shows how long climm has been running and some statistics.
+#_#1721:Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message.
+#_#1741:Must receive a message first.\n
+#_#1742:Must write a message first.\n
+#_#1743:Size mismatch in packet lengths.\n
+#_#1744:server (v5)
+#_#1745:unknown
+#_#1746: nr type         sent/received packets/unique packets\n
+#_#1747:total
+#_#1754:Note: You need to 'save' to write new contact list to disc.\n
+#_#1755:has added you to their contact list.\n
+#_#1766:Changing status to away/not available after idling %s%ld%s seconds.\n
+#_#1767:Toggles auto cycling to away/not available.
+#_#1770:Resend your last message to <contacts>.
+#_#1771:You haven't sent a message to anyone yet!\n
+#_#1774:Incoming packet:
+#_#1775:Outgoing packet:
+#_#1784:If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n
+#_#1785:success.\n
+#_#1786:I also need the port the socks server listens on. If unsure, press return for the default port.\n
+#_#1787:You probably need to authenticate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n
+#_#1788:Now I also need the password for this user.\n
+#_#1789:Received malformed packet: (%d)
+#_#1790:Setup wizard finished. Congratulations to your new UIN!\n
+#_#1791:Setup wizard finished. Congratulations!\n
+#_#1792:I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.\n
+#_#1795:Password:
+#_#1797:Finance and corporate
+#_#1798:Elementary School
+#_#1799:High School
+#_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
+#_#1801:Displays a list of people on your contact list in a screen wide format.
+#_#1807:Cancelled incoming message (seq %04x) from %s\n
+#_#1808:College
+#_#1810:University
+#_#1812:Past Work Place
+#_#1813:Past Organization
+#_#1814:Sent auto-response message to %s%s%s.\n
+#_#1815:    funny:      use funny messages for output.\n
+#_#1817:The event scripting feature is disabled.\n
+#_#1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
+#_#1820:%s <option> [on|off|<value>] - control simple options.\n
+#_#1822:    color:      use colored text output.\n
+#_#1823:Incoming partial packet:
+#_#1825:Discarded a %04x (%s) packet
+#_#1826:Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
+#_#1830:Discarding message to %s after %ld send attempts.  Message content:\n
+#_#1833:Peer to peer TCP connection established.\n
+#_#1842:Closing socket %d to %s.\n
+#_#1843:Closing socket %d.\n
+#_#1844:TCP message %04x discarded after timeout.\n
+#_#1846:Opens and closes direct (peer to peer) connections:\n
+#_#1847:peer open  <nick> - Opens direct connection.\n
+#_#1848:peer close <nick> - Closes/resets direct connection(s).\n
+#_#1849:Error on select: %s (%d)\n
+#_#1850:Timeout on connection with %s at %s:%ld\n
+#_#1855:TCP connection to %s at %s:%ld failed.\n
+#_#1856:Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n
+#_#1857:Do you want to hide your IP from other contacts? (YES/NO)
+#_#1867:Received a malformed (too short) packet - ignored.\n
+#_#1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.\n
+#_#1869:Protocol versions less than 5 are not supported anymore.\n
+#_#1870:peer off   <nick> - Closes direct connection(s) and don't try it again.\n
+#_#1872:failed: %s (%d)\n
+#_#1873:Work City:
+#_#1874:Work State:
+#_#1875:Personal interests:
+#_#1876:Personal past background:
+#_#1877:ok.\n
+#_#1878:Error while reading from socket: %s (%d, %d)\n
+#_#1879:Affiliations:
+#_#1881:FLAP channel 1 out of data.\n
+#_#1882:FLAP channel 1 cmd 1 extra data:\n
+#_#1883:FLAP channel 1 unknown command %d.\n
+#_#1884:FLAP with unknown channel %ld received.\n
+#_#1885:Connection v8 timed out.\n
+#_#1887:Connections:
+#_#1888:not webaware
+#_#1889:server
+#_#1890:peer-to-peer
+#_#1892:conn                    List available connections.\n
+#_#1893:conn login <nr> [pass]  Open connection <nr>.\n
+#_#1894:There is no connection number %ld.\n
+#_#1895:Login failed:\n
+#_#1896:Server closed connection:\n
+#_#1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
+#_#1899:Unknown family requested: %d\n
+#_#1900:It's readonly.
+#_#1901:has authorized you to add them to your contact list.\n
+#_#1903:Outgoing v8 server packet:
+#_#1904:Server doesn't understand ver %d (only %d) for family %d!\n
+#_#1911:connecting
+#_#1912:closed
+#_#1914:Can't allocate connection structure.\n
+#_#1915:Server says we're at %s.\n
+#_#1918:Ignored server request for a minimum report interval of %d.\n
+#_#1919:UIN mismatch: %ld vs %ld.\n
+#_#1920:Registration of new UIN refused.\n
 1921:Online
 1922:Niet storen
 1923:Weg
@@ -801,617 +801,617 @@
 1926:Onzichtbaar
 1927:Wil wel chatten
 1929:Gebruiker wil niet gestoord worden [Automatisch bericht]
-#1931:Current session is closed. Try another or open this one.\n
-#1934:connected
-#1935:    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n
-#1936:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
-#1937:Enter max age (22,29,39,49,59,120):
-#1938:Enter sex:
-#1939:Enter a city:
-#1940:Unknown Meta User result %lx.\n
-#1942:Additional Email addresses:
-#1943:(no authorization needed)
-#1944:(must request authorization)
-#1945:Unknown Meta User response
-#1947:listener
-#1948:Can't find hostname %s: %s.
-#1949:failed:\n
-#1950:Couldn't set socket nonblocking
-#1951:Can't find hostname %s: %s (%d).
-#1952:Couldn't open connection
-#1953:couldn't bind socket to free port
-#1954:unable to listen on socket
-#1955:Connection failed
-#1958:[SOCKS] Connection request refused (%d)
-#1960:Enter data to search user for. Enter '.' to start the search.\n
-#1961:URL: %s\n
-#1966: Connection refused on port %ld at %s\n
-#1967:More Info for
-#1968:User found:\n
-#1969:offline
-#1970:online
-#1971:do not disturb
-#1972:away
-#1973:occupied
-#1974:not available
-#1975:invisible
-#1976:free for chat
-#1977:Audio and visual
-#1978:Sporting and athletic
-#1979:Publishing
-#1980:Home automation
-#1981:Alumni Org.
-#1982:Charity Org.
-#1983:Club/Social Org.
-#1984:Community Org.
-#1985:Cultural Org.
-#1986:Fan Clubs
-#1987:Fraternity/Sorority
-#1988:Hobbyists Org.
-#1989:International Org.
-#1990:Nature and Environment Org.
-#1991:Professional Org.
-#1992:Scientific/Technical Org.
-#1993:Self Improvement Group
-#1994:Spiritual/Religious Org.
-#1995:Sports Org.
-#1996:Support Org.
-#1997:Trade and Business Org.
-#1998:Union
-#1999:Volunteer Org.
-#2000:Entertainment
-#2001:Consumer electronics
-#2002:Retail stores
-#2003:Health and beauty
-#2004:Media
-#2005:Household products
-#2006:Mail order catalog
-#2007:Business services
-#2011:You do not have a listening peer-to-peer connection.\n
-#2012:No password given.\n
-#2013:This command is v8 only.\n
-#2014:No number given.\n
-#2015:No message given.\n
-#2017:The user is online, but possibly invisible.\n
-#2020:Being visible to %s.\n
-#2021:Being invisible to %s.\n
-#2022:The user is offline.\n
-#2023:Direct connection closed by peer.\n
-#2024:Unknown protocol version %d for ICQ peer-to-peer protocol.\n
-#2026:TCP cookie:
-#2029:Protocol error on peer-to-peer connection
-#2031:Connecting failed too often, giving up.\n
-#2032:Scheduling v8 reconnect in %d seconds.\n
-#2033:born today
-#2036:Save current preferences to disc.
-#2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>.
-#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
-#2039:Sends a message to a (<nick>'s) <cell> phone.
-#2042:Displays a list of online people on your contact list in a screen wide format.
-#2043:Remove all contacts in <contacts> from contact group <group>.
-#2044:Set, clear or display an <option>: color, delbs, auto, prompt, autosave, autofinger, linebreak, funny.
-#2045:Toggles your visibility to <contacts> when you're online.
-#2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n
-#2047:Creating directory %s.\n
-#2048:Saving preferences to %s.\n
-#2051:Error on socket: %s (%d)\n
-#2055:User is ffc and wants to chat about everything.
-#2056:getauto [auto] <nick> - Get the auto-response from the contact.\n
-#2057:getauto away   <nick> - Get the auto-response for away from the contact.\n
-#2058:getauto na     <nick> - Get the auto-response for not available from the contact.\n
-#2059:getauto dnd    <nick> - Get the auto-response for do not disturb from the contact.\n
-#2060:getauto ffc    <nick> - Get the auto-response for free for chat from the contact.\n
-#2065:Unknown TCP_MSG_GREET_ command %04x.\n
-#2066:Unknown TCP_MSG_ command %04x.\n
-#2067:file io
-#2071:Couldn't stat file %s: %s (%d)\n
-#2072:File transfer #%ld (%s) canceled because of closed connection.\n
-#2073:Memory usage: %ld packets processing.\n
-#2078:Outgoing TCP packet (%d - %s): %s
-#2079:Incoming TCP packet (%d - %s): %s
-#2080:Server SMS delivery response:\n%s\n
-#2081:    at %p parent %p assoc %p\n
-#2083:Cannot open file %s: %s (%d).\n
-#2084:Error while seeking to offset %ld: %s (%d).\n
-#2086:Error while reading file %s: %s (%d).\n
-#2087:Finished sending file %s.\n
-#2088:Finished sending all %d files.\n
-#2089:file listener
-#2090:file peer-to-peer
-#2091:Queueing %s as %s for transfer.\n
-#2092:TCP message %s discarded - lost session.\n
-#2094:conn login [pass]       Open current/first server connection.\n
-#2095:conn remove <nr>        Remove connection <nr>.\n
-#2097:conn select <nr>        Select connection <nr> as server connection.\n
-#2098:Connection %ld is not a server connection.\n
-#2100:conn select <uin>       Select connection with UIN <uin> as server connection.\n
-#2101:Removing connection %ld and its dependents completely.\n
-#2102:Connection %ld is a configured connection.\n
-#2103:contact show    Show server based contact list.\n
-#2104:contact diff    Show server based contacts not on local contact list.\n
-#2105:contact import  Import server based contact list as local contact list.\n
-#2106:Last message from %s%s%s at %s:\n
-#2107:No messages received from %s%s%s.\n
-#2108:auto
-#2109:version
-#2110:peer files <nick> <file1> <as1> ... [<description>]\n
-#2111:                  - Send file1 as as1, ..., with description.\n
-#2112:                  - as = '/': strip path, as = '.': as is\n
-#2115:'%s' is not an integer.\n
-#2116:No new nick name given.\n
-#2118:Out of memory.\n
-#2119:auth [grant] <contacts>    - grant authorization.\n
-#2120:auth deny <contacts> <msg> - refuse authorization.\n
-#2121:auth req  <contacts> <msg> - request authorization.\n
-#2122:Note: You need to 'save' to write new password to disc.\n
-#2123:%sSyntax error%s: Too few arguments: %s\n
-#2124:%sSyntax error%s: Not an integer: %s\n
-#2128: Description: %s%s%s\n
-#2129:         URL: %s%s%s\n
-#2131:Composing message to %s%s%s:\n
-#2133:Color is %s%s%s.\n
-#2134:Funny messages are %s%s%s.\n
-#2136:Password change was %s%s%s.\n
-#2137:About info change was %s%s%s.\n
-#2138:Info change was %s%s%s.\n
-#2139:Other info change was %s%s%s.\n
-#2140:Random chat group change was %s%s%s.\n
-#2141:Search %sfailed%s.\n
-#2142:Direct connection with %s not possible.\n
-#2145:auth add  <contacts>       - authorized add.\n
-#2156:conn close <nr>         Close connection <nr>.\n
-#2157:Moldova
-#2158:No file name given.\n
-#2159:Some files.
-#2160:peer file  <nick> <file> [<description>]\n
-#2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
-#2162:Receiving file %s (%s) with %ld bytes as %s.\n
-#2163:Sending file %ld at offset %ld.\n
-#2165:The peer sent more bytes (%ld) than the file length (%ld).\n
-#2166:Finished receiving file.\n
-#2167:Error - unknown packet.\n
-#2168:File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n
-#2169:File transfer aborted by peer (%d).\n
-#2170:Sending file at speed %lx to %s.\n
-#2171:Advanced
-#2172:Advanced commands.
-#2176:Displays verbosely the current status of everyone on your contact list.
-#2177:Displays verbosely the current status of online people on your contact list.
-#2179:Send all <contacts> a single file.
-#2180:Send <uin> or <nick> several files.
-#2181:Closes or removes connection number <nr>.
-#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
-#2183:Check all <contacts> whether they are offline or invisible.
-#2184:%s%-14s%s - %s\n
-#2185:Closing connection %ld.\n
-#2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
-#2191:Instant message error: %d.\n
-#2192:Capabilities:
-#2195:Obsolete number:
-#2196:Obsolete text:
-#2197:Obsolete byte
-#2198:Unsuitable password '%s' - may not start with byte 0xf3.\n
-#2199:  -h, --help     gives this help text\n
-#2200:  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n
-#2201:  -b, --basedir  use given BASE dir (default: %s)\n
-#2203:  -l, --logplace use given log file/dir (default: %s)\n
-#2204:  -i, --i18n     use given locale (default: auto-detected)\n
-#2205:  -c, --nocolor  disable colors\n
-#2206:The server doesn't want to give us offline messages.\n
-#2207:Protocol error in command to old ICQ server: %d.\n
-#2211:Your status is %s.\n
-#2212:changed status to %s
-#2213:logged on (%s)
-#2214:Info for %s%lu%s:\n
-#2215:This climm can't convert between SJIS or EUC and unicode.\n
-#2216:This climm doesn't know the '%s' encoding.\n
-#2217:This climm can't convert between '%s' and unicode.\n
-#2218:UIN: %s\n
-#2220:several
-#2222:Script command '%s' failed: %s (%d).\n
-#2223:Opening scripting FIFO at %s... 
-#2225:scripting
-#2226:Couldn't create FIFO
-#2227:Couldn't open FIFO
-#2228:Couldn't set FIFO nonblocking
-#2233:refused authorization: %s%s%s\n
-#2234:Message %s discarded - lost session.\n
-#2237:Webaware:
-#2238:Hide IP:
-#2239:Unknown more:
-#2240:No contact group given.\n
-#2241:Added '%s' to contact group '%s'.\n
-#2243:Removed contact '%s' from group '%s'.\n
-#2245:Added contact group '%s'.\n
-#2246:Contact '%s' is not in group '%s'.\n
-#2250:Number '%s' is not of the format +<countrycode><cellprovider><number>.\n
-#2251:Error:
-#2252:A beep is generated by %sbeep%sing.\n
-#2253:A beep is generated by running the %sevent%s script.\n
-#2254:A beep is never generated.\n
-#2255:A beep for oncoming contacts is always generated by running the %sevent%s script.\n
-#2256:A beep for offgoing contacts is always generated by running the %sevent%s script.\n
-#2258:No pending incoming file transfer request for %s with (sequence %ld) found.\n
-#2260:Please try the getauto command instead.\n
-#2262:Interpreting a delete character as backspace is %s%s%s.\n
-#2265:Automatic replies are %s%s%s.\n
-#2266:Type of the prompt is %s%s%s.\n
-#2267:Automatic saves are %s%s%s.\n
-#2268:Automatic fingering of new UINs is %s%s%s.\n
-#2269:break
-#2270:simple
-#2271:indent
-#2272:smart
-#2278:    delbs:      interpret delete characters as backspace.\n
-#2281:    auto:       send auto-replies.\n
-#2282:    prompt:     type of the prompt: user, uin, simple\n
-#2283:    autosave:   automatically save the climmrc.\n
-#2284:    autofinger: automatically finger new UINs.\n
-#2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
-#2288:Indentation style is %s%s%s.\n
-#2293:--=
-#2294:===
-#2297:Alias to what?\n
-#2298:Remove which alias?\n
-#2299:Alias doesn't exist.\n
-#2300:Set an alias or list current aliases.
-#2301:Delete an alias.
-#2303:Invalid character 0x%x in alias name.\n
-#2304:Get automatic reply from all <contacts> for current status, away, not available, do not disturb, occupied, or free for chat.
-#2305:Handle meta data of contacts.
-#2306:Request server side contact list and show all or new contacts or import.
-#2307:Displays the current status of online people on your contact list, sorted by contact group.
-#2308:Displays the current status of everyone on your contact list, sorted by contact group.
-#2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
-#2310:Displays verbosely the current status of everyone on your contact list, sorted by contact group.
-#2311:Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>.
-#2312:Remove all aliases in <contacts>, removes contact if 'all' is given.
-#2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
-#2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
-#2315:Cannot watch status of %s - too many watchers.\n
-#2316:Translation %s not found.\n
-#2319:Accept an incoming file transfer from <uin> or <nick>.
-#2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
-#2321:contact add     Add server based contact list to local contact list.\n
-#2322:contact sync    Import server based contact list if appropriate.\n
-#2323:contact export  Export local contact list to server based list.\n
-#2324:contact upload  Add local contacts to server based contact list.\n
-#2325:Warning: server based contact list change failed with error code %d.\n
-#2326:Server side contact list only supported for ICQ v8.\n
-#2327:%sclimm - CLI-based Multi-Messenger%s version %s%s%s\n
-#2328:You logged in too frequently, please wait 30 minutes before trying again.\n
-#2329:syntax error
-#2330:removing non-contact
-#2331:unknown
-#2332:Contact error %d (%s) for %d contacts: 
-#2333:%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n
-#2334:  show - show current known meta data\n
-#2335:  load - load from file and show meta data\n
-#2336:  save - save meta data to file\n
-#2337:  set  - upload own meta data to server\n
-#2338:  get  - query server for meta data\n
-#2339:  rget - query server for last sender's meta data\n
-#2342:Scripting
-#2343:Advanced commands for scripting.
-#2344:Execute Tcl script from <file>.
-#2345:Execute Tcl script in <string>.
-#2346:The following Tcl commands are supported:\n
-#2348:Install hook to receive messages from UIN or nick, or all if omitted.
-#2351:Uninstall message hook for UIN or nick.
-#2353:Install event hook. Callback arguments: type ...
-#2355:Uninstall event hook.
-#2356:List all installed hooks. Format: <type> <command> <filter>.
-#2358:Execute climm command.
-#2360:Find nick from <uin>.
-#2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
-#2362:Wrong number of arguments. Try 'help'.
-#2363:Error: recursive 'climm exec' not allowed.
-#2364:No connection found.
-#2365:unknown command: %s
-#2366:TCL error in file %s: %s\n
-#2367:TCL error: %s\n
-#2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
-#2369:Refuse an incoming file transfer from <uin> or <nick>.
-#2371:SSL init failed.\n
-#2372:Could not send SSL request to %s\n
-#2374:SSL error: %s [%d]\n
-#2375:SSL handshake ok.\n
-#2376:SSL read from %s [ERR=%d]: %s
-#2377:SSL write to %s [ERR=%d]: %s
-#2378:peer ssl <nick>   - initiate SSL handshake.\n
-#2381:I'll add the author of climm to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
-#2383:View your last messages of <contact>. Type 'h' as short command.
-#2384:Case insensitive search of <pattern> in log file of <contact>.
-#2385:Couldn't open %s for reading: %s (%d).\n
-#2386:Found %s%d%s matches.\n
-#2388:find <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
-#2389:finds <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
-#2390:No or empty pattern given.\n
-#2391:Case sensitive search of <pattern> in log file of <contact>.
-#2393:%Y-%m-%d
-#2394: %I:%M %p
-#2395:View your messages of <contact> since <date>.
-#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
-#2397:No server session found.\n
-#2398:Set or display options for a contact group, a contact or global.\n
-#2399:Request SSL connection.
-#2401:Auto reply messages are now contact options, see the %s command.\n
-#2402:The global auto reply flag is handled by the %s command.\n
-#2403:msg>
-#2405:Your status is %s (%s).\n
-#2407:This flag is handled by the %s command.\n
-#2408:%s is not a contact group.\n
-#2409:%s is not a contact.\n
-#2410:%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n
-#2411:opt - short hand for optglobal, optconnection, optgroup or optcontact.\n
-#2412:optglobal            [<option> [<value>]] - set global option.\n
-#2413:optconnection        {<option> [<value>]] - set connection option.\n
-#2414:optgroup   <group>   [<option> [<value>]] - set contact group option.\n
-#2415:optcontact <contact> [<option> [<value>]] - set contact option.\n
-#2416:Options for contact %s:\n
-#2417:Options for contact group %s:\n
-#2418:Global options:\n
-#2419:undefined
-#2420:effectivly
-#2421:Unknown option %s.\n
-#2422:Option %s for contact %s is undefined.\n
-#2423:Option %s for contact group %s is undefined.\n
-#2424:Option %s%s has no global value.\n
-#2425:Option %s for contact %s is %s%s%s.\n
-#2426:Option %s for contact group %s is %s%s%s.\n
-#2427:Option %s%s is globally %s%s%s.\n
-#2428:Option %s for contact %s is %s.\n
-#2429:Option %s for contact group %s is %s.\n
-#2430:Option %s%s is globally %s.\n
-#2431:Undefining option %s for contact %s.\n
-#2432:Undefining option %s for contact group %s.\n
-#2433:Undefining global option %s%s.\n
-#2434:Setting option %s for contact %s to %s.\n
-#2435:Setting option %s for contact group %s to %s.\n
-#2436:Setting option %s%s globally to %s.\n
-#2437:Setting option %s for contact %s to %s%d%s.\n
-#2438:Setting option %s for contact group %s to %s%d%s.\n
-#2439:Setting option %s%s globally to %s%d%s.\n
-#2440:Setting option %s for contact %s.\n
-#2441:Setting option %s for contact group %s.\n
-#2442:Setting option %s%s globally.\n
-#2443:Clearing option %s for contact %s.\n
-#2444:Clearing option %s for contact group %s.\n
-#2445:Clearing option %s%s globally.\n
-#2446:Invalid value %s for boolean option %s.\n
-#2447:No new password given.\n
-#2448:Contact group '%s' already exists.\n
-#2449:Primary contact group for contact '%s' is now '%s'.\n
-#2450:Last %d people you talked with:\n
-#2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
-#2453:    at %p parent %p assoc %p ssl %d\n
-#2454:    open %p reconn %p close %p err %p dispatch %p\n
-#2455:About>
-#2456:Unknown command %s, type %shelp%s for help.\n
-#2457:Unknown configuration file format version %d.\n
-#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
-#2459:Peer-to-peer connection not associated to server connection, discarding.\n
-#2460:Contact group %s (id %s%d%s) not associated to server connection.\n
-#2461:Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
-#2462:File transfer %s to port %s%ld%s.
-#2463:File transfer %s rejected by peer: %s.
-#2464:Accepting file %s (%s%ld%s bytes).
-#2465:Refusing file request %s (%s%ld%s bytes): %s.
-#2466:Refusing chat request (%s/%s) from %s%s%s.
-#2467:climm>
-#2468:requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n
-#2469:URL:
-#2470:requests authorization: %s\n
-#2471:Ignored contacts:\n
-#2472:Hidden-from contacts:\n
-#2473:Normal contacts:\n
-#2474:Intimate contacts:\n
-#2475:Showed %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
-#2476:Downloaded %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
-#2477:Uploading %d contact groups and %d contacts.\n
-#2478:Server: Group %s (#%d)\n
-#2479:Local:  Group %s (#%d)\n
-#2480:Server: Group %s Contact %s (#%d) <ignored>\n
-#2481:Server: Group %s Contact %s (#%d) <hidefrom>\n
-#2482:Server: Group %s Contact %s/%s (#%d) <hidefrom>\n
-#2483:Local:  Group %s Contact %s/%s (#%d)\n
-#2484:Server: Group %s Contact %s (#%d)\n
-#2485:Server: Group %s Contact %s/%s (#%d)\n
-#2486:Local:  Group %s Contact %s/%s (#%d) <%s>\n
-#2487:hidefrom
-#2488:intimate
-#2489:Server: Group %s Contact %s/%s (#%d) <intimate>\n
-#2490:normal
-#2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
-#2492:Usage: climm [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
-#2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
-#2494:  -u, --user     login with this user/UIN instead of those configured\n
-#2495:  -p, --passwd   ... and override password\n
-#2496:  -s, --status   ... and override status\n
-#2497:  -C, --cmd      ... and execute climm command\n
-#2498:Encoding %s%s%s is not supported by this climm.\n
-#2499:Please recompile using the '--enable-iconvrepl' configure option.\n
-#2500:Manual locale setting %s ignored - use a real locale instead.\n
-#2501:Your locale is unset. Please use the %s--i18n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n
-#2502:Locale setting %s is no real locale and probably not what you want.\n
-#2503:Your system doesn't know the %s locale - try %slocale -a%s.\n
-#2504:Could not open configuration file %s%s%s.
-#2505:Deprecated option -f used. Please use the similar -b instead.\n
-#2506:This console uses encoding %s.\n
-#2507:Translation %s%s%s not found. Would you like to translate climm into your language?\n
-#2508:No translation (%s) loaded (%s%d%s entries).\n
-#2509:WSAStartup() for WinSocks 1.1 failed
-#2510:Opening v5 connection to %s:%s%ld%s... 
-#2511:Redirect to server %s:%s%ld%s... 
-#2512:Opening v8 connection to %s:%s%ld%s for %s%s%s... 
-#2513:new UIN
-#2514:refused (ignored)
-#2515:You queried already too many users today - come back tomorrow.\n
-#2516:The query got stuck. Or somesuch. Try again later.\n
-#2517:I'm out of wisdom about the server's problem. It just didn't work out.\n
-#2518:You need to 'save' to write your new UIN to disc.\n
-#2519:Opening file listener connection at %slocalhost%s:%s%ld%s... 
-#2520:Opening file transfer connection to %s:%s%ld%s... \n
-#2521:Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... 
-#2522:Opening TCP connection at %s:%s%ld%s... 
-#2523:%s not recognized as a nick name.\n
-#2524:Can't restore terminal modes.\n
-#2525:Can't read terminal modes.\n
-#2526:Can't modify terminal modes.\n
-#2527:OpenSSL internal error: %s:%i\n
-#2528:OpenSSL read error: %s\n
-#2529:OpenSSL read error %d (unknown)\n
-#2530:OpenSSL write error: %s\n
-#2531:OpenSSL write error %d (unknown)\n
-#2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
-#2533:SSL handshake failed.\n
-#2534:IP:
-#2535:Groups:\n
-#2536:Group:
-#2537:Contact upload failed, authorization required.\n
-#2538:Contact upload failed, already on server.\n
-#2539:Contact upload succeeded.\n
-#2540:    sound:      how to beep: off, on = beep, event.\n
-#2541:Status
-#2542:Commands to change your status.
-#2543:Contacts
-#2544:Commands to modify your contact list.
-#2545:     %s\n
-#2546:No help available for '%s'.\n
-#2547:Displays saved meta data about <contacts>.
-#2548:Displays the current status of online people on your contact list, including otherwise hidden contacts.
-#2549:Displays verbosely the current status of online people on your contact list, including otherwise hidden contacts.
-#2550:Displays the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
-#2551:Displays verbosely the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
-#2552:Displays the current status of everyone on your contact list, including otherwise hidden contacts.
-#2553:Displays verbosely the current status of everyone on your contact list, including otherwise hidden contacts.
-#2554:Displays the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
-#2555:Displays verbosely the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
-#2556:Add contact, alias, or contact to group.
-#2557:Remove alias, or contact from group or contact list.
-#2558:Set or display options for a contact.\n
-#2559:Set or display options for a contact group.\n
-#2560:Set or display global options.\n
-#2561:Logs off and quits without saving.
-#2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
-#2563:Set or display connection options.\n
-#2564:The user couldn't be detected to be online.\n
-#2565:Contact upload for %s%s%s failed, authorization required.\n
-#2566:Contact upload for %s%s%s failed, already on server.\n
-#2567:Contact upload for %s%s%s succeeded.\n
-#2568:Ignored request for auto-response from %s%s%s.\n
-#2569:Send <message> and further messages to <contacts> until canceled.
-#2570:Continuing chat with %s%s%s:\n
-#2571:"%s" <%s> emailed you a message [%s]: %s\n
-#2572:"%s" <%s> sent you a web message [%s]: %s\n
-#2573:The user is probably offline.\n
-#2574:%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n
-#2575:Error writing to file (%lu bytes written out of %u).\n
-#2576:contact delete  Delete server based contact list entry.\n
-#2577:SBL ids:
-#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
-#2579:contact delid   Delete server based contact list entry (experts only).\n
-#2580:ignore
-#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
-#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
-#2583:Location error: %d.\n
-#2584:msn temp
-#2585:msn server
-#2586:msn chat
-#2587:Couldn't load meta data for %s (%s).\n
-#2588:Saved meta data for '%s' (%s).\n
-#2589:Couldn't save meta data for '%s' (%s).\n
-#2590:%s added as %s.\n
-#2591:Contact group '%s' already has contact '%s' (%s).\n
-#2592:'%s' is already an alias for '%s' (%s).\n
-#2593:'%s' (%s) is already used as a nick.\n
-#2594:Added '%s' as an alias for '%s' (%s).\n
-#2595:Removed contact '%s' (%s).\n
-#2596:Removed alias '%s' for '%s' (%s).\n
-#2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
-#2598:There is no connection number %ld and no connection for UIN %s.\n
-#2599:There is no connection for %s.\n
-#2600:No connection selected.\n
-#2601:Connection for %s is already open.\n
-#2602:Don't know how to open connection type %s for %s.\n
-#2603:Selected connection %ld (version %d, UIN %s) as current connection.\n
-#2604:xmpp
-#2605:Automatic status change.
-#2606:Found random chat partner UIN %s in chat group %d.\n
-#2607:The new UIN is %s!\n
-#2608:Your new UIN is: %s.\n
-#2609:Warning: Server thinks our UIN is %s, when it is %s.\n
-#2610:Information for %s%s%s (%s):\n
-#2611: adnof__iiiiiiii
-#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
-#2613:You first need to enter a user account you want to use. This climm supports the following chat protocols:\n
-#2614:%s, enter i.e. %s\n
-#2615:User account ID:
-#2616:Cannot parse %s as a valid user ID. Try again!\n
-#2617:Next you can allow climm to store your password for %s account %s. Enter nothing to not save the password.\n
-#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
-#2619: with %s%s%s
-#2620:Opening XMPP connection for %s at %s...\n
-#2621:off
-#2622:inv
-#2623:dnd
-#2624:occ
-#2625:na
-#2626:away
-#2627:ffc
-#2628:online
-#2629:Set or show user defined prompt. See manual for details.
-#2630:user
-#2631:uin
-#2632:simple
-#2633:Note: You need to 'save' to write new user prompt to disc.\n
-#2634:Install libOTR 3.0.0 or newer and enjoy off-the-record encrypted messages!\n
-#2635:otr                           - Off-the-Record Messaging\n
-#2636:otr list [<contact>]          - List OTR connection states\n
-#2637:otr start|stop <contact>      - Start/Stop OTR session\n
-#2638:otr trust <contact> [<trust>] - Set/Show trust for active fingerprint\n
-#2639:otr genkey                    - Generate private key\n
-#2640:otr keys                      - List private keys\n
-#2641:Message for %s could not be encrypted and was NOT sent!
-#2642:util_otr: no connection found for account %s and protocol %s
-#2643:util_otr: no contact %s found
-#2645:Could not read OTR private key from %s.\n
-#2646:Writing OTR fingerprints failed!
-#2648:No OTR is allowed as long as policy is set to %s.\n
-#2651:No active fingerprint set - start OTR session first.\n
-#2652:Delete existing key first!\n
-#2653:util_otr: "%s" not a policy (use never|try|manual|always)
-#2654:Generating new OTR key for %s account %s. This may take a while...
-#2655:failed.\n
-#2656:successfull.\n
-#2659:otr_inject: message injection for contact %s failed
-#2660:new OTR fingerprint: %s.\n
-#2661:secure OTR channel established.\n
-#2662:secure OTR channel closed.\n
-#2663:secure OTR channel reestablished.\n
-#2664:reestablished secure OTR channel.\n
-#2665:plaintext
-#2666:encrypted
-#2667:finished
-#2668:unknown state
-#2669:no offer sent
-#2670:offer sent
-#2671:offer accepted
-#2672:offer rejected
-#2673:unknown auth
-#2674:awaiting D-H key
-#2675:awaiting reveal signature
-#2676:awaiting signature
-#2677:v1 setup
-#2678:never
-#2679:try
-#2680:manual
-#2681:always
-#2682:unknown
-#2683:trusted
-#2684:untrusted
-#2685:Could not find context for %s.\n
-#2686:Use %s to change.\n
-#2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
-#2688:No password given for %s.\n
-#2689:Enter password for %s account %s: 
+#_#1931:Current session is closed. Try another or open this one.\n
+#_#1934:connected
+#_#1935:    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n
+#_#1936:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
+#_#1937:Enter max age (22,29,39,49,59,120):
+#_#1938:Enter sex:
+#_#1939:Enter a city:
+#_#1940:Unknown Meta User result %lx.\n
+#_#1942:Additional Email addresses:
+#_#1943:(no authorization needed)
+#_#1944:(must request authorization)
+#_#1945:Unknown Meta User response
+#_#1947:listener
+#_#1948:Can't find hostname %s: %s.
+#_#1949:failed:\n
+#_#1950:Couldn't set socket nonblocking
+#_#1951:Can't find hostname %s: %s (%d).
+#_#1952:Couldn't open connection
+#_#1953:couldn't bind socket to free port
+#_#1954:unable to listen on socket
+#_#1955:Connection failed
+#_#1958:[SOCKS] Connection request refused (%d)
+#_#1960:Enter data to search user for. Enter '.' to start the search.\n
+#_#1961:URL: %s\n
+#_#1966: Connection refused on port %ld at %s\n
+#_#1967:More Info for
+#_#1968:User found:\n
+#_#1969:offline
+#_#1970:online
+#_#1971:do not disturb
+#_#1972:away
+#_#1973:occupied
+#_#1974:not available
+#_#1975:invisible
+#_#1976:free for chat
+#_#1977:Audio and visual
+#_#1978:Sporting and athletic
+#_#1979:Publishing
+#_#1980:Home automation
+#_#1981:Alumni Org.
+#_#1982:Charity Org.
+#_#1983:Club/Social Org.
+#_#1984:Community Org.
+#_#1985:Cultural Org.
+#_#1986:Fan Clubs
+#_#1987:Fraternity/Sorority
+#_#1988:Hobbyists Org.
+#_#1989:International Org.
+#_#1990:Nature and Environment Org.
+#_#1991:Professional Org.
+#_#1992:Scientific/Technical Org.
+#_#1993:Self Improvement Group
+#_#1994:Spiritual/Religious Org.
+#_#1995:Sports Org.
+#_#1996:Support Org.
+#_#1997:Trade and Business Org.
+#_#1998:Union
+#_#1999:Volunteer Org.
+#_#2000:Entertainment
+#_#2001:Consumer electronics
+#_#2002:Retail stores
+#_#2003:Health and beauty
+#_#2004:Media
+#_#2005:Household products
+#_#2006:Mail order catalog
+#_#2007:Business services
+#_#2011:You do not have a listening peer-to-peer connection.\n
+#_#2012:No password given.\n
+#_#2013:This command is v8 only.\n
+#_#2014:No number given.\n
+#_#2015:No message given.\n
+#_#2017:The user is online, but possibly invisible.\n
+#_#2020:Being visible to %s.\n
+#_#2021:Being invisible to %s.\n
+#_#2022:The user is offline.\n
+#_#2023:Direct connection closed by peer.\n
+#_#2024:Unknown protocol version %d for ICQ peer-to-peer protocol.\n
+#_#2026:TCP cookie:
+#_#2029:Protocol error on peer-to-peer connection
+#_#2031:Connecting failed too often, giving up.\n
+#_#2032:Scheduling v8 reconnect in %d seconds.\n
+#_#2033:born today
+#_#2036:Save current preferences to disc.
+#_#2037:Open or close a peer-to-peer connection, or disable using peer-to-peer connections for <uin> or <nick>.
+#_#2038:Opens connection number <nr> or connection for uin <uin>, or the first server connection.
+#_#2039:Sends a message to a (<nick>'s) <cell> phone.
+#_#2042:Displays a list of online people on your contact list in a screen wide format.
+#_#2043:Remove all contacts in <contacts> from contact group <group>.
+#_#2044:Set, clear or display an <option>: color, delbs, auto, prompt, autosave, autofinger, linebreak, funny.
+#_#2045:Toggles your visibility to <contacts> when you're online.
+#_#2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n
+#_#2047:Creating directory %s.\n
+#_#2048:Saving preferences to %s.\n
+#_#2051:Error on socket: %s (%d)\n
+#_#2055:User is ffc and wants to chat about everything.
+#_#2056:getauto [auto] <nick> - Get the auto-response from the contact.\n
+#_#2057:getauto away   <nick> - Get the auto-response for away from the contact.\n
+#_#2058:getauto na     <nick> - Get the auto-response for not available from the contact.\n
+#_#2059:getauto dnd    <nick> - Get the auto-response for do not disturb from the contact.\n
+#_#2060:getauto ffc    <nick> - Get the auto-response for free for chat from the contact.\n
+#_#2065:Unknown TCP_MSG_GREET_ command %04x.\n
+#_#2066:Unknown TCP_MSG_ command %04x.\n
+#_#2067:file io
+#_#2071:Couldn't stat file %s: %s (%d)\n
+#_#2072:File transfer #%ld (%s) canceled because of closed connection.\n
+#_#2073:Memory usage: %ld packets processing.\n
+#_#2078:Outgoing TCP packet (%d - %s): %s
+#_#2079:Incoming TCP packet (%d - %s): %s
+#_#2080:Server SMS delivery response:\n%s\n
+#_#2081:    at %p parent %p assoc %p\n
+#_#2083:Cannot open file %s: %s (%d).\n
+#_#2084:Error while seeking to offset %ld: %s (%d).\n
+#_#2086:Error while reading file %s: %s (%d).\n
+#_#2087:Finished sending file %s.\n
+#_#2088:Finished sending all %d files.\n
+#_#2089:file listener
+#_#2090:file peer-to-peer
+#_#2091:Queueing %s as %s for transfer.\n
+#_#2092:TCP message %s discarded - lost session.\n
+#_#2094:conn login [pass]       Open current/first server connection.\n
+#_#2095:conn remove <nr>        Remove connection <nr>.\n
+#_#2097:conn select <nr>        Select connection <nr> as server connection.\n
+#_#2098:Connection %ld is not a server connection.\n
+#_#2100:conn select <uin>       Select connection with UIN <uin> as server connection.\n
+#_#2101:Removing connection %ld and its dependents completely.\n
+#_#2102:Connection %ld is a configured connection.\n
+#_#2103:contact show    Show server based contact list.\n
+#_#2104:contact diff    Show server based contacts not on local contact list.\n
+#_#2105:contact import  Import server based contact list as local contact list.\n
+#_#2106:Last message from %s%s%s at %s:\n
+#_#2107:No messages received from %s%s%s.\n
+#_#2108:auto
+#_#2109:version
+#_#2110:peer files <nick> <file1> <as1> ... [<description>]\n
+#_#2111:                  - Send file1 as as1, ..., with description.\n
+#_#2112:                  - as = '/': strip path, as = '.': as is\n
+#_#2115:'%s' is not an integer.\n
+#_#2116:No new nick name given.\n
+#_#2118:Out of memory.\n
+#_#2119:auth [grant] <contacts>    - grant authorization.\n
+#_#2120:auth deny <contacts> <msg> - refuse authorization.\n
+#_#2121:auth req  <contacts> <msg> - request authorization.\n
+#_#2122:Note: You need to 'save' to write new password to disc.\n
+#_#2123:%sSyntax error%s: Too few arguments: %s\n
+#_#2124:%sSyntax error%s: Not an integer: %s\n
+#_#2128: Description: %s%s%s\n
+#_#2129:         URL: %s%s%s\n
+#_#2131:Composing message to %s%s%s:\n
+#_#2133:Color is %s%s%s.\n
+#_#2134:Funny messages are %s%s%s.\n
+#_#2136:Password change was %s%s%s.\n
+#_#2137:About info change was %s%s%s.\n
+#_#2138:Info change was %s%s%s.\n
+#_#2139:Other info change was %s%s%s.\n
+#_#2140:Random chat group change was %s%s%s.\n
+#_#2141:Search %sfailed%s.\n
+#_#2142:Direct connection with %s not possible.\n
+#_#2145:auth add  <contacts>       - authorized add.\n
+#_#2156:conn close <nr>         Close connection <nr>.\n
+#_#2157:Moldova
+#_#2158:No file name given.\n
+#_#2159:Some files.
+#_#2160:peer file  <nick> <file> [<description>]\n
+#_#2161:Receiving %ld files with total size %ld bytes at speed %lx from %s.\n
+#_#2162:Receiving file %s (%s) with %ld bytes as %s.\n
+#_#2163:Sending file %ld at offset %ld.\n
+#_#2165:The peer sent more bytes (%ld) than the file length (%ld).\n
+#_#2166:Finished receiving file.\n
+#_#2167:Error - unknown packet.\n
+#_#2168:File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n
+#_#2169:File transfer aborted by peer (%d).\n
+#_#2170:Sending file at speed %lx to %s.\n
+#_#2171:Advanced
+#_#2172:Advanced commands.
+#_#2176:Displays verbosely the current status of everyone on your contact list.
+#_#2177:Displays verbosely the current status of online people on your contact list.
+#_#2179:Send all <contacts> a single file.
+#_#2180:Send <uin> or <nick> several files.
+#_#2181:Closes or removes connection number <nr>.
+#_#2182:Select server connection number <nr> or connection for uin <uin> as current server connection.
+#_#2183:Check all <contacts> whether they are offline or invisible.
+#_#2184:%s%-14s%s - %s\n
+#_#2185:Closing connection %ld.\n
+#_#2188:You're sending data too fast - stop typing now, or the server will disconnect!\n
+#_#2191:Instant message error: %d.\n
+#_#2192:Capabilities:
+#_#2195:Obsolete number:
+#_#2196:Obsolete text:
+#_#2197:Obsolete byte
+#_#2198:Unsuitable password '%s' - may not start with byte 0xf3.\n
+#_#2199:  -h, --help     gives this help text\n
+#_#2200:  -v, --verbose  set (or increase) verbosity (mostly for debugging)\n
+#_#2201:  -b, --basedir  use given BASE dir (default: %s)\n
+#_#2203:  -l, --logplace use given log file/dir (default: %s)\n
+#_#2204:  -i, --i18n     use given locale (default: auto-detected)\n
+#_#2205:  -c, --nocolor  disable colors\n
+#_#2206:The server doesn't want to give us offline messages.\n
+#_#2207:Protocol error in command to old ICQ server: %d.\n
+#_#2211:Your status is %s.\n
+#_#2212:changed status to %s
+#_#2213:logged on (%s)
+#_#2214:Info for %s%lu%s:\n
+#_#2215:This climm can't convert between SJIS or EUC and unicode.\n
+#_#2216:This climm doesn't know the '%s' encoding.\n
+#_#2217:This climm can't convert between '%s' and unicode.\n
+#_#2218:UIN: %s\n
+#_#2220:several
+#_#2222:Script command '%s' failed: %s (%d).\n
+#_#2223:Opening scripting FIFO at %s... 
+#_#2225:scripting
+#_#2226:Couldn't create FIFO
+#_#2227:Couldn't open FIFO
+#_#2228:Couldn't set FIFO nonblocking
+#_#2233:refused authorization: %s%s%s\n
+#_#2234:Message %s discarded - lost session.\n
+#_#2237:Webaware:
+#_#2238:Hide IP:
+#_#2239:Unknown more:
+#_#2240:No contact group given.\n
+#_#2241:Added '%s' to contact group '%s'.\n
+#_#2243:Removed contact '%s' from group '%s'.\n
+#_#2245:Added contact group '%s'.\n
+#_#2246:Contact '%s' is not in group '%s'.\n
+#_#2250:Number '%s' is not of the format +<countrycode><cellprovider><number>.\n
+#_#2251:Error:
+#_#2252:A beep is generated by %sbeep%sing.\n
+#_#2253:A beep is generated by running the %sevent%s script.\n
+#_#2254:A beep is never generated.\n
+#_#2255:A beep for oncoming contacts is always generated by running the %sevent%s script.\n
+#_#2256:A beep for offgoing contacts is always generated by running the %sevent%s script.\n
+#_#2258:No pending incoming file transfer request for %s with (sequence %ld) found.\n
+#_#2260:Please try the getauto command instead.\n
+#_#2262:Interpreting a delete character as backspace is %s%s%s.\n
+#_#2265:Automatic replies are %s%s%s.\n
+#_#2266:Type of the prompt is %s%s%s.\n
+#_#2267:Automatic saves are %s%s%s.\n
+#_#2268:Automatic fingering of new UINs is %s%s%s.\n
+#_#2269:break
+#_#2270:simple
+#_#2271:indent
+#_#2272:smart
+#_#2278:    delbs:      interpret delete characters as backspace.\n
+#_#2281:    auto:       send auto-replies.\n
+#_#2282:    prompt:     type of the prompt: user, uin, simple\n
+#_#2283:    autosave:   automatically save the climmrc.\n
+#_#2284:    autofinger: automatically finger new UINs.\n
+#_#2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
+#_#2288:Indentation style is %s%s%s.\n
+#_#2293:--=
+#_#2294:===
+#_#2297:Alias to what?\n
+#_#2298:Remove which alias?\n
+#_#2299:Alias doesn't exist.\n
+#_#2300:Set an alias or list current aliases.
+#_#2301:Delete an alias.
+#_#2303:Invalid character 0x%x in alias name.\n
+#_#2304:Get automatic reply from all <contacts> for current status, away, not available, do not disturb, occupied, or free for chat.
+#_#2305:Handle meta data of contacts.
+#_#2306:Request server side contact list and show all or new contacts or import.
+#_#2307:Displays the current status of online people on your contact list, sorted by contact group.
+#_#2308:Displays the current status of everyone on your contact list, sorted by contact group.
+#_#2309:Displays verbosely the current status of online people on your contact list, sorted by contact group.
+#_#2310:Displays verbosely the current status of everyone on your contact list, sorted by contact group.
+#_#2311:Adds <uin> as <new nick>, or add alias <new nick> for <uin> or <nick>.
+#_#2312:Remove all aliases in <contacts>, removes contact if 'all' is given.
+#_#2313:Grant, deny, request or acknowledge authorization from/to <contacts> to you/them to their/your contact list.
+#_#2314:These are advanced commands. Be sure to have read the manual pages for complete information.\n
+#_#2315:Cannot watch status of %s - too many watchers.\n
+#_#2316:Translation %s not found.\n
+#_#2319:Accept an incoming file transfer from <uin> or <nick>.
+#_#2320:peer accept <nick> [<id>]\n                  - accept an incoming file transfer.\n
+#_#2321:contact add     Add server based contact list to local contact list.\n
+#_#2322:contact sync    Import server based contact list if appropriate.\n
+#_#2323:contact export  Export local contact list to server based list.\n
+#_#2324:contact upload  Add local contacts to server based contact list.\n
+#_#2325:Warning: server based contact list change failed with error code %d.\n
+#_#2326:Server side contact list only supported for ICQ v8.\n
+#_#2327:%sclimm - CLI-based Multi-Messenger%s version %s%s%s\n
+#_#2328:You logged in too frequently, please wait 30 minutes before trying again.\n
+#_#2329:syntax error
+#_#2330:removing non-contact
+#_#2331:unknown
+#_#2332:Contact error %d (%s) for %d contacts: 
+#_#2333:%s [show|load|save|set|get|rget] <contacts> - handle meta data for contacts.\n
+#_#2334:  show - show current known meta data\n
+#_#2335:  load - load from file and show meta data\n
+#_#2336:  save - save meta data to file\n
+#_#2337:  set  - upload own meta data to server\n
+#_#2338:  get  - query server for meta data\n
+#_#2339:  rget - query server for last sender's meta data\n
+#_#2342:Scripting
+#_#2343:Advanced commands for scripting.
+#_#2344:Execute Tcl script from <file>.
+#_#2345:Execute Tcl script in <string>.
+#_#2346:The following Tcl commands are supported:\n
+#_#2348:Install hook to receive messages from UIN or nick, or all if omitted.
+#_#2351:Uninstall message hook for UIN or nick.
+#_#2353:Install event hook. Callback arguments: type ...
+#_#2355:Uninstall event hook.
+#_#2356:List all installed hooks. Format: <type> <command> <filter>.
+#_#2358:Execute climm command.
+#_#2360:Find nick from <uin>.
+#_#2361:Wrong number of arguments for command '%s %s'. Expected %d.\n
+#_#2362:Wrong number of arguments. Try 'help'.
+#_#2363:Error: recursive 'climm exec' not allowed.
+#_#2364:No connection found.
+#_#2365:unknown command: %s
+#_#2366:TCL error in file %s: %s\n
+#_#2367:TCL error: %s\n
+#_#2368:peer deny <nick> [<id>] [<reason>]\n                  - deny an incoming file transfer.\n
+#_#2369:Refuse an incoming file transfer from <uin> or <nick>.
+#_#2371:SSL init failed.\n
+#_#2372:Could not send SSL request to %s\n
+#_#2374:SSL error: %s [%d]\n
+#_#2375:SSL handshake ok.\n
+#_#2376:SSL read from %s [ERR=%d]: %s
+#_#2377:SSL write to %s [ERR=%d]: %s
+#_#2378:peer ssl <nick>   - initiate SSL handshake.\n
+#_#2381:I'll add the author of climm to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
+#_#2383:View your last messages of <contact>. Type 'h' as short command.
+#_#2384:Case insensitive search of <pattern> in log file of <contact>.
+#_#2385:Couldn't open %s for reading: %s (%d).\n
+#_#2386:Found %s%d%s matches.\n
+#_#2388:find <contact> <pattern> -- Search <pattern> case insensitive in history of <contact>.\n
+#_#2389:finds <contact> <pattern> -- Search <pattern> case sensitive in history of <contact>.\n
+#_#2390:No or empty pattern given.\n
+#_#2391:Case sensitive search of <pattern> in log file of <contact>.
+#_#2393:%Y-%m-%d
+#_#2394: %I:%M %p
+#_#2395:View your messages of <contact> since <date>.
+#_#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
+#_#2397:No server session found.\n
+#_#2398:Set or display options for a contact group, a contact or global.\n
+#_#2399:Request SSL connection.
+#_#2401:Auto reply messages are now contact options, see the %s command.\n
+#_#2402:The global auto reply flag is handled by the %s command.\n
+#_#2403:msg>
+#_#2405:Your status is %s (%s).\n
+#_#2407:This flag is handled by the %s command.\n
+#_#2408:%s is not a contact group.\n
+#_#2409:%s is not a contact.\n
+#_#2410:%s is neither a contact, nor a contact group, nor the %sglobal%s keyword.\n
+#_#2411:opt - short hand for optglobal, optconnection, optgroup or optcontact.\n
+#_#2412:optglobal            [<option> [<value>]] - set global option.\n
+#_#2413:optconnection        {<option> [<value>]] - set connection option.\n
+#_#2414:optgroup   <group>   [<option> [<value>]] - set contact group option.\n
+#_#2415:optcontact <contact> [<option> [<value>]] - set contact option.\n
+#_#2416:Options for contact %s:\n
+#_#2417:Options for contact group %s:\n
+#_#2418:Global options:\n
+#_#2419:undefined
+#_#2420:effectivly
+#_#2421:Unknown option %s.\n
+#_#2422:Option %s for contact %s is undefined.\n
+#_#2423:Option %s for contact group %s is undefined.\n
+#_#2424:Option %s%s has no global value.\n
+#_#2425:Option %s for contact %s is %s%s%s.\n
+#_#2426:Option %s for contact group %s is %s%s%s.\n
+#_#2427:Option %s%s is globally %s%s%s.\n
+#_#2428:Option %s for contact %s is %s.\n
+#_#2429:Option %s for contact group %s is %s.\n
+#_#2430:Option %s%s is globally %s.\n
+#_#2431:Undefining option %s for contact %s.\n
+#_#2432:Undefining option %s for contact group %s.\n
+#_#2433:Undefining global option %s%s.\n
+#_#2434:Setting option %s for contact %s to %s.\n
+#_#2435:Setting option %s for contact group %s to %s.\n
+#_#2436:Setting option %s%s globally to %s.\n
+#_#2437:Setting option %s for contact %s to %s%d%s.\n
+#_#2438:Setting option %s for contact group %s to %s%d%s.\n
+#_#2439:Setting option %s%s globally to %s%d%s.\n
+#_#2440:Setting option %s for contact %s.\n
+#_#2441:Setting option %s for contact group %s.\n
+#_#2442:Setting option %s%s globally.\n
+#_#2443:Clearing option %s for contact %s.\n
+#_#2444:Clearing option %s for contact group %s.\n
+#_#2445:Clearing option %s%s globally.\n
+#_#2446:Invalid value %s for boolean option %s.\n
+#_#2447:No new password given.\n
+#_#2448:Contact group '%s' already exists.\n
+#_#2449:Primary contact group for contact '%s' is now '%s'.\n
+#_#2450:Last %d people you talked with:\n
+#_#2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
+#_#2453:    at %p parent %p assoc %p ssl %d\n
+#_#2454:    open %p reconn %p close %p err %p dispatch %p\n
+#_#2455:About>
+#_#2456:Unknown command %s, type %shelp%s for help.\n
+#_#2457:Unknown configuration file format version %d.\n
+#_#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
+#_#2459:Peer-to-peer connection not associated to server connection, discarding.\n
+#_#2460:Contact group %s (id %s%d%s) not associated to server connection.\n
+#_#2461:Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
+#_#2462:File transfer %s to port %s%ld%s.
+#_#2463:File transfer %s rejected by peer: %s.
+#_#2464:Accepting file %s (%s%ld%s bytes).
+#_#2465:Refusing file request %s (%s%ld%s bytes): %s.
+#_#2466:Refusing chat request (%s/%s) from %s%s%s.
+#_#2467:climm>
+#_#2468:requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n
+#_#2469:URL:
+#_#2470:requests authorization: %s\n
+#_#2471:Ignored contacts:\n
+#_#2472:Hidden-from contacts:\n
+#_#2473:Normal contacts:\n
+#_#2474:Intimate contacts:\n
+#_#2475:Showed %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#_#2476:Downloaded %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#_#2477:Uploading %d contact groups and %d contacts.\n
+#_#2478:Server: Group %s (#%d)\n
+#_#2479:Local:  Group %s (#%d)\n
+#_#2480:Server: Group %s Contact %s (#%d) <ignored>\n
+#_#2481:Server: Group %s Contact %s (#%d) <hidefrom>\n
+#_#2482:Server: Group %s Contact %s/%s (#%d) <hidefrom>\n
+#_#2483:Local:  Group %s Contact %s/%s (#%d)\n
+#_#2484:Server: Group %s Contact %s (#%d)\n
+#_#2485:Server: Group %s Contact %s/%s (#%d)\n
+#_#2486:Local:  Group %s Contact %s/%s (#%d) <%s>\n
+#_#2487:hidefrom
+#_#2488:intimate
+#_#2489:Server: Group %s Contact %s/%s (#%d) <intimate>\n
+#_#2490:normal
+#_#2491:Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n
+#_#2492:Usage: climm [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
+#_#2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
+#_#2494:  -u, --user     login with this user/UIN instead of those configured\n
+#_#2495:  -p, --passwd   ... and override password\n
+#_#2496:  -s, --status   ... and override status\n
+#_#2497:  -C, --cmd      ... and execute climm command\n
+#_#2498:Encoding %s%s%s is not supported by this climm.\n
+#_#2499:Please recompile using the '--enable-iconvrepl' configure option.\n
+#_#2500:Manual locale setting %s ignored - use a real locale instead.\n
+#_#2501:Your locale is unset. Please use the %s--i18n%s command line option or set one of the environment variables %sLC_ALL%s, %sLC_MESSAGES%s, or %sLANG%s to your current locale.\n
+#_#2502:Locale setting %s is no real locale and probably not what you want.\n
+#_#2503:Your system doesn't know the %s locale - try %slocale -a%s.\n
+#_#2504:Could not open configuration file %s%s%s.
+#_#2505:Deprecated option -f used. Please use the similar -b instead.\n
+#_#2506:This console uses encoding %s.\n
+#_#2507:Translation %s%s%s not found. Would you like to translate climm into your language?\n
+#_#2508:No translation (%s) loaded (%s%d%s entries).\n
+#_#2509:WSAStartup() for WinSocks 1.1 failed
+#_#2510:Opening v5 connection to %s:%s%ld%s... 
+#_#2511:Redirect to server %s:%s%ld%s... 
+#_#2512:Opening v8 connection to %s:%s%ld%s for %s%s%s... 
+#_#2513:new UIN
+#_#2514:refused (ignored)
+#_#2515:You queried already too many users today - come back tomorrow.\n
+#_#2516:The query got stuck. Or somesuch. Try again later.\n
+#_#2517:I'm out of wisdom about the server's problem. It just didn't work out.\n
+#_#2518:You need to 'save' to write your new UIN to disc.\n
+#_#2519:Opening file listener connection at %slocalhost%s:%s%ld%s... 
+#_#2520:Opening file transfer connection to %s:%s%ld%s... \n
+#_#2521:Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... 
+#_#2522:Opening TCP connection at %s:%s%ld%s... 
+#_#2523:%s not recognized as a nick name.\n
+#_#2524:Can't restore terminal modes.\n
+#_#2525:Can't read terminal modes.\n
+#_#2526:Can't modify terminal modes.\n
+#_#2527:OpenSSL internal error: %s:%i\n
+#_#2528:OpenSSL read error: %s\n
+#_#2529:OpenSSL read error %d (unknown)\n
+#_#2530:OpenSSL write error: %s\n
+#_#2531:OpenSSL write error %d (unknown)\n
+#_#2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
+#_#2533:SSL handshake failed.\n
+#_#2534:IP:
+#_#2535:Groups:\n
+#_#2536:Group:
+#_#2537:Contact upload failed, authorization required.\n
+#_#2538:Contact upload failed, already on server.\n
+#_#2539:Contact upload succeeded.\n
+#_#2540:    sound:      how to beep: off, on = beep, event.\n
+#_#2541:Status
+#_#2542:Commands to change your status.
+#_#2543:Contacts
+#_#2544:Commands to modify your contact list.
+#_#2545:     %s\n
+#_#2546:No help available for '%s'.\n
+#_#2547:Displays saved meta data about <contacts>.
+#_#2548:Displays the current status of online people on your contact list, including otherwise hidden contacts.
+#_#2549:Displays verbosely the current status of online people on your contact list, including otherwise hidden contacts.
+#_#2550:Displays the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
+#_#2551:Displays verbosely the current status of online people on your contact list, sorted by contact group, including otherwise hidden contacts.
+#_#2552:Displays the current status of everyone on your contact list, including otherwise hidden contacts.
+#_#2553:Displays verbosely the current status of everyone on your contact list, including otherwise hidden contacts.
+#_#2554:Displays the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+#_#2555:Displays verbosely the current status of everyone on your contact list, sorted by contact group, including otherwise hidden contacts.
+#_#2556:Add contact, alias, or contact to group.
+#_#2557:Remove alias, or contact from group or contact list.
+#_#2558:Set or display options for a contact.\n
+#_#2559:Set or display options for a contact group.\n
+#_#2560:Set or display global options.\n
+#_#2561:Logs off and quits without saving.
+#_#2562:Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection.
+#_#2563:Set or display connection options.\n
+#_#2564:The user couldn't be detected to be online.\n
+#_#2565:Contact upload for %s%s%s failed, authorization required.\n
+#_#2566:Contact upload for %s%s%s failed, already on server.\n
+#_#2567:Contact upload for %s%s%s succeeded.\n
+#_#2568:Ignored request for auto-response from %s%s%s.\n
+#_#2569:Send <message> and further messages to <contacts> until canceled.
+#_#2570:Continuing chat with %s%s%s:\n
+#_#2571:"%s" <%s> emailed you a message [%s]: %s\n
+#_#2572:"%s" <%s> sent you a web message [%s]: %s\n
+#_#2573:The user is probably offline.\n
+#_#2574:%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n
+#_#2575:Error writing to file (%lu bytes written out of %u).\n
+#_#2576:contact delete  Delete server based contact list entry.\n
+#_#2577:SBL ids:
+#_#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#_#2579:contact delid   Delete server based contact list entry (experts only).\n
+#_#2580:ignore
+#_#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
+#_#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
+#_#2583:Location error: %d.\n
+#_#2584:msn temp
+#_#2585:msn server
+#_#2586:msn chat
+#_#2587:Couldn't load meta data for %s (%s).\n
+#_#2588:Saved meta data for '%s' (%s).\n
+#_#2589:Couldn't save meta data for '%s' (%s).\n
+#_#2590:%s added as %s.\n
+#_#2591:Contact group '%s' already has contact '%s' (%s).\n
+#_#2592:'%s' is already an alias for '%s' (%s).\n
+#_#2593:'%s' (%s) is already used as a nick.\n
+#_#2594:Added '%s' as an alias for '%s' (%s).\n
+#_#2595:Removed contact '%s' (%s).\n
+#_#2596:Removed alias '%s' for '%s' (%s).\n
+#_#2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
+#_#2598:There is no connection number %ld and no connection for UIN %s.\n
+#_#2599:There is no connection for %s.\n
+#_#2600:No connection selected.\n
+#_#2601:Connection for %s is already open.\n
+#_#2602:Don't know how to open connection type %s for %s.\n
+#_#2603:Selected connection %ld (version %d, UIN %s) as current connection.\n
+#_#2604:xmpp
+#_#2605:Automatic status change.
+#_#2606:Found random chat partner UIN %s in chat group %d.\n
+#_#2607:The new UIN is %s!\n
+#_#2608:Your new UIN is: %s.\n
+#_#2609:Warning: Server thinks our UIN is %s, when it is %s.\n
+#_#2610:Information for %s%s%s (%s):\n
+#_#2611: adnof__iiiiiiii
+#_#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
+#_#2613:You first need to enter a user account you want to use. This climm supports the following chat protocols:\n
+#_#2614:%s, enter i.e. %s\n
+#_#2615:User account ID:
+#_#2616:Cannot parse %s as a valid user ID. Try again!\n
+#_#2617:Next you can allow climm to store your password for %s account %s. Enter nothing to not save the password.\n
+#_#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
+#_#2619: with %s%s%s
+#_#2620:Opening XMPP connection for %s at %s...\n
+#_#2621:off
+#_#2622:inv
+#_#2623:dnd
+#_#2624:occ
+#_#2625:na
+#_#2626:away
+#_#2627:ffc
+#_#2628:online
+#_#2629:Set or show user defined prompt. See manual for details.
+#_#2630:user
+#_#2631:uin
+#_#2632:simple
+#_#2633:Note: You need to 'save' to write new user prompt to disc.\n
+#_#2634:Install libOTR 3.0.0 or newer and enjoy off-the-record encrypted messages!\n
+#_#2635:otr                           - Off-the-Record Messaging\n
+#_#2636:otr list [<contact>]          - List OTR connection states\n
+#_#2637:otr start|stop <contact>      - Start/Stop OTR session\n
+#_#2638:otr trust <contact> [<trust>] - Set/Show trust for active fingerprint\n
+#_#2639:otr genkey                    - Generate private key\n
+#_#2640:otr keys                      - List private keys\n
+#_#2641:Message for %s could not be encrypted and was NOT sent!
+#_#2642:util_otr: no connection found for account %s and protocol %s
+#_#2643:util_otr: no contact %s found
+#_#2645:Could not read OTR private key from %s.\n
+#_#2646:Writing OTR fingerprints failed!
+#_#2648:No OTR is allowed as long as policy is set to %s.\n
+#_#2651:No active fingerprint set - start OTR session first.\n
+#_#2652:Delete existing key first!\n
+#_#2653:util_otr: "%s" not a policy (use never|try|manual|always)
+#_#2654:Generating new OTR key for %s account %s. This may take a while...
+#_#2655:failed.\n
+#_#2656:successfull.\n
+#_#2659:otr_inject: message injection for contact %s failed
+#_#2660:new OTR fingerprint: %s.\n
+#_#2661:secure OTR channel established.\n
+#_#2662:secure OTR channel closed.\n
+#_#2663:secure OTR channel reestablished.\n
+#_#2664:reestablished secure OTR channel.\n
+#_#2665:plaintext
+#_#2666:encrypted
+#_#2667:finished
+#_#2668:unknown state
+#_#2669:no offer sent
+#_#2670:offer sent
+#_#2671:offer accepted
+#_#2672:offer rejected
+#_#2673:unknown auth
+#_#2674:awaiting D-H key
+#_#2675:awaiting reveal signature
+#_#2676:awaiting signature
+#_#2677:v1 setup
+#_#2678:never
+#_#2679:try
+#_#2680:manual
+#_#2681:always
+#_#2682:unknown
+#_#2683:trusted
+#_#2684:untrusted
+#_#2685:Could not find context for %s.\n
+#_#2686:Use %s to change.\n
+#_#2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
+#_#2688:No password given for %s.\n
+#_#2689:Enter password for %s account %s: 

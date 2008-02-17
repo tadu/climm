@@ -11,7 +11,7 @@
 1010:Užívateľ je Preč [Automatická správa]
 1011:Užívateľ je Nedostupný [Automatická správa]
 1012:Užívateľ je Zaneprázdnený [Automatická správa]
-#1014:None
+#_#1014:None
 1015:Jan
 1016:Feb
 1017:Mar
@@ -130,7 +130,7 @@
 1169:Finančníctvo
 1170:Štátna správa
 1171:Študent strednej školy
-#1172:Home
+#_#1172:Home
 1173:ICQ - Pomoc
 1174:Právo
 1175:Manažment
@@ -138,9 +138,9 @@
 1177:Zdravie/Medicína
 1178:Armáda
 1179:Tretí sektor
-#1180:Professional
-#1181:Retail
-#1182:Retired
+#_#1180:Professional
+#_#1181:Retail
+#_#1182:Retired
 1183:Veda a výskum
 1184:Športy
 1185:Technika
@@ -193,7 +193,7 @@
 1242:Čad
 1243:Vianočné ostrovy
 1244:Ostrovy Cocos-Keeling
-#1245:Comoros
+#_#1245:Comoros
 1246:Kongo
 1247:Cookove ostrovy
 1248:Čile
@@ -205,14 +205,14 @@
 1254:Cyprus
 1255:Česká republika
 1256:Dánsko
-#1257:Diego Garcia
-#1258:Djibouti
-#1259:Dominica
+#_#1257:Diego Garcia
+#_#1258:Djibouti
+#_#1259:Dominica
 1260:Dominikánska republika
 1261:Ekvádor
 1262:Egypt
 1263:Salvádor
-#1264:Equatorial Guinea
+#_#1264:Equatorial Guinea
 1265:Eritrea
 1266:Estónsko
 1267:Etiópia
@@ -236,9 +236,9 @@
 1285:Grécko
 1286:Grónsko
 1287:Grenada
-#1288:Guadeloupe
-#1289:Guam
-#1290:Guantanomo Bay
+#_#1288:Guadeloupe
+#_#1289:Guam
+#_#1290:Guantanomo Bay
 1291:Guatemala
 1292:Guinea
 1293:Guinea-Bissau
@@ -257,7 +257,7 @@
 1306:Írsko
 1307:Izrael
 1308:Taliansko
-#1309:Ivory Coast
+#_#1309:Ivory Coast
 1310:Japonsko
 1311:Jordánsko
 1312:Kazachstan
@@ -306,22 +306,22 @@
 1355:Južná Afrika
 1356:Španielsko
 1357:Srí Lanka
-#1358:Suriname
+#_#1358:Suriname
 1359:Švédsko
 1360:Švajčiarsko
 1361:Taiwan
 1362:Tanzánia
 1363:Thajsko
-#1364:Tinian Island
-#1365:Togo
-#1366:Tokelau
-#1367:Tonga
+#_#1364:Tinian Island
+#_#1365:Togo
+#_#1366:Tokelau
+#_#1367:Tonga
 1368:Trinidad a Tabago
 1369:Tunis
 1370:Turecko
 1371:Turkmenistán
-#1372:Turks and Caicos Islands
-#1373:Tuvalu
+#_#1372:Turks and Caicos Islands
+#_#1373:Tuvalu
 1374:Uganda
 1375:Ukrajina
 1376:Spojené arabské emiráty
@@ -330,11 +330,11 @@
 1379:USA
 1380:Uruguaj
 1381:Uzbekistan
-#1382:Vanuatu
+#_#1382:Vanuatu
 1383:Vatikán
 1384:Venezuela
 1385:Vietnam
-#1386:Wallis and Futuna Islands
+#_#1386:Wallis and Futuna Islands
 1387:Západná Samoa
 1388:Jemen
 1389:Juhoslávia
@@ -511,7 +511,7 @@
 1618.UIN:
 1619:Varovanie:
 1620.dosiahnutý maximálny počet kontaktov. Požiadajte čarodejníka aby ma zväčšil!
-#1621:users not returned.
+#_#1621:users not returned.
 1622:Chcete aplikovať tieto nastavenia? (YES/NO)
 1623:Zdvojený paket %04x\n
 1632:\nNestabilné spojenie. Končím....
@@ -523,8 +523,8 @@
 1640:Aktualizácia informácií zlyhala.\n
 1641:Informácie o užívateľovi zaktualizované.\n
 1642:IP:
-#1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
-#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
+#_#1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
+#_#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
 1645:Vložili ste nesprávne heslo.\n
 1646:Server je zahltený.\n
 1648:Odpoveď bola %04x	
@@ -558,7 +558,7 @@
 1703:Stavové módy:\n
 1704:Skupiny:\n
 1705:Všeobecné
-#1706:Romance
+#_#1706:Romance
 1707:Hry
 1708:Študenti
 1709:20 a niečo
@@ -568,7 +568,7 @@
 1713:Hľadá ženu
 1714:Hľadá muža
 1715:climm
-#1716:None
+#_#1716:None
 1717:Vykoná príkaz shell-u <cmd> (napr. '!ls', '!dir', '!mkdir temp').
 1719:Zobrazí ako dlho je climm spustené a ďalšie štatistiky.
 1721:Zaslanie prázdnej správy prepne klient do multiriadkového režimu.\nPoužite . v samostatnom riadku pre uzavretie správy.\nPoužite # v samostatnom riadku pre zrušenie správy.
@@ -623,7 +623,7 @@
 1823:Prichádzajúci čiastočný paket:
 1825:Stratený %04x (%s) paket
 1826:Znovuposlanie správy %04x (%s) sekvencia %04lx (attempt #%ld, len %d).\n
-#1830:Discarding message to %s after %ld send attempts.  Message content:\n
+#_#1830:Discarding message to %s after %ld send attempts.  Message content:\n
 1833:Peer-to-peer TCP spojenie nadviazané.\n
 1842:Uzavretie socketu %d pre %s.\n
 1843:Uzavretie socketu %d.\n
@@ -644,10 +644,10 @@
 1873:Miesto zamestnania:
 1874:Štát zamestnania:
 1875:Osobné záujmy:
-#1876:Personal past background:
+#_#1876:Personal past background:
 1877:ok.\n
 1878:Chyba počas čítania zo socketu: %s (%d, %d)\n
-#1879:Affiliations:
+#_#1879:Affiliations:
 1881:FLAP kanál 1 je bez dát.\n
 1882:FLAP kanál 1 cmd 1 extra dáta:\n
 1883:FLAP kanál 1 neznámy príkaz %d.\n
@@ -663,7 +663,7 @@
 1894:Neexistuje spojenie s číslom %ld.\n
 1895:Prihlásenie zlyhalo:\n
 1896:Server ukončil spojenie:\n
-#1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
+#_#1897:Incomplete TLV %d, len %ld of %ld - ignoring.\n
 1899:Požadovaná neznáma rodina: %d\n
 1900:Je len pre čítanie.
 1901:vás autorizoval aby ste si ho pridali do zoznamu kontaktov.\n
@@ -687,23 +687,23 @@
 1929:Užívateľ je Nerušiť [Autmatická správa]
 1931:Aktuálne spojenie je ukončené. Skúste iné alebo zopakujte toto.\n
 1934:spojený
-#1935:    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n
+#_#1935:    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n
 1936:Vložte minimálny vek (18-22,23-29,30-39,40-49,50-59,60-120):
 1937:Vložte maximálny vek (22,29,39,49,59,120):
 1938:Vložte pohlavie:
 1939:Vložte mesto:
-#1940:Unknown Meta User result %lx.\n
+#_#1940:Unknown Meta User result %lx.\n
 1942:Ďalšie e-mailové adresy:
 1943:(nie je potrebná autorizácia)
 1944:(musíte požiadať o autorizáciu)
-#1945:Unknown Meta User response
-#1947:listener
+#_#1945:Unknown Meta User response
+#_#1947:listener
 1948:Nemôžem nájsť hostname %s: %s.
 1949:zlyhalo:\n
-#1950:Couldn't set socket nonblocking
+#_#1950:Couldn't set socket nonblocking
 1951:Nemôžem nájsť hostname %s: %s (%d).
 1952:Nemôžem otvoriť spojenie
-#1953:couldn't bind socket to free port
+#_#1953:couldn't bind socket to free port
 1954:nemôžem čítať socket
 1955:Spojenie zlyhalo
 1958:[SOCKS] Žiadosť o spojenie odmietnutá (%d)
@@ -724,31 +724,31 @@
 1978:Šport a atletika
 1979:Publikovanie
 1980:Domáce spotrebiče
-#1981:Alumni Org.
+#_#1981:Alumni Org.
 1982:Charita
-#1983:Club/Social Org.
-#1984:Community Org.
+#_#1983:Club/Social Org.
+#_#1984:Community Org.
 1985:Kultúrne organizácie
 1986:Fankluby
-#1987:Fraternity/Sorority
+#_#1987:Fraternity/Sorority
 1988:Nadšenci
 1989:Medzinárodné organizácie
-#1990:Nature and Environment Org.
+#_#1990:Nature and Environment Org.
 1991:Profesinálne organizácie
 1992:Vedecko-technické organizácie
-#1993:Self Improvement Group
-#1994:Spiritual/Religious Org.
+#_#1993:Self Improvement Group
+#_#1994:Spiritual/Religious Org.
 1995:Športové organizácie
-#1996:Support Org.
+#_#1996:Support Org.
 1997:Obchod a podnikanie
-#1998:Union
+#_#1998:Union
 1999:Združenia voličov
 2000:Zábava
 2001:Spotrebná elektronika
-#2002:Retail stores
+#_#2002:Retail stores
 2003:Krása a zdravie
 2004:Médiá
-#2005:Household products
+#_#2005:Household products
 2006:Dobierkové služby
 2007:Obchodné služby
 2009.Nájdený náhodný užívateľ pre rozhovor/chat UIN %ld s chatovej skupine %d.\n
@@ -796,15 +796,15 @@
 2078:Odchádzajúci TCP paket (%d - %s): %s
 2079:Prichádzajúci TCP paket (%d - %s): %s
 2080:Odpoveď na doručenie SMS správy serverom:\n%s\n
-#2081:    at %p parent %p assoc %p\n
+#_#2081:    at %p parent %p assoc %p\n
 2083:Nemôžem otvoriť súbor %s: %s (%d).\n
 2084:Chyba počas nastavovania pozície %ld: %s (%d).\n
 2086:Chyba počas čítania súboru %s: %s (%d).\n
 2087:Prenos súboru dokončený %s.\n
 2088:Dokončené prenosy všetkých %d súborov.\n
-#2089:file listener
-#2090:file peer-to-peer
-#2091:Queueing %s as %s for transfer.\n
+#_#2089:file listener
+#_#2090:file peer-to-peer
+#_#2091:Queueing %s as %s for transfer.\n
 2092:TCP správa %s stratená - strata spojenia.\n
 2094:conn login [pass]       Otvorí aktuálne/prvé spojenie so serverom.\n
 2095:conn remove <nr>        Odstráni spojenie <nr>.\n
@@ -819,11 +819,11 @@
 2105:contact import  Importuje zoznam kontaktov zo servera do lokálneho zoznamu.\n
 2106:Posledná správa od %s%s%s na %s:\n
 2107:Žiadne správy od %s%s%s.\n
-#2108:auto
+#_#2108:auto
 2109:verzia
 2110:peer files <nick> <file1> <as1> ... [<description>]\n
 2111:                  - Pošle súbor file1 ako as1, ..., s popisom description.\n
-#2112:                  - as = '/': strip path, as = '.': as is\n
+#_#2112:                  - as = '/': strip path, as = '.': as is\n
 2115:'%s' nie je celé číslo.\n
 2116:Nebolo určené nové nickname (prezývka).\n
 2117.%ld pridaný ako %s.\n
@@ -931,7 +931,7 @@
 2254:Pípnutie nebude nikdy generované.\n
 2255:Pípnutie pre prichádzajúce kontakty bude vždy generované skriptom %sevent%s.\n
 2256:Pípnutie pre odchádzajúce kontakty bude vždy generované skripom %sevent%s.\n
-#2258:No pending incoming file transfer request for %s with (sequence %ld) found.\n
+#_#2258:No pending incoming file transfer request for %s with (sequence %ld) found.\n
 2260:Skúste príkaz getauto namiesto toho.\n
 2262:Interpretácia delete ako backspace je %s%s%s.\n
 2265:Automatické odpovede sú %s%s%s.\n
@@ -940,10 +940,10 @@
 #_#2266:Type of the prompt is %s%s%s.\n
 2267:Automatické ukladanie je %s%s%s.\n
 2268:Automatické detaily nových UIN je %s%s%s.\n
-#2269:break
-#2270:simple
-#2271:indent
-#2272:smart
+#_#2269:break
+#_#2270:simple
+#_#2271:indent
+#_#2272:smart
 2278:    delbs:      znak delete ako backspace.\n
 2281:    auto:       posielať automatické odpovede.\n
 #-#2282:    uinprompt:  zobraziť posledný nick v konzole.\n
@@ -951,8 +951,8 @@
 #_#2282:    prompt:     type of the prompt: user, uin, simple\n
 2283:    autosave:   automaticky ukladať súbor climmrc.\n
 2284:    autofinger: autofinger (info) o nových UIN.\n
-#2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
-#2288:Indentation style is %s%s%s.\n
+#_#2285:    linebreak:  style for line-breaking messages: simple, break, indent, smart.\n
+#_#2288:Indentation style is %s%s%s.\n
 2293:--=
 2294:===
 2297:Alias čoho?\n
@@ -1058,8 +1058,8 @@
 2416:Nastavenia kontaktu %s:\n
 2417:Nastavenia skupiny %s:\n
 2418:Globálne nastavenia:\n
-#2419:undefined
-#2420:effectivly
+#_#2419:undefined
+#_#2420:effectivly
 2421:Neznáma hodnota %s.\n
 2422:Nastavenie %s pre kontakt %s nie je definované.\n
 2423:Nastavenie %s pre skupinu kontaktov %s nie je definované.\n
@@ -1091,12 +1091,12 @@
 2449:Primárna skupina pre kontakt '%s' je teraz '%s'.\n
 2450:Posledných %d ľudí,s ktorými ste hovorili:\n
 2451:history <contact> [<last> [<count>]] -- Zobrazí históriu pre <contact>.\n
-#2453:    at %p parent %p assoc %p ssl %d\n
-#2454:    open %p reconn %p close %p err %p dispatch %p\n
-#2455:About>
+#_#2453:    at %p parent %p assoc %p ssl %d\n
+#_#2454:    open %p reconn %p close %p err %p dispatch %p\n
+#_#2455:About>
 2456:Neznámy príkaz %s, napíšte %shelp%s pre nápovedu.\n
 2457:Neznáma verzia formátu konfiguračného súboru %d.\n
-#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
+#_#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
 2459:Peer-to-peer spojenie nie je priradené serverovému spojeniu, ruším.\n
 2460:Skupina %s (id %s%d%s) nie je priradená serverovému spojeniu.\n
 2461:Zastaralá syntax zistená v konfiguračnom súbore '%s'!\n    Prosím, zaktualizujte konfiguračný súbor alebo použite "save" a skontrolujte zmeny.\n
@@ -1105,9 +1105,9 @@
 2464:Prijatie prenosu súboru %s (%s%ld%s bajtov).
 2465:Odmietnutie prijatia súboru %s (%s%ld%s bajtov): %s.
 2466:Odmietnutie žiadosti o chat (%s/%s) s %s%s%s.
-#2467:climm>
+#_#2467:climm>
 2468:žiada o prenos súboru %s z %s%ld%s bajtov (sekvencia %s%ld%s).\n
-#2469:URL:
+#_#2469:URL:
 2470:žiada autorizáciu: %s\n
 2471:Ignorované kontakty:\n
 2472:Hidden-from kontakty:\n
@@ -1125,10 +1125,10 @@
 2484:Server: Skupina %s Kontakt %s (#%d)\n
 2485:Server: Skupina %s Kontakt %s/%s (#%d)\n
 2486:Local:  Skupina %s Kontakt %s/%s (#%d) <%s>\n
-#2487:hidefrom
-#2488:intimate
+#_#2487:hidefrom
+#_#2488:intimate
 2489:Server: Skupina %s Kontakt %s/%s (#%d) <intimate>\n
-#2490:normal
+#_#2490:normal
 2491:Rozdiely v  %d skupinách, celkom %d kontaktov, %d ignorovaných, %d skrytých, %d intimate, %d lokálnych.\n
 2492:Použitie: climm [-h] [-c] [-b <basedir>] [-i <locale>] [-v[<level>]] [-l <logplace>]\n
 2493:            [[-u <UIN>] [-p <passwd>] [-s <status>] [[-C] <command>]...]...\n
@@ -1151,20 +1151,20 @@
 2506:Táto konzola používa kódovanie %s.\n
 2507:Preklad %s%s%s nebol nájdený. Nechete preložiť climm do vášho jazyka?\n
 2508:Slovenský (%s) preklad načítaný (%s%d%s položiek).\n
-#2509:WSAStartup() for WinSocks 1.1 failed
+#_#2509:WSAStartup() for WinSocks 1.1 failed
 2510:Otváram v5 spojenie na %s:%s%ld%s... 
 2511:Presmerovanie na server %s:%s%ld%s... 
 2512:Otváram v8 spojenie na %s:%s%ld%s pre %s%s%s... 
 2513:nové UIN
 2514:odmietnuté (ignorované)
 2515:Už ste sa dnes pýtali na príliš mnoho užívateľov - vráťte sa zajtra.\n
-#2516:The query got stuck. Or somesuch. Try again later.\n
+#_#2516:The query got stuck. Or somesuch. Try again later.\n
 2517:Nemôžem rozpoznať chybu servera. Nepracuje.\n
 2518:Musíte použiť 'save' pre zápis nového UIN na disk.\n
-#2519:Opening file listener connection at %slocalhost%s:%s%ld%s... 
-#2520:Opening file transfer connection to %s:%s%ld%s... \n
-#2521:Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... 
-#2522:Opening TCP connection at %s:%s%ld%s... 
+#_#2519:Opening file listener connection at %slocalhost%s:%s%ld%s... 
+#_#2520:Opening file transfer connection to %s:%s%ld%s... \n
+#_#2521:Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... 
+#_#2522:Opening TCP connection at %s:%s%ld%s... 
 2523:%s nebolo rozpoznané ako prezývka alebo alias.\n
 2524:Nemôžem obnoviť módy terminálu.\n
 2525:Nemôžem čítať módy terminálu.\n
@@ -1182,12 +1182,12 @@
 2537:Upload kontaktu zlyhal, autorizácia je vyžadovaná.\n
 2538:Upload kontaktu zlyhal, kontakt je už na serveri.\n
 2539:Upload kontaktu úspešný.\n
-#2540:    sound:      how to beep: off, on = beep, event.\n
+#_#2540:    sound:      how to beep: off, on = beep, event.\n
 2541:Stav
 2542:Príkazy pre zmenu vášho stavu.
 2543:Kontakty
 2544:Príkazy pre úpravu zoznamu kontaktov.
-#2545:     %s\n
+#_#2545:     %s\n
 2546:Nie je nápoveda k '%s'.\n
 2547:Zobrazí uložené metadata pre <contacts>.
 2548:Zobrazí aktuálny stav online užívateľov z vášho zoznamu kontaktov, vrátane skrytých užívateľov.
@@ -1213,22 +1213,22 @@
 2568:Ignorovaná požiadavka na auto-response od %s%s%s.\n
 2569:Pošle správu <message> a všetky ďalšie správy kontaktom <contacts> až do prerušenia.
 2570:Pokračovanie v rozhovore s %s%s%s:\n
-#2571:"%s" <%s> emailed you a message [%s]: %s\n
-#2572:"%s" <%s> sent you a web message [%s]: %s\n
-#2573:The user is probably offline.\n
-#2574:%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n
-#2575:Error writing to file (%lu bytes written out of %u).\n
-#2576:contact delete  Delete server based contact list entry.\n
-#2577:SBL ids:
-#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
-#2579:contact delid   Delete server based contact list entry (experts only).\n
-#2580:ignore
-#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
-#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
-#2583:Location error: %d.\n
-#2584:msn temp
-#2585:msn server
-#2586:msn chat
+#_#2571:"%s" <%s> emailed you a message [%s]: %s\n
+#_#2572:"%s" <%s> sent you a web message [%s]: %s\n
+#_#2573:The user is probably offline.\n
+#_#2574:%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n
+#_#2575:Error writing to file (%lu bytes written out of %u).\n
+#_#2576:contact delete  Delete server based contact list entry.\n
+#_#2577:SBL ids:
+#_#2578:Modified %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n
+#_#2579:contact delid   Delete server based contact list entry (experts only).\n
+#_#2580:ignore
+#_#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
+#_#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
+#_#2583:Location error: %d.\n
+#_#2584:msn temp
+#_#2585:msn server
+#_#2586:msn chat
 2587:Nemôžem načítať metadata pre %s (%s).\n
 2588:Uložené metadata pre '%s' (%s).\n
 2589:Nemôžem uložiť metadata pre '%s' (%s).\n
@@ -1239,90 +1239,90 @@
 2594:Pridané '%s' ako alias pre '%s' (%s).\n
 2595:Odstránený kontakt '%s' (%s).\n
 2596:Odstránený alias '%s' pre '%s' (%s).\n
-#2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
-#2598:There is no connection number %ld and no connection for UIN %s.\n
-#2599:There is no connection for %s.\n
-#2600:No connection selected.\n
-#2601:Connection for %s is already open.\n
-#2602:Don't know how to open connection type %s for %s.\n
+#_#2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
+#_#2598:There is no connection number %ld and no connection for UIN %s.\n
+#_#2599:There is no connection for %s.\n
+#_#2600:No connection selected.\n
+#_#2601:Connection for %s is already open.\n
+#_#2602:Don't know how to open connection type %s for %s.\n
 2603:Vybrané spojenie %ld (verzia %d, UIN %s) ako aktuálne spojenie.\n
-#2604:xmpp
-#2605:Automatic status change.
+#_#2604:xmpp
+#_#2605:Automatic status change.
 2606:Nájdený náhodný užívateľ pre rozhovor/chat UIN %s s chatovej skupine %d.\n
 2607:Nové UIN je %s!\n
 2608:Vaše nové UIN je: %s.\n
 2609:Varovanie: Server považuje za UIN %s, keď je %s.\n
 2610:Informácia pre %s%s%s (%s):\n
-#2611: adnof__iiiiiiii
-#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
-#2613:You first need to enter a user account you want to use. This climm supports the following chat protocols:\n
-#2614:%s, enter i.e. %s\n
-#2615:User account ID:
-#2616:Cannot parse %s as a valid user ID. Try again!\n
-#2617:Next you can allow climm to store your password for %s account %s. Enter nothing to not save the password.\n
-#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
-#2619: with %s%s%s
-#2620:Opening XMPP connection for %s at %s...\n
-#2621:off
-#2622:inv
-#2623:dnd
-#2624:occ
-#2625:na
-#2626:away
-#2627:ffc
-#2628:online
-#2629:Set or show user defined prompt. See manual for details.
-#2630:user
-#2631:uin
-#2632:simple
-#2633:Note: You need to 'save' to write new user prompt to disc.\n
-#2634:Install libOTR 3.0.0 or newer and enjoy off-the-record encrypted messages!\n
-#2635:otr                           - Off-the-Record Messaging\n
-#2636:otr list [<contact>]          - List OTR connection states\n
-#2637:otr start|stop <contact>      - Start/Stop OTR session\n
-#2638:otr trust <contact> [<trust>] - Set/Show trust for active fingerprint\n
-#2639:otr genkey                    - Generate private key\n
-#2640:otr keys                      - List private keys\n
-#2641:Message for %s could not be encrypted and was NOT sent!
-#2642:util_otr: no connection found for account %s and protocol %s
-#2643:util_otr: no contact %s found
-#2645:Could not read OTR private key from %s.\n
-#2646:Writing OTR fingerprints failed!
-#2648:No OTR is allowed as long as policy is set to %s.\n
-#2651:No active fingerprint set - start OTR session first.\n
-#2652:Delete existing key first!\n
-#2653:util_otr: "%s" not a policy (use never|try|manual|always)
-#2654:Generating new OTR key for %s account %s. This may take a while...
-#2655:failed.\n
-#2656:successfull.\n
-#2659:otr_inject: message injection for contact %s failed
-#2660:new OTR fingerprint: %s.\n
-#2661:secure OTR channel established.\n
-#2662:secure OTR channel closed.\n
-#2663:secure OTR channel reestablished.\n
-#2664:reestablished secure OTR channel.\n
-#2665:plaintext
-#2666:encrypted
-#2667:finished
-#2668:unknown state
-#2669:no offer sent
-#2670:offer sent
-#2671:offer accepted
-#2672:offer rejected
-#2673:unknown auth
-#2674:awaiting D-H key
-#2675:awaiting reveal signature
-#2676:awaiting signature
-#2677:v1 setup
-#2678:never
-#2679:try
-#2680:manual
-#2681:always
-#2682:unknown
-#2683:trusted
-#2684:untrusted
-#2685:Could not find context for %s.\n
-#2686:Use %s to change.\n
-#2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
-#2688:No password given for %s.\n
-#2689:Enter password for %s account %s: 
+#_#2611: adnof__iiiiiiii
+#_#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
+#_#2613:You first need to enter a user account you want to use. This climm supports the following chat protocols:\n
+#_#2614:%s, enter i.e. %s\n
+#_#2615:User account ID:
+#_#2616:Cannot parse %s as a valid user ID. Try again!\n
+#_#2617:Next you can allow climm to store your password for %s account %s. Enter nothing to not save the password.\n
+#_#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
+#_#2619: with %s%s%s
+#_#2620:Opening XMPP connection for %s at %s...\n
+#_#2621:off
+#_#2622:inv
+#_#2623:dnd
+#_#2624:occ
+#_#2625:na
+#_#2626:away
+#_#2627:ffc
+#_#2628:online
+#_#2629:Set or show user defined prompt. See manual for details.
+#_#2630:user
+#_#2631:uin
+#_#2632:simple
+#_#2633:Note: You need to 'save' to write new user prompt to disc.\n
+#_#2634:Install libOTR 3.0.0 or newer and enjoy off-the-record encrypted messages!\n
+#_#2635:otr                           - Off-the-Record Messaging\n
+#_#2636:otr list [<contact>]          - List OTR connection states\n
+#_#2637:otr start|stop <contact>      - Start/Stop OTR session\n
+#_#2638:otr trust <contact> [<trust>] - Set/Show trust for active fingerprint\n
+#_#2639:otr genkey                    - Generate private key\n
+#_#2640:otr keys                      - List private keys\n
+#_#2641:Message for %s could not be encrypted and was NOT sent!
+#_#2642:util_otr: no connection found for account %s and protocol %s
+#_#2643:util_otr: no contact %s found
+#_#2645:Could not read OTR private key from %s.\n
+#_#2646:Writing OTR fingerprints failed!
+#_#2648:No OTR is allowed as long as policy is set to %s.\n
+#_#2651:No active fingerprint set - start OTR session first.\n
+#_#2652:Delete existing key first!\n
+#_#2653:util_otr: "%s" not a policy (use never|try|manual|always)
+#_#2654:Generating new OTR key for %s account %s. This may take a while...
+#_#2655:failed.\n
+#_#2656:successfull.\n
+#_#2659:otr_inject: message injection for contact %s failed
+#_#2660:new OTR fingerprint: %s.\n
+#_#2661:secure OTR channel established.\n
+#_#2662:secure OTR channel closed.\n
+#_#2663:secure OTR channel reestablished.\n
+#_#2664:reestablished secure OTR channel.\n
+#_#2665:plaintext
+#_#2666:encrypted
+#_#2667:finished
+#_#2668:unknown state
+#_#2669:no offer sent
+#_#2670:offer sent
+#_#2671:offer accepted
+#_#2672:offer rejected
+#_#2673:unknown auth
+#_#2674:awaiting D-H key
+#_#2675:awaiting reveal signature
+#_#2676:awaiting signature
+#_#2677:v1 setup
+#_#2678:never
+#_#2679:try
+#_#2680:manual
+#_#2681:always
+#_#2682:unknown
+#_#2683:trusted
+#_#2684:untrusted
+#_#2685:Could not find context for %s.\n
+#_#2686:Use %s to change.\n
+#_#2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
+#_#2688:No password given for %s.\n
+#_#2689:Enter password for %s account %s: 

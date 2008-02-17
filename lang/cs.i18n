@@ -511,7 +511,7 @@
 1618.UIN:
 1619:Varování:
 1620.dosáhnuto maximálního počtu kontaktů. Požádejte průvodce, aby mě zvětšil!
-#1621:users not returned.
+#_#1621:users not returned.
 1622:Chcete aplikovat tyto změny? (YES/NO)
 1623:Dvojitý packet %04x.\n
 1632:\nNestabilní spojení. Končím....
@@ -522,8 +522,8 @@
 1640:Aktualizace informací selhala.\n
 1641:Uživatelské info úspěšně aktualizováno.\n
 1642:IP:
-#1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
-#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
+#_#1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
+#_#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
 1645:Zadali jste nesprávné heslo.\n
 1646:Server je zaneprázdněný.\n
 1648:Odpověď byla %04x	
@@ -699,7 +699,7 @@
 1947:posluchač
 1948:Nemůžu najít hostname %s: %s.
 1949:selhalo:\n
-#1950:Couldn't set socket nonblocking
+#_#1950:Couldn't set socket nonblocking
 1951:Nemohu najít hostname hostname %s: %s (%d).
 1952:Nemohu otevřít spojení
 1953:nemohu svázat socket s volným portem
@@ -723,10 +723,10 @@
 1978:Sport a atletika
 1979:Publikování
 1980:Domácí spotřebiče
-#1981:Alumni Org.
+#_#1981:Alumni Org.
 1982:Charita.
-#1983:Club/Social Org.
-#1984:Community Org.
+#_#1983:Club/Social Org.
+#_#1984:Community Org.
 1985:Kulturní organizace.
 1986:Fankluby
 1987:Bratrstvo/Sesterstvo
@@ -795,14 +795,14 @@
 2078:Odchozí TCP packet (%d - %s): %s
 2079:Příchozí TCP packet (%d - %s): %s
 2080:SMS server odpověděl:\n%s\n
-#2081:    at %p parent %p assoc %p\n
+#_#2081:    at %p parent %p assoc %p\n
 2083:Nemohu otevřít soubor %s: %s (%d).\n
-#2084:Error while seeking to offset %ld: %s (%d).\n
+#_#2084:Error while seeking to offset %ld: %s (%d).\n
 2086:Chyba při čtení souboru %s: %s (%d).\n
 2087:Odeslání souboru dokončeno %s.\n
 2088:Odeslání všech %d souborů dokončeno.\n
-#2089:file listener
-#2090:file peer-to-peer
+#_#2089:file listener
+#_#2090:file peer-to-peer
 2091:Ve frontě čeká %s jako %s pro přenos.\n
 2092:TCP zpráva %s zahozena - ztráta sezení.\n
 2094:conn login [pass]       Otevře současné/první spojení se serverem.\n
@@ -822,7 +822,7 @@
 2109:verze
 2110:peer files <nick> <file1> <as1> ... [<description>]\n
 2111:                  - Pošle soubor file1 jako as1, ..., s popisem description.\n
-#2112:                  - as = '/': strip path, as = '.': as is\n
+#_#2112:                  - as = '/': strip path, as = '.': as is\n
 2115:'%s' není celé číslo.\n
 2116:Nebyla určena nová přezdívka (nick).\n
 2117.%ld přidán jako %s.\n
@@ -874,7 +874,7 @@
 2181:Zavírá nebo odstraní spojení číslo <nr>.
 2182:Nastaví číslo serverového spojení <nr> nebo spojení pro UIN <uin> jako současné serverové spojení.
 2183:Zjistí, zda jsou kontakty <contacts> offline nebo invisible.
-#2184:%s%-14s%s - %s\n
+#_#2184:%s%-14s%s - %s\n
 2185:Zavírám spojení %ld.\n
 2188:Posíláte data příliš rychle - přestaňte psát, nebo server ukončí spojení!\n
 2191:Instant message chyba: %d.\n
@@ -1088,12 +1088,12 @@
 2449:Primární skupina pro kontakt '%s' je nyní '%s'.\n
 2450:Posledních %d lidí se kterými jste hovořil/a:\n
 2451:history <contact> [<last> [<count>]] -- Zobrazí historii kontaktu <contact>.\n
-#2453:    at %p parent %p assoc %p ssl %d\n
-#2454:    open %p reconn %p close %p err %p dispatch %p\n
+#_#2453:    at %p parent %p assoc %p ssl %d\n
+#_#2454:    open %p reconn %p close %p err %p dispatch %p\n
 2455:About>
 2456:Neznámý příkaz %s, napište %shelp%s pro nápovědu.\n
 2457:Neznámá verze formátu konfiguračního souboru %d.\n
-#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
+#_#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
 2459:Peer-to-peer spojení není asociováno se serverovým spojením, ruším.\n
 2460:Supina %s (id %s%d%s) není připojena k serverovému spojení.\n
 2461:Neschvalovaná syntaxe nalezena v konfiguračním souboru '%s'!\n    Prosím aktualizujte konfigurační soubor nebo použijte "save" pro jeho uložení a zkontrolujte změny.\n
@@ -1214,16 +1214,16 @@
 2574:%sUvolněno pod GNU General Public License verze 2 (%sGPL v2%s).\n
 2575:Chyba při zápisu do souboru (%lu z %u bajtů zapsáno).\n
 2576:contact delete  Odstraní seznam kontaktů na serveru.\n
-#2577:SBL ids:
+#_#2577:SBL ids:
 2578:Upraveno %d skupin, celkem %d kontaktů, %d ignorovaných, %d skrytých, %d důvěrných.\n
 2579:contact delid   Odstraní seznam kontaktů na serveru (jen pro experty).\n
 2580:ignorováno
-#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
-#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
-#2583:Location error: %d.\n
-#2584:msn temp
-#2585:msn server
-#2586:msn chat
+#_#2581:Install the GnuTLS library and enjoy encrypted connections to peers!\n
+#_#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
+#_#2583:Location error: %d.\n
+#_#2584:msn temp
+#_#2585:msn server
+#_#2586:msn chat
 2587:Nemohu načíst meta data pro %s (%s).\n
 2588:Meta data pro '%s' (%s) byla uložena.\n
 2589:Nemohu uložit meta data pro '%s' (%s).\n
@@ -1234,90 +1234,90 @@
 2594:Přidáno '%s' jako alias pro '%s' (%s).\n
 2595:Odstraněn kontakt '%s' (%s).\n
 2596:Odstraněn alias '%s' pro '%s' (%s).\n
-#2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
-#2598:There is no connection number %ld and no connection for UIN %s.\n
-#2599:There is no connection for %s.\n
-#2600:No connection selected.\n
-#2601:Connection for %s is already open.\n
-#2602:Don't know how to open connection type %s for %s.\n
+#_#2597:%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n
+#_#2598:There is no connection number %ld and no connection for UIN %s.\n
+#_#2599:There is no connection for %s.\n
+#_#2600:No connection selected.\n
+#_#2601:Connection for %s is already open.\n
+#_#2602:Don't know how to open connection type %s for %s.\n
 2603:Vybrané spojení %ld (verze %d, UIN %s) jako současné spojení.\n
-#2604:xmpp
-#2605:Automatic status change.
+#_#2604:xmpp
+#_#2605:Automatic status change.
 2606:Nalezen náhodný uživatel pro chat: UIN %s z chatové skupiny %d.\n
 2607:Nové UIN je %s!\n
 2608:Vaše nové UIN je: %s.\n
 2609:Varování: Server si myslí že je vaše UIN %s, i když je %s.\n
 2610:Informace pro %s%s%s (%s):\n
-#2611: adnof__iiiiiiii
-#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
-#2613:You first need to enter a user account you want to use. This climm supports the following chat protocols:\n
-#2614:%s, enter i.e. %s\n
-#2615:User account ID:
-#2616:Cannot parse %s as a valid user ID. Try again!\n
-#2617:Next you can allow climm to store your password for %s account %s. Enter nothing to not save the password.\n
-#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
-#2619: with %s%s%s
-#2620:Opening XMPP connection for %s at %s...\n
-#2621:off
-#2622:inv
-#2623:dnd
-#2624:occ
-#2625:na
-#2626:away
-#2627:ffc
-#2628:online
-#2629:Set or show user defined prompt. See manual for details.
-#2630:user
-#2631:uin
-#2632:simple
-#2633:Note: You need to 'save' to write new user prompt to disc.\n
-#2634:Install libOTR 3.0.0 or newer and enjoy off-the-record encrypted messages!\n
-#2635:otr                           - Off-the-Record Messaging\n
-#2636:otr list [<contact>]          - List OTR connection states\n
-#2637:otr start|stop <contact>      - Start/Stop OTR session\n
-#2638:otr trust <contact> [<trust>] - Set/Show trust for active fingerprint\n
-#2639:otr genkey                    - Generate private key\n
-#2640:otr keys                      - List private keys\n
-#2641:Message for %s could not be encrypted and was NOT sent!
-#2642:util_otr: no connection found for account %s and protocol %s
-#2643:util_otr: no contact %s found
-#2645:Could not read OTR private key from %s.\n
-#2646:Writing OTR fingerprints failed!
-#2648:No OTR is allowed as long as policy is set to %s.\n
-#2651:No active fingerprint set - start OTR session first.\n
-#2652:Delete existing key first!\n
-#2653:util_otr: "%s" not a policy (use never|try|manual|always)
-#2654:Generating new OTR key for %s account %s. This may take a while...
-#2655:failed.\n
-#2656:successfull.\n
-#2659:otr_inject: message injection for contact %s failed
-#2660:new OTR fingerprint: %s.\n
-#2661:secure OTR channel established.\n
-#2662:secure OTR channel closed.\n
-#2663:secure OTR channel reestablished.\n
-#2664:reestablished secure OTR channel.\n
-#2665:plaintext
-#2666:encrypted
-#2667:finished
-#2668:unknown state
-#2669:no offer sent
-#2670:offer sent
-#2671:offer accepted
-#2672:offer rejected
-#2673:unknown auth
-#2674:awaiting D-H key
-#2675:awaiting reveal signature
-#2676:awaiting signature
-#2677:v1 setup
-#2678:never
-#2679:try
-#2680:manual
-#2681:always
-#2682:unknown
-#2683:trusted
-#2684:untrusted
-#2685:Could not find context for %s.\n
-#2686:Use %s to change.\n
-#2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
-#2688:No password given for %s.\n
-#2689:Enter password for %s account %s: 
+#_#2611: adnof__iiiiiiii
+#_#2612:No valid user account found. The setup wizard will guide you through the process of setting one up.\n
+#_#2613:You first need to enter a user account you want to use. This climm supports the following chat protocols:\n
+#_#2614:%s, enter i.e. %s\n
+#_#2615:User account ID:
+#_#2616:Cannot parse %s as a valid user ID. Try again!\n
+#_#2617:Next you can allow climm to store your password for %s account %s. Enter nothing to not save the password.\n
+#_#2618:You may add more user accounts now. Enter nothing to not add more accounts.\n
+#_#2619: with %s%s%s
+#_#2620:Opening XMPP connection for %s at %s...\n
+#_#2621:off
+#_#2622:inv
+#_#2623:dnd
+#_#2624:occ
+#_#2625:na
+#_#2626:away
+#_#2627:ffc
+#_#2628:online
+#_#2629:Set or show user defined prompt. See manual for details.
+#_#2630:user
+#_#2631:uin
+#_#2632:simple
+#_#2633:Note: You need to 'save' to write new user prompt to disc.\n
+#_#2634:Install libOTR 3.0.0 or newer and enjoy off-the-record encrypted messages!\n
+#_#2635:otr                           - Off-the-Record Messaging\n
+#_#2636:otr list [<contact>]          - List OTR connection states\n
+#_#2637:otr start|stop <contact>      - Start/Stop OTR session\n
+#_#2638:otr trust <contact> [<trust>] - Set/Show trust for active fingerprint\n
+#_#2639:otr genkey                    - Generate private key\n
+#_#2640:otr keys                      - List private keys\n
+#_#2641:Message for %s could not be encrypted and was NOT sent!
+#_#2642:util_otr: no connection found for account %s and protocol %s
+#_#2643:util_otr: no contact %s found
+#_#2645:Could not read OTR private key from %s.\n
+#_#2646:Writing OTR fingerprints failed!
+#_#2648:No OTR is allowed as long as policy is set to %s.\n
+#_#2651:No active fingerprint set - start OTR session first.\n
+#_#2652:Delete existing key first!\n
+#_#2653:util_otr: "%s" not a policy (use never|try|manual|always)
+#_#2654:Generating new OTR key for %s account %s. This may take a while...
+#_#2655:failed.\n
+#_#2656:successfull.\n
+#_#2659:otr_inject: message injection for contact %s failed
+#_#2660:new OTR fingerprint: %s.\n
+#_#2661:secure OTR channel established.\n
+#_#2662:secure OTR channel closed.\n
+#_#2663:secure OTR channel reestablished.\n
+#_#2664:reestablished secure OTR channel.\n
+#_#2665:plaintext
+#_#2666:encrypted
+#_#2667:finished
+#_#2668:unknown state
+#_#2669:no offer sent
+#_#2670:offer sent
+#_#2671:offer accepted
+#_#2672:offer rejected
+#_#2673:unknown auth
+#_#2674:awaiting D-H key
+#_#2675:awaiting reveal signature
+#_#2676:awaiting signature
+#_#2677:v1 setup
+#_#2678:never
+#_#2679:try
+#_#2680:manual
+#_#2681:always
+#_#2682:unknown
+#_#2683:trusted
+#_#2684:untrusted
+#_#2685:Could not find context for %s.\n
+#_#2686:Use %s to change.\n
+#_#2687:Trust must be trust, verify, or mistrust, distrust, falsify.\n
+#_#2688:No password given for %s.\n
+#_#2689:Enter password for %s account %s: 

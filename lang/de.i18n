@@ -1221,7 +1221,7 @@
 2574:%sFreigegeben unter Version 2 der GNU General Public License (%sGPL v2%s).\n
 2575:Fehler beim Schreiben in die Datei (%lu Bytes von %u geschrieben).\n
 2576:contact delete  Lösche Kontakte aus der Server-seitigen Kontaktliste.\n
-#2577:SBL ids:
+#_#2577:SBL ids:
 2578:%d Kontaktgruppen geändert, dabei insgesamt %d Kontakte, %d ignoriert, %d versteckt, %d sichtbar.\n
 2579:contact delid   Lösche Einträge der Server-seitigen Kontaktliste (nur für Experten).\n
 2580.ignorieren
@@ -1286,18 +1286,18 @@
 2639:otr genkey                    - Generiere einen privaten Schlüssel.\n
 2640:otr keys                      - Liste private Schlüssel.\n
 2641:Nachricht für %s konnte nicht verschlüsselt werden und wurde NICHT gesendet!
-#2642:util_otr: no connection found for account %s and protocol %s
-#2643:util_otr: no contact %s found
+#_#2642:util_otr: no connection found for account %s and protocol %s
+#_#2643:util_otr: no contact %s found
 2645:Konnte privaten OTR-Schlüssel nicht von %s lesen.\n
 2646:Schreiben der OTR-Fingerabdrücke fehlgeschlagen!
 2648:OTR wurde durch Setzen der Richtlinie %s verboten.\n
 2651:Kein aktiver Fingerabdruck gesetzt, da keine OTR-Sitzung gestartet ist.\n
 2652:Es existiert bereits ein privater Schlüssel.\n
-#2653:util_otr: "%s" not a policy (use never|try|manual|always)
-#2654:Generating new OTR key for %s account %s. This may take a while...
-#2655:failed.\n
-#2656:successfull.\n
-#2659:otr_inject: message injection for contact %s failed
+#_#2653:util_otr: "%s" not a policy (use never|try|manual|always)
+#_#2654:Generating new OTR key for %s account %s. This may take a while...
+#_#2655:failed.\n
+#_#2656:successfull.\n
+#_#2659:otr_inject: message injection for contact %s failed
 2660:neuer OTR-Fingerabdruck: %s.\n
 2661:sichere OTR-Sitzung aufgebaut.\n
 2662:sichere OTR-Sitzung beendet.\n
@@ -1305,17 +1305,17 @@
 2664:sichere OTR-Sitzung erneuert.\n
 2665:unverschlüsselt
 2666:verschlüsselt
-#2667:finished
-#2668:unknown state
+#_#2667:finished
+#_#2668:unknown state
 2669:kein Angebot gesendet
 2670:Angebot gesendet
 2671:Angebot angenommen
 2672:Angebot abgelehnt
-#2673:unknown auth
-#2674:awaiting D-H key
-#2675:awaiting reveal signature
-#2676:awaiting signature
-#2677:v1 setup
+#_#2673:unknown auth
+#_#2674:awaiting D-H key
+#_#2675:awaiting reveal signature
+#_#2676:awaiting signature
+#_#2677:v1 setup
 2678:never (niemals)
 2679:try (versuchen)
 2680:manual (manuell)
@@ -1323,7 +1323,7 @@
 2682:unbekannt
 2683:überprüft
 2684:nicht überprüft
-#2685:Could not find context for %s.\n
+#_#2685:Could not find context for %s.\n
 2686:Zum Ändern %s eingeben.\n
 2687:<trust> muß trust, verify, oder mistrust, distrust, falsify sein.\n
 2688:Kein Paßwort für %s angegeben.\n
@@ -1341,13 +1341,13 @@
 2700:Kontakt %s/%s existiert nur auf dem Server als sichtbar (#%d).\n
 2701:Kontakt %s/%s ist sichtbar (#%d) auf dem Server, aber lokal (#%d) normal.\n
 2702:Kontakt %s/%s existiert nur auf dem Server (#%d).\n
-#2703:Kontakt %s (#%d) is screen name %s (#%d) locally. Huh??\n
+#_#2703:Kontakt %s (#%d) is screen name %s (#%d) locally. Huh??\n
 2704:Kontakt %s ist %s (#%d) auf dem Server und %s (#%d) lokal.\n
 2705:Kontakt %s/%s ist normal (#%d) auf dem Server, aber unsichtbar (#%d,#%d) lokal.\n
 2706:Kontakt %s/%s ist normal (#%d) auf dem Server, aber sichtbar (#%d,#%d) lokal.\n
 2707:Kontakt %s/%s (#%d) ist in Gruppe %s (#%d) auf dem Server, aber in Gruppe %s (#%d) lokal.\n
 2708:Kontakt %s/%s (#%d) existiert nur lokal.\n
-#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
+#_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
 2710:Kontakt %s/%s ist normal (#%d) auf dem Server, aber ignoriert (#%d,#%d) lokal.\n
 2999.max.
 # Those are the funny messages. Substract 2000 to get the normal message.
