@@ -1069,7 +1069,7 @@ static JUMP_F(CmdUserPeer)
 {
     ContactGroup *cg;
     Contact *cont;
-    Connection *list;
+    Connection *list = NULL;
     UDWORD seq;
     char *reason;
     int i;
@@ -3401,7 +3401,7 @@ static JUMP_F(CmdUserHistory)
     int fposCur;
     UDWORD parsetmp;
 
-    int ra_i, ra_first, ra_mode = 0,
+    int ra_i, ra_first = 0, ra_mode = 0,
         ra_msgMin = DEFAULT_HISTORY_COUNT,
         ra_msgNum = DEFAULT_HISTORY_COUNT;
 
