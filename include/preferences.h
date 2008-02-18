@@ -63,7 +63,7 @@ const char *PrefSetColorScheme (UBYTE scheme);
 #define PrefUserDir(pref) (pref->basedir ? pref->basedir : PrefUserDirReal (pref))
 #define PrefLogName(pref) (pref->logname ? pref->logname : PrefLogNameReal (pref))
 
-#define AUTOUPDATE_CURRENT 5
+#define AUTOUPDATE_CURRENT 6
 
 const char *PrefDefUserDirReal (Preferences *pref);
 const char *PrefUserDirReal (Preferences *pref);

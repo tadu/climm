@@ -298,6 +298,10 @@ BOOL PrefLoad (Preferences *pref)
             for (i = 0; (conn = ConnectionNr (i)); i++)
                 if (conn->type == TYPE_SERVER)
                     OptSetVal (&conn->contacts->copts, CO_OBEYSBL, 1);
+        case 5:
+            for (i = 0; (conn = ConnectionNr (i)); i++)
+                if (conn->type == TYPE_SERVER)
+                    OptSetVal (&conn->contacts->copts, CO_WANTSBL, 1);
             
         case AUTOUPDATE_CURRENT:
         default:
