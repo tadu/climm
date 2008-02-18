@@ -614,15 +614,22 @@ const char *QueueType (UDWORD type)
         case QUEUE_UDP_RESEND:     return "UDP_RESEND";
         case QUEUE_PEER_FILE:      return "PEER_FILE";
         case QUEUE_PEER_RESEND:    return "PEER_RESEND";
+        case OSCAR_REF:            return "OSCAR_REF";
         case QUEUE_TYPE2_RESEND:   return "TYPE2_RESEND";
         case QUEUE_TYPE1_RESEND_ACK: return "TYPE1_R_ACK";
         case QUEUE_TYPE2_RESEND_ACK: return "TYPE2_R_ACK";
         case QUEUE_TYPE4_RESEND_ACK: return "TYPE4_R_ACK";
+        case QUEUE_XMPP_RESEND_ACK:  return "XMPP_R_ACK";
+        case QUEUE_USERFILEACK:    return "UFILE_ACK";
         case QUEUE_ACKNOWLEDGE:    return "ACKNOWLEDGE";
         case QUEUE_USERFILEACK:    return "USERFILEACK";
+        case QUEUE_TOGVIS:         return "TOGVIS";
+        case QUEUE_CHANGE_ROSTER:  return "CHANGE_ROSTER";
         case QUEUE_REQUEST_ROSTER: return "REQUEST_ROSTER";
+        case QUEUE_REQUEST_META:   return "REQUEST_META";
         case QUEUE_CLIMM_COMMAND:  return "CLIMM_COMMAND";
         case QUEUE_DEP_WAITLOGIN:  return "DEP_WAITLOGIN";
+        case QUEUE_CACHE_MSG:      return "CACHE_MSG";
     }
     return s_sprintf ("%lx", type);
 }
