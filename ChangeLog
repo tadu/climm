@@ -1,5 +1,51 @@
 -*- coding: utf-8 -*-
 
+2008-02-18 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* missing -I option for C++ source (i.e. Jabber code)
+	* add last seen and online since time to s command
+	* shorten names of known clients
+	* i18n auto-update
+	* Replace old #<number>: by #_#<number>: for english text
+	* update i18n (numbers)
+	* 0.6.2
+
+2008-02-11 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* get rid of those annoying false positives in contact diff by rewriting stuff completely 
+	* auto-update to set obeysql flag for all ICQv8 connections
+	* add extra \xfe to make auth req work again
+
+2008-01-27 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* Apply historyd fix and * patch; Closes: #28; Closes: #29
+	* Only sbl entries of type normal cause a contact to be marked as 'on
+	  server', otherwise if only the visible/invisible/ignore entry is
+	  already uploaded, the contact itself would never be considered for
+	  upload 
+	* change hidefrom/intimate flag always also in sbl
+	* fix data dir if binreloc is on; thanks komar
+
+2007-11-24 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* Apply file transfer patch. At least it compiles. Closes #21
+	* releases are done from tags dir
+	* ignore xml:lang attribute
+	* show cvs date during build
+
+2007-10-30 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* make sure negative connection numbers are never found
+	* change to more generally supported syntax
+	* this fix for undefined UT_NAMESIZE might be more clever
+
+2007-10-20 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* free opt as soon it is not needed anymore
+	* add more w32 ANSI terminal links
+	* fix compilation under w32
+	* allow climm to compile with libgloox >= 0.9; Closes #20
+	* add README about TCL usage by jmacloue
+	* try to avoid sending roster packets before login is finished
+	* XMPP: setInitialPririty() also belongs in the #else
+	* and another misapplied change...
+	* fix wrong type in argument
+	* another missing free
+
 2007-10-14 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* 0.6.1
 
