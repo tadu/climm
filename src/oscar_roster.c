@@ -561,6 +561,13 @@ void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont)
 }
 
 /*
+ * SRV_ROSTERADD
+ */
+JUMP_SNAC_F(SnacSrvRosteradd)
+{
+}
+
+/*
  * SRV_ROSTERUPDATE
  */
 JUMP_SNAC_F(SnacSrvRosterupdate)
@@ -592,6 +599,13 @@ JUMP_SNAC_F(SnacSrvRosterupdate)
 
     if (pak->rpos < pak->len)
         SnacSrvUnknown (event);
+}
+
+/*
+ * SRV_ROSTERDELETE
+ */
+JUMP_SNAC_F(SnacSrvRosterdelete)
+{
 }
 
 static JUMP_SNAC_F(cb_LoginVisibilitySet)
