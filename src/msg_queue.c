@@ -614,13 +614,12 @@ const char *QueueType (UDWORD type)
         case QUEUE_UDP_RESEND:     return "UDP_RESEND";
         case QUEUE_PEER_FILE:      return "PEER_FILE";
         case QUEUE_PEER_RESEND:    return "PEER_RESEND";
-        case OSCAR_REF:            return "OSCAR_REF";
+        case QUEUE_OSCAR_REF:      return "OSCAR_REF";
         case QUEUE_TYPE2_RESEND:   return "TYPE2_RESEND";
         case QUEUE_TYPE1_RESEND_ACK: return "TYPE1_R_ACK";
         case QUEUE_TYPE2_RESEND_ACK: return "TYPE2_R_ACK";
         case QUEUE_TYPE4_RESEND_ACK: return "TYPE4_R_ACK";
         case QUEUE_XMPP_RESEND_ACK:  return "XMPP_R_ACK";
-        case QUEUE_USERFILEACK:    return "UFILE_ACK";
         case QUEUE_ACKNOWLEDGE:    return "ACKNOWLEDGE";
         case QUEUE_USERFILEACK:    return "USERFILEACK";
         case QUEUE_TOGVIS:         return "TOGVIS";
