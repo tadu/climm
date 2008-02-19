@@ -774,6 +774,7 @@ void CLIMMXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, 
     status_t status;
     std::string pri;
     time_t delay;
+    std::string statustext;
 
     GetBothContacts (from, m_conn, &contb, &contr, 1);
 
@@ -811,8 +812,13 @@ void CLIMMXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, 
     }
     else
         status = ims_online;
-
-    IMOnline (contr, status, imf_none, status, NULL);
+    if (gloox::Tag *stat = s->findChild ("status"))
+    {
+        statustext = stat->cdata ();
+        IMOnline (contr, status, imf_none, status, statustext.c_str());
+    }
+    else
+        IMOnline (contr, status, imf_none, status, NULL);
 }
 
 void CLIMMXMPP::handlePresence (gloox::Stanza *s)
