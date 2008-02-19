@@ -294,6 +294,36 @@ static void DropAllChilds (gloox::Tag *s, const std::string &a)
     }
 }
 
+static void DropAllChildsTree (gloox::Tag *s, const std::string &a)
+{
+    gloox::Tag::TagList::const_iterator it;
+    if (a.empty ())
+    {
+        s->attributes().clear();
+        for (it = s->children().begin(); it != s->children().end(); it = s->children().begin())
+        {
+            gloox::Tag *b = *it;
+            DropCData (b);
+            DropAllChildsTree (b, "");
+            CheckInvalid (b);
+        }
+    }
+    else
+    {
+        for (it = s->children().begin(); it != s->children().end(); ++it)
+        {
+            while ((*it)->name() == a)
+            {
+                gloox::Tag *b = *it;
+                DropCData (b);
+                DropAllChildsTree (b, "");
+                CheckInvalid (b);
+                it = s->children().begin();
+            }
+        }
+    }
+}
+
 static int __SkipChar (const char **s, char c)
 {
     if (**s == c && **s)
@@ -525,7 +555,7 @@ void CLIMMXMPP::handleXEP71 (gloox::Tag *t)
     if (gloox::Tag *xhtmlim = t->findChild ("html", "xmlns", "http://jabber.org/protocol/xhtml-im"))
     {
         DropAttrib (xhtmlim, "xmlns");
-        DropAllChilds (xhtmlim, "body");
+        DropAllChildsTree (xhtmlim, "body");
         CheckInvalid (xhtmlim);
     }
 }
