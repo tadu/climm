@@ -53,6 +53,7 @@
 #include "conv.h"
 #include "contact.h"
 #include "os.h"
+#include "im_icq8.h"
 
 static FILE *PrefOpenRC (Preferences *pref);
 
@@ -298,11 +299,13 @@ BOOL PrefLoad (Preferences *pref)
             for (i = 0; (conn = ConnectionNr (i)); i++)
                 if (conn->type == TYPE_SERVER)
                     OptSetVal (&conn->contacts->copts, CO_OBEYSBL, 1);
+            pref->autoupdate = 5;
         case 5:
             for (i = 0; (conn = ConnectionNr (i)); i++)
                 if (conn->type == TYPE_SERVER)
                     OptSetVal (&conn->contacts->copts, CO_WANTSBL, 1);
-            
+            break;
+
         case AUTOUPDATE_CURRENT:
         default:
             pref->autoupdate = AUTOUPDATE_CURRENT;

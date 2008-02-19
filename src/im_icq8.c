@@ -646,6 +646,13 @@ static void IMRosterDiff (Event *event)
     rl_printf (i18n (2491, "Differences in %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate, %d local.\n"),
                cnt_groups, cnt_ignored + cnt_hidden + cnt_intimate + cnt_normal + cnt_more,
                cnt_ignored, cnt_hidden, cnt_intimate, cnt_more);
+    if (prG->autoupdate == 5)
+    {
+        if (cnt_more)
+            IMRoster (serv, IMROSTER_UPLOAD);
+        else
+            prG->autoupdate++;
+    }
 }
 
 UBYTE IMDeleteID (Connection *conn, int tag, int id, const char *name)

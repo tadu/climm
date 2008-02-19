@@ -338,12 +338,12 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         if (~serv->connect & CONNECT_OK)
             CliFinishLogin (serv);
 
-        event2->callback (event2);
         if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
         {
             rl_printf ("#\n# Server side contact list activated, authorization restrictions apply.\n#\n");
             SnacCliRosterack (serv);
         }
+        event2->callback (event2);
     }
     else
         QueueEnqueue (event2);
@@ -902,12 +902,12 @@ JUMP_SNAC_F(SnacSrvRosterok)
     if (~serv->connect & CONNECT_OK)
         CliFinishLogin (serv);
 
-    event2->callback (event2);
     if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
     {
         rl_printf ("#\n# Server side contact list activated, authorization restrictions apply.\n#\n");
         SnacCliRosterack (serv);
     }
+    event2->callback (event2);
 }
 
 /*
