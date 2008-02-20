@@ -3,10 +3,10 @@
 #_#1000:UTF-8
 1001:uk
 1002:uk_UA
-1003:0-6-1
+1003:0-6-2
 1004:Artem Sokolov, Maxim Komar
 1005:Maxim Komar
-1006:2007-10-14
+1006:2008-02-20
 1008:KOI8-U
 1010:Користувач відійшов [автоматичне повідомлення]
 1011:Користувач недоступний [автоматичне повідомлення]
@@ -1099,7 +1099,7 @@
 2464:Приймаю файл %s (%s%ld%s байтів).
 2465:Відхилено запит файла %s (%s%ld%s байтів): %s.
 2466:Відхилено запит чата  (%s/%s) від %s%s%s.
-#_#2467:climm>
+2467:клім>
 2468:запрошено передачу файлу %s розміром %s%ld%s байтів (послідовність %s%ld%s).\n
 2469:URL:
 2470:Запроси авторизації: %s\n
@@ -1317,23 +1317,23 @@
 2688:Пароль для %s не надано.\n
 2689:Введіть пароль для %s облікового запису %s: 
 2690:Зміна мета-інформації було закінчено %s%s%s.\n
-#_#2691:Last seen:
-#_#2692:Online since:
-#_#2693:Using climm:
-#_#2694:Group %s (#%d) exists only on the server.\n
-#_#2695:Group %s (#%d) on the server is group %s (#%d) locally.\n
-#_#2696:Group %s (#%d) exists only locally.\n
-#_#2697:Contact %s/%s exists only on the server as ignored (#%d).\n
-#_#2698:Contact %s/%s exists only on the server as invisible (#%d).\n
-#_#2699:Contact %s/%s is invisible (#%d) on the server, but locally (#%d) normal.\n
-#_#2700:Contact %s/%s exists only on the server as visible (#%d).\n
-#_#2701:Contact %s/%s is visible (#%d) on the server, but locally (#%d) normal.\n
-#_#2702:Contact %s/%s exists only on the server (#%d).\n
-#_#2703:Contact %s (#%d) is screen name %s (#%d) locally. Huh??\n
-#_#2704:Contact %s is %s (#%d) on the server and %s (#%d) locally.\n
-#_#2705:Contact %s/%s is normal (#%d) on the server, but invisible (#%d,#%d) locally.\n
-#_#2706:Contact %s/%s is normal (#%d) on the server, but visible (#%d,#%d) locally.\n
-#_#2707:Contact %s/%s (#%d) is in group %s (#%d) on the server, but in group %s (#%d) locally.\n
-#_#2708:Contact %s/%s (#%d) exists only locally.\n
-#_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
-#_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
+2691:Був помічен останній раз:
+2692:В онлайнi з часу:
+2693:Використовування climm:
+2694:Група %s (#%d) існує тільки на сервері.\n
+2695:Група %s (#%d) на сервері це група %s (#%d) локально.\n
+2696:Група %s (#%d) існує тільки локально.\n
+2697:Контакт %s/%s існує тільки на сервері як ігнорований (#%d).\n
+2698:Контакт %s/%s існує тільки на сервері як невидимий (#%d).\n
+2699:Контакт %s/%s як невидимий (#%d) на сервері, але локально (#%d) має нормальний статус.\n
+2700:Контакт %s/%s існує тільки на сервері як невидимий (#%d).\n
+2701:Контакт %s/%s як видимий (#%d) на сервері, але локально (#%d) має нормальний статус.\n
+2702:Контакт %s/%s існує тільки на сервері (#%d).\n
+2703:Контакт %s (#%d) це ім'я облікового запису %s (#%d) локально. Гм..??\n
+2704:Контакт %s це %s (#%d) на сервері і %s (#%d) локально.\n
+2705:Контакт %s/%s має нормальний статус (#%d) на сервері, але невидимий (#%d,#%d) локально.\n
+2706:Контакт %s/%s має нормальний статус (#%d) на сервері, але видимий (#%d,#%d) локально.\n
+2707:Контакт %s/%s (#%d) is у групі %s (#%d) на сервері, але у групі %s (#%d) локально.\n
+2708:Контакт %s/%s (#%d) існує тільки локально.\n
+2709:Відкриття з'єднання очікування прийому/відправки файлів на %slocalhost%s:%s%lp%s... 
+2710:Контакт %s/%s має нормальний статус (#%d) на сервері, але ігнорований (#%d,#%d) локально.\n
