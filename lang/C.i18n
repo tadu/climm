@@ -996,7 +996,7 @@
 2391:Case sensitive search of <pattern> in log file of <contact>.
 2393:%Y-%m-%d
 2394: %I:%M %p
-2395:View your messages of <contact> since <date>.
+2395:View your messages of <contact> or all contacts (for *) since <date>.
 2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
 2397:No server session found.\n
 2398:Set or display options for a contact group, a contact or global.\n
@@ -1288,4 +1288,4 @@
 2708:Contact %s/%s (#%d) exists only locally.\n
 2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
 2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
-9999:FT Error.\n
+2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n

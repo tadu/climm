@@ -475,7 +475,7 @@ static JUMP_F(CmdUserHelp)
         else if (!strcasecmp (par->txt, "history"))
             CMD_USER_HELP  ("history <contact> [<last> [<count>]]", i18n (2383, "View your last messages of <contact>. Type 'h' as short command."));
         else if (!strcasecmp (par->txt, "historyd"))
-            CMD_USER_HELP  ("historyd <contact> [<date> [<count>]]", i18n (2395, "View your messages of <contact> since <date>."));
+            CMD_USER_HELP  ("historyd <contact|*> [<date> [<count>]]", i18n (2395, "View your messages of <contact> or all contacts (for *) since <date>."));
         else if (!strcasecmp (par->txt, "find"))
             CMD_USER_HELP  ("find <contact> <pattern>", i18n (2384, "Case insensitive search of <pattern> in log file of <contact>."));
         else if (!strcasecmp (par->txt, "finds"))
@@ -3377,9 +3377,9 @@ static JUMP_F(CmdUserLast)
  *                DEFAULT_HISTORY_COUNT).
  *
  * Comand parameter:
- *      historyd  <contact> <date> [<count>]
+ *      historyd  <contact|*> <date> [<count>]
  *
- *      <contact> Nick or UIN
+ *      <contact|*> Nick or UIN or all contacts
  *      <date>    Earliest date of shown messages. <date> has to be in
  *                ISO 8601 format (CCYY-MM-DD or CCYY-MM-DDThh:mm:ss).
  *      <count>   Count of shown message. Default is DEFAULT_HISTORY_COUNT.
@@ -3418,6 +3418,8 @@ static JUMP_F(CmdUserHistory)
     {
         if ((par = s_parse (&args)))
             rl_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), par->txt);
+        else if (data == 1)
+            rl_print(i18n (2711, "historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n"));
         else
             rl_print (i18n (2451, "history <contact> [<last> [<count>]] -- Show history of <contact>.\n"));
         return 0;
