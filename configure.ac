@@ -22,9 +22,9 @@ AM_MAINTAINER_MODE
 AC_DEFINE(CLIMM_VERSION,VERSION,[climm's current version])
 
 if test -f $srcdir/.is_release; then
-  AC_DEFINE(CLIMM_IS_CVS, "")
+  AC_DEFINE(CLIMM_IS_SVN, "")
 else
-  AC_DEFINE(CLIMM_IS_CVS, " CVS " BUILDDATE, whether we are CVS or not)
+  AC_DEFINE(CLIMM_IS_SVN, " SVN " BUILDDATE, whether we are SVN or not)
 fi
 
 # Checks for programs.

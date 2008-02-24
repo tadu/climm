@@ -144,7 +144,7 @@ const char  *BuildPlatformStr = EXTRAVERSION_DEF;
 const char *BuildVersion (void)
 {
     return s_sprintf (i18n (2327, "%sclimm%s - CLI-based Multi-Messenger%s version %s%s%s\n"),
-            COLERROR, COLSERVER, COLNONE, COLSERVER, CLIMM_VERSION " (" CVSUPDATE ")", COLNONE);
+            COLERROR, COLSERVER, COLNONE, COLSERVER, CLIMM_VERSION " (" SVNUPDATE ")", COLNONE);
 }
 
 const char *BuildAttribution (void)
@@ -167,8 +167,8 @@ const char *BuildAttribution (void)
 }                  
 
 const UDWORD BuildVersionNum = CLIMM_BUILD_NUM;
-const char *BuildVersionText = "$VER: climm " VERSION " " EV EXTRAVERSION "\n(" CVSUPDATE " build " BUILDDATE ")";
-const char *BuildVersionStr  = VERSION CLIMM_IS_CVS;
+const char *BuildVersionText = "$VER: climm " VERSION " " EV EXTRAVERSION "\n(" SVNUPDATE " build " BUILDDATE ")";
+const char *BuildVersionStr  = VERSION CLIMM_IS_SVN;
 
 /*
  i18n (1000, "UTF-8")            charset used
