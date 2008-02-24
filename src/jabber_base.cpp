@@ -1112,11 +1112,11 @@ void CLIMMXMPP::handleFTSOCKS5Bytestream (gloox::SOCKS5Bytestream *s5b)
     s5b->registerSOCKS5BytestreamDataHandler (this);
     //if (prG->verbose)
         rl_printf (i18n (2709, "Opening file listener connection at %slocalhost%s:%s%lp%s... "),
-                  COLQUOTE, COLNONE, COLQUOTE, s5b->getConnectionImpl(), COLNONE);
+                  COLQUOTE, COLNONE, COLQUOTE, s5b->connectionImpl(), COLNONE);
     if (s5b->connect())
     {
         rl_print (i18n (1634, "ok.\n"));
-        gloox::ConnectionTCPBase *conn = dynamic_cast<gloox::ConnectionTCPBase *>(s5b->getConnectionImpl());
+        gloox::ConnectionTCPBase *conn = dynamic_cast<gloox::ConnectionTCPBase *>(s5b->connectionImpl());
         if (!conn)
             return;
         Connection *child = ConnectionFindScreen (TYPE_FILELISTEN, s5b->sid().c_str());
