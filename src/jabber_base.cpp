@@ -626,6 +626,8 @@ void CLIMMXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
             node = "Pidgin";
         else if (!strcmp (node.c_str(), "http://kopete.kde.org/jabber/caps"))
             node = "Kopete";
+        else if (!strcmp (node.c_str(), "http://psi-im.org/caps"))
+            node = "Psi";
         else if (!strcmp (node.c_str(), "http://miranda-im.org/caps"))
             node = "Miranda";
         else if (!strcmp (node.c_str(), "http://trillian.im/caps"))
