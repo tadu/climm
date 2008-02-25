@@ -183,11 +183,12 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
 void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype, status_t status, const char *text)
 {
     static int rc;
-    char *mytext, *mynick, *myscript, *tmp, *myagent, *mygroup;
+    char *mytext, *mynick, *myscreen, *myscript, *tmp, *myagent, *mygroup;
     const char *mytype, *cmd;
 
     mytext = strdup (text ? text : "");
     mynick = strdup (cont ? cont->nick : "");
+    myscreen = strdup (cont ? cont->screen : "");
     myagent = strdup (cont && cont->version ? cont->version : "");
     mytype = (type == ev_msg ? "msg" : type == ev_on ? "on" : type == ev_off ? "off" : 
               type == ev_beep ? "beep" : type == ev_status ? "status" : "other");
@@ -197,6 +198,7 @@ void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype
 #if HAVE_SETENV
     setenv ("CLIMM_TEXT", mytext, 1);   setenv ("MICQ_TEXT", mytext, 1);
     setenv ("CLIMM_NICK", mynick, 1);   setenv ("MICQ_NICK", mynick, 1);
+    setenv ("CLIMM_SCREEN", myscreen, 1);
     setenv ("CLIMM_AGENT", myagent, 1); setenv ("MICQ_AGENT", myagent, 1);
     setenv ("CLIMM_GROUP", mygroup, 1); setenv ("MICQ_GROUP", mygroup, 1);
     setenv ("CLIMM_TYPE", mytype, 1);   setenv ("MICQ_TYPE", mytype, 1);
@@ -210,6 +212,9 @@ void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype
     for (tmp = mynick; *tmp; tmp++)
         if (*tmp == '\'' || *tmp == '\\')
             *tmp = '"';
+    for (tmp = myscreen; *tmp; tmp++)
+        if (*tmp == '\'' || *tmp == '\\')
+            *tmp = '"';
     for (tmp = myagent; *tmp; tmp++)
         if (*tmp == '\'' || *tmp == '\\')
             *tmp = '"';
@@ -217,8 +222,9 @@ void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype
         if (*tmp == '\'' || *tmp == '\\')
             *tmp = '"';
 
-    cmd = s_sprintf ("%s icq '%s' '%s' '%s' %s %ld '%s' '%s' '%s'",
-                     myscript, cont ? cont->screen : "", mynick, mygroup, mytype, msgtype, mytext, myagent, ContactStatusStr (status));
+    cmd = s_sprintf ("%s %s '%s' '%s' '%s' %s %ld '%s' '%s' '%s'",
+                     myscript, cont && cont->serv ? ConnectionServerType (cont->serv->type) : "global", myscreen,
+                     mynick, mygroup, mytype, msgtype, mytext, myagent, ContactStatusStr (status));
 
     rc = system (cmd);
     if (rc)
@@ -227,6 +233,7 @@ void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype
     free (mynick);
     free (mytext);
     free (myscript);
+    free (myscreen);
     free (mygroup);
     free (myagent);
 }
