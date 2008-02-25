@@ -87,13 +87,12 @@ class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler
 
         void handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string tof, std::string id, gloox::StanzaSubType subtype);
         void handleXEP8 (gloox::Tag *t);
-        bool handleXEP22 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id);
+        bool handleXEP22and85 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id);
         void handleXEP22a (gloox::Tag *XEP22, Contact *cfrom);
         void handleXEP22b (gloox::Tag *XEP22, gloox::JID from, std::string tof, std::string id);
         void handleXEP22c (gloox::JID from, std::string tof, std::string id, std::string type);
         void handleXEP27 (gloox::Tag *t);
         void handleXEP71 (gloox::Tag *t);
-        void handleXEP85 (gloox::Tag *t);
         void handleXEP115 (gloox::Tag *t, Contact *contr);
         void handleXEP153 (gloox::Tag *t, Contact *contr);
         void handleGoogleNosave (gloox::Tag *t);
@@ -525,7 +524,7 @@ void CLIMMXMPP::handleXEP22b (gloox::Tag *XEP22, gloox::JID from, std::string to
     }
 }
 
-bool CLIMMXMPP::handleXEP22 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id)
+bool CLIMMXMPP::handleXEP22and85 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id)
 {
     if (gloox::Tag *XEP22 = t->findChild ("x", "xmlns", "jabber:x:event"))
     {
@@ -536,6 +535,43 @@ bool CLIMMXMPP::handleXEP22 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std
             return true;
         }
         handleXEP22b (XEP22, from, tof, id);
+    }
+    if (gloox::Tag *active = t->findChild ("active", "xmlns", "http://jabber.org/protocol/chatstates"))
+    {
+        DropAttrib (active, "xmlns");
+        CheckInvalid (active);
+        if (!t->hasChild ("body"))
+            return true;
+    }
+    if (gloox::Tag *composing = t->findChild ("composing", "xmlns", "http://jabber.org/protocol/chatstates"))
+    {
+        DropAttrib (composing, "xmlns");
+        CheckInvalid (composing);
+        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGCOMP, "");
+        if (!t->hasChild ("body"))
+            return true;
+    }
+    if (gloox::Tag *paused = t->findChild ("paused", "xmlns", "http://jabber.org/protocol/chatstates"))
+    {
+        DropAttrib (paused, "xmlns");
+        CheckInvalid (paused);
+        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGNOCOMP, "");
+        if (!t->hasChild ("body"))
+            return true;
+    }
+    if (gloox::Tag *inactive = t->findChild ("inactive", "xmlns", "http://jabber.org/protocol/chatstates"))
+    {
+        DropAttrib (inactive, "xmlns");
+        CheckInvalid (inactive);
+        if (!t->hasChild ("body"))
+            return true;
+    }
+    if (gloox::Tag *gone = t->findChild ("gone", "xmlns", "http://jabber.org/protocol/chatstates"))
+    {
+        DropAttrib (gone, "xmlns");
+        CheckInvalid (gone);
+        if (!t->hasChild ("body"))
+            return true;
     }
     return false;
 }
@@ -560,34 +596,6 @@ void CLIMMXMPP::handleXEP71 (gloox::Tag *t)
     }
 }
 
-void CLIMMXMPP::handleXEP85 (gloox::Tag *t)
-{
-    if (gloox::Tag *active = t->findChild ("active", "xmlns", "http://jabber.org/protocol/chatstates"))
-    {
-        DropAttrib (active, "xmlns");
-        CheckInvalid (active);
-    }
-    if (gloox::Tag *composing = t->findChild ("composing", "xmlns", "http://jabber.org/protocol/chatstates"))
-    {
-        DropAttrib (composing, "xmlns");
-        CheckInvalid (composing);
-    }
-    if (gloox::Tag *paused = t->findChild ("paused", "xmlns", "http://jabber.org/protocol/chatstates"))
-    {
-        DropAttrib (paused, "xmlns");
-        CheckInvalid (paused);
-    }
-    if (gloox::Tag *inactive = t->findChild ("inactive", "xmlns", "http://jabber.org/protocol/chatstates"))
-    {
-        DropAttrib (inactive, "xmlns");
-        CheckInvalid (inactive);
-    }
-    if (gloox::Tag *gone = t->findChild ("gone", "xmlns", "http://jabber.org/protocol/chatstates"))
-    {
-        DropAttrib (gone, "xmlns");
-        CheckInvalid (gone);
-    }
-}
 
 time_t CLIMMXMPP::handleXEP91 (gloox::Tag *t)
 {
@@ -718,23 +726,24 @@ void CLIMMXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string t
 
     GetBothContacts (from, m_conn, &contb, &contr, 0);
 
+    DropAllChilds (t, "subject");
+    DropAllChilds (t, "thread");
     handleXEP71 (t);
-    handleXEP85 (t);
     handleGoogleNosave (t);
     handleGoogleSig (t);
     handleGoogleChatstate (t);
     handleXEP136 (t);
-    if (handleXEP22 (t, contr, from, tof, id))
-        return;
     delay = handleXEP91 (t);
+    handleXEP115 (t, contr); // entity capabilities (used also for client version)
+    if (handleXEP22and85 (t, contr, from, tof, id))
+        return;
+    DropAllChilds (t, "body");
 
     Opt *opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, body.c_str(), 0);
     if (!subject.empty())
         opt = OptSetVals (opt, CO_MSGTYPE, MSG_NORM_SUBJ, CO_SUBJECT, subject.c_str(), 0);
     IMSrvMsgFat (contr, delay, opt);
 
-    DropAllChilds (t, "body");
-    DropAllChilds (t, "subject");
     if (gloox::Tag *x = t->findChild ("x"))
         CheckInvalid (x);
 }
