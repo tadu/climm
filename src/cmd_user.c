@@ -3010,7 +3010,7 @@ static JUMP_F(CmdUserAdd)
                 {
                     ContactCreate (uiG.conn, cont);
                     if (uiG.conn->type == TYPE_SERVER)
-                        SnacCliAddcontact (uiG.conn, cont, NULL);
+                        /* SnacCliAddcontact (uiG.conn, cont, NULL) */ ;
                     else if (uiG.conn->type == TYPE_SERVER_OLD)
                         CmdPktCmdContactList (uiG.conn);
                     rl_printf (i18n (2590, "%s added as %s.\n"), cont->screen, cont->nick);
@@ -3068,7 +3068,7 @@ static JUMP_F(CmdUserAdd)
         ContactCreate (uiG.conn, cont);
         ContactAddAlias (cont, cmd);
         if (uiG.conn->type == TYPE_SERVER)
-            SnacCliAddcontact (uiG.conn, cont, NULL);
+            /* SnacCliAddcontact (uiG.conn, cont, NULL) */;
         else if (uiG.conn->type == TYPE_SERVER_OLD)
             CmdPktCmdContactList (uiG.conn);
     }

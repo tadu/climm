@@ -370,8 +370,8 @@ static void IMRosterAdddown (Event *event)
     rl_printf (i18n (2474, "Intimate contacts:\n"));
     for (rc = roster->visible; rc; rc = rc->next)
         IMRosterDownCont (serv, roster, cg, rc, &cnt_intimate, &mod_intimate, FALSE, CO_INTIMATE);
-    if (ContactIndex (cg, 0))
-        SnacCliAddcontact (serv, NULL, cg);
+ /*   if (ContactIndex (cg, 0))               */
+ /*       SnacCliAddcontact (serv, NULL, cg); */
     IMRosterCancel (event);
     rl_printf (i18n (2476, "Downloaded %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n"),
                cnt_groups, cnt_ignored + cnt_hidden + cnt_intimate + cnt_normal, cnt_ignored, cnt_hidden, cnt_intimate);
@@ -422,8 +422,8 @@ static void IMRosterOverwritedown (Event *event)
     rl_printf (i18n (2474, "Intimate contacts:\n"));
     for (rc = roster->visible; rc; rc = rc->next)
         IMRosterDownCont (serv, roster, cg, rc, &cnt_normal, &mod_normal, TRUE, CO_INTIMATE);
-    if (ContactIndex (cg, 0))
-        SnacCliAddcontact (serv, NULL, cg);
+ /*   if (ContactIndex (cg, 0))               */
+ /*       SnacCliAddcontact (serv, NULL, cg); */
     IMRosterCancel (event);
     rl_printf (i18n (2476, "Downloaded %d contact groups, alltogether %d contacts, %d ignored, %d hidden, %d intimate.\n"),
                cnt_groups, cnt_ignored + cnt_hidden + cnt_intimate + cnt_normal, cnt_ignored, cnt_hidden, cnt_intimate);

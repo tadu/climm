@@ -90,7 +90,7 @@ void CliFinishLogin (Connection *serv)
 
     /* Step 4: (13,6)=(19,6) received */
     serv->connect += 16;
-    SnacCliAddcontact (serv, NULL, serv->contacts);
+    /* SnacCliAddcontact (serv, NULL, serv->contacts); */
     SnacCliSetstatus (serv, serv->status, 3);
     SnacCliReady (serv);
     SnacCliReqofflinemsgs (serv);
