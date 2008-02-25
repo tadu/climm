@@ -526,53 +526,50 @@ void CLIMMXMPP::handleXEP22b (gloox::Tag *XEP22, gloox::JID from, std::string to
 
 bool CLIMMXMPP::handleXEP22and85 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id)
 {
+    bool ret = false;
     if (gloox::Tag *XEP22 = t->findChild ("x", "xmlns", "jabber:x:event"))
     {
+        ret = true;
         DropAttrib (XEP22, "xmlns");
         if (!t->hasChild ("body"))
-        {
             handleXEP22a (XEP22, cfrom);
-            return true;
-        }
-        handleXEP22b (XEP22, from, tof, id);
+        else
+            handleXEP22b (XEP22, from, tof, id);
     }
     if (gloox::Tag *active = t->findChild ("active", "xmlns", "http://jabber.org/protocol/chatstates"))
     {
         DropAttrib (active, "xmlns");
         CheckInvalid (active);
-        if (!t->hasChild ("body"))
-            return true;
+        ret = true;
     }
     if (gloox::Tag *composing = t->findChild ("composing", "xmlns", "http://jabber.org/protocol/chatstates"))
     {
         DropAttrib (composing, "xmlns");
         CheckInvalid (composing);
         IMIntMsg (cfrom, NOW, ims_offline, INT_MSGCOMP, "");
-        if (!t->hasChild ("body"))
-            return true;
+        ret = true;
     }
     if (gloox::Tag *paused = t->findChild ("paused", "xmlns", "http://jabber.org/protocol/chatstates"))
     {
         DropAttrib (paused, "xmlns");
         CheckInvalid (paused);
         IMIntMsg (cfrom, NOW, ims_offline, INT_MSGNOCOMP, "");
-        if (!t->hasChild ("body"))
-            return true;
+        ret = true;
     }
     if (gloox::Tag *inactive = t->findChild ("inactive", "xmlns", "http://jabber.org/protocol/chatstates"))
     {
         DropAttrib (inactive, "xmlns");
         CheckInvalid (inactive);
-        if (!t->hasChild ("body"))
-            return true;
+        ret = true;
     }
     if (gloox::Tag *gone = t->findChild ("gone", "xmlns", "http://jabber.org/protocol/chatstates"))
     {
         DropAttrib (gone, "xmlns");
         CheckInvalid (gone);
-        if (!t->hasChild ("body"))
-            return true;
+        ret = true;
     }
+    if (ret && !t->hasChild ("body"))
+        return true;
     return false;
 }
 

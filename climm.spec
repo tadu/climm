@@ -83,7 +83,7 @@ test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
-* Mon Jan 18 2008 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+* Mon Feb 25 2008 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream release 0.6.2
 
 * Sun Oct 14 2007 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>

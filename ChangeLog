@@ -1,5 +1,34 @@
 -*- coding: utf-8 -*-
 
+2008-02-25 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* do not call SnacCliAddcontact() ever until we have something
+	  better; closes #32
+	* consider error presences as offline, but also clear client
+	  version in that case
+	* allow extended staus also for online - it doesn't seem to be in
+	  the standard, but everyone seems to use it
+	* handle XEP22/85 better
+	* 0.6.2
+
+2008-02-22 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* update doc for historyd command by komar
+	* stop referring to CVS version and refer to SVN instead, closes: #36
+	* add client id for Psi. Thanks LeSpocky. Closes #35
+	* apply fix to hopefully make it compile with newest and not only
+	  newer libgloox; thanks LeSpocky. Closes #34 
+
+2008-02-20 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* also set CO_WANTSBL for all contact groups for auto-update
+	* fix compiler warnings
+	* ignore server added and server deleted packets for now
+	* two more client ids
+	* update type of queue elements for debug display
+	* properly ignore complete known XML subtrees
+	* show extended status texts
+	* keep uploading for auto-update until there has been no local
+	  contact at least once
+	* ru/uk translation update from komar
+
 2008-02-18 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* missing -I option for C++ source (i.e. Jabber code)
 	* add last seen and online since time to s command
@@ -7,7 +36,6 @@
 	* i18n auto-update
 	* Replace old #<number>: by #_#<number>: for english text
 	* update i18n (numbers)
-	* 0.6.2
 
 2008-02-11 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* get rid of those annoying false positives in contact diff by rewriting stuff completely 

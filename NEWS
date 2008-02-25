@@ -42,6 +42,6 @@
    newer glibc versions, fix several memory leaks, for msg command parse
    nicks from other connections as well if there is no match in current
    connection, start supporting ICQ8 away messages
-2008-02-18: 0.6.2:
+2008-02-25: 0.6.2:
    switch to server based contact list (with several related updates), XMPP
-   file transfer patch, fix historyd, more fixes
+   file transfer patch, fix and improve historyd, more fixes
