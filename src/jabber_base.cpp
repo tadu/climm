@@ -794,12 +794,15 @@ void CLIMMXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, 
     handleXEP27 (s);         // OpenPGP signature (obsolete)
     handleXEP8 (s);          // iq-based avatar (obsolete)
 
-    if (s->hasAttribute ("type", "unavailable"))
+    if (s->hasAttribute ("type", "unavailable") || s->hasAttribute ("type", "error"))
     {
+        if (s->hasAttribute ("type", "error"))
+            s_repl (&contr->version, "");
         status = ims_offline;
         DropAttrib (s, "type");
 
         IMOffline (contr);
+        return;
     }
     else if (gloox::Tag *show = s->findChild ("show"))
     {
