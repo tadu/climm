@@ -1009,8 +1009,7 @@ void CLIMMXMPP::XMPPSetstatus (Connection *serv, Contact *cont, status_t status,
 
     switch (status)
     {
-        case ims_online:   msg = NULL;
-                           p = gloox::PresenceAvailable;   break;
+        case ims_online:   p = gloox::PresenceAvailable;   break;
         case ims_ffc:      p = gloox::PresenceChat;        break;
         case ims_away:     p = gloox::PresenceAway;        break;
         case ims_occ:      status = ims_dnd;
