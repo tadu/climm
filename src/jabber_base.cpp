@@ -717,6 +717,12 @@ void CLIMMXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string t
     std::string subtypeval = t->findAttribute ("type");
     std::string body = t->body();
     std::string subject = t->subject();
+    std::string html;
+    gloox::Tag *htmltag = t->findChild ("html", "xmlns", "http://jabber.org/protocol/xhtml-im");
+    if (htmltag)
+        htmltag = htmltag->findChild ("body", "xmlns", "http://www.w3.org/1999/xhtml");
+    if (htmltag)
+        html = htmltag->cdata();
     DropAttrib (t, "type");
     time_t delay;
     Contact *contb, *contr;
@@ -739,6 +745,8 @@ void CLIMMXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string t
     Opt *opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, body.c_str(), 0);
     if (!subject.empty())
         opt = OptSetVals (opt, CO_MSGTYPE, MSG_NORM_SUBJ, CO_SUBJECT, subject.c_str(), 0);
+    if (!strcmp (html.c_str(), body.c_str()))
+        opt = OptSetVals (opt, CO_SAMEHTML, 1);
     IMSrvMsgFat (contr, delay, opt);
 
     if (gloox::Tag *x = t->findChild ("x"))

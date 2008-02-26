@@ -428,6 +428,18 @@ int OTRMsgIn (Contact *cont, fat_srv_msg_t *msg)
             OTRFree (otr_text);
         return 1;
     }
+    
+    if (otr_text && msg->samehtml && strchr (otr_text, '<'))
+    { /* throw message back to broken client (e.g. Pidgin) */
+        Message *msg = MsgC ();
+        msg->cont = cont->parent ? cont->parent : cont;
+        msg->type = MSG_NORM;
+        msg->send_message = strdup (s_sprintf ("Your broken client sent HTML tags in plain text field, so your message could not be delivered. Please report this as an error to the author of %s.", cont->version ? cont->version : "(unknown client)"));
+        msg->otrinjected = 1;
+        msg->trans = CV_MSGTRANS_ANY;
+        IMCliReMsg (msg->cont, msg);
+        return 1;
+    }
 
     if (otr_text)
     { /* replace text with decrypted version */

@@ -139,6 +139,7 @@ extern struct OptEntry_s OptList[];
 #define CO_REFUSE        (COF_STRING               | 0x2bUL) /* refuse message */
 #define CO_SUBJECT       (COF_STRING               | 0x2cUL) /* message with subject */
 #define CO_OTRINJECT     (COF_NUMERIC              | 0x2dUL) /* otr injected message */
+#define CO_SAMEHTML      (COF_NUMERIC              | 0x2eUL) /* message text identical as HTML */
 
 #define CV_ORIGIN_v5  8
 #define CV_ORIGIN_v8  2

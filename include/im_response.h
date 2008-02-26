@@ -38,6 +38,7 @@ typedef struct {
     UDWORD bytes;
     UDWORD ref;
     int otrencrypted:2;
+    int samehtml:1;
 } fat_srv_msg_t;
 
 typedef int (cb_status)  (Contact *cont, parentmode_t pm, change_t ch, const char *text);

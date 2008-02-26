@@ -948,6 +948,10 @@ void IMSrvMsgFat (Contact *cont, time_t stamp, Opt *opt)
         msg.nativestatus = -1;
     if (!OptGetVal (opt, CO_BYTES, &msg.bytes))
         msg.bytes = 0;
+    if (OptGetVal (opt, CO_SAMEHTML, &msg.ref))
+        msg.samehtml = 1;
+    else
+        msg.samehtml = 0;
     if (!OptGetVal (opt, CO_REF, &msg.ref))
         msg.ref = 0;
     if (!OptGetStr (opt, CO_SUBJECT, &msg.subj))
