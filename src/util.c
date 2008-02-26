@@ -29,9 +29,6 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
             status_t status, UDWORD nativestatus, enum logtype level, UWORD type, const char *log)
 {
     char buffer[LOG_MAX_PATH + 1];                   /* path to the logfile */
-#if HAVE_SYMLINK
-    char symbuf[LOG_MAX_PATH + 1];                  /* path of a sym link */
-#endif
     char *target = buffer;                         /* Target of the sym link */
     const char *username = PrefLogName (prG);
     FILE *logfile;
@@ -135,9 +132,13 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
         }
 
         snprintf (target, buffer + sizeof (buffer) - target, "%s.log", cont->screen);
+        if (strchr (target, _OS_PATHSEP) != NULL)
+            strcpy (strchr (target, _OS_PATHSEP), ".log");
 
 #if HAVE_SYMLINK
+        if (strcmp (cont->screen, cont->nick))
         {
+            char symbuf[LOG_MAX_PATH + 1];                  /* path of a sym link */
             char *b = target - buffer + symbuf;
 
             strncpy (symbuf, buffer, target - buffer);
@@ -177,23 +178,36 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     return 0;
 }
 
+const char *_squash_shell_chars (str_t s, const char *input)
+{
+    char *tmp;
+    s_init (s, input, 0);
+    for (tmp = s->txt; tmp && *tmp; tmp++)
+        if (*tmp == '\'' || *tmp == '\\')
+            *tmp = '"';
+    return s->txt;
+}
+
 /*
  * Executes a program and feeds some shell-proof information data into it
  */
 void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype, status_t status, const char *text)
 {
-    static int rc;
-    char *mytext, *mynick, *myscreen, *myscript, *tmp, *myagent, *mygroup;
-    const char *mytype, *cmd;
+    int rc;
+    static str_s cmd = { NULL, 0, 0 };
+    static str_s buf = { NULL, 0, 0 };
+    const char *mytext, *mynick, *mytype, *myagent, *mygroup;
+    char *myscript, *myscreen;
 
-    mytext = strdup (text ? text : "");
-    mynick = strdup (cont ? cont->nick : "");
-    myscreen = strdup (cont ? cont->screen : "");
-    myagent = strdup (cont && cont->version ? cont->version : "");
+    mytext = (text ? text : "");
+    mynick = (cont && strcmp (cont->nick, cont->screen) ? cont->nick : "");
+    myscreen = strdup (cont && cont->parent ? s_sprintf ("%s/%s", cont->parent->screen, cont->screen) : cont ? cont->screen : "");
+    myagent = (cont && cont->version ? cont->version : "");
     mytype = (type == ev_msg ? "msg" : type == ev_on ? "on" : type == ev_off ? "off" : 
               type == ev_beep ? "beep" : type == ev_status ? "status" : "other");
     myscript = strdup (s_realpath (script));
-    mygroup =  strdup (cont && cont->group && cont->group->name ? cont->group->name : "global");
+    mygroup =  (cont && cont->group && cont->group->name ? cont->group->name :
+                cont && cont->parent && cont->parent->group && cont->parent->group->name ? cont->parent->group->name : "global");
 
 #if HAVE_SETENV
     setenv ("CLIMM_TEXT", mytext, 1);   setenv ("MICQ_TEXT", mytext, 1);
@@ -206,34 +220,24 @@ void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype
     setenv ("MICQ_STATUS", ContactStatusStr (status), 1);
 #endif
 
-    for (tmp = mytext; *tmp; tmp++)
-        if (*tmp == '\'' || *tmp == '\\')
-            *tmp = '"';
-    for (tmp = mynick; *tmp; tmp++)
-        if (*tmp == '\'' || *tmp == '\\')
-            *tmp = '"';
-    for (tmp = myscreen; *tmp; tmp++)
-        if (*tmp == '\'' || *tmp == '\\')
-            *tmp = '"';
-    for (tmp = myagent; *tmp; tmp++)
-        if (*tmp == '\'' || *tmp == '\\')
-            *tmp = '"';
-    for (tmp = mygroup; *tmp; tmp++)
-        if (*tmp == '\'' || *tmp == '\\')
-            *tmp = '"';
+    s_init (&cmd, "", 100);
+    s_cat  (&cmd, myscript);
+    s_catf (&cmd, " %s", cont && cont->serv ? ConnectionServerType (cont->serv->type)
+                       : cont && cont->parent && cont->parent->serv ? ConnectionServerType (cont->parent->serv->type)
+                       : "global");
+    s_catf (&cmd, " '%s'", _squash_shell_chars (&buf, myscreen));
+    s_catf (&cmd, " '%s'", _squash_shell_chars (&buf, mynick));
+    s_catf (&cmd, " '%s'", _squash_shell_chars (&buf, mygroup));
+    s_catf (&cmd, " %s", mytype);
+    s_catf (&cmd, " %ld", msgtype);
+    s_catf (&cmd, " '%s'", _squash_shell_chars (&buf, mytext));
+    s_catf (&cmd, " '%s'", _squash_shell_chars (&buf, myagent));
+    s_catf (&cmd, " '%s'", ContactStatusStr (status));
 
-    cmd = s_sprintf ("%s %s '%s' '%s' '%s' %s %ld '%s' '%s' '%s'",
-                     myscript, cont && cont->serv ? ConnectionServerType (cont->serv->type) : "global", myscreen,
-                     mynick, mygroup, mytype, msgtype, mytext, myagent, ContactStatusStr (status));
-
-    rc = system (cmd);
+    rc = system (cmd.txt);
     if (rc)
         rl_printf (i18n (2222, "Script command '%s' failed: %s (%d).\n"),
                  myscript, strerror (rc), rc);
-    free (mynick);
-    free (mytext);
     free (myscript);
     free (myscreen);
-    free (mygroup);
-    free (myagent);
 }
