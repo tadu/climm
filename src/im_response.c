@@ -307,7 +307,7 @@ static int cb_status_tui (Contact *cont, parentmode_t pm, change_t ch, const cha
     {
         rl_printf ("    %s %s / ", i18n (1642, "IP:"), s_ip (cont->dc->ip_rem));
         rl_printf ("%s:%ld    %s %d    %s (%d)\n", s_ip (cont->dc->ip_loc),
-            cont->dc->port, i18n (1453, "TCP version:"), cont->dc->version,
+            UD2UL (cont->dc->port), i18n (1453, "TCP version:"), cont->dc->version,
             cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"),
             cont->dc->type);
     }
@@ -354,7 +354,7 @@ static int cb_int_msg_tui (Contact *cont, parentmode_t pm, time_t stamp, fat_int
     {
         case INT_FILE_ACKED:
             line = s_sprintf (i18n (2462, "File transfer %s to port %s%ld%s."),
-                              s_qquote (msg->opt_text), COLQUOTE, msg->port, COLNONE);
+                              s_qquote (msg->opt_text), COLQUOTE, UD2UL (msg->port), COLNONE);
             break;
         case INT_FILE_REJED:
             line = s_sprintf (i18n (2463, "File transfer %s rejected by peer: %s."),
@@ -362,11 +362,11 @@ static int cb_int_msg_tui (Contact *cont, parentmode_t pm, time_t stamp, fat_int
             break;
         case INT_FILE_ACKING:
             line = s_sprintf (i18n (2464, "Accepting file %s (%s%ld%s bytes)."),
-                              s_qquote (msg->opt_text), COLQUOTE, msg->bytes, COLNONE);
+                              s_qquote (msg->opt_text), COLQUOTE, UD2UL (msg->bytes), COLNONE);
             break;
         case INT_FILE_REJING:
             line = s_sprintf (i18n (2465, "Refusing file request %s (%s%ld%s bytes): %s."),
-                              s_qquote (msg->opt_text), COLQUOTE, msg->bytes, COLNONE, s_wordquote (msg->msgtext));
+                              s_qquote (msg->opt_text), COLQUOTE, UD2UL (msg->bytes), COLNONE, s_wordquote (msg->msgtext));
             break;
         case INT_CHAR_REJING:
             line = s_sprintf (i18n (2466, "Refusing chat request (%s/%s) from %s%s%s."),
@@ -461,7 +461,7 @@ static int cb_srv_msg_tui (Contact *ocont, parentmode_t pm, time_t stamp, fat_sr
 
         uiG.idle_msgs++;
         ReadLinePromptSet (s_sprintf ("[%s%ld%s%s]%s%s",
-                           COLINCOMING, uiG.idle_msgs, uiG.idle_uins,
+                           COLINCOMING, UD2UL (uiG.idle_msgs), uiG.idle_uins,
                            COLNONE, COLSERVER, i18n (2467, "climm>")));
     }
 
@@ -498,14 +498,14 @@ static int cb_srv_msg_tui (Contact *ocont, parentmode_t pm, time_t stamp, fat_sr
         rl_printf ("(%s) ", s_status (IcqToStatus (msg->nativestatus), msg->nativestatus));
 
     if (prG->verbose > 1)
-        rl_printf ("<%ld> ", msg->type);
+        rl_printf ("<%ld> ", UD2UL (msg->type));
 
     switch (msg->type & ~MSGF_MASS)
     {
         case MSGF_MASS: /* not reached here, but quiets compiler warning */
         while (1)
         {
-            rl_printf ("(?%lx?) %s" COLMSGINDENT "%s\n", msg->type, COLMESSAGE, msg->orig_data);
+            rl_printf ("(?%lx?) %s" COLMSGINDENT "%s\n", UD2UL (msg->type), COLMESSAGE, msg->orig_data);
             rl_printf ("    '");
             for (j = 0; j < strlen (msg->orig_data); j++)
                 rl_printf ("%c", ((msg->msgtext[j] & 0xe0) && (msg->msgtext[j] != 127)) ? msg->msgtext[j] : '.');
@@ -527,7 +527,7 @@ static int cb_srv_msg_tui (Contact *ocont, parentmode_t pm, time_t stamp, fat_sr
 
         case MSG_FILE:
             rl_printf (i18n (2468, "requests file transfer %s of %s%ld%s bytes (sequence %s%ld%s).\n"),
-                      s_qquote (msg->msgtext), COLQUOTE, msg->bytes, COLNONE, COLQUOTE, msg->ref, COLNONE);
+                      s_qquote (msg->msgtext), COLQUOTE, UD2UL (msg->bytes), COLNONE, COLQUOTE, UD2UL (msg->ref), COLNONE);
             break;
 
         case MSG_AUTO:

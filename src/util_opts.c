@@ -240,7 +240,7 @@ const char *OptString (const Opt *opts)
                 if (*str.txt)
                     s_catc (&str, '\n');
                 if (flag & COF_NUMERIC)
-                    s_catf (&str, "options %s %lu", OptList[i].name, val);
+                    s_catf (&str, "options %s %lu", OptList[i].name, UD2UL (val));
                 else if (flag & COF_COLOR)
                     s_catf (&str, "options %s %s", OptList[i].name, s_quote (OptS2C (strtable[val])));
                 else
@@ -271,7 +271,7 @@ BOOL OptGetStr (const Opt *opt, UDWORD flag, const char **res DEBUGPARAM)
 
     *res = strtable[val];
     if (~flag & 0x80)
-        Debug (DEB_OPTS, "(%p,%lx) = %s", opt, flag, s_quote (*res));
+        Debug (DEB_OPTS, "(%p,%lx) = %s", opt, UD2UL (flag), s_quote (*res));
     return TRUE;
 }
 
@@ -344,7 +344,7 @@ BOOL OptSetStr (Opt *opt, UDWORD flag, const char *text DEBUGPARAM)
     if (!(strtable[val] = strdup (text)))
         return FALSE;
     
-    Debug (DEB_OPTS, "(%p,%lx) := %ld / %s", opt, flag, val, s_quote (strtable [val]));
+    Debug (DEB_OPTS, "(%p,%lx) := %ld / %s", opt, UD2UL (flag), UD2UL (val), s_quote (strtable [val]));
 
     return OptSetVal (opt, flag, val);
 }
@@ -369,12 +369,12 @@ BOOL OptGetVal (const Opt *opt, UDWORD flag, val_t *res DEBUGPARAM)
     }
     if (!cot || ((flag & COF_BOOL) && (~cot->vals[k] & (flag & CO_BOOLMASK))))
     {
-        Debug (DEB_OPTS, "(%p,%lx) undef", opt, flag);
+        Debug (DEB_OPTS, "(%p,%lx) undef", opt, UD2UL (flag));
         return FALSE;
     }
     *res = (flag & COF_BOOL) ? (cot->vals[k] & (flag * 2) & CO_BOOLMASK) != 0 : cot->vals[k];
     if (~tag & 0x80)
-        Debug (DEB_OPTS, "(%p,%lx) = %lx = %lu", opt, flag, *res, *res);
+        Debug (DEB_OPTS, "(%p,%lx) = %lx = %lu", opt, UD2UL (flag), UD2UL (*res), UD2UL (*res));
     return TRUE;
 }
 
@@ -402,16 +402,16 @@ BOOL OptSetVal (Opt *opt, UDWORD flag, val_t val DEBUGPARAM)
     {
         if (!(cot = calloc (sizeof (Opt), 1)))
         {
-            Debug (DEB_OPTS, "(%p,%lx) != %lx = %lu <mem %p>", opt, flag, val, val, cot);
+            Debug (DEB_OPTS, "(%p,%lx) != %lx = %lu <mem %p>", opt, UD2UL (flag), UD2UL (val), UD2UL (val), cot);
             return FALSE;
         }
 
-        Debug (DEB_OPTS, "(%p,%lx) := %lx = %lu <new %p>", opt, flag, val, val, cot);
+        Debug (DEB_OPTS, "(%p,%lx) := %lx = %lu <new %p>", opt, UD2UL (flag), UD2UL (val), UD2UL (val), cot);
         cotold->next = cot;
         k = 0;
     }
     else
-        Debug (DEB_OPTS, "(%p,%lx) := %lx = %lu <%p>", opt, flag, val, val, cot);
+        Debug (DEB_OPTS, "(%p,%lx) := %lx = %lu <%p>", opt, UD2UL (flag), UD2UL (val), UD2UL (val), cot);
 
     cot->tags[k] = tag;
     if (flag & COF_BOOL)
@@ -449,14 +449,14 @@ val_t OptUndef (Opt *opt, UDWORD flag DEBUGPARAM)
     }
     if (!cot)
     {
-        Debug (DEB_OPTS, "(%p,%lx) := undef <unset>", opt, flag);
+        Debug (DEB_OPTS, "(%p,%lx) := undef <unset>", opt, UD2UL (flag));
         return 0;
     }
     if (flag & COF_BOOL)
     {
         cot->vals[k] &= ~(flag & CO_BOOLMASK);
         cot->vals[k] &= ~((flag & CO_BOOLMASK) * 2);
-        Debug (DEB_OPTS, "(%p,%lx) := undef <bit>", opt, flag);
+        Debug (DEB_OPTS, "(%p,%lx) := undef <bit>", opt, UD2UL (flag));
         if (cot->vals[k])
             return 0;
     }
@@ -470,7 +470,7 @@ val_t OptUndef (Opt *opt, UDWORD flag DEBUGPARAM)
     cot->vals[k] = cotold->vals[m];
     cotold->tags[m] = 0;
     cotold->vals[m] = 0;
-    Debug (DEB_OPTS, "(%p,%lx) := undef <%ld>", opt, flag, old);
+    Debug (DEB_OPTS, "(%p,%lx) := undef <%ld>", opt, UD2UL (flag), UD2UL (old));
 
     return old;
 }

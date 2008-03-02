@@ -131,7 +131,7 @@ void UtilIOConnectUDP (Connection *conn)
         s5OurPort = ntohs (sin.sin_port);
 
         s5sin.sin_addr.s_addr = inet_addr (prG->s5Host);
-        if (s5sin.sin_addr.s_addr == (unsigned long) -1)        /* name isn't n.n.n.n so must be DNS */
+        if (!~s5sin.sin_addr.s_addr)        /* name isn't n.n.n.n so must be DNS */
         {
             host_struct = gethostbyname (prG->s5Host);
             if (!host_struct)
@@ -279,7 +279,7 @@ void UtilIOConnectUDP (Connection *conn)
     if (conct == -1)            /* did we connect ? */
     {
         if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
-            rl_printf (i18n (1966, " Connection refused on port %ld at %s\n"), conn->port, conn->server);
+            rl_printf (i18n (1966, " Connection refused on port %ld at %s\n"), UD2UL (conn->port), conn->server);
         conn->sok = -1;
         return;
     }

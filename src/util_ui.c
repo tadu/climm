@@ -103,7 +103,7 @@ void UtilUIDisplayMeta (Contact *cont)
     if ((dc = cont->dc))
     {
         rl_print (al (i18n (2534, "IP:")));
-        rl_printf (" %s%s%s:%s%ld%s\n", COLQUOTE, s_ip (dc->ip_rem), COLNONE, COLQUOTE, dc->port, COLNONE);
+        rl_printf (" %s%s%s:%s%ld%s\n", COLQUOTE, s_ip (dc->ip_rem), COLNONE, COLQUOTE, UD2UL (dc->port), COLNONE);
     }
 
     if ((mg = cont->meta_general) && cont->updated & (UPF_GENERAL_A | UPF_DISC))

@@ -238,10 +238,10 @@ void SnacPrint (Packet *pak)
 
     rl_printf ("%s %sSNAC     (%x,%x) [%s] flags %x ref %lx",
              s_dumpnd (pak->data + 6, flag & 0x8000 ? 10 + len + 2 : 10),
-             COLDEBUG, fam, cmd, SnacName (fam, cmd), flag, ref);
+             COLDEBUG, fam, cmd, SnacName (fam, cmd), flag, UD2UL (ref));
     if (flag & 0x8000)
     {
-        rl_printf (" extra (%ld)", len);
+        rl_printf (" extra (%ld)", UD2UL (len));
         pak->rpos += len + 2;
     }
     rl_printf ("%s\n", COLNONE);

@@ -86,16 +86,16 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
         case TYPE_SERVER:
             s_catf (&t, "[%s:%s]!%s %s %s%s%s[%s:%s+%lX %s]",
                 ConnectionServerType (conn->type), conn->screen, username, indic, pos, cont->nick, pos,
-                ConnectionServerType (conn->type), cont->screen, nativestatus, ContactStatusStr (status));
+                ConnectionServerType (conn->type), cont->screen, UD2UL (nativestatus), ContactStatusStr (status));
             break;
         case TYPE_MSGLISTEN:
         case TYPE_MSGDIRECT:
             s_catf (&t, "%s %s %s%s%s[tcp:%s+%lX %s]",
-                      username, indic, pos, cont->nick, pos, cont->screen, nativestatus, ContactStatusStr (status));
+                      username, indic, pos, cont->nick, pos, cont->screen, UD2UL (nativestatus), ContactStatusStr (status));
             break;
         default:
             s_catf (&t, "%s %s %s%s%s[tcp:%s+%lX %s]",
-                      username, indic, pos, cont->nick, pos, cont->screen, nativestatus, ContactStatusStr (status));
+                      username, indic, pos, cont->nick, pos, cont->screen, UD2UL (nativestatus), ContactStatusStr (status));
             break;
     }
 
@@ -146,7 +146,7 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
 
             while ((b = strchr (b, _OS_PATHSEP)) != NULL)
                 *b = '_';
-            symlink (target, symbuf);
+            (void) symlink (target, symbuf);
         }
 #endif
     }
@@ -229,7 +229,7 @@ void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype
     s_catf (&cmd, " '%s'", _squash_shell_chars (&buf, mynick));
     s_catf (&cmd, " '%s'", _squash_shell_chars (&buf, mygroup));
     s_catf (&cmd, " %s", mytype);
-    s_catf (&cmd, " %ld", msgtype);
+    s_catf (&cmd, " %ld", UD2UL (msgtype));
     s_catf (&cmd, " '%s'", _squash_shell_chars (&buf, mytext));
     s_catf (&cmd, " '%s'", _squash_shell_chars (&buf, myagent));
     s_catf (&cmd, " '%s'", ContactStatusStr (status));

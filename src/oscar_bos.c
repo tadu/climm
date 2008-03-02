@@ -53,7 +53,7 @@ JUMP_SNAC_F (SnacSrvBoserr)
     tlv = TLVRead (event->pak, PacketReadLeft (event->pak), -1);
     
     if (tlv[8].str.len)
-        DebugH (DEB_PROTOCOL, "Server returned error code %d, sub code %ld for bos family.", err, tlv[8].nr);
+        DebugH (DEB_PROTOCOL, "Server returned error code %d, sub code %ld for bos family.", err, UD2UL (tlv[8].nr));
     else
         DebugH (DEB_PROTOCOL, "Server returned error %d for bos family.", err);
     TLVD (tlv);

@@ -630,7 +630,7 @@ JUMP_SNAC_F(SnacSrvFromicqsrv)
     {
         if (prG->verbose & DEB_PROTOCOL)
         {
-            rl_printf (i18n (1919, "UIN mismatch: %ld vs %ld.\n"), serv->uin, uin);
+            rl_printf (i18n (1919, "UIN mismatch: %ld vs %ld.\n"), UD2UL (serv->uin), UD2UL (uin));
             SnacSrvUnknown (event);
         }
         TLVD (tlv);

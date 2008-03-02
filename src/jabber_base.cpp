@@ -1304,7 +1304,7 @@ Event *ConnectionInitXMPPServer (Connection *serv)
         s_wordquote (serv->screen), sp);
 
     if (!serv->port)
-        serv->port = -1UL;
+        serv->port = ~0;
 
     serv->c_open = &ConnectionInitXMPPServer;
     serv->reconnect = &XMPPCallbackReconn;

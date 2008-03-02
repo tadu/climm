@@ -938,7 +938,7 @@ static JUMP_F(CmdUserTrans)
 
         if (s_parseint (&args, &j))
         {
-            rl_printf ("%3ld:%s\n", j, i18n (j, i18n (1078, "No translation available.")));
+            rl_printf ("%3ld:%s\n", UD2UL (j), i18n (j, i18n (1078, "No translation available.")));
             one = 1;
             continue;
         }
@@ -998,7 +998,7 @@ static JUMP_F(CmdUserTrans)
             rl_printf (i18n (-1, s),
                      i18n (1001, "<lang>"), i18n (1002, "<lang_cc>"), i18n (1004, "<translation authors>"),
                      i18n (1006, "<last edit date>"), i18n (1005, "<last editor>"),
-                     v1, v2, v3, v4 ? s_sprintf (".%ld", v4) : "");
+                     v1, v2, v3, v4 ? s_sprintf (".%ld", UD2UL (v4)) : "");
             return 0;
         }
     }
@@ -1585,7 +1585,7 @@ static JUMP_F(CmdUserVerbose)
         }
         prG->verbose = i;
     }
-    rl_printf (i18n (1060, "Verbosity level is %ld.\n"), prG->verbose);
+    rl_printf (i18n (1060, "Verbosity level is %ld.\n"), UD2UL (prG->verbose));
     return 0;
 }
 
@@ -1885,11 +1885,11 @@ static JUMP_F(CmdUserStatusDetail)
             {
                 rl_printf ("    %-15s %s / %s:%ld\n    %s %d    %s (%d)    %s %08lx\n",
                       i18n (1642, "IP:"), t1 = strdup (s_ip (cont->dc->ip_rem)),
-                      t2 = strdup (s_ip (cont->dc->ip_loc)), cont->dc->port,
+                      t2 = strdup (s_ip (cont->dc->ip_loc)), UD2UL (cont->dc->port),
                       i18n (1453, "TCP version:"), cont->dc->version,
                       cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer")
                         : i18n (1494, "Server Only"), cont->dc->type,
-                      i18n (2026, "TCP cookie:"), cont->dc->cookie);
+                      i18n (2026, "TCP cookie:"), UD2UL (cont->dc->cookie));
                 free (t1);
                 free (t2);
             }
@@ -2364,7 +2364,7 @@ static JUMP_F(CmdUserAutoaway)
         }
     }
     rl_printf (i18n (1766, "Changing status to away/not available after idling %s%ld%s seconds.\n"),
-              COLQUOTE, prG->away_time, COLNONE);
+              COLQUOTE, UD2UL (prG->away_time), COLNONE);
     return 0;
 }
 
@@ -2623,13 +2623,13 @@ static JUMP_F(CmdUserOpt)
                     if (data == COF_CONTACT)
                         rl_printf ("    %-15s  %s%-15s%s  (%s %s%ld%s)\n", optname, colquote,
                                   OptGetVal (copts, flag, &val)
-                                    ? s_sprintf ("%ld", val)
+                                    ? s_sprintf ("%ld", UD2UL (val))
                                     : i18n (2419, "undefined"), colnone, i18n (2420, "effectivly"), colquote,
-                                  ContactPrefVal (cont, flag), colnone);
+                                  UD2UL (ContactPrefVal (cont, flag)), colnone);
                     else
                         rl_printf ("    %-15s  %s%s%s\n", optname, colquote,
                                   OptGetVal (copts, flag, &val)
-                                    ? s_sprintf ("%ld", val)
+                                    ? s_sprintf ("%ld", UD2UL (val))
                                     : i18n (2419, "undefined"), colnone);
                     break;
                 case COF_STRING:
@@ -2708,7 +2708,7 @@ static JUMP_F(CmdUserOpt)
                 rl_printf (data & COF_CONTACT ? i18n (2425, "Option %s for contact %s is %s%s%s.\n") :
                            data & COF_GROUP   ? i18n (2426, "Option %s for contact group %s is %s%s%s.\n")
                                               : i18n (2427, "Option %s%s is globally %s%s%s.\n"),
-                          coptname, coptobj, colquote, flag & COF_NUMERIC ? s_sprintf ("%ld", val)
+                          coptname, coptobj, colquote, flag & COF_NUMERIC ? s_sprintf ("%ld", UD2UL (val))
                           : val ? i18n (1085, "on") : i18n (1086, "off"), colnone);
             else
                 rl_printf (data & COF_CONTACT ? i18n (2428, "Option %s for contact %s is %s.\n") :
@@ -3993,8 +3993,8 @@ static JUMP_F(CmdUserUptime)
     for (i = 0; (connl = ConnectionNr (i)); i++)
     {
         rl_printf ("%3d %-12s %7ld %7ld %7ld %7ld\n",
-                 i + 1, ConnectionType (connl), connl->stat_pak_sent, connl->stat_pak_rcvd,
-                 connl->stat_real_pak_sent, connl->stat_real_pak_rcvd);
+                 i + 1, ConnectionType (connl), UD2UL (connl->stat_pak_sent), UD2UL (connl->stat_pak_rcvd),
+                 UD2UL (connl->stat_real_pak_sent), UD2UL (connl->stat_real_pak_rcvd));
         pak_sent += connl->stat_pak_sent;
         pak_rcvd += connl->stat_pak_rcvd;
         real_pak_sent += connl->stat_real_pak_sent;
@@ -4003,7 +4003,7 @@ static JUMP_F(CmdUserUptime)
     rl_printf ("    %-12s %7d %7d %7d %7d\n",
              i18n (1747, "total"), pak_sent, pak_rcvd,
              real_pak_sent, real_pak_rcvd);
-    rl_printf (i18n (2073, "Memory usage: %ld packets processing.\n"), uiG.packets);
+    rl_printf (i18n (2073, "Memory usage: %ld packets processing.\n"), UD2UL (uiG.packets));
     return 0;
 }
 
@@ -4059,7 +4059,7 @@ static JUMP_F(CmdUserConn)
                           "",
 #endif
                           cont ? cont->nick : "", ContactStatusStr (connl->status),
-                          connl->server ? connl->server : s_ip (connl->ip), connl->port,
+                          connl->server ? connl->server : s_ip (connl->ip), UD2UL (connl->port),
                           connl->connect & CONNECT_FAIL ? i18n (1497, "failed") :
                           connl->connect & CONNECT_OK   ? i18n (1934, "connected") :
                           connl->connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
@@ -4070,7 +4070,7 @@ static JUMP_F(CmdUserConn)
                          connl->type, connl->sok, t1 = strdup (s_ip (connl->ip)),
                          connl->connect, t2 = strdup (s_ip (connl->our_local_ip)),
                          t3 = strdup (s_ip (connl->our_outside_ip)),
-                         connl->our_session, connl->our_seq, connl->our_seq2);
+                         UD2UL (connl->our_session), connl->our_seq, connl->our_seq2);
 #ifdef ENABLE_SSL
                     rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), connl, connl->parent, connl->assoc, connl->ssl_status);
 #else
@@ -4098,7 +4098,7 @@ static JUMP_F(CmdUserConn)
                 if (!connl && s_parserem (&args))
                 {
                     if (nr)
-                        rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
+                        rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), UD2UL (nr), par->txt);
                     else
                         rl_printf (i18n (2599, "There is no connection for %s.\n"), par->txt);
                     break;
@@ -4142,7 +4142,7 @@ static JUMP_F(CmdUserConn)
                 if (!connl)
                 {
                     if (nr)
-                        rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
+                        rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), UD2UL (nr), par->txt);
                     else
                         rl_printf (i18n (2599, "There is no connection for %s.\n"), par->txt);
                 }
@@ -4152,12 +4152,12 @@ static JUMP_F(CmdUserConn)
             if (!connl)
                 break;
             if (~connl->type & TYPEF_ANY_SERVER)
-                rl_printf (i18n (2098, "Connection %ld is not a server connection.\n"), nr);
+                rl_printf (i18n (2098, "Connection %ld is not a server connection.\n"), UD2UL (nr));
             else
             {
                 uiG.conn = connl;
                 rl_printf (i18n (2603, "Selected connection %ld (version %d, UIN %s) as current connection.\n"),
-                          nr, connl->version, connl->screen);
+                          UD2UL (nr), connl->version, connl->screen);
             }
             break;
         
@@ -4168,15 +4168,15 @@ static JUMP_F(CmdUserConn)
             connl = ConnectionNr (nr - 1);
             if (!connl)
             {
-                rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
+                rl_printf (i18n (1894, "There is no connection number %ld.\n"), UD2UL (nr));
                 break;
             }
             if (connl->flags & CONN_CONFIGURED)
             {
-                rl_printf (i18n (2102, "Connection %ld is a configured connection.\n"), nr);
+                rl_printf (i18n (2102, "Connection %ld is a configured connection.\n"), UD2UL (nr));
                 break;
             }
-            rl_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), nr);
+            rl_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), UD2UL (nr));
             ConnectionD (connl);
             break;
         
@@ -4186,15 +4186,15 @@ static JUMP_F(CmdUserConn)
 
             connl = ConnectionNr (nr - 1);
             if (!connl)
-                rl_printf (i18n (1894, "There is no connection number %ld.\n"), nr);
+                rl_printf (i18n (1894, "There is no connection number %ld.\n"), UD2UL (nr));
             else if (connl->close)
             {
-                rl_printf (i18n (2185, "Closing connection %ld.\n"), nr);
+                rl_printf (i18n (2185, "Closing connection %ld.\n"), UD2UL (nr));
                 connl->close (connl);
             }
             else
             {
-                rl_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), nr);
+                rl_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), UD2UL (nr));
                 ConnectionD (connl);
             }
     }
@@ -4326,7 +4326,7 @@ static JUMP_F(CmdUserAsSession)
         if (!tmpconn && !quiet)
         {
             if (nr)
-                rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), nr, par->txt);
+                rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), UD2UL (nr), par->txt);
             else
                 rl_printf (i18n (2599, "There is no connection for %s.\n"), par->txt);
         }
@@ -4346,7 +4346,7 @@ static JUMP_F(CmdUserAsSession)
     if (~tmpconn->type & TYPEF_ANY_SERVER)
     {
         if (!quiet)
-            rl_printf (i18n (2098, "Connection %ld is not a server connection.\n"), nr);
+            rl_printf (i18n (2098, "Connection %ld is not a server connection.\n"), UD2UL (nr));
         return 0;
     }
     uiG.conn = tmpconn;

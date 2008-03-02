@@ -562,7 +562,7 @@ static void rl_recheck (BOOL clear)
     }
 #ifdef ANSI_TERM
     if (!((rl_prompt_len + rl_colpos + 1) % rl_columns))
-        s_catf (&rl_operate, " \b\r" ESC "[%luC", rl_columns - 1);
+        s_catf (&rl_operate, " \b\r" ESC "[%luC", UD2UL (rl_columns - 1));
     else
         s_cat (&rl_operate, " \b");
     if (clear)

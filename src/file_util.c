@@ -1095,7 +1095,7 @@ int Read_RC_File (FILE *rcf)
                 {
                     PrefParseInt (i);
                     conn->uin = i;
-                    s_repl (&conn->screen, s_sprintf ("%lu", i));
+                    s_repl (&conn->screen, s_sprintf ("%lu", UD2UL (i)));
                     dep = 77;
                 }
                 else if (!strcasecmp (cmd, "screen"))
@@ -1755,7 +1755,7 @@ int PrefWriteConfFile (void)
         if (ss->pref_server)
             fprintf (rcf, "server %s\n",   s_quote (ss->pref_server));
         if (ss->pref_port && ss->pref_port != -1)
-            fprintf (rcf, "port %ld\n",    ss->pref_port);
+            fprintf (rcf, "port %lu\n",    UD2UL (ss->pref_port));
         if (ss->type & TYPEF_ANY_SERVER)
             fprintf (rcf, "screen %s\n",   s_quote (ss->screen));
         if (ss->pref_passwd)
@@ -1785,10 +1785,10 @@ int PrefWriteConfFile (void)
     else
         fprintf (rcf, "s5_pass %s\n", s_quote (prG->s5Pass));
 
-    fprintf (rcf, "\n#in seconds\nauto_away %ld\n", prG->away_time);
+    fprintf (rcf, "\n#in seconds\nauto_away %lu\n", UD2UL (prG->away_time));
     fprintf (rcf, "\n#For dumb terminals that don't wrap set this.");
     fprintf (rcf, "\nScreen_Width %d\n", prG->screen);
-    fprintf (rcf, "verbose %ld\n\n", prG->verbose);
+    fprintf (rcf, "verbose %lu\n\n", UD2UL (prG->verbose));
 
 #ifdef ENABLE_TCL
     tpref = prG->tclscript;

@@ -105,7 +105,7 @@ Event *ConnectionInitPeer (Connection *list)
         rl_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
 
     rl_printf (i18n (2521, "Opening peer-to-peer connection at %slocalhost%s:%s%ld%s... "),
-              COLQUOTE, COLNONE, COLQUOTE, list->port, COLNONE);
+              COLQUOTE, COLNONE, COLQUOTE, UD2UL (list->port), COLNONE);
 
     list->connect     = 0;
     list->our_seq     = -1;
@@ -359,7 +359,7 @@ void TCPDispatchConn (Connection *peer)
                 {
                     rl_log_for (cont->nick, COLCONTACT);
                     rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
-                              s_wordquote (s_ip (peer->ip)), COLQUOTE, peer->port, COLNONE);
+                              s_wordquote (s_ip (peer->ip)), COLQUOTE, UD2UL (peer->port), COLNONE);
                 }
                 UtilIOConnectTCP (peer);
                 return;
@@ -379,7 +379,7 @@ void TCPDispatchConn (Connection *peer)
                 {
                     rl_log_for (cont->nick, COLCONTACT);
                     rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
-                              s_wordquote (s_ip (peer->ip)), COLQUOTE, peer->port, COLNONE);
+                              s_wordquote (s_ip (peer->ip)), COLQUOTE, UD2UL (peer->port), COLNONE);
                 }
                 UtilIOConnectTCP (peer);
                 return;
@@ -404,7 +404,7 @@ void TCPDispatchConn (Connection *peer)
                 {
                     rl_log_for (cont->nick, COLCONTACT);
                     rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
-                              s_wordquote (s_ip (peer->ip)), COLQUOTE, peer->port, COLNONE);
+                              s_wordquote (s_ip (peer->ip)), COLQUOTE, UD2UL (peer->port), COLNONE);
                     rl_print (i18n (1785, "success.\n"));
                 }
                 QueueEnqueueData (peer, QUEUE_TCP_TIMEOUT, peer->ip, time (NULL) + 10,
@@ -423,7 +423,7 @@ void TCPDispatchConn (Connection *peer)
             case TCP_STATE_WAITING + 2:
                 if (prG->verbose)
                     rl_printf (i18n (1855, "TCP connection to %s at %s:%ld failed.\n"),
-                             cont->nick, s_ip (peer->ip), peer->port);
+                             cont->nick, s_ip (peer->ip), UD2UL (peer->port));
                 peer->connect = CONNECT_FAIL;
                 peer->sok = -1;
                 return;
@@ -672,7 +672,7 @@ static void TCPCallBackTimeout (Event *event)
         
         if ((cont = peer->cont))
             rl_printf (i18n (1850, "Timeout on connection with %s at %s:%ld\n"),
-                      cont->nick, s_ip (peer->ip), peer->port);
+                      cont->nick, s_ip (peer->ip), UD2UL (peer->port));
         TCPClose (peer);
     }
     EventD (event);
@@ -1026,7 +1026,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (tcpflag)  cont->dc->type = tcpflag;
 
         DebugH (DEB_TCP, "HS %d uin %s nick %s init pak %p peer %p: ver %04x:%04x port %ld uin %ld SID %08lx type %x",
-                peer->sok, cont->screen, cont->nick, pak, peer, peer->version, len, port, uin, sid, peer->type);
+                peer->sok, cont->screen, cont->nick, pak, peer, peer->version, len, UD2UL (port), UD2UL (uin), UD2UL (sid), peer->type);
 
         for (i = 0; (peer2 = ConnectionNr (i)); i++)
             if (     peer2->type == peer->type && peer2->parent == peer->parent
@@ -1632,7 +1632,7 @@ static void TCPCallBackReceive (Event *event)
             if (msg->type != type && type != MSG_EXTENDED)
             {
                 /* D'oh! */
-                rl_printf ("FIXME: message type mismatch: %d vs %ld\n", type, msg->type); /* FIXME */
+                rl_printf ("FIXME: message type mismatch: %d vs %ld\n", type, UD2UL (msg->type)); /* FIXME */
                 MsgD (msg);
                 EventD (oldevent);
                 break;

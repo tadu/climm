@@ -56,7 +56,7 @@ TLV *TLVRead (Packet *pak, UDWORD TLVlen, UDWORD TLVCount)
         len = PacketReadB2 (pak);
         if (TLVlen < len)
         {
-            rl_printf (i18n (1897, "Incomplete TLV %d, len %ld of %ld - ignoring.\n"), typ, TLVlen, len);
+            rl_printf (i18n (1897, "Incomplete TLV %d, len %ld of %ld - ignoring.\n"), typ, UD2UL (TLVlen), UD2UL (len));
             return tlv;
         }
         if (typ >= __minTLV || tlv[typ].str.len)

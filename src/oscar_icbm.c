@@ -643,7 +643,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
 
 #ifdef WIP
     if (tlv[6].str.len && tlv[6].nr != cont->nativestatus)
-        rl_printf ("FIXMEWIP: status for %s embedded in message 0x%08lx different from server status 0x%08lx.\n", cont->screen, tlv[6].nr, cont->nativestatus);
+        rl_printf ("FIXMEWIP: status for %s embedded in message 0x%08lx different from server status 0x%08lx.\n", cont->screen, UD2UL (tlv[6].nr), UD2UL (cont->nativestatus));
 #endif
 
     if (tlv[6].str.len)
@@ -779,7 +779,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
 #ifdef WIP
                         rl_log_for (cont->nick, COLCONTACT);
                         rl_printf ("FIXMEWIP: updates dc to %s:%ld|%ld|%ld v%d %d seq %ld\n",
-                                  s_ip (sip), sp1, sp2, sop, sver, scon, sunk);
+                                  s_ip (sip), UD2UL (sp1), UD2UL (sp2), UD2UL (sop), sver, scon, UD2UL (sunk));
 #endif
                         CONTACT_DC (cont)->ip_rem = sip;
                         cont->dc->port = sp1;

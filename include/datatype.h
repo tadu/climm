@@ -25,6 +25,8 @@ typedef unsigned SIZE_2_TYPE UWORD;
 typedef unsigned SIZE_1_TYPE UBYTE;
 #endif
 
+static inline unsigned long int UD2UL (UDWORD i) { return (unsigned long int) i; };
+
 #if !HAVE_SOCKLEN_T
 typedef int socklen_t;
 #endif

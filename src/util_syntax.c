@@ -157,31 +157,31 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
             case 'b':
                 nr = PacketRead1 (pak);
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos - 1, 1));
-                s_catf (&str, " %sBYTE     0x%02lx = %03lu%s\n", coldebug, nr, nr, colnone);
+                s_catf (&str, " %sBYTE     0x%02lx = %03lu%s\n", coldebug, UD2UL (nr), UD2UL (nr), colnone);
                 continue;
             case 'W':
                 if (pak->len < pak->rpos + 2) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 2));
                 nr = PacketReadB2 (pak);
-                s_catf (&str, " %sWORD.B   0x%04lx = %05lu%s\n", coldebug, nr, nr, colnone);
+                s_catf (&str, " %sWORD.B   0x%04lx = %05lu%s\n", coldebug, UD2UL (nr), UD2UL (nr), colnone);
                 continue;
             case 'w':
                 if (pak->len < pak->rpos + 2) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 2));
                 nr = PacketRead2 (pak);
-                s_catf (&str, " %sWORD.L   0x%04lx = %05lu%s\n", coldebug, nr, nr, colnone);
+                s_catf (&str, " %sWORD.L   0x%04lx = %05lu%s\n", coldebug, UD2UL (nr), UD2UL (nr), colnone);
                 continue;
             case 'D':
                 if (pak->len < pak->rpos + 4) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 4));
                 nr = PacketReadB4 (pak);
-                s_catf (&str, " %sDWORD.B  0x%08lx = %010lu%s\n", coldebug, nr, nr, colnone);
+                s_catf (&str, " %sDWORD.B  0x%08lx = %010lu%s\n", coldebug, UD2UL (nr), UD2UL (nr), colnone);
                 continue;
             case 'd':
                 if (pak->len < pak->rpos + 4) break;
                 s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 4));
                 nr = PacketRead4 (pak);
-                s_catf (&str, " %sDWORD.L  0x%08lx = %010lu%s\n", coldebug, nr, nr, colnone);
+                s_catf (&str, " %sDWORD.L  0x%08lx = %010lu%s\n", coldebug, UD2UL (nr), UD2UL (nr), colnone);
                 continue;
             case 'C':
                 if (pak->len < pak->rpos + 16) break;
@@ -272,13 +272,13 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
                 {
                     val = PacketReadAtB2 (pak, pak->rpos + 4);
                     s_cat  (&str, s_dumpnd (pak->data + pak->rpos, len + 4));
-                    s_catf (&str, " %sTLV (%2lx) 0x%04lx = %05lu%s\n", coldebug, nr, val, val, colnone);
+                    s_catf (&str, " %sTLV (%2lx) 0x%04lx = %05lu%s\n", coldebug, UD2UL (nr), UD2UL (val), UD2UL (val), colnone);
                 }
                 else if (len == 4)
                 {
                     val = PacketReadAtB4 (pak, pak->rpos + 4);
                     s_cat  (&str, s_dumpnd (pak->data + pak->rpos, len + 4));
-                    s_catf (&str, " %sTLV (%2lx) 0x%08lx = %010lu%s\n", coldebug, nr, val, val, colnone);
+                    s_catf (&str, " %sTLV (%2lx) 0x%08lx = %010lu%s\n", coldebug, UD2UL (nr), UD2UL (val), UD2UL (val), colnone);
                 }
                 else if (sub)
                 {
@@ -290,7 +290,7 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
                     p = PacketCreate (&tt);
                     
                     s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 4));
-                    s_catf (&str, " %sTLV (%2lx) \"%s\"%s\n", coldebug, nr, sub, colnone);
+                    s_catf (&str, " %sTLV (%2lx) \"%s\"%s\n", coldebug, UD2UL (nr), sub, colnone);
                     s_cat  (&str, s_ind (tmp = PacketDump (p, sub, coldebug, colnone)));
                     
                     PacketD (p);
@@ -300,7 +300,7 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
                 else
                 {
                     s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 4));
-                    s_catf (&str, " %sTLV (%2lx)%s\n", coldebug, nr, colnone);
+                    s_catf (&str, " %sTLV (%2lx)%s\n", coldebug, UD2UL (nr), colnone);
                     s_cat  (&str, s_ind (s_dump (pak->data + pak->rpos + 4, len)));
                 }
                 pak->rpos += len + 4;
@@ -337,13 +337,13 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
                 {
                     val = PacketReadAt2 (pak, pak->rpos + 4);
                     s_cat  (&str, s_dumpnd (pak->data + pak->rpos, len + 4));
-                    s_catf (&str, " %stlv (%2lx) 0x%04lx = %05lu%s\n", coldebug, nr, val, val, colnone);
+                    s_catf (&str, " %stlv (%2lx) 0x%04lx = %05lu%s\n", coldebug, UD2UL (nr), UD2UL (val), UD2UL (val), colnone);
                 }
                 else if (len == 4)
                 {
                     val = PacketReadAt4 (pak, pak->rpos + 4);
                     s_cat  (&str, s_dumpnd (pak->data + pak->rpos, len + 4));
-                    s_catf (&str, " %stlv (%2lx) 0x%08lx = %010lu%s\n", coldebug, nr, val, val, colnone);
+                    s_catf (&str, " %stlv (%2lx) 0x%08lx = %010lu%s\n", coldebug, UD2UL (nr), UD2UL (val), UD2UL (val), colnone);
                 }
                 else if (sub)
                 {
@@ -355,7 +355,7 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
                     p = PacketCreate (&tt);
                     
                     s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 4));
-                    s_catf (&str, " %stlv (%2lx) \"%s\"%s\n", coldebug, nr, sub, colnone);
+                    s_catf (&str, " %stlv (%2lx) \"%s\"%s\n", coldebug, UD2UL (nr), sub, colnone);
                     s_cat  (&str, s_ind (tmp = PacketDump (p, sub, coldebug, colnone)));
                     
                     PacketD (p);
@@ -365,7 +365,7 @@ char *PacketDump (Packet *pak, const char *syntax, const char *coldebug, const c
                 else
                 {
                     s_cat  (&str, s_dumpnd (pak->data + pak->rpos, 4));
-                    s_catf (&str, " %stlv (%2lx)%s\n", coldebug, nr, colnone);
+                    s_catf (&str, " %stlv (%2lx)%s\n", coldebug, UD2UL (nr), colnone);
                     s_cat  (&str, s_ind (s_dump (pak->data + pak->rpos + 4, len)));
                 }
                 s_free (sub);

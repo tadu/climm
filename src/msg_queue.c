@@ -112,7 +112,7 @@ static Event *q_QueuePop (DEBUG0PARAM)
         else
             queue->due = queue->head->event->due;
         Debug (DEB_QUEUE, STR_DOT STR_DOT STR_DOT "> %s %p: %08lx %p %s @ %p",
-               QueueType (event->type), event, event->seq, event->pak,
+               QueueType (event->type), event, UD2UL (event->seq), event->pak,
                event->cont ? event->cont->screen : "", event->conn);
         return event;
     }
@@ -126,8 +126,8 @@ static Event *q_QueuePop (DEBUG0PARAM)
 void QueueEnqueue (Event *event DEBUGPARAM)
 {
     Debug (DEB_QUEUE, "<" STR_DOT STR_DOT STR_DOT " %s %p: %08lx %p %s %x @ %p t %ld",
-           QueueType (event->type), event, event->seq, event->pak,
-           event->cont ? event->cont->screen : "", event->flags, event->conn, (long)event->due);
+           QueueType (event->type), event, UD2UL (event->seq), event->pak,
+           event->cont ? event->cont->screen : "", event->flags, event->conn, UD2UL (event->due));
     q_QueueEnqueue (event);
 }
 
@@ -195,7 +195,7 @@ Event *QueueEnqueueData (Connection *conn, UDWORD type, UDWORD id,
     event->cancel = NULL;
     
     Debug (DEB_EVENT, "<+" STR_DOT STR_DOT " %s %p: %08lx %p %s %x @ %p",
-           QueueType (event->type), event, event->seq, event->pak,
+           QueueType (event->type), event, UD2UL (event->seq), event->pak,
            event->cont ? event->cont->screen : "", event->flags, event->conn);
     q_QueueEnqueue (event);
 
@@ -226,7 +226,7 @@ Event *QueueEnqueueData2 (Connection *conn, UDWORD type, UDWORD ref, UDWORD wait
     event->cancel = cancel;
     
     Debug (DEB_EVENT, "<+" STR_DOT STR_DOT " %s %p: %08lx %p @ %p",
-           QueueType (event->type), event, event->seq, event->data, event->conn);
+           QueueType (event->type), event, UD2UL (event->seq), event->data, event->conn);
     q_QueueEnqueue (event);
 
     return event;
@@ -256,7 +256,7 @@ Event *QueueEnqueueDep (Connection *conn, UDWORD type, UDWORD id,
     event->callback = callback;
     
     Debug (DEB_EVENT, "<*" STR_DOT STR_DOT " %s %p: %08lx %p %s %x @ %p",
-           QueueType (event->type), event, event->seq, event->pak,
+           QueueType (event->type), event, UD2UL (event->seq), event->pak,
            event->cont ? event->cont->screen : "", event->flags, event->conn);
     q_QueueEnqueue (event);
 
@@ -331,7 +331,7 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq DEBUGPARAM)
 
     if (!queue->head)
     {
-        Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08lx", QueueType (type), seq);
+        Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08lx", QueueType (type), UD2UL (seq));
         return NULL;
     }
 
@@ -341,7 +341,7 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq DEBUGPARAM)
     {
         event = q_QueueDequeueEvent (queue->head->event, NULL);
         Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %s",
-               QueueType (type), event, seq, event->pak, event->cont ? event->cont->screen : "");
+               QueueType (type), event, UD2UL (seq), event->pak, event->cont ? event->cont->screen : "");
         return event;
     }
     for (iter = queue->head; iter->next; iter = iter->next)
@@ -352,11 +352,11 @@ Event *QueueDequeue (Connection *conn, UDWORD type, UDWORD seq DEBUGPARAM)
         {
             event = q_QueueDequeueEvent (iter->next->event, iter);
             Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %s",
-                   QueueType (type), event, seq, event->pak, event->cont ? event->cont->screen : "");
+                   QueueType (type), event, UD2UL (seq), event->pak, event->cont ? event->cont->screen : "");
             return event;
         }
     }
-    Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08lx", QueueType (type), seq);
+    Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08lx", QueueType (type), UD2UL (seq));
     return NULL;
 }
 
@@ -373,7 +373,7 @@ Event *QueueDequeue2 (Connection *conn, UDWORD type, UDWORD seq, Contact *cont D
 
     if (!queue->head)
     {
-        Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08lx %s", QueueType (type), seq, cont ? cont->screen : "");
+        Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08lx %s", QueueType (type), UD2UL (seq), cont ? cont->screen : "");
         return NULL;
     }
 
@@ -384,7 +384,7 @@ Event *QueueDequeue2 (Connection *conn, UDWORD type, UDWORD seq, Contact *cont D
     {
         event = q_QueueDequeueEvent (queue->head->event, NULL);
         Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %s",
-               QueueType (type), event, event->seq, event->pak,
+               QueueType (type), event, UD2UL (event->seq), event->pak,
                event->cont ? event->cont->screen : "");
         return event;
     }
@@ -397,13 +397,13 @@ Event *QueueDequeue2 (Connection *conn, UDWORD type, UDWORD seq, Contact *cont D
         {
             event = q_QueueDequeueEvent (iter->next->event, iter);
             Debug (DEB_QUEUE, STR_DOT STR_DOT "s> %s %p: %08lx %p %s",
-                   QueueType (type), event, event->seq, event->pak,
+                   QueueType (type), event, UD2UL (event->seq), event->pak,
                    event->cont ? event->cont->screen : "");
             return event;
         }
     }
     Debug (DEB_QUEUE, STR_DOT "??" STR_DOT " %s %08lx %s @ %p",
-           QueueType (type), seq, cont ? cont->screen : "", conn);
+           QueueType (type), UD2UL (seq), cont ? cont->screen : "", conn);
     return NULL;
 }
 
@@ -434,7 +434,7 @@ void EventD (Event *event DEBUGPARAM)
     if (q_QueueDequeueEvent (event, NULL))
         rl_printf ("FIXME: Deleting still queued event %p!\n", event);
     Debug (DEB_EVENT, STR_DOT STR_DOT ">> %s %p: %08lx %p %s",
-           QueueType (event->type), event, event->seq, event->pak,
+           QueueType (event->type), event, UD2UL (event->seq), event->pak,
            event->cont ? event->cont->screen : "");
     if (event->pak)
         PacketD (event->pak);
@@ -485,7 +485,7 @@ void QueueCancel (Connection *conn DEBUGPARAM)
     {
         event = q_QueueDequeueEvent (queue->head->event, NULL);
         Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08lx %p %s",
-               QueueType (event->type), conn, event, event->seq, event->pak,
+               QueueType (event->type), conn, event, UD2UL (event->seq), event->pak,
                event->cont ? event->cont->screen : "");
         if (event->cancel)
             event->cancel (event);
@@ -506,7 +506,7 @@ void QueueCancel (Connection *conn DEBUGPARAM)
         {
             event = q_QueueDequeueEvent (iter->next->event, iter);
             Debug (DEB_QUEUE, STR_DOT STR_DOT "!> %s %p %p: %08lx %p %s",
-                   QueueType (event->type), conn, event, event->seq, event->pak,
+                   QueueType (event->type), conn, event, UD2UL (event->seq), event->pak,
                    event->cont ? event->cont->screen : "");
             if (event->cancel)
                 event->cancel (event);
@@ -592,8 +592,8 @@ void QueuePrint (void)
         rl_printf ("%02u %08lx %p %-15s conn %p cont %p pak %p seq %ld att %ld call %p dep %p\n",
                   i++, iter->event->due, iter->event, QueueType (iter->event->type),
                   iter->event->conn, iter->event->cont, iter->event->pak,
-                  iter->event->seq, iter->event->attempts, iter->event->callback, iter->event->wait);
-    rl_printf ("Total: %d events of %ld queued.\n", i, uiG.events);
+                  UD2UL (iter->event->seq), UD2UL (iter->event->attempts), iter->event->callback, iter->event->wait);
+    rl_printf ("Total: %d events of %ld queued.\n", i, UD2UL (uiG.events));
 }
 #endif
 
@@ -630,6 +630,6 @@ const char *QueueType (UDWORD type)
         case QUEUE_DEP_WAITLOGIN:  return "DEP_WAITLOGIN";
         case QUEUE_CACHE_MSG:      return "CACHE_MSG";
     }
-    return s_sprintf ("%lx", type);
+    return s_sprintf ("%lx", UD2UL (type));
 }
 

@@ -181,7 +181,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             rl_printf ("%s\n", pak->data + pak->rpos);
             return;
         default:
-            rl_printf (i18n (1940, "Unknown Meta User result %lx.\n"), result);
+            rl_printf (i18n (1940, "Unknown Meta User result %lx.\n"), UD2UL (result));
             return;
     }
 
@@ -207,7 +207,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             if (!(event = QueueDequeue (conn, QUEUE_REQUEST_META, pak->ref)) || !event->callback)
             {
                 if (prG->verbose)
-                    rl_printf ("FIXME: meta reply ref %lx not found.\n", pak->ref);
+                    rl_printf ("FIXME: meta reply ref %lx not found.\n", UD2UL (pak->ref));
                 return;
             }
             if (event->cont)
@@ -260,7 +260,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             else
             {
                 dwdata = PacketRead4 (pak);
-                s_repl (&mg->zip, dwdata ? s_sprintf ("%ld", dwdata) : "");
+                s_repl (&mg->zip, dwdata ? s_sprintf ("%ld", UD2UL (dwdata)) : "");
             }
             mg->country = PacketRead2 (pak);
             mg->tz      = PacketRead1 (pak);
@@ -320,7 +320,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             else
             {
                 dwdata = PacketRead4 (pak);
-                s_repl (&mw->wzip, dwdata ? s_sprintf ("%ld", dwdata) : "");
+                s_repl (&mw->wzip, dwdata ? s_sprintf ("%ld", UD2UL (dwdata)) : "");
             }
             mw->wcountry = PacketRead2 (pak);
             s_read (mw->wcompany);

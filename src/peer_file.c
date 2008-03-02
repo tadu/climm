@@ -91,7 +91,7 @@ Connection *PeerFileCreate (Connection *serv)
 
     if (prG->verbose)
         rl_printf (i18n (2519, "Opening file listener connection at %slocalhost%s:%s%ld%s... "),
-                  COLQUOTE, COLNONE, COLQUOTE, serv->assoc->pref_port, COLNONE);
+                  COLQUOTE, COLNONE, COLQUOTE, UD2UL (serv->assoc->pref_port), COLNONE);
 
     flist->our_seq  = -1;
     flist->version  = serv->assoc->version;
@@ -126,7 +126,7 @@ void PeerFileUser (UDWORD seq, Contact *cont, const char *reason, Connection *se
     if (!(event = QueueDequeue2 (serv, QUEUE_USERFILEACK, seq, cont)))
     {
         rl_printf (i18n (2258, "No pending incoming file transfer request for %s with (sequence %ld) found.\n"),
-                  cont ? cont->nick : "<?>", seq);
+                  cont ? cont->nick : "<?>", UD2UL (seq));
     }
     else
     {
@@ -221,7 +221,7 @@ BOOL PeerFileAccept (Connection *peer, UWORD ackstatus, UDWORD port)
     
     if (prG->verbose)
         rl_printf (i18n (2520, "Opening file transfer connection to %s:%s%ld%s... \n"),
-                  s_wordquote (fpeer->server), COLQUOTE, fpeer->port, COLNONE);
+                  s_wordquote (fpeer->server), COLQUOTE, UD2UL (fpeer->port), COLNONE);
 
     TCPDispatchConn (fpeer);
     
@@ -295,12 +295,12 @@ void PeerFileDispatch (Connection *fpeer)
             
             rl_log_for (cont->nick, COLCONTACT);
             rl_printf (i18n (2161, "Receiving %ld files with total size %ld bytes at speed %lx from %s.\n"),
-                     nr, len, speed, ConvFromCont (name, cont));
+                     UD2UL (nr), UD2UL (len), UD2UL (speed), ConvFromCont (name, cont));
             
             if (len != fpeer->len)
             {
                 rl_printf ("FIXME: byte len different than in file request: requested %ld, sending %ld.\n",
-                         fpeer->len, len);
+                           UD2UL (fpeer->len), UD2UL (len));
                 fpeer->len = len;
             }
             
@@ -317,7 +317,7 @@ void PeerFileDispatch (Connection *fpeer)
             PacketD (pak);
             
             rl_log_for (cont->nick, COLCONTACT);
-            rl_printf (i18n (2170, "Sending file at speed %lx to %s.\n"), speed, s_wordquote (ConvFromCont (name, cont)));
+            rl_printf (i18n (2170, "Sending file at speed %lx to %s.\n"), UD2UL (speed), s_wordquote (ConvFromCont (name, cont)));
             
             fpeer->our_seq = 1;
             QueueRetry (fpeer, QUEUE_PEER_FILE, cont);
@@ -377,7 +377,7 @@ void PeerFileDispatch (Connection *fpeer)
 
                 rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (2162, "Receiving file %s (%s) with %ld bytes as %s.\n"),
-                         name->txt, text->txt, len, buf);
+                         name->txt, text->txt, UD2UL (len), buf);
             }
             pak = PeerPacketC (fpeer, 3);
             PacketWrite4 (pak, off);
@@ -397,7 +397,7 @@ void PeerFileDispatch (Connection *fpeer)
             
             rl_log_for (cont->nick, COLCONTACT);
             rl_printf (i18n (2163, "Sending file %ld at offset %ld.\n"),
-                     nr, off);
+                       UD2UL (nr), UD2UL (off));
             
             err = lseek (fpeer->assoc->sok, off, SEEK_SET);
             if (err == -1)
@@ -405,7 +405,7 @@ void PeerFileDispatch (Connection *fpeer)
                 err = errno;
                 rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (2084, "Error while seeking to offset %ld: %s (%d).\n"),
-                         off, strerror (err), err);
+                           UD2UL (off), strerror (err), err);
                 TCPClose (fpeer);
                 return;
             }
@@ -434,7 +434,7 @@ void PeerFileDispatch (Connection *fpeer)
             {
                 rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (2165, "The peer sent more bytes (%ld) than the file length (%ld).\n"),
-                         fpeer->assoc->done + pak->len - 1, fpeer->assoc->len);
+                           UD2UL (fpeer->assoc->done + pak->len - 1), UD2UL (fpeer->assoc->len));
                 PacketD (pak);
                 TCPClose (fpeer);
                 return;
@@ -448,7 +448,7 @@ void PeerFileDispatch (Connection *fpeer)
             if (len + 1 != pak->len)
             {
                 rl_log_for (cont->nick, COLCONTACT);
-                rl_printf (i18n (2575, "Error writing to file (%lu bytes written out of %u).\n"), len, pak->len - 1);
+                rl_printf (i18n (2575, "Error writing to file (%lu bytes written out of %u).\n"), UD2UL (len), pak->len - 1);
                 PacketD (pak);
                 TCPClose (fpeer);
                 return;
@@ -468,7 +468,7 @@ void PeerFileDispatch (Connection *fpeer)
             else if (fpeer->assoc->len)
             {
                 ReadLinePromptUpdate (s_sprintf ("[%s%ld %02d%%%s] %s%s",
-                              COLINCOMING, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
+                              COLINCOMING, UD2UL (fpeer->assoc->done), (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
                               COLNONE, COLSERVER, i18n (2467, "climm>")));
             }
             PacketD (pak);
@@ -524,7 +524,7 @@ static BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags)
                 fpeer->assoc->connect = CONNECT_OK | 1;
                 if (fpeer->assoc->len)
                     ReadLinePromptUpdate (s_sprintf ("[%s%ld:%02d%%%s] %s%s",
-                                  COLCONTACT, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
+                                  COLCONTACT, UD2UL (fpeer->assoc->done), (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
                                   COLNONE, COLSERVER, i18n (2467, "climm>")));
                 return 1;
             }
@@ -559,14 +559,14 @@ void PeerFileResend (Event *event)
     {
         rl_log_for (cont->nick, COLCONTACT);
         rl_printf (i18n (2168, "File transfer #%ld (%s) dropped after %ld attempts because of timeout.\n"),
-                 event->seq, opt_text, event->attempts);
+                   UD2UL (event->seq), opt_text, UD2UL (event->attempts));
         TCPClose (fpeer);
     }
     else if (!(fpeer->connect & CONNECT_MASK))
     {
         rl_log_for (cont->nick, COLCONTACT);
         rl_printf (i18n (2072, "File transfer #%ld (%s) canceled because of closed connection.\n"),
-                 event->seq, opt_text);
+                   UD2UL (event->seq), opt_text);
     }
     else if (~fpeer->connect & CONNECT_OK)
     {
@@ -658,11 +658,11 @@ void PeerFileResend (Event *event)
             {
                 if (fpeer->assoc->len)
                     ReadLinePromptUpdate (s_sprintf ("[%s%ld %02d%%%s] %s%s",
-                                  COLCONTACT, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
+                                  COLCONTACT, UD2UL (fpeer->assoc->done), (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
                                   COLNONE, COLSERVER, i18n (2467, "climm>")));
                 else
                     ReadLinePromptUpdate (s_sprintf ("[%s%ld%s] %s%s",
-                                  COLCONTACT, fpeer->assoc->done,
+                                  COLCONTACT, UD2UL (fpeer->assoc->done),
                                   COLNONE, COLSERVER, i18n (2467, "climm>")));
                 event->attempts = 0;
                 QueueEnqueue (event);

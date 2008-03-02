@@ -63,7 +63,7 @@ void MsgD (Message *msg)
         return;
     DebugH (DEB_MSG, "M<" STR_DOT STR_DOT STR_DOT " %p [%s] %lu %lu %lu %u %u (%s) (%s) ",
            msg, msg->cont ? msg->cont->screen : "",
-           msg->type, msg->origin, msg->trans, msg->otrinjected, msg->force,
+           UD2UL (msg->type), UD2UL (msg->origin), UD2UL (msg->trans), msg->otrinjected, msg->force,
            msg->send_message ? msg->send_message : "(null)",
            msg->plain_message ? msg->plain_message : "(null)");
                                     

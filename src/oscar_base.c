@@ -96,7 +96,7 @@ void SrvCallBackFlap (Event *event)
                 FlapPrint (event->pak);
             break;
         default:
-            rl_printf (i18n (1884, "FLAP with unknown channel %ld received.\n"), event->pak->cmd);
+            rl_printf (i18n (1884, "FLAP with unknown channel %ld received.\n"), UD2UL (event->pak->cmd));
     }
     EventD (event);
 }
@@ -163,7 +163,7 @@ void FlapChannel4 (Connection *conn, Packet *pak)
             rl_print (i18n (1895, "Login failed:\n"));
         else
             rl_print (i18n (1896, "Server closed connection:\n"));
-        rl_printf (i18n (1048, "Error code: %ld\n"), tlv[9].nr ? tlv[9].nr : tlv[8].nr);
+        rl_printf (i18n (1048, "Error code: %ld\n"), UD2UL (tlv[9].nr ? tlv[9].nr : tlv[8].nr));
         if (tlv[1].str.len && strcmp (tlv[1].str.txt, conn->screen))
             rl_printf (i18n (2218, "UIN: %s\n"), tlv[1].str.txt);
         if (tlv[4].str.len)
@@ -193,7 +193,7 @@ void FlapChannel4 (Connection *conn, Packet *pak)
         conn->ip = 0;
 
         rl_printf (i18n (2511, "Redirect to server %s:%s%ld%s... "),
-                  s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE);
+                  s_wordquote (conn->server), COLQUOTE, UD2UL (conn->port), COLNONE);
 
         conn->connect = 8;
         conn->tlv = tlv;
@@ -272,11 +272,11 @@ static void FlapSave (Connection *serv, Packet *pak, BOOL in)
 
         s_catf (&str, "%s SNAC (%x,%x) [%s] flags %x ref %lx",
             s_dumpnd (pak->data + 6, flag & 0x8000 ? 10 + len + 2 : 10),
-            fam, cmd, SnacName (fam, cmd), flag, ref);
+            fam, cmd, SnacName (fam, cmd), flag, UD2UL (ref));
 
         if (flag & 0x8000)
         {
-            s_catf (&str, " extra (%ld)", len);
+            s_catf (&str, " extra (%ld)", UD2UL (len));
             pak->rpos += len + 2;
         }
         s_catc (&str, '\n');
@@ -459,7 +459,7 @@ Event *ConnectionInitServer (Connection *conn)
                                   NULL, conn->cont, NULL, &SrvCallBackTimeout);
 
     rl_printf (i18n (2512, "Opening v8 connection to %s:%s%ld%s for %s%s%s... "),
-              s_wordquote (conn->server), COLQUOTE, conn->port, COLNONE, COLCONTACT,
+              s_wordquote (conn->server), COLQUOTE, UD2UL (conn->port), COLNONE, COLCONTACT,
               !cont ? i18n (2513, "new UIN") : cont->nick ? cont->nick 
               : cont->screen, COLNONE);
 

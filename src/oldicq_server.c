@@ -154,7 +154,7 @@ void CmdPktSrvRead (Connection *conn)
         rl_printf ("%s " COLINDENT "%s", s_now, COLSERVER);
         rl_print  (i18n (1774, "Incoming packet:"));
         rl_printf (" %04x %08lx:%04x%04x %04x (%s)%s\n",
-                 pak->ver, session, seq2, seq, cmd, CmdPktSrvName (cmd), COLNONE);
+                 pak->ver, UD2UL (session), seq2, seq, cmd, CmdPktSrvName (cmd), COLNONE);
 #if ICQ_VER == 5
         pak->rpos = 0;
         rl_print  (f = PacketDump (pak, "gv5sp", COLDEBUG, COLNONE));
@@ -176,7 +176,7 @@ void CmdPktSrvRead (Connection *conn)
         if (prG->verbose & DEB_PROTOCOL)
         {
             rl_printf (i18n (1606, "Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n"),
-                     session, conn->our_session, cmd);
+                       UD2UL (session), UD2UL (conn->our_session), cmd);
         }
         return;
     }
@@ -187,7 +187,7 @@ void CmdPktSrvRead (Connection *conn)
             if (prG->verbose & DEB_PROTOCOL)
             {
                 rl_printf (i18n (1032, "debug: double packet #%04lx type %04x (%s)\n"),
-                         id, cmd, CmdPktSrvName (cmd));
+                           UD2UL (id), cmd, CmdPktSrvName (cmd));
             }
             CmdPktCmdAck (conn, id);       /* LAGGGGG!! */ 
             return;
@@ -306,7 +306,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             uin = PacketRead4 (pak);
             if (!uin || !(cont = ContactUIN (conn, uin)))
                 break;
-            rl_printf (i18n (2214, "Info for %s%lu%s:\n"), COLSERVER, uin, COLNONE);
+            rl_printf (i18n (2214, "Info for %s%lu%s:\n"), COLSERVER, UD2UL (uin), COLNONE);
             Display_Info_Reply (cont, pak, IREP_HASAUTHFLAG);
             break;
         case SRV_EXT_INFO_REPLY:
@@ -423,7 +423,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
 
             rl_printf ("%-15s %s\n", i18n (1440, "Random User:"), cont->screen);
             rl_printf ("%-15s %s:%lu\n", i18n (1441, "remote IP:"), 
-                      s_ip (cont->dc->ip_rem), cont->dc->port);
+                      s_ip (cont->dc->ip_rem), UD2UL (cont->dc->port));
             rl_printf ("%-15s %s\n", i18n (1451, "local  IP:"),  s_ip (cont->dc->ip_loc));
             rl_printf ("%-15s %s\n", i18n (1454, "Connection:"), cont->dc->type == 4
                       ? i18n (1493, "Peer-to-Peer") : i18n (1494, "Server Only"));
@@ -452,7 +452,7 @@ void CmdPktSrvProcess (Connection *conn, Contact *cont, Packet *pak,
             rl_printf ("%s %s", s_now, COLCLIENT);
             rl_printf (i18n (1648, "The response was %04x\t"), cmd);
             rl_printf (i18n (1649, "The version was %x\t"), ver);
-            rl_printf (i18n (1650, "\nThe SEQ was %04lx\t"), seq);
+            rl_printf (i18n (1650, "\nThe SEQ was %04lx\t"), UD2UL (seq));
             rl_printf (i18n (1651, "The size was %d\n"), pak->len - pak->rpos);
             rl_print  (s_dump (pak->data + pak->rpos, pak->len - pak->rpos));
             rl_printf ("%s\n", COLNONE);
@@ -504,7 +504,7 @@ static JUMP_SRV_F (CmdPktSrvMulti)
             rl_printf ("%s " COLINDENT "%s", s_now, COLSERVER);
             rl_print  (i18n (1823, "Incoming partial packet:"));
             rl_printf (" %04x %08lx:%04x%04lx %04x (%s)%s\n",
-                     ver, session, seq2, seq, cmd, CmdPktSrvName (cmd), COLNONE);
+                       ver, UD2UL (session), seq2, UD2UL (seq), cmd, CmdPktSrvName (cmd), COLNONE);
 #if ICQ_VER == 5
             pak->rpos = 0;
             rl_print  (f = PacketDump (pak, "gv5sp", COLDEBUG, COLNONE));
@@ -539,7 +539,7 @@ static JUMP_SRV_F (CmdPktSrvAck)
     ccmd = PacketReadAt2 (event->pak, CMD_v5_OFF_CMD);
 
     DebugH (DEB_QUEUE, STR_DOT STR_DOT STR_DOT STR_DOT " ack type %04lx (%s) seq %04lx",
-                      ccmd, CmdPktCmdName (ccmd), event->seq >> 16);
+            UD2UL (ccmd), CmdPktCmdName (ccmd), UD2UL (event->seq >> 16));
 
     if (ccmd == CMD_SEND_MESSAGE)
     {

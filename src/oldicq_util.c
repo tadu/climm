@@ -124,8 +124,8 @@ void PacketEnqueuev5 (Packet *pak, Connection *conn)
         rl_printf ("%s " COLINDENT "%s", s_now, COLCLIENT);
         rl_print  (i18n (1775, "Outgoing packet:"));
         rl_printf (" %04x %08lx:%08lx %04x (%s) @%p%s\n",
-                 PacketReadAt2 (pak, CMD_v5_OFF_VER), PacketReadAt4 (pak, CMD_v5_OFF_SESS),
-                 PacketReadAt4 (pak, CMD_v5_OFF_SEQ), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
+                 PacketReadAt2 (pak, CMD_v5_OFF_VER), UD2UL (PacketReadAt4 (pak, CMD_v5_OFF_SESS)),
+                 UD2UL (PacketReadAt4 (pak, CMD_v5_OFF_SEQ)), PacketReadAt2 (pak, CMD_v5_OFF_SEQ2),
                  CmdPktCmdName (PacketReadAt2 (pak, CMD_v5_OFF_CMD)), pak, COLNONE);
         rl_print  (f = PacketDump (pak, "gv5cp", COLDEBUG, COLNONE));
         free (f);
@@ -286,7 +286,7 @@ void UDPCallBackResend (Event *event)
     {
         rl_printf (i18n (1856, "Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n"),
                  cmd, CmdPktSrvName (cmd),
-                 session, conn->our_session);
+                 UD2UL (session), UD2UL (conn->our_session));
         EventD (event);
     }
     else if (event->attempts <= MAX_RETRY_ATTEMPTS)
@@ -295,7 +295,7 @@ void UDPCallBackResend (Event *event)
         {
             rl_printf (i18n (1826, "Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n"),
                      cmd, CmdPktCmdName (cmd),
-                     event->seq >> 16, event->attempts, pak->len);
+                     UD2UL (event->seq >> 16), UD2UL (event->attempts), pak->len);
         }
         PacketSendv5 (pak, conn);
         event->due = time (NULL) + 10;
@@ -312,7 +312,7 @@ void UDPCallBackResend (Event *event)
 
             rl_print ("\n");
             rl_printf (i18n (1830, "Discarding message to %s after %ld send attempts.  Message content:\n"),
-                      cont ? cont->nick : s_sprintf ("%ld", tuin), event->attempts - 1);
+                      cont ? cont->nick : s_sprintf ("%ld", UD2UL (tuin)), UD2UL (event->attempts - 1));
 
             if ((type & ~MSGF_MASS) == MSG_URL)
             {

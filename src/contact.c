@@ -298,7 +298,7 @@ static Contact *ContactCUIN (Connection *serv, UDWORD uin DEBUGPARAM)
     cont->serv = serv;
 
     cont->uin = uin;
-    s_repl (&cont->screen, s_sprintf ("%ld", uin));
+    s_repl (&cont->screen, s_sprintf ("%ld", UD2UL (uin)));
     s_repl (&cont->nick, cont->screen);
 
     Debug (DEB_CONTACT, "new  %p UIN %s %p %p", cont, cont->screen, cont, serv);
