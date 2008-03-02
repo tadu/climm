@@ -36,7 +36,6 @@
 #include "oscar_snac.h"
 #include "oscar_contact.h"
 #include "oscar_service.h"
-#include "oldicq_compat.h"
 #include "packet.h"
 #include "contact.h"
 #include "connection.h"

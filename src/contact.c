@@ -43,7 +43,7 @@
 #include "packet.h"        /* for capabilities */
 #include "buildmark.h"     /* for versioning */
 #include "preferences.h"   /* for BASEDIR */
-#include "oldicq_compat.h" /* for IcqIsUIN */
+#include "oscar_base.h"    /* for IcqIsUIN */
 #include "util_parse.h"
 
 static ContactGroup **cnt_groups = NULL;

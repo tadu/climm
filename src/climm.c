@@ -36,7 +36,7 @@
 #include "tcp.h"
 #include "tabs.h"
 #include "util_io.h"
-#include "oldicq_compat.h"
+#include "oscar_base.h"
 #include "util_tcl.h"
 #include "util_ssl.h"
 #include "util_otr.h"

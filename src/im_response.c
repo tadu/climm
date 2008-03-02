@@ -4,7 +4,7 @@
 #include "climm.h"
 #include <assert.h>
 #include "im_response.h"
-#include "oldicq_compat.h"
+#include "oscar_base.h"
 #include "util_rl.h"
 #include "tabs.h"
 #include "contact.h"

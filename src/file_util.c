@@ -40,7 +40,6 @@
 #include "util_io.h"
 #include "remote.h"
 #include "oscar_base.h"
-#include "oldicq_compat.h"
 #include "connection.h"
 #include "util_parse.h"
 #include "util_rl.h"

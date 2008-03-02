@@ -25,7 +25,6 @@
 #include "tcp.h"
 #include "util_syntax.h"
 #include "util_ssl.h"
-#include "oldicq_compat.h"
 #include "oscar_snac.h"
 #include "oscar_service.h"
 #include "oscar_icbm.h"

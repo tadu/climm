@@ -669,3 +669,103 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
     return news;
 }
 
+/* test in this order */
+#define STATUSF_ICQINV       0x00000100
+#define STATUSF_ICQDND       0x00000002
+#define STATUSF_ICQOCC       0x00000010
+#define STATUSF_ICQNA        0x00000004
+#define STATUSF_ICQAWAY      0x00000001
+#define STATUSF_ICQFFC       0x00000020
+
+#define STATUS_ICQOFFLINE    0xffffffff
+#define STATUS_ICQINV         STATUSF_ICQINV
+#define STATUS_ICQDND        (STATUSF_ICQDND | STATUSF_ICQOCC | STATUSF_ICQAWAY)
+#define STATUS_ICQOCC        (STATUSF_ICQOCC | STATUSF_ICQAWAY)
+#define STATUS_ICQNA         (STATUSF_ICQNA  | STATUSF_ICQAWAY)
+#define STATUS_ICQAWAY        STATUSF_ICQAWAY
+#define STATUS_ICQFFC         STATUSF_ICQFFC
+#define STATUS_ICQONLINE     0x00000000
+
+status_t IcqToStatus (UDWORD status)
+{
+    status_t tmp;
+
+    if (status == (UWORD)STATUS_ICQOFFLINE)
+        return ims_offline;
+    tmp = (status & STATUSF_ICQINV) ? ims_inv : ims_online;
+    if (status & STATUSF_ICQDND)
+        return ContactCopyInv (tmp, imr_dnd);
+    if (status & STATUSF_ICQOCC)
+        return ContactCopyInv (tmp, imr_occ);
+    if (status & STATUSF_ICQNA)
+        return ContactCopyInv (tmp, imr_na);
+    if (status & STATUSF_ICQAWAY)
+        return ContactCopyInv (tmp, imr_away);
+    if (status & STATUSF_ICQFFC)
+        return ContactCopyInv (tmp, imr_ffc);
+    return tmp;
+}
+
+UDWORD IcqFromStatus (status_t status)
+{
+    UDWORD isinv = ContactIsInv (status) ? STATUSF_ICQINV : 0;
+    switch (ContactClearInv (status))
+    {
+        case imr_offline:  return STATUS_ICQOFFLINE;
+        default:
+        case imr_online:   return STATUS_ICQONLINE | isinv;
+        case imr_ffc:      return STATUS_ICQFFC    | isinv;
+        case imr_away:     return STATUS_ICQAWAY   | isinv;
+        case imr_na:       return STATUS_ICQNA     | isinv;
+        case imr_occ:      return STATUS_ICQOCC    | isinv;
+        case imr_dnd:      return STATUS_ICQDND    | isinv;
+    }
+}
+
+#define STATUSF_ICQBIRTH     0x00080000
+#define STATUSF_ICQWEBAWARE  0x00010000
+#define STATUSF_ICQIP        0x00020000
+#define STATUSF_ICQDC_AUTH   0x10000000
+#define STATUSF_ICQDC_CONT   0x20000000
+
+statusflag_t IcqToFlags (UDWORD status)
+{
+    statusflag_t flags = imf_none;
+    if (status & STATUSF_ICQBIRTH)
+        flags |= imf_birth;
+    if (status & STATUSF_ICQWEBAWARE)
+        flags |= imf_web;
+    if (status & STATUSF_ICQDC_AUTH)
+        flags |= imf_dcauth;
+    if (status & STATUSF_ICQDC_CONT)
+        flags |= imf_dccont;
+    return flags;
+}
+
+UDWORD IcqFromFlags (statusflag_t flags)
+{
+    UDWORD status = 0;
+    if (flags & imf_birth)
+        status |= STATUSF_ICQBIRTH;
+    if (flags & imf_web)
+        status |= STATUSF_ICQWEBAWARE;
+    if (flags & imf_dcauth)
+        status |= STATUSF_ICQDC_AUTH;
+    if (flags & imf_dccont)
+        status |= STATUSF_ICQDC_CONT;
+    return status;
+}
+
+UDWORD IcqIsUIN (const char *screen)
+{
+    UDWORD uin = 0;
+    while (*screen)
+    {
+        if (*screen < '0' || *screen > '9')
+            return 0;
+        uin *= 10;
+        uin += *screen - '0';
+        screen++;
+    }
+    return uin;
+}

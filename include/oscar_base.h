@@ -27,4 +27,10 @@ void    FlapPrint (Packet *pak);
 Event *ConnectionInitServer (Connection *serv);
 Connection *SrvRegisterUIN (Connection *serv, const char *pass);
 
+status_t     IcqToStatus   (UDWORD status);
+UDWORD       IcqFromStatus (status_t status);
+statusflag_t IcqToFlags    (UDWORD status);
+UDWORD       IcqFromFlags  (statusflag_t flags);
+UDWORD       IcqIsUIN      (const char *screen);
+
 #endif
