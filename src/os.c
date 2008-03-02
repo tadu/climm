@@ -5,7 +5,7 @@
 #include "os_win32.c"
 #endif
 
-#if defined(HAVE_GETUTENT)
+#if defined(HAVE_GETUTENT) || defined(HAVE_GETUTXENT)
 #include "os_unix.c"
 #endif
 

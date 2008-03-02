@@ -70,7 +70,7 @@ fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([locale.h langinfo.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h wchar.h wctype.h pwd.h utmp.h values.h])
+AC_CHECK_HEADERS([locale.h langinfo.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h wchar.h wctype.h pwd.h utmp.h utmpx.h values.h])
 
 if test "x$ac_arg_use_autopackage" = xyes; then
     enable_binreloc=auto
@@ -443,7 +443,7 @@ AC_CHECK_FUNCS([mkdir atexit strcasecmp strchr memchr strdup strncasecmp strpbrk
                [AC_MSG_ERROR([Required function $ac_func missing. Sorry.])])
 AC_CHECK_FUNCS([localtime_r timegm timelocal memcmp uname fcntl strchr strtok_r \
                 symlink chmod tcgetattr gettimeofday setlocale select sigprocmask])
-AC_CHECK_FUNCS([memset wcwidth iswalnum iswspace nl_langinfo atoll getpwuid getuid fsync getutent])
+AC_CHECK_FUNCS([memset wcwidth iswalnum iswspace nl_langinfo atoll getpwuid getuid fsync getutent getutxent])
 
 if test "x$ac_cv_func_timegm" != xyes; then
     AC_LIBOBJ(timegm)

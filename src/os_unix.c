@@ -13,11 +13,18 @@
 #if defined (HAVE_UTMP_H)
 #include <utmp.h>
 #endif
+#if defined (HAVE_UTMPX_H)
+#include <utmpx.h>
+#endif
 #if defined (HAVE_CTYPE_H)
 #include <ctype.h>
 #endif
 
+#if HAVE_GETUTXENT
+static int console_idle (time_t now, struct utmpx *u)
+#else
 static int console_idle (time_t now, struct utmp *u)
+#endif
 {
     struct stat sbuf;
     char tty[5 + sizeof u->ut_line + 1] = "/dev/";
@@ -30,23 +37,27 @@ static int console_idle (time_t now, struct utmp *u)
             tty[i + 5] = '\0';
 
     if (*u->ut_line == ':')
-        return MAXINT;
+        return INT_MAX;
 
     if (stat (tty, &sbuf) != 0)
-        return MAXINT;
+        return INT_MAX;
 
     return now - sbuf.st_atime;
 }
   
 /*
-  Return minimum idle time from all consoles of user owing this process.
+  Return minimum idle time from all consoles of user owning this process.
 */
 UDWORD os_DetermineIdleTime (time_t now, time_t last)
 {
+#if HAVE_GETUTXENT
+    struct utmpx *u;
+#else
     struct utmp *u;
+#endif
     struct passwd *pass;
     uid_t uid;
-    int tmp, min = MAXINT;
+    int tmp, min = INT_MAX;
 
     uid = geteuid ();
     pass = getpwuid (uid);
@@ -54,9 +65,13 @@ UDWORD os_DetermineIdleTime (time_t now, time_t last)
     if (!pass)
         return -1;
 
-    utmpname (UTMP_FILE);
+#if HAVE_GETUTXENT
+    setutxent();
+    while ((u = getutxent()))
+#else
     setutent();
     while ((u = getutent()))
+#endif
     {
         if (u->ut_type != USER_PROCESS)
             continue;
@@ -71,8 +86,12 @@ UDWORD os_DetermineIdleTime (time_t now, time_t last)
         tmp = console_idle (now, u);
         min = (tmp < min) ? tmp : min ;
     }
+#if HAVE_GETUTXENT
+    endutxent();
+#else
     endutent();
-    if (min == MAXINT || now - last < min)
+#endif
+    if (min == INT_MAX || now - last < min)
         min = now - last;
     return min;
 }
