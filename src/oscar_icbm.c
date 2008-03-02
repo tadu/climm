@@ -32,11 +32,11 @@
 
 #include "climm.h"
 #include <assert.h>
-#include "oldicq_compat.h"
 #include "oscar_base.h"
 #include "oscar_tlv.h"
 #include "oscar_snac.h"
 #include "oscar_icbm.h"
+#include "oscar_oldicq.h"
 #include "packet.h"
 #include "contact.h"
 #include "connection.h"
