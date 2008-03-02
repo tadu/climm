@@ -39,7 +39,7 @@ mv climm_$VERSION* $WEBDIR/deb/dists/sid/main/source/
 
 
 #
-# rpm
+# rpm (generic)
 #
 rm -rf /usr/src/rpm 2>/dev/null
 tar -zxvf climm-$VERSION.tgz climm-$VERSION/climm.spec
@@ -85,23 +85,23 @@ rm -rf climm-$VERSION
 mv climm-$VERSION.x86.package $WEBDIR/binary/
 
 #
-# Debian Feisty
+# Ubuntu from chroot
 #
-[ -f /etc/lsb-release ] && . /etc/lsb-release
-[ -z "$DISTRIB_CODENAME" ] && DISTRIB_CODENAME=gutsy
-cp climm-$VERSION.tgz climm_$VERSION.orig.tar.gz
-tar -zxf climm-$VERSION.tgz
-cd climm-$VERSION
-sed -i "1s/$VERSION-0/$VERSION-3${DISTRIB_CODENAME}0/" debian/changelog
-sed -i "/Build-Depends:/s/$/| libgloox-dev/" debian/control
-export CLIMM_EXTRAVERSION="Official deb (${DISTRIB_CODENAME})"
-fakeroot dpkg-buildpackage -tc -us -uc
 cd /tmp
-rm -rf climm-$VERSION
-mv climm_$VERSION-3${DISTRIB_CODENAME}0*.deb $WEBDIR/deb/dists/${DISTRIB_CODENAME}/main/binary-i386/
-mv climm_$VERSION-3${DISTRIB_CODENAME}0* climm_$VERSION.orig.tar.gz $WEBDIR/deb/dists/${DISTRIB_CODENAME}/main/source/
-unset DEB_BUILD_OPTIONS
-
+for distri in \
+  Debian-4.0-0etch: \
+  Ubuntu-6.06-1dapper:noxmpp Ubuntu-6.10-2edgy:noxmpp Ubuntu-7.04-3feisty: Ubuntu-7.10-4gutsy: \
+  Ubuntu-8.04-5hardy:
+do
+  idist=${distri##*-}
+  idist=${idist%:*}
+  distcode=${idist#[0-9]}
+  dist=${distri%:*}
+  buildopts=${distri#*:}
+  sudo buildtarball $distri /tmp/climm-${VERSION}.tgz $buildopts
+  mv climm_$VERSION-$idist*.deb $WEBDIR/deb/dists/$distcode/main/binary-i386/
+  mv climm_$VERSION-$idist* climm_$VERSION.orig.tar.gz $WEBDIR/deb/dists/$distcode/main/source/
+done
 
 #
 # final
