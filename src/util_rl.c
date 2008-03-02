@@ -32,7 +32,7 @@
 #include "climm.h"
 #include "util_rl.h"
 #include "util_alias.h"
-#include "tabs.h"
+#include "util_tabs.h"
 #include "conv.h"
 #include "contact.h"
 #include "cmd_user.h"

@@ -15,7 +15,7 @@
 #include "util_rl.h"
 #include "util.h"
 #include "cmd_user.h"
-#include "tabs.h"
+#include "util_tabs.h"
 #include "conv.h"
 #include "contact.h"
 #include "preferences.h"

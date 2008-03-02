@@ -58,7 +58,7 @@
 #include "util_rl.h"
 #include "util.h"
 #include "im_response.h"
-#include "tcp.h"
+#include "oscar_dc.h"
 #include "conv.h"
 
 static void PeerFileDispatchClose   (Connection *ffile);

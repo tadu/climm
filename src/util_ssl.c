@@ -40,7 +40,7 @@
 #include "util_str.h"
 #include "util_tcl.h"
 #include "util_ui.h"
-#include "tcp.h"
+#include "oscar_dc.h"
 #include "connection.h"
 #include "contact.h"
 #include "packet.h"

@@ -22,7 +22,7 @@
 #include "contact.h"
 #include "connection.h"
 #include "packet.h"
-#include "tcp.h"
+#include "oscar_dc.h"
 #include "util_syntax.h"
 #include "util_ssl.h"
 #include "oscar_snac.h"

@@ -20,7 +20,7 @@
 #include "contact.h"
 #include "connection.h"
 #include "preferences.h"
-#include "tcp.h"
+#include "oscar_dc.h"
 #include "packet.h"
 #include "conv.h"
 #include "oscar_service.h"

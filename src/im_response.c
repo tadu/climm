@@ -6,7 +6,7 @@
 #include "im_response.h"
 #include "oscar_base.h"
 #include "util_rl.h"
-#include "tabs.h"
+#include "util_tabs.h"
 #include "contact.h"
 #include "im_request.h"
 #include "util.h"

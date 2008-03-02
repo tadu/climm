@@ -31,7 +31,7 @@
  */
 
 #include "climm.h"
-#include "tabs.h"
+#include "util_tabs.h"
 #include "contact.h"
 
 #define TAB_SLOTS 32

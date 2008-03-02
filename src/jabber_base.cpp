@@ -14,7 +14,7 @@ extern "C" {
 #include "connection.h"
 #include "contact.h"
 #include "conv.h"
-#include "tcp.h"
+#include "oscar_dc.h"
 #include "util_io.h"
 #include "im_response.h"
 #include "im_request.h"
@@ -22,7 +22,7 @@ extern "C" {
 #include "util_rl.h"
 #include "buildmark.h"
 #include "preferences.h"
-#include "peer_file.h"
+#include "oscar_dc_file.h"
 }
 
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000907

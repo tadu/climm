@@ -51,7 +51,7 @@
 #include "packet.h"
 #include "contact.h"
 #include "conv.h"
-#include "tcp.h"
+#include "oscar_dc.h"
 
 static void FlapChannel1 (Connection *conn, Packet *pak);
 static void FlapSave (Connection *serv, Packet *pak, BOOL in);

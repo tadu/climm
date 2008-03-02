@@ -33,7 +33,7 @@
 #include "connection.h"
 #include "preferences.h"
 #include "util_ui.h"
-#include "tcp.h"
+#include "oscar_dc.h"
 #if HAVE_NETDB_H
 #include <netdb.h>
 #endif
