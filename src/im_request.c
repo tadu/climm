@@ -12,8 +12,6 @@
 #include "im_request.h"
 #include "util.h"
 #include "im_response.h"
-#include "oldicq_compat.h"
-#include "oldicq_client.h"
 #include "oscar_snac.h"
 #include "oscar_icbm.h"
 #include "oscar_oldicq.h"
@@ -280,13 +278,6 @@ UBYTE IMCliReMsg (Contact *cont, Message *msg)
         }
         msg->trans &= ~CV_MSGTRANS_ICQv8;
     }
-    if (msg->trans & CV_MSGTRANS_ICQv5)
-        if (cont->serv->connect & CONNECT_OK && cont->serv->type == TYPE_SERVER_OLD)
-        {
-            CmdPktCmdSendMessage (cont->serv, cont, msg->send_message, msg->type);
-            MsgD (msg);
-            return RET_OK;
-        }
 #if ENABLE_XMPP
     if (msg->trans & CV_MSGTRANS_XMPP)
         if (cont->serv->connect & CONNECT_OK && cont->serv->type == TYPE_XMPP_SERVER)
@@ -304,15 +295,11 @@ void IMCliInfo (Connection *conn, Contact *cont, int group)
         cont->updated = 0;
         if (cont->serv->type == TYPE_SERVER)
             ref = SnacCliMetareqinfo (cont->serv, cont);
-        else if (cont->serv->type == TYPE_SERVER_OLD)
-            ref = CmdPktCmdMetaReqInfo (cont->serv, cont);
     }
     else
     {
         if (conn->type == TYPE_SERVER)
             ref = SnacCliSearchrandom (conn, group);
-        else if (conn->type == TYPE_SERVER_OLD)
-            ref = CmdPktCmdRandSearch (conn, group);
     }
     if (ref)
         QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 60, NULL,
@@ -360,11 +347,6 @@ void IMSetStatus (Connection *serv, Contact *cont, status_t status, const char *
         }
         else if (serv->type == TYPE_SERVER)
             SnacCliSetstatus (serv, status, 1);
-        else if (serv->type == TYPE_SERVER_OLD)
-        {
-            CmdPktCmdStatusChange (serv, status);
-            rl_printf ("%s %s\n", s_now, s_status (serv->status, serv->nativestatus));
-        }
 #if ENABLE_XMPP
         else if (serv->type == TYPE_XMPP_SERVER)
             XMPPSetstatus (serv, NULL, status, msg);
@@ -379,7 +361,7 @@ void IMCliAuth (Contact *cont, const char *text, auth_t how)
     if (~cont->serv->connect & CONNECT_OK)
         return;
 
-    if (cont->serv->type == TYPE_SERVER || cont->serv->type == TYPE_SERVER_OLD)
+    if (cont->serv->type == TYPE_SERVER)
     {
         UDWORD msgtype;
         switch (how)
@@ -406,9 +388,7 @@ void IMCliAuth (Contact *cont, const char *text, auth_t how)
                     text = "\x03";
                 msgtype = MSG_AUTH_GRANT;
         }
-        if (cont->serv->type == TYPE_SERVER_OLD)
-            CmdPktCmdSendMessage (cont->serv, cont, text, msgtype);
-        else if (cont->uin)
+        if (cont->uin)
         {
             Message *msg = MsgC ();
             if (!msg)

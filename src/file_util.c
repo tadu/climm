@@ -36,7 +36,6 @@
 #include "util.h"
 #include "conv.h"
 #include "cmd_user.h"
-#include "oldicq_base.h"
 #include "preferences.h"
 #include "util_io.h"
 #include "remote.h"
@@ -1037,9 +1036,7 @@ int Read_RC_File (FILE *rcf)
 
                     if (!strcasecmp (cmd, "server"))
                     {
-                        conn->type =
-                            (conn->version ? (conn->version > 6 
-                               ? TYPE_SERVER : TYPE_SERVER_OLD) : conn->type);
+                        conn->type = TYPE_SERVER;
                         dep = 20;
                     }
                     else if (!(conn->type = ConnectionServerNType (cmd, 0)))
@@ -1048,7 +1045,7 @@ int Read_RC_File (FILE *rcf)
                     if (conn->type == TYPE_MSGLISTEN)
                     {
                         conn->pref_status = TCP_OK_FLAG;
-                        if (oldconn->type == TYPE_SERVER || oldconn->type == TYPE_SERVER_OLD)
+                        if (oldconn->type == TYPE_SERVER)
                         {
                             oldconn->assoc = conn;
                             conn->parent = oldconn;
@@ -1074,12 +1071,7 @@ int Read_RC_File (FILE *rcf)
 
                     conn->version = i;
                     if (!conn->type)
-                    {
-                        if (conn->version > 6)
-                            conn->type = TYPE_SERVER;
-                        else
-                            conn->type = TYPE_SERVER_OLD;
-                    }
+                        conn->type = TYPE_SERVER;
                 }
                 else if (!strcasecmp (cmd, "server"))
                 {
@@ -1232,9 +1224,6 @@ int Read_RC_File (FILE *rcf)
         {
             case TYPE_SERVER:
                 conn->c_open = &ConnectionInitServer;
-                break;
-            case TYPE_SERVER_OLD:
-                conn->c_open = &ConnectionInitServerV5;
                 break;
 #ifdef ENABLE_MSN
             case TYPE_MSN_SERVER:

@@ -315,8 +315,6 @@ const char *ConnectionType (Connection *conn)
             return i18n (2586, "msn chat");
         case TYPE_SERVER:
             return i18n (1889, "server");
-        case TYPE_SERVER_OLD:
-            return i18n (1744, "server (v5)");
         case TYPE_MSGLISTEN:
             return i18n (1947, "listener");
         case TYPE_MSGDIRECT:
@@ -343,8 +341,6 @@ const char *ConnectionServerType (UWORD type)
             return "msn";
         case TYPE_SERVER:
             return "icq8";
-        case TYPE_SERVER_OLD:
-            return "icq5";
         case TYPE_MSGLISTEN:
             return "peer";
         case TYPE_REMOTE:
@@ -357,7 +353,6 @@ const char *ConnectionServerType (UWORD type)
 UWORD ConnectionServerNType (const char *type, char del)
 {
     if (!strncmp (type, "icq8", 4)   && type[4] == del) return TYPE_SERVER;
-    if (!strncmp (type, "icq5", 4)   && type[4] == del) return TYPE_SERVER_OLD;
     if (!strncmp (type, "peer", 4)   && type[4] == del) return TYPE_MSGLISTEN;
     if (!strncmp (type, "remote", 6) && type[6] == del) return TYPE_REMOTE;
     if (!strncmp (type, "msn", 3)    && type[3] == del) return TYPE_MSN_SERVER;

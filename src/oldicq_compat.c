@@ -11,7 +11,6 @@
 #include "packet.h"
 #include "im_request.h"
 #include "conv.h"
-#include "oldicq_client.h"
 #include "im_response.h"
 #include "oscar_snac.h"
 #include "oscar_oldicq.h"
@@ -240,12 +239,6 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
         case META_SRV_GEN:
             Display_Info_Reply (cont, pak, 0);
 
-            if (conn->type == TYPE_SERVER_OLD)
-            {
-                ContactMetaAdd (&cont->meta_email, 0, ConvFromCont (PacketReadL2Str (pak, NULL), cont));
-                ContactMetaAdd (&cont->meta_email, 0, ConvFromCont (PacketReadL2Str (pak, NULL), cont));
-            }
-
             if (!(mg = CONTACT_GENERAL (cont)))
                 break;
             
@@ -278,10 +271,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             mm->age = PacketRead2 (pak);
             mm->sex = PacketRead1 (pak);
             s_read (mm->homepage);
-            if (conn->type == TYPE_SERVER_OLD)
-                mm->year = PacketRead1 (pak) + 1900;
-            else
-                mm->year = PacketRead2 (pak);
+            mm->year  = PacketRead2 (pak);
             mm->month = PacketRead1 (pak);
             mm->day   = PacketRead1 (pak);
             mm->lang1 = PacketRead1 (pak);
@@ -388,8 +378,6 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             {
                 if (conn->type == TYPE_SERVER)
                     event->seq = SnacCliMetareqinfo (conn, cont);
-                else
-                    event->seq = CmdPktCmdMetaReqInfo (conn, cont);
             }
             event->callback (event);
             cont->dc->ip_rem  = PacketReadB4 (pak);

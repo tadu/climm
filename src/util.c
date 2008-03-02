@@ -82,7 +82,6 @@ int putlog (Connection *conn, time_t stamp, Contact *cont,
     {
         case TYPE_MSN_SERVER:
         case TYPE_XMPP_SERVER:
-        case TYPE_SERVER_OLD:
         case TYPE_SERVER:
             s_catf (&t, "[%s:%s]!%s %s %s%s%s[%s:%s+%lX %s]",
                 ConnectionServerType (conn->type), conn->screen, username, indic, pos, cont->nick, pos,

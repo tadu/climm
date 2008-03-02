@@ -26,7 +26,6 @@
 #include "util_syntax.h"
 #include "util_ssl.h"
 #include "oldicq_compat.h"
-#include "oldicq_client.h"
 #include "oscar_snac.h"
 #include "oscar_service.h"
 #include "oscar_icbm.h"
@@ -76,7 +75,6 @@ static Connection *TCPReceiveInit2    (Connection *peer, Packet *pak);
 static Packet     *PacketTCPC         (Connection *peer, UDWORD cmd);
 
 static void        TCPCallBackTimeout (Event *event);
-static void        TCPCallBackTOConn  (Event *event);
 static void        TCPCallBackResend  (Event *event);
 static void        TCPCallBackReceive (Event *event);
 
@@ -385,15 +383,7 @@ void TCPDispatchConn (Connection *peer)
                 return;
             case 5:
             {
-                if (peer->parent && peer->parent->parent && peer->parent->parent->type == TYPE_SERVER_OLD)
-                {
-                    CmdPktCmdTCPRequest (peer->parent->parent, cont, cont->dc->port);
-                    QueueEnqueueData (peer, QUEUE_TCP_TIMEOUT, peer->ip, time (NULL) + 30,
-                                      NULL, cont, NULL, &TCPCallBackTOConn);
-                    peer->connect = TCP_STATE_WAITING;
-                }
-                else
-                    peer->connect = CONNECT_FAIL;
+                peer->connect = CONNECT_FAIL;
                 sockclose (peer->sok);
                 peer->sok = -1;
                 return;
@@ -675,23 +665,6 @@ static void TCPCallBackTimeout (Event *event)
                       cont->nick, s_ip (peer->ip), UD2UL (peer->port));
         TCPClose (peer);
     }
-    EventD (event);
-}
-
-/*
- * Handles timeout on TCP connect
- */
-static void TCPCallBackTOConn (Event *event)
-{
-    if (!event->conn)
-    {
-        EventD (event);
-        return;
-    }
-    ASSERT_ANY_DIRECT (event->conn);
-
-    event->conn->connect += 2;
-    TCPDispatchConn (event->conn);
     EventD (event);
 }
 

@@ -230,8 +230,7 @@ Contact *s_parsenick_s (const char **input, const char *sep, BOOL any, Connectio
         p = *input;
     }
 
-    if ((serv->type == TYPE_SERVER || serv->type == TYPE_SERVER_OLD)
-        && !strncasecmp (p, "ICQ:", 4))
+    if (serv->type == TYPE_SERVER && !strncasecmp (p, "ICQ:", 4))
     {
         t = s_parse (&p);
         if (t && is_valid_icq_name (t->txt))
@@ -289,7 +288,7 @@ Contact *s_parsenick_s (const char **input, const char *sep, BOOL any, Connectio
         return ContactScreen (serv, t->txt);
     }
 
-    if ((serv->type == TYPE_SERVER || serv->type == TYPE_SERVER_OLD) && is_valid_icq_name (t->txt))
+    if (serv->type == TYPE_SERVER && is_valid_icq_name (t->txt))
     {
         *input = p;
         return ContactScreen (serv, t->txt);

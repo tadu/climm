@@ -143,7 +143,6 @@ val_t          ConnectionPrefVal (Connection *conn, UDWORD flag);
 
 
 #define TYPEF_ANY_SERVER    1  /* any server connection  */
-#define TYPEF_SERVER_OLD    2  /* " && ver == 5          */
 #define TYPEF_SERVER        4  /* " && ver > 6           */
 #define TYPEF_ANY_PEER      8  /* any peer connection    */
 #define TYPEF_ANY_DIRECT   16  /* " && established       */
@@ -161,7 +160,6 @@ val_t          ConnectionPrefVal (Connection *conn, UDWORD flag);
 /* any conn->type may be only any of those values:
  * do not use the flags above unless you _really_ REALLY know what you're doing
  */
-#define TYPE_SERVER_OLD    (TYPEF_ANY_SERVER | TYPEF_SERVER_OLD | TYPEF_HAVEUIN)
 #define TYPE_SERVER        (TYPEF_ANY_SERVER | TYPEF_SERVER     | TYPEF_HAVEUIN)
 #define TYPE_MSGLISTEN     (TYPEF_ANY_PEER | TYPEF_ANY_MSG  | TYPEF_ANY_LISTEN | TYPEF_HAVEUIN)
 #define TYPE_MSGDIRECT     (TYPEF_ANY_PEER | TYPEF_ANY_MSG  | TYPEF_ANY_DIRECT | TYPEF_HAVEUIN)
@@ -178,7 +176,6 @@ val_t          ConnectionPrefVal (Connection *conn, UDWORD flag);
 
 #define ASSERT_ANY_SERVER(s)  (assert (s), assert ((s)->type & TYPEF_ANY_SERVER))
 #define ASSERT_SERVER(s)      (assert (s), assert ((s)->type == TYPE_SERVER))
-#define ASSERT_SERVER_OLD(s)  (assert (s), assert ((s)->type == TYPE_SERVER_OLD))
 #define ASSERT_ANY_LISTEN(s)  (assert (s), assert ((s)->type & TYPEF_ANY_LISTEN), ASSERT_ANY_SERVER ((s)->parent))
 #define ASSERT_ANY_DIRECT(s)  (assert (s), assert ((s)->type & TYPEF_ANY_DIRECT), ASSERT_ANY_LISTEN ((s)->parent))
 #define ASSERT_MSGLISTEN(s)   (assert (s), assert ((s)->type == TYPE_MSGLISTEN), assert ((s)->parent->assoc == (s)), ASSERT_ANY_SERVER ((s)->parent))

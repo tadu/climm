@@ -23,8 +23,6 @@
 #include "util_rl.h"
 #include "util_table.h"
 #include "util_parse.h"
-#include "oldicq_compat.h"
-#include "oldicq_client.h"
 #include "oscar_base.h"
 #include "oscar_snac.h"
 #include "oscar_service.h"
@@ -365,8 +363,6 @@ static JUMP_F(CmdUserRandomSet)
     {
         if (uiG.conn->type == TYPE_SERVER)
             SnacCliSetrandom (uiG.conn, arg1);
-        else if (uiG.conn->type == TYPE_SERVER_OLD)
-            CmdPktCmdRandSet (uiG.conn, arg1);
     }
     return 0;
 }
@@ -777,8 +773,6 @@ static JUMP_F(CmdUserPass)
         }
         if (uiG.conn->type == TYPE_SERVER)
             SnacCliMetasetpass (uiG.conn, arg1);
-        else if (uiG.conn->type == TYPE_SERVER_OLD)
-            CmdPktCmdMetaPass (uiG.conn, arg1);
         s_repl (&uiG.conn->passwd, arg1);
         if (uiG.conn->pref_passwd && *uiG.conn->pref_passwd)
         {
@@ -1396,9 +1390,7 @@ static JUMP_F (CmdUserAnyMess)
     }
     else
     {
-        if (uiG.conn->type == TYPE_SERVER_OLD)
-            CmdPktCmdSendMessage (uiG.conn, cont, t.txt, data >> 2);
-        else if (uiG.conn->type == TYPE_SERVER)
+        if (uiG.conn->type == TYPE_SERVER)
         {
             Message *msg = MsgC ();
             UBYTE ret;
@@ -2142,12 +2134,6 @@ static JUMP_F(CmdUserStatusMeta)
                     SnacCliMetasetmore (uiG.conn, cont);
                     SnacCliMetasetabout (uiG.conn, cont->meta_about);
                 }
-                else if (uiG.conn->type == TYPE_SERVER_OLD)
-                {
-                    CmdPktCmdMetaGeneral (uiG.conn, cont);
-                    CmdPktCmdMetaMore (uiG.conn, cont);
-                    CmdPktCmdMetaAbout (uiG.conn, cont->meta_about);
-                }
                 return 0;
             case 6:
                 IMCliInfo (uiG.last_rcvd->serv, uiG.last_rcvd, 0);
@@ -2809,8 +2795,6 @@ static JUMP_F(CmdUserRegister)
             Connection *newc = SrvRegisterUIN (uiG.conn, par->txt);
             ConnectionInitServer (newc);
         }
-        else if (uiG.conn->type == TYPE_SERVER_OLD)
-            CmdPktCmdRegNewUser (uiG.conn, par->txt);     /* TODO */
     }
     else
         rl_print (i18n (2447, "No new password given.\n"));
@@ -2868,8 +2852,6 @@ static JUMP_F(CmdUserTogInvis)
                     if ((cid = ContactIDHas (cont, roster_invisible)) && cid->issbl)
                         SnacCliRosterdelete (cont->serv, cont->screen, cid->tag, cid->id, roster_invisible);
                 }
-                else if (uiG.conn->type == TYPE_SERVER_OLD)
-                    CmdPktCmdUpdateList (uiG.conn, cont, INV_LIST_UPDATE, FALSE);
                 rl_printf (i18n (2020, "Being visible to %s.\n"), cont->nick);
             }
             else
@@ -2887,16 +2869,7 @@ static JUMP_F(CmdUserTogInvis)
                         SnacCliRosterdelete (cont->serv, cont->screen, cid->tag, cid->id, roster_visible);
                     SnacCliRosterentryadd (cont->serv, cont->screen, 0, ContactIDGet (cont, roster_invisible), roster_invisible, 0, NULL, 0);
                 }
-                else if (uiG.conn->type == TYPE_SERVER_OLD)
-                    CmdPktCmdUpdateList (uiG.conn, cont, INV_LIST_UPDATE, TRUE);
                 rl_printf (i18n (2021, "Being invisible to %s.\n"), cont->nick);
-            }
-            if (uiG.conn->type == TYPE_SERVER_OLD)
-            {
-                CmdPktCmdContactList (uiG.conn);
-                CmdPktCmdInvisList (uiG.conn);
-                CmdPktCmdVisList (uiG.conn);
-                CmdPktCmdStatusChange (uiG.conn, uiG.conn->status);
             }
         }
     return 0;
@@ -2930,8 +2903,6 @@ static JUMP_F(CmdUserTogVisible)
                     if ((cid = ContactIDHas (cont, roster_visible)) && cid->issbl)
                         SnacCliRosterdelete (cont->serv, cont->screen, cid->tag, cid->id, roster_visible);
                 }
-                else if (uiG.conn->type == TYPE_SERVER_OLD)
-                    CmdPktCmdUpdateList (uiG.conn, cont, VIS_LIST_UPDATE, FALSE);
                 rl_printf (i18n (1670, "Normal visible to %s now.\n"), cont->nick);
             }
             else
@@ -2949,8 +2920,6 @@ static JUMP_F(CmdUserTogVisible)
                     if (i || !ContactIsInv (uiG.conn->status))
                         SnacCliSetstatus (uiG.conn, uiG.conn->status, 3);
                 }
-                else if (uiG.conn->type == TYPE_SERVER_OLD)
-                    CmdPktCmdUpdateList (uiG.conn, cont, VIS_LIST_UPDATE, TRUE);
                 rl_printf (i18n (1671, "Always visible to %s now.\n"), cont->nick);
             }
         }
@@ -3011,8 +2980,6 @@ static JUMP_F(CmdUserAdd)
                     ContactCreate (uiG.conn, cont);
                     if (uiG.conn->type == TYPE_SERVER)
                         /* SnacCliAddcontact (uiG.conn, cont, NULL) */ ;
-                    else if (uiG.conn->type == TYPE_SERVER_OLD)
-                        CmdPktCmdContactList (uiG.conn);
                     rl_printf (i18n (2590, "%s added as %s.\n"), cont->screen, cont->nick);
                 }
                 if (ContactHas (cg, cont))
@@ -3069,8 +3036,6 @@ static JUMP_F(CmdUserAdd)
         ContactAddAlias (cont, cmd);
         if (uiG.conn->type == TYPE_SERVER)
             /* SnacCliAddcontact (uiG.conn, cont, NULL) */;
-        else if (uiG.conn->type == TYPE_SERVER_OLD)
-            CmdPktCmdContactList (uiG.conn);
     }
     else
     {
@@ -3157,8 +3122,6 @@ static JUMP_F(CmdUserRemove)
                 {
                     if (uiG.conn->type == TYPE_SERVER)
                         SnacCliRemcontact (uiG.conn, cont, NULL);
-                    else if (uiG.conn->type == TYPE_SERVER_OLD)
-                        CmdPktCmdContactList (uiG.conn);
                 }
 
                 alias = strdup (cont->nick);
@@ -4384,8 +4347,6 @@ static JUMP_F(CmdUserOldSearch)
             {
                 if (uiG.conn->type == TYPE_SERVER)
                     SnacCliSearchbymail (uiG.conn, args);
-                else if (uiG.conn->type == TYPE_SERVER_OLD)
-                    CmdPktCmdSearchUser (uiG.conn, args, "", "", "");
                 
                 return 0;
             }
@@ -4407,8 +4368,6 @@ static JUMP_F(CmdUserOldSearch)
             last = strdup ((char *) args);
             if (uiG.conn->type == TYPE_SERVER)
                 SnacCliSearchbypersinf (uiG.conn, email, nick, first, last);
-            else if (uiG.conn->type == TYPE_SERVER_OLD)
-                CmdPktCmdSearchUser (uiG.conn, email, nick, first, last);
         case -1:
             ReadLinePromptReset ();
             free (email);
@@ -4448,22 +4407,16 @@ static JUMP_F(CmdUserSearch)
             {
                 if (uiG.conn->type == TYPE_SERVER)
                     SnacCliSearchbypersinf (uiG.conn, NULL, NULL, arg1, par->txt);
-                else if (uiG.conn->type == TYPE_SERVER_OLD)
-                    CmdPktCmdSearchUser (uiG.conn, NULL, NULL, arg1, par->txt);
             }
             else if (strchr (arg1, '@'))
             {
                 if (uiG.conn->type == TYPE_SERVER)
                     SnacCliSearchbymail (uiG.conn, arg1);
-                else if (uiG.conn->type == TYPE_SERVER_OLD)
-                    CmdPktCmdSearchUser (uiG.conn, arg1, "", "", "");
             }
             else
             {
                 if (uiG.conn->type == TYPE_SERVER)
                     SnacCliSearchbypersinf (uiG.conn, NULL, arg1, NULL, NULL);
-                else if (uiG.conn->type == TYPE_SERVER_OLD)
-                    CmdPktCmdSearchUser (uiG.conn, NULL, arg1, NULL, NULL);
             }
             free (arg1);
             return 0;
@@ -4561,13 +4514,6 @@ static JUMP_F(CmdUserSearch)
                     SnacCliSearchbypersinf (uiG.conn, wp.email, wp.nick, wp.first, wp.last);
                 else
                     SnacCliSearchwp (uiG.conn, &wp);
-            }
-            else if (uiG.conn->type == TYPE_SERVER_OLD)
-            {
-                if (status > 250 && status <= 403)
-                    CmdPktCmdSearchUser (uiG.conn, wp.email, wp.nick, wp.first, wp.last);
-                else
-                    CmdPktCmdMetaSearchWP (uiG.conn, &wp);
             }
         case -1:
             s_repl (&wp.nick,  NULL);
@@ -4713,8 +4659,6 @@ static JUMP_F(CmdUserUpdate)
             {
                 if (uiG.conn->type == TYPE_SERVER)
                     SnacCliMetasetgeneral (uiG.conn, cont);
-                else if (uiG.conn->type == TYPE_SERVER_OLD)
-                    CmdPktCmdMetaGeneral (uiG.conn, cont);
             }
         case -1:
             break;
@@ -4804,8 +4748,6 @@ static JUMP_F(CmdUserOther)
             more->lang3 = temp;
             if (uiG.conn->type == TYPE_SERVER)
                 SnacCliMetasetmore (uiG.conn, cont);
-            else if (uiG.conn->type == TYPE_SERVER_OLD)
-                CmdPktCmdMetaMore (uiG.conn, cont);
         case -1:
             break;
     }
@@ -4830,8 +4772,6 @@ static JUMP_F(CmdUserAbout)
             {
                 if (uiG.conn->type == TYPE_SERVER)
                     SnacCliMetasetabout (uiG.conn, msg);
-                else if (uiG.conn->type == TYPE_SERVER_OLD)
-                    CmdPktCmdMetaAbout (uiG.conn, msg);
             }
             else if (strcmp (args, CANCEL_MSG_STR))
             {
@@ -4846,8 +4786,6 @@ static JUMP_F(CmdUserAbout)
                 {
                     if (uiG.conn->type == TYPE_SERVER)
                         SnacCliMetasetabout (uiG.conn, msg);
-                    else if (uiG.conn->type == TYPE_SERVER_OLD)
-                        CmdPktCmdMetaAbout (uiG.conn, msg);
                 }
             }
         case -1:
@@ -4857,8 +4795,6 @@ static JUMP_F(CmdUserAbout)
             {
                 if (uiG.conn->type == TYPE_SERVER)
                     SnacCliMetasetabout (uiG.conn, arg);
-                else if (uiG.conn->type == TYPE_SERVER_OLD)
-                    CmdPktCmdMetaAbout (uiG.conn, arg);
                 return 0;
             }
             offset = 0;
