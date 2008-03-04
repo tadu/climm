@@ -57,22 +57,22 @@ Roster *OscarRosterC (void);
 void    OscarRosterD (Roster *roster);
 
 
-UDWORD SnacCliCheckroster (Connection *serv);
-void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont);
-void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs);
-void SnacCliRosterentryadd (Connection *serv, const char *name, UWORD tag, UWORD id, UWORD type, UWORD tlv, void *data, UWORD len);
-void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont);
-void SnacCliSetvisibility (Connection *serv, char value, char islogin);
-void SnacCliSetlastupdate (Connection *serv);
-void SnacCliRosterdeletegroup (Connection *serv, ContactGroup *cg);
-void SnacCliRosterdeletecontact (Connection *serv, Contact *cont);
-void SnacCliRosterentrydelete (Connection *serv, RosterEntry *entry);
-void SnacCliRosterdelete (Connection *serv, const char *name, UWORD tag, UWORD id, roster_t type);
-void SnacCliAddstart (Connection *serv);
-void SnacCliAddend (Connection *serv);
-void SnacCliGrantauth (Connection *serv, Contact *cont);
-void SnacCliReqauth (Connection *serv, Contact *cont, const char *msg);
-void SnacCliAuthorize (Connection *serv, Contact *cont, BOOL accept, const char *msg);
+UDWORD SnacCliCheckroster (Server *serv);
+void SnacCliRosteradd (Server *serv, ContactGroup *cg, Contact *cont);
+void SnacCliRosterbulkadd (Server *serv, ContactGroup *cs);
+void SnacCliRosterentryadd (Server *serv, const char *name, UWORD tag, UWORD id, UWORD type, UWORD tlv, void *data, UWORD len);
+void SnacCliRosterupdate (Server *serv, ContactGroup *cg, Contact *cont);
+void SnacCliSetvisibility (Server *serv, char value, char islogin);
+void SnacCliSetlastupdate (Server *serv);
+void SnacCliRosterdeletegroup (Server *serv, ContactGroup *cg);
+void SnacCliRosterdeletecontact (Server *serv, Contact *cont);
+void SnacCliRosterentrydelete (Server *serv, RosterEntry *entry);
+void SnacCliRosterdelete (Server *serv, const char *name, UWORD tag, UWORD id, roster_t type);
+void SnacCliAddstart (Server *serv);
+void SnacCliAddend (Server *serv);
+void SnacCliGrantauth (Server *serv, Contact *cont);
+void SnacCliReqauth (Server *serv, Contact *cont, const char *msg);
+void SnacCliAuthorize (Server *serv, Contact *cont, BOOL accept, const char *msg);
 
 #define SnacCliReqlists(serv)     SnacSend (serv, SnacC (serv, 19, 2, 0, 0))
 #define SnacCliReqroster(serv)    SnacSend (serv, SnacC (serv, 19, 4, 0, 0))

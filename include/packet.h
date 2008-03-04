@@ -98,7 +98,7 @@ strc_t      PacketReadB2Str   (      Packet *pak, str_t str);
 strc_t      PacketReadL2Str   (      Packet *pak, str_t str);
 strc_t      PacketReadL4Str   (      Packet *pak, str_t str);
 strc_t      PacketReadUIN     (      Packet *pak);
-Contact    *PacketReadCont    (      Packet *pak, Connection *serv);
+Contact    *PacketReadCont    (      Packet *pak, Server *serv);
 
 UBYTE       PacketReadAt1     (const Packet *pak, UWORD at);
 UWORD       PacketReadAt2     (const Packet *pak, UWORD at);

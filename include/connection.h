@@ -21,10 +21,85 @@ typedef enum {
 #endif
 
 typedef void (jump_conn_f)(Connection *conn);
-typedef Event * (jump_conn_open_f)(Connection *conn);
+typedef Event * (jump_conn_open_f)(Server *conn);
 typedef BOOL (jump_conn_err_f)(Connection *conn, UDWORD rc, UDWORD flags);
 
 struct Connection_s
+{
+    UWORD     type;           /* connection type - TYPE_*                 */
+    UBYTE     flags;          /* connection flags                         */
+    UBYTE     version;        /* protocol version in this session         */
+    UDWORD    uin;            /* the uin of this server connection        */
+    char     *screen;
+    status_t  pref_status;
+    char     *pref_server;
+    UDWORD    pref_port;
+    char     *pref_passwd;
+
+    Contact  *cont;           /* the user this connection is for          */
+    status_t  status;         /* own status                               */
+    UDWORD    nativestatus;   /* own ICQ extended status                  */
+    char     *server;         /* the remote server name                   */
+    UDWORD    port;           /* the port the server is listening on      */
+    char     *passwd;         /* the password for this user               */
+    UDWORD    ip;             /* the remote ip (host byte order)          */
+    
+    idleflag_t idle_flag;     /* the idle status                          */
+
+    SOK_T     sok;            /* socket for connection to server          */
+    UWORD     connect;        /* connection setup status                  */
+    Packet   *incoming;       /* packet we're receiving                   */
+    Packet   *outgoing;       /* packet we're sending                     */
+    
+    ContactGroup *contacts;   /* The contacts for this connection         */
+    
+    void     *xmpp_private;   /* private data for XMPP connections        */
+
+    void     *tlv;            /* temporary during v8 connect              */
+
+#if ENABLE_SSL
+#if ENABLE_GNUTLS
+    gnutls_session ssl;       /* The SSL data structure for GnuTLS        */
+#else
+    SSL *ssl;                 /* SSL session struct for OpenSSL           */
+#endif
+    ssl_status_t ssl_status;  /* SSL status (INIT,OK,FAILED,...)          */
+#endif
+
+    UDWORD    our_local_ip;   /* LAN-internal IP (host byte order)        */
+    UDWORD    our_outside_ip; /* the IP address the server sees from us   */
+
+    UDWORD    our_session;    /* session ID                               */
+    UWORD     our_seq_dc;     /* sequence number for dc and type-2        */
+    UWORD     our_seq;        /* current primary sequence number          */
+    UWORD     our_seq2;       /* current secondary sequence number        */
+    UDWORD    our_seq3;       /* current old-ICQ sequence number          */
+    
+    UDWORD    len;            /* used for file transfer                   */
+    UDWORD    done;           /* used for file transfer                   */
+
+    Connection            *assoc;  /* associated session           */
+    Connection            *parent; /* parent session               */
+    
+    SOK_T     logfd;
+    UWORD     privacy_tag;         /* F*cking ICQ needs to change the value */
+    UBYTE     privacy_value;       /* when switching between visible and invisible */
+    
+    UDWORD    stat_real_pak_sent;
+    UDWORD    stat_real_pak_rcvd;
+    UDWORD    stat_pak_sent;
+    UDWORD    stat_pak_rcvd;
+
+    jump_conn_open_f *c_open;  /* function to call to open        */
+    jump_conn_f *dispatch;     /* function to call on select()    */
+    jump_conn_f *reconnect;    /* function to call for reconnect  */
+    jump_conn_err_f *error;    /* function to call for i/o errors */
+    jump_conn_f *close;        /* function to call to close       */
+
+    jump_conn_f *utilio;       /* private to util_io.c            */
+};
+
+struct Server_s
 {
     UWORD     type;           /* connection type - TYPE_*                 */
     UBYTE     flags;          /* connection flags                         */
@@ -108,6 +183,12 @@ struct Connection_s
 #define CONNECT_SOCKS_ADD  0x1000
 #define CONNECT_SOCKS      0xf000
 
+
+/* Server        *Connection2Server (Connection *conn);
+   Connection    *Server2Connection (Server *serv); */
+#define Connection2Server(c) ((Server *)(c))
+#define Server2Connection(c) ((Connection *)(c))
+
 Connection    *ConnectionC       (UWORD type DEBUGPARAM);
 Connection    *ConnectionClone   (Connection *conn, UWORD type DEBUGPARAM);
 void           ConnectionD       (Connection *conn DEBUGPARAM);
@@ -118,7 +199,7 @@ UDWORD         ConnectionFindNr  (Connection *conn);
 const char    *ConnectionType    (Connection *conn);
 const char    *ConnectionServerType  (UWORD type);
 UWORD          ConnectionServerNType (const char *type, char del);
-val_t          ConnectionPrefVal (Connection *conn, UDWORD flag);
+val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
 
 #define ConnectionC(t)       ConnectionC (t DEBUGARGS)
 #define ConnectionClone(c,t) ConnectionClone (c,t DEBUGARGS)

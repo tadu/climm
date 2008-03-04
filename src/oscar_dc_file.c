@@ -73,7 +73,7 @@ static BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags);
 /*
  * Create a new file listener unless one already exists.
  */
-Connection *PeerFileCreate (Connection *serv)
+Connection *PeerFileCreate (Server *serv)
 {
     Connection *flist;
     
@@ -82,10 +82,10 @@ Connection *PeerFileCreate (Connection *serv)
     if (!serv->assoc || serv->assoc->version < 6)
         return NULL;
     
-    if ((flist = ConnectionFind (TYPE_FILELISTEN, 0, serv)))
+    if ((flist = ConnectionFind (TYPE_FILELISTEN, 0, Server2Connection (serv))))
         return flist;
     
-    flist = ConnectionClone (serv, TYPE_FILELISTEN);
+    flist = ConnectionClone (Server2Connection (serv), TYPE_FILELISTEN);
     if (!flist)
         return NULL;
 
@@ -144,7 +144,8 @@ void PeerFileUser (UDWORD seq, Contact *cont, const char *reason, Connection *se
  */
 UBYTE PeerFileIncAccept (Connection *list, Event *event)
 {
-    Connection *flist, *fpeer, *serv;
+    Connection *flist, *fpeer;
+    Server *serv;
     Contact *cont;
     UDWORD opt_bytes, opt_acc;
     const char *opt_files;
@@ -156,7 +157,7 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
 
     ASSERT_MSGLISTEN(list);
     
-    serv  = list->parent;
+    serv  = Connection2Server (list->parent);
     cont  = event->cont;
     flist = PeerFileCreate (serv);
 
@@ -196,7 +197,7 @@ BOOL PeerFileAccept (Connection *peer, UWORD ackstatus, UDWORD port)
 {
     Connection *flist, *fpeer;
     
-    flist = PeerFileCreate (peer->parent->parent);
+    flist = PeerFileCreate (Connection2Server (peer->parent->parent));
     fpeer = ConnectionFind (TYPE_FILEDIRECT, peer->cont, flist);
     
     if (!flist || !fpeer || !port || (ackstatus == TCP_ACK_REFUSE))

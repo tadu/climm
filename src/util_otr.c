@@ -133,12 +133,12 @@ static UWORD proto_type (const char *proto_name)
 /* otr context to contact */
 static Contact *find_contact (const char *account, const char *proto, const char *contact)
 {
-    Connection *conn;
+    Server *serv;
     Contact *cont;
 
     /* may there be more than 1 TYPEF_HAVEUIN connection for a screen name? */
-    conn = ConnectionFindScreen (proto_type (proto), account);
-    if (!conn)
+    serv = Connection2Server (ConnectionFindScreen (proto_type (proto), account));
+    if (!serv)
     {
         rl_print (COLDEBUG);
         rl_printf (i18n (2642, "util_otr: no connection found for account %s and protocol %s"),
@@ -147,7 +147,7 @@ static Contact *find_contact (const char *account, const char *proto, const char
         return NULL;
     }
 
-    cont = ContactScreen (conn, contact);
+    cont = ContactScreen (serv, contact);
     if (!cont)
     {
         rl_print (COLDEBUG);

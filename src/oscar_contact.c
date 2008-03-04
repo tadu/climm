@@ -46,7 +46,7 @@
  */
 JUMP_SNAC_F(SnacSrvContacterr)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     UWORD err, cnt;
     Contact *cont;
     char first = 0, empty = 0;
@@ -97,7 +97,7 @@ JUMP_SNAC_F(SnacSrvReplybuddy)
 /*
  * CLI_ADDCONTACT - SNAC(3,4)
  */
-void SnacCliAddcontact (Connection *serv, Contact *cont, ContactGroup *cg)
+void SnacCliAddcontact (Server *serv, Contact *cont, ContactGroup *cg)
 {
     Packet *pak;
     int i;
@@ -129,7 +129,7 @@ void SnacCliAddcontact (Connection *serv, Contact *cont, ContactGroup *cg)
 /*
  * CLI_REMCONTACT - SNAC(3,5)
  */
-void SnacCliRemcontact (Connection *serv, Contact *cont, ContactGroup *cg)
+void SnacCliRemcontact (Server *serv, Contact *cont, ContactGroup *cg)
 {
     Packet *pak;
     int i;
@@ -158,7 +158,7 @@ void SnacCliRemcontact (Connection *serv, Contact *cont, ContactGroup *cg)
  */
 JUMP_SNAC_F(SnacSrvContrefused)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     Contact *cont;
     
     cont = PacketReadCont (event->pak, serv);
@@ -171,7 +171,7 @@ JUMP_SNAC_F(SnacSrvContrefused)
  */
 JUMP_SNAC_F(SnacSrvUseronline)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     Contact *cont;
     UDWORD ostat;
     Packet *p, *pak;
@@ -231,6 +231,6 @@ JUMP_SNAC_F(SnacSrvUseronline)
  */
 JUMP_SNAC_F(SnacSrvUseroffline)
 {
-    IMOffline (PacketReadCont (event->pak, event->conn));
+    IMOffline (PacketReadCont (event->pak, Connection2Server (event->conn)));
 }
 

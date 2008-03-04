@@ -53,12 +53,12 @@
 #include "conv.h"
 #include "oscar_dc.h"
 
-static void FlapChannel1 (Connection *conn, Packet *pak);
-static void FlapSave (Connection *serv, Packet *pak, BOOL in);
+static void FlapChannel1 (Server *serv, Packet *pak);
+static void FlapSave (Server *serv, Packet *pak, BOOL in);
 
 void SrvCallBackFlap (Event *event)
 {
-    Connection *conn;
+    Server *serv;
 
     if (!event->conn)
     {
@@ -69,19 +69,19 @@ void SrvCallBackFlap (Event *event)
     assert (event->type == QUEUE_FLAP);
     ASSERT_SERVER (event->conn);
     
-    conn = event->conn;
+    serv = Connection2Server (event->conn);
 
     event->pak->tpos = event->pak->rpos;
     event->pak->cmd = PacketRead1 (event->pak);
     event->pak->id  = PacketReadB2 (event->pak);
                       PacketReadB2 (event->pak);
     
-    conn->stat_pak_rcvd++;
-    conn->stat_real_pak_rcvd++;
+    serv->stat_pak_rcvd++;
+    serv->stat_real_pak_rcvd++;
     switch (event->pak->cmd)
     {
         case 1: /* Client login */
-            FlapChannel1 (conn, event->pak);
+            FlapChannel1 (serv, event->pak);
             break;
         case 2: /* SNAC packets */
             SnacCallback (event);
@@ -89,7 +89,7 @@ void SrvCallBackFlap (Event *event)
         case 3: /* Errors */
             break;
         case 4: /* Logoff */
-            FlapChannel4 (conn, event->pak);
+            FlapChannel4 (serv, event->pak);
             break;
         case 5: /* Ping */
             if (PacketReadB4 (event->pak) || PacketReadLeft (event->pak))
@@ -103,7 +103,7 @@ void SrvCallBackFlap (Event *event)
 
 /***********************************************/
 
-static void FlapChannel1 (Connection *conn, Packet *pak)
+static void FlapChannel1 (Server *serv, Packet *pak)
 {
     int i;
 
@@ -122,36 +122,36 @@ static void FlapChannel1 (Connection *conn, Packet *pak)
                 rl_print (s_dump (pak->data + pak->rpos, PacketReadLeft (pak)));
                 break;
             }
-            if (!conn->uin)
+            if (!serv->uin)
             {
-                FlapCliHello (conn);
-                SnacCliRegisteruser (conn);
+                FlapCliHello (serv);
+                SnacCliRegisteruser (serv);
             }
-            else if (conn->connect & 8)
+            else if (serv->connect & 8)
             {
-                TLV *tlv = conn->tlv;
+                TLV *tlv = serv->tlv;
                 
                 assert (tlv);
-                FlapCliCookie (conn, tlv[6].str.txt, tlv[6].str.len);
+                FlapCliCookie (serv, tlv[6].str.txt, tlv[6].str.len);
                 TLVD (tlv);
                 tlv = NULL;
             }
 #if ENABLE_SSL
             else if (libgcrypt_is_present)
             {
-                FlapCliHello (conn);
-                SnacCliReqlogin (conn);
+                FlapCliHello (serv);
+                SnacCliReqlogin (serv);
             }
 #endif
             else
-                FlapCliIdent (conn);
+                FlapCliIdent (serv);
             break;
         default:
             rl_printf (i18n (1883, "FLAP channel 1 unknown command %d.\n"), i);
     }
 }
 
-void FlapChannel4 (Connection *conn, Packet *pak)
+void FlapChannel4 (Server *serv, Packet *pak)
 {
     TLV *tlv;
     
@@ -159,12 +159,12 @@ void FlapChannel4 (Connection *conn, Packet *pak)
     if (!tlv[5].str.len)
     {
         rl_printf ("%s " COLINDENT, s_now);
-        if (!(conn->connect & CONNECT_OK))
+        if (!(serv->connect & CONNECT_OK))
             rl_print (i18n (1895, "Login failed:\n"));
         else
             rl_print (i18n (1896, "Server closed connection:\n"));
         rl_printf (i18n (1048, "Error code: %ld\n"), UD2UL (tlv[9].nr ? tlv[9].nr : tlv[8].nr));
-        if (tlv[1].str.len && strcmp (tlv[1].str.txt, conn->screen))
+        if (tlv[1].str.len && strcmp (tlv[1].str.txt, serv->screen))
             rl_printf (i18n (2218, "UIN: %s\n"), tlv[1].str.txt);
         if (tlv[4].str.len)
             rl_printf (i18n (1961, "URL: %s\n"), tlv[4].str.txt);
@@ -173,31 +173,31 @@ void FlapChannel4 (Connection *conn, Packet *pak)
         if (tlv[8].nr == 24)
             rl_print (i18n (2328, "You logged in too frequently, please wait 30 minutes before trying again.\n"));
         if (tlv[8].nr == 5)
-            s_repl (&conn->passwd, NULL);
+            s_repl (&serv->passwd, NULL);
 
-        if ((conn->connect & CONNECT_MASK) && conn->sok != -1)
-            sockclose (conn->sok);
-        conn->connect = 0;
-        conn->sok = -1;
+        if ((serv->connect & CONNECT_MASK) && serv->sok != -1)
+            sockclose (serv->sok);
+        serv->connect = 0;
+        serv->sok = -1;
         TLVD (tlv);
         tlv = NULL;
     }
     else
     {
         assert (strchr (tlv[5].str.txt, ':'));
-        FlapCliGoodbye (conn);
+        FlapCliGoodbye (serv);
 
-        conn->port = atoi (strchr (tlv[5].str.txt, ':') + 1);
+        serv->port = atoi (strchr (tlv[5].str.txt, ':') + 1);
         *strchr (tlv[5].str.txt, ':') = '\0';
-        s_repl (&conn->server, tlv[5].str.txt);
-        conn->ip = 0;
+        s_repl (&serv->server, tlv[5].str.txt);
+        serv->ip = 0;
 
         rl_printf (i18n (2511, "Redirect to server %s:%s%ld%s... "),
-                  s_wordquote (conn->server), COLQUOTE, UD2UL (conn->port), COLNONE);
+                  s_wordquote (serv->server), COLQUOTE, UD2UL (serv->port), COLNONE);
 
-        conn->connect = 8;
-        conn->tlv = tlv;
-        UtilIOConnectTCP (conn);
+        serv->connect = 8;
+        serv->tlv = tlv;
+        UtilIOConnectTCP (Server2Connection (serv));
     }
 }
 
@@ -226,7 +226,7 @@ void FlapPrint (Packet *pak)
     pak->rpos = opos;
 }
 
-static void FlapSave (Connection *serv, Packet *pak, BOOL in)
+static void FlapSave (Server *serv, Packet *pak, BOOL in)
 {
     UDWORD oldrpos = pak->rpos;
     UBYTE ch;
@@ -311,14 +311,14 @@ Packet *FlapC (UBYTE channel)
     return pak;
 }
 
-void FlapSend (Connection *conn, Packet *pak)
+void FlapSend (Server *serv, Packet *pak)
 {
-    if (!conn->our_seq)
-        conn->our_seq = rand () & 0x7fff;
-    conn->our_seq++;
-    conn->our_seq &= 0x7fff;
+    if (!serv->our_seq)
+        serv->our_seq = rand () & 0x7fff;
+    serv->our_seq++;
+    serv->our_seq &= 0x7fff;
 
-    PacketWriteAtB2 (pak, 2, pak->id = conn->our_seq);
+    PacketWriteAtB2 (pak, 2, pak->id = serv->our_seq);
     PacketWriteAtB2 (pak, 4, pak->len - 6);
     
     if (prG->verbose & DEB_PACK8)
@@ -328,13 +328,13 @@ void FlapSend (Connection *conn, Packet *pak)
         rl_print (COLEXDENT "\r");
     }
     
-    if (ConnectionPrefVal (conn, CO_LOGSTREAM))
-        FlapSave (conn, pak, FALSE);
+    if (ConnectionPrefVal (serv, CO_LOGSTREAM))
+        FlapSave (serv, pak, FALSE);
     
-    conn->stat_pak_sent++;
-    conn->stat_real_pak_sent++;
+    serv->stat_pak_sent++;
+    serv->stat_real_pak_sent++;
     
-    sockwrite (conn->sok, pak->data, pak->len);
+    sockwrite (serv->sok, pak->data, pak->len);
     PacketD (pak);
 }
 
@@ -352,18 +352,18 @@ static char *_encryptpw (const char *pw)
 }
 
     
-void FlapCliIdent (Connection *conn)
+void FlapCliIdent (Server *serv)
 {
     Packet *pak;
     char *f;
 
-    assert (conn->passwd);
-    assert (*conn->passwd);
+    assert (serv->passwd);
+    assert (*serv->passwd);
 
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
-    PacketWriteTLVStr  (pak, 1, conn->screen);
-    PacketWriteTLVData (pak, 2, f = _encryptpw (conn->passwd), strlen (conn->passwd));
+    PacketWriteTLVStr  (pak, 1, serv->screen);
+    PacketWriteTLVData (pak, 2, f = _encryptpw (serv->passwd), strlen (serv->passwd));
     PacketWriteTLVStr  (pak, 3, "ICQ Inc. - Product of ICQ (TM).2003b.5.37.1.3728.85");
     PacketWriteTLV2    (pak, 22, 266);
     PacketWriteTLV2    (pak, 23, FLAP_VER_MAJOR);
@@ -373,47 +373,52 @@ void FlapCliIdent (Connection *conn)
     PacketWriteTLV4    (pak, 20, FLAP_VER_SUBBUILD);
     PacketWriteTLVStr  (pak, 15, "de");  /* en */
     PacketWriteTLVStr  (pak, 14, "DE");  /* en */
-    FlapSend (conn, pak);
+    FlapSend (serv, pak);
     free (f);
 }
 
-void FlapCliCookie (Connection *conn, const char *cookie, UWORD len)
+void FlapCliCookie (Server *serv, const char *cookie, UWORD len)
 {
     Packet *pak;
 
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
     PacketWriteTLVData (pak, 6, cookie, len);
-    FlapSend (conn, pak);
+    FlapSend (serv, pak);
 }
 
-void FlapCliHello (Connection *conn)
+void FlapCliHello (Server *serv)
 {
     Packet *pak;
     
     pak = FlapC (1);
     PacketWriteB4 (pak, CLI_HELLO);
-    FlapSend (conn, pak);
+    FlapSend (serv, pak);
 }
 
-void FlapCliGoodbye (Connection *conn)
+static void FlapCliGoodbyeConn (Connection *conn)
+{
+    FlapCliGoodbye (Connection2Server (conn));
+}
+
+void FlapCliGoodbye (Server *serv)
 {
     Packet *pak;
     
-    if (!(conn->connect & CONNECT_MASK))
+    if (!(serv->connect & CONNECT_MASK))
         return;
     
     pak = FlapC (4);
-    FlapSend (conn, pak);
+    FlapSend (serv, pak);
     
-    sockclose (conn->sok);
-    conn->sok = -1;
-    conn->connect = 0;
+    sockclose (serv->sok);
+    serv->sok = -1;
+    serv->connect = 0;
 }
 
-void FlapCliKeepalive (Connection *conn)
+void FlapCliKeepalive (Server *serv)
 {
-    FlapSend (conn, FlapC (5));
+    FlapSend (serv, FlapC (5));
 }
 
 jump_conn_f SrvCallBackReceive;
@@ -422,32 +427,32 @@ static void SrvCallBackTimeout (Event *event);
 static void SrvCallBackDoReconn (Event *event);
 
 
-Event *ConnectionInitServer (Connection *conn)
+Event *ConnectionInitServer (Server *serv)
 {
     Contact *cont;
     Event *event;
     
-    if (!conn->passwd || !*conn->passwd || !conn->port)
+    if (!serv->passwd || !*serv->passwd || !serv->port)
         return NULL;
-    if (!conn->uin && ~conn->flags & CONN_WIZARD)
+    if (!serv->uin && ~serv->flags & CONN_WIZARD)
         return NULL;
-    if (!conn->server || !*conn->server)
-        s_repl (&conn->server, "login.icq.com");
+    if (!serv->server || !*serv->server)
+        s_repl (&serv->server, "login.icq.com");
 
-    if (conn->sok != -1)
-        sockclose (conn->sok);
-    conn->sok = -1;
-    conn->cont = cont = conn->uin ? ContactUIN (conn, conn->uin) : NULL;
-    conn->our_seq  = rand () & 0x7fff;
-    conn->connect  = 0;
-    conn->dispatch = &SrvCallBackReceive;
-    conn->reconnect= &SrvCallBackReconn;
-    conn->close    = &FlapCliGoodbye;
-    s_repl (&conn->server, conn->pref_server);
-    if (conn->status == ims_offline)
-        conn->status = conn->pref_status;
+    if (serv->sok != -1)
+        sockclose (serv->sok);
+    serv->sok = -1;
+    serv->cont = cont = serv->uin ? ContactUIN (serv, serv->uin) : NULL;
+    serv->our_seq  = rand () & 0x7fff;
+    serv->connect  = 0;
+    serv->dispatch = &SrvCallBackReceive;
+    serv->reconnect= &SrvCallBackReconn;
+    serv->close    = &FlapCliGoodbyeConn;
+    s_repl (&serv->server, serv->pref_server);
+    if (serv->status == ims_offline)
+        serv->status = serv->pref_status;
     
-    if ((event = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
+    if ((event = QueueDequeue2 (Server2Connection (serv), QUEUE_DEP_WAITLOGIN, 0, NULL)))
     {
         event->attempts++;
         event->due = time (NULL) + 10 * event->attempts + 10;
@@ -455,31 +460,34 @@ Event *ConnectionInitServer (Connection *conn)
         QueueEnqueue (event);
     }
     else
-        event = QueueEnqueueData (conn, QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 12,
-                                  NULL, conn->cont, NULL, &SrvCallBackTimeout);
+        event = QueueEnqueueData (Server2Connection (serv), QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 12,
+                                  NULL, serv->cont, NULL, &SrvCallBackTimeout);
 
     rl_printf (i18n (2512, "Opening v8 connection to %s:%s%ld%s for %s%s%s... "),
-              s_wordquote (conn->server), COLQUOTE, UD2UL (conn->port), COLNONE, COLCONTACT,
+              s_wordquote (serv->server), COLQUOTE, UD2UL (serv->port), COLNONE, COLCONTACT,
               !cont ? i18n (2513, "new UIN") : cont->nick ? cont->nick 
               : cont->screen, COLNONE);
 
-    UtilIOConnectTCP (conn);
+    UtilIOConnectTCP (Server2Connection (serv));
     return event;
 }
 
 static void SrvCallBackReconn (Connection *conn)
 {
     ContactGroup *cg = conn->contacts;
+    Server *serv;
     Event *event;
     Contact *cont;
     int i;
 
-    if (!(cont = conn->cont))
+    serv = Connection2Server (conn);
+
+    if (!(cont = serv->cont))
         return;
     
-    if (!(event = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
+    if (!(event = QueueDequeue2 (Server2Connection (serv), QUEUE_DEP_WAITLOGIN, 0, NULL)))
     {
-        ConnectionInitServer (conn);
+        ConnectionInitServer (serv);
         return;
     }
     
@@ -506,7 +514,7 @@ static void SrvCallBackDoReconn (Event *event)
     if (event->conn && event->conn->type == TYPE_SERVER)
     {
         QueueEnqueue (event);
-        ConnectionInitServer (event->conn);
+        ConnectionInitServer (Connection2Server (event->conn));
     }
     else
         EventD (event);
@@ -564,7 +572,7 @@ void SrvCallBackReceive (Connection *conn)
             case 1:
             case 5:
                 /* fall-through */
-                    conn->connect |= 4 | CONNECT_SELECT_R;
+                conn->connect |= 4 | CONNECT_SELECT_R;
                 conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~3;
                 return;
             case 2:
@@ -597,40 +605,40 @@ void SrvCallBackReceive (Connection *conn)
         FlapPrint (pak);
         rl_print (COLEXDENT "\r");
     }
-    if (ConnectionPrefVal (conn, CO_LOGSTREAM))
-        FlapSave (conn, pak, TRUE);
+    if (ConnectionPrefVal (Connection2Server (conn), CO_LOGSTREAM))
+        FlapSave (Connection2Server (conn), pak, TRUE);
     
     QueueEnqueueData (conn, QUEUE_FLAP, pak->id, time (NULL),
                       pak, 0, NULL, &SrvCallBackFlap);
     pak = NULL;
 }
 
-Connection *SrvRegisterUIN (Connection *conn, const char *pass)
+Server *SrvRegisterUIN (Server *serv, const char *pass)
 {
-    Connection *news;
+    Server *news;
 #ifdef ENABLE_PEER2PEER
-    Connection *newl;
+    Server *newl;
 #endif
 
     assert (pass);
     assert (*pass);
     
-    if (!(news = ConnectionC (TYPE_SERVER)))
+    if (!(news = Connection2Server (ConnectionC (TYPE_SERVER))))
         return NULL;
 
 #ifdef ENABLE_PEER2PEER
-    if (!(newl = ConnectionClone (news, TYPE_MSGLISTEN)))
+    if (!(newl = Connection2Server (ConnectionClone (Server2Connection (news), TYPE_MSGLISTEN))))
     {
-        ConnectionD (news);
+        ConnectionD (Server2Connection (news));
         return NULL;
     }
-    news->assoc = newl;
+    news->assoc = Server2Connection (newl);
     newl->c_open = &ConnectionInitPeer;
-    if (conn && conn->assoc)
+    if (serv && serv->assoc)
     {
-        newl->version = conn->assoc->version;
-        newl->status = newl->pref_status = conn->assoc->pref_status;
-        newl->flags = conn->assoc->flags & ~CONN_CONFIGURED;
+        newl->version = serv->assoc->version;
+        newl->status = newl->pref_status = serv->assoc->pref_status;
+        newl->flags = serv->assoc->flags & ~CONN_CONFIGURED;
     }
     else
     {
@@ -640,15 +648,15 @@ Connection *SrvRegisterUIN (Connection *conn, const char *pass)
     newl->flags &= ~CONN_AUTOLOGIN;
 #endif
 
-    if (conn)
+    if (serv)
     {
-        assert (conn->type == TYPE_SERVER);
+        assert (serv->type == TYPE_SERVER);
         
-        news->flags   = conn->flags & ~CONN_CONFIGURED;
-        news->version = conn->version;
+        news->flags   = serv->flags & ~CONN_CONFIGURED;
+        news->version = serv->version;
         news->pref_status  = ims_online;
-        news->pref_server  = strdup (conn->pref_server);
-        news->pref_port    = conn->pref_port;
+        news->pref_server  = strdup (serv->pref_server);
+        news->pref_port    = serv->pref_port;
         news->pref_passwd  = strdup (pass);
     }
     else

@@ -59,7 +59,7 @@ struct ContactGroup_s
 {
     ContactGroup  *more;
     Contact       *contacts[32];
-    Connection    *serv;
+    Server        *serv;
     char          *name;
     Opt            copts;
     UWORD          id;
@@ -91,7 +91,7 @@ struct ContactIDs_s
 
 struct Contact_s
 {
-    Connection *serv;
+    Server *serv;
     ContactGroup *group;
     char  *nick;
     char  *screen;
@@ -128,8 +128,8 @@ struct Contact_s
 };
 
 
-ContactGroup *ContactGroupC       (Connection *serv, UWORD id, const char *name DEBUGPARAM);
-ContactGroup *ContactGroupFind    (Connection *serv, UWORD id, const char *name);
+ContactGroup *ContactGroupC       (Server *serv, UWORD id, const char *name DEBUGPARAM);
+ContactGroup *ContactGroupFind    (Server *serv, UWORD id, const char *name);
 ContactGroup *ContactGroupIndex   (int i);
 UWORD         ContactGroupID      (ContactGroup *group);
 UDWORD        ContactGroupCount   (ContactGroup *group);
@@ -139,13 +139,13 @@ void          ContactGroupSort    (ContactGroup *group, contact_sort_func_t sort
 
 /* NULL ContactGroup accesses global list */
 Contact      *ContactIndex        (ContactGroup *group, int i);
-Contact      *ContactUIN          (Connection *serv, UDWORD uin DEBUGPARAM);
-Contact      *ContactScreen       (Connection *serv, const char *screen DEBUGPARAM);
+Contact      *ContactUIN          (Server *serv, UDWORD uin DEBUGPARAM);
+Contact      *ContactScreen       (Server *serv, const char *screen DEBUGPARAM);
 #if ENABLE_CONT_HIER
-Contact      *ContactScreenP      (Connection *serv, Contact *parent, const char *screen DEBUGPARAM);
+Contact      *ContactScreenP      (Server *serv, Contact *parent, const char *screen DEBUGPARAM);
 #endif
-void          ContactCreate       (Connection *serv, Contact *cont DEBUGPARAM);
-Contact      *ContactFind         (Connection *serv, const char *nick);
+void          ContactCreate       (Server *serv, Contact *cont DEBUGPARAM);
+Contact      *ContactFind         (Server *serv, const char *nick);
 const char   *ContactFindAlias    (Contact *cont, const char *nick);
 Contact      *ContactFindUIN      (ContactGroup *group, UDWORD uin);
 Contact      *ContactFindScreen   (ContactGroup *group, const char *screen);

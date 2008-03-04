@@ -61,24 +61,50 @@
 #define CLIMM_ICON_NOCOLOR_6 " cli/mm  "
 #define CLIMM_ICON_NOCOLOR_7 "         "
 
-static void Idle_Check (Connection *conn);
+/*
+      |
+cli=o=O
+    | |
+    O=o=mm
+    |
+
+cli
+  O=o==
+  | |
+==o=O
+    |mm
+
+    |
+==o=O
+  | |
+  O=o==
+  |
+
+CLI  /
+  +-+
+  | |
+  +-+
+ /   MM
+*/
+
+static void Idle_Check (Server *serv);
 
 user_interface_state uiG = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 Preferences *prG;
 
-static void Idle_Check (Connection *conn)
+static void Idle_Check (Server *serv)
 {
     int saver = -1;
     time_t now;
     UDWORD delta;
     status_t news = ims_offline;
-    status_noi_t noinv = ContactClearInv (conn->status);
+    status_noi_t noinv = ContactClearInv (serv->status);
 
-    if (~conn->type & TYPEF_ANY_SERVER)
+    if (~serv->type & TYPEF_ANY_SERVER)
         return;
 
     if ((noinv == imr_dnd || noinv == imr_occ || noinv == imr_ffc)
-        || ~conn->connect & CONNECT_OK)
+        || ~serv->connect & CONNECT_OK)
     {
         uiG.idle_val = 0;
         return;
@@ -104,34 +130,34 @@ static void Idle_Check (Connection *conn)
                     case 0: /* no screen saver, not locked */
                         if (noinv != imr_dnd && noinv != imr_occ && noinv != imr_na && noinv != imr_away)
                             return;
-                        news = ContactCopyInv (conn->status, imr_online);
-                        conn->idle_flag = i_idle;
+                        news = ContactCopyInv (serv->status, imr_online);
+                        serv->idle_flag = i_idle;
                         break;
                     case 2: /* locked workstation */
                     case 3:
                         if (noinv == imr_na)
                             return;
-                        news = ContactCopyInv (conn->status, imr_na);
+                        news = ContactCopyInv (serv->status, imr_na);
                         uiG.idle_msgs = 0;
-                        conn->idle_flag = i_os;
+                        serv->idle_flag = i_os;
                         break;
                     case 1: /* screen saver only */
                         if (noinv == imr_away || noinv == imr_occ || noinv == imr_dnd)
                             return;
-                        news = ContactCopyInv (conn->status, imr_away);
+                        news = ContactCopyInv (serv->status, imr_away);
                         uiG.idle_msgs = 0;
-                        conn->idle_flag = i_os;
+                        serv->idle_flag = i_os;
                         break;
                 }
 
                 uiG.idle_val = 0;
                 delta = 0;
-                if (news == ims_offline || news == conn->status)
+                if (news == ims_offline || news == serv->status)
                     return;
             }
         }
 
-        if (conn->idle_flag == i_idle && news == ims_offline)
+        if (serv->idle_flag == i_idle && news == ims_offline)
             return;
     }
     else
@@ -140,33 +166,33 @@ static void Idle_Check (Connection *conn)
     if (!uiG.idle_val)
         uiG.idle_val = now;
     
-    if (conn->idle_flag == i_idle)
+    if (serv->idle_flag == i_idle)
     {
         if (delta >= prG->away_time && noinv != imr_dnd
             && noinv != imr_occ && noinv != imr_na && noinv != imr_away)
         {
-            news = ContactCopyInv (conn->status, imr_away);
-            conn->idle_flag = i_want_away;
+            news = ContactCopyInv (serv->status, imr_away);
+            serv->idle_flag = i_want_away;
             uiG.idle_msgs = 0;
         }
     }
-    else if (conn->idle_flag != i_os)
+    else if (serv->idle_flag != i_os)
     {
         if (delta < prG->away_time || !prG->away_time)
         {
-            news = ContactCopyInv (conn->status, imr_online);
-            conn->idle_flag = i_idle;
+            news = ContactCopyInv (serv->status, imr_online);
+            serv->idle_flag = i_idle;
             uiG.idle_val = 0;
         }
-        else if (conn->idle_flag == i_want_away && delta >= 2 * prG->away_time)
+        else if (serv->idle_flag == i_want_away && delta >= 2 * prG->away_time)
         {
-            news = ContactCopyInv (conn->status, imr_na);
-            conn->idle_flag = i_want_na;
+            news = ContactCopyInv (serv->status, imr_na);
+            serv->idle_flag = i_want_na;
         }
     }
-    if (news != ims_offline && news != conn->status)
+    if (news != ims_offline && news != serv->status)
     {
-        IMSetStatus (conn, NULL, news, i18n (2605, "Automatic status change."));
+        IMSetStatus (serv, NULL, news, i18n (2605, "Automatic status change."));
         rl_printf ("%s ", s_now);
         rl_printf (i18n (1064, "Automatically changed status to %s.\n"), s_status (news, 0));
     }
@@ -181,7 +207,7 @@ static void Init (int argc, char *argv[])
 #ifdef _WIN32
     WSADATA wsaData;
 #endif
-    Connection *conn;
+    Server *serv;
     Event *loginevent = NULL;
     const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b, *arg_s, *arg_u, *arg_p;
     UDWORD loaded, uingiven = 0, arg_h = 0, arg_vv = 0, arg_c = 0;
@@ -466,12 +492,12 @@ static void Init (int argc, char *argv[])
         targv[j++] = "";
     }
 
-    for (i = 0; (conn = ConnectionNr (i)); i++)
-        if (conn->c_open && conn->flags & CONN_AUTOLOGIN)
-            if (conn->type & TYPEF_ANY_SERVER)
-                conn->status = conn->pref_status;
+    for (i = 0; (serv = Connection2Server (ConnectionNr (i))); i++)
+        if (serv->c_open && serv->flags & CONN_AUTOLOGIN)
+            if (serv->type & TYPEF_ANY_SERVER)
+                serv->status = serv->pref_status;
 
-    conn = NULL;
+    serv = NULL;
     s_init (&arg_C, "", 0);
     arg_u = arg_p = arg_s = NULL;
     
@@ -481,32 +507,32 @@ static void Init (int argc, char *argv[])
         {
             if (arg_u)
             {
-                if (!(conn = ConnectionFindScreen (TYPEF_ANY_SERVER, arg_u)))
+                if (!(serv = Connection2Server (ConnectionFindScreen (TYPEF_ANY_SERVER, arg_u))))
                 {
                     char *u = strdup (arg_u);
                     if (is_valid_icq_name (u))
-                        conn = PrefNewConnection (TYPE_SERVER, u, arg_p);
+                        serv = PrefNewConnection (TYPE_SERVER, u, arg_p);
 #ifdef ENABLE_XMPP
                     else if (is_valid_xmpp_name (u))
-                        conn = PrefNewConnection (TYPE_XMPP_SERVER, u, arg_p);
+                        serv = PrefNewConnection (TYPE_XMPP_SERVER, u, arg_p);
 #endif
 #ifdef ENABLE_MSN
                     else if (is_valid_msn_name (u))
-                        conn = PrefNewConnection (TYPE_MSN_SERVER, u, arg_p);
+                        serv = PrefNewConnection (TYPE_MSN_SERVER, u, arg_p);
 #endif
                     s_free (u);
                 }
             }
             else if (!*targv[i+1])
-                conn = ConnectionFind (TYPEF_ANY_SERVER, NULL, NULL);
-            if (conn)
+                serv = Connection2Server (ConnectionFind (TYPEF_ANY_SERVER, NULL, NULL));
+            if (serv)
             {
                 if (arg_s)
-                    conn->status = arg_ss;
+                    serv->status = arg_ss;
                 if (arg_p)
-                    s_repl (&conn->passwd, arg_p);
-                if (conn->passwd && *conn->passwd && (!arg_s || arg_ss != ims_offline) && (loginevent = conn->c_open (conn)))
-                    QueueEnqueueDep (conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, conn->cont,
+                    s_repl (&serv->passwd, arg_p);
+                if (serv->passwd && *serv->passwd && (!arg_s || arg_ss != ims_offline) && (loginevent = serv->c_open (serv)))
+                    QueueEnqueueDep (Server2Connection (serv), QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, serv->cont,
                                      OptSetVals (NULL, CO_CLIMMCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                      &CmdUserCallbackTodo);
             }
@@ -517,7 +543,7 @@ static void Init (int argc, char *argv[])
             arg_p = arg_s = NULL;
             s_init (&arg_C, "", 0);
             arg_ss = ims_online;
-            conn = NULL;
+            serv = NULL;
         }
         else if (!strcmp (targv[i], "-p") || !strcmp (targv[i], "--passwd"))
             arg_p = targv[++i];
@@ -537,34 +563,34 @@ static void Init (int argc, char *argv[])
     }
     
     if (!uingiven)
-        for (i = 0; (conn = ConnectionNr (i)); i++)
-            if (conn->c_open && conn->flags & CONN_AUTOLOGIN)
-                if (conn->type & TYPEF_ANY_SERVER)
-                    if (!conn->passwd || !*conn->passwd)
+        for (i = 0; (serv = Connection2Server (ConnectionNr (i))); i++)
+            if (serv->c_open && serv->flags & CONN_AUTOLOGIN)
+                if (serv->type & TYPEF_ANY_SERVER)
+                    if (!serv->passwd || !*serv->passwd)
                     {
                         strc_t pwd;
-                        const char *s = s_sprintf ("%s", s_qquote (conn->screen));
+                        const char *s = s_sprintf ("%s", s_qquote (serv->screen));
                         rl_printf (i18n (2689, "Enter password for %s account %s: "),
-                                   s_qquote (ConnectionServerType (conn->type)), s);
+                                   s_qquote (ConnectionServerType (serv->type)), s);
                         pwd = UtilIOReadline (stdin);
                         rl_printf ("\n");
-                        s_repl (&conn->passwd, pwd ? ConvFrom (pwd, prG->enc_loc)->txt : "");
+                        s_repl (&serv->passwd, pwd ? ConvFrom (pwd, prG->enc_loc)->txt : "");
                     }
 
     if (!uingiven)
     {
-        for (i = 0; (conn = ConnectionNr (i)); i++)
-            if (conn->c_open && conn->flags & CONN_AUTOLOGIN)
+        for (i = 0; (serv = Connection2Server (ConnectionNr (i))); i++)
+            if (serv->c_open && serv->flags & CONN_AUTOLOGIN)
             {
-                if (conn->type & TYPEF_ANY_SERVER)
+                if (serv->type & TYPEF_ANY_SERVER)
                 {
-                    if (conn->passwd && *conn->passwd && conn->status != ims_offline && (loginevent = conn->c_open (conn)))
-                         QueueEnqueueDep (conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, conn->cont,
+                    if (serv->passwd && *serv->passwd && serv->status != ims_offline && (loginevent = serv->c_open (serv)))
+                         QueueEnqueueDep (Server2Connection (serv), QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, serv->cont,
                                           OptSetVals (NULL, CO_CLIMMCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                           &CmdUserCallbackTodo);
                 }
                 else
-                    conn->c_open (conn);
+                    serv->c_open (serv);
             }
     }
     s_done (&arg_C);
@@ -602,7 +628,7 @@ int main (int argc, char *argv[])
         for (i = 0; (conn = ConnectionNr (i)); i++)
         {
             if (conn->connect & CONNECT_OK && conn->type & TYPEF_ANY_SERVER)
-                Idle_Check (conn);
+                Idle_Check (Connection2Server (conn));
             if (conn->sok < 0 || !conn->dispatch)
                 continue;
             if (conn->connect & CONNECT_SELECT_R)

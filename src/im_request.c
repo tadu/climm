@@ -41,7 +41,7 @@ static void CallbackTogvis (Event *event)
         EventD (event);
         return;
     }
-    SnacCliRemvisible (event->conn, event->cont);
+    SnacCliRemvisible (Connection2Server (event->conn), event->cont);
     EventD (event);
 }
 
@@ -109,12 +109,12 @@ Message *cb_msg_revealinv (Message *msg)
     if (!(reveal_time = ContactPrefVal (msg->cont, CO_REVEALTIME)))
         return msg;
 
-    event = QueueDequeue2 (msg->cont->serv, QUEUE_TOGVIS, 0, msg->cont);
+    event = QueueDequeue2 (Server2Connection (msg->cont->serv), QUEUE_TOGVIS, 0, msg->cont);
     if (event)
         EventD (event);
     else
         SnacCliAddvisible (msg->cont->serv, msg->cont);
-    QueueEnqueueData (msg->cont->serv, QUEUE_TOGVIS, 0, time (NULL) + reveal_time, NULL, msg->cont, NULL, CallbackTogvis);
+    QueueEnqueueData (Server2Connection (msg->cont->serv), QUEUE_TOGVIS, 0, time (NULL) + reveal_time, NULL, msg->cont, NULL, CallbackTogvis);
     return msg;
 }
 
@@ -287,7 +287,7 @@ UBYTE IMCliReMsg (Contact *cont, Message *msg)
     return ret;
 }
 
-void IMCliInfo (Connection *conn, Contact *cont, int group)
+void IMCliInfo (Server *serv, Contact *cont, int group)
 {
     UDWORD ref = 0;
     if (cont)
@@ -298,11 +298,11 @@ void IMCliInfo (Connection *conn, Contact *cont, int group)
     }
     else
     {
-        if (conn->type == TYPE_SERVER)
-            ref = SnacCliSearchrandom (conn, group);
+        if (serv->type == TYPE_SERVER)
+            ref = SnacCliSearchrandom (serv, group);
     }
     if (ref)
-        QueueEnqueueData (conn, QUEUE_REQUEST_META, ref, time (NULL) + 60, NULL,
+        QueueEnqueueData (Server2Connection (serv), QUEUE_REQUEST_META, ref, time (NULL) + 60, NULL,
                           cont, NULL, &CallbackMeta);
 }
 
@@ -328,7 +328,7 @@ static void CallbackMeta (Event *event)
     }
 }
 
-void IMSetStatus (Connection *serv, Contact *cont, status_t status, const char *msg)
+void IMSetStatus (Server *serv, Contact *cont, status_t status, const char *msg)
 {
     assert (serv || cont);
     if (cont)

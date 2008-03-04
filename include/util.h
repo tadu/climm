@@ -12,7 +12,7 @@ typedef enum {
    ev_other       /* anything else */
 } evtype_t;
 
-int putlog (Connection *conn, time_t stamp, Contact *cont, 
+int putlog (Server *conn, time_t stamp, Contact *cont, 
             status_t status, UDWORD nativestatus, enum logtype level, UWORD type, const char *str);
 
 void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype, status_t status, const char *text);

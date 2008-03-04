@@ -5,7 +5,7 @@
 jump_snac_f SnacSrvReplylocation, SnacSrvRegrefused, SnacSrvNewuin,
     SnacSrvReplylogin, SnacSrvLoginkey;
 
-void SnacCliRegisteruser (Connection *serv);
-void SnacCliReqlogin (Connection *serv);
+void SnacCliRegisteruser (Server *serv);
+void SnacCliReqlogin (Server *serv);
 
 #endif

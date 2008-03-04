@@ -70,7 +70,7 @@ JUMP_SNAC_F (SnacSrvBoserr)
  */
 JUMP_SNAC_F(SnacSrvReplybos)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     if (serv->connect & CONNECT_OK)
         return;
     /* Step 3: (9,3) received */
@@ -81,7 +81,7 @@ JUMP_SNAC_F(SnacSrvReplybos)
 /*
  * CLI_ADDVISIBLE - SNAC(9,5)
  */
-void SnacCliAddvisible (Connection *serv, Contact *cont)
+void SnacCliAddvisible (Server *serv, Contact *cont)
 {
     ContactGroup *cg;
     Packet *pak;
@@ -101,7 +101,7 @@ void SnacCliAddvisible (Connection *serv, Contact *cont)
 /*
  * CLI_REMVISIBLE - SNAC(9,6)
  */
-void SnacCliRemvisible (Connection *serv, Contact *cont)
+void SnacCliRemvisible (Server *serv, Contact *cont)
 {
     Packet *pak;
     
@@ -115,7 +115,7 @@ void SnacCliRemvisible (Connection *serv, Contact *cont)
 /*
  * CLI_ADDINVIS - SNAC(9,7)
  */
-void SnacCliAddinvis (Connection *serv, Contact *cont)
+void SnacCliAddinvis (Server *serv, Contact *cont)
 {
     ContactGroup *cg;
     Packet *pak;
@@ -135,7 +135,7 @@ void SnacCliAddinvis (Connection *serv, Contact *cont)
 /*
  * CLI_REMINVIS - SNAC(9,8)
  */
-void SnacCliReminvis (Connection *serv, Contact *cont)
+void SnacCliReminvis (Server *serv, Contact *cont)
 {
     Packet *pak;
     

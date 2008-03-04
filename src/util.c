@@ -25,7 +25,7 @@
 /*
  * Log the event provided to the log with a time stamp.
  */
-int putlog (Connection *conn, time_t stamp, Contact *cont, 
+int putlog (Server *conn, time_t stamp, Contact *cont, 
             status_t status, UDWORD nativestatus, enum logtype level, UWORD type, const char *log)
 {
     char buffer[LOG_MAX_PATH + 1];                   /* path to the logfile */

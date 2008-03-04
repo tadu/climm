@@ -4,7 +4,7 @@
 #define CLIMM_IM_RESPONSE_H
 
 void HistShow (Contact *cont);
-void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg, UWORD inout);
+void HistMsg (Server *conn, Contact *cont, time_t stamp, const char *msg, UWORD inout);
 
 typedef enum { pm_leaf, pm_parent } parentmode_t;
 typedef enum { st_on, st_ch, st_off } change_t;

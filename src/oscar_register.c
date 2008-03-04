@@ -66,7 +66,7 @@ JUMP_SNAC_F(SnacSrvRegrefused)
 /*
  * CLI_MD5LOGIN - SNAC(17,2)
  */
-void SnacCliMd5login (Connection *serv, const char *hash)
+void SnacCliMd5login (Server *serv, const char *hash)
 {
     Packet *pak;
 
@@ -95,7 +95,7 @@ void SnacCliMd5login (Connection *serv, const char *hash)
  */
 JUMP_SNAC_F(SnacSrvReplylogin)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
 
     /* delegate to old login method */
     FlapChannel4 (serv, event->pak);
@@ -110,7 +110,7 @@ JUMP_SNAC_F(SnacSrvReplylogin)
 #define REG_X1 0x28000300
 #define REG_X2 0x9e270000
 #define REG_X3 0x00000302
-void SnacCliRegisteruser (Connection *serv)
+void SnacCliRegisteruser (Server *serv)
 {
     Packet *pak;
     
@@ -141,7 +141,7 @@ void SnacCliRegisteruser (Connection *serv)
  */
 JUMP_SNAC_F(SnacSrvNewuin)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     Contact *cont;
     UDWORD uin;
 
@@ -172,7 +172,7 @@ JUMP_SNAC_F(SnacSrvNewuin)
         if (Save_RC () == -1)
             rl_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
 #ifdef ENABLE_PEER2PEER
-        serv->assoc->c_open (serv->assoc);
+        serv->assoc->c_open (Connection2Server (serv->assoc));
 #endif
         serv->c_open (serv);
     }
@@ -183,7 +183,7 @@ JUMP_SNAC_F(SnacSrvNewuin)
 /*
  * CLI_REQLOGIN - SNAC(17,6)
  */
-void SnacCliReqlogin (Connection *serv)
+void SnacCliReqlogin (Server *serv)
 {
     Packet *pak;
 
@@ -201,7 +201,7 @@ void SnacCliReqlogin (Connection *serv)
  */
 JUMP_SNAC_F(SnacSrvLoginkey)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     char hash[16];
     ssl_md5ctx_t *ctx;
     int rc;

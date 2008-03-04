@@ -88,9 +88,9 @@ static void TCPSendInitv6 (Connection *peer);
 /*
  * "Logs in" peer2peer connection by opening listening socket.
  */
-Event *ConnectionInitPeer (Connection *list)
+Event *ConnectionInitPeer (Server *list)
 {
-    ASSERT_MSGLISTEN (list);
+    ASSERT_MSGLISTEN (Server2Connection (list));
     
     if (list->version < 6 || list->version > 8)
     {
@@ -111,9 +111,9 @@ Event *ConnectionInitPeer (Connection *list)
     list->ip          = 0;
     s_repl (&list->server, NULL);
     list->port        = list->pref_port;
-    list->cont        = list->parent->cont ? list->parent->cont : ContactUIN (list->parent, list->parent->uin);
+    list->cont        = list->parent->cont ? list->parent->cont : ContactUIN (Connection2Server (list->parent), list->parent->uin);
 
-    UtilIOConnectTCP (list);
+    UtilIOConnectTCP (Server2Connection (list));
     return NULL;
 }
 
@@ -250,7 +250,7 @@ void TCPDispatchMain (Connection *list)
                 list->connect &= ~CONNECT_SELECT_W; /* & ~CONNECT_SELECT_X; */
                 if (list->type == TYPE_MSGLISTEN && list->parent && list->parent->type == TYPE_SERVER
                     && (list->parent->connect & CONNECT_OK))
-                    SnacCliSetstatus (list->parent, ims_online, 2);
+                    SnacCliSetstatus (Connection2Server (list->parent), ims_online, 2);
                 break;
             case 2:
                 list->connect = 0;
@@ -970,7 +970,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (uin  == peer->parent->parent->uin)
             FAIL (6);
         
-        if (!(cont = ContactUIN (peer->parent->parent, uin)))
+        if (!(cont = ContactUIN (Connection2Server (peer->parent->parent), uin)))
             FAIL (7);
 
         if (!CONTACT_DC (cont))
@@ -1351,7 +1351,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
 
     ASSERT_MSGDIRECT(peer);
     
-    if (!(flist = PeerFileCreate (peer->parent->parent)))
+    if (!(flist = PeerFileCreate (Connection2Server (peer->parent->parent))))
     
     ASSERT_FILELISTEN(flist);
 
@@ -1546,7 +1546,8 @@ static void PeerCallbackReceiveAdvanced (Event *event)
  */
 static void TCPCallBackReceive (Event *event)
 {
-    Connection *serv, *peer;
+    Server *serv;
+    Connection *peer;
     Event *oldevent;
     Contact *cont;
     Packet *pak, *ack_pak = NULL;
@@ -1571,7 +1572,7 @@ static void TCPCallBackReceive (Event *event)
     assert (event->pak);
     
     pak = event->pak;
-    serv = peer->parent->parent;
+    serv = Connection2Server (peer->parent->parent);
     pak->tpos = pak->rpos;
 
     cmd    = PacketRead2 (pak);

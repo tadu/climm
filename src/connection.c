@@ -365,10 +365,10 @@ UWORD ConnectionServerNType (const char *type, char del)
 /*
  * Query an option for a contact group
  */
-val_t ConnectionPrefVal (Connection *conn, UDWORD flag)
+val_t ConnectionPrefVal (Server *serv, UDWORD flag)
 {
     val_t res = 0;
-    if (conn->contacts && OptGetVal (&conn->contacts->copts, flag, &res))
+    if (serv->contacts && OptGetVal (&serv->contacts->copts, flag, &res))
         return res;
     if (OptGetVal (&prG->copts, flag, &res))
         return res;

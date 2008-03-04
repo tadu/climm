@@ -737,7 +737,7 @@ strc_t PacketReadUIN (Packet *pak)
     return str;
 }
 
-Contact *PacketReadCont (Packet *pak, Connection *serv)
+Contact *PacketReadCont (Packet *pak, Server *serv)
 {
     UBYTE len = PacketRead1 (pak);
     Contact *cont;

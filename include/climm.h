@@ -81,24 +81,26 @@ struct Event_s;
 struct Contact_s;
 struct Packet_s;
 struct Connection_s;
+struct Server_s;
 struct Preferences_s;
 struct ConnectionPreferences_s;
 struct Cap_s;
 struct Extra_s;
 struct Message_s;
 
-typedef struct Queue_s        Queue;
-typedef struct Event_s        Event;
-typedef struct Opt_s          Opt;
-typedef struct Contact_s      Contact;
-typedef struct ContactGroup_s ContactGroup;
-typedef struct ContactAlias_s ContactAlias;
-typedef struct Packet_s       Packet;
-typedef struct Connection_s   Connection;
-typedef struct Preferences_s  Preferences;
-typedef struct Cap_s          Cap;
-typedef struct Extra_s        Extra;
-typedef struct Message_s      Message;
+typedef struct Queue_s            Queue;
+typedef struct Event_s            Event;
+typedef struct Opt_s              Opt;
+typedef struct Contact_s          Contact;
+typedef struct ContactGroup_s     ContactGroup;
+typedef struct ContactAlias_s     ContactAlias;
+typedef struct Packet_s           Packet;
+typedef struct Server_s           Server;
+typedef struct Connection_s       Connection;
+typedef struct Preferences_s      Preferences;
+typedef struct Cap_s              Cap;
+typedef struct Extra_s            Extra;
+typedef struct Message_s          Message;
 
 typedef void MSN_Handle;
 
@@ -264,11 +266,11 @@ typedef struct
     UBYTE    reconnect_count;
     BOOL     quit;
     UDWORD   packets, events;
-    time_t     idle_val;
-    UDWORD     idle_msgs;
-    char      *idle_uins;
+    time_t   idle_val;
+    UDWORD   idle_msgs;
+    char    *idle_uins;
     UWORD    nick_len;   /* this *must* be an int why??*/
-    Connection *conn;          /* Current connection */
+    Server  *conn;          /* Current connection */
 } user_interface_state;
 
 extern user_interface_state uiG;

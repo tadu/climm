@@ -56,7 +56,7 @@ static void RemoteClose (Connection *remo);
 /*
  * "Logs in" TCP connection by opening listening socket.
  */
-Event *RemoteOpen (Connection *remo)
+Event *RemoteOpen (Server *remo)
 {
     if (!remo->pref_server)
         remo->pref_server = strdup ("scripting");
@@ -74,7 +74,7 @@ Event *RemoteOpen (Connection *remo)
     remo->ip          = 0;
     remo->port        = 0;
 
-    UtilIOConnectF (remo);
+    UtilIOConnectF (Server2Connection (remo));
     
     if (remo->connect)
         remo->connect = CONNECT_OK | CONNECT_SELECT_R;

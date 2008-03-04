@@ -1,4 +1,4 @@
 /* $Id$ */
 
-void PeerFileUser (UDWORD seq, Contact *cont, const char *reason, Connection *serv);
+void PeerFileUser (UDWORD seq, Contact *cont, const char *reason, Server *serv);
 void PeerFileTO (Event *event);

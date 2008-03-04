@@ -112,7 +112,7 @@ void OscarRosterD (Roster *roster)
  */
 JUMP_SNAC_F(SnacSrvReplylists)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
 
     if (serv->flags & CONN_WIZARD)
     {
@@ -140,7 +140,7 @@ JUMP_SNAC_F(SnacSrvReplylists)
 /*
  * CLI_CHECKROSTER - SNAC(13,5)
  */
-UDWORD SnacCliCheckroster (Connection *serv)
+UDWORD SnacCliCheckroster (Server *serv)
 {
     ContactGroup *cg;
     Packet *pak;
@@ -164,7 +164,7 @@ UDWORD SnacCliCheckroster (Connection *serv)
  */
 JUMP_SNAC_F(SnacSrvReplyroster)
 {
-    Connection *serv;
+    Server *serv;
     Packet *pak;
     Event *event2;
     Roster *roster;
@@ -180,7 +180,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
     if (!event)
         return;
 
-    serv = event->conn;
+    serv = Connection2Server (event->conn);
     if (!serv)
         return;
 
@@ -189,7 +189,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
     if (!pak)
         return;
     
-    event2 = QueueDequeue2 (serv, QUEUE_REQUEST_ROSTER, 0, 0);
+    event2 = QueueDequeue2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, 0, 0);
     if (!event2 || !event2->callback)
     {
         DebugH (DEB_PROTOCOL, "Unrequested roster packet received.\n");
@@ -359,7 +359,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
  * CLI_ADDBUDDY - SNAC(13,8)
  */
 
-static void SnacCliRosterbulkone (Connection *serv, Contact *cont, Packet *pak, UWORD type)
+static void SnacCliRosterbulkone (Server *serv, Contact *cont, Packet *pak, UWORD type)
 {
     PacketWriteStrB     (pak, cont->screen);
     PacketWriteB2       (pak, 0);
@@ -367,10 +367,10 @@ static void SnacCliRosterbulkone (Connection *serv, Contact *cont, Packet *pak, 
     PacketWriteB2       (pak, type);
     PacketWriteBLen     (pak);
     PacketWriteBLenDone (pak);
-    QueueEnqueueData (serv, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
+    QueueEnqueueData (Server2Connection (serv), QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
 }
 
-void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs)
+void SnacCliRosterbulkadd (Server *serv, ContactGroup *cs)
 {
     Packet *pak;
     Contact *cont;
@@ -410,7 +410,7 @@ void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs)
             PacketWriteTLVDone (pak);
         }
         PacketWriteBLenDone (pak);
-        QueueEnqueueData (serv, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
+        QueueEnqueueData (Server2Connection (serv), QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
 
         if (ContactPrefVal (cont, CO_HIDEFROM))
         {
@@ -435,7 +435,7 @@ void SnacCliRosterbulkadd (Connection *serv, ContactGroup *cs)
 /*
  * CLI_ADDBUDDY - SNAC(13,8)
  */
-void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
+void SnacCliRosteradd (Server *serv, ContactGroup *cg, Contact *cont)
 {
     Packet *pak;
     
@@ -467,7 +467,7 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
             PacketWriteTLVDone (pak);
         }
         PacketWriteBLenDone (pak);
-        QueueEnqueueData (serv, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
+        QueueEnqueueData (Server2Connection (serv), QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
 
         if (ContactPrefVal (cont, CO_HIDEFROM))
             SnacCliRosterbulkone (serv, cont, pak, roster_invisible);
@@ -493,7 +493,7 @@ void SnacCliRosteradd (Connection *serv, ContactGroup *cg, Contact *cont)
     }
 }
 
-void SnacCliRosterentryadd (Connection *serv, const char *name, UWORD tag, UWORD id, UWORD type, UWORD tlv, void *data, UWORD len)
+void SnacCliRosterentryadd (Server *serv, const char *name, UWORD tag, UWORD id, UWORD type, UWORD tlv, void *data, UWORD len)
 {
     Packet *pak;
 
@@ -514,7 +514,7 @@ void SnacCliRosterentryadd (Connection *serv, const char *name, UWORD tag, UWORD
 /*
  * CLI_ROSTERUPDATE - SNAC(13,9)
  */
-void SnacCliRosterupdate (Connection *serv, ContactGroup *cg, Contact *cont)
+void SnacCliRosterupdate (Server *serv, ContactGroup *cg, Contact *cont)
 {
     Packet *pak;
     int i;
@@ -572,6 +572,7 @@ JUMP_SNAC_F(SnacSrvRosteradd)
  */
 JUMP_SNAC_F(SnacSrvRosterupdate)
 {
+    Server *serv = Connection2Server (event->conn);
     Packet *pak = event->pak;
     Contact *cont;
     UWORD tag, id, type, TLVlen;
@@ -588,7 +589,7 @@ JUMP_SNAC_F(SnacSrvRosterupdate)
     
     if (type == roster_normal)
     {
-        cont = ContactScreen (event->conn, cname->txt);
+        cont = ContactScreen (serv, cname->txt);
         j = TLVGet (tlv, TLV_NICK);
         assert (j < 200 || j == (UWORD)-1);
         if (j != (UWORD)-1 && tlv[j].str.len)
@@ -633,7 +634,7 @@ static JUMP_SNAC_F(cb_LoginVisibilitySet)
 /*
  * CLI_ROSTERADD/UPDATE - SNAC(13,9)
  */
-void SnacCliSetvisibility (Connection *serv, char value, char islogin)
+void SnacCliSetvisibility (Server *serv, char value, char islogin)
 {
     Packet *pak;
     
@@ -663,7 +664,7 @@ void SnacCliSetvisibility (Connection *serv, char value, char islogin)
 /*
  * CLI_ROSTERUPDATE - SNAC(13,9)
  */
-void SnacCliSetlastupdate (Connection *serv)
+void SnacCliSetlastupdate (Server *serv)
 {
     Packet *pak;
     
@@ -683,7 +684,7 @@ void SnacCliSetlastupdate (Connection *serv)
 /*
  * CLI_ROSTERDELETE - SNAC(13,a)
  */
-void SnacCliRosterdeletegroup (Connection *serv, ContactGroup *cg)
+void SnacCliRosterdeletegroup (Server *serv, ContactGroup *cg)
 {
     Packet *pak;
 
@@ -705,7 +706,7 @@ void SnacCliRosterdeletegroup (Connection *serv, ContactGroup *cg)
 /*
  * CLI_ROSTERDELETE - SNAC(13,a)
  */
-void SnacCliRosterdeletecontact (Connection *serv, Contact *cont)
+void SnacCliRosterdeletecontact (Server *serv, Contact *cont)
 {
     Packet *pak;
     ContactIDs *ids;
@@ -739,7 +740,7 @@ void SnacCliRosterdeletecontact (Connection *serv, Contact *cont)
 /*
  * CLI_ROSTERDELETE - SNAC(13,a)
  */
-void SnacCliRosterentrydelete (Connection *serv, RosterEntry *re)
+void SnacCliRosterentrydelete (Server *serv, RosterEntry *re)
 {
     Packet *pak;
     int i;
@@ -759,7 +760,7 @@ void SnacCliRosterentrydelete (Connection *serv, RosterEntry *re)
     SnacCliAddend (serv);
 }
 
-void SnacCliRosterdelete (Connection *serv, const char *name, UWORD tag, UWORD id, roster_t type)
+void SnacCliRosterdelete (Server *serv, const char *name, UWORD tag, UWORD id, roster_t type)
 {
     Packet *pak;
 
@@ -780,7 +781,7 @@ void SnacCliRosterdelete (Connection *serv, const char *name, UWORD tag, UWORD i
  */
 JUMP_SNAC_F(SnacSrvUpdateack)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     Contact *cont = NULL;
     Event *event2;
     UWORD err;
@@ -791,7 +792,7 @@ JUMP_SNAC_F(SnacSrvUpdateack)
     err = PacketReadB2 (event->pak);
     SnacSrvUpdateack (event);
 
-    event2 = QueueDequeue (serv, QUEUE_CHANGE_ROSTER, event->pak->ref);
+    event2 = QueueDequeue (Server2Connection (serv), QUEUE_CHANGE_ROSTER, event->pak->ref);
     cont = event2 ? event2->cont : NULL;
     
     switch (err)
@@ -847,7 +848,7 @@ JUMP_SNAC_F(SnacSrvUpdateack)
 JUMP_SNAC_F(SnacSrvRosterok)
 {
     /* ignore */
-    Connection *serv;
+    Server *serv;
     Packet *pak;
     Event *event2;
     Roster *roster;
@@ -857,7 +858,7 @@ JUMP_SNAC_F(SnacSrvRosterok)
     if (!event)
         return;
 
-    serv = event->conn;
+    serv = Connection2Server (event->conn);
     if (!serv)
         return;
 
@@ -865,7 +866,7 @@ JUMP_SNAC_F(SnacSrvRosterok)
     if (!pak)
         return;
     
-    event2 = QueueDequeue2 (serv, QUEUE_REQUEST_ROSTER, 0, 0);
+    event2 = QueueDequeue2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, 0, 0);
     if (!event2 || !event2->callback)
     {
         DebugH (DEB_PROTOCOL, "Unrequested roster packet received.\n");
@@ -932,7 +933,7 @@ JUMP_SNAC_F(SnacSrvAddend)
 /*
  * CLI_ADDSTART - SNAC(13,11)
  */
-void SnacCliAddstart (Connection *serv)
+void SnacCliAddstart (Server *serv)
 {
     Packet *pak;
     
@@ -943,7 +944,7 @@ void SnacCliAddstart (Connection *serv)
 /*
  * CLI_ADDEND - SNAC(13,12)
  */
-void SnacCliAddend (Connection *serv)
+void SnacCliAddend (Server *serv)
 {
     Packet *pak;
 
@@ -954,7 +955,7 @@ void SnacCliAddend (Connection *serv)
 /*
  * CLI_GRANTAUTH - SNAC(13,14)
  */
-void SnacCliGrantauth (Connection *serv, Contact *cont)
+void SnacCliGrantauth (Server *serv, Contact *cont)
 {
     Packet *pak;
     
@@ -969,7 +970,7 @@ void SnacCliGrantauth (Connection *serv, Contact *cont)
 /*
  * CLI_REQAUTH - SNAC(13,18)
  */
-void SnacCliReqauth (Connection *serv, Contact *cont, const char *msg)
+void SnacCliReqauth (Server *serv, Contact *cont, const char *msg)
 {
     Packet *pak;
     
@@ -987,7 +988,7 @@ void SnacCliReqauth (Connection *serv, Contact *cont, const char *msg)
  */
 JUMP_SNAC_F(SnacSrvAuthreq)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     Packet *pak;
     Contact *cont;
     strc_t ctext;
@@ -1008,7 +1009,7 @@ JUMP_SNAC_F(SnacSrvAuthreq)
 /*
  * CLI_AUTHORIZE - SNAC(13,1a)
  */
-void SnacCliAuthorize (Connection *serv, Contact *cont, BOOL accept, const char *msg)
+void SnacCliAuthorize (Server *serv, Contact *cont, BOOL accept, const char *msg)
 {
     Packet *pak;
     
@@ -1026,7 +1027,7 @@ void SnacCliAuthorize (Connection *serv, Contact *cont, BOOL accept, const char 
  */
 JUMP_SNAC_F(SnacSrvAuthreply)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     Packet *pak;
     Contact *cont;
     strc_t ctext;
@@ -1053,6 +1054,6 @@ JUMP_SNAC_F(SnacSrvAddedyou)
 {
     Contact *cont;
 
-    cont = PacketReadCont (event->pak, event->conn);
+    cont = PacketReadCont (event->pak, Connection2Server (event->conn));
     IMSrvMsg (cont, NOW, CV_ORIGIN_v8, MSG_AUTH_ADDED, "");
 }

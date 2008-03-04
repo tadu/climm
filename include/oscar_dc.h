@@ -7,7 +7,7 @@
 
 #define TCP_STATE_WAITING      32
 
-Event *ConnectionInitPeer   (Connection *list);
+Event *ConnectionInitPeer   (Server *list);
 
 /* Open, close, disallow connection of UIN with this listener */
 BOOL TCPDirectOpen     (Connection *list, Contact *cont);
@@ -20,7 +20,7 @@ UBYTE PeerSendMsgFat   (Connection *list, Contact *cont, Message *msg);
 BOOL TCPSendFiles      (Connection *list, Contact *cont, const char *description, const char **file, const char **as, int count);
 BOOL TCPGetAuto        (Connection *list, Contact *cont, UWORD which);
 
-Connection *PeerFileCreate    (Connection *serv);
+Connection *PeerFileCreate    (Server *serv);
 BOOL        PeerFileAccept    (Connection *peer, UWORD ackstatus, UDWORD port);
 UBYTE       PeerFileIncAccept (Connection *list, Event *event);
 

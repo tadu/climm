@@ -46,8 +46,8 @@
 #include "im_request.h"
 #include "util_ui.h"
 
-static Packet *SnacMetaC (Connection *serv, UWORD sub, UWORD type, UWORD ref);
-static void SnacMetaSend (Connection *serv, Packet *pak);
+static Packet *SnacMetaC (Server *serv, UWORD sub, UWORD type, UWORD ref);
+static void SnacMetaSend (Server *serv, Packet *pak);
 
 #define PacketWriteMetaLNTS(p,t,s)  { PacketWrite2 (p, t); PacketWriteLen (p); PacketWriteLNTS (p, s); PacketWriteLenDone (p); }
 #define PacketWriteMeta1(p,t,i)     { PacketWrite2 (p, t); PacketWrite2 (p, 1); PacketWrite1 (p, i); }
@@ -110,7 +110,7 @@ static void SnacMetaSend (Connection *serv, Packet *pak);
 /*
  * Create meta request package.
  */
-static Packet *SnacMetaC (Connection *serv, UWORD sub, UWORD type, UWORD ref)
+static Packet *SnacMetaC (Server *serv, UWORD sub, UWORD type, UWORD ref)
 {
     Packet *pak;
 
@@ -131,7 +131,7 @@ static Packet *SnacMetaC (Connection *serv, UWORD sub, UWORD type, UWORD ref)
 /*
  * Complete & send meta request package.
  */
-static void SnacMetaSend (Connection *serv, Packet *pak)
+static void SnacMetaSend (Server *serv, Packet *pak)
 {
     PacketWriteLenDone (pak);
     PacketWriteTLVDone (pak);
@@ -143,6 +143,7 @@ static void SnacMetaSend (Connection *serv, Packet *pak)
  */
 JUMP_SNAC_F(SnacSrvToicqerr)
 {
+    Server *serv = Connection2Server (event->conn);
     Packet *pak = event->pak;
     if ((pak->ref & 0xffff) == 0x4231)
     {
@@ -153,7 +154,7 @@ JUMP_SNAC_F(SnacSrvToicqerr)
         UWORD err = PacketReadB2 (pak);
         Event *oevent;
 
-        if ((oevent = QueueDequeue (event->conn, QUEUE_REQUEST_META, pak->ref)))
+        if ((oevent = QueueDequeue (Server2Connection (serv), QUEUE_REQUEST_META, pak->ref)))
         {
             rl_printf (i18n (2207, "Protocol error in command to old ICQ server: %d.\n"), err);
             if (err == 2)
@@ -175,7 +176,7 @@ JUMP_SNAC_F(SnacSrvToicqerr)
 /*
  * CLI_REQOFFLINEMSGS - SNAC(15,2) - 60
  */
-void SnacCliReqofflinemsgs (Connection *serv)
+void SnacCliReqofflinemsgs (Server *serv)
 {
     Packet *pak;
 
@@ -186,7 +187,7 @@ void SnacCliReqofflinemsgs (Connection *serv)
 /*
  * CLI_ACKOFFLINEMSGS - SNAC(15,2) - 62
  */
-void SnacCliAckofflinemsgs (Connection *serv)
+void SnacCliAckofflinemsgs (Server *serv)
 {
     Packet *pak;
 
@@ -197,7 +198,7 @@ void SnacCliAckofflinemsgs (Connection *serv)
 /*
  * CLI_METASETGENERAL - SNAC(15,2) - 2000/1002
  */
-void SnacCliMetasetgeneral (Connection *serv, Contact *cont)
+void SnacCliMetasetgeneral (Server *serv, Contact *cont)
 {
     Packet *pak;
 
@@ -350,7 +351,7 @@ void SnacCliMetasetgeneral (Connection *serv, Contact *cont)
  * CLI_METASETABOUT - SNAC(15,2) - 2000/1030
  */
 
-void SnacCliMetasetabout (Connection *serv, const char *text)
+void SnacCliMetasetabout (Server *serv, const char *text)
 {
     Packet *pak;
 #if 0
@@ -367,7 +368,7 @@ void SnacCliMetasetabout (Connection *serv, const char *text)
 /*
  * CLI_METASETMORE - SNAC(15,2) - 2000/1021
  */
-void SnacCliMetasetmore (Connection *serv, Contact *cont)
+void SnacCliMetasetmore (Server *serv, Contact *cont)
 {
     Packet *pak;
     
@@ -429,7 +430,7 @@ void SnacCliMetasetmore (Connection *serv, Contact *cont)
 /*
  * CLI_METASETPASS - SNAC(15,2) - 2000/1070
  */
-void SnacCliMetasetpass (Connection *serv, const char *newpass)
+void SnacCliMetasetpass (Server *serv, const char *newpass)
 {
     Packet *pak;
     
@@ -441,7 +442,7 @@ void SnacCliMetasetpass (Connection *serv, const char *newpass)
 /*
  * CLI_METAREQINFO - SNAC(15,2) - 2000/1202
  */
-UDWORD SnacCliMetareqmoreinfo (Connection *serv, Contact *cont)
+UDWORD SnacCliMetareqmoreinfo (Server *serv, Contact *cont)
 {
     Packet *pak;
     UDWORD ref;
@@ -456,7 +457,7 @@ UDWORD SnacCliMetareqmoreinfo (Connection *serv, Contact *cont)
 /*
  * CLI_METAREQINFO - SNAC(15,2) - 2000/1232
  */
-UDWORD SnacCliMetareqinfo (Connection *serv, Contact *cont)
+UDWORD SnacCliMetareqinfo (Server *serv, Contact *cont)
 {
     Packet *pak;
     UDWORD ref;
@@ -471,7 +472,7 @@ UDWORD SnacCliMetareqinfo (Connection *serv, Contact *cont)
 /*
  * CLI_SEARCHBYPERSINF - SNAC(15,2) - 2000/1375
  */
-void SnacCliSearchbypersinf (Connection *serv, const char *email, const char *nick, const char *name, const char *surname)
+void SnacCliSearchbypersinf (Server *serv, const char *email, const char *nick, const char *name, const char *surname)
 {
     Packet *pak;
 
@@ -490,7 +491,7 @@ void SnacCliSearchbypersinf (Connection *serv, const char *email, const char *ni
 /*
  * CLI_SEARCHBYMAIL - SNAC(15,2) - 2000/{1395,1321}
  */
-void SnacCliSearchbymail (Connection *serv, const char *email)
+void SnacCliSearchbymail (Server *serv, const char *email)
 {
     Packet *pak;
 
@@ -503,7 +504,7 @@ void SnacCliSearchbymail (Connection *serv, const char *email)
 /*
  * CLI_SEARCHRANDOM - SNAC(15,2) - 2000/1870
  */
-UDWORD SnacCliSearchrandom (Connection *serv, UWORD group)
+UDWORD SnacCliSearchrandom (Server *serv, UWORD group)
 {
     Packet *pak;
     UDWORD ref;
@@ -518,7 +519,7 @@ UDWORD SnacCliSearchrandom (Connection *serv, UWORD group)
 /*
  * CLI_SETRANDOM - SNAC(15,2) - 2000/1880
  */
-void SnacCliSetrandom (Connection *serv, UWORD group)
+void SnacCliSetrandom (Server *serv, UWORD group)
 {
     Packet *pak;
 
@@ -545,7 +546,7 @@ void SnacCliSetrandom (Connection *serv, UWORD group)
 /*
  * CLI_SEARCHWP - SNAC(15,2) - 2000/1331
  */
-void SnacCliSearchwp (Connection *serv, const MetaWP *wp)
+void SnacCliSearchwp (Server *serv, const MetaWP *wp)
 {
     Packet *pak;
 
@@ -580,7 +581,7 @@ void SnacCliSearchwp (Connection *serv, const MetaWP *wp)
 /*
  * CLI_SENDSMS - SNAC(15,2) - 2000/5250
  */
-void SnacCliSendsms (Connection *serv, const char *target, const char *text)
+void SnacCliSendsms (Server *serv, const char *target, const char *text)
 {
     Packet *pak;
     char buf[2000];
@@ -609,7 +610,7 @@ void SnacCliSendsms (Connection *serv, const char *target, const char *text)
  */
 JUMP_SNAC_F(SnacSrvFromicqsrv)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     TLV *tlv;
     Packet *p, *pak;
     UDWORD len, uin, type /*, id*/;
@@ -694,7 +695,7 @@ JUMP_SNAC_F(SnacSrvFromicqsrv)
 #define META_SRV_RANDOM_UPDATE  880
 #define META_SRV_METATLV_UPDATE 3135
 
-void Auto_Reply (Connection *conn, Contact *cont)
+void Auto_Reply (Server *serv, Contact *cont)
 {
     const char *temp = NULL;
 
@@ -756,7 +757,7 @@ static BOOL Meta_Read_List (Packet *pak, ContactMeta **list, Contact *cont)
     return TRUE;
 }
 
-void Meta_User (Connection *conn, Contact *cont, Packet *pak)
+void Meta_User (Server *serv, Contact *cont, Packet *pak)
 {
     UWORD subtype;
     UDWORD result;
@@ -806,7 +807,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
     {
         case 0x32:
         case 0x14:
-            if ((event = QueueDequeue (conn, QUEUE_REQUEST_META, pak->ref)))
+            if ((event = QueueDequeue (Server2Connection (serv), QUEUE_REQUEST_META, pak->ref)))
                 EventD (event);
             rl_printf ("%s ", s_now);
             rl_printf (i18n (2141, "Search %sfailed%s.\n"), COLCLIENT, COLNONE);
@@ -843,7 +844,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
         case META_SRV_BACKGROUND:
         case META_SRV_UNKNOWN_270:
         case META_SRV_RANDOM:
-            if (!(event = QueueDequeue (conn, QUEUE_REQUEST_META, pak->ref)) || !event->callback)
+            if (!(event = QueueDequeue (Server2Connection (serv), QUEUE_REQUEST_META, pak->ref)) || !event->callback)
             {
                 if (prG->verbose)
                     rl_printf ("FIXME: meta reply ref %lx not found.\n", UD2UL (pak->ref));
@@ -889,7 +890,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             s_read (mg->fax);
             s_read (mg->street);
             s_read (mg->cellular);
-            if (conn->type == TYPE_SERVER)
+            if (serv->type == TYPE_SERVER)
                 s_read (mg->zip);
             else
             {
@@ -946,7 +947,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             s_read (mw->wphone);
             s_read (mw->wfax);
             s_read (mw->waddress);
-            if (conn->type == TYPE_SERVER)
+            if (serv->type == TYPE_SERVER)
                 s_read (mw->wzip);
             else
             {
@@ -991,7 +992,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
                 rl_printf (i18n (2141, "Search %sfailed%s.\n"), COLCLIENT, COLNONE);
                 break;
             }
-            cont = ContactUIN (conn, PacketRead4 (pak));
+            cont = ContactUIN (serv, PacketRead4 (pak));
             if (!cont || !(mg = CONTACT_GENERAL (cont)) || !(mm = CONTACT_MORE (cont)))
                 break;
 
@@ -1009,7 +1010,7 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
             break;
         case META_SRV_RANDOM:
             uin = PacketRead4 (pak);
-            event->cont = cont = ContactUIN (event->conn, uin);
+            event->cont = cont = ContactUIN (serv, uin);
             wdata = PacketRead2 (pak);
             rl_printf (i18n (2606, "Found random chat partner UIN %s in chat group %d.\n"),
                       cont->screen, wdata);
@@ -1017,8 +1018,8 @@ void Meta_User (Connection *conn, Contact *cont, Packet *pak)
                 break;
             if (~cont->updated & UP_INFO)
             {
-                if (conn->type == TYPE_SERVER)
-                    event->seq = SnacCliMetareqinfo (conn, cont);
+                if (serv->type == TYPE_SERVER)
+                    event->seq = SnacCliMetareqinfo (serv, cont);
             }
             event->callback (event);
             cont->dc->ip_rem  = PacketReadB4 (pak);
@@ -1067,13 +1068,13 @@ void Display_Info_Reply (Contact *cont, Packet *pak, UBYTE flags)
     cont->updated |= UPF_GENERAL_A;
 }
 
-void Display_Ext_Info_Reply (Connection *conn, Packet *pak)
+void Display_Ext_Info_Reply (Server *serv, Packet *pak)
 {
     Contact *cont;
     MetaGeneral *mg;
     MetaMore *mm;
 
-    if (!(cont = ContactUIN (conn, PacketRead4 (pak))))
+    if (!(cont = ContactUIN (serv, PacketRead4 (pak))))
         return;
 
     if (!(mg = CONTACT_GENERAL (cont)) || !(mm = CONTACT_MORE (cont)))
@@ -1095,7 +1096,7 @@ void Display_Ext_Info_Reply (Connection *conn, Packet *pak)
     UtilUIDisplayMeta (cont);
 }
 
-void Recv_Message (Connection *conn, Packet *pak)
+void Recv_Message (Server *serv, Packet *pak)
 {
     struct tm stamp;
     Contact *cont;
@@ -1116,7 +1117,7 @@ void Recv_Message (Connection *conn, Packet *pak)
     len            = PacketReadAt2 (pak, pak->rpos);
     ctext          = PacketReadL2Str (pak, NULL);
 
-    cont = ContactUIN (conn, uin);
+    cont = ContactUIN (serv, uin);
     if (!cont)
         return;
 

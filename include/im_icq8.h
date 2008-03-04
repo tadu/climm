@@ -2,8 +2,8 @@
 #ifndef CLIMM_IM_ICQ8
 #define CLIMM_IM_ICQ8
 
-UBYTE IMRoster (Connection *conn, int mode);
-UBYTE IMDeleteID (Connection *conn, int tag, int id, const char *name);
+UBYTE IMRoster (Server *serv, int mode);
+UBYTE IMDeleteID (Server *serv, int tag, int id, const char *name);
 
 #define IMROSTER_EXPORT   1 /* export local to sbl */
 #define IMROSTER_UPLOAD   2 /* add local to sbl */

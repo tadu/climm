@@ -86,7 +86,7 @@ JUMP_SNAC_F(SnacSrvIcbmerr)
 /*
  * CLI_SETICBM - SNAC(4,2)
  */
-void SnacCliSeticbm (Connection *serv)
+void SnacCliSeticbm (Server *serv)
 {
    Packet *pak;
    
@@ -113,12 +113,12 @@ void SnacCliSeticbm (Connection *serv)
  */
 JUMP_SNAC_F(SnacSrvReplyicbm)
 {
-    SnacCliSeticbm (event->conn);
+    SnacCliSeticbm (Connection2Server (event->conn));
 }
 
 JUMP_SNAC_F(SnacSrvAckmsg)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     /* UDWORD midtime, midrand; */
     UWORD msgtype, seq_dc;
     Contact *cont;
@@ -160,7 +160,7 @@ JUMP_SNAC_F(SnacSrvAckmsg)
         }
     }
 
-    event = QueueDequeue (serv, QUEUE_TYPE2_RESEND, seq_dc);
+    event = QueueDequeue (Server2Connection (serv), QUEUE_TYPE2_RESEND, seq_dc);
 
     if ((msgtype & 0x300) == 0x300)
         IMSrvMsg (cont, NOW, CV_ORIGIN_v8, msgtype, text);
@@ -194,7 +194,7 @@ void SnacCallbackIgnore (Event *event)
 /*
  * CLI_SENDMSG - SNAC(4,6)
  */
-static UBYTE SnacCliSendmsg1 (Connection *serv, Message *msg)
+static UBYTE SnacCliSendmsg1 (Server *serv, Message *msg)
 {
     Packet *pak;
     Event *event;
@@ -265,7 +265,7 @@ static UBYTE SnacCliSendmsg1 (Connection *serv, Message *msg)
     PacketWriteB2 (pak, 6);
     PacketWriteB2 (pak, 0);
 
-    event = QueueEnqueueData2 (serv, QUEUE_TYPE1_RESEND_ACK, pak->ref, 120, msg, &SnacCallbackIgnore, NULL);
+    event = QueueEnqueueData2 (Server2Connection (serv), QUEUE_TYPE1_RESEND_ACK, pak->ref, 120, msg, &SnacCallbackIgnore, NULL);
     event->cont = cont;
 
     SnacSend (serv, pak);
@@ -273,7 +273,7 @@ static UBYTE SnacCliSendmsg1 (Connection *serv, Message *msg)
     return RET_OK;
 }
 
-static UBYTE SnacCliSendmsg4 (Connection *serv, Message *msg)
+static UBYTE SnacCliSendmsg4 (Server *serv, Message *msg)
 {
     Packet *pak;
     Event *event;
@@ -309,7 +309,7 @@ static UBYTE SnacCliSendmsg4 (Connection *serv, Message *msg)
     PacketWriteB2 (pak, 6);
     PacketWriteB2 (pak, 0);
 
-    event = QueueEnqueueData2 (serv, QUEUE_TYPE4_RESEND_ACK, pak->ref, 120, msg, &SnacCallbackIgnore, NULL);
+    event = QueueEnqueueData2 (Server2Connection (serv), QUEUE_TYPE4_RESEND_ACK, pak->ref, 120, msg, &SnacCallbackIgnore, NULL);
     event->cont = cont;
 
     SnacSend (serv, pak);
@@ -365,7 +365,7 @@ static void SnacCallbackType2Cancel (Event *event)
 
 static void SnacCallbackType2 (Event *event)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     Contact *cont = event->cont;
     Packet *pak = event->pak;
     Message *msg = event->data;
@@ -388,7 +388,7 @@ static void SnacCallbackType2 (Event *event)
             /* allow more time for the peer's ack than the server's ack */
             event->due = time (NULL) + RETRY_DELAY_TYPE2 + 5;
 
-            event2 = QueueEnqueueData2 (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref, RETRY_DELAY_TYPE2, NULL, &SnacCallbackType2Ack, &SnacCallbackType2Cancel2);
+            event2 = QueueEnqueueData2 (Server2Connection (serv), QUEUE_TYPE2_RESEND_ACK, pak->ref, RETRY_DELAY_TYPE2, NULL, &SnacCallbackType2Ack, &SnacCallbackType2Cancel2);
             event2->cont = cont;
             event2->opt = OptSetVals (NULL, CO_REF, event->seq, 0);
         }
@@ -403,7 +403,7 @@ static void SnacCallbackType2 (Event *event)
     EventD (event);
 }
 
-static UBYTE SnacCliSendmsg2 (Connection *serv, Message *msg)
+static UBYTE SnacCliSendmsg2 (Server *serv, Message *msg)
 {
     Packet *pak;
     UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
@@ -495,7 +495,7 @@ static UBYTE SnacCliSendmsg2 (Connection *serv, Message *msg)
         Event *event;
 
         PacketWriteB4      (pak, 0x00030000); /* empty TLV(3) */
-        event = QueueEnqueueData2 (serv, QUEUE_TYPE2_RESEND, serv->our_seq_dc, 0, msg, &SnacCallbackType2, &SnacCallbackType2Cancel);
+        event = QueueEnqueueData2 (Server2Connection (serv), QUEUE_TYPE2_RESEND, serv->our_seq_dc, 0, msg, &SnacCallbackType2, &SnacCallbackType2Cancel);
         event->cont = cont;
         event->pak = pak;
     }
@@ -506,7 +506,7 @@ static UBYTE SnacCliSendmsg2 (Connection *serv, Message *msg)
 /*
  * CLI_SENDMSG - SNAC(4,6) - all
  */
-UBYTE SnacCliSendmsg (Connection *serv, Contact *cont, UBYTE format, Message *msg)
+UBYTE SnacCliSendmsg (Server *serv, Contact *cont, UBYTE format, Message *msg)
 {
     assert (serv);
     assert (cont);
@@ -603,7 +603,7 @@ static void SnacSrvCallbackSendack (Event *event)
 {
     if (event && event->conn && event->pak && event->conn->type == TYPE_SERVER)
     {
-        SnacSend (event->conn, event->pak);
+        SnacSend (Connection2Server (event->conn), event->pak);
         event->pak = NULL;
     }
     EventD (event);
@@ -614,7 +614,7 @@ static void SnacSrvCallbackSendack (Event *event)
  */
 JUMP_SNAC_F(SnacSrvRecvmsg)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     Contact *cont;
     Event *newevent;
     Cap *cap1, *cap2;
@@ -821,7 +821,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                     {
                         event->opt = OptSetVals (event->opt, CO_ORIGIN, CV_ORIGIN_v8, 0);
                         event->cont = cont;
-                        newevent = QueueEnqueueData (serv, QUEUE_ACKNOWLEDGE, seq1,
+                        newevent = QueueEnqueueData (Server2Connection (serv), QUEUE_ACKNOWLEDGE, seq1,
                                      (time_t)-1, p, cont, NULL, &SnacSrvCallbackSendack);
                         SrvReceiveAdvanced (serv, event, pp, newevent);
                     }
@@ -866,7 +866,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
  */
 JUMP_SNAC_F(SnacSrvSrvackmsg)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     Event *event2 = NULL;
     Packet *pak;
     Message *msg;
@@ -889,7 +889,7 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
     switch (format)
     {
         case 1:
-            event2 = QueueDequeue (serv, QUEUE_TYPE1_RESEND_ACK, pak->ref);
+            event2 = QueueDequeue (Server2Connection (serv), QUEUE_TYPE1_RESEND_ACK, pak->ref);
             if (!event2 || !(msg = event2->data))
                 break;
             msg->type = INT_MSGACK_V8;
@@ -897,7 +897,7 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
                 IMIntMsgMsg (msg, NOW, ims_offline);
             break;
         case 4:
-            event2 = QueueDequeue (serv, QUEUE_TYPE4_RESEND_ACK, pak->ref);
+            event2 = QueueDequeue (Server2Connection (serv), QUEUE_TYPE4_RESEND_ACK, pak->ref);
             if (!event2 || !(msg = event2->data))
                 break;
             msg->type = INT_MSGACK_V8;
@@ -905,7 +905,7 @@ JUMP_SNAC_F(SnacSrvSrvackmsg)
                 IMIntMsgMsg (msg, NOW, ims_offline);
             break;
         case 2: /* msg was received by server */
-            event2 = QueueDequeue (serv, QUEUE_TYPE2_RESEND_ACK, pak->ref);
+            event2 = QueueDequeue (Server2Connection (serv), QUEUE_TYPE2_RESEND_ACK, pak->ref);
             if (!event2 || !(msg = event2->data))
                 break;
             if (pak->ref == PEEK_REFID)
@@ -1011,7 +1011,7 @@ void SrvMsgGreet (Packet *pak, UWORD cmd, const char *reason, UWORD port, UDWORD
  * Note: swallows only acknowledge event/packet;
  * the caller destructs inc_event after return.
  */
-void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Event *ack_event)
+void SrvReceiveAdvanced (Server *serv, Event *inc_event, Packet *inc_pak, Event *ack_event)
 {
 #ifdef ENABLE_PEER2PEER
     Connection *flist;
@@ -1154,7 +1154,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                 opt2 = OptC ();
                 OptSetVal (opt2, CO_FILEACCEPT, 0);
                 OptSetStr (opt2, CO_REFUSE, i18n (2514, "refused (ignored)"));
-                e1 = QueueEnqueueData (serv, QUEUE_USERFILEACK, ack_event->seq, time (NULL) + 120,
+                e1 = QueueEnqueueData (Server2Connection (serv), QUEUE_USERFILEACK, ack_event->seq, time (NULL) + 120,
                                        NULL, inc_event->cont, opt2, &PeerFileTO);
                 QueueEnqueueDep (inc_event->conn, inc_event->type, ack_event->seq, e1,
                                  inc_event->pak, inc_event->cont, opt, inc_event->callback);
@@ -1253,7 +1253,7 @@ void SrvReceiveAdvanced (Connection *serv, Event *inc_event, Packet *inc_pak, Ev
                             opt2 = OptC ();
                             OptSetVal (opt2, CO_FILEACCEPT, 0);
                             OptSetStr (opt2, CO_REFUSE, i18n (2514, "refused (ignored)"));
-                            e1 = QueueEnqueueData (serv, QUEUE_USERFILEACK, ack_event->seq, time (NULL) + 120,
+                            e1 = QueueEnqueueData (Server2Connection (serv), QUEUE_USERFILEACK, ack_event->seq, time (NULL) + 120,
                                                    NULL, inc_event->cont, opt2, &PeerFileTO);
                             QueueEnqueueDep (inc_event->conn, inc_event->type, ack_event->seq, e1,
                                              inc_event->pak, inc_event->cont, opt, inc_event->callback);

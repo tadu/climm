@@ -169,7 +169,7 @@ int is_valid_msn_name (char *txt)
 /*
  * Parses a nick, UIN or screen name.
  */
-Contact *s_parsenick_s (const char **input, const char *sep, BOOL any, Connection *serv)
+Contact *s_parsenick_s (const char **input, const char *sep, BOOL any, Server *serv)
 {
     ContactGroup *cg;
     Contact *r, *parsed;
@@ -297,7 +297,7 @@ Contact *s_parsenick_s (const char **input, const char *sep, BOOL any, Connectio
     if (!any)
         return NULL;
 
-    for (i = 0; (serv = ConnectionNr (i)); i++)
+    for (i = 0; (serv = Connection2Server (ConnectionNr (i))); i++)
         if ((r = s_parsenick_s (input, sep, 0, serv)))
             return r;
 
@@ -307,7 +307,7 @@ Contact *s_parsenick_s (const char **input, const char *sep, BOOL any, Connectio
 /*
  * Parses a contact group by name.
  */
-ContactGroup *s_parsecg_s (const char **input, const char *sep, BOOL any, Connection *serv)
+ContactGroup *s_parsecg_s (const char **input, const char *sep, BOOL any, Server *serv)
 {
     ContactGroup *cg;
     const char *p = *input;
@@ -349,7 +349,7 @@ ContactGroup *s_parsecg_s (const char **input, const char *sep, BOOL any, Connec
     if (!any)
         return NULL;
     
-    for (i = 0; (serv = ConnectionNr (i)); i++)
+    for (i = 0; (serv = Connection2Server (ConnectionNr (i))); i++)
         if ((cg = s_parsecg_s (input, sep, 0, serv)))
             return cg;
     
@@ -359,7 +359,7 @@ ContactGroup *s_parsecg_s (const char **input, const char *sep, BOOL any, Connec
 /*
  * Parses nicks and contact groups.
  */
-ContactGroup *s_parselist_s (const char **input, BOOL rem, BOOL any, Connection *serv)
+ContactGroup *s_parselist_s (const char **input, BOOL rem, BOOL any, Server *serv)
 {
     static ContactGroup *scg = NULL;
     ContactGroup *cg;

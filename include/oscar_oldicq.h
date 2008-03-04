@@ -54,27 +54,27 @@ typedef enum {
 } meta_cmd;
 
 
-void SnacCliReqofflinemsgs (Connection *serv);
-void SnacCliAckofflinemsgs (Connection *serv);
-void SnacCliMetasetgeneral (Connection *serv, Contact *cont);
-void SnacCliMetasetabout (Connection *serv, const char *text);
-void SnacCliMetasetmore (Connection *serv, Contact *cont);
-void SnacCliMetasetpass (Connection *serv, const char *newpass);
-UDWORD SnacCliMetareqmoreinfo (Connection *serv, Contact *cont);
-UDWORD SnacCliMetareqinfo (Connection *serv, Contact *cont);
-void SnacCliSearchbypersinf (Connection *serv, const char *email, const char *nick, const char *name, const char *surname);
-void SnacCliSearchbymail (Connection *serv, const char *email);
-UDWORD SnacCliSearchrandom (Connection *serv, UWORD group);
-void SnacCliSetrandom (Connection *serv, UWORD group);
-void SnacCliSearchwp (Connection *serv, const MetaWP *wp);
-void SnacCliSendsms (Connection *serv, const char *target, const char *text);
+void SnacCliReqofflinemsgs (Server *serv);
+void SnacCliAckofflinemsgs (Server *serv);
+void SnacCliMetasetgeneral (Server *serv, Contact *cont);
+void SnacCliMetasetabout (Server *serv, const char *text);
+void SnacCliMetasetmore (Server *serv, Contact *cont);
+void SnacCliMetasetpass (Server *serv, const char *newpass);
+UDWORD SnacCliMetareqmoreinfo (Server *serv, Contact *cont);
+UDWORD SnacCliMetareqinfo (Server *serv, Contact *cont);
+void SnacCliSearchbypersinf (Server *serv, const char *email, const char *nick, const char *name, const char *surname);
+void SnacCliSearchbymail (Server *serv, const char *email);
+UDWORD SnacCliSearchrandom (Server *serv, UWORD group);
+void SnacCliSetrandom (Server *serv, UWORD group);
+void SnacCliSearchwp (Server *serv, const MetaWP *wp);
+void SnacCliSendsms (Server *serv, const char *target, const char *text);
 
-void Auto_Reply (Connection *conn, Contact *cont);
+void Auto_Reply (Server *serv, Contact *cont);
 #define IREP_HASAUTHFLAG 1
-void Meta_User (Connection *conn, Contact *cont, Packet *pak);
-void Display_Rand_User (Connection *conn, Packet *pak);
-void Recv_Message (Connection *conn, Packet *pak);
+void Meta_User (Server *serv, Contact *cont, Packet *pak);
+void Display_Rand_User (Server *serv, Packet *pak);
+void Recv_Message (Server *serv, Packet *pak);
 void Display_Info_Reply (Contact *cont, Packet *pak, UBYTE flags);
-void Display_Ext_Info_Reply (Connection *conn, Packet *pak);
+void Display_Ext_Info_Reply (Server *serv, Packet *pak);
 
 #endif

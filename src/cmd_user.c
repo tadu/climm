@@ -210,12 +210,12 @@ static jump_t jump[] = {
 
 /* Have an opened server connection ready. */
 #define OPENCONN \
-    if (!uiG.conn) uiG.conn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL); \
+    if (!uiG.conn) uiG.conn = Connection2Server (ConnectionFind (TYPEF_ANY_SERVER, 0, NULL)); \
     if (!uiG.conn || ~uiG.conn->connect & CONNECT_OK) \
     { rl_print (i18n (1931, "Current session is closed. Try another or open this one.\n")); return 0; } \
 
 /* Try to have any server connection ready. */
-#define ANYCONN if (!uiG.conn) uiG.conn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL); \
+#define ANYCONN if (!uiG.conn) uiG.conn = Connection2Server (ConnectionFind (TYPEF_ANY_SERVER, 0, NULL)); \
     if (!uiG.conn) { rl_print (i18n (2397, "No server session found.\n")); return 0; }
 
 /*
@@ -1651,7 +1651,7 @@ static void __donecheck (UWORD data)
 
 }
 
-static void __showcontact (Connection *conn, Contact *cont, UWORD data, const char *none_ul)
+static void __showcontact (Server *serv, Contact *cont, UWORD data, const char *none_ul)
 {
     Connection *peer;
     ContactAlias *alias;
@@ -1665,7 +1665,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data, const ch
 #endif
     char tbuf[100];
     
-    peer = (conn && conn->assoc) ? ConnectionFind (TYPE_MSGDIRECT, cont, conn->assoc) : NULL;
+    peer = (serv && serv->assoc) ? ConnectionFind (TYPE_MSGDIRECT, cont, serv->assoc) : NULL;
     
     stat = strdup (s_sprintf ("(%s)", s_status (cont->status, cont->nativestatus)));
     if (cont->version)
@@ -1795,7 +1795,7 @@ static void __showcontact (Connection *conn, Contact *cont, UWORD data, const ch
 #if ENABLE_CONT_HIER
     if (prG->verbose)
         for (cont = cont->firstchild; cont; cont = cont->next)
-            __showcontact (conn, cont, data | 128, none_ul);
+            __showcontact (serv, cont, data | 128, none_ul);
 #endif
 }
 
@@ -2493,7 +2493,7 @@ static JUMP_F(CmdUserOpt)
     const char *optname = NULL, *res = NULL, *optobj = NULL;
     char *coptname, *coptobj, *col;
     Opt *copts = NULL;
-    Connection *connl = NULL;
+    Server *connl = NULL;
     int i;
     UDWORD flag = 0;
     val_t val;
@@ -2792,7 +2792,7 @@ static JUMP_F(CmdUserRegister)
 
         if (!uiG.conn || uiG.conn->type == TYPE_SERVER)
         {
-            Connection *newc = SrvRegisterUIN (uiG.conn, par->txt);
+            Server *newc = SrvRegisterUIN (uiG.conn, par->txt);
             ConnectionInitServer (newc);
         }
     }
@@ -2889,7 +2889,7 @@ static JUMP_F(CmdUserTogVisible)
     if ((cg = s_parselistrem (&args, uiG.conn)))
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            event = QueueDequeue2 (uiG.conn, QUEUE_TOGVIS, 0, cont);
+            event = QueueDequeue2 (Server2Connection (uiG.conn), QUEUE_TOGVIS, 0, cont);
             if (event)
                 EventD (event);
             if (ContactPrefVal (cont, CO_INTIMATE))
@@ -3978,7 +3978,7 @@ static JUMP_F(CmdUserConn)
     int i;
     UDWORD nr;
     strc_t par;
-    Connection *connl = NULL;
+    Server *connl = NULL;
     const char *targs;
 
     if (!data)
@@ -4010,12 +4010,12 @@ static JUMP_F(CmdUserConn)
             rl_print (i18n (1887, "Connections:"));
             rl_print ("\n  " COLINDENT);
             
-            for (i = 0; (connl = ConnectionNr (i)); i++)
+            for (i = 0; (connl = Connection2Server (ConnectionNr (i))); i++)
             {
                 Contact *cont = connl->cont;
 
                 rl_printf (i18n (2597, "%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n"),
-                          i + 1, ConnectionType (connl), connl->version,
+                          i + 1, ConnectionType (Server2Connection (connl)), connl->version,
 #ifdef ENABLE_SSL
                           connl->ssl_status == SSL_STATUS_OK ? " SSL" : "",
 #else
@@ -4053,11 +4053,11 @@ static JUMP_F(CmdUserConn)
             targs = args;
             nr = 0;
 
-            if (s_parseint (&targs, &nr) && (connl = ConnectionNr (nr - 1)))
+            if (s_parseint (&targs, &nr) && (connl = Connection2Server (ConnectionNr (nr - 1))))
                 args = targs;
             else if ((par = s_parse (&args)))
             {
-                connl = ConnectionFindScreen (TYPEF_ANY_SERVER, par->txt);
+                connl = Connection2Server (ConnectionFindScreen (TYPEF_ANY_SERVER, par->txt));
                 if (!connl && s_parserem (&args))
                 {
                     if (nr)
@@ -4071,10 +4071,10 @@ static JUMP_F(CmdUserConn)
             }
             if (!connl)
             {
-                if (ConnectionFindNr (uiG.conn) != (UDWORD)-1)
+                if (ConnectionFindNr (Server2Connection (uiG.conn)) != (UDWORD)-1)
                     connl = uiG.conn;
                 else
-                    connl = ConnectionFind (TYPEF_ANY_SERVER, NULL, 0);
+                    connl = Connection2Server (ConnectionFind (TYPEF_ANY_SERVER, NULL, 0));
                 if (!connl)
                     rl_printf (i18n (2600, "No connection selected.\n"));
             }
@@ -4086,7 +4086,7 @@ static JUMP_F(CmdUserConn)
                 rl_printf (i18n (2601, "Connection for %s is already open.\n"), connl->screen);
             else if (!connl->c_open)
                 rl_printf (i18n (2602, "Don't know how to open connection type %s for %s.\n"),
-                    ConnectionType (connl), connl->screen);
+                    ConnectionType (Server2Connection (connl)), connl->screen);
             else if (!connl->passwd || !*connl->passwd)
                 rl_printf (i18n (2688, "No password given for %s.\n"), connl->screen);
             else
@@ -4097,11 +4097,11 @@ static JUMP_F(CmdUserConn)
             targs = args;
             nr = 0;
 
-            if (s_parseint (&targs, &nr) && (connl = ConnectionNr (nr - 1)))
+            if (s_parseint (&targs, &nr) && (connl = Connection2Server (ConnectionNr (nr - 1))))
                 args = targs;
             else if ((par = s_parse (&args)))
             {
-                connl = ConnectionFindScreen (TYPEF_ANY_SERVER, par->txt);
+                connl = Connection2Server (ConnectionFindScreen (TYPEF_ANY_SERVER, par->txt));
                 if (!connl)
                 {
                     if (nr)
@@ -4128,7 +4128,7 @@ static JUMP_F(CmdUserConn)
             if (!s_parseint (&args, &nr))
                 nr = 0;
 
-            connl = ConnectionNr (nr - 1);
+            connl = Connection2Server (ConnectionNr (nr - 1));
             if (!connl)
             {
                 rl_printf (i18n (1894, "There is no connection number %ld.\n"), UD2UL (nr));
@@ -4140,25 +4140,25 @@ static JUMP_F(CmdUserConn)
                 break;
             }
             rl_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), UD2UL (nr));
-            ConnectionD (connl);
+            ConnectionD (Server2Connection (connl));
             break;
         
         case 5:
             if (!s_parseint (&args, &nr))
                 nr = 0;
 
-            connl = ConnectionNr (nr - 1);
+            connl = Connection2Server (ConnectionNr (nr - 1));
             if (!connl)
                 rl_printf (i18n (1894, "There is no connection number %ld.\n"), UD2UL (nr));
             else if (connl->close)
             {
                 rl_printf (i18n (2185, "Closing connection %ld.\n"), UD2UL (nr));
-                connl->close (connl);
+                connl->close (Server2Connection (connl));
             }
             else
             {
                 rl_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), UD2UL (nr));
-                ConnectionD (connl);
+                ConnectionD (Server2Connection (connl));
             }
     }
     return 0;
@@ -4269,7 +4269,7 @@ static JUMP_F(CmdUserQuit)
  */
 static JUMP_F(CmdUserAsSession)
 {
-    Connection *saveconn, *tmpconn;
+    Server *saveconn, *tmpconn;
     UDWORD quiet = 0, nr = 0;
     const char *targs;
     strc_t par;
@@ -4281,11 +4281,11 @@ static JUMP_F(CmdUserAsSession)
 
     targs = args;
 
-    if (s_parseint (&targs, &nr) && (tmpconn = ConnectionNr (nr - 1)))
+    if (s_parseint (&targs, &nr) && (tmpconn = Connection2Server (ConnectionNr (nr - 1))))
         args = targs;
     else if ((par = s_parse (&args)))
     {
-        tmpconn = ConnectionFindScreen (TYPEF_ANY_SERVER, par->txt);
+        tmpconn = Connection2Server (ConnectionFindScreen (TYPEF_ANY_SERVER, par->txt));
         if (!tmpconn && !quiet)
         {
             if (nr)
@@ -4296,10 +4296,10 @@ static JUMP_F(CmdUserAsSession)
     }
     else
     {
-        if (ConnectionFindNr (uiG.conn))
+        if (ConnectionFindNr (Server2Connection (uiG.conn)))
             tmpconn = uiG.conn;
         else
-            tmpconn = ConnectionFind (TYPEF_ANY_SERVER, NULL, 0);
+            tmpconn = Connection2Server (ConnectionFind (TYPEF_ANY_SERVER, NULL, 0));
         if (!tmpconn && !quiet)
             rl_printf (i18n (2600, "No connection selected.\n"));
     }
@@ -4808,7 +4808,7 @@ static JUMP_F(CmdUserAbout)
  */
 void CmdUserCallbackTodo (Event *event)
 {
-    Connection *tconn;
+    Server *tconn;
     const char *args;
     strc_t par;
     
@@ -4816,7 +4816,7 @@ void CmdUserCallbackTodo (Event *event)
         && OptGetStr (event->opt, CO_CLIMMCOMMAND, &args))
     {
         tconn = uiG.conn;
-        uiG.conn = event->conn;
+        uiG.conn = Connection2Server (event->conn);
         while ((par = s_parse (&args)))
         {
             char *cmd = strdup (par->txt);
@@ -4872,8 +4872,8 @@ static void CmdUserProcess (const char *command, time_t *idle_val, idleflag_t *i
 
     rl_print ("\r");
 
-    if (!uiG.conn || !(ConnectionFindNr (uiG.conn) + 1))
-        uiG.conn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL);
+    if (!uiG.conn || !(ConnectionFindNr (Server2Connection (uiG.conn)) + 1))
+        uiG.conn = Connection2Server (ConnectionFind (TYPEF_ANY_SERVER, 0, NULL));
 
     if (isinterrupted)
     {

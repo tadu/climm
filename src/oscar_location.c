@@ -36,6 +36,7 @@
 #include "oscar_location.h"
 #include "oscar_tlv.h"
 #include "conv.h"
+#include "connection.h"
 #include "contact.h"
 #include "packet.h"
 #include "im_response.h"
@@ -71,14 +72,14 @@ JUMP_SNAC_F(SnacSrvLocationerr)
  */
 JUMP_SNAC_F(SnacSrvReplylocation)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     SnacCliSetuserinfo (serv);
 }
 
 /*
  * CLI_SETUSERINFO - SNAC(2,4)
  */
-void SnacCliSetuserinfo (Connection *serv)
+void SnacCliSetuserinfo (Server *serv)
 {
     Packet *pak;
     
@@ -97,7 +98,7 @@ void SnacCliSetuserinfo (Connection *serv)
 /*
  * CLI_REQUSERINFO - SNAC(2,5)
  */
-void SnacCliRequserinfo (Connection *serv, Contact *victim, UWORD type)
+void SnacCliRequserinfo (Server *serv, Contact *victim, UWORD type)
 {
     Packet *pak;
     
@@ -113,7 +114,7 @@ void SnacCliRequserinfo (Connection *serv, Contact *victim, UWORD type)
  */
 JUMP_SNAC_F(SnacSrvUserinfo)
 {
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     Packet *pak = event->pak;
     Contact *cont = PacketReadCont (pak, serv);
     TLV *tlv;

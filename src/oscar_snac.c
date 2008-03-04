@@ -203,7 +203,7 @@ const char *SnacName (UWORD fam, UWORD cmd)
 /*
  * Creates a new SNAC.
  */
-Packet *SnacC (Connection *serv, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref)
+Packet *SnacC (Server *serv, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref)
 {
     Packet *pak;
     
@@ -289,8 +289,8 @@ static JUMP_SNAC_F(cb_SnacRefCancel)
     EventD (event);
 }
 
-void SnacSendR (Connection *serv, Packet *pak, jump_snac_f *f, void *data)
+void SnacSendR (Server *serv, Packet *pak, jump_snac_f *f, void *data)
 {
-    QueueEnqueueData2 (serv, QUEUE_OSCAR_REF, pak->ref, 600, data, f, &cb_SnacRefCancel);
+    QueueEnqueueData2 (Server2Connection (serv), QUEUE_OSCAR_REF, pak->ref, 600, data, f, &cb_SnacRefCancel);
     SnacSend (serv, pak);
 }

@@ -32,9 +32,9 @@ Message *MsgC (void);
 void     MsgD (Message *msg);
 
 UBYTE IMCliMsg    (Contact *cont, UDWORD type, const char *msg, Opt *opt);
-void  IMSetStatus (Connection *serv, Contact *cont, status_t status, const char *msg);
+void  IMSetStatus (Server *serv, Contact *cont, status_t status, const char *msg);
 UBYTE IMCliReMsg  (Contact *cont, Message *msg); /* no log */
-void  IMCliInfo   (Connection *serv, Contact *cont, int group);
+void  IMCliInfo   (Server *serv, Contact *cont, int group);
 void  IMCliAuth   (Contact *cont, const char *msg, auth_t how);
 
 #endif /* CLIMM_IM_CLI_H */

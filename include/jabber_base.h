@@ -4,10 +4,10 @@
 
 #include "im_request.h"
 
-Event *ConnectionInitXMPPServer (Connection *serv);
+Event *ConnectionInitXMPPServer (Server *serv);
 
-UBYTE XMPPSendmsg   (Connection *serv, Contact *cont, Message *msg);
-void  XMPPSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg);
-void  XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, const char *msg);
+UBYTE XMPPSendmsg   (Server *serv, Contact *cont, Message *msg);
+void  XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *msg);
+void  XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const char *msg);
 
 #endif

@@ -4,9 +4,9 @@
 #define CLIMM_UTIL_PARSE_H
 
 strc_t        s_parse_s     (const char **input, const char *sep);
-Contact      *s_parsenick_s (const char **input, const char *sep, BOOL any, Connection *serv);
-ContactGroup *s_parsecg_s   (const char **input, const char *sep, BOOL any, Connection *serv);
-ContactGroup *s_parselist_s (const char **input, BOOL rem, BOOL any, Connection *serv);
+Contact      *s_parsenick_s (const char **input, const char *sep, BOOL any, Server *serv);
+ContactGroup *s_parsecg_s   (const char **input, const char *sep, BOOL any, Server *serv);
+ContactGroup *s_parselist_s (const char **input, BOOL rem, BOOL any, Server *serv);
 char         *s_parserem_s  (const char **input, const char *sep);
 
 BOOL          s_parseint_s  (const char **input, UDWORD        *parsed, const char *sep);

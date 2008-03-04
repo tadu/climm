@@ -68,7 +68,7 @@ static void ContactGroupInit (void)
 }
 
 #undef ContactGroupC
-ContactGroup *ContactGroupC (Connection *conn, UWORD id, const char *name DEBUGPARAM)
+ContactGroup *ContactGroupC (Server *serv, UWORD id, const char *name DEBUGPARAM)
 {
     ContactGroup *cg;
     int i;
@@ -95,10 +95,10 @@ ContactGroup *ContactGroupC (Connection *conn, UWORD id, const char *name DEBUGP
 
     cnt_groups[i + 1] = NULL;
     cnt_groups[i] = cg;
-    cg->serv = conn;
+    cg->serv = serv;
     cg->id = id;
     s_repl (&cg->name, name);
-    Debug (DEB_CONTACT, "grpadd #%d %p %p '%s'", i, cg, conn, cg->name);
+    Debug (DEB_CONTACT, "grpadd #%d %p %p '%s'", i, cg, serv, cg->name);
     return cg;
 }
 
@@ -117,7 +117,7 @@ ContactGroup *ContactGroupIndex (int i)
 /*
  * Finds and/or creates a contact group.
  */
-ContactGroup *ContactGroupFind (Connection *serv, UWORD id, const char *name)
+ContactGroup *ContactGroupFind (Server *serv, UWORD id, const char *name)
 {
     ContactGroup *cg;
     int i;
@@ -284,7 +284,7 @@ Contact *ContactIndex (ContactGroup *group, int i)
 }
 
 #undef ContactCUIN
-static Contact *ContactCUIN (Connection *serv, UDWORD uin DEBUGPARAM)
+static Contact *ContactCUIN (Server *serv, UDWORD uin DEBUGPARAM)
 {
     Contact *cont;
 
@@ -311,8 +311,8 @@ static Contact *ContactCUIN (Connection *serv, UDWORD uin DEBUGPARAM)
 }
 
 #undef ContactCScreen
-static Contact *ContactCScreen (Connection *serv, const char *screen DEBUGPARAM);
-static Contact *ContactCScreen (Connection *serv, const char *screen DEBUGPARAM)
+static Contact *ContactCScreen (Server *serv, const char *screen DEBUGPARAM);
+static Contact *ContactCScreen (Server *serv, const char *screen DEBUGPARAM)
 {
     Contact *cont;
     
@@ -411,7 +411,7 @@ Contact *ContactFindScreenP (ContactGroup *group, Contact *parent, const char *s
 /*
  * Finds a contact on a contact group by UIN
  */
-static Contact *ContactFindSUIN (ContactGroup *group, Connection *serv, UDWORD uin)
+static Contact *ContactFindSUIN (ContactGroup *group, Server *serv, UDWORD uin)
 {
     ContactGroup *tmp;
     Contact *cont;
@@ -432,7 +432,7 @@ static Contact *ContactFindSUIN (ContactGroup *group, Connection *serv, UDWORD u
 /*
  * Finds a contact on a contact group by screen name
  */
-static Contact *ContactFindSScreen (ContactGroup *group, Connection *serv, const char *screen)
+static Contact *ContactFindSScreen (ContactGroup *group, Server *serv, const char *screen)
 {
     ContactGroup *tmp;
     Contact *cont;
@@ -457,7 +457,7 @@ static Contact *ContactFindSScreen (ContactGroup *group, Connection *serv, const
 /*
  * Finds a contact on a contact group by screen name under a parent
  */
-static Contact *ContactFindSScreenP (ContactGroup *group, Connection *serv, Contact *parent, const char *screen)
+static Contact *ContactFindSScreenP (ContactGroup *group, Server *serv, Contact *parent, const char *screen)
 {
     ContactGroup *tmp;
     Contact *cont;
@@ -483,7 +483,7 @@ static Contact *ContactFindSScreenP (ContactGroup *group, Connection *serv, Cont
  * Finds a contact for a connection
  */
 #undef ContactScreen
-Contact *ContactScreen (Connection *serv, const char *screen DEBUGPARAM)
+Contact *ContactScreen (Server *serv, const char *screen DEBUGPARAM)
 {
     Contact *cont;
     UDWORD uin;
@@ -517,7 +517,7 @@ Contact *ContactScreen (Connection *serv, const char *screen DEBUGPARAM)
  * Finds a contact for a connection under a parent
  */
 #undef ContactScreenP
-Contact *ContactScreenP (Connection *serv, Contact *parent, const char *screen DEBUGPARAM)
+Contact *ContactScreenP (Server *serv, Contact *parent, const char *screen DEBUGPARAM)
 {
     Contact *cont;
     UDWORD uin;
@@ -552,7 +552,7 @@ Contact *ContactScreenP (Connection *serv, Contact *parent, const char *screen D
  * Finds a contact for a connection
  */
 #undef ContactUIN
-Contact *ContactUIN (Connection *serv, UDWORD uin DEBUGPARAM)
+Contact *ContactUIN (Server *serv, UDWORD uin DEBUGPARAM)
 {
     Contact *cont;
     
@@ -596,7 +596,7 @@ const char *ContactFindAlias (Contact *cont, const char *nick)
 /*
  * Finds a contact by nick
  */
-Contact *ContactFind (Connection *serv, const char *nick)
+Contact *ContactFind (Server *serv, const char *nick)
 {
     ContactGroup *tmp;
     ContactAlias *ca;
@@ -619,7 +619,7 @@ Contact *ContactFind (Connection *serv, const char *nick)
 }
 
 #undef ContactCreate
-void ContactCreate (Connection *serv, Contact *cont DEBUGPARAM)
+void ContactCreate (Server *serv, Contact *cont DEBUGPARAM)
 {
     assert (cont->serv == serv);
     if (cont->group)

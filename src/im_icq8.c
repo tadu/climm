@@ -56,7 +56,7 @@ static RosterEntry *IMRosterGroup (Roster *roster, UWORD id)
     return NULL;
 }
 
-static Contact *IMRosterCheckCont (Connection *serv, RosterEntry *rc)
+static Contact *IMRosterCheckCont (Server *serv, RosterEntry *rc)
 {
     Contact *cont;
     
@@ -73,7 +73,7 @@ static Contact *IMRosterCheckCont (Connection *serv, RosterEntry *rc)
     return cont;
 }
 
-static ContactGroup *IMRosterCheckGroup (Connection *serv, RosterEntry *rg)
+static ContactGroup *IMRosterCheckGroup (Server *serv, RosterEntry *rg)
 {
     ContactGroup *cg, *tcg;
 
@@ -101,7 +101,7 @@ static void IMRosterDoDelete (Event *event)
 {
     Roster *roster = event->data;
     RosterEntry *re;
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     
     if (!roster)
         return;
@@ -166,7 +166,7 @@ static void IMRosterShow (Event *event)
 {
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     Contact *cont = NULL;
     int cnt_groups = 0, cnt_ignored = 0, cnt_hidden = 0, cnt_intimate = 0, cnt_normal = 0;
     
@@ -257,7 +257,7 @@ static void IMRosterShow (Event *event)
                cnt_groups, cnt_ignored + cnt_hidden + cnt_intimate + cnt_normal, cnt_ignored, cnt_hidden, cnt_intimate);
 }
 
-static void IMRosterDownCont (Connection *serv, Roster *roster, ContactGroup *cg, RosterEntry *rc, int *pcnt, int *pmod, char force, UDWORD flag)
+static void IMRosterDownCont (Server *serv, Roster *roster, ContactGroup *cg, RosterEntry *rc, int *pcnt, int *pmod, char force, UDWORD flag)
 {
     ContactGroup *tcg = NULL;
     Contact *cont;
@@ -331,7 +331,7 @@ static void IMRosterAdddown (Event *event)
 {
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     ContactGroup *cg;
     int cnt_groups = 0, cnt_ignored = 0, cnt_hidden = 0, cnt_intimate = 0, cnt_normal = 0;
     int mod_groups = 0, mod_ignored = 0, mod_hidden = 0, mod_intimate = 0, mod_normal = 0;
@@ -383,7 +383,7 @@ static void IMRosterOverwritedown (Event *event)
 {
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     ContactGroup *cg;
     int cnt_groups = 0, cnt_ignored = 0, cnt_hidden = 0, cnt_intimate = 0, cnt_normal = 0;
     int mod_groups = 0, mod_ignored = 0, mod_hidden = 0, mod_intimate = 0, mod_normal = 0;
@@ -435,7 +435,7 @@ static void IMRosterAddup (Event *event)
 {
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     ContactGroup *cg;
     Contact *cont;
     int i, cnt_groups = 0, cnt_normal = 0;
@@ -506,7 +506,7 @@ static void IMRosterDiff (Event *event)
 {
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
-    Connection *serv = event->conn;
+    Server *serv = Connection2Server (event->conn);
     ContactGroup *cg;
     Contact *cont;
     int i, cnt_more = 0;
@@ -655,7 +655,7 @@ static void IMRosterDiff (Event *event)
     }
 }
 
-UBYTE IMDeleteID (Connection *conn, int tag, int id, const char *name)
+UBYTE IMDeleteID (Server *serv, int tag, int id, const char *name)
 {
     Roster *roster;
     
@@ -663,13 +663,13 @@ UBYTE IMDeleteID (Connection *conn, int tag, int id, const char *name)
     roster->deltag = tag;
     roster->delid = id;
     roster->delname = name ? strdup (name) : NULL;
-    QueueEnqueueData2 (conn, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (conn),
+    QueueEnqueueData2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
                        900, roster, IMRosterDoDelete, IMRosterCancel);
     return RET_OK;
 }
 
 
-UBYTE IMRoster (Connection *serv, int mode)
+UBYTE IMRoster (Server *serv, int mode)
 {
     ContactGroup *cg;
     ContactIDs *ids;
@@ -689,25 +689,25 @@ UBYTE IMRoster (Connection *serv, int mode)
     switch (mode)
     {
         case IMROSTER_IMPORT:
-            QueueEnqueueData2 (serv, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
+            QueueEnqueueData2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
                                900, NULL, IMRosterOverwritedown, IMRosterCancel);
             break;
         case IMROSTER_DOWNLOAD:
-            QueueEnqueueData2 (serv, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
+            QueueEnqueueData2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
                                900, NULL, IMRosterAdddown, IMRosterCancel);
             break;
         case IMROSTER_EXPORT:
         case IMROSTER_UPLOAD:
-            QueueEnqueueData2 (serv, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
+            QueueEnqueueData2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
                                900, NULL, IMRosterAddup, IMRosterCancel);
             break;
         case IMROSTER_DIFF:
-            QueueEnqueueData2 (serv, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
+            QueueEnqueueData2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
                                900, NULL, IMRosterDiff, IMRosterCancel);
             break;
         case IMROSTER_SYNC:
         case IMROSTER_SHOW:
-            QueueEnqueueData2 (serv, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
+            QueueEnqueueData2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
                                900, NULL, IMRosterShow, IMRosterCancel);
             return RET_OK;
     }

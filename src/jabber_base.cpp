@@ -78,7 +78,7 @@ class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler
 
                  public gloox::LogHandler {
     private :
-        Connection *m_conn;
+        Server *m_conn;
         gloox::Client *m_client;
         char *m_stamp;
 #ifdef CLIMM_FILE_TRANSFER
@@ -103,7 +103,7 @@ class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler
         void handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, std::string msg);
 
     public :
-                      CLIMMXMPP (Connection *serv);
+                      CLIMMXMPP (Server *serv);
         virtual       ~CLIMMXMPP ();
         virtual void  onConnect ();
         virtual void  onDisconnect (gloox::ConnectionError e);
@@ -132,12 +132,12 @@ class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler
         virtual void  handleSubscription (gloox::Stanza *stanza);
         virtual void  handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message);
         gloox::Client *getClient () { return m_client; }
-        UBYTE XMPPSendmsg (Connection *conn, Contact *cont, Message *msg);
-        void  XMPPSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg);
-        void  XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, const char *msg);
+        UBYTE XMPPSendmsg (Server *conn, Contact *cont, Message *msg);
+        void  XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *msg);
+        void  XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const char *msg);
 };
 
-CLIMMXMPP::CLIMMXMPP (Connection *serv)
+CLIMMXMPP::CLIMMXMPP (Server *serv)
 {
     m_conn = serv;
     m_stamp = (char *)malloc (15);
@@ -211,7 +211,7 @@ void CLIMMXMPP::onDisconnect (gloox::ConnectionError e)
             break;
         case gloox::ConnStreamClosed:
         case gloox::ConnIoError:
-            XMPPCallbackReconn (m_conn);
+            XMPPCallbackReconn (Server2Connection (m_conn));
             return;
 
         case gloox::ConnOutOfMemory:          rl_printf ("#onDisconnect: Error OutOfMemory %d.\n", e); break;
@@ -357,7 +357,7 @@ static time_t ParseUTCDate (std::string str)
     return timegm (&tm);
 }
 
-static void GetBothContacts (const gloox::JID &j, Connection *conn, Contact **b, Contact **f, bool crea)
+static void GetBothContacts (const gloox::JID &j, Server *conn, Contact **b, Contact **f, bool crea)
 {
     Contact *bb, *ff, **t;
     std::string jb = j.bare();
@@ -470,7 +470,7 @@ void CLIMMXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
 
     if (ref != -1)
     {
-        Event *event = QueueDequeue (m_conn, QUEUE_XMPP_RESEND_ACK, ref);
+        Event *event = QueueDequeue (Server2Connection (m_conn), QUEUE_XMPP_RESEND_ACK, ref);
         if (event)
         {
             Message *msg = (Message *)event->data;
@@ -884,7 +884,7 @@ void CLIMMXMPP::handleSubscription (gloox::Stanza *s)
                s->xml().c_str());
 }
 
-void CLIMMXMPPSave (Connection *serv, const char *text, bool in)
+void CLIMMXMPPSave (Server *serv, const char *text, bool in)
 {
     const char *data;
 
@@ -985,7 +985,7 @@ static void SnacCallbackXmppCancel (Event *event)
     EventD (event);
 }
 
-UBYTE CLIMMXMPP::XMPPSendmsg (Connection *serv, Contact *cont, Message *msg)
+UBYTE CLIMMXMPP::XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
 {
     assert (serv == m_conn);
 
@@ -1010,13 +1010,13 @@ UBYTE CLIMMXMPP::XMPPSendmsg (Connection *serv, Contact *cont, Message *msg)
     new gloox::Tag (x, "composing");
     m_client->send (msgs);
 
-    Event *event = QueueEnqueueData2 (serv, QUEUE_XMPP_RESEND_ACK, m_conn->our_seq, 120, msg, &SnacCallbackXmpp, &SnacCallbackXmppCancel);
+    Event *event = QueueEnqueueData2 (Server2Connection (serv), QUEUE_XMPP_RESEND_ACK, m_conn->our_seq, 120, msg, &SnacCallbackXmpp, &SnacCallbackXmppCancel);
     event->cont = cont;
 
     return RET_OK;
 }
 
-void CLIMMXMPP::XMPPSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg)
+void CLIMMXMPP::XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *msg)
 {
     gloox::Presence p;
     gloox::JID j = cont ? gloox::JID (cont->screen) : gloox::JID ();
@@ -1046,7 +1046,7 @@ void CLIMMXMPP::XMPPSetstatus (Connection *serv, Contact *cont, status_t status,
     m_conn->nativestatus = p;
 }
 
-void CLIMMXMPP::XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, const char *msg)
+void CLIMMXMPP::XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const char *msg)
 {
     gloox::JID j = gloox::JID (cont->screen);
     gloox::Tag *pres = new gloox::Tag ("presence");
@@ -1267,6 +1267,7 @@ void XMPPFTCallbackDispatch (Connection *conn)
 static void XMPPCallBackTimeout (Event *event)
 {
     Connection *conn = event->conn;
+    Server *serv;
 
     if (!conn)
     {
@@ -1274,12 +1275,13 @@ static void XMPPCallBackTimeout (Event *event)
         return;
     }
     assert (conn->type == TYPE_XMPP_SERVER);
-    if (~conn->connect & CONNECT_OK)
+    serv = Connection2Server (conn);
+    if (~serv->connect & CONNECT_OK)
         rl_print ("# XMPP timeout\n");
     EventD (event);
 }
 
-Event *ConnectionInitXMPPServer (Connection *serv)
+Event *ConnectionInitXMPPServer (Server *serv)
 {
     const char *sp;
     Event *event;
@@ -1297,7 +1299,7 @@ Event *ConnectionInitXMPPServer (Connection *serv)
         s_repl (&serv->screen, jid);
     }
 
-    XMPPCallbackClose (serv);
+    XMPPCallbackClose (Server2Connection (serv));
 
     sp = s_sprintf ("%s", s_wordquote (s_sprintf ("%s:%lu", serv->server, serv->port)));
     rl_printf (i18n (2620, "Opening XMPP connection for %s at %s...\n"),
@@ -1312,7 +1314,7 @@ Event *ConnectionInitXMPPServer (Connection *serv)
     serv->close = &XMPPCallbackClose;
     serv->dispatch = &XMPPCallbackDispatch;
 
-    if ((event = QueueDequeue2 (serv, QUEUE_DEP_WAITLOGIN, 0, NULL)))
+    if ((event = QueueDequeue2 (Server2Connection (serv), QUEUE_DEP_WAITLOGIN, 0, NULL)))
     {
         event->attempts++;
         event->due = time (NULL) + 10 * event->attempts + 10;
@@ -1320,7 +1322,7 @@ Event *ConnectionInitXMPPServer (Connection *serv)
         QueueEnqueue (event);
     }
     else
-        event = QueueEnqueueData (serv, QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 5,
+        event = QueueEnqueueData (Server2Connection (serv), QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 5,
                                   NULL, serv->cont, NULL, &XMPPCallBackTimeout);
 
     CLIMMXMPP *l = new CLIMMXMPP (serv);
@@ -1330,9 +1332,9 @@ Event *ConnectionInitXMPPServer (Connection *serv)
     return event;
 }
 
-static inline CLIMMXMPP *getXMPPClient (Connection *conn)
+static inline CLIMMXMPP *getXMPPClient (Connection *serv)
 {
-    return conn ? (CLIMMXMPP *)conn->xmpp_private : NULL;
+    return serv ? (CLIMMXMPP *)serv->xmpp_private : NULL;
 }
 
 void XMPPCallbackDispatch (Connection *conn)
@@ -1353,8 +1355,8 @@ void XMPPCallbackDispatch (Connection *conn)
 
 static void XMPPCallbackReconn (Connection *conn)
 {
-
-    ContactGroup *cg = conn->contacts;
+    Server *serv = Connection2Server (conn);
+    ContactGroup *cg = serv->contacts;
     Event *event;
     Contact *cont;
     int i;
@@ -1364,7 +1366,7 @@ static void XMPPCallbackReconn (Connection *conn)
 
     if (!(event = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
     {
-        ConnectionInitXMPPServer (conn);
+        ConnectionInitXMPPServer (serv);
         return;
     }
 
@@ -1391,7 +1393,7 @@ static void XMPPCallBackDoReconn (Event *event)
     if (event->conn && event->conn->type == TYPE_XMPP_SERVER)
     {
         QueueEnqueue (event);
-        ConnectionInitXMPPServer (event->conn);
+        ConnectionInitXMPPServer (Connection2Server (event->conn));
     }
     else
         EventD (event);
@@ -1489,23 +1491,23 @@ void XMPPCallBackFileAccept (Event *event)
 }
 #endif
 
-UBYTE XMPPSendmsg (Connection *serv, Contact *cont, Message *msg)
+UBYTE XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
 {
-    CLIMMXMPP *j = getXMPPClient (serv);
+    CLIMMXMPP *j = getXMPPClient (Server2Connection (serv));
     assert (j);
     return j->XMPPSendmsg (serv, cont, msg);
 }
 
-void XMPPSetstatus (Connection *serv, Contact *cont, status_t status, const char *msg)
+void XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *msg)
 {
-    CLIMMXMPP *j = getXMPPClient (serv);
+    CLIMMXMPP *j = getXMPPClient (Server2Connection (serv));
     assert (j);
     j->XMPPSetstatus (serv, cont, status, msg);
 }
 
-void XMPPAuthorize (Connection *serv, Contact *cont, auth_t how, const char *msg)
+void XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const char *msg)
 {
-    CLIMMXMPP *j = getXMPPClient (serv);
+    CLIMMXMPP *j = getXMPPClient (Server2Connection (serv));
     assert (j);
     assert (cont);
     j->XMPPAuthorize (serv, cont, how, msg);

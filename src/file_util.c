@@ -56,35 +56,35 @@
 #define WAND3 " \xb7 \\ "
 #define WAND4 "    \\"
 
-Connection *PrefNewConnection (UDWORD servertype, const char *user, const char *passwd)
+Server *PrefNewConnection (UDWORD servertype, const char *user, const char *passwd)
 {
-    Connection *conn = NULL;
+    Server *serv = NULL;
     Contact *cont;
     
     if (servertype == TYPE_SERVER)
     {
-        conn = ConnectionC (servertype);
-        conn->c_open = &ConnectionInitServer;
+        serv = Connection2Server (ConnectionC (servertype));
+        serv->c_open = &ConnectionInitServer;
         
-        conn->flags |= CONN_AUTOLOGIN;
-        conn->pref_server = strdup ("login.icq.com");
-        conn->pref_port = 5190;
-        conn->pref_status = ims_online;
-        conn->version = 8;
-        s_repl (&conn->screen, user);
-        conn->uin = atoi (user);
-        conn->pref_passwd = passwd ? strdup (passwd) : NULL;
+        serv->flags |= CONN_AUTOLOGIN;
+        serv->pref_server = strdup ("login.icq.com");
+        serv->pref_port = 5190;
+        serv->pref_status = ims_online;
+        serv->version = 8;
+        s_repl (&serv->screen, user);
+        serv->uin = atoi (user);
+        serv->pref_passwd = passwd ? strdup (passwd) : NULL;
         
-        conn->server  = strdup (conn->pref_server);
-        conn->port    = conn->pref_port;
-        conn->passwd  = passwd ? strdup (passwd) : NULL;
-        conn->status  = ims_online;
+        serv->server  = strdup (serv->pref_server);
+        serv->port    = serv->pref_port;
+        serv->passwd  = passwd ? strdup (passwd) : NULL;
+        serv->status  = ims_online;
 
-        conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-icq8-%s", user));
-        OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
+        serv->contacts = ContactGroupC (serv, 0, s_sprintf ("contacts-icq8-%s", user));
+        OptSetVal (&serv->contacts->copts, CO_IGNORE, 0);
         
-        cont = ContactUIN (conn, 82274703);
-        ContactCreate (conn, cont);
+        cont = ContactUIN (serv, 82274703);
+        ContactCreate (serv, cont);
         ContactAddAlias (cont, "climm");
         ContactAddAlias (cont, "Tadu");
         OptSetStr (&cont->copts, CO_COLORINCOMING, OptC2S ("red bold"));
@@ -98,31 +98,31 @@ Connection *PrefNewConnection (UDWORD servertype, const char *user, const char *
     {
         const char *serverpart = strchr (user, '@') + 1;
     
-        conn = ConnectionC (servertype);
-        conn->c_open = &ConnectionInitXMPPServer;
+        serv = Connection2Server (ConnectionC (servertype));
+        serv->c_open = &ConnectionInitXMPPServer;
         
-        conn->flags |= CONN_AUTOLOGIN;
+        serv->flags |= CONN_AUTOLOGIN;
         if (!strcmp (serverpart, "gmail.com") || !strcmp (serverpart, "gmail.com"))
-            conn->pref_server = strdup ("talk.google.com");
+            serv->pref_server = strdup ("talk.google.com");
         else
-            conn->pref_server = strdup (serverpart);
-        conn->pref_port = 5222;
-        conn->pref_status = ims_online;
-        conn->version = 8;
-        s_repl (&conn->screen, user);
-        conn->uin = 0;
-        conn->pref_passwd = passwd ? strdup (passwd) : NULL;
+            serv->pref_server = strdup (serverpart);
+        serv->pref_port = 5222;
+        serv->pref_status = ims_online;
+        serv->version = 8;
+        s_repl (&serv->screen, user);
+        serv->uin = 0;
+        serv->pref_passwd = passwd ? strdup (passwd) : NULL;
         
-        conn->server  = strdup (conn->pref_server);
-        conn->port    = conn->pref_port;
-        conn->passwd  = passwd ? strdup (passwd) : NULL;
-        conn->status  = ims_online;
+        serv->server  = strdup (serv->pref_server);
+        serv->port    = serv->pref_port;
+        serv->passwd  = passwd ? strdup (passwd) : NULL;
+        serv->status  = ims_online;
 
-        conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-xmpp-%s", user));
-        OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
+        serv->contacts = ContactGroupC (serv, 0, s_sprintf ("contacts-xmpp-%s", user));
+        OptSetVal (&serv->contacts->copts, CO_IGNORE, 0);
         
-        cont = ContactScreen (conn, "RKuhlmann@gmail.com");
-        ContactCreate (conn, cont);
+        cont = ContactScreen (serv, "RKuhlmann@gmail.com");
+        ContactCreate (serv, cont);
         ContactAddAlias (cont, "climm");
         ContactAddAlias (cont, "Tadu");
         OptSetStr (&cont->copts, CO_COLORINCOMING, OptC2S ("red bold"));
@@ -135,36 +135,36 @@ Connection *PrefNewConnection (UDWORD servertype, const char *user, const char *
 #ifdef ENABLE_MSN
     else if (servertype == TYPE_MSN_SERVER)
     {
-        conn = ConnectionC (servertype);
-        conn->c_open = &ConnectionInitMSNServer;
+        serv = Connection2Server (ConnectionC (servertype));
+        serv->c_open = &ConnectionInitMSNServer;
         
-        conn->flags |= CONN_AUTOLOGIN;
-        conn->pref_server = strdup (strchr (user, '@') + 1);
-        conn->pref_port = 42;
-        conn->pref_status = ims_online;
-        conn->version = 8;
-        s_repl (&conn->screen, user);
-        conn->uin = 0;
-        conn->pref_passwd = passwd ? strdup (passwd) : NULL;
+        serv->flags |= CONN_AUTOLOGIN;
+        serv->pref_server = strdup (strchr (user, '@') + 1);
+        serv->pref_port = 42;
+        serv->pref_status = ims_online;
+        serv->version = 8;
+        s_repl (&serv->screen, user);
+        serv->uin = 0;
+        serv->pref_passwd = passwd ? strdup (passwd) : NULL;
         
-        conn->server  = strdup (conn->pref_server);
-        conn->port    = conn->pref_port;
-        conn->passwd  = passwd ? strdup (passwd) : NULL;
-        conn->status  = ims_online;
+        serv->server  = strdup (serv->pref_server);
+        serv->port    = serv->pref_port;
+        serv->passwd  = passwd ? strdup (passwd) : NULL;
+        serv->status  = ims_online;
 
-        conn->contacts = ContactGroupC (conn, 0, s_sprintf ("contacts-msn-%s", user));
-        OptSetVal (&conn->contacts->copts, CO_IGNORE, 0);
+        serv->contacts = ContactGroupC (serv, 0, s_sprintf ("contacts-msn-%s", user));
+        OptSetVal (&serv->contacts->copts, CO_IGNORE, 0);
     }
 #endif
-    return conn;
+    return serv;
 }
 
 void Initialize_RC_File ()
 {
     strc_t line;
-    Connection *conn;
+    Server *conn;
 #ifdef ENABLE_REMOTECONTROL
-    Connection *conns;
+    Server *conns;
 #endif
     char *user = NULL;
     char *passwd;
@@ -307,7 +307,7 @@ void Initialize_RC_File ()
         free (tmp);
     }
 #ifdef ENABLE_REMOTECONTROL
-    conns = ConnectionC (TYPE_REMOTE);
+    conns = Connection2Server (ConnectionC (TYPE_REMOTE));
     conns->c_open = &RemoteOpen;
     conns->flags |= CONN_AUTOLOGIN;
     conns->pref_server = strdup ("scripting");
@@ -357,9 +357,9 @@ int Read_RC_File (FILE *rcf)
     strc_t line, par;
     const char *args, *p;
     Contact *cont = NULL, *lastcont = NULL;
-    Connection *oldconn = NULL, *conn = NULL, *tconn;
+    Server *oldconn = NULL, *conn = NULL, *tconn;
 #ifdef ENABLE_REMOTECONTROL
-    Connection *connr = NULL;
+    Server *connr = NULL;
 #endif
     ContactGroup *cg = NULL;
     int section, dep = 0;
@@ -384,14 +384,14 @@ int Read_RC_File (FILE *rcf)
             {
                 section = 3;
                 oldconn = conn;
-                conn = ConnectionC (0);
+                conn = Connection2Server (ConnectionC (0));
             }
             else if (!strcasecmp (args, "[Group]"))
             {
                 section = 4;
                 cg = ContactGroupC (NULL, 0, NULL);
                 OptSetVal (&cg->copts, CO_IGNORE, 0);
-                if ((conn = ConnectionFind (TYPEF_SERVER, NULL, NULL)))
+                if ((conn = Connection2Server (ConnectionFind (TYPEF_SERVER, NULL, NULL))))
                     cg->serv = conn;
                 cont = NULL;
             }
@@ -948,7 +948,7 @@ int Read_RC_File (FILE *rcf)
                     PrefParse (cmd);
                 }
                 
-                for (i = j = 0; (tconn = ConnectionNr (i)); i++)
+                for (i = j = 0; (tconn = Connection2Server (ConnectionNr (i))); i++)
                 {
                     if (~tconn->type & TYPEF_ANY_SERVER)
                         continue;
@@ -963,7 +963,7 @@ int Read_RC_File (FILE *rcf)
                 if (!j)
                 {
                     dep = 19;
-                    for (i = 0; (tconn = ConnectionNr (i)); i++)
+                    for (i = 0; (tconn = Connection2Server (ConnectionNr (i))); i++)
                         if (tconn->type & TYPEF_ANY_SERVER)
                             break;
                     if (!tconn)
@@ -1046,8 +1046,8 @@ int Read_RC_File (FILE *rcf)
                         conn->pref_status = TCP_OK_FLAG;
                         if (oldconn->type == TYPE_SERVER)
                         {
-                            oldconn->assoc = conn;
-                            conn->parent = oldconn;
+                            oldconn->assoc = Server2Connection (conn);
+                            conn->parent = Server2Connection (oldconn);
                         }
                         else
                         {
@@ -1122,7 +1122,7 @@ int Read_RC_File (FILE *rcf)
                 PrefParse (cmd);
                 if (!strcasecmp (cmd, "label") && !cg->used)
                 {
-                    Connection *conn = NULL;
+                    Server *conn = NULL;
                     PrefParse (tmp);
                     s_repl (&cg->name, tmp);
                     if (!strncmp (cg->name, "contacts-", 9))
@@ -1131,7 +1131,7 @@ int Read_RC_File (FILE *rcf)
                         if ((type = ConnectionServerNType (cg->name + 9, '-')))
                         {
                             int len = strlen (ConnectionServerType (type));
-                            conn = ConnectionFindScreen (type, cg->name + len + 10);
+                            conn = Connection2Server (ConnectionFindScreen (type, cg->name + len + 10));
                             if (conn)
                             {
                                 if (conn->contacts && conn->contacts != cg) /* Duplicate! */
@@ -1148,7 +1148,7 @@ int Read_RC_File (FILE *rcf)
                         }
                     }
                     if (!cg->serv)
-                        if ((conn = ConnectionFind (TYPEF_SERVER, NULL, NULL)))
+                        if ((conn = Connection2Server (ConnectionFind (TYPEF_SERVER, NULL, NULL))))
                             cg->serv = conn;
                 }
                 else if (!strcasecmp (cmd, "id") && !cg->used)
@@ -1158,7 +1158,7 @@ int Read_RC_File (FILE *rcf)
                 }
                 else if (!strcasecmp (cmd, "server") && !cg->used)
                 {
-                    Connection *conn;
+                    Server *conn;
                     UWORD type;
                     
                     PrefParse (tmp);
@@ -1167,7 +1167,7 @@ int Read_RC_File (FILE *rcf)
                     
                     PrefParse (tmp);
                     
-                    if ((conn = ConnectionFindScreen (type, tmp)))
+                    if ((conn = Connection2Server (ConnectionFindScreen (type, tmp))))
                         cg->serv = conn;
                 }
                 else if (!cg->serv)
@@ -1211,7 +1211,7 @@ int Read_RC_File (FILE *rcf)
     if (!prG->prompt_strftime)
         prG->prompt_strftime = strdup (USER_PROMPT_STRFTIME);
 
-    for (i = 0; (conn = ConnectionNr (i)); i++)
+    for (i = 0; (conn = Connection2Server (ConnectionNr (i))); i++)
     {
         conn->port   = conn->pref_port;
         s_repl (&conn->server, conn->pref_server);
@@ -1262,7 +1262,7 @@ int Read_RC_File (FILE *rcf)
 #ifdef ENABLE_REMOTECONTROL
     if (!connr)
     {
-        connr = ConnectionC (TYPE_REMOTE);
+        connr = Connection2Server (ConnectionC (TYPE_REMOTE));
         connr->c_open = &RemoteOpen;
         connr->pref_server = strdup ("scripting");
         connr->parent = NULL;
@@ -1290,7 +1290,7 @@ void PrefReadStat (FILE *stf)
     char *cmd = NULL;
     const char *args;
     Contact *cont = NULL;
-    Connection *conn = NULL;
+    Server *conn = NULL;
     ContactGroup *cg = NULL;
     int section, dep = 0;
     UDWORD i;
@@ -1311,7 +1311,7 @@ void PrefReadStat (FILE *stf)
                 section = 4;
                 cg = ContactGroupC (NULL, 0, NULL);
                 OptSetVal (&cg->copts, CO_IGNORE, 0);
-                if ((conn = ConnectionFind (TYPEF_ANY_SERVER, NULL, NULL)))
+                if ((conn = Connection2Server (ConnectionFind (TYPEF_ANY_SERVER, NULL, NULL))))
                     cg->serv = conn;
             }
             else if (!strcasecmp (args, "[Contacts]"))
@@ -1373,7 +1373,7 @@ void PrefReadStat (FILE *stf)
                             break;
 
                         len = strlen (ConnectionServerType (type));
-                        if ((conn = ConnectionFindScreen (type, cg->name + 10 + len)))
+                        if ((conn = Connection2Server (ConnectionFindScreen (type, cg->name + 10 + len))))
                         {
                             if (conn->contacts && conn->contacts != cg)
                             {
@@ -1388,7 +1388,7 @@ void PrefReadStat (FILE *stf)
                         }
                     }
                     if (!cg->serv)
-                        cg->serv = ConnectionFind (TYPEF_SERVER, NULL, NULL);
+                        cg->serv = Connection2Server (ConnectionFind (TYPEF_SERVER, NULL, NULL));
                 }
                 else if (!strcasecmp (cmd, "id") && !cg->used)
                 {
@@ -1404,7 +1404,7 @@ void PrefReadStat (FILE *stf)
                         ERROR;
                     
                     PrefParse (cmd);
-                    if ((conn = ConnectionFindScreen (type, cmd)))
+                    if ((conn = Connection2Server (ConnectionFindScreen (type, cmd))))
                         cg->serv = conn;
                 }
                 else if (!strcasecmp (cmd, "options"))
@@ -1464,7 +1464,7 @@ void PrefReadStat (FILE *stf)
                     PrefParseInt (uin);
                     PrefParse (cmd);
                     
-                    for (i = uinconts = 0; (conn = ConnectionNr (i)); i++)
+                    for (i = uinconts = 0; (conn = Connection2Server (ConnectionNr (i))); i++)
                     {
                         if (conn->type & TYPEF_ANY_SERVER && conn->contacts && uinconts < 20
                             && (cont = ContactFindUIN (conn->contacts, uin)))
@@ -1502,7 +1502,7 @@ void PrefReadStat (FILE *stf)
                         ERROR;
 
                     PrefParse (cmd);
-                    if (!(conn = ConnectionFindScreen (type, cmd)))
+                    if (!(conn = Connection2Server (ConnectionFindScreen (type, cmd))))
                         ERROR;
                     cont = NULL;
                     if (!conn->contacts)
@@ -1546,7 +1546,7 @@ void PrefReadStat (FILE *stf)
         }
     }
     
-    for (i = 0; (conn = ConnectionNr (i)); i++)
+    for (i = 0; (conn = Connection2Server (ConnectionNr (i))); i++)
     {
         if (conn->type & TYPEF_ANY_SERVER)
         {
@@ -1576,7 +1576,7 @@ int PrefWriteStatusFile (void)
     time_t t;
     int i, k, rc;
     Contact *cont;
-    Connection *ss;
+    Server *ss;
     ContactGroup *cg;
 
     if (!prG->statfile)
@@ -1615,7 +1615,7 @@ int PrefWriteStatusFile (void)
     fprintf (stf, "format 3\n\n");
 
     fprintf (stf, "\n# The contact list section.\n");
-    for (k = 0; (ss = ConnectionNr (k)); k++)
+    for (k = 0; (ss = Connection2Server (ConnectionNr (k))); k++)
     {
         if (~ss->type & TYPEF_ANY_SERVER)
             continue;

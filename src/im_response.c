@@ -63,7 +63,7 @@ static int cb_srv_msg_exec (Contact *cont, parentmode_t pm, time_t stamp, fat_sr
 #define HISTSIZE 100
 struct History_s
 {
-    Connection *conn;
+    Server *serv;
     Contact *cont;
     time_t stamp;
     char *msg;
@@ -73,19 +73,19 @@ typedef struct History_s History;
 
 static History hist[HISTSIZE];
 
-void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg, UWORD inout)
+void HistMsg (Server *serv, Contact *cont, time_t stamp, const char *msg, UWORD inout)
 {
     int i, j, k;
 
-    if (hist[HISTSIZE - 1].conn && hist[0].conn)
+    if (hist[HISTSIZE - 1].serv && hist[0].serv)
     {
         free (hist[0].msg);
         for (i = 0; i < HISTSIZE - 1; i++)
             hist[i] = hist[i + 1];
-        hist[HISTSIZE - 1].conn = NULL;
+        hist[HISTSIZE - 1].serv = NULL;
     }
 
-    for (i = k = j = 0; j < HISTSIZE - 1 && hist[j].conn; j++)
+    for (i = k = j = 0; j < HISTSIZE - 1 && hist[j].serv; j++)
         if (cont == hist[j].cont)
         {
             if (!k)
@@ -95,12 +95,12 @@ void HistMsg (Connection *conn, Contact *cont, time_t stamp, const char *msg, UW
                 free (hist[i].msg);
                 for ( ; i < HISTSIZE - 1; i++)
                     hist[i] = hist[i + 1];
-                hist[HISTSIZE - 1].conn = NULL;
+                hist[HISTSIZE - 1].serv = NULL;
                 j--;
             }
         }
     
-    hist[j].conn = conn;
+    hist[j].serv = serv;
     hist[j].cont = cont;
     hist[j].stamp = stamp;
     hist[j].msg = strdup (msg);
@@ -112,7 +112,7 @@ void HistShow (Contact *cont)
     int i;
     
     for (i = 0; i < HISTSIZE; i++)
-        if (hist[i].conn && (!cont || hist[i].cont == cont))
+        if (hist[i].serv && (!cont || hist[i].cont == cont))
             rl_printf ("%s%s %s %s %s" COLMSGINDENT "%s\n",
                        COLDEBUG, s_time (&hist[i].stamp),
                        ReadLinePrintWidth (hist[i].cont->nick,
@@ -846,7 +846,7 @@ void IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWORD native
     if (!cont)
         return;
 
-    if ((egevent = QueueDequeue2 (cont->serv, QUEUE_DEP_WAITLOGIN, 0, 0)))
+    if ((egevent = QueueDequeue2 (Server2Connection (cont->serv), QUEUE_DEP_WAITLOGIN, 0, 0)))
     {
         egevent->due = time (NULL) + 3;
         QueueEnqueue (egevent);
