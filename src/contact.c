@@ -807,9 +807,10 @@ BOOL ContactRemAlias (Contact *cont, const char *nick DEBUGPARAM)
             ca = cont->alias;
             nn = cont->alias->alias;
             cont->alias = cont->alias->more;
+            free (ca);
         }
         else
-            nn = strdup ("");
+            nn = strdup (cont->screen);
         free (cont->nick);
         cont->nick = nn;
         Debug (DEB_CONTACT, "remal #%d %s N'%s' '%s'", 0, cont->screen, cont->nick, nick);
