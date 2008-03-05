@@ -4,7 +4,7 @@
 #define CLIMM_UTIL_PARSE_H
 
 strc_t        s_parse_s     (const char **input, const char *sep);
-Contact      *s_parsenick_s (const char **input, const char *sep, BOOL any, Server *serv);
+Contact      *s_parsenick_s (const char **input, const char *sep, BOOL any, Server *serv, const char **alias);
 ContactGroup *s_parsecg_s   (const char **input, const char *sep, BOOL any, Server *serv);
 ContactGroup *s_parselist_s (const char **input, BOOL rem, BOOL any, Server *serv);
 char         *s_parserem_s  (const char **input, const char *sep);
@@ -21,7 +21,7 @@ int is_valid_msn_name  (char *user);
 #define MULTI_SEP   " \t\r\n,"
 
 #define s_parse(i)          s_parse_s     (i, DEFAULT_SEP)
-#define s_parsenick(i,s)    s_parsenick_s (i, DEFAULT_SEP, 0, s)
+#define s_parsenick(i,s)    s_parsenick_s (i, DEFAULT_SEP, 0, s, NULL)
 #define s_parsecg(i,s)      s_parsecg_s   (i, DEFAULT_SEP, 0, s)
 #define s_parselist(i,s)    s_parselist_s (i, 0, 0, s)
 #define s_parselistrem(i,s) s_parselist_s (i, 1, 0, s)
