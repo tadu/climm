@@ -156,7 +156,8 @@ static jump_t jump[] = {
     { &CmdUserAdd,           "addgroup",     0,   2 },
     { &CmdUserRemove,        "rem",          0,   0 },
     { &CmdUserRemove,        "remalias",     0,   1 },
-    { &CmdUserRemove,        "remgroup",     0,   2 },
+    { &CmdUserRemove,        "remcont",      0,   2 },
+    { &CmdUserRemove,        "remgroup",     0,   4 },
     { &CmdUserRegister,      "reg",          0,   0 },
     { &CmdUserAuth,          "auth",         0,   0 },
     { &CmdUserURL,           "url",          0,   0 },
@@ -3061,92 +3062,126 @@ static JUMP_F(CmdUserAdd)
 /*
  * Remove a user from your contact list.
  *
- * 2 contact group
- * 1 alias
- * 0 auto
+ * 4 remgroup <g> <c>... - remove contacts from group
+ * 4 remgroup all <g>    - remove contact group
+ * 2 remcont <c>...      - remove contacts
+ * 1 remalias <c>...     - remove mentioned alias from contact
+ * 0 rem <g> <c>...      - remove contacts from group
+ * 0 rem all <g>         - remove all contacts from group
+ * 0 rem <c>...          - remove contacts or remove alias from contact
+ * 0 rem all <c>...      - remove contacts
+ *
+ * .... this is a total mess.
  */
 static JUMP_F(CmdUserRemove)
 {
     ContactGroup *cg = NULL, *acg;
     Contact *cont = NULL;
+    const char *oldalias;
     char *screen;
     char *alias;
     UBYTE all = 0;
+    UBYTE did = 0;
     int i;
     OPENCONN;
     
-    if (s_parsekey (&args, "all"))
-        all = 1;
-    
-    if (data != 1)
-        cg = s_parsecg (&args, uiG.conn);
-    
-    if (!cg && (data == 2))
+    if (!(data & 3))
     {
-        rl_print (i18n (2240, "No contact group given.\n"));
-        return 0;
+        if (s_parsekey (&args, "all"))
+            all = 1;
+        cg = s_parsecg (&args, uiG.conn);
     }
-
-    if (all && cg && cg->serv->contacts == cg)
-        return 0;
     
     if (all && cg)
     {
+        if (cg->serv->contacts == cg)
+            return 0;
         while ((cont = ContactIndex (cg, 0)))
         {
-            if (ContactRem (cg, cont) && data != 2)
+            if (ContactRem (cg, cont) && data != 4)
                 rl_printf (i18n (2243, "Removed contact '%s' from group '%s'.\n"),
                     cont->nick, cg->name);
         }
+        if (data == 4)
+            ContactGroupD (cg);
+        did = 1;
     }
-
-    else if ((acg = s_parselistrem (&args, uiG.conn)))
+    else if ((data == 4 || cg) && (acg = s_parselistrem (&args, uiG.conn)))
+    {
+        if (!cg)
+        {
+            rl_print (i18n (2240, "No contact group given.\n"));
+            return 0;
+        }
+        for (i = 0; (cont = ContactIndex (acg, i)); i++)
+        {
+            if (ContactRem (cg, cont))
+            {
+                did = 1;
+                rl_printf (i18n (2243, "Removed contact '%s' from group '%s'.\n"),
+                          cont->nick, cg->name);
+            }
+            else
+                rl_printf (i18n (2246, "Contact '%s' is not in group '%s'.\n"),
+                          cont->nick, cg->name);
+        }
+    }
+    else if ((data == 2 || all) && (acg = s_parselistrem (&args, uiG.conn)))
     {
         for (i = 0; (cont = ContactIndex (acg, i)); i++)
         {
-            if (cg)
+            if (!cont->group)
+                continue;
+
+            if (uiG.conn->type == TYPE_SERVER)
+                SnacCliRemcontact (uiG.conn, cont, NULL);
+
+            alias = strdup (cont->nick);
+            screen = strdup (cont->screen);
+            
+            ContactD (cont);
+            rl_printf (i18n (2595, "Removed contact '%s' (%s).\n"), alias, screen);
+
+            s_free (alias);
+            s_free (screen);
+            did = 1;
+        }
+    }
+    else
+    {
+        while ((cont = s_parsenick_s (&args, MULTI_SEP, 0, uiG.conn, &oldalias)))
+        {
+            if (!cont->group)
+                continue;
+
+            if (!cont->alias && !data)
             {
-                if (ContactRem (cg, cont))
-                    rl_printf (i18n (2243, "Removed contact '%s' from group '%s'.\n"),
-                              cont->nick, cg->name);
-                else
-                    rl_printf (i18n (2246, "Contact '%s' is not in group '%s'.\n"),
-                              cont->nick, cg->name);
+                if (uiG.conn->type == TYPE_SERVER)
+                    SnacCliRemcontact (uiG.conn, cont, NULL);
+            }
+
+            alias = strdup (oldalias);
+            screen = strdup (cont->screen);
+            
+            if (!cont->alias && !data)
+            {
+                ContactD (cont);
+                rl_printf (i18n (2595, "Removed contact '%s' (%s).\n"),
+                          alias, screen);
             }
             else
             {
-                if (!cont->group)
-                    continue;
-
-                if (all || !cont->alias)
-                {
-                    if (uiG.conn->type == TYPE_SERVER)
-                        SnacCliRemcontact (uiG.conn, cont, NULL);
-                }
-
-                alias = strdup (cont->nick);
-                screen = strdup (cont->screen);
-                
-                if (all || !cont->alias)
-                {
-                    ContactD (cont);
-                    rl_printf (i18n (2595, "Removed contact '%s' (%s).\n"),
-                              alias, screen);
-                }
-                else
-                {
-                    ContactRemAlias (cont, alias);
-                    rl_printf (i18n (2596, "Removed alias '%s' for '%s' (%s).\n"),
-                             alias, cont->nick, screen);
-                }
-                s_free (alias);
-                s_free (screen);
+                ContactRemAlias (cont, alias);
+                rl_printf (i18n (2596, "Removed alias '%s' for '%s' (%s).\n"),
+                         alias, cont->nick, screen);
             }
+            s_free (alias);
+            s_free (screen);
+            did = 1;
         }
-        rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     }
-    if (all && (data == 2))
-        ContactGroupD (cg);
+    if (did)
+        rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
     return 0;
 }
 

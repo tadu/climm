@@ -433,16 +433,16 @@ If
 .I number
 is not given, list all interest groups.
 .SH COMMANDS CONCERNING YOUR CONTACT LIST
+Note: you need to
+.B save
+to make any of the changes done by these commmands persistent
+for the local contact list.
 .TP
 .BI add \ <uin>\ <nickname>
 Add
 .I uin
 to your contact list as
 .IR nickname .
-.br
-Note: you need to
-.B save
-to make this persistent.
 .TP
 .BI add \ <contact>\ <alias>
 .TP
@@ -452,10 +452,6 @@ Add alias
 for
 .IR nickname .
 New (addalias) for 0.4.10.
-.br
-Note: you need to
-.B save
-to make this persistent.
 .TP
 .BI add \ [<group>\ [<contacts>]
 .TP
@@ -467,43 +463,56 @@ to the contact group
 which is created if it doesn\'t exist and the command is given as
 .BI addgroup .
 New for 0.4.10.
-.br
-Note: you need to
-.B save
-to make this persistent.
 .TP
-.BI rem\ [all] \ <contacts>
-.TP
-.BI remalias\ [all] \ <contacts>
+.BI rem \ <contacts>
 Remove the aliases in
 .IR contacts .
-If any nick is the last alias for this contact, or if
-.B all
-is given, remove the contact completely.
+If any nick is the last alias for this contact,
+remove the contact completely.
 .br
-New (remalias) for 0.4.10.
-Note: you need to
-.B save
-to make this persistent.
+Note: This command has a different meaning if the first
+argument of the contacts is a group name, so if you want to affect all
+contacts of a group, you may not use this as the first
+parameter; e.g. mention one member of the group first.
 .TP
-.BI rem\ all \ <group>
+.BI remalias \ <contacts>
+Remove the aliases in
+.IR contacts .
+.br
+Modified for 0.6.3.
+.TP
+.BI rem\ all \ <contacts>
+.TP
+.BI remcont \ <contacts>
+Remove the contact completely from the contact list.
+.br
+New (remcont) for 0.6.3.
+.br
+Note: The command
+.B rem
+has a different meaning if the first
+argument of the contacts is a group name, so if you want to affect all
+contacts of a group, you may not use this as the first
+parameter; e.g. mention one member of the group first.
 .TP
 .BI rem \ <group>\ <contacts>
-.TP
-.BI remgroup\ all \ <group>
 .TP
 .BI remgroup \ <group>\ <contacts>
 Remove all contacts in
 .IR contacts
 from the contact group
-.IR group ,
-or remove the contact group completely if
-.B all
-is given.
-New for 0.4.10.
-Note: you need to
-.B save
-to make this persistent.
+.IR group .
+Modified for 0.6.3.
+.TP
+.BI rem\ all \ <group>
+.TP
+.BI remgroup\ all \ <group>
+Remove all contacts from the contact group
+.IR group .
+Further arguments may be silently ignored. If
+.B remgroup all
+is used, discard of the contact group completely.
+Modified for 0.6.3.
 .TP
 .BI togig \ <contacts>
 Toggles whether
