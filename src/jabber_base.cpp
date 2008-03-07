@@ -1173,13 +1173,13 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     opt2 = OptC ();
     OptSetVal (opt2, CO_FILEACCEPT, 0);
     OptSetStr (opt2, CO_REFUSE, i18n (2514, "refused (ignored)"));
-    Event *e1 = QueueEnqueueData (m_conn, QUEUE_USERFILEACK, seq, time (NULL) + 120,
+    Event *e1 = QueueEnqueueData (Server2Connection (m_conn), QUEUE_USERFILEACK, seq, time (NULL) + 120,
                            NULL, contr, opt2, &PeerFileTO); //Timeout Handler
-    QueueEnqueueDep (m_conn, 0, seq, e1,
+    QueueEnqueueDep (Server2Connection (m_conn), 0, seq, e1,
                      NULL, contr, opt2, XMPPCallBackFileAccept); // Route whatever there ;)
     
     // Prepare a FileListener
-    Connection *child = ConnectionClone (m_conn, TYPE_FILELISTEN);
+    Connection *child = ConnectionClone (Server2Connection (m_conn), TYPE_FILELISTEN);
     if (!child)
         return; //Failed
 
