@@ -88,9 +88,9 @@ static void TCPSendInitv6 (Connection *peer);
 /*
  * "Logs in" peer2peer connection by opening listening socket.
  */
-Event *ConnectionInitPeer (Server *list)
+Event *ConnectionInitPeer (Connection *list)
 {
-    ASSERT_MSGLISTEN (Server2Connection (list));
+    ASSERT_MSGLISTEN (list);
     
     if (list->version < 6 || list->version > 8)
     {

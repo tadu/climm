@@ -21,7 +21,8 @@ typedef enum {
 #endif
 
 typedef void (jump_conn_f)(Connection *conn);
-typedef Event * (jump_conn_open_f)(Server *conn);
+typedef Event * (jump_conn_open_f)(Connection *conn);
+typedef Event * (jump_serv_open_f)(Server *serv);
 typedef BOOL (jump_conn_err_f)(Connection *conn, UDWORD rc, UDWORD flags);
 
 struct Connection_s
@@ -165,7 +166,7 @@ struct Server_s
     UDWORD    stat_pak_sent;
     UDWORD    stat_pak_rcvd;
 
-    jump_conn_open_f *c_open;  /* function to call to open        */
+    jump_serv_open_f *c_open;  /* function to call to open        */
     jump_conn_f *dispatch;     /* function to call on select()    */
     jump_conn_f *reconnect;    /* function to call for reconnect  */
     jump_conn_err_f *error;    /* function to call for i/o errors */
@@ -193,6 +194,9 @@ Connection    *ConnectionC       (UWORD type DEBUGPARAM);
 Connection    *ConnectionClone   (Connection *conn, UWORD type DEBUGPARAM);
 void           ConnectionD       (Connection *conn DEBUGPARAM);
 Connection    *ConnectionNr      (int i);
+
+Server        *ServerNr          (int i);
+
 Connection    *ConnectionFind    (UWORD type, const Contact *cont, const Connection *parent);
 Connection    *ConnectionFindScreen (UWORD type, const char *screen);
 UDWORD         ConnectionFindNr  (Connection *conn);
@@ -224,7 +228,8 @@ val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
 
 
 #define TYPEF_ANY_SERVER    1  /* any server connection  */
-#define TYPEF_SERVER        4  /* " && ver > 6           */
+#define TYPEF_SAVEME        2  /* a connection to be saved in config */
+#define TYPEF_SERVER        4  /* ICQ server connection  */
 #define TYPEF_ANY_PEER      8  /* any peer connection    */
 #define TYPEF_ANY_DIRECT   16  /* " && established       */
 #define TYPEF_ANY_LISTEN   32  /* " && listening         */
@@ -241,7 +246,7 @@ val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
 /* any conn->type may be only any of those values:
  * do not use the flags above unless you _really_ REALLY know what you're doing
  */
-#define TYPE_SERVER        (TYPEF_ANY_SERVER | TYPEF_SERVER     | TYPEF_HAVEUIN)
+#define TYPE_SERVER        (TYPEF_ANY_SERVER | TYPEF_SAVEME | TYPEF_SERVER     | TYPEF_HAVEUIN)
 #define TYPE_MSGLISTEN     (TYPEF_ANY_PEER | TYPEF_ANY_MSG  | TYPEF_ANY_LISTEN | TYPEF_HAVEUIN)
 #define TYPE_MSGDIRECT     (TYPEF_ANY_PEER | TYPEF_ANY_MSG  | TYPEF_ANY_DIRECT | TYPEF_HAVEUIN)
 #define TYPE_FILELISTEN    (TYPEF_ANY_PEER | TYPEF_ANY_FILE | TYPEF_ANY_LISTEN | TYPEF_HAVEUIN)
@@ -249,11 +254,11 @@ val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
 #define TYPE_CHATLISTEN    (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_LISTEN | TYPEF_HAVEUIN)
 #define TYPE_CHATDIRECT    (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_DIRECT | TYPEF_HAVEUIN)
 #define TYPE_FILE          TYPEF_FILE
-#define TYPE_REMOTE        TYPEF_REMOTE
+#define TYPE_REMOTE        (TYPEF_SAVEME | TYPEF_REMOTE)
 #define TYPE_MSN_TEMP      TYPEF_MSN
-#define TYPE_MSN_SERVER    (TYPEF_ANY_SERVER | TYPEF_MSN)
-#define TYPE_MSN_CHAT      (TYPEF_ANY_SERVER | TYPEF_MSN | TYPEF_MSN_CHAT)
-#define TYPE_XMPP_SERVER   (TYPEF_ANY_SERVER | TYPEF_XMPP)
+#define TYPE_MSN_SERVER    (TYPEF_ANY_SERVER | TYPEF_SAVEME | TYPEF_MSN)
+#define TYPE_MSN_CHAT      (TYPEF_MSN | TYPEF_MSN_CHAT)
+#define TYPE_XMPP_SERVER   (TYPEF_ANY_SERVER | TYPEF_SAVEME | TYPEF_XMPP)
 
 #define ASSERT_ANY_SERVER(s)  (assert (s), assert ((s)->type & TYPEF_ANY_SERVER))
 #define ASSERT_SERVER(s)      (assert (s), assert ((s)->type == TYPE_SERVER))

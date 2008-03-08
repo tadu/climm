@@ -208,6 +208,7 @@ static void Init (int argc, char *argv[])
     WSADATA wsaData;
 #endif
     Server *serv;
+    Connection *conn;
     Event *loginevent = NULL;
     const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b, *arg_s, *arg_u, *arg_p;
     UDWORD loaded, uingiven = 0, arg_h = 0, arg_vv = 0, arg_c = 0;
@@ -492,10 +493,9 @@ static void Init (int argc, char *argv[])
         targv[j++] = "";
     }
 
-    for (i = 0; (serv = Connection2Server (ConnectionNr (i))); i++)
-        if (serv->c_open && serv->flags & CONN_AUTOLOGIN)
-            if (serv->type & TYPEF_ANY_SERVER)
-                serv->status = serv->pref_status;
+    for (i = 0; (conn = ConnectionNr (i)); i++)
+        if (conn->c_open && conn->flags & CONN_AUTOLOGIN)
+            conn->status = conn->pref_status;
 
     serv = NULL;
     s_init (&arg_C, "", 0);
@@ -562,35 +562,30 @@ static void Init (int argc, char *argv[])
         }
     }
     
+    conn = NULL;
     if (!uingiven)
-        for (i = 0; (serv = Connection2Server (ConnectionNr (i))); i++)
-            if (serv->c_open && serv->flags & CONN_AUTOLOGIN)
-                if (serv->type & TYPEF_ANY_SERVER)
-                    if (!serv->passwd || !*serv->passwd)
-                    {
-                        strc_t pwd;
-                        const char *s = s_sprintf ("%s", s_qquote (serv->screen));
-                        rl_printf (i18n (2689, "Enter password for %s account %s: "),
-                                   s_qquote (ConnectionServerType (serv->type)), s);
-                        pwd = UtilIOReadline (stdin);
-                        rl_printf ("\n");
-                        s_repl (&serv->passwd, pwd ? ConvFrom (pwd, prG->enc_loc)->txt : "");
-                    }
+        for (i = 0; (conn = ConnectionNr (i)); i++)
+            if (conn->c_open && conn->flags & CONN_AUTOLOGIN && conn->type & TYPEF_ANY_SERVER)
+                if (!conn->passwd || !*conn->passwd)
+                {
+                    strc_t pwd;
+                    const char *s = s_sprintf ("%s", s_qquote (conn->screen));
+                    rl_printf (i18n (2689, "Enter password for %s account %s: "),
+                               s_qquote (ConnectionServerType (conn->type)), s);
+                    pwd = UtilIOReadline (stdin);
+                    rl_printf ("\n");
+                    s_repl (&conn->passwd, pwd ? ConvFrom (pwd, prG->enc_loc)->txt : "");
+                }
 
     if (!uingiven)
     {
-        for (i = 0; (serv = Connection2Server (ConnectionNr (i))); i++)
-            if (serv->c_open && serv->flags & CONN_AUTOLOGIN)
+        for (i = 0; (conn = ConnectionNr (i)); i++)
+            if (conn->c_open && conn->flags & CONN_AUTOLOGIN)
             {
-                if (serv->type & TYPEF_ANY_SERVER)
-                {
-                    if (serv->passwd && *serv->passwd && serv->status != ims_offline && (loginevent = serv->c_open (serv)))
-                         QueueEnqueueDep (Server2Connection (serv), QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, serv->cont,
+                if (conn->passwd && *conn->passwd && conn->status != ims_offline && (loginevent = conn->c_open (conn)))
+                         QueueEnqueueDep (conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, conn->cont,
                                           OptSetVals (NULL, CO_CLIMMCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                           &CmdUserCallbackTodo);
-                }
-                else
-                    serv->c_open (serv);
             }
     }
     s_done (&arg_C);
@@ -605,6 +600,7 @@ in a loop waiting for server responses.
 int main (int argc, char *argv[])
 {
     Connection *conn;
+    Server *serv;
     int i;
     
     umask (077);
@@ -627,8 +623,9 @@ int main (int argc, char *argv[])
 
         for (i = 0; (conn = ConnectionNr (i)); i++)
         {
-            if (conn->connect & CONNECT_OK && conn->type & TYPEF_ANY_SERVER)
-                Idle_Check (Connection2Server (conn));
+            serv = Connection2Server (conn);
+            if (conn->connect & CONNECT_OK && serv)
+                Idle_Check (serv);
             if (conn->sok < 0 || !conn->dispatch)
                 continue;
             if (conn->connect & CONNECT_SELECT_R)
@@ -703,9 +700,9 @@ int main (int argc, char *argv[])
         int i, j;
         Contact *cont;
 
-        for (i = 0; (conn = ConnectionNr (i)); i++)
-            if (conn->contacts)
-                for (j = 0; (cont = ContactIndex (conn->contacts, j)); j++)
+        for (i = 0; (serv = ServerNr (i)); i++)
+            if (serv->contacts)
+                for (j = 0; (cont = ContactIndex (serv->contacts, j)); j++)
                     ContactMetaSave (cont);
         Save_RC ();
     }

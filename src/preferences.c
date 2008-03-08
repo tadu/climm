@@ -253,7 +253,7 @@ static FILE *PrefOpenStat (Preferences *pref)
 BOOL PrefLoad (Preferences *pref)
 {
     FILE *rcf, *stf;
-    Connection *conn;
+    Server *serv;
     Contact *cont;
     int i;
     BOOL ok = TRUE;
@@ -289,21 +289,19 @@ BOOL PrefLoad (Preferences *pref)
         case 2:
             pref->enc_loc = ENC_AUTO;
         case 3:
-            for (i = 0; (conn = ConnectionNr (i)); i++)
+            for (i = 0; (serv = ServerNr (i)); i++)
             {
-                cont = ContactFindUIN (conn->contacts, 82274703);
+                cont = ContactFindUIN (serv->contacts, 82274703);
                 if (cont)
                     OptSetVal (&cont->copts, CO_WANTSBL, 0);
             }
         case 4:
-            for (i = 0; (conn = ConnectionNr (i)); i++)
-                if (conn->type == TYPE_SERVER)
-                    OptSetVal (&conn->contacts->copts, CO_OBEYSBL, 1);
+            for (i = 0; (serv = ServerNr (i)); i++)
+                OptSetVal (&serv->contacts->copts, CO_OBEYSBL, 1);
             pref->autoupdate = 5;
         case 5:
-            for (i = 0; (conn = ConnectionNr (i)); i++)
-                if (conn->type == TYPE_SERVER)
-                    OptSetVal (&conn->contacts->copts, CO_WANTSBL, 1);
+            for (i = 0; (serv = ServerNr (i)); i++)
+                OptSetVal (&serv->contacts->copts, CO_WANTSBL, 1);
             break;
 
         case AUTOUPDATE_CURRENT:

@@ -172,7 +172,7 @@ JUMP_SNAC_F(SnacSrvNewuin)
         if (Save_RC () == -1)
             rl_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
 #ifdef ENABLE_PEER2PEER
-        serv->assoc->c_open (Connection2Server (serv->assoc));
+        serv->assoc->c_open (serv->assoc);
 #endif
         serv->c_open (serv);
     }

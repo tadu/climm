@@ -85,6 +85,28 @@ Connection *ConnectionC (UWORD type DEBUGPARAM)
 
     if (!(conn = calloc (1, sizeof (Connection))))
         return NULL;
+    cl->conn[i] = conn;
+    
+    if (type && TYPEF_ANY_SERVER)
+    {
+        Connection **ncp = &cl->conn[i];
+        cl = &slist;
+        i = 0;
+        while (cl && cl->conn[i] && cl->conn[i]->type & TYPEF_ANY_SERVER)
+        {
+            i++;
+            if (i >= ConnectionListLen || !cl->conn[i])
+            {
+                cl = cl->more;
+                i = 0;
+            }
+        }
+        if (cl && cl->conn[i])
+        {
+            *ncp = cl->conn[i];
+            cl->conn[i] = conn;
+        }
+    }
     
     conn->our_local_ip   = 0x7f000001;
     conn->our_outside_ip = 0x7f000001;
@@ -96,7 +118,7 @@ Connection *ConnectionC (UWORD type DEBUGPARAM)
 
     Debug (DEB_CONNECT, "<=== %p[%d] create %d", conn, j, type);
 
-    return cl->conn[i] = conn;
+    return conn;
 }
 
 /*
@@ -124,7 +146,7 @@ Connection *ConnectionClone (Connection *conn, UWORD type DEBUGPARAM)
 }
 
 /*
- * Returns the n-th session.
+ * Returns the n-th connection.
  */
 Connection *ConnectionNr (int i)
 {
@@ -137,6 +159,27 @@ Connection *ConnectionNr (int i)
         return NULL;
     
     return cl->conn[i];
+}
+
+/*
+ * Returns the n-th session.
+ */
+Server *ServerNr (int i)
+{
+    ConnectionList *cl;
+    Connection *conn;
+    
+    for (cl = &slist; cl && i >= ConnectionListLen; cl = cl->more)
+        i -= ConnectionListLen;
+    
+    if (!cl || i < 0)
+        return NULL;
+    
+    conn = cl->conn[i];
+    if (~conn->type & TYPEF_ANY_SERVER)
+        return NULL;
+    
+    return Connection2Server (conn);
 }
 
 /*

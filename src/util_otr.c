@@ -321,7 +321,7 @@ static void print_keys ()
 void OTRInit ()
 {
     gcry_error_t ret;
-    Connection *conn;
+    Server *serv;
     int i;
 
     if (!libotr_is_present)
@@ -346,11 +346,10 @@ void OTRInit ()
     if (ret)
         rl_printf (i18n (2645, "Could not read OTR private key from %s.\n"), keyfile.txt);
     
-    for (i = 0; (conn = ConnectionNr (i)); i++)
-        if (conn->type & TYPEF_ANY_SERVER &&
-            !otrl_privkey_find (userstate, conn->screen, proto_name (conn->type)))
+    for (i = 0; (serv = ServerNr (i)); i++)
+        if (!otrl_privkey_find (userstate, serv->screen, proto_name (serv->type)))
         {
-            cb_create_privkey (NULL, conn->screen, proto_name (conn->type));
+            cb_create_privkey (NULL, serv->screen, proto_name (serv->type));
         }
 
     /* get fingerprints */

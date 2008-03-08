@@ -332,7 +332,7 @@ void TCLInit ()
 {
     tcl_pref_p pref;
     int i, result;
-    Connection *conn;
+    Server *serv;
 #if HAVE_SIGPROCMASK
     sigset_t sigs;
 #endif
@@ -367,14 +367,13 @@ void TCLInit ()
     Tcl_SetVar (tinterp, "climm_basedir", prG->basedir, 0);
     Tcl_SetVar (tinterp, "climm_version", CLIMM_VERSION, 0);
 
-    for (i = 0; (conn = ConnectionNr (i)); i++)
-        if (conn->type & TYPEF_ANY_SERVER)
-        {
-            Tcl_SetVar (tinterp, "climm_uin", conn->screen,
-                        TCL_LIST_ELEMENT | TCL_APPEND_VALUE);
-            Tcl_SetVar (tinterp, "micq_uin", conn->screen,
-                        TCL_LIST_ELEMENT | TCL_APPEND_VALUE);
-        }
+    for (i = 0; (serv = ServerNr (i)); i++)
+    {
+        Tcl_SetVar (tinterp, "climm_uin", serv->screen,
+                    TCL_LIST_ELEMENT | TCL_APPEND_VALUE);
+        Tcl_SetVar (tinterp, "micq_uin", serv->screen,
+                    TCL_LIST_ELEMENT | TCL_APPEND_VALUE);
+    }
 
     tcl_events = NULL;
     tcl_msgs = NULL;

@@ -14,7 +14,7 @@ class CLIMMMSN : public MSN::Callbacks
 {
   public:
     MSN::NotificationServerConnection *mainConnection;
-    ::Connection *serv;
+    ::Server *serv;
     virtual void   registerSocket (int s, int read, int write);
     virtual void   unregisterSocket (int s);
     virtual void   showError (MSN::Connection *msnconn, std::string msg);
@@ -81,7 +81,7 @@ static inline void MyCallbackSetClimm (Connection *conn, CLIMMMSN *msn)
     conn->tlv = (void *)msn;
 }
 
-Event *ConnectionInitMSNServer (Connection *serv)
+Event *ConnectionInitMSNServer (Server *serv)
 {
     CLIMMMSN *cb = new CLIMMMSN;
     
@@ -100,7 +100,7 @@ Event *ConnectionInitMSNServer (Connection *serv)
         serv->port = 1863;
     
     cb->serv = serv;
-    MyCallbackSetClimm (serv, cb);
+    MyCallbackSetClimm (Server2Connection (serv), cb);
     serv->c_open = &ConnectionInitMSNServer;
     serv->reconnect = &MsnCallbackReconn;
     serv->error = &MsnCallbackError;
@@ -269,7 +269,7 @@ void CLIMMMSN::buddyOffline (MSN::Connection * msnconn, MSN::Passport buddy)
 void CLIMMMSN::gotFriendlyName (MSN::Connection *msnconn, std::string friendlyname)
 {
     rl_printf ("CLIMMMSN::gotFriendlyName %p {%s}\n", (void *)msnconn, friendlyname.c_str());
-    Connection *serv = MyCallbackFromMSN (msnconn->myNotificationServer())->serv;
+    Server *serv = MyCallbackFromMSN (msnconn->myNotificationServer())->serv;
     serv->cont = ContactScreen (serv, friendlyname.c_str());
 }
 

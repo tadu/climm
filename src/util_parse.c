@@ -318,7 +318,7 @@ Contact *s_parsenick_s (const char **input, const char *sep, BOOL any, Server *s
     if (!any)
         return NULL;
 
-    for (i = 0; (serv = Connection2Server (ConnectionNr (i))); i++)
+    for (i = 0; (serv = ServerNr (i)); i++)
         if ((r = s_parsenick_s (input, sep, 0, serv, alias)))
             return r;
 
@@ -370,7 +370,7 @@ ContactGroup *s_parsecg_s (const char **input, const char *sep, BOOL any, Server
     if (!any)
         return NULL;
     
-    for (i = 0; (serv = Connection2Server (ConnectionNr (i))); i++)
+    for (i = 0; (serv = ServerNr (i)); i++)
         if ((cg = s_parsecg_s (input, sep, 0, serv)))
             return cg;
     

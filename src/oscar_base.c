@@ -469,6 +469,8 @@ Event *ConnectionInitServer (Server *serv)
               : cont->screen, COLNONE);
 
     UtilIOConnectTCP (Server2Connection (serv));
+    if (serv->assoc && serv->assoc->c_open)
+        serv->assoc->c_open (serv->assoc);
     return event;
 }
 
@@ -617,7 +619,7 @@ Server *SrvRegisterUIN (Server *serv, const char *pass)
 {
     Server *news;
 #ifdef ENABLE_PEER2PEER
-    Server *newl;
+    Connection *newl;
 #endif
 
     assert (pass);
@@ -627,7 +629,7 @@ Server *SrvRegisterUIN (Server *serv, const char *pass)
         return NULL;
 
 #ifdef ENABLE_PEER2PEER
-    if (!(newl = Connection2Server (ConnectionClone (Server2Connection (news), TYPE_MSGLISTEN))))
+    if (!(newl = ConnectionClone (Server2Connection (news), TYPE_MSGLISTEN)))
     {
         ConnectionD (Server2Connection (news));
         return NULL;
