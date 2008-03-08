@@ -112,7 +112,7 @@ void OscarRosterD (Roster *roster)
  */
 JUMP_SNAC_F(SnacSrvReplylists)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
 
     if (serv->flags & CONN_WIZARD)
     {
@@ -180,7 +180,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
     if (!event)
         return;
 
-    serv = Connection2Server (event->conn);
+    serv = event->conn->serv;
     if (!serv)
         return;
 
@@ -572,7 +572,7 @@ JUMP_SNAC_F(SnacSrvRosteradd)
  */
 JUMP_SNAC_F(SnacSrvRosterupdate)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     Packet *pak = event->pak;
     Contact *cont;
     UWORD tag, id, type, TLVlen;
@@ -781,7 +781,7 @@ void SnacCliRosterdelete (Server *serv, const char *name, UWORD tag, UWORD id, r
  */
 JUMP_SNAC_F(SnacSrvUpdateack)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     Contact *cont = NULL;
     Event *event2;
     UWORD err;
@@ -858,7 +858,7 @@ JUMP_SNAC_F(SnacSrvRosterok)
     if (!event)
         return;
 
-    serv = Connection2Server (event->conn);
+    serv = event->conn->serv;
     if (!serv)
         return;
 
@@ -988,7 +988,7 @@ void SnacCliReqauth (Server *serv, Contact *cont, const char *msg)
  */
 JUMP_SNAC_F(SnacSrvAuthreq)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     Packet *pak;
     Contact *cont;
     strc_t ctext;
@@ -1027,7 +1027,7 @@ void SnacCliAuthorize (Server *serv, Contact *cont, BOOL accept, const char *msg
  */
 JUMP_SNAC_F(SnacSrvAuthreply)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     Packet *pak;
     Contact *cont;
     strc_t ctext;
@@ -1054,6 +1054,6 @@ JUMP_SNAC_F(SnacSrvAddedyou)
 {
     Contact *cont;
 
-    cont = PacketReadCont (event->pak, Connection2Server (event->conn));
+    cont = PacketReadCont (event->pak, event->conn->serv);
     IMSrvMsg (cont, NOW, CV_ORIGIN_v8, MSG_AUTH_ADDED, "");
 }

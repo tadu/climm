@@ -4891,7 +4891,7 @@ void CmdUserCallbackTodo (Event *event)
         && OptGetStr (event->opt, CO_CLIMMCOMMAND, &args))
     {
         tconn = uiG.conn;
-        uiG.conn = Connection2Server (event->conn);
+        uiG.conn = event->conn->serv;
         while ((par = s_parse (&args)))
         {
             char *cmd = strdup (par->txt);

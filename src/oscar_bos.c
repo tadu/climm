@@ -70,7 +70,7 @@ JUMP_SNAC_F (SnacSrvBoserr)
  */
 JUMP_SNAC_F(SnacSrvReplybos)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     if (serv->connect & CONNECT_OK)
         return;
     /* Step 3: (9,3) received */

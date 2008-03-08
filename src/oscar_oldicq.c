@@ -143,7 +143,7 @@ static void SnacMetaSend (Server *serv, Packet *pak)
  */
 JUMP_SNAC_F(SnacSrvToicqerr)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     Packet *pak = event->pak;
     if ((pak->ref & 0xffff) == 0x4231)
     {
@@ -610,7 +610,7 @@ void SnacCliSendsms (Server *serv, const char *target, const char *text)
  */
 JUMP_SNAC_F(SnacSrvFromicqsrv)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     TLV *tlv;
     Packet *p, *pak;
     UDWORD len, uin, type /*, id*/;

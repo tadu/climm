@@ -113,12 +113,12 @@ void SnacCliSeticbm (Server *serv)
  */
 JUMP_SNAC_F(SnacSrvReplyicbm)
 {
-    SnacCliSeticbm (Connection2Server (event->conn));
+    SnacCliSeticbm (event->conn->serv);
 }
 
 JUMP_SNAC_F(SnacSrvAckmsg)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     /* UDWORD midtime, midrand; */
     UWORD msgtype, seq_dc;
     Contact *cont;
@@ -365,7 +365,7 @@ static void SnacCallbackType2Cancel (Event *event)
 
 static void SnacCallbackType2 (Event *event)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     Contact *cont = event->cont;
     Packet *pak = event->pak;
     Message *msg = event->data;
@@ -603,7 +603,7 @@ static void SnacSrvCallbackSendack (Event *event)
 {
     if (event && event->conn && event->pak && event->conn->type == TYPE_SERVER)
     {
-        SnacSend (Connection2Server (event->conn), event->pak);
+        SnacSend (event->conn->serv, event->pak);
         event->pak = NULL;
     }
     EventD (event);
@@ -614,7 +614,7 @@ static void SnacSrvCallbackSendack (Event *event)
  */
 JUMP_SNAC_F(SnacSrvRecvmsg)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     Contact *cont;
     Event *newevent;
     Cap *cap1, *cap2;
@@ -866,7 +866,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
  */
 JUMP_SNAC_F(SnacSrvSrvackmsg)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     Event *event2 = NULL;
     Packet *pak;
     Message *msg;

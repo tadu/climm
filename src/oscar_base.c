@@ -69,7 +69,7 @@ void SrvCallBackFlap (Event *event)
     assert (event->type == QUEUE_FLAP);
     ASSERT_SERVER (event->conn);
     
-    serv = Connection2Server (event->conn);
+    serv = event->conn->serv;
 
     event->pak->tpos = event->pak->rpos;
     event->pak->cmd = PacketRead1 (event->pak);
@@ -398,7 +398,7 @@ void FlapCliHello (Server *serv)
 
 static void FlapCliGoodbyeConn (Connection *conn)
 {
-    FlapCliGoodbye (Connection2Server (conn));
+    FlapCliGoodbye (conn->serv);
 }
 
 void FlapCliGoodbye (Server *serv)
@@ -482,12 +482,12 @@ static void SrvCallBackReconn (Connection *conn)
     Contact *cont;
     int i;
 
-    serv = Connection2Server (conn);
+    serv = conn->serv;
 
     if (!(cont = serv->cont))
         return;
     
-    if (!(event = QueueDequeue2 (Server2Connection (serv), QUEUE_DEP_WAITLOGIN, 0, NULL)))
+    if (!(event = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
     {
         ConnectionInitServer (serv);
         return;
@@ -516,7 +516,7 @@ static void SrvCallBackDoReconn (Event *event)
     if (event->conn && event->conn->type == TYPE_SERVER)
     {
         QueueEnqueue (event);
-        ConnectionInitServer (Connection2Server (event->conn));
+        ConnectionInitServer (event->conn->serv);
     }
     else
         EventD (event);
@@ -607,8 +607,8 @@ void SrvCallBackReceive (Connection *conn)
         FlapPrint (pak);
         rl_print (COLEXDENT "\r");
     }
-    if (ConnectionPrefVal (Connection2Server (conn), CO_LOGSTREAM))
-        FlapSave (Connection2Server (conn), pak, TRUE);
+    if (ConnectionPrefVal (conn->serv, CO_LOGSTREAM))
+        FlapSave (conn->serv, pak, TRUE);
     
     QueueEnqueueData (conn, QUEUE_FLAP, pak->id, time (NULL),
                       pak, 0, NULL, &SrvCallBackFlap);

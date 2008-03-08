@@ -76,7 +76,7 @@ static void SrvCallBackKeepalive (Event *event)
 {
     if (event->conn && event->conn->connect & CONNECT_OK && event->conn->type == TYPE_SERVER)
     {
-        FlapCliKeepalive (Connection2Server (event->conn));
+        FlapCliKeepalive (event->conn->serv);
         event->due = time (NULL) + 30;
         QueueEnqueue (event);
         return;
@@ -151,7 +151,7 @@ void SnacCliReady (Server *serv)
  */
 JUMP_SNAC_F(SnacSrvFamilies)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     Packet *pak;
     SNAC *s;
     UWORD fam;
@@ -184,7 +184,7 @@ JUMP_SNAC_F(SnacSrvFamilies)
  */
 JUMP_SNAC_F(SnacSrvRates)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     UWORD nr, grp;
     Packet *pak;
     
@@ -214,7 +214,7 @@ JUMP_SNAC_F(SnacSrvRateexceeded)
  */
 JUMP_SNAC_F(SnacServerpause)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     ContactGroup *cg = serv->contacts;
     Contact *cont;
     int i;
@@ -240,7 +240,7 @@ JUMP_SNAC_F(SnacSrvMotd)
  */
 JUMP_SNAC_F(SnacSrvReplyinfo)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     Contact *cont;
     Packet *pak;
     TLV *tlv;
@@ -306,7 +306,7 @@ void SnacCliFamilies (Server *serv)
  */
 JUMP_SNAC_F(SnacSrvFamilies2)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     Packet *pak;
     SNAC *s;
     UWORD fam, ver;

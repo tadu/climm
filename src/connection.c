@@ -106,6 +106,7 @@ Connection *ConnectionC (UWORD type DEBUGPARAM)
             *ncp = cl->conn[i];
             cl->conn[i] = conn;
         }
+        conn->serv = Connection2Server (conn);
     }
     
     conn->our_local_ip   = 0x7f000001;

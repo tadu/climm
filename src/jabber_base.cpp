@@ -1267,7 +1267,6 @@ void XMPPFTCallbackDispatch (Connection *conn)
 static void XMPPCallBackTimeout (Event *event)
 {
     Connection *conn = event->conn;
-    Server *serv;
 
     if (!conn)
     {
@@ -1275,8 +1274,7 @@ static void XMPPCallBackTimeout (Event *event)
         return;
     }
     assert (conn->type == TYPE_XMPP_SERVER);
-    serv = Connection2Server (conn);
-    if (~serv->connect & CONNECT_OK)
+    if (~conn->connect & CONNECT_OK)
         rl_print ("# XMPP timeout\n");
     EventD (event);
 }
@@ -1355,7 +1353,7 @@ void XMPPCallbackDispatch (Connection *conn)
 
 static void XMPPCallbackReconn (Connection *conn)
 {
-    Server *serv = Connection2Server (conn);
+    Server *serv = conn->serv;
     ContactGroup *cg = serv->contacts;
     Event *event;
     Contact *cont;
@@ -1393,7 +1391,7 @@ static void XMPPCallBackDoReconn (Event *event)
     if (event->conn && event->conn->type == TYPE_XMPP_SERVER)
     {
         QueueEnqueue (event);
-        ConnectionInitXMPPServer (Connection2Server (event->conn));
+        ConnectionInitXMPPServer (event->conn->serv);
     }
     else
         EventD (event);

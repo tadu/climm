@@ -72,7 +72,7 @@ JUMP_SNAC_F(SnacSrvLocationerr)
  */
 JUMP_SNAC_F(SnacSrvReplylocation)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     SnacCliSetuserinfo (serv);
 }
 
@@ -114,7 +114,7 @@ void SnacCliRequserinfo (Server *serv, Contact *victim, UWORD type)
  */
 JUMP_SNAC_F(SnacSrvUserinfo)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     Packet *pak = event->pak;
     Contact *cont = PacketReadCont (pak, serv);
     TLV *tlv;

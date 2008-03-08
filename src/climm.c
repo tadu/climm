@@ -623,9 +623,8 @@ int main (int argc, char *argv[])
 
         for (i = 0; (conn = ConnectionNr (i)); i++)
         {
-            serv = Connection2Server (conn);
-            if (conn->connect & CONNECT_OK && serv)
-                Idle_Check (serv);
+            if (conn->connect & CONNECT_OK && conn->type & TYPEF_ANY_SERVER && conn->serv)
+                Idle_Check (conn->serv);
             if (conn->sok < 0 || !conn->dispatch)
                 continue;
             if (conn->connect & CONNECT_SELECT_R)

@@ -41,7 +41,7 @@ static void CallbackTogvis (Event *event)
         EventD (event);
         return;
     }
-    SnacCliRemvisible (Connection2Server (event->conn), event->cont);
+    SnacCliRemvisible (event->conn->serv, event->cont);
     EventD (event);
 }
 

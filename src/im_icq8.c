@@ -101,7 +101,7 @@ static void IMRosterDoDelete (Event *event)
 {
     Roster *roster = event->data;
     RosterEntry *re;
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     
     if (!roster)
         return;
@@ -166,7 +166,7 @@ static void IMRosterShow (Event *event)
 {
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     Contact *cont = NULL;
     int cnt_groups = 0, cnt_ignored = 0, cnt_hidden = 0, cnt_intimate = 0, cnt_normal = 0;
     
@@ -331,7 +331,7 @@ static void IMRosterAdddown (Event *event)
 {
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     ContactGroup *cg;
     int cnt_groups = 0, cnt_ignored = 0, cnt_hidden = 0, cnt_intimate = 0, cnt_normal = 0;
     int mod_groups = 0, mod_ignored = 0, mod_hidden = 0, mod_intimate = 0, mod_normal = 0;
@@ -383,7 +383,7 @@ static void IMRosterOverwritedown (Event *event)
 {
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     ContactGroup *cg;
     int cnt_groups = 0, cnt_ignored = 0, cnt_hidden = 0, cnt_intimate = 0, cnt_normal = 0;
     int mod_groups = 0, mod_ignored = 0, mod_hidden = 0, mod_intimate = 0, mod_normal = 0;
@@ -435,7 +435,7 @@ static void IMRosterAddup (Event *event)
 {
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     ContactGroup *cg;
     Contact *cont;
     int i, cnt_groups = 0, cnt_normal = 0;
@@ -506,7 +506,7 @@ static void IMRosterDiff (Event *event)
 {
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     ContactGroup *cg;
     Contact *cont;
     int i, cnt_more = 0;

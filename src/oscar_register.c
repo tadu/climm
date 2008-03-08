@@ -95,7 +95,7 @@ void SnacCliMd5login (Server *serv, const char *hash)
  */
 JUMP_SNAC_F(SnacSrvReplylogin)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
 
     /* delegate to old login method */
     FlapChannel4 (serv, event->pak);
@@ -141,7 +141,7 @@ void SnacCliRegisteruser (Server *serv)
  */
 JUMP_SNAC_F(SnacSrvNewuin)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     Contact *cont;
     UDWORD uin;
 
@@ -201,7 +201,7 @@ void SnacCliReqlogin (Server *serv)
  */
 JUMP_SNAC_F(SnacSrvLoginkey)
 {
-    Server *serv = Connection2Server (event->conn);
+    Server *serv = event->conn->serv;
     char hash[16];
     ssl_md5ctx_t *ctx;
     int rc;
