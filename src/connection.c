@@ -65,7 +65,7 @@ static ConnectionList slist = { NULL, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
 Server *ServerCC (Connection *conn DEBUGPARAM)
 {
     ConnectionList *cl;
-    Connection **ncp;
+    Connection **ncp = NULL;
     Server *serv;
     int i;
     
@@ -75,22 +75,24 @@ Server *ServerCC (Connection *conn DEBUGPARAM)
     
     cl = &slist;
     i = 0;
-    while (cl && cl->conn[i] && cl->conn[i]->type & TYPEF_ANY_SERVER)
+    while (cl && cl->conn[i])
     {
-        if (cl->conn[i] == conn)
+        if (!ncp && ~cl->conn[i]->type & TYPEF_ANY_SERVER)
             ncp = &cl->conn[i];
+        else if (cl->conn[i] == conn)
+        {
+            if (!ncp)
+                break;
+            assert (ncp != &cl->conn[i]);
+            cl->conn[i] = *ncp;
+            *ncp = conn;
+        }
         i++;
         if (i >= ConnectionListLen || !cl->conn[i])
         {
             cl = cl->more;
             i = 0;
         }
-    }
-    assert (ncp);
-    if (cl && cl->conn[i])
-    {
-        *ncp = cl->conn[i];
-        cl->conn[i] = conn;
     }
     serv = Connection2Server (conn);
     conn->serv = serv;
