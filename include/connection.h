@@ -185,20 +185,20 @@ struct Server_s
 #define CONNECT_SOCKS      0xf000
 
 
-/* Server        *Connection2Server (Connection *conn);
-   Connection    *Server2Connection (Server *serv); */
-#define Connection2Server(c) ((Server *)(c))
+/* Connection    *Server2Connection (Server *serv); */
 #define Server2Connection(c) ((Connection *)(c))
 
-Connection    *ConnectionC       (UWORD type DEBUGPARAM);
-void           ConnectionD       (Connection *conn DEBUGPARAM);
-Connection    *ConnectionNr      (int i);
-
+#define        ServerC(t)        ServerCC (ConnectionC (t))
+Server        *ServerCC          (Connection *conn DEBUGPARAM);
+void           ServerD           (Server *conn DEBUGPARAM);
 Server        *ServerNr          (int i);
 Server        *ServerFindScreen  (UWORD type, const char *screen);
 Connection    *ServerChild       (Server *serv, Contact *cont, UWORD type DEBUGPARAM);
 Connection    *ServerFindChild   (const Server *parent, const Contact *cont, UWORD type);
 
+Connection    *ConnectionC       (UWORD type DEBUGPARAM);
+void           ConnectionD       (Connection *conn DEBUGPARAM);
+Connection    *ConnectionNr      (int i);
 UDWORD         ConnectionFindNr  (Connection *conn);
 const char    *ConnectionType    (Connection *conn);
 const char    *ConnectionServerType  (UWORD type);
@@ -206,23 +206,25 @@ UWORD          ConnectionServerNType (const char *type, char del);
 val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
 
 #define ConnectionC(t)       ConnectionC (t DEBUGARGS)
-#define ServerChild(s,f,t)   ServerChild (s,f,t DEBUGARGS)
 #define ConnectionD(c)       ConnectionD (c DEBUGARGS)
+#define ServerCC(t)          ServerCC (t DEBUGARGS)
+#define ServerD(c)           ServerD (c DEBUGARGS)
+#define ServerChild(s,f,t)   ServerChild (s,f,t DEBUGARGS)
 
 /*
                             TYPE_SERVER
-                           ^ |  ^  ^ ^
-                         p/  a  |  | p\
-                         /   V  |  |   \
-                 TYPE_MSGLISTEN |  | TYPE_FILELISTEN
-                                |  |
-                               p|  |p
-                                |  |
-              TYPE_MSGDIRECT(uin)  TYPE_FILEDIRECT(uin)
-                                          |  ^
-                                         a| p|
-                                          V  |
-                                        TYPE_FILE
+                           ^ |  ^ ^ ^ ^
+                         p/  a  | | | p\
+                         /   V  | | |   \
+                 TYPE_MSGLISTEN | | | TYPE_FILELISTEN
+                                | | |
+                               p| | |p
+                                | | |
+              TYPE_MSGDIRECT(uin) | TYPE_FILEDIRECT(uin)
+                                  |   |
+                                  |  a|
+                                  |   V
+                                 TYPE_FILE(uin)
 
 */
 

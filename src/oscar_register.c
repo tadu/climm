@@ -47,7 +47,7 @@
  */
 JUMP_SNAC_F(SnacSrvRegrefused)
 {
-    Connection *serv = event->conn;
+    Server *serv = event->conn->serv;
     rl_print (i18n (1920, "Registration of new UIN refused.\n"));
     if (serv->flags & CONN_WIZARD)
     {
@@ -59,7 +59,7 @@ JUMP_SNAC_F(SnacSrvRegrefused)
 #ifdef ENABLE_PEER2PEER
         ConnectionD (serv->assoc);
 #endif
-        ConnectionD (serv);
+        ServerD (serv);
     }
 }
 

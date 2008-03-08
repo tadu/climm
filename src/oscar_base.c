@@ -625,13 +625,13 @@ Server *SrvRegisterUIN (Server *serv, const char *pass)
     assert (pass);
     assert (*pass);
     
-    if (!(news = Connection2Server (ConnectionC (TYPE_SERVER))))
+    if (!(news = ServerC (TYPE_SERVER)))
         return NULL;
 
 #ifdef ENABLE_PEER2PEER
     if (!(newl = ServerChild (news, NULL, TYPE_MSGLISTEN)))
     {
-        ConnectionD (Server2Connection (news));
+        ServerD (news);
         return NULL;
     }
     news->assoc = newl;

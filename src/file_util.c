@@ -63,7 +63,7 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
     
     if (servertype == TYPE_SERVER)
     {
-        serv = Connection2Server (ConnectionC (servertype));
+        serv = ServerC (servertype);
         serv->c_open = &ConnectionInitServer;
         
         serv->flags |= CONN_AUTOLOGIN;
@@ -98,7 +98,7 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
     {
         const char *serverpart = strchr (user, '@') + 1;
     
-        serv = Connection2Server (ConnectionC (servertype));
+        serv = ServerC (servertype);
         serv->c_open = &ConnectionInitXMPPServer;
         
         serv->flags |= CONN_AUTOLOGIN;
@@ -135,7 +135,7 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
 #ifdef ENABLE_MSN
     else if (servertype == TYPE_MSN_SERVER)
     {
-        serv = Connection2Server (ConnectionC (servertype));
+        serv = ServerC (servertype);
         serv->c_open = &ConnectionInitMSNServer;
         
         serv->flags |= CONN_AUTOLOGIN;
@@ -385,8 +385,8 @@ int Read_RC_File (FILE *rcf)
             {
                 section = 3;
                 if (conn && conn->type & TYPEF_ANY_SERVER)
-                    oldserv = Connection2Server (conn);
-                conn = ConnectionC (TYPEF_ANY_SERVER);
+                    oldserv = ServerCC (conn);
+                conn = ConnectionC (0);
             }
             else if (!strcasecmp (args, "[Group]"))
             {
@@ -1195,6 +1195,8 @@ int Read_RC_File (FILE *rcf)
                 break;
         }
     }
+    if (conn && conn->type & TYPEF_ANY_SERVER)
+        oldserv = ServerCC (conn);
     
     if (!prG->logplace)
         prG->logplace = strdup ("history" _OS_PATHSEPSTR);
@@ -1212,7 +1214,7 @@ int Read_RC_File (FILE *rcf)
     {
         if (conn->type & TYPEF_ANY_SERVER)
         {
-            serv = Connection2Server (conn);
+            serv = conn->serv;
             serv->port   = serv->pref_port;
             s_repl (&serv->server, serv->pref_server);
             s_repl (&serv->passwd, serv->pref_passwd);

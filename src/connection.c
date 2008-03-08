@@ -42,6 +42,7 @@
 #endif
 #include <assert.h>
 
+#define Connection2Server(c) ((Server *)(c))
 #define ConnectionListLen 10
 
 typedef struct ConnectionList_s ConnectionList;
@@ -59,15 +60,57 @@ static ConnectionList slist = { NULL, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
  * Creates a new session.
  * Returns NULL if not enough memory available.
  */
+#undef ServerCC
+Server *ServerCC (Connection *conn DEBUGPARAM)
+{
+    ConnectionList *cl;
+    Connection **ncp;
+    Server *serv;
+    int i;
+    
+    if (!conn)
+        return NULL;
+    conn->type |= TYPEF_ANY_SERVER;
+    
+    cl = &slist;
+    i = 0;
+    while (cl && cl->conn[i] && cl->conn[i]->type & TYPEF_ANY_SERVER)
+    {
+        if (cl->conn[i] == conn)
+            ncp = &cl->conn[i];
+        i++;
+        if (i >= ConnectionListLen || !cl->conn[i])
+        {
+            cl = cl->more;
+            i = 0;
+        }
+    }
+    assert (ncp);
+    if (cl && cl->conn[i])
+    {
+        *ncp = cl->conn[i];
+        cl->conn[i] = conn;
+    }
+    serv = Connection2Server (conn);
+    conn->serv = serv;
+    Debug (DEB_CONNECT, "<=S= %p create %d", serv, serv->type);
+    return serv;
+}
+
+/*
+ * Creates a new session.
+ * Returns NULL if not enough memory available.
+ */
 #undef ConnectionC
 Connection *ConnectionC (UWORD type DEBUGPARAM)
 {
     ConnectionList *cl;
     Connection *conn;
     int i, j;
-    
+
     cl = &slist;
     i = j = 0;
+    type =~ TYPEF_ANY_SERVER;
     while (cl->conn[ConnectionListLen - 1] && cl->more)
         cl = cl->more, j += ConnectionListLen;
     if (cl->conn[ConnectionListLen - 1])
@@ -86,28 +129,6 @@ Connection *ConnectionC (UWORD type DEBUGPARAM)
     if (!(conn = calloc (1, sizeof (Connection))))
         return NULL;
     cl->conn[i] = conn;
-    
-    if (type && TYPEF_ANY_SERVER)
-    {
-        Connection **ncp = &cl->conn[i];
-        cl = &slist;
-        i = 0;
-        while (cl && cl->conn[i] && cl->conn[i]->type & TYPEF_ANY_SERVER)
-        {
-            i++;
-            if (i >= ConnectionListLen || !cl->conn[i])
-            {
-                cl = cl->more;
-                i = 0;
-            }
-        }
-        if (cl && cl->conn[i])
-        {
-            *ncp = cl->conn[i];
-            cl->conn[i] = conn;
-        }
-        conn->serv = Connection2Server (conn);
-    }
     
     conn->our_local_ip   = 0x7f000001;
     conn->our_outside_ip = 0x7f000001;
@@ -277,6 +298,17 @@ UDWORD ConnectionFindNr (Connection *conn)
             if (cl->conn[i % ConnectionListLen] == conn)
                 return i;
     return -1;
+}
+
+/*
+ * Closes and removes a session.
+ */
+#undef ServerD
+void ServerD (Server *serv DEBUGPARAM)
+{
+    Connection *conn = Server2Connection (serv);
+    ConnectionD (conn);
+    Debug (DEB_CONNECT, "=S=> %p closed.", conn);
 }
 
 /*
