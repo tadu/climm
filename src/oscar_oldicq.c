@@ -154,7 +154,7 @@ JUMP_SNAC_F(SnacSrvToicqerr)
         UWORD err = PacketReadB2 (pak);
         Event *oevent;
 
-        if ((oevent = QueueDequeue (Server2Connection (serv), QUEUE_REQUEST_META, pak->ref)))
+        if ((oevent = QueueDequeue (serv->conn, QUEUE_REQUEST_META, pak->ref)))
         {
             rl_printf (i18n (2207, "Protocol error in command to old ICQ server: %d.\n"), err);
             if (err == 2)
@@ -807,7 +807,7 @@ void Meta_User (Server *serv, Contact *cont, Packet *pak)
     {
         case 0x32:
         case 0x14:
-            if ((event = QueueDequeue (Server2Connection (serv), QUEUE_REQUEST_META, pak->ref)))
+            if ((event = QueueDequeue (serv->conn, QUEUE_REQUEST_META, pak->ref)))
                 EventD (event);
             rl_printf ("%s ", s_now);
             rl_printf (i18n (2141, "Search %sfailed%s.\n"), COLCLIENT, COLNONE);
@@ -844,7 +844,7 @@ void Meta_User (Server *serv, Contact *cont, Packet *pak)
         case META_SRV_BACKGROUND:
         case META_SRV_UNKNOWN_270:
         case META_SRV_RANDOM:
-            if (!(event = QueueDequeue (Server2Connection (serv), QUEUE_REQUEST_META, pak->ref)) || !event->callback)
+            if (!(event = QueueDequeue (serv->conn, QUEUE_REQUEST_META, pak->ref)) || !event->callback)
             {
                 if (prG->verbose)
                     rl_printf ("FIXME: meta reply ref %lx not found.\n", UD2UL (pak->ref));

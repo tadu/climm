@@ -81,6 +81,7 @@ struct Connection_s
 
     Connection            *assoc;  /* associated session           */
     Server                *serv;   /* parent session               */
+    Connection            *foo_conn;   /* main I/O connection          */
     
     SOK_T     logfd;
     UWORD     privacy_tag;         /* F*cking ICQ needs to change the value */
@@ -156,6 +157,7 @@ struct Server_s
 
     Connection            *assoc;  /* associated session           */
     Server                *foo_serv; /* parent session               */
+    Connection            *conn;   /* main I/O connection          */
     
     SOK_T     logfd;
     UWORD     privacy_tag;         /* F*cking ICQ needs to change the value */
@@ -190,17 +192,18 @@ struct Server_s
 
 #define        ServerC(t)        ServerCC (ConnectionC (t))
 Server        *ServerCC          (Connection *conn DEBUGPARAM);
-void           ServerD           (Server *conn DEBUGPARAM);
+void           ServerD           (Server *serv DEBUGPARAM);
 Server        *ServerNr          (int i);
+UDWORD         ServerFindNr      (const Server *serv);
 Server        *ServerFindScreen  (UWORD type, const char *screen);
 Connection    *ServerChild       (Server *serv, Contact *cont, UWORD type DEBUGPARAM);
 Connection    *ServerFindChild   (const Server *parent, const Contact *cont, UWORD type);
+const char    *ServerStrType     (Server *conn);
 
 Connection    *ConnectionC       (UWORD type DEBUGPARAM);
 void           ConnectionD       (Connection *conn DEBUGPARAM);
 Connection    *ConnectionNr      (int i);
-UDWORD         ConnectionFindNr  (Connection *conn);
-const char    *ConnectionType    (Connection *conn);
+const char    *ConnectionStrType (Connection *conn);
 const char    *ConnectionServerType  (UWORD type);
 UWORD          ConnectionServerNType (const char *type, char del);
 val_t          ConnectionPrefVal (Server *conn, UDWORD flag);

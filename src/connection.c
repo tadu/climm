@@ -93,6 +93,7 @@ Server *ServerCC (Connection *conn DEBUGPARAM)
     }
     serv = Connection2Server (conn);
     conn->serv = serv;
+    serv->conn = conn;
     Debug (DEB_CONNECT, "<=S= %p create %d", serv, serv->type);
     return serv;
 }
@@ -148,7 +149,7 @@ Connection *ConnectionC (UWORD type DEBUGPARAM)
  * Returns NULL if not enough memory available.
  */
 #undef ServerChild
-Connection *ServerChild (Server *conn, Contact *cont, UWORD type DEBUGPARAM)
+Connection *ServerChild (Server *serv, Contact *cont, UWORD type DEBUGPARAM)
 {
     Connection *child;
     
@@ -156,13 +157,13 @@ Connection *ServerChild (Server *conn, Contact *cont, UWORD type DEBUGPARAM)
     if (!child)
         return NULL;
 
-    child->serv = conn;
+    child->serv   = serv;
     child->cont   = cont;
     child->flags  = 0;
-    child->screen = strdup (conn->screen ? conn->screen : "child");
+    child->screen = strdup (serv->screen ? serv->screen : "child");
     
     Debug (DEB_CONNECT, "<=*= %p (%s) clone from %p (%s)",
-        child, ConnectionType (child), conn, ConnectionType (Server2Connection (conn)));
+        child, ConnectionStrType (child), serv, ServerStrType (serv));
 
     return child;
 }
@@ -285,7 +286,7 @@ Server *ServerFindScreen (UWORD type, const char *screen)
 /*
  * Finds the index of this session.
  */
-UDWORD ConnectionFindNr (Connection *conn)
+UDWORD ConnectionFindNr (const Connection *conn)
 {
     ConnectionList *cl;
     int i, j;
@@ -298,6 +299,16 @@ UDWORD ConnectionFindNr (Connection *conn)
             if (cl->conn[i % ConnectionListLen] == conn)
                 return i;
     return -1;
+}
+
+/*
+ * Finds the index of this session.
+ */
+UDWORD ServerFindNr (const Server *serv)
+{
+    if (!serv)
+        return -1;
+    return ConnectionFindNr (serv->conn);
 }
 
 /*
@@ -324,7 +335,7 @@ void ConnectionD (Connection *conn DEBUGPARAM)
     if ((i = ConnectionFindNr (conn)) == -1)
         return;
 
-    Debug (DEB_CONNECT, "===> %p[%d] (%s) closing...", conn, i, ConnectionType (conn));
+    Debug (DEB_CONNECT, "===> %p[%d] (%s) closing...", conn, i, ConnectionStrType (conn));
 
     if (conn->close)
         conn->close (conn);
@@ -384,9 +395,39 @@ void ConnectionD (Connection *conn DEBUGPARAM)
 /*
  * Returns a string describing the session's type.
  */
-const char *ConnectionType (Connection *conn)
+const char *ConnectionStrType (Connection *conn)
 {
-    switch (conn->type) {
+    switch (conn->type & ~TYPEF_ANY_SERVER) {
+        case TYPE_XMPP_SERVER & ~TYPEF_ANY_SERVER:
+            return i18n (2604, "xmpp");
+        case TYPE_MSN_TEMP & ~TYPEF_ANY_SERVER:
+            return i18n (2584, "msn temp");
+        case TYPE_MSN_SERVER & ~TYPEF_ANY_SERVER:
+            return i18n (2585, "msn server");
+        case TYPE_MSN_CHAT & ~TYPEF_ANY_SERVER:
+            return i18n (2586, "msn chat");
+        case TYPE_SERVER & ~TYPEF_ANY_SERVER:
+            return i18n (1889, "server");
+        case TYPE_MSGLISTEN & ~TYPEF_ANY_SERVER:
+            return i18n (1947, "listener");
+        case TYPE_MSGDIRECT & ~TYPEF_ANY_SERVER:
+            return i18n (1890, "peer-to-peer");
+        case TYPE_FILELISTEN & ~TYPEF_ANY_SERVER:
+            return i18n (2089, "file listener");
+        case TYPE_FILEDIRECT & ~TYPEF_ANY_SERVER:
+            return i18n (2090, "file peer-to-peer");
+        case TYPE_FILE & ~TYPEF_ANY_SERVER:
+            return i18n (2067, "file io");
+        case TYPE_REMOTE & ~TYPEF_ANY_SERVER:
+            return i18n (2225, "scripting");
+        default:
+            return i18n (1745, "unknown");
+    }
+}
+
+const char *ServerStrType (Server *serv)
+{
+    switch (serv->type) {
         case TYPE_XMPP_SERVER:
             return i18n (2604, "xmpp");
         case TYPE_MSN_TEMP:

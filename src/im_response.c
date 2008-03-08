@@ -846,7 +846,7 @@ void IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWORD native
     if (!cont)
         return;
 
-    if ((egevent = QueueDequeue2 (Server2Connection (cont->serv), QUEUE_DEP_WAITLOGIN, 0, 0)))
+    if ((egevent = QueueDequeue2 (cont->serv->conn, QUEUE_DEP_WAITLOGIN, 0, 0)))
     {
         egevent->due = time (NULL) + 3;
         QueueEnqueue (egevent);

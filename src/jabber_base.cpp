@@ -78,7 +78,7 @@ class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler
 
                  public gloox::LogHandler {
     private :
-        Server *m_conn;
+        Server *m_serv;
         gloox::Client *m_client;
         char *m_stamp;
 #ifdef CLIMM_FILE_TRANSFER
@@ -139,7 +139,7 @@ class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler
 
 CLIMMXMPP::CLIMMXMPP (Server *serv)
 {
-    m_conn = serv;
+    m_serv = serv;
     m_stamp = (char *)malloc (15);
     time_t now = time (NULL);
     strftime (m_stamp, 15, "%Y%m%d%H%M%S", gmtime (&now));
@@ -187,16 +187,16 @@ CLIMMXMPP::~CLIMMXMPP ()
 
 void CLIMMXMPP::onConnect ()
 {
-    m_conn->connect = CONNECT_OK | CONNECT_SELECT_R;
+    m_serv->connect = CONNECT_OK | CONNECT_SELECT_R;
 //    m_client->send (gloox::Stanza::createPresenceStanza (gloox::JID (""), "", gloox::PresenceChat));
 }
 
 void CLIMMXMPP::onDisconnect (gloox::ConnectionError e)
 {
-    m_conn->connect = 0;
-    if (m_conn->sok != -1)
-        close (m_conn->sok);
-    m_conn->sok = -1;
+    m_serv->connect = 0;
+    if (m_serv->sok != -1)
+        close (m_serv->sok);
+    m_serv->sok = -1;
     switch (e)
     {
         case gloox::ConnNoError:
@@ -211,14 +211,14 @@ void CLIMMXMPP::onDisconnect (gloox::ConnectionError e)
             break;
         case gloox::ConnStreamClosed:
         case gloox::ConnIoError:
-            XMPPCallbackReconn (Server2Connection (m_conn));
+            XMPPCallbackReconn (m_serv->conn);
             return;
 
         case gloox::ConnOutOfMemory:          rl_printf ("#onDisconnect: Error OutOfMemory %d.\n", e); break;
         case gloox::ConnNoSupportedAuth:      rl_printf ("#onDisconnect: Error NoSupportedAuth %d.\n", e); break;
         case gloox::ConnTlsFailed:            rl_printf ("#onDisconnect: Error TlsFailed %d.\n", e); break;
         case gloox::ConnAuthenticationFailed: rl_printf ("#onDisconnect: Error AuthenticationFailed %d.\n", e);
-            s_repl (&m_conn->passwd, NULL);
+            s_repl (&m_serv->passwd, NULL);
             break;
         case gloox::ConnUserDisconnected:     return;
         case gloox::ConnNotConnected:         rl_printf ("#onDisconnect: Error NotConnected %d.\n", e); break;
@@ -470,7 +470,7 @@ void CLIMMXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
 
     if (ref != -1)
     {
-        Event *event = QueueDequeue (Server2Connection (m_conn), QUEUE_XMPP_RESEND_ACK, ref);
+        Event *event = QueueDequeue (m_serv->conn, QUEUE_XMPP_RESEND_ACK, ref);
         if (event)
         {
             Message *msg = (Message *)event->data;
@@ -492,9 +492,9 @@ void CLIMMXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
 void CLIMMXMPP::handleXEP22c (gloox::JID from, std::string tof, std::string id, std::string type)
 {
     gloox::Stanza *msg = gloox::Stanza::createMessageStanza (from, "");
-    msg->addAttribute ("id", s_sprintf ("ack-%s-%x", m_stamp, m_conn->our_seq++));
+    msg->addAttribute ("id", s_sprintf ("ack-%s-%x", m_stamp, m_serv->our_seq++));
     std::string res = m_client->resource();
-    msg->addAttribute ("from", s_sprintf ("%s/%s", m_conn->screen, res.c_str()));
+    msg->addAttribute ("from", s_sprintf ("%s/%s", m_serv->screen, res.c_str()));
     gloox::Tag *x = new gloox::Tag (msg, "x");
     x->addAttribute ("xmlns", "jabber:x:event");
     new gloox::Tag (x, type);
@@ -713,7 +713,7 @@ void CLIMMXMPP::handleGoogleChatstate(gloox::Tag *t)
 
 void CLIMMXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string tof, std::string id, gloox::StanzaSubType subtype)
 {
-    Contact *cto = ContactScreen (m_conn, tof.c_str());
+    Contact *cto = ContactScreen (m_serv, tof.c_str());
     std::string subtypeval = t->findAttribute ("type");
     std::string body = t->body();
     std::string subject = t->subject();
@@ -727,7 +727,7 @@ void CLIMMXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string t
     time_t delay;
     Contact *contb, *contr;
 
-    GetBothContacts (from, m_conn, &contb, &contr, 0);
+    GetBothContacts (from, m_serv, &contb, &contr, 0);
 
     DropAllChilds (t, "subject");
     DropAllChilds (t, "thread");
@@ -792,7 +792,7 @@ void CLIMMXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, 
     time_t delay;
     std::string statustext;
 
-    GetBothContacts (from, m_conn, &contb, &contr, 1);
+    GetBothContacts (from, m_serv, &contb, &contr, 1);
 
     if (gloox::Tag *priority = s->findChild ("priority"))
     {
@@ -933,14 +933,14 @@ void CLIMMXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std
     }
     if (area == gloox::LogAreaXmlIncoming)
     {
-        if (ConnectionPrefVal (m_conn, CO_LOGSTREAM))
-            CLIMMXMPPSave (m_conn, message.c_str(), 1);
+        if (ConnectionPrefVal (m_serv, CO_LOGSTREAM))
+            CLIMMXMPPSave (m_serv, message.c_str(), 1);
         DebugH (DEB_XMPPIN, "%s/%s: %s", lt, la, message.c_str());
     }
     else if (area == gloox::LogAreaXmlOutgoing)
     {
-        if (ConnectionPrefVal (m_conn, CO_LOGSTREAM))
-            CLIMMXMPPSave (m_conn, message.c_str(), 0);
+        if (ConnectionPrefVal (m_serv, CO_LOGSTREAM))
+            CLIMMXMPPSave (m_serv, message.c_str(), 0);
         DebugH (DEB_XMPPOUT, "%s/%s: %s", lt, la, message.c_str());
     }
     else
@@ -987,18 +987,18 @@ static void SnacCallbackXmppCancel (Event *event)
 
 UBYTE CLIMMXMPP::XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
 {
-    assert (serv == m_conn);
+    assert (serv == m_serv);
 
     assert (cont);
     assert (msg->send_message);
 
-    if (~m_conn->connect & CONNECT_OK)
+    if (~m_serv->connect & CONNECT_OK)
         return RET_DEFER;
     if (msg->type != MSG_NORM)
         return RET_DEFER;
 
     gloox::Stanza *msgs = gloox::Stanza::createMessageStanza (gloox::JID (cont->screen), msg->send_message);
-    msgs->addAttribute ("id", s_sprintf ("xmpp-%s-%x", m_stamp, ++m_conn->our_seq));
+    msgs->addAttribute ("id", s_sprintf ("xmpp-%s-%x", m_stamp, ++m_serv->our_seq));
 
     std::string res = m_client->resource();
     msgs->addAttribute ("from", s_sprintf ("%s/%s", serv->screen, res.c_str()));
@@ -1010,7 +1010,7 @@ UBYTE CLIMMXMPP::XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
     new gloox::Tag (x, "composing");
     m_client->send (msgs);
 
-    Event *event = QueueEnqueueData2 (Server2Connection (serv), QUEUE_XMPP_RESEND_ACK, m_conn->our_seq, 120, msg, &SnacCallbackXmpp, &SnacCallbackXmppCancel);
+    Event *event = QueueEnqueueData2 (serv->conn, QUEUE_XMPP_RESEND_ACK, m_serv->our_seq, 120, msg, &SnacCallbackXmpp, &SnacCallbackXmppCancel);
     event->cont = cont;
 
     return RET_OK;
@@ -1042,8 +1042,8 @@ void CLIMMXMPP::XMPPSetstatus (Server *serv, Contact *cont, status_t status, con
         // vers->addAttribute ("ext", "ext1 ext2");
     }
     m_client->send (pres);
-    m_conn->status = status;
-    m_conn->nativestatus = p;
+    m_serv->status = status;
+    m_serv->nativestatus = p;
 }
 
 void CLIMMXMPP::XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const char *msg)
@@ -1124,7 +1124,7 @@ void CLIMMXMPP::handleFTSOCKS5Bytestream (gloox::SOCKS5Bytestream *s5b)
 {
     strc_t name;
     int len, off;
-    Contact *cont = ContactFindScreen (m_conn->contacts, s5b->initiator().bare().c_str());
+    Contact *cont = ContactFindScreen (m_serv->contacts, s5b->initiator().bare().c_str());
     s5b->registerSOCKS5BytestreamDataHandler (this);
     //if (prG->verbose)
         rl_printf (i18n (2709, "Opening file listener connection at %slocalhost%s:%s%lp%s... "),
@@ -1159,10 +1159,10 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     if (desc.size())
         pretty += " (" + desc + ")";
 
-    UWORD seq = ++m_conn->our_seq;
+    UWORD seq = ++m_serv->our_seq;
     l_tSeqTranslate[seq] = sid;
     sid2id[sid] = id; //This will be changed in the 1.0 release of gloox :)
-    GetBothContacts (from, m_conn, &cont, &contr, 0);
+    GetBothContacts (from, m_serv, &cont, &contr, 0);
 
     Opt *opt2 = OptC ();
     OptSetVal (opt2, CO_BYTES, size);
@@ -1173,13 +1173,13 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     opt2 = OptC ();
     OptSetVal (opt2, CO_FILEACCEPT, 0);
     OptSetStr (opt2, CO_REFUSE, i18n (2514, "refused (ignored)"));
-    Event *e1 = QueueEnqueueData (Server2Connection (m_conn), QUEUE_USERFILEACK, seq, time (NULL) + 120,
+    Event *e1 = QueueEnqueueData (m_serv->conn, QUEUE_USERFILEACK, seq, time (NULL) + 120,
                            NULL, contr, opt2, &PeerFileTO); //Timeout Handler
-    QueueEnqueueDep (Server2Connection (m_conn), 0, seq, e1,
+    QueueEnqueueDep (m_serv->conn, 0, seq, e1,
                      NULL, contr, opt2, XMPPCallBackFileAccept); // Route whatever there ;)
     
     // Prepare a FileListener
-    Connection *child = ServerChild (Server2Connection (m_conn), NULL, TYPE_FILELISTEN);
+    Connection *child = ServerChild (Server2Connection (m_serv), NULL, TYPE_FILELISTEN);
     if (!child)
         return; //Failed
 
@@ -1312,7 +1312,7 @@ Event *ConnectionInitXMPPServer (Server *serv)
     serv->close = &XMPPCallbackClose;
     serv->dispatch = &XMPPCallbackDispatch;
 
-    if ((event = QueueDequeue2 (Server2Connection (serv), QUEUE_DEP_WAITLOGIN, 0, NULL)))
+    if ((event = QueueDequeue2 (serv->conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
     {
         event->attempts++;
         event->due = time (NULL) + 10 * event->attempts + 10;
@@ -1320,7 +1320,7 @@ Event *ConnectionInitXMPPServer (Server *serv)
         QueueEnqueue (event);
     }
     else
-        event = QueueEnqueueData (Server2Connection (serv), QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 5,
+        event = QueueEnqueueData (serv->conn, QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 5,
                                   NULL, serv->cont, NULL, &XMPPCallBackTimeout);
 
     CLIMMXMPP *l = new CLIMMXMPP (serv);
@@ -1330,7 +1330,7 @@ Event *ConnectionInitXMPPServer (Server *serv)
     return event;
 }
 
-static inline CLIMMXMPP *getXMPPClient (Connection *serv)
+static inline CLIMMXMPP *getXMPPClient (Server *serv)
 {
     return serv ? (CLIMMXMPP *)serv->xmpp_private : NULL;
 }
@@ -1340,7 +1340,7 @@ void XMPPCallbackDispatch (Connection *conn)
     if (conn->sok == -1)
         return;
 
-    CLIMMXMPP *j = getXMPPClient (conn);
+    CLIMMXMPP *j = getXMPPClient (conn->serv);
     if (!j)
     {
         rl_printf ("#Avoid spinning.\n");
@@ -1402,7 +1402,7 @@ void XMPPCallbackClose (Connection *conn)
     if (conn->sok == -1)
         return;
 
-    CLIMMXMPP *j = getXMPPClient (conn);
+    CLIMMXMPP *j = getXMPPClient (conn->serv);
     if (!j)
     {
         rl_printf ("#Avoid spinning.\n");
@@ -1426,7 +1426,7 @@ void XMPPCallBackFileAccept (Event *event)
 {
     Connection *conn = event->conn;
     Contact *id, *res = NULL;
-    CLIMMXMPP *j = getXMPPClient (conn);
+    CLIMMXMPP *j = getXMPPClient (conn->serv);
     UDWORD opt_acc;
     std::string seq, sid;
     char *reason = NULL;
@@ -1491,21 +1491,21 @@ void XMPPCallBackFileAccept (Event *event)
 
 UBYTE XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
 {
-    CLIMMXMPP *j = getXMPPClient (Server2Connection (serv));
+    CLIMMXMPP *j = getXMPPClient (serv);
     assert (j);
     return j->XMPPSendmsg (serv, cont, msg);
 }
 
 void XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *msg)
 {
-    CLIMMXMPP *j = getXMPPClient (Server2Connection (serv));
+    CLIMMXMPP *j = getXMPPClient (serv);
     assert (j);
     j->XMPPSetstatus (serv, cont, status, msg);
 }
 
 void XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const char *msg)
 {
-    CLIMMXMPP *j = getXMPPClient (Server2Connection (serv));
+    CLIMMXMPP *j = getXMPPClient (serv);
     assert (j);
     assert (cont);
     j->XMPPAuthorize (serv, cont, how, msg);

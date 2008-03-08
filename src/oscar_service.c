@@ -97,9 +97,9 @@ void CliFinishLogin (Server *serv)
     if (prG->chat > 0)
         SnacCliSetrandom (serv, prG->chat);
     serv->connect = CONNECT_OK | CONNECT_SELECT_R;
-    QueueEnqueueData (Server2Connection (serv), QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
+    QueueEnqueueData (serv->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
         NULL, serv->cont, NULL, &SrvCallBackKeepalive);
-    if ((event = QueueDequeue2 (Server2Connection (serv), QUEUE_DEP_WAITLOGIN, 0, NULL)))
+    if ((event = QueueDequeue2 (serv->conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
     {
         event->due = time (NULL) + 5;
         QueueEnqueue (event);

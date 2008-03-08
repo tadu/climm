@@ -197,7 +197,7 @@ void FlapChannel4 (Server *serv, Packet *pak)
 
         serv->connect = 8;
         serv->tlv = tlv;
-        UtilIOConnectTCP (Server2Connection (serv));
+        UtilIOConnectTCP (serv->conn);
     }
 }
 
@@ -452,7 +452,7 @@ Event *ConnectionInitServer (Server *serv)
     if (serv->status == ims_offline)
         serv->status = serv->pref_status;
     
-    if ((event = QueueDequeue2 (Server2Connection (serv), QUEUE_DEP_WAITLOGIN, 0, NULL)))
+    if ((event = QueueDequeue2 (serv->conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
     {
         event->attempts++;
         event->due = time (NULL) + 10 * event->attempts + 10;
@@ -460,7 +460,7 @@ Event *ConnectionInitServer (Server *serv)
         QueueEnqueue (event);
     }
     else
-        event = QueueEnqueueData (Server2Connection (serv), QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 12,
+        event = QueueEnqueueData (serv->conn, QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 12,
                                   NULL, serv->cont, NULL, &SrvCallBackTimeout);
 
     rl_printf (i18n (2512, "Opening v8 connection to %s:%s%ld%s for %s%s%s... "),
@@ -468,7 +468,7 @@ Event *ConnectionInitServer (Server *serv)
               !cont ? i18n (2513, "new UIN") : cont->nick ? cont->nick 
               : cont->screen, COLNONE);
 
-    UtilIOConnectTCP (Server2Connection (serv));
+    UtilIOConnectTCP (serv->conn);
     if (serv->assoc && serv->assoc->c_open)
         serv->assoc->c_open (serv->assoc);
     return event;

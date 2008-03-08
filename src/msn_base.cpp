@@ -79,6 +79,7 @@ static inline CLIMMMSN *MyCallbackFromClimm (Connection *conn)
 static inline void MyCallbackSetClimm (Connection *conn, CLIMMMSN *msn)
 {
     conn->tlv = (void *)msn;
+    conn->serv->tlv = (void *)msn;
 }
 
 Event *ConnectionInitMSNServer (Server *serv)
@@ -100,7 +101,7 @@ Event *ConnectionInitMSNServer (Server *serv)
         serv->port = 1863;
     
     cb->serv = serv;
-    MyCallbackSetClimm (Server2Connection (serv), cb);
+    MyCallbackSetClimm (serv->conn, cb);
     serv->c_open = &ConnectionInitMSNServer;
     serv->reconnect = &MsnCallbackReconn;
     serv->error = &MsnCallbackError;

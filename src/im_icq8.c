@@ -663,7 +663,7 @@ UBYTE IMDeleteID (Server *serv, int tag, int id, const char *name)
     roster->deltag = tag;
     roster->delid = id;
     roster->delname = name ? strdup (name) : NULL;
-    QueueEnqueueData2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
+    QueueEnqueueData2 (serv->conn, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
                        900, roster, IMRosterDoDelete, IMRosterCancel);
     return RET_OK;
 }
@@ -689,25 +689,25 @@ UBYTE IMRoster (Server *serv, int mode)
     switch (mode)
     {
         case IMROSTER_IMPORT:
-            QueueEnqueueData2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
+            QueueEnqueueData2 (serv->conn, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
                                900, NULL, IMRosterOverwritedown, IMRosterCancel);
             break;
         case IMROSTER_DOWNLOAD:
-            QueueEnqueueData2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
+            QueueEnqueueData2 (serv->conn, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
                                900, NULL, IMRosterAdddown, IMRosterCancel);
             break;
         case IMROSTER_EXPORT:
         case IMROSTER_UPLOAD:
-            QueueEnqueueData2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
+            QueueEnqueueData2 (serv->conn, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
                                900, NULL, IMRosterAddup, IMRosterCancel);
             break;
         case IMROSTER_DIFF:
-            QueueEnqueueData2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
+            QueueEnqueueData2 (serv->conn, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
                                900, NULL, IMRosterDiff, IMRosterCancel);
             break;
         case IMROSTER_SYNC:
         case IMROSTER_SHOW:
-            QueueEnqueueData2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
+            QueueEnqueueData2 (serv->conn, QUEUE_REQUEST_ROSTER, SnacCliCheckroster (serv),
                                900, NULL, IMRosterShow, IMRosterCancel);
             return RET_OK;
     }

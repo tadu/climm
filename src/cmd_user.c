@@ -2890,7 +2890,7 @@ static JUMP_F(CmdUserTogVisible)
     if ((cg = s_parselistrem (&args, uiG.conn)))
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
         {
-            event = QueueDequeue2 (Server2Connection (uiG.conn), QUEUE_TOGVIS, 0, cont);
+            event = QueueDequeue2 (uiG.conn->conn, QUEUE_TOGVIS, 0, cont);
             if (event)
                 EventD (event);
             if (ContactPrefVal (cont, CO_INTIMATE))
@@ -3991,7 +3991,7 @@ static JUMP_F(CmdUserUptime)
     for (i = 0; (connl = ConnectionNr (i)); i++) /* FIXME */
     {
         rl_printf ("%3d %-12s %7ld %7ld %7ld %7ld\n",
-                 i + 1, ConnectionType (connl), UD2UL (connl->stat_pak_sent), UD2UL (connl->stat_pak_rcvd),
+                 i + 1, ConnectionStrType (connl), UD2UL (connl->stat_pak_sent), UD2UL (connl->stat_pak_rcvd),
                  UD2UL (connl->stat_real_pak_sent), UD2UL (connl->stat_real_pak_rcvd));
         pak_sent += connl->stat_pak_sent;
         pak_rcvd += connl->stat_pak_rcvd;
@@ -4050,7 +4050,7 @@ static JUMP_F(CmdUserConn)
             {
                 Contact *cont = servl->cont;
                 rl_printf (i18n (2597, "%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n"),
-                          i + 1, ConnectionType (Server2Connection (servl)), servl->version,
+                          i + 1, ServerStrType (servl), servl->version,
 #ifdef ENABLE_SSL
                           servl->ssl_status == SSL_STATUS_OK ? " SSL" : "",
 #else
@@ -4090,7 +4090,7 @@ static JUMP_F(CmdUserConn)
                 if (connl->type & TYPEF_ANY_SERVER)
                     continue;
                 rl_printf (i18n (2597, "%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n"),
-                          i + 1, ConnectionType (connl), connl->version,
+                          i + 1, ConnectionStrType (connl), connl->version,
 #ifdef ENABLE_SSL
                           connl->ssl_status == SSL_STATUS_OK ? " SSL" : "",
 #else
@@ -4146,7 +4146,7 @@ static JUMP_F(CmdUserConn)
             }
             if (!servl)
             {
-                if (ConnectionFindNr (Server2Connection (uiG.conn)) != (UDWORD)-1)
+                if (ServerFindNr (uiG.conn) != (UDWORD)-1)
                     servl = uiG.conn;
                 else
                     servl = ServerNr (0);
@@ -4161,7 +4161,7 @@ static JUMP_F(CmdUserConn)
                 rl_printf (i18n (2601, "Connection for %s is already open.\n"), servl->screen);
             else if (!servl->c_open)
                 rl_printf (i18n (2602, "Don't know how to open connection type %s for %s.\n"),
-                    ConnectionType (Server2Connection (servl)), servl->screen);
+                    ServerStrType (servl), servl->screen);
             else if (!servl->passwd || !*servl->passwd)
                 rl_printf (i18n (2688, "No password given for %s.\n"), servl->screen);
             else
@@ -4371,7 +4371,7 @@ static JUMP_F(CmdUserAsSession)
     }
     else
     {
-        if (ConnectionFindNr (Server2Connection (uiG.conn)))
+        if (ServerFindNr (uiG.conn))
             tmpconn = uiG.conn;
         else
             tmpconn = ServerNr (0);
@@ -4947,7 +4947,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, idleflag_t *i
 
     rl_print ("\r");
 
-    if (!uiG.conn || !(ConnectionFindNr (Server2Connection (uiG.conn)) + 1))
+    if (!uiG.conn || !(ServerFindNr (uiG.conn) + 1))
         uiG.conn = ServerNr (0);
 
     if (isinterrupted)

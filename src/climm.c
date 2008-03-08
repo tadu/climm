@@ -532,7 +532,7 @@ static void Init (int argc, char *argv[])
                 if (arg_p)
                     s_repl (&serv->passwd, arg_p);
                 if (serv->passwd && *serv->passwd && (!arg_s || arg_ss != ims_offline) && (loginevent = serv->c_open (serv)))
-                    QueueEnqueueDep (Server2Connection (serv), QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, serv->cont,
+                    QueueEnqueueDep (serv->conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, serv->cont,
                                      OptSetVals (NULL, CO_CLIMMCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                      &CmdUserCallbackTodo);
             }

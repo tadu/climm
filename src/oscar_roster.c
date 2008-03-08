@@ -189,7 +189,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
     if (!pak)
         return;
     
-    event2 = QueueDequeue2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, 0, 0);
+    event2 = QueueDequeue2 (serv->conn, QUEUE_REQUEST_ROSTER, 0, 0);
     if (!event2 || !event2->callback)
     {
         DebugH (DEB_PROTOCOL, "Unrequested roster packet received.\n");
@@ -367,7 +367,7 @@ static void SnacCliRosterbulkone (Server *serv, Contact *cont, Packet *pak, UWOR
     PacketWriteB2       (pak, type);
     PacketWriteBLen     (pak);
     PacketWriteBLenDone (pak);
-    QueueEnqueueData (Server2Connection (serv), QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
+    QueueEnqueueData (serv->conn, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
 }
 
 void SnacCliRosterbulkadd (Server *serv, ContactGroup *cs)
@@ -410,7 +410,7 @@ void SnacCliRosterbulkadd (Server *serv, ContactGroup *cs)
             PacketWriteTLVDone (pak);
         }
         PacketWriteBLenDone (pak);
-        QueueEnqueueData (Server2Connection (serv), QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
+        QueueEnqueueData (serv->conn, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
 
         if (ContactPrefVal (cont, CO_HIDEFROM))
         {
@@ -467,7 +467,7 @@ void SnacCliRosteradd (Server *serv, ContactGroup *cg, Contact *cont)
             PacketWriteTLVDone (pak);
         }
         PacketWriteBLenDone (pak);
-        QueueEnqueueData (Server2Connection (serv), QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
+        QueueEnqueueData (serv->conn, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
 
         if (ContactPrefVal (cont, CO_HIDEFROM))
             SnacCliRosterbulkone (serv, cont, pak, roster_invisible);
@@ -792,7 +792,7 @@ JUMP_SNAC_F(SnacSrvUpdateack)
     err = PacketReadB2 (event->pak);
     SnacSrvUpdateack (event);
 
-    event2 = QueueDequeue (Server2Connection (serv), QUEUE_CHANGE_ROSTER, event->pak->ref);
+    event2 = QueueDequeue (serv->conn, QUEUE_CHANGE_ROSTER, event->pak->ref);
     cont = event2 ? event2->cont : NULL;
     
     switch (err)
@@ -866,7 +866,7 @@ JUMP_SNAC_F(SnacSrvRosterok)
     if (!pak)
         return;
     
-    event2 = QueueDequeue2 (Server2Connection (serv), QUEUE_REQUEST_ROSTER, 0, 0);
+    event2 = QueueDequeue2 (serv->conn, QUEUE_REQUEST_ROSTER, 0, 0);
     if (!event2 || !event2->callback)
     {
         DebugH (DEB_PROTOCOL, "Unrequested roster packet received.\n");

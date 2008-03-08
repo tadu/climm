@@ -291,6 +291,6 @@ static JUMP_SNAC_F(cb_SnacRefCancel)
 
 void SnacSendR (Server *serv, Packet *pak, jump_snac_f *f, void *data)
 {
-    QueueEnqueueData2 (Server2Connection (serv), QUEUE_OSCAR_REF, pak->ref, 600, data, f, &cb_SnacRefCancel);
+    QueueEnqueueData2 (serv->conn, QUEUE_OSCAR_REF, pak->ref, 600, data, f, &cb_SnacRefCancel);
     SnacSend (serv, pak);
 }

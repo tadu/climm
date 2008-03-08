@@ -109,12 +109,12 @@ Message *cb_msg_revealinv (Message *msg)
     if (!(reveal_time = ContactPrefVal (msg->cont, CO_REVEALTIME)))
         return msg;
 
-    event = QueueDequeue2 (Server2Connection (msg->cont->serv), QUEUE_TOGVIS, 0, msg->cont);
+    event = QueueDequeue2 (msg->cont->serv->conn, QUEUE_TOGVIS, 0, msg->cont);
     if (event)
         EventD (event);
     else
         SnacCliAddvisible (msg->cont->serv, msg->cont);
-    QueueEnqueueData (Server2Connection (msg->cont->serv), QUEUE_TOGVIS, 0, time (NULL) + reveal_time, NULL, msg->cont, NULL, CallbackTogvis);
+    QueueEnqueueData (msg->cont->serv->conn, QUEUE_TOGVIS, 0, time (NULL) + reveal_time, NULL, msg->cont, NULL, CallbackTogvis);
     return msg;
 }
 
@@ -302,7 +302,7 @@ void IMCliInfo (Server *serv, Contact *cont, int group)
             ref = SnacCliSearchrandom (serv, group);
     }
     if (ref)
-        QueueEnqueueData (Server2Connection (serv), QUEUE_REQUEST_META, ref, time (NULL) + 60, NULL,
+        QueueEnqueueData (serv->conn, QUEUE_REQUEST_META, ref, time (NULL) + 60, NULL,
                           cont, NULL, &CallbackMeta);
 }
 
