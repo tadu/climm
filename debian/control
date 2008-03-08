@@ -10,7 +10,8 @@ Architecture: any
 Depends: ${shlibs:Depends}
 Recommends: popularity-contest
 Provides: micq,micq-ssl
-Replaces: micq,micq-ssl
+Replaces: micq (<< 1:0.6), micq-ssl (<< 1:0.6)
+Conflicts: micq (<< 1:0.6), micq-ssl (<< 1:0.6)
 Description: text/line based ICQ client with many features
  climm is a portable, small, yet powerful console based ICQ client. It
  supports password changing, auto-away, creation of new accounts, searching,
