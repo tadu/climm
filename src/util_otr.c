@@ -137,7 +137,7 @@ static Contact *find_contact (const char *account, const char *proto, const char
     Contact *cont;
 
     /* may there be more than 1 TYPEF_HAVEUIN connection for a screen name? */
-    serv = Connection2Server (ConnectionFindScreen (proto_type (proto), account));
+    serv = ServerFindScreen (proto_type (proto), account);
     if (!serv)
     {
         rl_print (COLDEBUG);

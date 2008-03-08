@@ -1068,7 +1068,7 @@ void CLIMMXMPP::XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const ch
 
 void CLIMMXMPP::handleSOCKS5Data (gloox::SOCKS5Bytestream *s5b, const std::string &data)
 {
-    Connection *fpeer = ConnectionFindScreen (TYPE_FILELISTEN, s5b->sid().c_str());
+    Connection *fpeer = Server2Connection (ServerFindScreen (TYPE_FILELISTEN, s5b->sid().c_str()));
     Contact *cont = fpeer->cont;
     assert (fpeer);
     int len = write (fpeer->assoc->sok, data.c_str(), data.length());
@@ -1110,7 +1110,7 @@ void CLIMMXMPP::handleSOCKS5Open (gloox::SOCKS5Bytestream *s5b)
 
 void CLIMMXMPP::handleSOCKS5Close (gloox::SOCKS5Bytestream *s5b)
 {
-    Connection *conn = ConnectionFindScreen (TYPE_FILELISTEN, s5b->sid().c_str());
+    Connection *conn = Server2Connection (ServerFindScreen (TYPE_FILELISTEN, s5b->sid().c_str()));
     assert (conn);
     ConnectionD (conn);
 }
@@ -1135,7 +1135,7 @@ void CLIMMXMPP::handleFTSOCKS5Bytestream (gloox::SOCKS5Bytestream *s5b)
         gloox::ConnectionTCPBase *conn = dynamic_cast<gloox::ConnectionTCPBase *>(s5b->connectionImpl());
         if (!conn)
             return;
-        Connection *child = ConnectionFindScreen (TYPE_FILELISTEN, s5b->sid().c_str());
+        Connection *child = Server2Connection (ServerFindScreen (TYPE_FILELISTEN, s5b->sid().c_str()));
         if (!child)
             return; //Failed
 
@@ -1226,7 +1226,7 @@ void CLIMMXMPP::XMPPAcceptDenyFT (gloox::JID contact, std::string id, std::strin
     // We have done some preps 
     // delete them
     m_pFT->declineFT (contact, id, gloox::SIManager::RequestRejected, reason);
-    conn = ConnectionFindScreen (TYPE_FILELISTEN, sid.c_str());
+    conn = Server2Connection (ServerFindScreen (TYPE_FILELISTEN, sid.c_str()));
     // If it is not found e crash... Godd idea, cause this should not happen
     TCPClose(conn);
 }
@@ -1459,7 +1459,7 @@ void XMPPCallBackFileAccept (Event *event)
         OptGetStr (event->opt, CO_REFUSE, (const char **)&reason);
     else
     {
-        Connection *conn = ConnectionFindScreen (TYPE_FILELISTEN, sid.c_str());
+        Connection *conn = Server2Connection (ServerFindScreen (TYPE_FILELISTEN, sid.c_str()));
         Connection *ffile = conn->assoc;
         Contact *cont = res->parent;
         assert (ffile->type == TYPE_FILE);

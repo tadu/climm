@@ -4132,7 +4132,7 @@ static JUMP_F(CmdUserConn)
                 args = targs;
             else if ((par = s_parse (&args)))
             {
-                servl = Connection2Server (ConnectionFindScreen (TYPEF_ANY_SERVER, par->txt));
+                servl = ServerFindScreen (0, par->txt);
                 if (!servl && s_parserem (&args))
                 {
                     if (nr)
@@ -4176,7 +4176,7 @@ static JUMP_F(CmdUserConn)
                 args = targs;
             else if ((par = s_parse (&args)))
             {
-                servl = Connection2Server (ConnectionFindScreen (TYPEF_ANY_SERVER, par->txt));
+                servl = ServerFindScreen (0, par->txt);
                 if (!servl)
                 {
                     if (nr)
@@ -4360,7 +4360,7 @@ static JUMP_F(CmdUserAsSession)
         args = targs;
     else if ((par = s_parse (&args)))
     {
-        tmpconn = Connection2Server (ConnectionFindScreen (TYPEF_ANY_SERVER, par->txt));
+        tmpconn = ServerFindScreen (0, par->txt);
         if (!tmpconn && !quiet)
         {
             if (nr)

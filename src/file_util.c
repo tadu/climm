@@ -1128,7 +1128,7 @@ int Read_RC_File (FILE *rcf)
                         if ((type = ConnectionServerNType (cg->name + 9, '-')))
                         {
                             int len = strlen (ConnectionServerType (type));
-                            serv = Connection2Server (ConnectionFindScreen (type, cg->name + len + 10));
+                            serv = ServerFindScreen (type, cg->name + len + 10);
                             if (serv)
                             {
                                 if (serv->contacts && serv->contacts != cg) /* Duplicate! */
@@ -1164,7 +1164,7 @@ int Read_RC_File (FILE *rcf)
                     
                     PrefParse (tmp);
                     
-                    if ((serv = Connection2Server (ConnectionFindScreen (type, tmp))))
+                    if ((serv = ServerFindScreen (type, tmp)))
                         cg->serv = serv;
                 }
                 else if (!cg->serv)
@@ -1384,7 +1384,7 @@ void PrefReadStat (FILE *stf)
                             break;
 
                         len = strlen (ConnectionServerType (type));
-                        if ((serv = Connection2Server (ConnectionFindScreen (type, cg->name + 10 + len))))
+                        if ((serv = ServerFindScreen (type, cg->name + 10 + len)))
                         {
                             if (serv->contacts && serv->contacts != cg)
                             {
@@ -1415,7 +1415,7 @@ void PrefReadStat (FILE *stf)
                         ERROR;
                     
                     PrefParse (cmd);
-                    if ((serv = Connection2Server (ConnectionFindScreen (type, cmd))))
+                    if ((serv = ServerFindScreen (type, cmd)))
                         cg->serv = serv;
                 }
                 else if (!strcasecmp (cmd, "options"))
@@ -1513,7 +1513,7 @@ void PrefReadStat (FILE *stf)
                         ERROR;
 
                     PrefParse (cmd);
-                    if (!(serv = Connection2Server (ConnectionFindScreen (type, cmd))))
+                    if (!(serv = ServerFindScreen (type, cmd)))
                         ERROR;
                     cont = NULL;
                     if (!serv->contacts)

@@ -196,9 +196,9 @@ void           ConnectionD       (Connection *conn DEBUGPARAM);
 Connection    *ConnectionNr      (int i);
 
 Server        *ServerNr          (int i);
+Server        *ServerFindScreen  (UWORD type, const char *screen);
 
 Connection    *ConnectionFind    (UWORD type, const Contact *cont, const Connection *parent);
-Connection    *ConnectionFindScreen (UWORD type, const char *screen);
 UDWORD         ConnectionFindNr  (Connection *conn);
 const char    *ConnectionType    (Connection *conn);
 const char    *ConnectionServerType  (UWORD type);

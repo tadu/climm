@@ -236,7 +236,7 @@ Connection *ConnectionFind (UWORD type, const Contact *cont, const Connection *p
  * Finds a session of given type and given screen.
  * Actually, you may specify TYPEF_* here that must all be set.
  */
-Connection *ConnectionFindScreen (UWORD type, const char *screen)
+Server *ServerFindScreen (UWORD type, const char *screen)
 {
     ConnectionList *cl;
     Connection *conn;
@@ -245,11 +245,17 @@ Connection *ConnectionFindScreen (UWORD type, const char *screen)
     assert (type);    
     assert (screen);
     
+    type |= TYPEF_ANY_SERVER;
+    
     for (cl = &slist; cl; cl = cl->more)
         for (i = 0; i < ConnectionListLen; i++)
+        {
             if ((conn = cl->conn[i]) && (conn->type & type) == type
                 && conn->screen && !strcmp (conn->screen, screen))
-                return conn;
+                return Connection2Server (conn);
+            if (~conn->type & TYPEF_ANY_SERVER)
+                return NULL;
+        }
 
     return NULL;
 }
