@@ -43,6 +43,7 @@
 #include <assert.h>
 
 #define Connection2Server(c) ((Server *)(c))
+#define Server2Connection(c) ((Connection *)(c))
 #define ConnectionListLen 10
 
 typedef struct ConnectionList_s ConnectionList;
@@ -418,6 +419,10 @@ const char *ConnectionStrType (Connection *conn)
             return i18n (2090, "file peer-to-peer");
         case TYPE_FILE & ~TYPEF_ANY_SERVER:
             return i18n (2067, "file io");
+        case TYPE_XMPPDIRECT & ~TYPEF_ANY_SERVER:
+            return i18n (9999, "xmpp peer-to-peer");
+        case TYPE_FILEXMPP & ~TYPEF_ANY_SERVER:
+            return i18n (9999, "xmpp file io");
         case TYPE_REMOTE & ~TYPEF_ANY_SERVER:
             return i18n (2225, "scripting");
         default:
@@ -430,24 +435,10 @@ const char *ServerStrType (Server *serv)
     switch (serv->type) {
         case TYPE_XMPP_SERVER:
             return i18n (2604, "xmpp");
-        case TYPE_MSN_TEMP:
-            return i18n (2584, "msn temp");
         case TYPE_MSN_SERVER:
             return i18n (2585, "msn server");
-        case TYPE_MSN_CHAT:
-            return i18n (2586, "msn chat");
         case TYPE_SERVER:
             return i18n (1889, "server");
-        case TYPE_MSGLISTEN:
-            return i18n (1947, "listener");
-        case TYPE_MSGDIRECT:
-            return i18n (1890, "peer-to-peer");
-        case TYPE_FILELISTEN:
-            return i18n (2089, "file listener");
-        case TYPE_FILEDIRECT:
-            return i18n (2090, "file peer-to-peer");
-        case TYPE_FILE:
-            return i18n (2067, "file io");
         case TYPE_REMOTE:
             return i18n (2225, "scripting");
         default:

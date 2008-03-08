@@ -187,9 +187,6 @@ struct Server_s
 #define CONNECT_SOCKS      0xf000
 
 
-/* Connection    *Server2Connection (Server *serv); */
-#define Server2Connection(c) ((Connection *)(c))
-
 #define        ServerC(t)        ServerCC (ConnectionC (t))
 Server        *ServerCC          (Connection *conn DEBUGPARAM);
 void           ServerD           (Server *serv DEBUGPARAM);
@@ -258,7 +255,9 @@ val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
 #define TYPE_FILEDIRECT    (TYPEF_ANY_PEER | TYPEF_ANY_FILE | TYPEF_ANY_DIRECT | TYPEF_HAVEUIN)
 #define TYPE_CHATLISTEN    (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_LISTEN | TYPEF_HAVEUIN)
 #define TYPE_CHATDIRECT    (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_DIRECT | TYPEF_HAVEUIN)
-#define TYPE_FILE          TYPEF_FILE
+#define TYPE_XMPPDIRECT    (TYPEF_ANY_PEER | TYPEF_ANY_FILE | TYPEF_XMPP)
+#define TYPE_FILE          (TYPEF_FILE | TYPEF_SERVER)
+#define TYPE_FILEXMPP      (TYPEF_FILE | TYPEF_XMPP)
 #define TYPE_REMOTE        (TYPEF_SAVEME | TYPEF_REMOTE)
 #define TYPE_MSN_TEMP      TYPEF_MSN
 #define TYPE_MSN_SERVER    (TYPEF_ANY_SERVER | TYPEF_SAVEME | TYPEF_MSN)

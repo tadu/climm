@@ -67,6 +67,7 @@ extern "C" {
 #ifdef CLIMM_FILE_TRANSFER
 std::map<UWORD, std::string> l_tSeqTranslate;
 std::map<const std::string, std::string> sid2id;
+std::map<const std::string, Contact *> sid2cont;
 #endif
 
 class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
@@ -1068,8 +1069,8 @@ void CLIMMXMPP::XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const ch
 
 void CLIMMXMPP::handleSOCKS5Data (gloox::SOCKS5Bytestream *s5b, const std::string &data)
 {
-    Connection *fpeer = Server2Connection (ServerFindScreen (TYPE_FILELISTEN, s5b->sid().c_str()));
-    Contact *cont = fpeer->cont;
+    Contact *cont = sid2cont[sid];
+    Connection *fpeer = ServerFindChild (m_serv, cont, TYPE_XMPPDIRECT);
     assert (fpeer);
     int len = write (fpeer->assoc->sok, data.c_str(), data.length());
     if (len != data.length())
@@ -1110,9 +1111,9 @@ void CLIMMXMPP::handleSOCKS5Open (gloox::SOCKS5Bytestream *s5b)
 
 void CLIMMXMPP::handleSOCKS5Close (gloox::SOCKS5Bytestream *s5b)
 {
-    Connection *conn = Server2Connection (ServerFindScreen (TYPE_FILELISTEN, s5b->sid().c_str()));
-    assert (conn);
-    ConnectionD (conn);
+    Connection *fpeer = ServerFindChild (m_serv, sid2cont[sid], TYPE_XMPPDIRECT);
+    assert (fpeer);
+    ConnectionD (fpeer);
 }
 
 void CLIMMXMPP::handleFTRequestError (gloox::Stanza *stanza)
@@ -1135,7 +1136,7 @@ void CLIMMXMPP::handleFTSOCKS5Bytestream (gloox::SOCKS5Bytestream *s5b)
         gloox::ConnectionTCPBase *conn = dynamic_cast<gloox::ConnectionTCPBase *>(s5b->connectionImpl());
         if (!conn)
             return;
-        Connection *child = Server2Connection (ServerFindScreen (TYPE_FILELISTEN, s5b->sid().c_str()));
+        Connection *child = ServerFindChild (m_serv, sid2cont[sid], TYPE_XMPPDIRECT);
         if (!child)
             return; //Failed
 
@@ -1163,6 +1164,7 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     l_tSeqTranslate[seq] = sid;
     sid2id[sid] = id; //This will be changed in the 1.0 release of gloox :)
     GetBothContacts (from, m_serv, &cont, &contr, 0);
+    sid2cont[sid] = contr;
 
     Opt *opt2 = OptC ();
     OptSetVal (opt2, CO_BYTES, size);
@@ -1179,7 +1181,7 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
                      NULL, contr, opt2, XMPPCallBackFileAccept); // Route whatever there ;)
     
     // Prepare a FileListener
-    Connection *child = ServerChild (Server2Connection (m_serv), NULL, TYPE_FILELISTEN);
+    Connection *child = ServerChild (m_serv, contr, TYPE_XMPPDIRECT);
     if (!child)
         return; //Failed
 
@@ -1197,7 +1199,7 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     /**
      * Create the output file
      */
-    Connection *ffile = ServerChild (child, contr, TYPE_FILE);
+    Connection *ffile = ServerChild (child, contr, TYPE_FILEXMPP);
     char buf[200], *p;
     str_s filename = { (char *)name.c_str(), name.length(), name.length() };
     int pos = 0;
@@ -1226,7 +1228,7 @@ void CLIMMXMPP::XMPPAcceptDenyFT (gloox::JID contact, std::string id, std::strin
     // We have done some preps 
     // delete them
     m_pFT->declineFT (contact, id, gloox::SIManager::RequestRejected, reason);
-    conn = Server2Connection (ServerFindScreen (TYPE_FILELISTEN, sid.c_str()));
+    conn = ServerFindChild (m_serv, sid2cont[sid], TYPE_XMPPDIRECT);
     // If it is not found e crash... Godd idea, cause this should not happen
     TCPClose(conn);
 }
@@ -1297,7 +1299,7 @@ Event *ConnectionInitXMPPServer (Server *serv)
         s_repl (&serv->screen, jid);
     }
 
-    XMPPCallbackClose (Server2Connection (serv));
+    XMPPCallbackClose (serv->conn);
 
     sp = s_sprintf ("%s", s_wordquote (s_sprintf ("%s:%lu", serv->server, serv->port)));
     rl_printf (i18n (2620, "Opening XMPP connection for %s at %s...\n"),
@@ -1457,10 +1459,10 @@ void XMPPCallBackFileAccept (Event *event)
         OptGetStr (event->opt, CO_REFUSE, (const char **)&reason);
     else
     {
-        Connection *conn = Server2Connection (ServerFindScreen (TYPE_FILELISTEN, sid.c_str()));
+        Connection *conn = ServerFindChild (m_serv, sid2cont[sid], TYPE_XMPPDIRECT);
         Connection *ffile = conn->assoc;
         Contact *cont = res->parent;
-        assert (ffile->type == TYPE_FILE);
+        assert (ffile->type == TYPE_FILEXMPP);
         ffile->sok = open (ffile->server, O_CREAT | O_WRONLY | (ffile->done ? O_APPEND : O_TRUNC), 0660);
         if (ffile->sok == -1)
         {
