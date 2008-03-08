@@ -80,7 +80,7 @@ struct Connection_s
     UDWORD    done;           /* used for file transfer                   */
 
     Connection            *assoc;  /* associated session           */
-    Connection            *parent; /* parent session               */
+    Server                *serv;   /* parent session               */
     
     SOK_T     logfd;
     UWORD     privacy_tag;         /* F*cking ICQ needs to change the value */
@@ -155,7 +155,7 @@ struct Server_s
     UDWORD    done;           /* used for file transfer                   */
 
     Connection            *assoc;  /* associated session           */
-    Connection            *parent; /* parent session               */
+    Server                *foo_serv; /* parent session               */
     
     SOK_T     logfd;
     UWORD     privacy_tag;         /* F*cking ICQ needs to change the value */
@@ -191,14 +191,14 @@ struct Server_s
 #define Server2Connection(c) ((Connection *)(c))
 
 Connection    *ConnectionC       (UWORD type DEBUGPARAM);
-Connection    *ConnectionClone   (Connection *conn, UWORD type DEBUGPARAM);
 void           ConnectionD       (Connection *conn DEBUGPARAM);
 Connection    *ConnectionNr      (int i);
 
 Server        *ServerNr          (int i);
 Server        *ServerFindScreen  (UWORD type, const char *screen);
+Connection    *ServerChild       (Server *serv, Contact *cont, UWORD type DEBUGPARAM);
+Connection    *ServerFindChild   (const Server *parent, const Contact *cont, UWORD type);
 
-Connection    *ConnectionFind    (UWORD type, const Contact *cont, const Connection *parent);
 UDWORD         ConnectionFindNr  (Connection *conn);
 const char    *ConnectionType    (Connection *conn);
 const char    *ConnectionServerType  (UWORD type);
@@ -206,19 +206,19 @@ UWORD          ConnectionServerNType (const char *type, char del);
 val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
 
 #define ConnectionC(t)       ConnectionC (t DEBUGARGS)
-#define ConnectionClone(c,t) ConnectionClone (c,t DEBUGARGS)
+#define ServerChild(s,f,t)   ServerChild (s,f,t DEBUGARGS)
 #define ConnectionD(c)       ConnectionD (c DEBUGARGS)
 
 /*
                             TYPE_SERVER
-                           ^ |       ^
-                         p/  a       p\
-                         /   V         \
-                TYPE_MSGLISTENER    TYPE_FILELISTENER
-                        ^                 ^
-                       p|                p|
-                        |                 |
-              TYPE_MSGDIRECT(uin)   TYPE_FILEDIRECT(uin)
+                           ^ |  ^  ^ ^
+                         p/  a  |  | p\
+                         /   V  |  |   \
+                 TYPE_MSGLISTEN |  | TYPE_FILELISTEN
+                                |  |
+                               p|  |p
+                                |  |
+              TYPE_MSGDIRECT(uin)  TYPE_FILEDIRECT(uin)
                                           |  ^
                                          a| p|
                                           V  |
@@ -262,13 +262,6 @@ val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
 
 #define ASSERT_ANY_SERVER(s)  (assert (s), assert ((s)->type & TYPEF_ANY_SERVER))
 #define ASSERT_SERVER(s)      (assert (s), assert ((s)->type == TYPE_SERVER))
-#define ASSERT_ANY_LISTEN(s)  (assert (s), assert ((s)->type & TYPEF_ANY_LISTEN), ASSERT_ANY_SERVER ((s)->parent))
-#define ASSERT_ANY_DIRECT(s)  (assert (s), assert ((s)->type & TYPEF_ANY_DIRECT), ASSERT_ANY_LISTEN ((s)->parent))
-#define ASSERT_MSGLISTEN(s)   (assert (s), assert ((s)->type == TYPE_MSGLISTEN), assert ((s)->parent->assoc == (s)), ASSERT_ANY_SERVER ((s)->parent))
-#define ASSERT_MSGDIRECT(s)   (assert (s), assert ((s)->type == TYPE_MSGDIRECT), ASSERT_MSGLISTEN ((s)->parent))
-#define ASSERT_FILELISTEN(s)  (assert (s), assert ((s)->type == TYPE_FILELISTEN), ASSERT_ANY_SERVER ((s)->parent))
-#define ASSERT_FILEDIRECT(s)  (assert (s), assert ((s)->type == TYPE_FILEDIRECT), ASSERT_FILELISTEN ((s)->parent))
-#define ASSERT_FILE(s)        (assert (s), assert ((s)->type == TYPE_FILE), assert ((s)->parent->assoc == (s)), ASSERT_FILEDIRECT ((s)->parent))
 
 #define CONNERR_WRITE       1
 #define CONNERR_READ        2

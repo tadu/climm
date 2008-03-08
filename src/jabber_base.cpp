@@ -1179,7 +1179,7 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
                      NULL, contr, opt2, XMPPCallBackFileAccept); // Route whatever there ;)
     
     // Prepare a FileListener
-    Connection *child = ConnectionClone (Server2Connection (m_conn), TYPE_FILELISTEN);
+    Connection *child = ServerChild (Server2Connection (m_conn), NULL, TYPE_FILELISTEN);
     if (!child)
         return; //Failed
 
@@ -1197,7 +1197,7 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     /**
      * Create the output file
      */
-    Connection *ffile = ConnectionClone (child, TYPE_FILE);
+    Connection *ffile = ServerChild (child, contr, TYPE_FILE);
     char buf[200], *p;
     str_s filename = { (char *)name.c_str(), name.length(), name.length() };
     int pos = 0;

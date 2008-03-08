@@ -56,6 +56,9 @@
 #define CV_ORIGIN_dcssl CV_ORIGIN_dc
 #endif
 
+#define ASSERT_ANY_DIRECT(s)  (assert (s), assert ((s)->type & TYPEF_ANY_DIRECT), assert ((s)->serv), ASSERT_ANY_LISTEN ((s)->serv->assoc))
+#define ASSERT_ANY_LISTEN(s)  (assert (s), assert ((s)->type & TYPEF_ANY_LISTEN), ASSERT_ANY_SERVER ((s)->serv))
+
 #ifdef ENABLE_PEER2PEER
 
 static void        TCPDispatchPeer    (Connection *peer);
@@ -111,9 +114,9 @@ Event *ConnectionInitPeer (Connection *list)
     list->ip          = 0;
     s_repl (&list->server, NULL);
     list->port        = list->pref_port;
-    list->cont        = list->parent->cont ? list->parent->cont : ContactUIN (Connection2Server (list->parent), list->parent->uin);
+    list->cont        = list->serv->cont ? list->serv->cont : ContactUIN (list->serv, list->serv->uin);
 
-    UtilIOConnectTCP (Server2Connection (list));
+    UtilIOConnectTCP (list);
     return NULL;
 }
 
@@ -132,8 +135,8 @@ BOOL TCPDirectOpen (Connection *list, Contact *cont)
     if (cont == list->cont)
         return FALSE;
 
-    if (!(peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
-        if (!(peer = ConnectionClone (list, TYPE_MSGDIRECT)))
+    if (!(peer = ServerFindChild (list->serv, cont, TYPE_MSGDIRECT)))
+        if (!(peer = ServerChild (list->serv, cont, TYPE_MSGDIRECT)))
             return FALSE;
 
     ASSERT_MSGDIRECT (peer);
@@ -163,7 +166,7 @@ void TCPDirectClose (Connection *list, Contact *cont)
     ASSERT_MSGLISTEN (list);
     assert (cont);
     
-    while ((peer = ConnectionFind (TYPEF_ANY_DIRECT, list->cont, list)))
+    while ((peer = ServerFindChild (list->serv, cont, TYPEF_ANY_DIRECT)))
         TCPClose (peer);
 }
 
@@ -177,8 +180,8 @@ void TCPDirectOff (Connection *list, Contact *cont)
     ASSERT_MSGLISTEN (list);
     assert (cont);
 
-    if (!(peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
-        if (!(peer = ConnectionClone (list, TYPE_MSGDIRECT)))
+    if (!(peer = ServerFindChild (list->serv, cont, TYPE_MSGDIRECT)))
+        if (!(peer = ServerChild (list->serv, cont, TYPE_MSGDIRECT)))
             return;
     
     peer->cont     = cont;
@@ -248,9 +251,9 @@ void TCPDispatchMain (Connection *list)
             case 1:
                 list->connect |= CONNECT_OK | CONNECT_SELECT_R | CONNECT_SELECT_X;
                 list->connect &= ~CONNECT_SELECT_W; /* & ~CONNECT_SELECT_X; */
-                if (list->type == TYPE_MSGLISTEN && list->parent && list->parent->type == TYPE_SERVER
-                    && (list->parent->connect & CONNECT_OK))
-                    SnacCliSetstatus (Connection2Server (list->parent), ims_online, 2);
+                if (list->type == TYPE_MSGLISTEN && list->serv && list->serv->type == TYPE_SERVER
+                    && (list->serv->connect & CONNECT_OK))
+                    SnacCliSetstatus (list->serv, ims_online, 2);
                 break;
             case 2:
                 list->connect = 0;
@@ -261,7 +264,7 @@ void TCPDispatchMain (Connection *list)
         return;
     }
 
-    peer = ConnectionClone (list, list->type == TYPE_MSGLISTEN ? TYPE_MSGDIRECT : TYPE_FILEDIRECT);
+    peer = ServerChild (list->serv, list->cont, list->type == TYPE_MSGLISTEN ? TYPE_MSGDIRECT : TYPE_FILEDIRECT);
     
     if (!peer)
     {
@@ -553,7 +556,7 @@ void TCPDispatchShake (Connection *peer)
 #ifdef ENABLE_SSL
                 /* outgoing peer connection established */
                 if (peer->type == TYPE_MSGDIRECT && ssl_supported (peer) && peer->ssl_status == SSL_STATUS_REQUEST)
-                    if (!TCPSendSSLReq (peer->parent, cont)) 
+                    if (!TCPSendSSLReq (peer->serv->assoc, cont)) 
                         rl_printf (i18n (2372, "Could not send SSL request to %s\n"), cont->nick);
 #endif
                 return;
@@ -791,17 +794,17 @@ static void TCPSendInitv6 (Connection *peer)
     peer->stat_real_pak_sent++;
 
     pak = PeerPacketC (peer, PEER_INIT);
-    PacketWrite2  (pak, 6);                                    /* TCP version      */
-    PacketWrite2  (pak, 0);                                    /* TCP revision     */
-    PacketWrite4  (pak, peer->cont->uin);                      /* destination UIN  */
-    PacketWrite2  (pak, 0);                                    /* unknown - zero   */
-    PacketWrite4  (pak, peer->parent->port);                   /* our port         */
-    PacketWrite4  (pak, peer->parent->parent->uin);            /* our UIN          */
-    PacketWriteB4 (pak, peer->parent->parent->our_outside_ip); /* our (remote) IP  */
-    PacketWriteB4 (pak, peer->parent->parent->our_local_ip);   /* our (local)  IP  */
-    PacketWrite1  (pak, peer->parent->status);                 /* connection type  */
-    PacketWrite4  (pak, peer->parent->port);                   /* our (other) port */
-    PacketWrite4  (pak, peer->our_session);                    /* session id       */
+    PacketWrite2  (pak, 6);                          /* TCP version      */
+    PacketWrite2  (pak, 0);                          /* TCP revision     */
+    PacketWrite4  (pak, peer->cont->uin);            /* destination UIN  */
+    PacketWrite2  (pak, 0);                          /* unknown - zero   */
+    PacketWrite4  (pak, peer->serv->assoc->port);    /* our port         */
+    PacketWrite4  (pak, peer->serv->uin);            /* our UIN          */
+    PacketWriteB4 (pak, peer->serv->our_outside_ip); /* our (remote) IP  */
+    PacketWriteB4 (pak, peer->serv->our_local_ip);   /* our (local)  IP  */
+    PacketWrite1  (pak, peer->serv->status);         /* connection type  */
+    PacketWrite4  (pak, peer->serv->port);           /* our (other) port */
+    PacketWrite4  (pak, peer->our_session);          /* session id       */
 
     DebugH (DEB_TCP, "HS %d uin %s CONNECT pak %p peer %p",
                      peer->sok, peer->cont->screen, pak, peer);
@@ -843,17 +846,17 @@ static void TCPSendInit (Connection *peer)
     peer->stat_real_pak_sent++;
 
     pak = PeerPacketC (peer, PEER_INIT);
-    PacketWrite2  (pak, peer->version);                        /* TCP version      */
-    PacketWrite2  (pak, 43);                                   /* length           */
-    PacketWrite4  (pak, peer->cont->uin);                      /* destination UIN  */
-    PacketWrite2  (pak, 0);                                    /* unknown - zero   */
-    PacketWrite4  (pak, peer->parent->port);                   /* our port         */
-    PacketWrite4  (pak, peer->parent->parent->uin);            /* our UIN          */
-    PacketWriteB4 (pak, peer->parent->parent->our_outside_ip); /* our (remote) IP  */
-    PacketWriteB4 (pak, peer->parent->parent->our_local_ip);   /* our (local)  IP  */
-    PacketWrite1  (pak, peer->parent->status);                 /* connection type  */
-    PacketWrite4  (pak, peer->parent->port);                   /* our (other) port */
-    PacketWrite4  (pak, peer->our_session);                    /* session id       */
+    PacketWrite2  (pak, peer->version);              /* TCP version      */
+    PacketWrite2  (pak, 43);                         /* length           */
+    PacketWrite4  (pak, peer->cont->uin);            /* destination UIN  */
+    PacketWrite2  (pak, 0);                          /* unknown - zero   */
+    PacketWrite4  (pak, peer->serv->assoc->port);    /* our port         */
+    PacketWrite4  (pak, peer->serv->uin);            /* our UIN          */
+    PacketWriteB4 (pak, peer->serv->our_outside_ip); /* our (remote) IP  */
+    PacketWriteB4 (pak, peer->serv->our_local_ip);   /* our (local)  IP  */
+    PacketWrite1  (pak, peer->serv->status);         /* connection type  */
+    PacketWrite4  (pak, peer->serv->port);           /* our (other) port */
+    PacketWrite4  (pak, peer->our_session);          /* session id       */
     PacketWrite4  (pak, 0x00000050);
     PacketWrite4  (pak, 0x00000003);
     PacketWrite4  (pak, 0);
@@ -964,13 +967,13 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (nver == 6 && 23 > len2)
             FAIL (4);
 
-        if (muin  != peer->parent->parent->uin)
+        if (muin  != peer->serv->uin)
             FAIL (5);
         
-        if (uin  == peer->parent->parent->uin)
+        if (uin  == peer->serv->uin)
             FAIL (6);
         
-        if (!(cont = ContactUIN (Connection2Server (peer->parent->parent), uin)))
+        if (!(cont = ContactUIN (peer->serv, uin)))
             FAIL (7);
 
         if (!CONTACT_DC (cont))
@@ -979,7 +982,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (port && port2 && port != port2)
             FAIL (11);
 
-        peer->version = (peer->parent->version > nver ? nver : peer->parent->version);
+        peer->version = (peer->serv->version > nver ? nver : peer->serv->version);
 
         if (!peer->our_session)
             peer->our_session = peer->version > 6 ? cont->dc->cookie : sid;
@@ -1001,7 +1004,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
                 peer->sok, cont->screen, cont->nick, pak, peer, peer->version, len, UD2UL (port), UD2UL (uin), UD2UL (sid), peer->type);
 
         for (i = 0; (peer2 = ConnectionNr (i)); i++)
-            if (     peer2->type == peer->type && peer2->parent == peer->parent
+            if (     peer2->type == peer->type && peer2->serv == peer->serv
                   && peer2->cont  == peer->cont  && !peer->assoc && peer2 != peer)
                 break;
 
@@ -1259,7 +1262,7 @@ UBYTE PeerSendMsgFat (Connection *list, Contact *cont, Message *msg)
         return RET_DEFER;
     if (!cont->uin)
         return RET_DEFER;
-    if (cont->uin == list->parent->uin || !(list->connect & CONNECT_MASK))
+    if (cont->uin == list->serv->uin || !(list->connect & CONNECT_MASK))
         return RET_DEFER;
     if (!cont->dc->ip_loc && !cont->dc->ip_rem)
         return RET_DEFER;
@@ -1281,7 +1284,7 @@ UBYTE PeerSendMsgFat (Connection *list, Contact *cont, Message *msg)
             return RET_DEFER;
     }
 
-    if ((peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
+    if ((peer = ServerFindChild (list->serv, cont, TYPE_MSGDIRECT)))
         if (peer->connect & CONNECT_FAIL)
             return RET_DEFER;
 
@@ -1294,7 +1297,7 @@ UBYTE PeerSendMsgFat (Connection *list, Contact *cont, Message *msg)
     ASSERT_MSGDIRECT(peer);
     
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-    SrvMsgAdvanced   (pak, peer->our_seq, msg->type, list->parent->status,
+    SrvMsgAdvanced   (pak, peer->our_seq, msg->type, list->serv->status,
                       cont->status, -1, c_out_for (msg->send_message, cont, msg->type));
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
@@ -1335,7 +1338,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     if (!cont->dc || !cont->dc->port)
         return FALSE;
     
-    if (cont->uin == list->parent->uin)
+    if (cont->uin == list->serv->uin)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))
         return FALSE;
@@ -1344,25 +1347,24 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
 
     if (!TCPDirectOpen (list, cont))
         return FALSE;
-    if (!(peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
+    if (!(peer = ServerFindChild (list->serv, cont, TYPE_MSGDIRECT)))
         return FALSE;
     if (peer->connect & CONNECT_FAIL)
         return FALSE;
 
     ASSERT_MSGDIRECT(peer);
     
-    if (!(flist = PeerFileCreate (Connection2Server (peer->parent->parent))))
+    if (!(flist = PeerFileCreate (peer->serv)))
     
     ASSERT_FILELISTEN(flist);
 
-    if (ConnectionFind (TYPE_FILEDIRECT, cont, flist))
+    if (ServerFindChild (flist->serv, cont, TYPE_FILEDIRECT))
         return FALSE;
 
-    fpeer = ConnectionClone (flist, TYPE_FILEDIRECT);
+    fpeer = ServerChild (flist->serv, cont, TYPE_FILEDIRECT);
     
     ASSERT_FILEDIRECT(fpeer);
     
-    fpeer->cont    = cont;
     fpeer->connect = 77;
     fpeer->version = flist->version;
     
@@ -1418,7 +1420,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     if (peer->version < 8)
     {
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-        SrvMsgAdvanced   (pak, peer->our_seq, MSG_FILE, list->parent->status,
+        SrvMsgAdvanced   (pak, peer->our_seq, MSG_FILE, list->serv->status,
                           cont->status, -1, c_out_to_split (description, cont));
         PacketWrite2 (pak, 0);
         PacketWrite2 (pak, 0);
@@ -1429,7 +1431,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     else
     {
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-        SrvMsgAdvanced   (pak, peer->our_seq, MSG_EXTENDED, list->parent->status,
+        SrvMsgAdvanced   (pak, peer->our_seq, MSG_EXTENDED, list->serv->status,
                           cont->status, -1, "");
         SrvMsgGreet (pak, 0x29, description, 0, sumlen, filenames.txt);
     }
@@ -1572,7 +1574,7 @@ static void TCPCallBackReceive (Event *event)
     assert (event->pak);
     
     pak = event->pak;
-    serv = Connection2Server (peer->parent->parent);
+    serv = peer->serv;
     pak->tpos = pak->rpos;
 
     cmd    = PacketRead2 (pak);

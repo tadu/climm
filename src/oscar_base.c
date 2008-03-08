@@ -629,12 +629,12 @@ Server *SrvRegisterUIN (Server *serv, const char *pass)
         return NULL;
 
 #ifdef ENABLE_PEER2PEER
-    if (!(newl = ConnectionClone (Server2Connection (news), TYPE_MSGLISTEN)))
+    if (!(newl = ServerChild (news, NULL, TYPE_MSGLISTEN)))
     {
         ConnectionD (Server2Connection (news));
         return NULL;
     }
-    news->assoc = Server2Connection (newl);
+    news->assoc = newl;
     newl->c_open = &ConnectionInitPeer;
     if (serv && serv->assoc)
     {

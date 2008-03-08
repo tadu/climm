@@ -246,12 +246,12 @@ TCL_COMMAND (TCL_command_climm)
     }
     else if (!strcmp (argv[1], "nick"))
     {
-        Connection *tconn;
+        Server *tconn;
         Contact *cont;
         UDWORD uin = atol (argv[2]);
         TCL_CHECK_PARMS (1);
         
-        if (!(tconn = ConnectionFind (TYPEF_ANY_SERVER, 0, NULL)))
+        if (!(tconn = ServerNr (0)))
         {
             Tcl_SetResult (tinterp, 
                 (char *)i18n (2364, "No connection found."),

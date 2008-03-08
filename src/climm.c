@@ -524,7 +524,7 @@ static void Init (int argc, char *argv[])
                 }
             }
             else if (!*targv[i+1])
-                serv = Connection2Server (ConnectionFind (TYPEF_ANY_SERVER, NULL, NULL));
+                serv = ServerNr (0);
             if (serv)
             {
                 if (arg_s)

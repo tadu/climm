@@ -82,10 +82,10 @@ Connection *PeerFileCreate (Server *serv)
     if (!serv->assoc || serv->assoc->version < 6)
         return NULL;
     
-    if ((flist = ConnectionFind (TYPE_FILELISTEN, 0, Server2Connection (serv))))
+    if ((flist = ServerFindChild (serv, NULL, TYPE_FILELISTEN)))
         return flist;
     
-    flist = ConnectionClone (Server2Connection (serv), TYPE_FILELISTEN);
+    flist = ServerChild (serv, NULL, TYPE_FILELISTEN);
     if (!flist)
         return NULL;
 
@@ -157,13 +157,13 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
 
     ASSERT_MSGLISTEN(list);
     
-    serv  = Connection2Server (list->parent);
+    serv  = list->serv;
     cont  = event->cont;
     flist = PeerFileCreate (serv);
 
     if ((event->wait && !OptGetVal (event->wait->opt, CO_FILEACCEPT, &opt_acc))
         || !opt_acc || !cont || !flist
-        || !(fpeer = ConnectionClone (flist, TYPE_FILEDIRECT)))
+        || !(fpeer = ServerChild (flist->serv, cont, TYPE_FILEDIRECT)))
     {
         const char *txt;
         if (!OptGetStr (event->wait->opt, CO_REFUSE, &txt))
@@ -179,7 +179,6 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     fpeer->connect   = 0;
     fpeer->version   = serv->assoc->version;
     s_repl (&fpeer->server, NULL);
-    fpeer->cont      = cont;
     fpeer->len       = opt_bytes;
     fpeer->done      = 0;
     fpeer->close     = &PeerFileDispatchDClose;
@@ -197,8 +196,8 @@ BOOL PeerFileAccept (Connection *peer, UWORD ackstatus, UDWORD port)
 {
     Connection *flist, *fpeer;
     
-    flist = PeerFileCreate (Connection2Server (peer->parent->parent));
-    fpeer = ConnectionFind (TYPE_FILEDIRECT, peer->cont, flist);
+    flist = PeerFileCreate (peer->serv);
+    fpeer = ServerFindChild (flist->serv, peer->cont, TYPE_FILEDIRECT);
     
     if (!flist || !fpeer || !port || (ackstatus == TCP_ACK_REFUSE))
     {
@@ -335,7 +334,7 @@ void PeerFileDispatch (Connection *fpeer)
             PacketD (pak);
             
             {
-                Connection *ffile = ConnectionClone (fpeer, TYPE_FILE);
+                Connection *ffile = ServerChild (fpeer->serv, fpeer->cont, TYPE_FILE);
                 char buf[200], *p;
                 int pos = 0;
                 struct stat finfo;
@@ -600,7 +599,7 @@ void PeerFileResend (Event *event)
         event->pak = NULL;
         QueueEnqueue (event);
         
-        ffile = ConnectionClone (fpeer, TYPE_FILE);
+        ffile = ServerChild (fpeer->serv, fpeer->cont, TYPE_FILE);
         fpeer->assoc = ffile;
 
         if (stat (opt_text, &finfo))

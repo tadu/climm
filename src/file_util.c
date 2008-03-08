@@ -393,7 +393,7 @@ int Read_RC_File (FILE *rcf)
                 section = 4;
                 cg = ContactGroupC (NULL, 0, NULL);
                 OptSetVal (&cg->copts, CO_IGNORE, 0);
-                if ((serv = Connection2Server (ConnectionFind (TYPEF_SERVER, NULL, NULL))))
+                if ((serv = ServerNr (0)))
                     cg->serv = serv;
                 cont = NULL;
             }
@@ -1044,7 +1044,7 @@ int Read_RC_File (FILE *rcf)
                         if (oldserv->type == TYPE_SERVER)
                         {
                             oldserv->assoc = conn;
-                            conn->parent = Server2Connection (oldserv);
+                            conn->serv = oldserv;
                         }
                         else
                         {
@@ -1145,7 +1145,7 @@ int Read_RC_File (FILE *rcf)
                         }
                     }
                     if (!cg->serv)
-                        if ((serv = Connection2Server (ConnectionFind (TYPEF_SERVER, NULL, NULL))))
+                        if ((serv = ServerNr (0)))
                             cg->serv = serv;
                 }
                 else if (!strcasecmp (cmd, "id") && !cg->used)
@@ -1276,7 +1276,7 @@ int Read_RC_File (FILE *rcf)
         connr = ConnectionC (TYPE_REMOTE);
         connr->c_open = &RemoteOpen;
         connr->pref_server = strdup ("scripting");
-        connr->parent = NULL;
+        connr->serv = NULL;
         connr->server = strdup (connr->pref_server);
         dep = 22;
     }
@@ -1322,7 +1322,7 @@ void PrefReadStat (FILE *stf)
                 section = 4;
                 cg = ContactGroupC (NULL, 0, NULL);
                 OptSetVal (&cg->copts, CO_IGNORE, 0);
-                if ((serv = Connection2Server (ConnectionFind (TYPEF_ANY_SERVER, NULL, NULL))))
+                if ((serv = ServerNr (0)))
                     cg->serv = serv;
             }
             else if (!strcasecmp (args, "[Contacts]"))
@@ -1399,7 +1399,7 @@ void PrefReadStat (FILE *stf)
                         }
                     }
                     if (!cg->serv)
-                        cg->serv = Connection2Server (ConnectionFind (TYPEF_SERVER, NULL, NULL));
+                        cg->serv = ServerNr (0);
                 }
                 else if (!strcasecmp (cmd, "id") && !cg->used)
                 {

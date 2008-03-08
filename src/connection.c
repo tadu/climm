@@ -125,8 +125,8 @@ Connection *ConnectionC (UWORD type DEBUGPARAM)
  * Clones an existing session, while blanking out some values.
  * Returns NULL if not enough memory available.
  */
-#undef ConnectionClone
-Connection *ConnectionClone (Connection *conn, UWORD type DEBUGPARAM)
+#undef ServerChild
+Connection *ServerChild (Server *conn, Contact *cont, UWORD type DEBUGPARAM)
 {
     Connection *child;
     
@@ -134,13 +134,13 @@ Connection *ConnectionClone (Connection *conn, UWORD type DEBUGPARAM)
     if (!child)
         return NULL;
 
-    child->parent = conn;
-    child->cont   = conn->cont;
+    child->serv = conn;
+    child->cont   = cont;
     child->flags  = 0;
     child->screen = strdup (conn->screen ? conn->screen : "child");
     
     Debug (DEB_CONNECT, "<=*= %p (%s) clone from %p (%s)",
-        child, ConnectionType (child), conn, ConnectionType (conn));
+        child, ConnectionType (child), conn, ConnectionType (Server2Connection (conn)));
 
     return child;
 }
@@ -187,7 +187,7 @@ Server *ServerNr (int i)
  * Actually, you may specify TYPEF_* here that must all be set.
  * The parent is the session this one has to have as parent.
  */
-Connection *ConnectionFind (UWORD type, const Contact *cont, const Connection *parent)
+Connection *ServerFindChild (const Server *parent, const Contact *cont, UWORD type)
 {
     ConnectionList *cl;
     Connection *conn;
@@ -199,13 +199,13 @@ Connection *ConnectionFind (UWORD type, const Contact *cont, const Connection *p
         {
             for (cl = &slist; cl; cl = cl->more)
                 for (i = 0; i < ConnectionListLen; i++)
-                    if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->cont == cont && conn->parent == parent)
+                    if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->cont == cont && conn->serv == parent)
                         return conn;
         }
         else
             for (cl = &slist; cl; cl = cl->more)
                 for (i = 0; i < ConnectionListLen; i++)
-                    if ((conn = cl->conn[i]) && (conn->type & type) == type && (conn->connect & CONNECT_OK) && conn->parent == parent)
+                    if ((conn = cl->conn[i]) && (conn->type & type) == type && (conn->connect & CONNECT_OK) && conn->serv == parent)
                         return conn;
     }
     else
@@ -303,7 +303,7 @@ void ConnectionD (Connection *conn DEBUGPARAM)
         sockclose (conn->sok);
     conn->sok     = -1;
     conn->connect = 0;
-    conn->parent  = NULL;
+    conn->serv  = NULL;
     s_free (conn->server);
     s_free (conn->screen);
     conn->server  = NULL;
@@ -315,9 +315,9 @@ void ConnectionD (Connection *conn DEBUGPARAM)
 
     for (cl = &slist; cl; cl = cl->more)
         for (j = 0; j < ConnectionListLen; j++)
-            if ((clc = cl->conn[j]) && clc->parent == conn)
+            if ((clc = cl->conn[j]) && clc->serv == Connection2Server (conn))
             {
-                clc->parent = NULL;
+                clc->serv = NULL;
                 ConnectionD (clc DEBUGFOR);
                 cl = &slist;
                 j = -1;

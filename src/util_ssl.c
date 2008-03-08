@@ -741,7 +741,7 @@ BOOL TCPSendSSLReq (Connection *list, Contact *cont)
     UBYTE ret;
 
     ret = PeerSendMsg (list, cont, MSG_SSL_OPEN, "");
-    if ((peer = ConnectionFind (TYPE_MSGDIRECT, cont, list)))
+    if ((peer = ServerFindChild (list->serv, cont, TYPE_MSGDIRECT)))
         peer->ssl_status = SSL_STATUS_REQUEST;
     return ret;
 }                      

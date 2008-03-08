@@ -211,12 +211,12 @@ static jump_t jump[] = {
 
 /* Have an opened server connection ready. */
 #define OPENCONN \
-    if (!uiG.conn) uiG.conn = Connection2Server (ConnectionFind (TYPEF_ANY_SERVER, 0, NULL)); \
+    if (!uiG.conn) uiG.conn = ServerNr (0); \
     if (!uiG.conn || ~uiG.conn->connect & CONNECT_OK) \
     { rl_print (i18n (1931, "Current session is closed. Try another or open this one.\n")); return 0; } \
 
 /* Try to have any server connection ready. */
-#define ANYCONN if (!uiG.conn) uiG.conn = Connection2Server (ConnectionFind (TYPEF_ANY_SERVER, 0, NULL)); \
+#define ANYCONN if (!uiG.conn) uiG.conn = ServerNr (0); \
     if (!uiG.conn) { rl_print (i18n (2397, "No server session found.\n")); return 0; }
 
 /*
@@ -1666,7 +1666,7 @@ static void __showcontact (Server *serv, Contact *cont, UWORD data, const char *
 #endif
     char tbuf[100];
     
-    peer = (serv && serv->assoc) ? ConnectionFind (TYPE_MSGDIRECT, cont, serv->assoc) : NULL;
+    peer = (serv && serv->assoc) ? ServerFindChild (serv, cont, TYPE_MSGDIRECT) : NULL;
     
     stat = strdup (s_sprintf ("(%s)", s_status (cont->status, cont->nativestatus)));
     if (cont->version)
@@ -4070,9 +4070,9 @@ static JUMP_F(CmdUserConn)
                          t3 = strdup (s_ip (servl->our_outside_ip)),
                          UD2UL (servl->our_session), servl->our_seq, servl->our_seq2);
 #ifdef ENABLE_SSL
-                    rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), servl, servl->parent, servl->assoc, servl->ssl_status);
+                    rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), servl, servl->foo_serv, servl->assoc, servl->ssl_status);
 #else
-                    rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), servl, servl->parent, servl->assoc);
+                    rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), servl, servl->foo_serv, servl->assoc);
 #endif
                     rl_printf (i18n (2454, "    open %p reconn %p close %p err %p dispatch %p\n"),
                               servl->c_open, servl->reconnect, servl->close, servl->error, servl->dispatch);
@@ -4090,7 +4090,7 @@ static JUMP_F(CmdUserConn)
                 if (connl->type & TYPEF_ANY_SERVER)
                     continue;
                 rl_printf (i18n (2597, "%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n"),
-                          i + 1, ConnectionType (Server2Connection (connl)), connl->version,
+                          i + 1, ConnectionType (connl), connl->version,
 #ifdef ENABLE_SSL
                           connl->ssl_status == SSL_STATUS_OK ? " SSL" : "",
 #else
@@ -4110,9 +4110,9 @@ static JUMP_F(CmdUserConn)
                          t3 = strdup (s_ip (connl->our_outside_ip)),
                          UD2UL (connl->our_session), connl->our_seq, connl->our_seq2);
 #ifdef ENABLE_SSL
-                    rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), connl, connl->parent, connl->assoc, connl->ssl_status);
+                    rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), connl, connl->serv, connl->assoc, connl->ssl_status);
 #else
-                    rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), connl, connl->parent, connl->assoc);
+                    rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), connl, connl->serv, connl->assoc);
 #endif
                     rl_printf (i18n (2454, "    open %p reconn %p close %p err %p dispatch %p\n"),
                               connl->c_open, connl->reconnect, connl->close, connl->error, connl->dispatch);
@@ -4149,7 +4149,7 @@ static JUMP_F(CmdUserConn)
                 if (ConnectionFindNr (Server2Connection (uiG.conn)) != (UDWORD)-1)
                     servl = uiG.conn;
                 else
-                    servl = Connection2Server (ConnectionFind (TYPEF_ANY_SERVER, NULL, 0));
+                    servl = ServerNr (0);
                 if (!servl)
                     rl_printf (i18n (2600, "No connection selected.\n"));
             }
@@ -4374,7 +4374,7 @@ static JUMP_F(CmdUserAsSession)
         if (ConnectionFindNr (Server2Connection (uiG.conn)))
             tmpconn = uiG.conn;
         else
-            tmpconn = Connection2Server (ConnectionFind (TYPEF_ANY_SERVER, NULL, 0));
+            tmpconn = ServerNr (0);
         if (!tmpconn && !quiet)
             rl_printf (i18n (2600, "No connection selected.\n"));
     }
@@ -4948,7 +4948,7 @@ static void CmdUserProcess (const char *command, time_t *idle_val, idleflag_t *i
     rl_print ("\r");
 
     if (!uiG.conn || !(ConnectionFindNr (Server2Connection (uiG.conn)) + 1))
-        uiG.conn = Connection2Server (ConnectionFind (TYPEF_ANY_SERVER, 0, NULL));
+        uiG.conn = ServerNr (0);
 
     if (isinterrupted)
     {
