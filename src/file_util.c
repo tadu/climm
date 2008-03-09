@@ -356,12 +356,9 @@ int Read_RC_File (FILE *rcf)
     const char *args, *p;
     Contact *cont = NULL, *lastcont = NULL;
     Server *serv, *oldserv = NULL, *tserv;
-    Connection *conn = NULL;
-#ifdef ENABLE_REMOTECONTROL
-    Connection *connr = NULL;
-#endif
     ContactGroup *cg = NULL;
     int section, dep = 0;
+    val_t v;
     UDWORD uin, i, j;
     UWORD flags;
     UBYTE enc = ENC_LATIN1, format = 0;
@@ -379,12 +376,11 @@ int Read_RC_File (FILE *rcf)
                 section = 1;
             else if (!strcasecmp (args, "[Strings]"))
                 section = 2;
-            else if (!strcasecmp (args, "[Connection]"))
+            else if (!strcasecmp (args, "[Connection]") || !strcasecmp (args, "[Server]"))
             {
                 section = 3;
-                if (conn && conn->type & TYPEF_ANY_SERVER)
-                    oldserv = ServerCC (conn);
-                conn = ConnectionC (0);
+                oldserv = serv;
+                serv = NULL;
             }
             else if (!strcasecmp (args, "[Group]"))
             {
@@ -492,14 +488,16 @@ int Read_RC_File (FILE *rcf)
                 {
                     PrefParseInt (i);
                     format = i;
-                    if (format > 2)
+                    if (format > 3)
                     {
                         rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
                         rl_printf (i18n (2457, "Unknown configuration file format version %d.\n"), format);
                         return 0;
                     }
-                    if (format == 2)
+                    if (format >= 2)
                         enc = ENC_UTF8;
+                    if (format < 3)
+                        dep = 45;
                 }
 #ifdef ENABLE_TCL
                 else if (!strcasecmp (cmd, "tclscript"))
@@ -1021,85 +1019,127 @@ int Read_RC_File (FILE *rcf)
                     rl_print ("\n");
                 }
                 break;
+            case 301:
+                PrefParse (cmd);
+                if (!strcasecmp (cmd, "status"))
+                {
+                    status_t ii;
+                    if (!OptGetVal (&oldserv->copts, CO_OSCAR_DC_MODE, &v))
+                        v = 16+3;
+                    if (!ContactStatus (&args, &ii))
+                    {
+                        PrefParseInt (i);
+                        ii = IcqToStatus (i);
+                    }
+                    v = (v & ~15) + ii;
+                    OptSetVal (&oldserv->copts, CO_OSCAR_DC_MODE, v);
+                }
+                break;
+            case 302:
+                PrefParse (cmd);
+                if (!strcasecmp (cmd, "server"))
+                {
+                    PrefParse (tmp);
+                    OptSetStr (&prG->copts, CO_SCRIPT_PATH, tmp);
+                }
+                break;
             case 3:
                 PrefParse (cmd);
+                if (!serv && strcasecmp (cmd, "type"))
+                {
+                    dep = 42;
+                    serv = ServerC (TYPEF_ANY_SERVER);
+                }
 
                 if (!strcasecmp (cmd, "type"))
                 {
-                    PrefParse (cmd);
+                    UDWORD newtype = 0;
 
+                    PrefParse (cmd);
                     if (!strcasecmp (cmd, "server"))
                     {
-                        conn->type = TYPE_SERVER;
+                        newtype = TYPE_SERVER;
                         dep = 20;
                     }
-                    else if (!(conn->type = ConnectionServerNType (cmd, 0)))
+                    else if (!strcasecmp (cmd, "peer"))
+                    {
+                        dep = 45;
+                        if (!oldserv)
+                            ERROR;
+                        if (s_parsekey (&args, "auto"))
+                            OptSetVal (&oldserv->copts, CO_OSCAR_DC_MODE, 32+3);
+                        else
+                            OptSetVal (&oldserv->copts, CO_OSCAR_DC_MODE, 16+3);
+                        section = 301;
+                        break;
+                    }
+                    else if (!strcasecmp (cmd, "remote"))
+                    {
+                        dep = 45;
+                        OptSetVal (&prG->copts, CO_SCRIPT, 1);
+                        section = 302;
+                        break;
+                    }
+                    else if (!(newtype = ConnectionServerNType (cmd, 0)))
                         ERROR;
                     
-                    if (conn->type == TYPE_MSGLISTEN)
-                    {
-                        conn->pref_status = TCP_OK_FLAG;
-                        if (oldserv->type == TYPE_SERVER)
-                        {
-                            oldserv->oscar_dc = conn;
-                            conn->serv = oldserv;
-                        }
-                        else
-                        {
-                            rl_printf ("%s%s%s ", COLERROR, i18n (1619, "Warning:"), COLNONE);
-                            rl_printf (i18n (2459, "Peer-to-peer connection not associated to server connection, discarding.\n"));
-                            conn->type = 0;
-                            section = -1;
-                        }
-                    }
-
+                    serv = ServerC (newtype);
+                    
                     if ((par = s_parse (&args)))
                     {
                         if (!strcasecmp (par->txt, "auto"))
-                            conn->flags |= CONN_AUTOLOGIN;
+                            serv->flags |= CONN_AUTOLOGIN;
                     }
                 }
-                else if (!strcasecmp (cmd, "version"))
+                else if (serv && !strcasecmp (cmd, "version"))
                 {
                     PrefParseInt (i);
 
-                    conn->version = i;
-                    if (!conn->type || conn->type == TYPEF_ANY_SERVER)
-                        conn->type = TYPE_SERVER;
+                    serv->version = i;
+                    if (!serv->type || serv->type == TYPEF_ANY_SERVER)
+                    {
+                        serv->type = TYPE_SERVER;
+                        dep = 43;
+                    }
                 }
-                else if (!strcasecmp (cmd, "server"))
+                else if (serv && (!strcasecmp (cmd, "server") || !strcasecmp (cmd, "host")))
                 {
                     PrefParse (tmp);
-                    s_repl (&conn->pref_server, tmp);
+                    s_repl (&serv->pref_server, tmp);
                 }
-                else if (!strcasecmp (cmd, "port"))
+                else if (serv && !strcasecmp (cmd, "port"))
                 {
                     PrefParseInt (i);
-                    conn->pref_port = i;
+                    serv->pref_port = i;
                 }
-                else if (!strcasecmp (cmd, "uin"))
+                else if (serv && !strcasecmp (cmd, "uin"))
                 {
                     PrefParseInt (i);
-                    s_repl (&conn->screen, s_sprintf ("%lu", UD2UL (i)));
+                    s_repl (&serv->screen, s_sprintf ("%lu", UD2UL (i)));
                     dep = 77;
                 }
-                else if (!strcasecmp (cmd, "screen"))
+                else if (serv && !strcasecmp (cmd, "screen"))
                 {
                     PrefParse (tmp);
-                    s_repl (&conn->screen, tmp);
+                    s_repl (&serv->screen, tmp);
                 }
-                else if (!strcasecmp (cmd, "password"))
+                else if (serv && !strcasecmp (cmd, "password"))
                 {
                     PrefParse (tmp);
-                    s_repl (&conn->pref_passwd, tmp);
+                    s_repl (&serv->pref_passwd, tmp);
                 }
-                else if (!strcasecmp (cmd, "status"))
+                else if (serv && !strcasecmp (cmd, "status"))
                 {
-                    if (!ContactStatus (&args, &conn->pref_status))
+                    if (!ContactStatus (&args, &serv->pref_status))
                     {
                         PrefParseInt (i);
-                        conn->pref_status = IcqToStatus (i);
+                        serv->pref_status = IcqToStatus (i);
                     }
+                }
+                else if (!strcasecmp (cmd, "options"))
+                {
+                    if (OptImport (&serv->copts, args))
+                        ERROR;
                 }
                 else
                 {
@@ -1191,8 +1231,6 @@ int Read_RC_File (FILE *rcf)
                 break;
         }
     }
-    if (conn && conn->type & TYPEF_ANY_SERVER)
-        oldserv = ServerCC (conn);
     
     if (!prG->logplace)
         prG->logplace = strdup ("history" _OS_PATHSEPSTR);
@@ -1206,76 +1244,47 @@ int Read_RC_File (FILE *rcf)
     if (!prG->prompt_strftime)
         prG->prompt_strftime = strdup (USER_PROMPT_STRFTIME);
 
-    for (i = 0; (conn = ConnectionNr (i)); i++)
+    for (i = 0; (serv = ServerNr (i)); i++)
     {
-        if (conn->type & TYPEF_ANY_SERVER)
+        serv->port   = serv->pref_port;
+        s_repl (&serv->server, serv->pref_server);
+        s_repl (&serv->passwd, serv->pref_passwd);
+        serv->status = serv->pref_status;
+        switch (serv->type)
         {
-            serv = conn->serv;
-            serv->port   = serv->pref_port;
-            s_repl (&serv->server, serv->pref_server);
-            s_repl (&serv->passwd, serv->pref_passwd);
-            serv->status = serv->pref_status;
-            switch (serv->type)
-            {
-                case TYPE_SERVER:
-                    serv->c_open = &ConnectionInitServer;
-                    if (prG->s5Use && !serv->version)
-                        serv->version = 2;
-                    break;
+            case TYPE_SERVER:
+                serv->c_open = &ConnectionInitServer;
+                if (prG->s5Use && !serv->version)
+                    serv->version = 2;
+                break;
 #ifdef ENABLE_MSN
-                case TYPE_MSN_SERVER:
-                    serv->c_open = &ConnectionInitMSNServer;
-                    break;
+            case TYPE_MSN_SERVER:
+                serv->c_open = &ConnectionInitMSNServer;
+                break;
 #endif
 #ifdef ENABLE_XMPP
-                case TYPE_XMPP_SERVER:
-                    serv->c_open = &ConnectionInitXMPPServer;
-                    break;
+            case TYPE_XMPP_SERVER:
+                serv->c_open = &ConnectionInitXMPPServer;
+                break;
 #endif
-                default:
-                    serv->type = 0;
-                    serv->c_open = NULL;
-                    break;
-            }
-            if (format < 2 && !serv->contacts)
-            {
-                serv->contacts = cg = ContactGroupC (serv, 0, s_sprintf ("contacts-%s-%s", ConnectionServerType (serv->type), serv->screen));
-                for (i = 0; (cont = ContactIndex (NULL, i)); i++)
-                    ContactCreate (serv, cont);
-                dep = 21;
-            }
+            default:
+                serv->type = 0;
+                serv->c_open = NULL;
+                break;
         }
-        else
+        if (format < 2 && !serv->contacts)
         {
-            conn->port   = conn->pref_port;
-            s_repl (&conn->server, conn->pref_server);
-            s_repl (&conn->passwd, conn->pref_passwd);
-            conn->status = conn->pref_status;
-            switch (conn->type)
-            {
-#ifdef ENABLE_PEER2PEER
-                case TYPE_MSGLISTEN:
-                    conn->c_open = &ConnectionInitPeer;
-                    break;
-#endif
-#ifdef ENABLE_REMOTECONTROL
-                case TYPE_REMOTE:
-                    conn->c_open = &RemoteOpen;
-                    connr = conn;
-                    break;
-#endif
-            }
+            serv->contacts = cg = ContactGroupC (serv, 0, s_sprintf ("contacts-%s-%s", ConnectionServerType (serv->type), serv->screen));
+            for (i = 0; (cont = ContactIndex (NULL, i)); i++)
+                ContactCreate (serv, cont);
+            dep = 21;
         }
     }
 
 #ifdef ENABLE_REMOTECONTROL
-    if (!connr)
+    if (!OptGetVal (&prG->copts, CO_SCRIPT, &v))
     {
-        connr = ConnectionC (TYPE_REMOTE);
-        connr->c_open = &RemoteOpen;
-        connr->pref_server = strdup ("scripting");
-        connr->serv = NULL;
-        connr->server = strdup (connr->pref_server);
+        OptSetVal (&prG->copts, CO_SCRIPT, 1);
         dep = 22;
     }
 #endif
@@ -1685,7 +1694,7 @@ int PrefWriteConfFile (void)
     char *rcfn, *rcfo;
     time_t t;
     int k, rc;
-    Connection *ss;
+    Server *ss;
 #ifdef ENABLE_TCL
     tcl_pref_p tpref;
 #endif
@@ -1730,23 +1739,21 @@ int PrefWriteConfFile (void)
     fprintf (rcf, "%sencoding local %s%s\n",
              prG->enc_loc & ENC_FLAGS ? "# " : "", s_quote (ConvEncName (prG->enc_loc)),
              prG->enc_loc & ENC_FLAGS ? "" : " # please set your locale correctly instead");
-    fprintf (rcf, "format 2\n\n");
+    fprintf (rcf, "format 3\n\n");
 
-    for (k = 0; (ss = ConnectionNr (k)); k++)
+    for (k = 0; (ss = ServerNr (k)); k++)
     {
-        if (!ss->type & TYPEF_SAVEME || ss->type == TYPE_MSGLISTEN)
-            continue;
         if (!ss->flags)
             continue;
         if (!strcmp (ConnectionServerType (ss->type), "unknown"))
             continue;
 
-        fprintf (rcf, "[Connection]\n");
+        fprintf (rcf, "[Server]\n");
         fprintf (rcf, "type %s%s\n",  ConnectionServerType (ss->type),
                                       ss->flags & CONN_AUTOLOGIN ? " auto" : "");
         fprintf (rcf, "version %d\n", ss->version);
         if (ss->pref_server)
-            fprintf (rcf, "server %s\n",   s_quote (ss->pref_server));
+            fprintf (rcf, "host %s\n",   s_quote (ss->pref_server));
         if (ss->pref_port && ss->pref_port != -1)
             fprintf (rcf, "port %lu\n",    UD2UL (ss->pref_port));
         if (ss->type & TYPEF_ANY_SERVER)
@@ -1757,29 +1764,8 @@ int PrefWriteConfFile (void)
             fprintf (rcf, "# password\n");
         if (ss->pref_status || !k)
             fprintf (rcf, "status %s\n",  ContactStatusStr (ss->pref_status));
+        fprintf (rcf, "%s", OptString (&ss->copts));
         fprintf (rcf, "\n");
-        
-        if (ss->type == TYPE_SERVER && ss->assoc)
-        {
-            ss = ss->assoc;
-            fprintf (rcf, "[Connection]\n");
-            fprintf (rcf, "type %s%s\n",  ConnectionServerType (ss->type),
-                                          ss->flags & CONN_AUTOLOGIN ? " auto" : "");
-            fprintf (rcf, "version %d\n", ss->version);
-            if (ss->pref_server)
-                fprintf (rcf, "server %s\n",   s_quote (ss->pref_server));
-            if (ss->pref_port && ss->pref_port != -1)
-                fprintf (rcf, "port %lu\n",    UD2UL (ss->pref_port));
-            if (ss->type & TYPEF_ANY_SERVER)
-                fprintf (rcf, "screen %s\n",   s_quote (ss->screen));
-            if (ss->pref_passwd)
-                fprintf (rcf, "password %s\n", s_quote (ss->pref_passwd));
-            else if (!k)
-                fprintf (rcf, "# password\n");
-            if (ss->pref_status || !k)
-                fprintf (rcf, "status %s\n",  ContactStatusStr (ss->pref_status));
-            fprintf (rcf, "\n");
-        }
     }
 
     fprintf (rcf, "\n[General]\n# Support for SOCKS5 server\n");

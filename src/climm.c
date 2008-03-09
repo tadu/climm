@@ -43,6 +43,7 @@
 #include "util_alias.h"
 #include "cmd_user.h"
 #include "util_parse.h"
+#include "remote.h"
 #include "os.h"
 
 #define CLIMM_ICON_1 "   " GREEN "_" SGR0 "     "
@@ -590,6 +591,25 @@ static void Init (int argc, char *argv[])
     }
     s_done (&arg_C);
     free (targv);
+#ifdef ENABLE_REMOTECONTROL
+    if (OptGetVal (&prG->copts, CO_SCRIPT, &res) && res)
+    {
+        Connection *connr = connr = ConnectionC (TYPE_REMOTE);
+        
+        const char *path;
+        if (!OptGetStr (&prG->copts, CO_SCRIPT_PATH, &path))
+        {
+            path = "scripting";
+            OptSetStr (&prG->copts, CO_SCRIPT_PATH, path);
+        }
+        connr->c_open = &RemoteOpen;
+        connr->pref_server = strdup (path);
+        connr->serv = NULL;
+        connr->server = strdup (connr->pref_server);
+        if (connr->server && *connr->server)
+            connr->c_open (connr);
+    }
+#endif
 }
 
 /******************************

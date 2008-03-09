@@ -431,6 +431,7 @@ Event *ConnectionInitServer (Server *serv)
 {
     Contact *cont;
     Event *event;
+    val_t v;
     
     if (!serv->passwd || !*serv->passwd || !serv->port)
         return NULL;
@@ -470,8 +471,22 @@ Event *ConnectionInitServer (Server *serv)
               : cont->screen, COLNONE);
 
     UtilIOConnectTCP (serv->conn);
-    if (serv->oscar_dc && serv->oscar_dc->c_open)
-        serv->oscar_dc->c_open (serv->oscar_dc);
+    if ((v = ConnectionPrefVal (serv, CO_OSCAR_DC_MODE)))
+    {
+        Connection *conn = serv->oscar_dc;
+        if (!conn)
+        {
+            conn = ServerChild (serv, NULL, TYPE_MSGLISTEN);
+            conn->version = serv->version;
+            conn->status = v & 15;
+            conn->c_open = &ConnectionInitPeer;
+            serv->oscar_dc = conn;
+            if (v & 32)
+                conn->flags |= CONN_AUTOLOGIN;
+        }
+        if (serv->oscar_dc && serv->oscar_dc->c_open && conn->flags & CONN_AUTOLOGIN)
+            serv->oscar_dc->c_open (serv->oscar_dc);
+    }
     return event;
 }
 

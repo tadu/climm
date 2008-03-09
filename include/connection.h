@@ -178,8 +178,7 @@ struct Server_s
 #define CONNECT_SOCKS      0xf000
 
 
-#define        ServerC(t)        ServerCC (ConnectionC (t))
-Server        *ServerCC          (Connection *conn DEBUGPARAM);
+Server        *ServerC           (UWORD type DEBUGPARAM);
 void           ServerD           (Server *serv DEBUGPARAM);
 Server        *ServerNr          (int i);
 UDWORD         ServerFindNr      (const Server *serv);
@@ -198,7 +197,7 @@ val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
 
 #define ConnectionC(t)       ConnectionC (t DEBUGARGS)
 #define ConnectionD(c)       ConnectionD (c DEBUGARGS)
-#define ServerCC(t)          ServerCC (t DEBUGARGS)
+#define ServerC(t)           ServerC (t DEBUGARGS)
 #define ServerD(c)           ServerD (c DEBUGARGS)
 #define ServerChild(s,f,t)   ServerChild (s,f,t DEBUGARGS)
 

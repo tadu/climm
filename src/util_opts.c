@@ -91,6 +91,9 @@ struct OptEntry_s OptList[] = {
   { "timeseen",      CO_TIMESEEN      },
   { "timeonline",    CO_TIMEONLINE    },
   { "timeclimm",     CO_TIMECLIMM     },
+  { "oscar_dc_mode", CO_OSCAR_DC_MODE },
+  { "scripting",     CO_SCRIPT        },
+  { "scriptingpath", CO_SCRIPT_PATH   },
 #ifdef ENABLE_OTR
   { "otrpolicy",     CO_OTRPOLICY     },
 #endif

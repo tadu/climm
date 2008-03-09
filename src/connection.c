@@ -61,10 +61,11 @@ static ConnectionList slist = { NULL, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
  * Creates a new session.
  * Returns NULL if not enough memory available.
  */
-#undef ServerCC
-Server *ServerCC (Connection *conn DEBUGPARAM)
+#undef ServerC
+Server *ServerC (UWORD type DEBUGPARAM)
 {
     ConnectionList *cl;
+    Connection *conn = ConnectionC (type);
     Connection **ncp = NULL;
     Server *serv;
     int i;
@@ -115,7 +116,7 @@ Connection *ConnectionC (UWORD type DEBUGPARAM)
 
     cl = &slist;
     i = j = 0;
-    type =~ TYPEF_ANY_SERVER;
+    type &= ~TYPEF_ANY_SERVER;
     while (cl->conn[ConnectionListLen - 1] && cl->more)
         cl = cl->more, j += ConnectionListLen;
     if (cl->conn[ConnectionListLen - 1])
@@ -202,7 +203,7 @@ Server *ServerNr (int i)
         return NULL;
     
     conn = cl->conn[i];
-    if (~conn->type & TYPEF_ANY_SERVER)
+    if (!conn || ~conn->type & TYPEF_ANY_SERVER)
         return NULL;
     
     return Connection2Server (conn);
