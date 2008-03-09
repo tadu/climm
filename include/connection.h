@@ -3,6 +3,8 @@
 #ifndef CLIMM_UTIL_CONNECTION_H
 #define CLIMM_UTIL_CONNECTION_H
 
+#include "util_opts.h"
+
 #if ENABLE_SSL
 typedef enum {
     SSL_STATUS_NA,       /* unknown / nothing done yet       */
@@ -83,6 +85,7 @@ struct Connection_s
     Connection            *foo_conn;   /* main I/O connection          */
     UDWORD    foo_nativestatus;   /* own ICQ extended status                  */
     idleflag_t foo_idle_flag;     /* the idle status                          */
+    Opt       foo_copts;
     
     void     *foo_xmpp_private;   /* private data for XMPP connections        */
 
@@ -152,6 +155,7 @@ struct Server_s
     Connection            *conn;   /* main I/O connection          */
     UDWORD    nativestatus;   /* own ICQ extended status                  */
     idleflag_t idle_flag;     /* the idle status                          */
+    Opt       copts;
 
     void     *xmpp_private;   /* private data for XMPP connections        */
 

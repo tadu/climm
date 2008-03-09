@@ -1217,7 +1217,7 @@ val_t ContactGroupPrefVal (ContactGroup *cg, UDWORD flag)
     {
         if (OptGetVal (&cg->copts, flag, &res))
             return res;
-        if (cg->serv && OptGetVal (&cg->serv->contacts->copts, flag, &res))
+        if (cg->serv && OptGetVal (&cg->serv->copts, flag, &res))
             return res;
     }
 
@@ -1250,7 +1250,7 @@ val_t ContactPrefVal (Contact *ocont, UDWORD flag)
         {
             if (OptGetVal (&cont->group->copts, flag, &res))
                 return res;
-            if (cont->group->serv && OptGetVal (&cont->group->serv->contacts->copts, flag, &res))
+            if (cont->group->serv && OptGetVal (&cont->group->serv->copts, flag, &res))
                 return res;
         }
     if (OptGetVal (&prG->copts, flag, &res))
@@ -1282,7 +1282,7 @@ const char *ContactPrefStr (Contact *ocont, UDWORD flag)
         {
             if (OptGetStr (&cont->group->copts, flag, &res))
                 return res;
-            if (cont->group->serv && OptGetStr (&cont->group->serv->contacts->copts, flag, &res))
+            if (cont->group->serv && OptGetStr (&cont->group->serv->copts, flag, &res))
                 return res;
         }
     if (OptGetStr (&prG->copts, flag, &res))
@@ -1305,7 +1305,7 @@ const char *ContactPrefStr (Contact *ocont, UDWORD flag)
         {
             if (OptGetStr (&cont->group->copts, CO_COLORNONE, &res))
                 return res;
-            if (cont->group->serv && OptGetStr (&cont->group->serv->contacts->copts, CO_COLORNONE, &res))
+            if (cont->group->serv && OptGetStr (&cont->group->serv->copts, CO_COLORNONE, &res))
                 return res;
         }
     if (OptGetStr (&prG->copts, CO_COLORNONE, &res))

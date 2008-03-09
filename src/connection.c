@@ -484,7 +484,7 @@ UWORD ConnectionServerNType (const char *type, char del)
 val_t ConnectionPrefVal (Server *serv, UDWORD flag)
 {
     val_t res = 0;
-    if (serv->contacts && OptGetVal (&serv->contacts->copts, flag, &res))
+    if (serv->contacts && OptGetVal (&serv->copts, flag, &res))
         return res;
     if (OptGetVal (&prG->copts, flag, &res))
         return res;

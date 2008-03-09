@@ -49,12 +49,13 @@ extern struct OptEntry_s OptList[];
 
 #define CO_BOOLMASK 0x00ffff00UL
 
-#define COF_GLOBAL  0x04000000UL
+#define COF_GLOBAL  0x08000000UL
+#define COF_SERVER  0x04000000UL
 #define COF_GROUP   0x02000000UL
 #define COF_CONTACT 0x01000000UL
 
-#define CO_DIRECT   (COF_DIRECT | COF_BOOL)
-#define CO_CONTACT  (COF_GLOBAL | COF_GROUP | COF_CONTACT)
+#define CO_CONTACT  (COF_GLOBAL | COF_GROUP | COF_SERVER | COF_CONTACT)
+#define CO_SERVER   (COF_GLOBAL | COF_GROUP | COF_SERVER)
 #define CO_GROUP    (COF_GLOBAL | COF_GROUP)
 #define CO_GLOBAL    COF_GLOBAL
 
@@ -76,13 +77,14 @@ extern struct OptEntry_s OptList[];
 #define CO_AUTOAUTO      (COF_BOOL    | CO_CONTACT | 0x100002UL) /* autogetauto on status change */
 #define CO_PEEKME        (COF_BOOL    | CO_CONTACT | 0x400002UL) /* shall be peeked on peekall   */
 
-#define CO_WEBAWARE      (COF_BOOL    | CO_GROUP   | 0x000103UL) /* this connection is webaware           */
-#define CO_HIDEIP        (COF_BOOL    | CO_GROUP   | 0x000403UL) /* this connection hides its LAN ip      */
-#define CO_DCAUTH        (COF_BOOL    | CO_GROUP   | 0x001003UL) /* this connection requires auth for dc  */
-#define CO_DCCONT        (COF_BOOL    | CO_GROUP   | 0x004003UL) /* this connection: dc only for contacts */
-#define CO_OBEYSBL       (COF_BOOL    | CO_GROUP   | 0x010003UL) /* this connection obeys the sbl         */
-#define CO_AWAYCOUNT     (COF_BOOL    | CO_GROUP   | 0x100003UL) /* this connection counts msgs even if _manual_ na/away/... */
-#define CO_LOGSTREAM     (COF_BOOL    | CO_GROUP   | 0x400003UL) /* this connection's stream is completely logged */
+#define CO_WEBAWARE      (COF_BOOL    | CO_SERVER  | 0x000103UL) /* this connection is webaware           */
+#define CO_HIDEIP        (COF_BOOL    | CO_SERVER  | 0x000403UL) /* this connection hides its LAN ip      */
+#define CO_DCAUTH        (COF_BOOL    | CO_SERVER  | 0x001003UL) /* this connection requires auth for dc  */
+#define CO_DCCONT        (COF_BOOL    | CO_SERVER  | 0x004003UL) /* this connection: dc only for contacts */
+#define CO_OBEYSBL       (COF_BOOL    | CO_SERVER  | 0x010003UL) /* this connection obeys the sbl         */
+#define CO_AWAYCOUNT     (COF_BOOL    | CO_SERVER  | 0x100003UL) /* this connection counts msgs even if _manual_ na/away/... */
+#define CO_LOGSTREAM     (COF_BOOL    | CO_SERVER  | 0x400003UL) /* this connection's stream is completely logged */
+#define CO_LOGSTREAM     (COF_BOOL    | CO_SERVER  | 0x400003UL) /* this connection's stream is completely logged */
 
 #define CO_ENCODING      (COF_NUMERIC | CO_CONTACT | 0x04UL) /* the default encoding for this contact */
 #define CO_ENCODINGSTR   (COF_STRING  | CO_CONTACT | 0x05UL) /* the default encoding for this contact */

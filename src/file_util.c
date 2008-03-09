@@ -81,7 +81,7 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
         serv->status  = ims_online;
 
         serv->contacts = ContactGroupC (serv, 0, s_sprintf ("contacts-icq8-%s", user));
-        OptSetVal (&serv->contacts->copts, CO_IGNORE, 0);
+        OptSetVal (&serv->copts, CO_IGNORE, 0);
         
         cont = ContactUIN (serv, 82274703);
         ContactCreate (serv, cont);
@@ -118,7 +118,7 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
         serv->status  = ims_online;
 
         serv->contacts = ContactGroupC (serv, 0, s_sprintf ("contacts-xmpp-%s", user));
-        OptSetVal (&serv->contacts->copts, CO_IGNORE, 0);
+        OptSetVal (&serv->copts, CO_IGNORE, 0);
         
         cont = ContactScreen (serv, "RKuhlmann@gmail.com");
         ContactCreate (serv, cont);
@@ -151,7 +151,7 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
         serv->status  = ims_online;
 
         serv->contacts = ContactGroupC (serv, 0, s_sprintf ("contacts-msn-%s", user));
-        OptSetVal (&serv->contacts->copts, CO_IGNORE, 0);
+        OptSetVal (&serv->copts, CO_IGNORE, 0);
     }
 #endif
     return serv;
@@ -1430,7 +1430,7 @@ void PrefReadStat (FILE *stf)
                     if (!cg->serv->contacts)
                     {
                         cg->serv->contacts = ContactGroupC (NULL, 0, s_sprintf ("contacts-%s-%s", ConnectionServerType (cg->serv->type), cmd));
-                        OptSetVal (&cg->serv->contacts->copts, CO_IGNORE, 0);
+                        OptSetVal (&cg->serv->copts, CO_IGNORE, 0);
                         cg->serv->contacts->serv = cg->serv;
                     }
                     
@@ -1517,7 +1517,7 @@ void PrefReadStat (FILE *stf)
                     if (!serv->contacts)
                     {
                         serv->contacts = ContactGroupC (serv, 0, s_sprintf ("contacts-%s-%s", ConnectionServerType (serv->type), serv->screen));
-                        OptSetVal (&serv->contacts->copts, CO_IGNORE, 0);
+                        OptSetVal (&serv->copts, CO_IGNORE, 0);
                         serv->contacts->serv = serv;
                     }
                 }
@@ -1537,13 +1537,12 @@ void PrefReadStat (FILE *stf)
                     while ((par = s_parse (&args)))
                         ContactAddAlias (cont, par->txt);
                 }
-                else if (serv && cont && !strcasecmp (cmd, "options"))
+                else if (serv && !strcasecmp (cmd, "options"))
                 {
-                    OptImport (&cont->copts, args);
-                }
-                else if (serv && !cont && !strcasecmp (cmd, "options"))
-                {
-                    OptImport (&serv->contacts->copts, args);
+                    if (cont)
+                        OptImport (&cont->copts, args);
+                    else
+                        OptImport (&serv->copts, args);
                 }
                 else
                 {
@@ -1632,7 +1631,7 @@ int PrefWriteStatusFile (void)
 
         fprintf (stf, "[Contacts]\n");
         fprintf (stf, "server %s %s\n", ConnectionServerType (ss->type), ss->screen);
-        fprintf (stf, "%s\n", OptString (&ss->contacts->copts));
+        fprintf (stf, "%s\n", OptString (&ss->copts));
 
         for (i = 0; (cont = ContactIndex (0, i)); i++)
         {

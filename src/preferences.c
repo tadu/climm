@@ -297,11 +297,11 @@ BOOL PrefLoad (Preferences *pref)
             }
         case 4:
             for (i = 0; (serv = ServerNr (i)); i++)
-                OptSetVal (&serv->contacts->copts, CO_OBEYSBL, 1);
+                OptSetVal (&serv->copts, CO_OBEYSBL, 1);
             pref->autoupdate = 5;
         case 5:
             for (i = 0; (serv = ServerNr (i)); i++)
-                OptSetVal (&serv->contacts->copts, CO_WANTSBL, 1);
+                OptSetVal (&serv->copts, CO_WANTSBL, 1);
             break;
 
         case AUTOUPDATE_CURRENT:
