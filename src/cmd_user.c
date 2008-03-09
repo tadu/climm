@@ -2580,7 +2580,7 @@ static JUMP_F(CmdUserOpt)
     if (!*args)
     {
         rl_printf (data & COF_CONTACT ? i18n (2416, "Options for contact %s:\n") :
-                   data & COF_GROUP   ? i18n (2417, "Options for contact group %s:\n")
+                   data & COF_GROUP   ? i18n (2417, "Options for contact group %s:\n") :
                    data & COF_SERVER  ? i18n (9999, "Options for server %s:\n")
                                       : i18n (2418, "Global options:\n"),
                    coptobj);
@@ -2678,7 +2678,7 @@ static JUMP_F(CmdUserOpt)
             else
                 OptUndef (copts, flag);
             rl_printf (data & COF_CONTACT ? i18n (2431, "Undefining option %s for contact %s.\n") :
-                       data & COF_GROUP   ? i18n (2432, "Undefining option %s for contact group %s.\n")
+                       data & COF_GROUP   ? i18n (2432, "Undefining option %s for contact group %s.\n") :
                        data & COF_SERVER  ? i18n (9999, "Undefining option %s for server %s.\n")
                                           : i18n (2433, "Undefining global option %s%s.\n"),
                       coptname, coptobj);
@@ -2690,20 +2690,20 @@ static JUMP_F(CmdUserOpt)
 
             if (!OptGetVal (copts, flag, &val) || ((flag & (COF_STRING | COF_COLOR)) && !OptGetStr (copts, flag, &res)))
                 rl_printf (data & COF_CONTACT ? i18n (2422, "Option %s for contact %s is undefined.\n") :
-                           data & COF_GROUP   ? i18n (2423, "Option %s for contact group %s is undefined.\n")
+                           data & COF_GROUP   ? i18n (2423, "Option %s for contact group %s is undefined.\n") :
                            data & COF_SERVER  ? i18n (9999, "Option %s for server %s is undefined.\n")
                                               : i18n (2424, "Option %s%s has no global value.\n"),
                           coptname, coptobj);
             else if (flag & (COF_BOOL | COF_NUMERIC))
                 rl_printf (data & COF_CONTACT ? i18n (2425, "Option %s for contact %s is %s%s%s.\n") :
-                           data & COF_GROUP   ? i18n (2426, "Option %s for contact group %s is %s%s%s.\n")
+                           data & COF_GROUP   ? i18n (2426, "Option %s for contact group %s is %s%s%s.\n") :
                            data & COF_SERVER  ? i18n (9999, "Option %s for server %s is %s%s%s.\n")
                                               : i18n (2427, "Option %s%s is globally %s%s%s.\n"),
                           coptname, coptobj, colquote, flag & COF_NUMERIC ? s_sprintf ("%ld", UD2UL (val))
                           : val ? i18n (1085, "on") : i18n (1086, "off"), colnone);
             else
                 rl_printf (data & COF_CONTACT ? i18n (2428, "Option %s for contact %s is %s.\n") :
-                           data & COF_GROUP   ? i18n (2429, "Option %s for contact group %s is %s.\n")
+                           data & COF_GROUP   ? i18n (2429, "Option %s for contact group %s is %s.\n") :
                            data & COF_SERVER  ? i18n (9999, "Option %s for server %s is %s.\n")
                                               : i18n (2430, "Option %s%s is globally %s.\n"),
                           coptname, coptobj, s_qquote (flag & COF_STRING  ? res : OptS2C (res)));
@@ -2721,7 +2721,7 @@ static JUMP_F(CmdUserOpt)
             }
             OptSetStr (copts, flag, res);
             rl_printf (data & COF_CONTACT ? i18n (2434, "Setting option %s for contact %s to %s.\n") :
-                       data & COF_GROUP   ? i18n (2435, "Setting option %s for contact group %s to %s.\n")
+                       data & COF_GROUP   ? i18n (2435, "Setting option %s for contact group %s to %s.\n") :
                        data & COF_SERVER  ? i18n (9999, "Setting option %s for server %s to %s.\n")
                                           : i18n (2436, "Setting option %s%s globally to %s.\n"),
                       coptname, coptobj, s_qquote (res));
@@ -2731,7 +2731,7 @@ static JUMP_F(CmdUserOpt)
             res = OptC2S (col = strdup (par->txt));
             OptSetStr (copts, flag, res);
             rl_printf (data & COF_CONTACT ? i18n (2434, "Setting option %s for contact %s to %s.\n") :
-                       data & COF_GROUP   ? i18n (2435, "Setting option %s for contact group %s to %s.\n")
+                       data & COF_GROUP   ? i18n (2435, "Setting option %s for contact group %s to %s.\n") :
                        data & COF_SERVER  ? i18n (9999, "Setting option %s for server %s to %s.\n")
                                           : i18n (2436, "Setting option %s%s globally to %s.\n"),
                       coptname, coptobj, s_qquote (col));
@@ -2743,7 +2743,7 @@ static JUMP_F(CmdUserOpt)
                 OptImport (copts, PrefSetColorScheme (val));
             OptSetVal (copts, flag, atoi (par->txt));
             rl_printf (data & COF_CONTACT ? i18n (2437, "Setting option %s for contact %s to %s%d%s.\n") :
-                       data & COF_GROUP   ? i18n (2438, "Setting option %s for contact group %s to %s%d%s.\n")
+                       data & COF_GROUP   ? i18n (2438, "Setting option %s for contact group %s to %s%d%s.\n") :
                        data & COF_SERVER  ? i18n (9999, "Setting option %s for server %s to %s%d%s.\n")
                                           : i18n (2439, "Setting option %s%s globally to %s%d%s.\n"),
                       coptname, coptobj, colquote, atoi (par->txt), colnone);
@@ -2752,7 +2752,7 @@ static JUMP_F(CmdUserOpt)
         {
             OptSetVal (copts, flag, 1);
             rl_printf (data & COF_CONTACT ? i18n (2440, "Setting option %s for contact %s.\n") :
-                       data & COF_GROUP   ? i18n (2441, "Setting option %s for contact group %s.\n")
+                       data & COF_GROUP   ? i18n (2441, "Setting option %s for contact group %s.\n") :
                        data & COF_SERVER  ? i18n (9999, "Setting option %s for server %s.\n")
                                           : i18n (2442, "Setting option %s%s globally.\n"),
                       coptname, coptobj);
@@ -2761,7 +2761,7 @@ static JUMP_F(CmdUserOpt)
         {
             OptSetVal (copts, flag, 0);
             rl_printf (data & COF_CONTACT ? i18n (2443, "Clearing option %s for contact %s.\n") :
-                       data & COF_GROUP   ? i18n (2444, "Clearing option %s for contact group %s.\n")
+                       data & COF_GROUP   ? i18n (2444, "Clearing option %s for contact group %s.\n") :
                        data & COF_SERVER  ? i18n (9999, "Clearing option %s for server %s.\n")
                                           : i18n (2445, "Clearing option %s%s globally.\n"),
                       coptname, coptobj);
