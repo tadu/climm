@@ -147,7 +147,7 @@ BOOL TCPDirectOpen (Connection *list, Contact *cont)
     peer->version   = list->version <= cont->dc->version ? list->version : cont->dc->version;
     peer->port      = 0;
     peer->cont      = cont;
-    peer->assoc     = NULL;
+    peer->oscar_file= NULL;
     peer->close     = &PeerDispatchClose;
     peer->reconnect = &TCPDispatchReconn;
 
@@ -1005,7 +1005,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
 
         for (i = 0; (peer2 = ConnectionNr (i)); i++)
             if (     peer2->type == peer->type && peer2->serv == peer->serv
-                  && peer2->cont  == peer->cont  && !peer->assoc && peer2 != peer)
+                  && peer2->cont == peer->cont  && !peer->oscar_file && peer2 != peer)
                 break;
 
         if (peer2)
@@ -1115,8 +1115,11 @@ void TCPClose (Connection *peer)
 {
     assert (peer);
     
-    if (peer->assoc && peer->assoc->type == TYPE_FILE)
-        ConnectionD (peer->assoc);
+    if (peer->oscar_file)
+    {
+        assert (peer->oscar_file->type == TYPE_FILE);
+        ConnectionD (peer->oscar_file);
+    }
     
     if (peer->sok != -1)
     {

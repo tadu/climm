@@ -99,6 +99,7 @@ Server *ServerC (UWORD type DEBUGPARAM)
     conn->serv = serv;
     serv->conn = conn;
     serv->logfd = -1;
+    serv->flags = 0;
     Debug (DEB_CONNECT, "<=S= %p create %d", serv, serv->type);
     return serv;
 }
@@ -141,7 +142,6 @@ Connection *ConnectionC (UWORD type DEBUGPARAM)
     conn->status = ims_offline;
     conn->sok = -1;
     conn->type = type;
-    conn->flags = CONN_CONFIGURED;
 
     Debug (DEB_CONNECT, "<=== %p[%d] create %d", conn, j, type);
 
@@ -163,7 +163,6 @@ Connection *ServerChild (Server *serv, Contact *cont, UWORD type DEBUGPARAM)
 
     child->serv   = serv;
     child->cont   = cont;
-    child->flags  = 0;
     child->screen = strdup (serv->screen ? serv->screen : "child");
     
     Debug (DEB_CONNECT, "<=*= %p (%s) clone from %p (%s)",
@@ -358,8 +357,8 @@ void ConnectionD (Connection *conn DEBUGPARAM)
 
     for (cl = &slist; cl; cl = cl->more)
         for (j = 0; j < ConnectionListLen; j++)
-            if ((clc = cl->conn[j]) && clc->assoc == conn)
-                clc->assoc = NULL;
+            if ((clc = cl->conn[j]) && clc->oscar_file == conn)
+                clc->oscar_file = NULL;
 
     for (cl = &slist; cl; cl = cl->more)
         for (j = 0; j < ConnectionListLen; j++)

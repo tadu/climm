@@ -399,8 +399,8 @@ void UtilIOConnectTCP (Connection *conn DEBUGPARAM)
         length = sizeof (struct sockaddr);
         getsockname (conn->sok, (struct sockaddr *) &sin, &length);
         conn->our_local_ip = ntohl (sin.sin_addr.s_addr);
-        if (conn->assoc && (conn->type == TYPE_SERVER))
-            conn->assoc->our_local_ip = conn->our_local_ip;
+        if (conn->serv && conn->serv->oscar_dc && (conn->serv->type == TYPE_SERVER))
+            conn->serv->oscar_dc->our_local_ip = conn->our_local_ip;
 
         if (rc >= 0)
         {
@@ -636,8 +636,8 @@ static void UtilIOConnectCallback (Connection *conn)
                 {
                     conn->our_outside_ip = ntohl (*(UDWORD *)(&buf[4]));
                     conn->port = ntohs (*(UWORD *)(&buf[8]));
-                    if (conn->assoc)
-                        conn->assoc->our_local_ip = conn->our_outside_ip;
+                    if (conn->serv && conn->serv->oscar_dc)
+                        conn->serv->oscar_dc->our_local_ip = conn->our_outside_ip;
                 }
                 conn->connect &= ~CONNECT_SOCKS;
                 CONN_OK

@@ -30,7 +30,7 @@ typedef BOOL (jump_conn_err_f)(Connection *conn, UDWORD rc, UDWORD flags);
 struct Connection_s
 {
     UWORD     type;           /* connection type - TYPE_*                 */
-    UBYTE     flags;          /* connection flags                         */
+    UBYTE     foo_flags;          /* connection flags                         */
     UBYTE     version;        /* protocol version in this session         */
     char     *screen;
 
@@ -42,7 +42,7 @@ struct Connection_s
     UWORD     our_seq;        /* current primary sequence number          */
 
     jump_conn_open_f *c_open;  /* function to call to open        */
-    Connection            *assoc;  /* associated session           */
+    Connection       *oscar_file;  /* associated file saving session           */
 
 
     UDWORD    ip;             /* the remote ip (host byte order)          */
@@ -204,7 +204,7 @@ val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
 /*
                             TYPE_SERVER
                            ^ |  ^ ^ ^ ^
-                         p/  a  | | | p\
+                         p/ dc  | | | p\
                          /   V  | | |   \
                  TYPE_MSGLISTEN | | | TYPE_FILELISTEN
                                 | | |
@@ -212,7 +212,7 @@ val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
                                 | | |
               TYPE_MSGDIRECT(uin) | TYPE_FILEDIRECT(uin)
                                   |   |
-                                  |  a|
+                                  |   |file
                                   |   V
                                  TYPE_FILE(uin)
 
@@ -262,7 +262,6 @@ val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
 
 #define CONN_AUTOLOGIN   1
 #define CONN_WIZARD      2
-#define CONN_CONFIGURED  4
 #define CONN_INITWP      8
 
 #endif /* CLIMM_UTIL_CONNECTION_H */

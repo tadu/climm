@@ -54,7 +54,7 @@ JUMP_SNAC_F(SnacSrvRegrefused)
         rl_print (i18n (1792, "I'm sorry, AOL doesn't want to give us a new UIN, probably because of too many new UIN requests from this IP. Please try again later.\n"));
         exit (0);
     }
-    if (~serv->flags & CONN_CONFIGURED)
+    if (!serv->oscar_uin)
     {
 #ifdef ENABLE_PEER2PEER
         ConnectionD (serv->oscar_dc);
@@ -151,15 +151,10 @@ JUMP_SNAC_F(SnacSrvNewuin)
     s_repl (&serv->screen, cont->screen);
     rl_print ("\n");
     rl_printf (i18n (2608, "Your new UIN is: %s.\n"), cont->screen);
-    serv->flags |= CONN_CONFIGURED;
     if (serv->flags & CONN_WIZARD)
     {
         assert (serv->c_open);
-#ifdef ENABLE_PEER2PEER
-        assert (serv->oscar_dc);
-        assert (serv->oscar_dc->c_open);
-        serv->oscar_dc->flags |= CONN_AUTOLOGIN;
-#endif
+
         serv->flags |= CONN_AUTOLOGIN;
         serv->flags |= CONN_INITWP;
 
@@ -171,9 +166,6 @@ JUMP_SNAC_F(SnacSrvNewuin)
 
         if (Save_RC () == -1)
             rl_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
-#ifdef ENABLE_PEER2PEER
-        serv->oscar_dc->c_open (serv->oscar_dc);
-#endif
         serv->c_open (serv);
     }
     else

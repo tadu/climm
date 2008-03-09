@@ -481,10 +481,8 @@ Event *ConnectionInitServer (Server *serv)
             conn->status = v & 15;
             conn->c_open = &ConnectionInitPeer;
             serv->oscar_dc = conn;
-            if (v & 32)
-                conn->flags |= CONN_AUTOLOGIN;
         }
-        if (serv->oscar_dc && serv->oscar_dc->c_open && conn->flags & CONN_AUTOLOGIN)
+        if (serv->oscar_dc && serv->oscar_dc->c_open && (v & 32))
             serv->oscar_dc->c_open (serv->oscar_dc);
     }
     return event;
@@ -576,13 +574,15 @@ static void SrvCallBackTimeout (Event *event)
 void SrvCallBackReceive (Connection *conn)
 {
     Packet *pak;
+    Server *serv = conn->serv;
 
     if (~conn->connect & CONNECT_OK)
     {
         switch (conn->connect & 7)
         {
             case 0:
-                if (conn->assoc && (~conn->assoc->connect & CONNECT_OK) && (conn->assoc->flags & CONN_AUTOLOGIN))
+                if (serv->oscar_dc && (~serv->oscar_dc->connect & CONNECT_OK)
+                    && ConnectionPrefVal (serv, CO_OSCAR_DC_MODE) & 32)
                 {
                     rl_printf ("FIXME: avoiding deadlock\n");
                     conn->connect &= ~CONNECT_SELECT_R;
@@ -624,12 +624,11 @@ void SrvCallBackReceive (Connection *conn)
         FlapPrint (pak);
         rl_print (COLEXDENT "\r");
     }
-    if (ConnectionPrefVal (conn->serv, CO_LOGSTREAM))
-        FlapSave (conn->serv, pak, TRUE);
+    if (ConnectionPrefVal (serv, CO_LOGSTREAM))
+        FlapSave (serv, pak, TRUE);
     
     QueueEnqueueData (conn, QUEUE_FLAP, pak->id, time (NULL),
                       pak, 0, NULL, &SrvCallBackFlap);
-    pak = NULL;
 }
 
 Server *SrvRegisterUIN (Server *serv, const char *pass)
@@ -658,7 +657,7 @@ Server *SrvRegisterUIN (Server *serv, const char *pass)
     {
         assert (serv->type == TYPE_SERVER);
         
-        news->flags   = serv->flags & ~CONN_CONFIGURED;
+        news->flags   = serv->flags;
         news->version = serv->version;
         news->pref_status  = ims_online;
         news->pref_server  = strdup (serv->pref_server);

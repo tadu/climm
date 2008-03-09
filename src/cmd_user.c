@@ -4121,9 +4121,9 @@ static JUMP_F(CmdUserConn)
                          t3 = strdup (s_ip (connl->our_outside_ip)),
                          UD2UL (connl->our_session), connl->our_seq, connl->foo_oscar_snac_seq);
 #ifdef ENABLE_SSL
-                    rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), connl, connl->serv, connl->assoc, connl->ssl_status);
+                    rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), connl, connl->serv, connl->oscar_file, connl->ssl_status);
 #else
-                    rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), connl, connl->serv, connl->assoc);
+                    rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), connl, connl->serv, connl->oscar_file);
 #endif
                     rl_printf (i18n (2454, "    open %p reconn %p close %p err %p dispatch %p\n"),
                               connl->c_open, connl->reconnect, connl->close, connl->error, connl->dispatch);
@@ -4220,7 +4220,7 @@ static JUMP_F(CmdUserConn)
                 rl_printf (i18n (1894, "There is no connection number %ld.\n"), UD2UL (nr));
                 break;
             }
-            if (connl->flags & CONN_CONFIGURED)
+            if (connl->serv->conn == connl)
             {
                 rl_printf (i18n (2102, "Connection %ld is a configured connection.\n"), UD2UL (nr));
                 break;
