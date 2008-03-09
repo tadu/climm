@@ -79,7 +79,7 @@ UDWORD os_DetermineIdleTime (time_t now, time_t last)
 #ifdef UT_NAMESIZE
         if (strncmp (u->ut_user, pass->pw_name, UT_NAMESIZE))
 #else
-        if (strncmp (u->ut_user, pass->pw_name, sizeof (u->ut_user))
+        if (strncmp (u->ut_user, pass->pw_name, sizeof (u->ut_user)))
 #endif
             continue;
         
