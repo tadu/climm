@@ -79,7 +79,7 @@ Connection *PeerFileCreate (Server *serv)
     
     ASSERT_ANY_SERVER(serv);
     
-    if (!serv->assoc || serv->assoc->version < 6)
+    if (!serv->oscar_dc || serv->oscar_dc->version < 6)
         return NULL;
     
     if ((flist = ServerFindChild (serv, NULL, TYPE_FILELISTEN)))
@@ -91,12 +91,12 @@ Connection *PeerFileCreate (Server *serv)
 
     if (prG->verbose)
         rl_printf (i18n (2519, "Opening file listener connection at %slocalhost%s:%s%ld%s... "),
-                  COLQUOTE, COLNONE, COLQUOTE, UD2UL (serv->assoc->pref_port), COLNONE);
+                  COLQUOTE, COLNONE, COLQUOTE, UD2UL (serv->oscar_dc->pref_port), COLNONE);
 
     flist->our_seq  = -1;
-    flist->version  = serv->assoc->version;
-    flist->cont     = serv->assoc->cont;
-    flist->port     = serv->assoc->pref_port;
+    flist->version  = serv->oscar_dc->version;
+    flist->cont     = serv->oscar_dc->cont;
+    flist->port     = serv->oscar_dc->pref_port;
     flist->dispatch = &TCPDispatchMain;
     flist->close    = &PeerFileDispatchClose;
     
@@ -177,10 +177,10 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     fpeer->port      = 0;
     fpeer->ip        = 0;
     fpeer->connect   = 0;
-    fpeer->version   = serv->assoc->version;
+    fpeer->version   = serv->oscar_dc->version;
     s_repl (&fpeer->server, NULL);
-    fpeer->len       = opt_bytes;
-    fpeer->done      = 0;
+    fpeer->oscar_file_len       = opt_bytes;
+    fpeer->oscar_file_done      = 0;
     fpeer->close     = &PeerFileDispatchDClose;
     fpeer->reconnect = &TCPDispatchReconn;
 
@@ -297,11 +297,11 @@ void PeerFileDispatch (Connection *fpeer)
             rl_printf (i18n (2161, "Receiving %ld files with total size %ld bytes at speed %lx from %s.\n"),
                      UD2UL (nr), UD2UL (len), UD2UL (speed), ConvFromCont (name, cont));
             
-            if (len != fpeer->len)
+            if (len != fpeer->oscar_file_len)
             {
                 rl_printf ("FIXME: byte len different than in file request: requested %ld, sending %ld.\n",
-                           UD2UL (fpeer->len), UD2UL (len));
-                fpeer->len = len;
+                           UD2UL (fpeer->oscar_file_len), UD2UL (len));
+                fpeer->oscar_file_len = len;
             }
             
             pak = PeerPacketC (fpeer, 1);
@@ -371,8 +371,8 @@ void PeerFileDispatch (Connection *fpeer)
                     }
                 }
                 ffile->connect = CONNECT_OK;
-                ffile->len = len;
-                ffile->done = off;
+                ffile->oscar_file_len = len;
+                ffile->oscar_file_done = off;
                 ffile->close = &PeerFileIODispatchClose;
 
                 rl_log_for (cont->nick, COLCONTACT);
@@ -409,7 +409,7 @@ void PeerFileDispatch (Connection *fpeer)
                 TCPClose (fpeer);
                 return;
             }
-            fpeer->assoc->done = off;
+            fpeer->assoc->oscar_file_done = off;
             fpeer->assoc->connect = CONNECT_OK;
             
             QueueRetry (fpeer, QUEUE_PEER_FILE, cont);
@@ -430,11 +430,11 @@ void PeerFileDispatch (Connection *fpeer)
             return;
 
         case 6:
-            if (fpeer->assoc->done + pak->len - 1 > fpeer->assoc->len)
+            if (fpeer->assoc->oscar_file_done + pak->len - 1 > fpeer->assoc->oscar_file_len)
             {
                 rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (2165, "The peer sent more bytes (%ld) than the file length (%ld).\n"),
-                           UD2UL (fpeer->assoc->done + pak->len - 1), UD2UL (fpeer->assoc->len));
+                           UD2UL (fpeer->assoc->oscar_file_done + pak->len - 1), UD2UL (fpeer->assoc->oscar_file_len));
                 PacketD (pak);
                 TCPClose (fpeer);
                 return;
@@ -453,8 +453,8 @@ void PeerFileDispatch (Connection *fpeer)
                 TCPClose (fpeer);
                 return;
             }
-            fpeer->assoc->done += len;
-            if (fpeer->assoc->len == fpeer->assoc->done)
+            fpeer->assoc->oscar_file_done += len;
+            if (fpeer->assoc->oscar_file_len == fpeer->assoc->oscar_file_done)
             {
                 ReadLinePromptReset ();
                 rl_log_for (cont->nick, COLCONTACT);
@@ -465,10 +465,10 @@ void PeerFileDispatch (Connection *fpeer)
                 close (fpeer->assoc->sok);
                 fpeer->assoc->sok = -1;
             }
-            else if (fpeer->assoc->len)
+            else if (fpeer->assoc->oscar_file_len)
             {
                 ReadLinePromptUpdate (s_sprintf ("[%s%ld %02d%%%s] %s%s",
-                              COLINCOMING, UD2UL (fpeer->assoc->done), (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
+                              COLINCOMING, UD2UL (fpeer->assoc->oscar_file_done), (int)((100.0 * fpeer->assoc->oscar_file_done) / fpeer->assoc->oscar_file_len),
                               COLNONE, COLSERVER, i18n (2467, "climm>")));
             }
             PacketD (pak);
@@ -522,9 +522,9 @@ static BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags)
                 fpeer->connect = CONNECT_OK | CONNECT_SELECT_W;
                 fpeer->dispatch = &PeerFileDispatchW;
                 fpeer->assoc->connect = CONNECT_OK | 1;
-                if (fpeer->assoc->len)
+                if (fpeer->assoc->oscar_file_len)
                     ReadLinePromptUpdate (s_sprintf ("[%s%ld:%02d%%%s] %s%s",
-                                  COLCONTACT, UD2UL (fpeer->assoc->done), (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
+                                  COLCONTACT, UD2UL (fpeer->assoc->oscar_file_done), (int)((100.0 * fpeer->assoc->oscar_file_done) / fpeer->assoc->oscar_file_len),
                                   COLNONE, COLSERVER, i18n (2467, "climm>")));
                 return 1;
             }
@@ -608,7 +608,7 @@ void PeerFileResend (Event *event)
             rl_printf (i18n (2071, "Couldn't stat file %s: %s (%d)\n"),
                       s_wordquote (opt_text), strerror (rc), rc);
         }
-        ffile->len = finfo.st_size;
+        ffile->oscar_file_len = finfo.st_size;
 
         ffile->sok = open (opt_text, O_RDONLY);
         if (ffile->sok == -1)
@@ -649,20 +649,20 @@ void PeerFileResend (Event *event)
         else
         {
             pak->len += len;
-            fpeer->assoc->done += len;
+            fpeer->assoc->oscar_file_done += len;
             fpeer->error = &PeerFileError;
             PeerPacketSend (fpeer, pak);
             PacketD (pak);
 
             if (len > 0)
             {
-                if (fpeer->assoc->len)
+                if (fpeer->assoc->oscar_file_len)
                     ReadLinePromptUpdate (s_sprintf ("[%s%ld %02d%%%s] %s%s",
-                                  COLCONTACT, UD2UL (fpeer->assoc->done), (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
+                                  COLCONTACT, UD2UL (fpeer->assoc->oscar_file_done), (int)((100.0 * fpeer->assoc->oscar_file_done) / fpeer->assoc->oscar_file_len),
                                   COLNONE, COLSERVER, i18n (2467, "climm>")));
                 else
                     ReadLinePromptUpdate (s_sprintf ("[%s%ld%s] %s%s",
-                                  COLCONTACT, UD2UL (fpeer->assoc->done),
+                                  COLCONTACT, UD2UL (fpeer->assoc->oscar_file_done),
                                   COLNONE, COLSERVER, i18n (2467, "climm>")));
                 event->attempts = 0;
                 QueueEnqueue (event);

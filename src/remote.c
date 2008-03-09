@@ -65,12 +65,10 @@ Event *RemoteOpen (Connection *remo)
     rl_printf (i18n (2223, "Opening scripting FIFO at %s... "), s_wordquote (remo->server));
 
     remo->connect     = 0;
-    remo->our_seq     = 0;
     remo->c_open      = &RemoteOpen;
     remo->dispatch    = &RemoteDispatch;
     remo->reconnect   = NULL;
     remo->close       = &RemoteClose;
-    remo->our_session = 0;
     remo->ip          = 0;
     remo->port        = 0;
 

@@ -301,7 +301,7 @@ static UBYTE SnacCliSendmsg4 (Server *serv, Message *msg)
     PacketWriteCont (pak, cont);
     
     PacketWriteTLV     (pak, 5);
-    PacketWrite4       (pak, serv->uin);
+    PacketWrite4       (pak, serv->oscar_uin);
     PacketWrite1       (pak, msg->type % 256);
     PacketWrite1       (pak, msg->type / 256);
     PacketWriteLNTS    (pak, text);
@@ -377,9 +377,9 @@ static void SnacCallbackType2 (Event *event)
     assert (event->data);
     assert (!event->opt);
 
-    if (event->attempts < MAX_RETRY_TYPE2_ATTEMPTS && serv->connect & CONNECT_MASK)
+    if (event->attempts < MAX_RETRY_TYPE2_ATTEMPTS && serv->conn->connect & CONNECT_MASK)
     {
-        if (serv->connect & CONNECT_OK)
+        if (serv->conn->connect & CONNECT_OK)
         {
             if (event->attempts > 1)
                 IMIntMsg (cont, NOW, ims_offline, INT_MSGTRY_TYPE2, msg->plain_message ? msg->plain_message : msg->send_message);
@@ -430,7 +430,7 @@ static UBYTE SnacCliSendmsg2 (Server *serv, Message *msg)
         return RET_DEFER;
     }
     
-    serv->our_seq_dc--;
+    serv->oscar_type2_seq--;
     msg->trans &= ~CV_MSGTRANS_TYPE2;
     
     pak = SnacC (serv, 4, 6, 0, peek ? PEEK_REFID : 0);
@@ -450,18 +450,18 @@ static UBYTE SnacCliSendmsg2 (Server *serv, Message *msg)
      if (!peek) {
      PacketWriteTLV     (pak, 10001);
       PacketWriteLen     (pak);
-       PacketWrite2       (pak, serv->assoc && serv->assoc->connect & CONNECT_OK
-                              ? serv->assoc->version : 8);
+       PacketWrite2       (pak, serv->oscar_dc && serv->oscar_dc->connect & CONNECT_OK
+                              ? serv->oscar_dc->version : 8);
        PacketWriteCapID   (pak, CAP_NONE);
        PacketWrite2       (pak, 0);
        PacketWrite4       (pak, 3);
        PacketWrite1       (pak, 0);
-       PacketWrite2       (pak, peek ? 0 : serv->our_seq_dc);
+       PacketWrite2       (pak, peek ? 0 : serv->oscar_type2_seq);
       PacketWriteLenDone (pak);
       if (peek)
       {
           PacketWriteLen    (pak);
-           PacketWrite2      (pak, serv->our_seq_dc);       /* sequence number */
+           PacketWrite2      (pak, serv->oscar_type2_seq);       /* sequence number */
            PacketWrite4      (pak, 0);
            PacketWrite4      (pak, 0);
            PacketWrite4      (pak, 0);
@@ -474,7 +474,7 @@ static UBYTE SnacCliSendmsg2 (Server *serv, Message *msg)
       }
       else
       {
-          SrvMsgAdvanced     (pak, serv->our_seq_dc, msg->type, serv->status, cont->status, -1, text);
+          SrvMsgAdvanced     (pak, serv->oscar_type2_seq, msg->type, serv->status, cont->status, -1, text);
           PacketWrite4       (pak, TCP_COL_FG);
           PacketWrite4       (pak, TCP_COL_BG);
           if (CONT_UTF8 (cont, msg->type))
@@ -495,7 +495,7 @@ static UBYTE SnacCliSendmsg2 (Server *serv, Message *msg)
         Event *event;
 
         PacketWriteB4      (pak, 0x00030000); /* empty TLV(3) */
-        event = QueueEnqueueData2 (serv->conn, QUEUE_TYPE2_RESEND, serv->our_seq_dc, 0, msg, &SnacCallbackType2, &SnacCallbackType2Cancel);
+        event = QueueEnqueueData2 (serv->conn, QUEUE_TYPE2_RESEND, serv->oscar_type2_seq, 0, msg, &SnacCallbackType2, &SnacCallbackType2Cancel);
         event->cont = cont;
         event->pak = pak;
     }
@@ -1172,7 +1172,7 @@ void SrvReceiveAdvanced (Server *serv, Event *inc_event, Packet *inc_pak, Event 
                 return;
             }
             free (name);
-            if (serv->assoc && PeerFileIncAccept (serv->assoc, inc_event))
+            if (serv->oscar_dc && PeerFileIncAccept (serv->oscar_dc, inc_event))
             {
                 PacketWrite2    (ack_pak, ack_status);
                 PacketWrite2    (ack_pak, ack_flags);
@@ -1181,7 +1181,7 @@ void SrvReceiveAdvanced (Server *serv, Event *inc_event, Packet *inc_pak, Event 
                 PacketWrite2    (ack_pak, 0);
                 PacketWriteStr  (ack_pak, "");
                 PacketWrite4    (ack_pak, 0);
-                if (serv->assoc->version > 6)
+                if (serv->oscar_dc->version > 6)
                     PacketWrite4 (ack_pak, 0x20726f66);
                 PacketWrite4    (ack_pak, flist->port);
             }
@@ -1197,7 +1197,7 @@ void SrvReceiveAdvanced (Server *serv, Event *inc_event, Packet *inc_pak, Event 
                 PacketWrite2    (ack_pak, 0);
                 PacketWriteStr  (ack_pak, txt);
                 PacketWrite4    (ack_pak, 0);
-                if (serv->assoc->version > 6)
+                if (serv->oscar_dc->version > 6)
                     PacketWrite4 (ack_pak, 0x20726f66);
                 PacketWrite4    (ack_pak, 0);
             }
@@ -1271,7 +1271,7 @@ void SrvReceiveAdvanced (Server *serv, Event *inc_event, Packet *inc_pak, Event 
 #endif
                             return;
                         }
-                        if (serv->assoc && PeerFileIncAccept (serv->assoc, inc_event))
+                        if (serv->oscar_dc && PeerFileIncAccept (serv->oscar_dc, inc_event))
                         {
                             PacketWrite2    (ack_pak, ack_status);
                             PacketWrite2    (ack_pak, ack_flags);

@@ -212,7 +212,7 @@ static jump_t jump[] = {
 /* Have an opened server connection ready. */
 #define OPENCONN \
     if (!uiG.conn) uiG.conn = ServerNr (0); \
-    if (!uiG.conn || ~uiG.conn->connect & CONNECT_OK) \
+    if (!uiG.conn || ~uiG.conn->conn->connect & CONNECT_OK) \
     { rl_print (i18n (1931, "Current session is closed. Try another or open this one.\n")); return 0; } \
 
 /* Try to have any server connection ready. */
@@ -1073,7 +1073,7 @@ static JUMP_F(CmdUserPeer)
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
     if (uiG.conn->type != TYPE_XMPP_SERVER)
 #endif
-        if (!uiG.conn || !(list = uiG.conn->assoc))
+        if (!uiG.conn || !(list = uiG.conn->oscar_dc))
         {
             rl_print (i18n (2011, "You do not have a listening peer-to-peer connection.\n"));
             return 0;
@@ -1381,12 +1381,12 @@ static JUMP_F (CmdUserAnyMess)
     if (data & 1)
     {
 #ifdef ENABLE_PEER2PEER
-        if (!uiG.conn->assoc || !TCPDirectOpen  (uiG.conn->assoc, cont))
+        if (!uiG.conn->oscar_dc || !TCPDirectOpen  (uiG.conn->oscar_dc, cont))
         {
             rl_printf (i18n (2142, "Direct connection with %s not possible.\n"), cont->nick);
             return 0;
         }
-        PeerSendMsg (uiG.conn->assoc, cont, data >> 2, t.txt);
+        PeerSendMsg (uiG.conn->oscar_dc, cont, data >> 2, t.txt);
 #endif
     }
     else
@@ -1666,7 +1666,7 @@ static void __showcontact (Server *serv, Contact *cont, UWORD data, const char *
 #endif
     char tbuf[100];
     
-    peer = (serv && serv->assoc) ? ServerFindChild (serv, cont, TYPE_MSGDIRECT) : NULL;
+    peer = (serv && serv->oscar_dc) ? ServerFindChild (serv, cont, TYPE_MSGDIRECT) : NULL;
     
     stat = strdup (s_sprintf ("(%s)", s_status (cont->status, cont->nativestatus)));
     if (cont->version)
@@ -1984,7 +1984,7 @@ static JUMP_F(CmdUserStatusDetail)
         if (uiG.conn)
         {
             rl_log_for (uiG.conn->screen, COLCONTACT);
-            if (~uiG.conn->connect & CONNECT_OK)
+            if (~uiG.conn->conn->connect & CONNECT_OK)
                 rl_printf (i18n (2405, "Your status is %s (%s).\n"),
                     i18n (1969, "offline"), s_status (uiG.conn->status, uiG.conn->nativestatus));
             else
@@ -4052,30 +4052,30 @@ static JUMP_F(CmdUserConn)
                 rl_printf (i18n (2597, "%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n"),
                           i + 1, ServerStrType (servl), servl->version,
 #ifdef ENABLE_SSL
-                          servl->ssl_status == SSL_STATUS_OK ? " SSL" : "",
+                          servl->foo_ssl_status == SSL_STATUS_OK ? " SSL" : "",
 #else
                           "",
 #endif
                           cont ? cont->nick : "", ContactStatusStr (servl->status),
-                          servl->server ? servl->server : s_ip (servl->ip), UD2UL (servl->port),
-                          servl->connect & CONNECT_FAIL ? i18n (1497, "failed") :
-                          servl->connect & CONNECT_OK   ? i18n (1934, "connected") :
-                          servl->connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
+                          servl->server ? servl->server : s_ip (servl->foo_ip), UD2UL (servl->port),
+                          servl->foo_connect & CONNECT_FAIL ? i18n (1497, "failed") :
+                          servl->foo_connect & CONNECT_OK   ? i18n (1934, "connected") :
+                          servl->foo_connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
                 if (prG->verbose)
                 {
                     char *t1, *t2, *t3;
                     rl_printf (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n"),
-                         servl->type, servl->sok, t1 = strdup (s_ip (servl->ip)),
-                         servl->connect, t2 = strdup (s_ip (servl->our_local_ip)),
-                         t3 = strdup (s_ip (servl->our_outside_ip)),
-                         UD2UL (servl->our_session), servl->our_seq, servl->our_seq2);
+                         servl->type, servl->foo_sok, t1 = strdup (s_ip (servl->foo_ip)),
+                         servl->foo_connect, t2 = strdup (s_ip (servl->foo_our_local_ip)),
+                         t3 = strdup (s_ip (servl->foo_our_outside_ip)),
+                         UD2UL (servl->foo_our_session), servl->our_seq, servl->oscar_snac_seq);
 #ifdef ENABLE_SSL
-                    rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), servl, servl->foo_serv, servl->assoc, servl->ssl_status);
+                    rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), servl, servl->foo_serv, servl->oscar_dc, servl->foo_ssl_status);
 #else
-                    rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), servl, servl->foo_serv, servl->assoc);
+                    rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), servl, servl->foo_serv, servl->oscar_dc);
 #endif
                     rl_printf (i18n (2454, "    open %p reconn %p close %p err %p dispatch %p\n"),
-                              servl->c_open, servl->reconnect, servl->close, servl->error, servl->dispatch);
+                              servl->c_open, servl->foo_reconnect, servl->foo_close, servl->foo_error, servl->foo_dispatch);
                     free (t1);
                     free (t2);
                     free (t3);
@@ -4108,7 +4108,7 @@ static JUMP_F(CmdUserConn)
                          connl->type, connl->sok, t1 = strdup (s_ip (connl->ip)),
                          connl->connect, t2 = strdup (s_ip (connl->our_local_ip)),
                          t3 = strdup (s_ip (connl->our_outside_ip)),
-                         UD2UL (connl->our_session), connl->our_seq, connl->our_seq2);
+                         UD2UL (connl->our_session), connl->our_seq, connl->foo_oscar_snac_seq);
 #ifdef ENABLE_SSL
                     rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), connl, connl->serv, connl->assoc, connl->ssl_status);
 #else
@@ -4157,7 +4157,7 @@ static JUMP_F(CmdUserConn)
                 break;
             if ((targs = s_parserem (&args)))
                 s_repl (&servl->passwd, targs);
-            if (servl->connect & CONNECT_OK)
+            if (servl->conn->connect & CONNECT_OK)
                 rl_printf (i18n (2601, "Connection for %s is already open.\n"), servl->screen);
             else if (!servl->c_open)
                 rl_printf (i18n (2602, "Don't know how to open connection type %s for %s.\n"),

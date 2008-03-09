@@ -175,9 +175,9 @@ CLIMMXMPP::CLIMMXMPP (Server *serv)
     m_client->connect (false);
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
     // Yes http proxy is now avail in gloox, but not used in climm, so != NULL
-    serv->sok = dynamic_cast<gloox::ConnectionTCPBase *>(m_client->connectionImpl())->socket();
+    serv->conn->sok = dynamic_cast<gloox::ConnectionTCPBase *>(m_client->connectionImpl())->socket();
 #else
-    serv->sok = m_client->fileDescriptor ();
+    serv->conn->sok = m_client->fileDescriptor ();
 #endif
 }
 
@@ -188,16 +188,16 @@ CLIMMXMPP::~CLIMMXMPP ()
 
 void CLIMMXMPP::onConnect ()
 {
-    m_serv->connect = CONNECT_OK | CONNECT_SELECT_R;
+    m_serv->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
 //    m_client->send (gloox::Stanza::createPresenceStanza (gloox::JID (""), "", gloox::PresenceChat));
 }
 
 void CLIMMXMPP::onDisconnect (gloox::ConnectionError e)
 {
-    m_serv->connect = 0;
-    if (m_serv->sok != -1)
-        close (m_serv->sok);
-    m_serv->sok = -1;
+    m_serv->conn->connect = 0;
+    if (m_serv->conn->sok != -1)
+        close (m_serv->conn->sok);
+    m_serv->conn->sok = -1;
     switch (e)
     {
         case gloox::ConnNoError:
@@ -993,7 +993,7 @@ UBYTE CLIMMXMPP::XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
     assert (cont);
     assert (msg->send_message);
 
-    if (~m_serv->connect & CONNECT_OK)
+    if (~m_serv->conn->connect & CONNECT_OK)
         return RET_DEFER;
     if (msg->type != MSG_NORM)
         return RET_DEFER;
@@ -1309,10 +1309,10 @@ Event *ConnectionInitXMPPServer (Server *serv)
         serv->port = ~0;
 
     serv->c_open = &ConnectionInitXMPPServer;
-    serv->reconnect = &XMPPCallbackReconn;
-    serv->error = &XMPPCallbackError;
-    serv->close = &XMPPCallbackClose;
-    serv->dispatch = &XMPPCallbackDispatch;
+    serv->conn->reconnect = &XMPPCallbackReconn;
+    serv->conn->error = &XMPPCallbackError;
+    serv->conn->close = &XMPPCallbackClose;
+    serv->conn->dispatch = &XMPPCallbackDispatch;
 
     if ((event = QueueDequeue2 (serv->conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
     {
@@ -1327,7 +1327,7 @@ Event *ConnectionInitXMPPServer (Server *serv)
 
     CLIMMXMPP *l = new CLIMMXMPP (serv);
     serv->xmpp_private = l;
-    serv->connect |= CONNECT_SELECT_R;
+    serv->conn->connect |= CONNECT_SELECT_R;
 
     return event;
 }
@@ -1414,7 +1414,7 @@ void XMPPCallbackClose (Connection *conn)
 
     j->getClient()->disconnect ();
     delete j;
-    conn->xmpp_private = NULL;
+    conn->serv->xmpp_private = NULL;
 }
 
 BOOL XMPPCallbackError (Connection *conn, UDWORD rc, UDWORD flags)

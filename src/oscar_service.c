@@ -89,14 +89,14 @@ void CliFinishLogin (Server *serv)
     Event *event;
 
     /* Step 4: (13,6)=(19,6) received */
-    serv->connect += 16;
+    serv->conn->connect += 16;
     /* SnacCliAddcontact (serv, NULL, serv->contacts); */
     SnacCliSetstatus (serv, serv->status, 3);
     SnacCliReady (serv);
     SnacCliReqofflinemsgs (serv);
     if (prG->chat > 0)
         SnacCliSetrandom (serv, prG->chat);
-    serv->connect = CONNECT_OK | CONNECT_SELECT_R;
+    serv->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
     QueueEnqueueData (serv->conn, QUEUE_SRV_KEEPALIVE, 0, time (NULL) + 30,
         NULL, serv->cont, NULL, &SrvCallBackKeepalive);
     if ((event = QueueDequeue2 (serv->conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
@@ -170,10 +170,10 @@ JUMP_SNAC_F(SnacSrvFamilies)
             continue;
         }
     }
-    if (serv->connect & CONNECT_OK)
+    if (serv->conn->connect & CONNECT_OK)
         return;
     /* Step 1: (1,3) received) */
-    serv->connect += 16;
+    serv->conn->connect += 16;
     SnacCliFamilies (serv);
     SnacCliRatesrequest (serv); /* triggers step 2 */
 }
@@ -258,11 +258,9 @@ JUMP_SNAC_F(SnacSrvReplyinfo)
     tlv = TLVRead (pak, PacketReadLeft (pak), tlvc);
     if (tlv[10].str.len)
     {
-        serv->our_outside_ip = tlv[10].nr;
+        serv->conn->our_outside_ip = tlv[10].nr;
         if (prG->verbose)
-            rl_printf (i18n (1915, "Server says we're at %s.\n"), s_ip (serv->our_outside_ip));
-        if (serv->assoc)
-            serv->assoc->our_outside_ip = serv->our_outside_ip;
+            rl_printf (i18n (1915, "Server says we're at %s.\n"), s_ip (serv->conn->our_outside_ip));
     }
     if (tlv[6].str.len)
     {
@@ -325,10 +323,10 @@ JUMP_SNAC_F(SnacSrvFamilies2)
             rl_printf (i18n (1904, "Server doesn't understand ver %d (only %d) for family %d!\n"), s->cmd, ver, fam);
     }
 
-    if (serv->connect & CONNECT_OK)
+    if (serv->conn->connect & CONNECT_OK)
         return;
     /* Step 2: (1,24)=(1,18) received */
-    serv->connect += 16;
+    serv->conn->connect += 16;
     SnacCliReqlocation  (serv);
     SnacCliReqbuddy     (serv);
     SnacCliReqicbm      (serv);
@@ -356,11 +354,11 @@ void SnacCliSetstatus (Server *serv, status_t status, UWORD action)
     
     ostat |= IcqFromFlags (flags);
     
-    if (serv->privacy_value != 1 && serv->privacy_value != 2 && serv->privacy_value != 5)
+    if (serv->oscar_privacy_value != 1 && serv->oscar_privacy_value != 2 && serv->oscar_privacy_value != 5)
     {
-        if (ContactIsInv (status) && serv->privacy_value != 3)
+        if (ContactIsInv (status) && serv->oscar_privacy_value != 3)
             SnacCliSetvisibility (serv, 3, 0);
-        else if (!ContactIsInv (status) && serv->privacy_value != 4)
+        else if (!ContactIsInv (status) && serv->oscar_privacy_value != 4)
             SnacCliSetvisibility (serv, 4, 0);
     }
     
@@ -373,13 +371,13 @@ void SnacCliSetstatus (Server *serv, status_t status, UWORD action)
     {
         PacketWriteB2 (pak, 0x0c); /* TLV 0C */
         PacketWriteB2 (pak, 0x25);
-        PacketWriteB4 (pak, ConnectionPrefVal (serv, CO_HIDEIP) ? 0 : serv->our_local_ip);
-        if (serv->assoc && serv->assoc->connect & CONNECT_OK)
+        PacketWriteB4 (pak, ConnectionPrefVal (serv, CO_HIDEIP) ? 0 : serv->conn->our_local_ip);
+        if (serv->oscar_dc && serv->oscar_dc->connect & CONNECT_OK)
         {
-            PacketWriteB4 (pak, serv->assoc->port);
-            PacketWrite1  (pak, serv->assoc->status);
-            PacketWriteB2 (pak, serv->assoc->version);
-            PacketWriteB4 (pak, serv->assoc->our_session);
+            PacketWriteB4 (pak, serv->oscar_dc->port);
+            PacketWrite1  (pak, serv->oscar_dc->status);
+            PacketWriteB2 (pak, serv->oscar_dc->version);
+            PacketWriteB4 (pak, serv->oscar_dc->our_session);
         }
         else
         {

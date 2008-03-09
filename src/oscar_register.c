@@ -57,7 +57,7 @@ JUMP_SNAC_F(SnacSrvRegrefused)
     if (~serv->flags & CONN_CONFIGURED)
     {
 #ifdef ENABLE_PEER2PEER
-        ConnectionD (serv->assoc);
+        ConnectionD (serv->oscar_dc);
 #endif
         ServerD (serv);
     }
@@ -147,7 +147,7 @@ JUMP_SNAC_F(SnacSrvNewuin)
 
     uin = PacketReadAt4 (event->pak, 6 + 10 + 46);
     cont = ContactUIN (serv, uin);
-    serv->uin = cont->uin;
+    serv->oscar_uin = cont->uin;
     s_repl (&serv->screen, cont->screen);
     rl_print ("\n");
     rl_printf (i18n (2608, "Your new UIN is: %s.\n"), cont->screen);
@@ -156,9 +156,9 @@ JUMP_SNAC_F(SnacSrvNewuin)
     {
         assert (serv->c_open);
 #ifdef ENABLE_PEER2PEER
-        assert (serv->assoc);
-        assert (serv->assoc->c_open);
-        serv->assoc->flags |= CONN_AUTOLOGIN;
+        assert (serv->oscar_dc);
+        assert (serv->oscar_dc->c_open);
+        serv->oscar_dc->flags |= CONN_AUTOLOGIN;
 #endif
         serv->flags |= CONN_AUTOLOGIN;
         serv->flags |= CONN_INITWP;
@@ -172,7 +172,7 @@ JUMP_SNAC_F(SnacSrvNewuin)
         if (Save_RC () == -1)
             rl_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
 #ifdef ENABLE_PEER2PEER
-        serv->assoc->c_open (serv->assoc);
+        serv->oscar_dc->c_open (serv->oscar_dc);
 #endif
         serv->c_open (serv);
     }

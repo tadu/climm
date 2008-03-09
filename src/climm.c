@@ -104,7 +104,7 @@ static void Idle_Check (Server *serv)
         return;
 
     if ((noinv == imr_dnd || noinv == imr_occ || noinv == imr_ffc)
-        || ~serv->connect & CONNECT_OK)
+        || ~serv->conn->connect & CONNECT_OK)
     {
         uiG.idle_val = 0;
         return;

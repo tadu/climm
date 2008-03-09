@@ -114,14 +114,14 @@ static Packet *SnacMetaC (Server *serv, UWORD sub, UWORD type, UWORD ref)
 {
     Packet *pak;
 
-    serv->our_seq3 = serv->our_seq3 ? (serv->our_seq3 + 1) % 0x7fff : 2;
+    serv->oscar_icq_seq = serv->oscar_icq_seq ? (serv->oscar_icq_seq + 1) % 0x7fff : 2;
     
-    pak = SnacC (serv, 21, 2, 0, (ref ? ref : rand () % 0x7fff) + (serv->our_seq3 << 16));
+    pak = SnacC (serv, 21, 2, 0, (ref ? ref : rand () % 0x7fff) + (serv->oscar_icq_seq << 16));
     PacketWriteTLV (pak, 1);
     PacketWriteLen (pak);
-    PacketWrite4   (pak, serv->uin);
+    PacketWrite4   (pak, serv->oscar_uin);
     PacketWrite2   (pak, sub);
-    PacketWrite2   (pak, serv->our_seq3);
+    PacketWrite2   (pak, serv->oscar_icq_seq);
     if (type)
         PacketWrite2 (pak, type);
 
@@ -523,7 +523,7 @@ void SnacCliSetrandom (Server *serv, UWORD group)
 {
     Packet *pak;
 
-    pak = SnacMetaC (serv, 2000, META_SET_RANDOM, serv->connect & CONNECT_OK ? 0 : 0x4242);
+    pak = SnacMetaC (serv, 2000, META_SET_RANDOM, serv->conn->connect & CONNECT_OK ? 0 : 0x4242);
     PacketWrite2    (pak, group);
     if (group)
     {
@@ -531,10 +531,10 @@ void SnacCliSetrandom (Server *serv, UWORD group)
         PacketWriteB4 (pak, 0);
         PacketWriteB4 (pak, 0);
         PacketWriteB4 (pak, 0);
-        PacketWrite1  (pak, serv->assoc && serv->assoc->connect & CONNECT_OK
-                            ? serv->assoc->status : 0);
-        PacketWrite2  (pak, serv->assoc && serv->assoc->connect & CONNECT_OK
-                            ? serv->assoc->version : 0);
+        PacketWrite1  (pak, serv->oscar_dc && serv->oscar_dc->connect & CONNECT_OK
+                            ? serv->oscar_dc->status : 0);
+        PacketWrite2  (pak, serv->oscar_dc && serv->oscar_dc->connect & CONNECT_OK
+                            ? serv->oscar_dc->version : 0);
         PacketWriteB4 (pak, 0);
         PacketWriteB4 (pak, 0x00005000);
         PacketWriteB4 (pak, 0x00000300);
@@ -629,11 +629,11 @@ JUMP_SNAC_F(SnacSrvFromicqsrv)
     uin = PacketRead4 (p);
     type= PacketRead2 (p);
 /*  id=*/ PacketRead2 (p);
-    if (uin != serv->uin)
+    if (uin != serv->oscar_uin)
     {
         if (prG->verbose & DEB_PROTOCOL)
         {
-            rl_printf (i18n (1919, "UIN mismatch: %ld vs %ld.\n"), UD2UL (serv->uin), UD2UL (uin));
+            rl_printf (i18n (1919, "UIN mismatch: %ld vs %ld.\n"), UD2UL (serv->oscar_uin), UD2UL (uin));
             SnacSrvUnknown (event);
         }
         TLVD (tlv);

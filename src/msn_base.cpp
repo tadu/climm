@@ -404,9 +404,9 @@ void CLIMMMSN::gotNewConnection (MSN::Connection * msnconn)
     MyCallbackSetMSN (msnconn, this);
     if (msnconn == msnconn->myNotificationServer())
     {
-        serv->connect = conn->connect;
+        serv->conn->connect = conn->connect;
         serv->dispatch = conn->dispatch;
-        serv->sok = conn->sok;
+        serv->conn->sok = conn->sok;
         conn->sok = -1;
         ConnectionD (conn);
         serv->error = &MsnCallbackError;

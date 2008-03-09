@@ -254,22 +254,22 @@ UBYTE IMCliReMsg (Contact *cont, Message *msg)
 #ifdef ENABLE_PEER2PEER
     if (msg->trans & CV_MSGTRANS_DC)
     {
-        if (cont->serv->assoc)
-            if (RET_IS_OK (ret = PeerSendMsgFat (cont->serv->assoc, cont, msg)))
+        if (cont->serv->oscar_dc)
+            if (RET_IS_OK (ret = PeerSendMsgFat (cont->serv->oscar_dc, cont, msg)))
                 return ret;
         msg->trans &= ~CV_MSGTRANS_DC;
     }
 #endif
     if (msg->trans & CV_MSGTRANS_TYPE2)
     {
-        if (cont->serv->connect & CONNECT_OK && cont->serv->type == TYPE_SERVER)
+        if (cont->serv->conn->connect & CONNECT_OK && cont->serv->type == TYPE_SERVER)
             if (RET_IS_OK (ret = SnacCliSendmsg (cont->serv, cont, 2, msg)))
                 return ret;
         msg->trans &= ~CV_MSGTRANS_TYPE2;
     }
     if (msg->trans & CV_MSGTRANS_ICQv8)
     {
-        if (cont->serv->connect & CONNECT_OK && cont->serv->type == TYPE_SERVER)
+        if (cont->serv->conn->connect & CONNECT_OK && cont->serv->type == TYPE_SERVER)
         {
             if (RET_IS_OK (ret = SnacCliSendmsg (cont->serv, cont, 1, msg)))
                 return ret;
@@ -280,7 +280,7 @@ UBYTE IMCliReMsg (Contact *cont, Message *msg)
     }
 #if ENABLE_XMPP
     if (msg->trans & CV_MSGTRANS_XMPP)
-        if (cont->serv->connect & CONNECT_OK && cont->serv->type == TYPE_XMPP_SERVER)
+        if (cont->serv->conn->connect & CONNECT_OK && cont->serv->type == TYPE_XMPP_SERVER)
             if (RET_IS_OK (ret = XMPPSendmsg (cont->serv, cont, msg)))
                 return ret;
 #endif
@@ -340,7 +340,7 @@ void IMSetStatus (Server *serv, Contact *cont, status_t status, const char *msg)
     }
     else
     {
-        if (~serv->connect & CONNECT_OK)
+        if (~serv->conn->connect & CONNECT_OK)
         {
             serv->status = status;
             serv->nativestatus = 0;
@@ -358,7 +358,7 @@ void IMCliAuth (Contact *cont, const char *text, auth_t how)
 {
     assert (cont);
     assert (cont->serv);
-    if (~cont->serv->connect & CONNECT_OK)
+    if (~cont->serv->conn->connect & CONNECT_OK)
         return;
 
     if (cont->serv->type == TYPE_SERVER)

@@ -72,7 +72,7 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
         serv->pref_status = ims_online;
         serv->version = 8;
         s_repl (&serv->screen, user);
-        serv->uin = atoi (user);
+        serv->oscar_uin = atoi (user);
         serv->pref_passwd = passwd ? strdup (passwd) : NULL;
         
         serv->server  = strdup (serv->pref_server);
@@ -110,7 +110,6 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
         serv->pref_status = ims_online;
         serv->version = 8;
         s_repl (&serv->screen, user);
-        serv->uin = 0;
         serv->pref_passwd = passwd ? strdup (passwd) : NULL;
         
         serv->server  = strdup (serv->pref_server);
@@ -144,7 +143,6 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
         serv->pref_status = ims_online;
         serv->version = 8;
         s_repl (&serv->screen, user);
-        serv->uin = 0;
         serv->pref_passwd = passwd ? strdup (passwd) : NULL;
         
         serv->server  = strdup (serv->pref_server);
@@ -1043,7 +1041,7 @@ int Read_RC_File (FILE *rcf)
                         conn->pref_status = TCP_OK_FLAG;
                         if (oldserv->type == TYPE_SERVER)
                         {
-                            oldserv->assoc = conn;
+                            oldserv->oscar_dc = conn;
                             conn->serv = oldserv;
                         }
                         else
@@ -1082,7 +1080,6 @@ int Read_RC_File (FILE *rcf)
                 else if (!strcasecmp (cmd, "uin"))
                 {
                     PrefParseInt (i);
-                    conn->uin = i;
                     s_repl (&conn->screen, s_sprintf ("%lu", UD2UL (i)));
                     dep = 77;
                 }
@@ -1090,7 +1087,6 @@ int Read_RC_File (FILE *rcf)
                 {
                     PrefParse (tmp);
                     s_repl (&conn->screen, tmp);
-                    conn->uin = IcqIsUIN (tmp);
                 }
                 else if (!strcasecmp (cmd, "password"))
                 {
@@ -1631,7 +1627,7 @@ int PrefWriteStatusFile (void)
     {
         if (!ss->flags)
             continue;
-        if (!ss->uin && (ss->type & TYPEF_HAVEUIN))
+        if (!ss->oscar_uin && (ss->type & TYPEF_HAVEUIN))
             continue;
 
         fprintf (stf, "[Contacts]\n");

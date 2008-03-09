@@ -56,7 +56,7 @@
 #define CV_ORIGIN_dcssl CV_ORIGIN_dc
 #endif
 
-#define ASSERT_ANY_DIRECT(s)  (assert (s), assert ((s)->type & TYPEF_ANY_DIRECT), assert ((s)->serv), ASSERT_ANY_LISTEN ((s)->serv->assoc))
+#define ASSERT_ANY_DIRECT(s)  (assert (s), assert ((s)->type & TYPEF_ANY_DIRECT), assert ((s)->serv), ASSERT_ANY_LISTEN ((s)->serv->oscar_dc))
 #define ASSERT_ANY_LISTEN(s)  (assert (s), assert ((s)->type & TYPEF_ANY_LISTEN), ASSERT_ANY_SERVER ((s)->serv))
 
 #ifdef ENABLE_PEER2PEER
@@ -114,7 +114,7 @@ Event *ConnectionInitPeer (Connection *list)
     list->ip          = 0;
     s_repl (&list->server, NULL);
     list->port        = list->pref_port;
-    list->cont        = list->serv->cont ? list->serv->cont : ContactUIN (list->serv, list->serv->uin);
+    list->cont        = list->serv->cont ? list->serv->cont : ContactUIN (list->serv, list->serv->oscar_uin);
 
     UtilIOConnectTCP (list);
     return NULL;
@@ -252,7 +252,7 @@ void TCPDispatchMain (Connection *list)
                 list->connect |= CONNECT_OK | CONNECT_SELECT_R | CONNECT_SELECT_X;
                 list->connect &= ~CONNECT_SELECT_W; /* & ~CONNECT_SELECT_X; */
                 if (list->type == TYPE_MSGLISTEN && list->serv && list->serv->type == TYPE_SERVER
-                    && (list->serv->connect & CONNECT_OK))
+                    && (list->serv->conn->connect & CONNECT_OK))
                     SnacCliSetstatus (list->serv, ims_online, 2);
                 break;
             case 2:
@@ -556,7 +556,7 @@ void TCPDispatchShake (Connection *peer)
 #ifdef ENABLE_SSL
                 /* outgoing peer connection established */
                 if (peer->type == TYPE_MSGDIRECT && ssl_supported (peer) && peer->ssl_status == SSL_STATUS_REQUEST)
-                    if (!TCPSendSSLReq (peer->serv->assoc, cont)) 
+                    if (!TCPSendSSLReq (peer->serv->oscar_dc, cont)) 
                         rl_printf (i18n (2372, "Could not send SSL request to %s\n"), cont->nick);
 #endif
                 return;
@@ -798,10 +798,10 @@ static void TCPSendInitv6 (Connection *peer)
     PacketWrite2  (pak, 0);                          /* TCP revision     */
     PacketWrite4  (pak, peer->cont->uin);            /* destination UIN  */
     PacketWrite2  (pak, 0);                          /* unknown - zero   */
-    PacketWrite4  (pak, peer->serv->assoc->port);    /* our port         */
-    PacketWrite4  (pak, peer->serv->uin);            /* our UIN          */
-    PacketWriteB4 (pak, peer->serv->our_outside_ip); /* our (remote) IP  */
-    PacketWriteB4 (pak, peer->serv->our_local_ip);   /* our (local)  IP  */
+    PacketWrite4  (pak, peer->serv->oscar_dc->port);    /* our port         */
+    PacketWrite4  (pak, peer->serv->oscar_uin);      /* our UIN          */
+    PacketWriteB4 (pak, peer->serv->conn->our_outside_ip); /* our (remote) IP  */
+    PacketWriteB4 (pak, peer->serv->conn->our_local_ip);   /* our (local)  IP  */
     PacketWrite1  (pak, peer->serv->status);         /* connection type  */
     PacketWrite4  (pak, peer->serv->port);           /* our (other) port */
     PacketWrite4  (pak, peer->our_session);          /* session id       */
@@ -850,10 +850,10 @@ static void TCPSendInit (Connection *peer)
     PacketWrite2  (pak, 43);                         /* length           */
     PacketWrite4  (pak, peer->cont->uin);            /* destination UIN  */
     PacketWrite2  (pak, 0);                          /* unknown - zero   */
-    PacketWrite4  (pak, peer->serv->assoc->port);    /* our port         */
-    PacketWrite4  (pak, peer->serv->uin);            /* our UIN          */
-    PacketWriteB4 (pak, peer->serv->our_outside_ip); /* our (remote) IP  */
-    PacketWriteB4 (pak, peer->serv->our_local_ip);   /* our (local)  IP  */
+    PacketWrite4  (pak, peer->serv->oscar_dc->port);    /* our port         */
+    PacketWrite4  (pak, peer->serv->oscar_uin);      /* our UIN          */
+    PacketWriteB4 (pak, peer->serv->conn->our_outside_ip); /* our (remote) IP  */
+    PacketWriteB4 (pak, peer->serv->conn->our_local_ip);   /* our (local)  IP  */
     PacketWrite1  (pak, peer->serv->status);         /* connection type  */
     PacketWrite4  (pak, peer->serv->port);           /* our (other) port */
     PacketWrite4  (pak, peer->our_session);          /* session id       */
@@ -967,10 +967,10 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (nver == 6 && 23 > len2)
             FAIL (4);
 
-        if (muin  != peer->serv->uin)
+        if (muin  != peer->serv->oscar_uin)
             FAIL (5);
         
-        if (uin  == peer->serv->uin)
+        if (uin  == peer->serv->oscar_uin)
             FAIL (6);
         
         if (!(cont = ContactUIN (peer->serv, uin)))
@@ -1031,7 +1031,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
             }
             if (peer2->sok != -1)
                 TCPClose (peer2);
-            peer->len = peer2->len;
+            peer->oscar_file_len = peer2->oscar_file_len;
             ConnectionD (peer2);
         }
         return peer;
@@ -1262,7 +1262,7 @@ UBYTE PeerSendMsgFat (Connection *list, Contact *cont, Message *msg)
         return RET_DEFER;
     if (!cont->uin)
         return RET_DEFER;
-    if (cont->uin == list->serv->uin || !(list->connect & CONNECT_MASK))
+    if (cont->uin == list->serv->oscar_uin || !(list->connect & CONNECT_MASK))
         return RET_DEFER;
     if (!cont->dc->ip_loc && !cont->dc->ip_rem)
         return RET_DEFER;
@@ -1338,7 +1338,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     if (!cont->dc || !cont->dc->port)
         return FALSE;
     
-    if (cont->uin == list->serv->uin)
+    if (cont->uin == list->serv->oscar_uin)
         return FALSE;
     if (!(list->connect & CONNECT_MASK))
         return FALSE;

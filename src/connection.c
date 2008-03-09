@@ -97,6 +97,7 @@ Server *ServerCC (Connection *conn DEBUGPARAM)
     serv = Connection2Server (conn);
     conn->serv = serv;
     serv->conn = conn;
+    serv->logfd = -1;
     Debug (DEB_CONNECT, "<=S= %p create %d", serv, serv->type);
     return serv;
 }
@@ -140,7 +141,6 @@ Connection *ConnectionC (UWORD type DEBUGPARAM)
     conn->sok = -1;
     conn->type = type;
     conn->flags = CONN_CONFIGURED;
-    conn->logfd = -1;
 
     Debug (DEB_CONNECT, "<=== %p[%d] create %d", conn, j, type);
 

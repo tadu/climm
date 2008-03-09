@@ -275,11 +275,11 @@ JUMP_SNAC_F(SnacSrvReplyroster)
                     s_repl (&roster->ICQTIC, re->tlv[j].str.txt);
                 break;
             case roster_visibility:
-                serv->privacy_tag = re->id;
+                serv->oscar_privacy_tag = re->id;
                 j = TLVGet (re->tlv, TLV_PRIVACY);
                 if (j != (UWORD)-1)
                 {
-                    serv->privacy_value = *re->tlv[j].str.txt;
+                    serv->oscar_privacy_value = *re->tlv[j].str.txt;
                     if (*re->tlv[j].str.txt != 3 && *re->tlv[j].str.txt != 4)
                     {
                         rl_printf ("# privacy mode: (%d)\n", *re->tlv[j].str.txt);
@@ -328,14 +328,14 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         }
         if (!roster->ICQTIC)
             SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, roster_icqtic, TLV_ICQTIC, "3608,0,0,0,60,null", 18);
-        if (!serv->privacy_tag)
+        if (!serv->oscar_privacy_tag)
         {
-            serv->privacy_tag = rand () % 0x8000;
-            SnacCliRosterentryadd (serv, "", 0, serv->privacy_tag, roster_visibility, TLV_PRIVACY, "\x03", 1);
-            serv->privacy_value = 3;
+            serv->oscar_privacy_tag = rand () % 0x8000;
+            SnacCliRosterentryadd (serv, "", 0, serv->oscar_privacy_tag, roster_visibility, TLV_PRIVACY, "\x03", 1);
+            serv->oscar_privacy_value = 3;
         }
 #endif
-        if (~serv->connect & CONNECT_OK)
+        if (~serv->conn->connect & CONNECT_OK)
             CliFinishLogin (serv);
 
         if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
@@ -638,12 +638,12 @@ void SnacCliSetvisibility (Server *serv, char value, char islogin)
 {
     Packet *pak;
     
-    if (serv->privacy_tag)
+    if (serv->oscar_privacy_tag)
     {
         pak = SnacC (serv, 19, 9, 0, 0);
         PacketWriteStrB     (pak, "");
         PacketWriteB2       (pak, 0);
-        PacketWriteB2       (pak, serv->privacy_tag);
+        PacketWriteB2       (pak, serv->oscar_privacy_tag);
         PacketWriteB2       (pak, roster_visibility);
         PacketWriteBLen     (pak);
         PacketWriteTLV      (pak, TLV_PRIVACY);
@@ -651,13 +651,13 @@ void SnacCliSetvisibility (Server *serv, char value, char islogin)
         PacketWriteTLVDone  (pak);
         PacketWriteBLenDone (pak);
         SnacSendR (serv, pak, cb_LoginVisibilitySet, NULL);
-        serv->privacy_value = value;
+        serv->oscar_privacy_value = value;
     }
     else
     {
-        serv->privacy_tag = rand () % 0x8000;
-        SnacCliRosterentryadd (serv, "", 0, serv->privacy_tag, roster_visibility, TLV_PRIVACY, &value, 1);
-        serv->privacy_value = value;
+        serv->oscar_privacy_tag = rand () % 0x8000;
+        SnacCliRosterentryadd (serv, "", 0, serv->oscar_privacy_tag, roster_visibility, TLV_PRIVACY, &value, 1);
+        serv->oscar_privacy_value = value;
     }
 }
 
@@ -893,14 +893,14 @@ JUMP_SNAC_F(SnacSrvRosterok)
     }
     if (!roster->ICQTIC)
         SnacCliRosterentryadd (serv, "ICQTIC", 0, 2, roster_icqtic, TLV_ICQTIC, "3608,0,0,0,60,null", 18);
-    if (!serv->privacy_tag)
+    if (!serv->oscar_privacy_tag)
     {
-        serv->privacy_tag = rand () % 0x8000;
-        SnacCliRosterentryadd (serv, "", 0, serv->privacy_tag, roster_visibility, TLV_PRIVACY, "\x03", 1);
-        serv->privacy_value = 3;
+        serv->oscar_privacy_tag = rand () % 0x8000;
+        SnacCliRosterentryadd (serv, "", 0, serv->oscar_privacy_tag, roster_visibility, TLV_PRIVACY, "\x03", 1);
+        serv->oscar_privacy_value = 3;
     }
 #endif
-    if (~serv->connect & CONNECT_OK)
+    if (~serv->conn->connect & CONNECT_OK)
         CliFinishLogin (serv);
 
     if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))

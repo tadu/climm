@@ -76,8 +76,8 @@ void SrvCallBackFlap (Event *event)
     event->pak->id  = PacketReadB2 (event->pak);
                       PacketReadB2 (event->pak);
     
-    serv->stat_pak_rcvd++;
-    serv->stat_real_pak_rcvd++;
+    serv->conn->stat_pak_rcvd++;
+    serv->conn->stat_real_pak_rcvd++;
     switch (event->pak->cmd)
     {
         case 1: /* Client login */
@@ -122,14 +122,14 @@ static void FlapChannel1 (Server *serv, Packet *pak)
                 rl_print (s_dump (pak->data + pak->rpos, PacketReadLeft (pak)));
                 break;
             }
-            if (!serv->uin)
+            if (!serv->oscar_uin)
             {
                 FlapCliHello (serv);
                 SnacCliRegisteruser (serv);
             }
-            else if (serv->connect & 8)
+            else if (serv->conn->connect & 8)
             {
-                TLV *tlv = serv->tlv;
+                TLV *tlv = serv->oscar_tlv;
                 
                 assert (tlv);
                 FlapCliCookie (serv, tlv[6].str.txt, tlv[6].str.len);
@@ -159,7 +159,7 @@ void FlapChannel4 (Server *serv, Packet *pak)
     if (!tlv[5].str.len)
     {
         rl_printf ("%s " COLINDENT, s_now);
-        if (!(serv->connect & CONNECT_OK))
+        if (!(serv->conn->connect & CONNECT_OK))
             rl_print (i18n (1895, "Login failed:\n"));
         else
             rl_print (i18n (1896, "Server closed connection:\n"));
@@ -175,10 +175,10 @@ void FlapChannel4 (Server *serv, Packet *pak)
         if (tlv[8].nr == 5)
             s_repl (&serv->passwd, NULL);
 
-        if ((serv->connect & CONNECT_MASK) && serv->sok != -1)
-            sockclose (serv->sok);
-        serv->connect = 0;
-        serv->sok = -1;
+        if ((serv->conn->connect & CONNECT_MASK) && serv->conn->sok != -1)
+            sockclose (serv->conn->sok);
+        serv->conn->connect = 0;
+        serv->conn->sok = -1;
         TLVD (tlv);
         tlv = NULL;
     }
@@ -190,13 +190,13 @@ void FlapChannel4 (Server *serv, Packet *pak)
         serv->port = atoi (strchr (tlv[5].str.txt, ':') + 1);
         *strchr (tlv[5].str.txt, ':') = '\0';
         s_repl (&serv->server, tlv[5].str.txt);
-        serv->ip = 0;
+        serv->conn->ip = 0;
 
         rl_printf (i18n (2511, "Redirect to server %s:%s%ld%s... "),
                   s_wordquote (serv->server), COLQUOTE, UD2UL (serv->port), COLNONE);
 
-        serv->connect = 8;
-        serv->tlv = tlv;
+        serv->conn->connect = 8;
+        serv->oscar_tlv = tlv;
         UtilIOConnectTCP (serv->conn);
     }
 }
@@ -331,10 +331,10 @@ void FlapSend (Server *serv, Packet *pak)
     if (ConnectionPrefVal (serv, CO_LOGSTREAM))
         FlapSave (serv, pak, FALSE);
     
-    serv->stat_pak_sent++;
-    serv->stat_real_pak_sent++;
+    serv->conn->stat_pak_sent++;
+    serv->conn->stat_real_pak_sent++;
     
-    sockwrite (serv->sok, pak->data, pak->len);
+    sockwrite (serv->conn->sok, pak->data, pak->len);
     PacketD (pak);
 }
 
@@ -405,15 +405,15 @@ void FlapCliGoodbye (Server *serv)
 {
     Packet *pak;
     
-    if (!(serv->connect & CONNECT_MASK))
+    if (!(serv->conn->connect & CONNECT_MASK))
         return;
     
     pak = FlapC (4);
     FlapSend (serv, pak);
     
-    sockclose (serv->sok);
-    serv->sok = -1;
-    serv->connect = 0;
+    sockclose (serv->conn->sok);
+    serv->conn->sok = -1;
+    serv->conn->connect = 0;
 }
 
 void FlapCliKeepalive (Server *serv)
@@ -434,20 +434,20 @@ Event *ConnectionInitServer (Server *serv)
     
     if (!serv->passwd || !*serv->passwd || !serv->port)
         return NULL;
-    if (!serv->uin && ~serv->flags & CONN_WIZARD)
+    if (!serv->oscar_uin && ~serv->flags & CONN_WIZARD)
         return NULL;
     if (!serv->server || !*serv->server)
         s_repl (&serv->server, "login.icq.com");
 
-    if (serv->sok != -1)
-        sockclose (serv->sok);
-    serv->sok = -1;
-    serv->cont = cont = serv->uin ? ContactUIN (serv, serv->uin) : NULL;
+    if (serv->conn->sok != -1)
+        sockclose (serv->conn->sok);
+    serv->conn->sok = -1;
+    serv->cont = cont = serv->oscar_uin ? ContactUIN (serv, serv->oscar_uin) : NULL;
     serv->our_seq  = rand () & 0x7fff;
-    serv->connect  = 0;
-    serv->dispatch = &SrvCallBackReceive;
-    serv->reconnect= &SrvCallBackReconn;
-    serv->close    = &FlapCliGoodbyeConn;
+    serv->conn->connect  = 0;
+    serv->conn->dispatch = &SrvCallBackReceive;
+    serv->conn->reconnect= &SrvCallBackReconn;
+    serv->conn->close    = &FlapCliGoodbyeConn;
     s_repl (&serv->server, serv->pref_server);
     if (serv->status == ims_offline)
         serv->status = serv->pref_status;
@@ -469,20 +469,21 @@ Event *ConnectionInitServer (Server *serv)
               : cont->screen, COLNONE);
 
     UtilIOConnectTCP (serv->conn);
-    if (serv->assoc && serv->assoc->c_open)
-        serv->assoc->c_open (serv->assoc);
+    if (serv->oscar_dc && serv->oscar_dc->c_open)
+        serv->oscar_dc->c_open (serv->oscar_dc);
     return event;
 }
 
 static void SrvCallBackReconn (Connection *conn)
 {
-    ContactGroup *cg = conn->contacts;
+    ContactGroup *cg;
     Server *serv;
     Event *event;
     Contact *cont;
     int i;
 
     serv = conn->serv;
+    cg = serv->contacts;
 
     if (!(cont = serv->cont))
         return;
@@ -634,13 +635,13 @@ Server *SrvRegisterUIN (Server *serv, const char *pass)
         ServerD (news);
         return NULL;
     }
-    news->assoc = newl;
+    news->oscar_dc = newl;
     newl->c_open = &ConnectionInitPeer;
-    if (serv && serv->assoc)
+    if (serv && serv->oscar_dc)
     {
-        newl->version = serv->assoc->version;
-        newl->status = newl->pref_status = serv->assoc->pref_status;
-        newl->flags = serv->assoc->flags & ~CONN_CONFIGURED;
+        newl->version = serv->oscar_dc->version;
+        newl->status = newl->pref_status = serv->oscar_dc->pref_status;
+        newl->flags = serv->oscar_dc->flags & ~CONN_CONFIGURED;
     }
     else
     {
@@ -670,7 +671,7 @@ Server *SrvRegisterUIN (Server *serv, const char *pass)
         news->pref_passwd  = strdup (pass);
         news->flags |= CONN_AUTOLOGIN;
     }
-    news->uin = 0;
+    news->oscar_uin = 0;
     s_repl (&news->screen, "");
     news->server = strdup (news->pref_server);
     news->port = news->pref_port;

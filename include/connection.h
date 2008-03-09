@@ -30,7 +30,6 @@ struct Connection_s
     UWORD     type;           /* connection type - TYPE_*                 */
     UBYTE     flags;          /* connection flags                         */
     UBYTE     version;        /* protocol version in this session         */
-    UDWORD    uin;            /* the uin of this server connection        */
     char     *screen;
     status_t  pref_status;
     char     *pref_server;
@@ -39,25 +38,24 @@ struct Connection_s
 
     Contact  *cont;           /* the user this connection is for          */
     status_t  status;         /* own status                               */
-    UDWORD    nativestatus;   /* own ICQ extended status                  */
     char     *server;         /* the remote server name                   */
     UDWORD    port;           /* the port the server is listening on      */
     char     *passwd;         /* the password for this user               */
-    UDWORD    ip;             /* the remote ip (host byte order)          */
     
-    idleflag_t idle_flag;     /* the idle status                          */
+    UWORD     our_seq;        /* current primary sequence number          */
 
+    jump_conn_open_f *c_open;  /* function to call to open        */
+    Connection            *assoc;  /* associated session           */
+
+
+    UDWORD    ip;             /* the remote ip (host byte order)          */
+    UDWORD    our_local_ip;   /* LAN-internal IP (host byte order)        */
+    UDWORD    our_outside_ip; /* the IP address the server sees from us   */
     SOK_T     sok;            /* socket for connection to server          */
     UWORD     connect;        /* connection setup status                  */
     Packet   *incoming;       /* packet we're receiving                   */
     Packet   *outgoing;       /* packet we're sending                     */
     
-    ContactGroup *contacts;   /* The contacts for this connection         */
-    
-    void     *xmpp_private;   /* private data for XMPP connections        */
-
-    void     *tlv;            /* temporary during v8 connect              */
-
 #if ENABLE_SSL
 #if ENABLE_GNUTLS
     gnutls_session ssl;       /* The SSL data structure for GnuTLS        */
@@ -66,39 +64,35 @@ struct Connection_s
 #endif
     ssl_status_t ssl_status;  /* SSL status (INIT,OK,FAILED,...)          */
 #endif
-
-    UDWORD    our_local_ip;   /* LAN-internal IP (host byte order)        */
-    UDWORD    our_outside_ip; /* the IP address the server sees from us   */
-
     UDWORD    our_session;    /* session ID                               */
-    UWORD     our_seq_dc;     /* sequence number for dc and type-2        */
-    UWORD     our_seq;        /* current primary sequence number          */
-    UWORD     our_seq2;       /* current secondary sequence number        */
-    UDWORD    our_seq3;       /* current old-ICQ sequence number          */
-    
-    UDWORD    len;            /* used for file transfer                   */
-    UDWORD    done;           /* used for file transfer                   */
-
-    Connection            *assoc;  /* associated session           */
+    UDWORD    oscar_file_len;            /* used for file transfer                   */
+    UDWORD    oscar_file_done;           /* used for file transfer                   */
     Server                *serv;   /* parent session               */
-    Connection            *foo_conn;   /* main I/O connection          */
-    
-    SOK_T     logfd;
-    UWORD     privacy_tag;         /* F*cking ICQ needs to change the value */
-    UBYTE     privacy_value;       /* when switching between visible and invisible */
-    
+    jump_conn_f *dispatch;     /* function to call on select()    */
+    jump_conn_f *reconnect;    /* function to call for reconnect  */
+    jump_conn_err_f *error;    /* function to call for i/o errors */
+    jump_conn_f *close;        /* function to call to close       */
+    jump_conn_f *utilio;       /* private to util_io.c            */
     UDWORD    stat_real_pak_sent;
     UDWORD    stat_real_pak_rcvd;
     UDWORD    stat_pak_sent;
     UDWORD    stat_pak_rcvd;
 
-    jump_conn_open_f *c_open;  /* function to call to open        */
-    jump_conn_f *dispatch;     /* function to call on select()    */
-    jump_conn_f *reconnect;    /* function to call for reconnect  */
-    jump_conn_err_f *error;    /* function to call for i/o errors */
-    jump_conn_f *close;        /* function to call to close       */
+    SOK_T     foo_logfd;
+    ContactGroup *foo_contacts;   /* The contacts for this connection         */
+    Connection            *foo_conn;   /* main I/O connection          */
+    UDWORD    foo_nativestatus;   /* own ICQ extended status                  */
+    idleflag_t foo_idle_flag;     /* the idle status                          */
+    
+    void     *foo_xmpp_private;   /* private data for XMPP connections        */
 
-    jump_conn_f *utilio;       /* private to util_io.c            */
+    void     *foo_oscar_tlv;            /* temporary during v8 connect              */
+    UDWORD    foo_oscar_uin;            /* the uin of this server connection        */
+    UWORD     foo_oscar_type2_seq;     /* sequence number for dc and type-2        */
+    UWORD     foo_oscar_snac_seq;       /* current secondary sequence number        */
+    UDWORD    foo_oscar_icq_seq;       /* current old-ICQ sequence number          */
+    UWORD     foo_oscar_privacy_tag;         /* F*cking ICQ needs to change the value */
+    UBYTE     foo_oscar_privacy_value;       /* when switching between visible and invisible */
 };
 
 struct Server_s
@@ -106,7 +100,6 @@ struct Server_s
     UWORD     type;           /* connection type - TYPE_*                 */
     UBYTE     flags;          /* connection flags                         */
     UBYTE     version;        /* protocol version in this session         */
-    UDWORD    uin;            /* the uin of this server connection        */
     char     *screen;
     status_t  pref_status;
     char     *pref_server;
@@ -115,66 +108,60 @@ struct Server_s
 
     Contact  *cont;           /* the user this connection is for          */
     status_t  status;         /* own status                               */
-    UDWORD    nativestatus;   /* own ICQ extended status                  */
     char     *server;         /* the remote server name                   */
     UDWORD    port;           /* the port the server is listening on      */
     char     *passwd;         /* the password for this user               */
-    UDWORD    ip;             /* the remote ip (host byte order)          */
     
-    idleflag_t idle_flag;     /* the idle status                          */
-
-    SOK_T     sok;            /* socket for connection to server          */
-    UWORD     connect;        /* connection setup status                  */
-    Packet   *incoming;       /* packet we're receiving                   */
-    Packet   *outgoing;       /* packet we're sending                     */
-    
-    ContactGroup *contacts;   /* The contacts for this connection         */
-    
-    void     *xmpp_private;   /* private data for XMPP connections        */
-
-    void     *tlv;            /* temporary during v8 connect              */
-
-#if ENABLE_SSL
-#if ENABLE_GNUTLS
-    gnutls_session ssl;       /* The SSL data structure for GnuTLS        */
-#else
-    SSL *ssl;                 /* SSL session struct for OpenSSL           */
-#endif
-    ssl_status_t ssl_status;  /* SSL status (INIT,OK,FAILED,...)          */
-#endif
-
-    UDWORD    our_local_ip;   /* LAN-internal IP (host byte order)        */
-    UDWORD    our_outside_ip; /* the IP address the server sees from us   */
-
-    UDWORD    our_session;    /* session ID                               */
-    UWORD     our_seq_dc;     /* sequence number for dc and type-2        */
     UWORD     our_seq;        /* current primary sequence number          */
-    UWORD     our_seq2;       /* current secondary sequence number        */
-    UDWORD    our_seq3;       /* current old-ICQ sequence number          */
-    
-    UDWORD    len;            /* used for file transfer                   */
-    UDWORD    done;           /* used for file transfer                   */
-
-    Connection            *assoc;  /* associated session           */
-    Server                *foo_serv; /* parent session               */
-    Connection            *conn;   /* main I/O connection          */
-    
-    SOK_T     logfd;
-    UWORD     privacy_tag;         /* F*cking ICQ needs to change the value */
-    UBYTE     privacy_value;       /* when switching between visible and invisible */
-    
-    UDWORD    stat_real_pak_sent;
-    UDWORD    stat_real_pak_rcvd;
-    UDWORD    stat_pak_sent;
-    UDWORD    stat_pak_rcvd;
 
     jump_serv_open_f *c_open;  /* function to call to open        */
-    jump_conn_f *dispatch;     /* function to call on select()    */
-    jump_conn_f *reconnect;    /* function to call for reconnect  */
-    jump_conn_err_f *error;    /* function to call for i/o errors */
-    jump_conn_f *close;        /* function to call to close       */
+    Connection            *oscar_dc;  /* associated session           */
 
-    jump_conn_f *utilio;       /* private to util_io.c            */
+
+    UDWORD    foo_ip;             /* the remote ip (host byte order)          */
+    UDWORD    foo_our_local_ip;   /* LAN-internal IP (host byte order)        */
+    UDWORD    foo_our_outside_ip; /* the IP address the server sees from us   */
+    SOK_T     foo_sok;            /* socket for connection to server          */
+    UWORD     foo_connect;        /* connection setup status                  */
+    Packet   *foo_incoming;       /* packet we're receiving                   */
+    Packet   *foo_outgoing;       /* packet we're sending                     */
+#if ENABLE_SSL
+#if ENABLE_GNUTLS
+    gnutls_session foo_ssl;       /* The SSL data structure for GnuTLS        */
+#else
+    SSL *foo_ssl;                 /* SSL session struct for OpenSSL           */
+#endif
+    ssl_status_t foo_ssl_status;  /* SSL status (INIT,OK,FAILED,...)          */
+#endif
+    UDWORD    foo_our_session;    /* session ID                               */
+    UDWORD    foo_oscar_file_len;            /* used for file transfer                   */
+    UDWORD    foo_oscar_file_done;           /* used for file transfer                   */
+    Server                *foo_serv; /* parent session               */
+    jump_conn_f *foo_dispatch;     /* function to call on select()    */
+    jump_conn_f *foo_reconnect;    /* function to call for reconnect  */
+    jump_conn_err_f *foo_error;    /* function to call for i/o errors */
+    jump_conn_f *foo_close;        /* function to call to close       */
+    jump_conn_f *foo_utilio;       /* private to util_io.c            */
+    UDWORD    foo_stat_real_pak_sent;
+    UDWORD    foo_stat_real_pak_rcvd;
+    UDWORD    foo_stat_pak_sent;
+    UDWORD    foo_stat_pak_rcvd;
+
+    SOK_T     logfd;
+    ContactGroup *contacts;   /* The contacts for this connection         */
+    Connection            *conn;   /* main I/O connection          */
+    UDWORD    nativestatus;   /* own ICQ extended status                  */
+    idleflag_t idle_flag;     /* the idle status                          */
+
+    void     *xmpp_private;   /* private data for XMPP connections        */
+
+    void     *oscar_tlv;            /* temporary during v8 connect              */
+    UDWORD    oscar_uin;            /* the uin of this server connection        */
+    UWORD     oscar_type2_seq;     /* sequence number for dc and type-2        */
+    UWORD     oscar_snac_seq;       /* current secondary sequence number        */
+    UDWORD    oscar_icq_seq;       /* current old-ICQ sequence number          */
+    UWORD     oscar_privacy_tag;         /* F*cking ICQ needs to change the value */
+    UBYTE     oscar_privacy_value;       /* when switching between visible and invisible */
 };
 
 #define CONNECT_MASK       0x00ff

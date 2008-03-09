@@ -207,8 +207,8 @@ Packet *SnacC (Server *serv, UWORD fam, UWORD cmd, UWORD flags, UDWORD ref)
 {
     Packet *pak;
     
-    if (!serv->our_seq2)
-        serv->our_seq2 = rand () & 0x7fff;
+    if (!serv->oscar_snac_seq)
+        serv->oscar_snac_seq = rand () & 0x7fff;
     if (!ref)
         ref = rand () & 0x7fff;
     
