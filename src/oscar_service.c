@@ -375,7 +375,7 @@ void SnacCliSetstatus (Server *serv, status_t status, UWORD action)
         if (serv->oscar_dc && serv->oscar_dc->connect & CONNECT_OK)
         {
             PacketWriteB4 (pak, serv->oscar_dc->port);
-            PacketWrite1  (pak, serv->oscar_dc->status);
+            PacketWrite1  (pak, ConnectionPrefVal (serv, CO_OSCAR_DC_MODE) & 15);
             PacketWriteB2 (pak, serv->oscar_dc->version);
             PacketWriteB4 (pak, serv->oscar_dc->our_session);
         }

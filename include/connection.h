@@ -30,20 +30,17 @@ typedef BOOL (jump_conn_err_f)(Connection *conn, UDWORD rc, UDWORD flags);
 struct Connection_s
 {
     UWORD     type;           /* connection type - TYPE_*                 */
-    UBYTE     foo_flags;          /* connection flags                         */
     UBYTE     version;        /* protocol version in this session         */
-    char     *screen;
 
     Contact  *cont;           /* the user this connection is for          */
-    status_t  status;         /* own status                               */
     char     *server;         /* the remote server name                   */
     UDWORD    port;           /* the port the server is listening on      */
     
     UWORD     our_seq;        /* current primary sequence number          */
 
+
     jump_conn_open_f *c_open;  /* function to call to open        */
     Connection       *oscar_file;  /* associated file saving session           */
-
 
     UDWORD    ip;             /* the remote ip (host byte order)          */
     UDWORD    our_local_ip;   /* LAN-internal IP (host byte order)        */
@@ -75,6 +72,9 @@ struct Connection_s
     UDWORD    stat_pak_sent;
     UDWORD    stat_pak_rcvd;
 
+    char     *foo_screen;
+    status_t  foo_status;         /* own status                               */
+    UBYTE     foo_flags;          /* connection flags                         */
     status_t  foo_pref_status;
     char     *foo_pref_server;
     UDWORD    foo_pref_port;
@@ -101,20 +101,17 @@ struct Connection_s
 struct Server_s
 {
     UWORD     type;           /* connection type - TYPE_*                 */
-    UBYTE     flags;          /* connection flags                         */
     UBYTE     version;        /* protocol version in this session         */
-    char     *screen;
 
     Contact  *cont;           /* the user this connection is for          */
-    status_t  status;         /* own status                               */
     char     *server;         /* the remote server name                   */
     UDWORD    port;           /* the port the server is listening on      */
     
     UWORD     our_seq;        /* current primary sequence number          */
 
+
     jump_serv_open_f *c_open;  /* function to call to open        */
     Connection            *oscar_dc;  /* associated session           */
-
 
     UDWORD    foo_ip;             /* the remote ip (host byte order)          */
     UDWORD    foo_our_local_ip;   /* LAN-internal IP (host byte order)        */
@@ -145,6 +142,9 @@ struct Server_s
     UDWORD    foo_stat_pak_sent;
     UDWORD    foo_stat_pak_rcvd;
 
+    char     *screen;
+    status_t  status;         /* own status                               */
+    UBYTE     flags;          /* connection flags                         */
     status_t  pref_status;
     char     *pref_server;
     UDWORD    pref_port;

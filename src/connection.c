@@ -100,6 +100,7 @@ Server *ServerC (UWORD type DEBUGPARAM)
     serv->conn = conn;
     serv->logfd = -1;
     serv->flags = 0;
+    serv->status = ims_offline;
     Debug (DEB_CONNECT, "<=S= %p create %d", serv, serv->type);
     return serv;
 }
@@ -139,7 +140,6 @@ Connection *ConnectionC (UWORD type DEBUGPARAM)
     
     conn->our_local_ip   = 0x7f000001;
     conn->our_outside_ip = 0x7f000001;
-    conn->status = ims_offline;
     conn->sok = -1;
     conn->type = type;
 
@@ -163,7 +163,6 @@ Connection *ServerChild (Server *serv, Contact *cont, UWORD type DEBUGPARAM)
 
     child->serv   = serv;
     child->cont   = cont;
-    child->screen = strdup (serv->screen ? serv->screen : "child");
     
     Debug (DEB_CONNECT, "<=*= %p (%s) clone from %p (%s)",
         child, ConnectionStrType (child), serv, ServerStrType (serv));
@@ -277,8 +276,9 @@ Server *ServerFindScreen (UWORD type, const char *screen)
         for (i = 0; i < ConnectionListLen; i++)
         {
             if ((conn = cl->conn[i]) && (conn->type & type) == type
-                && conn->screen && !strcmp (conn->screen, screen))
-                return Connection2Server (conn);
+                && conn->serv && conn->serv->conn == conn
+                && conn->serv->screen && !strcmp (conn->serv->screen, screen))
+                return conn->serv;
             if (~conn->type & TYPEF_ANY_SERVER)
                 return NULL;
         }
@@ -321,6 +321,7 @@ UDWORD ServerFindNr (const Server *serv)
 void ServerD (Server *serv DEBUGPARAM)
 {
     Connection *conn = Server2Connection (serv);
+    s_repl (&serv->screen, NULL);
     ConnectionD (conn);
     Debug (DEB_CONNECT, "=S=> %p closed.", conn);
 }
@@ -352,7 +353,6 @@ void ConnectionD (Connection *conn DEBUGPARAM)
     conn->connect = 0;
     conn->serv  = NULL;
     s_free (conn->server);
-    s_free (conn->screen);
     conn->server  = NULL;
 
     for (cl = &slist; cl; cl = cl->more)

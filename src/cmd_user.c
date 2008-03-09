@@ -4107,7 +4107,7 @@ static JUMP_F(CmdUserConn)
 #else
                           "",
 #endif
-                          cont ? cont->nick : "", ContactStatusStr (connl->status),
+                          cont ? cont->nick : "", ContactStatusStr (connl->foo_status),
                           connl->server ? connl->server : s_ip (connl->ip), UD2UL (connl->port),
                           connl->connect & CONNECT_FAIL ? i18n (1497, "failed") :
                           connl->connect & CONNECT_OK   ? i18n (1934, "connected") :

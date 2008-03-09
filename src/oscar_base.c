@@ -478,7 +478,6 @@ Event *ConnectionInitServer (Server *serv)
         {
             conn = ServerChild (serv, NULL, TYPE_MSGLISTEN);
             conn->version = serv->version;
-            conn->status = v & 15;
             conn->c_open = &ConnectionInitPeer;
             serv->oscar_dc = conn;
         }

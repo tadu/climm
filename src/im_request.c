@@ -36,7 +36,7 @@ static void CallbackTogvis (Event *event)
     if (!event)
         return;
     if (!event->cont || !event->conn || ContactPrefVal (event->cont, CO_INTIMATE)
-        || !ContactIsInv (event->conn->status))
+        || !ContactIsInv (event->conn->serv->status))
     {
         EventD (event);
         return;
