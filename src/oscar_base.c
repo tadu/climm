@@ -434,6 +434,7 @@ Event *ConnectionInitServer (Server *serv)
     
     if (!serv->passwd || !*serv->passwd || !serv->port)
         return NULL;
+    serv->oscar_uin = atoi (serv->screen);
     if (!serv->oscar_uin && ~serv->flags & CONN_WIZARD)
         return NULL;
     if (!serv->server || !*serv->server)
