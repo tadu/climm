@@ -113,7 +113,7 @@ Event *ConnectionInitPeer (Connection *list)
     list->our_session = 0;
     list->ip          = 0;
     s_repl (&list->server, NULL);
-    list->port        = list->pref_port;
+    list->port        = ConnectionPrefVal (list->serv, CO_OSCAR_DC_PORT);
     list->cont        = list->serv->cont ? list->serv->cont : ContactUIN (list->serv, list->serv->oscar_uin);
 
     UtilIOConnectTCP (list);

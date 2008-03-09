@@ -209,7 +209,6 @@ static void Init (int argc, char *argv[])
     WSADATA wsaData;
 #endif
     Server *serv;
-    Connection *conn;
     Event *loginevent = NULL;
     const char *arg_v, *arg_f, *arg_l, *arg_i, *arg_b, *arg_s, *arg_u, *arg_p;
     UDWORD loaded, uingiven = 0, arg_h = 0, arg_vv = 0, arg_c = 0;
@@ -494,9 +493,9 @@ static void Init (int argc, char *argv[])
         targv[j++] = "";
     }
 
-    for (i = 0; (conn = ConnectionNr (i)); i++)
-        if (conn->c_open && conn->flags & CONN_AUTOLOGIN)
-            conn->status = conn->pref_status;
+    for (i = 0; (serv = ServerNr (i)); i++)
+        if (serv->c_open && serv->flags & CONN_AUTOLOGIN)
+            serv->status = serv->pref_status;
 
     serv = NULL;
     s_init (&arg_C, "", 0);
@@ -563,28 +562,27 @@ static void Init (int argc, char *argv[])
         }
     }
     
-    conn = NULL;
     if (!uingiven)
-        for (i = 0; (conn = ConnectionNr (i)); i++)
-            if (conn->c_open && conn->flags & CONN_AUTOLOGIN && conn->type & TYPEF_ANY_SERVER)
-                if (!conn->passwd || !*conn->passwd)
+        for (i = 0; (serv = ServerNr (i)); i++)
+            if (serv->c_open && serv->flags & CONN_AUTOLOGIN && serv->type & TYPEF_ANY_SERVER)
+                if (!serv->passwd || !*serv->passwd)
                 {
                     strc_t pwd;
-                    const char *s = s_sprintf ("%s", s_qquote (conn->screen));
+                    const char *s = s_sprintf ("%s", s_qquote (serv->screen));
                     rl_printf (i18n (2689, "Enter password for %s account %s: "),
-                               s_qquote (ConnectionServerType (conn->type)), s);
+                               s_qquote (ConnectionServerType (serv->type)), s);
                     pwd = UtilIOReadline (stdin);
                     rl_printf ("\n");
-                    s_repl (&conn->passwd, pwd ? ConvFrom (pwd, prG->enc_loc)->txt : "");
+                    s_repl (&serv->passwd, pwd ? ConvFrom (pwd, prG->enc_loc)->txt : "");
                 }
 
     if (!uingiven)
     {
-        for (i = 0; (conn = ConnectionNr (i)); i++)
-            if (conn->c_open && conn->flags & CONN_AUTOLOGIN)
+        for (i = 0; (serv = ServerNr (i)); i++)
+            if (serv->c_open && serv->flags & CONN_AUTOLOGIN)
             {
-                if (conn->passwd && *conn->passwd && conn->status != ims_offline && (loginevent = conn->c_open (conn)))
-                         QueueEnqueueDep (conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, conn->cont,
+                if (serv->passwd && *serv->passwd && serv->status != ims_offline && (loginevent = serv->c_open (serv)))
+                         QueueEnqueueDep (serv->conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, serv->cont,
                                           OptSetVals (NULL, CO_CLIMMCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                           &CmdUserCallbackTodo);
             }
@@ -603,9 +601,8 @@ static void Init (int argc, char *argv[])
             OptSetStr (&prG->copts, CO_SCRIPT_PATH, path);
         }
         connr->c_open = &RemoteOpen;
-        connr->pref_server = strdup (path);
         connr->serv = NULL;
-        connr->server = strdup (connr->pref_server);
+        connr->server = strdup (path);
         if (connr->server && *connr->server)
             connr->c_open (connr);
     }

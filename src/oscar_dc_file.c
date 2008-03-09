@@ -89,17 +89,17 @@ Connection *PeerFileCreate (Server *serv)
     if (!flist)
         return NULL;
 
-    if (prG->verbose)
-        rl_printf (i18n (2519, "Opening file listener connection at %slocalhost%s:%s%ld%s... "),
-                  COLQUOTE, COLNONE, COLQUOTE, UD2UL (serv->oscar_dc->pref_port), COLNONE);
-
     flist->our_seq  = -1;
     flist->version  = serv->oscar_dc->version;
     flist->cont     = serv->oscar_dc->cont;
-    flist->port     = serv->oscar_dc->pref_port;
+    flist->port     = ConnectionPrefVal (serv, CO_OSCAR_DC_PORT);
     flist->dispatch = &TCPDispatchMain;
     flist->close    = &PeerFileDispatchClose;
     
+    if (prG->verbose)
+        rl_printf (i18n (2519, "Opening file listener connection at %slocalhost%s:%s%ld%s... "),
+                  COLQUOTE, COLNONE, COLQUOTE, UD2UL (flist->port), COLNONE);
+
     UtilIOConnectTCP (flist);
     
     return flist;

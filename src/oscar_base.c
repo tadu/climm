@@ -636,7 +636,7 @@ Server *SrvRegisterUIN (Server *serv, const char *pass)
 {
     Server *news;
 #ifdef ENABLE_PEER2PEER
-    Connection *newl;
+    val_t v;
 #endif
 
     assert (pass);
@@ -646,25 +646,12 @@ Server *SrvRegisterUIN (Server *serv, const char *pass)
         return NULL;
 
 #ifdef ENABLE_PEER2PEER
-    if (!(newl = ServerChild (news, NULL, TYPE_MSGLISTEN)))
-    {
-        ServerD (news);
-        return NULL;
-    }
-    news->oscar_dc = newl;
-    newl->c_open = &ConnectionInitPeer;
-    if (serv && serv->oscar_dc)
-    {
-        newl->version = serv->oscar_dc->version;
-        newl->status = newl->pref_status = serv->oscar_dc->pref_status;
-        newl->flags = serv->oscar_dc->flags & ~CONN_CONFIGURED;
-    }
+    if (OptGetVal (&serv->copts, CO_OSCAR_DC_MODE, &v))
+        OptSetVal (&news->copts, CO_OSCAR_DC_MODE, v);
     else
-    {
-        newl->version = 8;
-        newl->status = newl->pref_status = prG->s5Use ? 2 : TCP_OK_FLAG;
-    }
-    newl->flags &= ~CONN_AUTOLOGIN;
+        OptSetVal (&news->copts, CO_OSCAR_DC_MODE, 20);
+    if (OptGetVal (&serv->copts, CO_OSCAR_DC_PORT, &v))
+        OptSetVal (&news->copts, CO_OSCAR_DC_PORT, v);
 #endif
 
     if (serv)

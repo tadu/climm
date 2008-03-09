@@ -88,7 +88,6 @@ extern struct OptEntry_s OptList[];
 
 #define CO_SCRIPT        (COF_BOOL    | CO_GLOBAL  | 0x000104UL) /* open a scripting connection       */
 
-#define CO_OSCAR_DC_MODE (COF_NUMERIC | CO_SERVER  | 0x05UL) /* peer2peer connection mode for oscar   */
 #define CO_ENCODING      (COF_NUMERIC | CO_CONTACT | 0x06UL) /* the default encoding for this contact */
 #define CO_ENCODINGSTR   (COF_STRING  | CO_CONTACT | 0x07UL) /* the default encoding for this contact */
 #define CO_CSCHEME       (COF_NUMERIC | CO_GLOBAL  | 0x08UL) /* the color scheme to use               */
@@ -100,6 +99,9 @@ extern struct OptEntry_s OptList[];
 #define CO_REVEALTIME    (COF_NUMERIC | CO_CONTACT | 0x0dUL) /* time to reveal invisibility to contact*/
 
 #define CO_SCRIPT_PATH   (COF_STRING  | CO_GLOBAL  | 0x0eUL) /* path for socket to scripting connection */
+
+#define CO_OSCAR_DC_MODE (COF_NUMERIC | CO_SERVER  | 0x10UL) /* peer2peer connection mode for oscar   */
+#define CO_OSCAR_DC_PORT (COF_NUMERIC | CO_SERVER  | 0x11UL) /* peer2peer connection port             */
 
 #define CO_AUTOAWAY      (COF_STRING  | CO_CONTACT | 0x20UL) /* the away auto reply message           */
 #define CO_AUTONA        (COF_STRING  | CO_CONTACT | 0x21UL) /* the not available auto reply message  */

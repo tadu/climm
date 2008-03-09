@@ -161,9 +161,6 @@ void Initialize_RC_File ()
 {
     strc_t line;
     Server *conn;
-#ifdef ENABLE_REMOTECONTROL
-    Connection *conns;
-#endif
     char *user = NULL;
     char *passwd;
     char *t;
@@ -305,11 +302,8 @@ void Initialize_RC_File ()
         free (tmp);
     }
 #ifdef ENABLE_REMOTECONTROL
-    conns = ConnectionC (TYPE_REMOTE);
-    conns->c_open = &RemoteOpen;
-    conns->flags |= CONN_AUTOLOGIN;
-    conns->pref_server = strdup ("scripting");
-    conns->server = strdup (conns->pref_server);
+    OptSetVal (&prG->copts, CO_SCRIPT, 1);
+    OptSetStr (&prG->copts, CO_SCRIPT_PATH, "scripting");
 #endif
 
     prG->prompt    = strdup (USER_PROMPT);
@@ -1033,6 +1027,11 @@ int Read_RC_File (FILE *rcf)
                     }
                     v = (v & ~15) + ii;
                     OptSetVal (&oldserv->copts, CO_OSCAR_DC_MODE, v);
+                }
+                else if (!strcasecmp (cmd, "port"))
+                {
+                    PrefParseInt (i);
+                    OptSetVal (&oldserv->copts, CO_OSCAR_DC_PORT, i);
                 }
                 break;
             case 302:

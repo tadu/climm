@@ -58,9 +58,9 @@ static void RemoteClose (Connection *remo);
  */
 Event *RemoteOpen (Connection *remo)
 {
-    if (!remo->pref_server)
-        remo->pref_server = strdup ("scripting");
-    s_repl (&remo->server, s_realpath (remo->pref_server));
+    if (!remo->server)
+        remo->server = strdup ("scripting");
+    s_repl (&remo->server, s_realpath (remo->server));
 
     rl_printf (i18n (2223, "Opening scripting FIFO at %s... "), s_wordquote (remo->server));
 

@@ -33,16 +33,11 @@ struct Connection_s
     UBYTE     flags;          /* connection flags                         */
     UBYTE     version;        /* protocol version in this session         */
     char     *screen;
-    status_t  pref_status;
-    char     *pref_server;
-    UDWORD    pref_port;
-    char     *pref_passwd;
 
     Contact  *cont;           /* the user this connection is for          */
     status_t  status;         /* own status                               */
     char     *server;         /* the remote server name                   */
     UDWORD    port;           /* the port the server is listening on      */
-    char     *passwd;         /* the password for this user               */
     
     UWORD     our_seq;        /* current primary sequence number          */
 
@@ -80,6 +75,11 @@ struct Connection_s
     UDWORD    stat_pak_sent;
     UDWORD    stat_pak_rcvd;
 
+    status_t  foo_pref_status;
+    char     *foo_pref_server;
+    UDWORD    foo_pref_port;
+    char     *foo_pref_passwd;
+    char     *foo_passwd;         /* the password for this user               */
     SOK_T     foo_logfd;
     ContactGroup *foo_contacts;   /* The contacts for this connection         */
     Connection            *foo_conn;   /* main I/O connection          */
@@ -104,16 +104,11 @@ struct Server_s
     UBYTE     flags;          /* connection flags                         */
     UBYTE     version;        /* protocol version in this session         */
     char     *screen;
-    status_t  pref_status;
-    char     *pref_server;
-    UDWORD    pref_port;
-    char     *pref_passwd;
 
     Contact  *cont;           /* the user this connection is for          */
     status_t  status;         /* own status                               */
     char     *server;         /* the remote server name                   */
     UDWORD    port;           /* the port the server is listening on      */
-    char     *passwd;         /* the password for this user               */
     
     UWORD     our_seq;        /* current primary sequence number          */
 
@@ -150,6 +145,11 @@ struct Server_s
     UDWORD    foo_stat_pak_sent;
     UDWORD    foo_stat_pak_rcvd;
 
+    status_t  pref_status;
+    char     *pref_server;
+    UDWORD    pref_port;
+    char     *pref_passwd;
+    char     *passwd;         /* the password for this user               */
     SOK_T     logfd;
     ContactGroup *contacts;   /* The contacts for this connection         */
     Connection            *conn;   /* main I/O connection          */
