@@ -1893,9 +1893,9 @@ const char *rl_user_prompt (const char *prompt)
                 /* === user info === */    
                 case 'n':
                     if ((uiG.conn != NULL)
-                            && (uiG.conn->cont != NULL)
-                            && (uiG.conn->cont->nick != NULL))
-                        s_cat (&t, s_sprintf ("%s", uiG.conn->cont->nick));
+                            && (uiG.conn->conn->cont != NULL)
+                            && (uiG.conn->conn->cont->nick != NULL))
+                        s_cat (&t, s_sprintf ("%s", uiG.conn->conn->cont->nick));
                     break;
                 case 'U':
                     if (uiG.conn != NULL)
@@ -1919,8 +1919,8 @@ const char *rl_user_prompt (const char *prompt)
                     break;
                 case 'P':
                     if ((uiG.conn != NULL)
-                            && (uiG.conn->server != NULL))
-                        s_cat (&t, uiG.conn->server);
+                            && (uiG.conn->conn->server != NULL))
+                        s_cat (&t, uiG.conn->conn->server);
                     break;
 
                 /* === last nicks === */    

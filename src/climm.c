@@ -532,7 +532,7 @@ static void Init (int argc, char *argv[])
                 if (arg_p)
                     s_repl (&serv->passwd, arg_p);
                 if (serv->passwd && *serv->passwd && (!arg_s || arg_ss != ims_offline) && (loginevent = serv->c_open (serv)))
-                    QueueEnqueueDep (serv->conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, serv->cont,
+                    QueueEnqueueDep (serv->conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, serv->conn->cont,
                                      OptSetVals (NULL, CO_CLIMMCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                      &CmdUserCallbackTodo);
             }
@@ -582,7 +582,7 @@ static void Init (int argc, char *argv[])
             if (serv->c_open && serv->flags & CONN_AUTOLOGIN)
             {
                 if (serv->passwd && *serv->passwd && serv->status != ims_offline && (loginevent = serv->c_open (serv)))
-                         QueueEnqueueDep (serv->conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, serv->cont,
+                         QueueEnqueueDep (serv->conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, serv->conn->cont,
                                           OptSetVals (NULL, CO_CLIMMCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                           &CmdUserCallbackTodo);
             }

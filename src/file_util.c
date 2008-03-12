@@ -70,13 +70,13 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
         serv->pref_server = strdup ("login.icq.com");
         serv->pref_port = 5190;
         serv->pref_status = ims_online;
-        serv->version = 8;
+        serv->pref_version = 8;
         s_repl (&serv->screen, user);
         serv->oscar_uin = atoi (user);
         serv->pref_passwd = passwd ? strdup (passwd) : NULL;
         
-        serv->server  = strdup (serv->pref_server);
-        serv->port    = serv->pref_port;
+        serv->conn->server  = strdup (serv->pref_server);
+        serv->conn->port    = serv->pref_port;
         serv->passwd  = passwd ? strdup (passwd) : NULL;
         serv->status  = ims_online;
 
@@ -108,12 +108,12 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
             serv->pref_server = strdup (serverpart);
         serv->pref_port = 5222;
         serv->pref_status = ims_online;
-        serv->version = 8;
+        serv->pref_version = 8;
         s_repl (&serv->screen, user);
         serv->pref_passwd = passwd ? strdup (passwd) : NULL;
         
-        serv->server  = strdup (serv->pref_server);
-        serv->port    = serv->pref_port;
+        serv->conn->server  = strdup (serv->pref_server);
+        serv->conn->port    = serv->pref_port;
         serv->passwd  = passwd ? strdup (passwd) : NULL;
         serv->status  = ims_online;
 
@@ -141,12 +141,12 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
         serv->pref_server = strdup (strchr (user, '@') + 1);
         serv->pref_port = 42;
         serv->pref_status = ims_online;
-        serv->version = 8;
+        serv->pref_version = 8;
         s_repl (&serv->screen, user);
         serv->pref_passwd = passwd ? strdup (passwd) : NULL;
         
-        serv->server  = strdup (serv->pref_server);
-        serv->port    = serv->pref_port;
+        serv->conn->server  = strdup (serv->pref_server);
+        serv->conn->port    = serv->pref_port;
         serv->passwd  = passwd ? strdup (passwd) : NULL;
         serv->status  = ims_online;
 
@@ -1094,7 +1094,7 @@ int Read_RC_File (FILE *rcf)
                 {
                     PrefParseInt (i);
 
-                    serv->version = i;
+                    serv->pref_version = i;
                     if (!serv->type || serv->type == TYPEF_ANY_SERVER)
                     {
                         serv->type = TYPE_SERVER;
@@ -1245,16 +1245,16 @@ int Read_RC_File (FILE *rcf)
 
     for (i = 0; (serv = ServerNr (i)); i++)
     {
-        serv->port   = serv->pref_port;
-        s_repl (&serv->server, serv->pref_server);
+        serv->conn->port = serv->pref_port;
+        s_repl (&serv->conn->server, serv->pref_server);
         s_repl (&serv->passwd, serv->pref_passwd);
         serv->status = serv->pref_status;
         switch (serv->type)
         {
             case TYPE_SERVER:
                 serv->c_open = &ConnectionInitServer;
-                if (prG->s5Use && !serv->version)
-                    serv->version = 2;
+                if (prG->s5Use && !serv->pref_version)
+                    serv->pref_version = 2;
                 break;
 #ifdef ENABLE_MSN
             case TYPE_MSN_SERVER:
@@ -1572,8 +1572,8 @@ void PrefReadStat (FILE *stf)
             OptSetVal (&cg->copts, CO_IGNORE, 0);
             dep = 21;
         }
-        if (!serv->cont)
-            serv->cont = ContactScreen (serv, serv->screen);
+        if (!serv->conn->cont)
+            serv->conn->cont = ContactScreen (serv, serv->screen);
     }
 
     if (dep || !format)
@@ -1750,7 +1750,7 @@ int PrefWriteConfFile (void)
         fprintf (rcf, "[Server]\n");
         fprintf (rcf, "type %s%s\n",  ConnectionServerType (ss->type),
                                       ss->flags & CONN_AUTOLOGIN ? " auto" : "");
-        fprintf (rcf, "version %d\n", ss->version);
+        fprintf (rcf, "version %d\n", ss->pref_version);
         if (ss->pref_server)
             fprintf (rcf, "host %s\n",   s_quote (ss->pref_server));
         if (ss->pref_port && ss->pref_port != -1)

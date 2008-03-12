@@ -146,10 +146,10 @@ CLIMMXMPP::CLIMMXMPP (Server *serv)
     strftime (m_stamp, 15, "%Y%m%d%H%M%S", gmtime (&now));
     assert (serv->passwd);
     assert (*serv->passwd);
-    m_client = new gloox::Client (gloox::JID (serv->screen), serv->passwd, serv->port);
+    m_client = new gloox::Client (gloox::JID (serv->screen), serv->passwd, serv->conn->port);
     m_client->setResource ("climm");
-    if (serv->server)
-        m_client->setServer (serv->server);
+    if (serv->conn->server)
+        m_client->setServer (serv->conn->server);
 
     m_client->disableRoster ();
     m_client->registerConnectionListener (this);
@@ -493,7 +493,7 @@ void CLIMMXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
 void CLIMMXMPP::handleXEP22c (gloox::JID from, std::string tof, std::string id, std::string type)
 {
     gloox::Stanza *msg = gloox::Stanza::createMessageStanza (from, "");
-    msg->addAttribute ("id", s_sprintf ("ack-%s-%x", m_stamp, m_serv->our_seq++));
+    msg->addAttribute ("id", s_sprintf ("ack-%s-%x", m_stamp, m_serv->conn->our_seq++));
     std::string res = m_client->resource();
     msg->addAttribute ("from", s_sprintf ("%s/%s", m_serv->screen, res.c_str()));
     gloox::Tag *x = new gloox::Tag (msg, "x");
@@ -999,7 +999,7 @@ UBYTE CLIMMXMPP::XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
         return RET_DEFER;
 
     gloox::Stanza *msgs = gloox::Stanza::createMessageStanza (gloox::JID (cont->screen), msg->send_message);
-    msgs->addAttribute ("id", s_sprintf ("xmpp-%s-%x", m_stamp, ++m_serv->our_seq));
+    msgs->addAttribute ("id", s_sprintf ("xmpp-%s-%x", m_stamp, ++m_serv->conn->our_seq));
 
     std::string res = m_client->resource();
     msgs->addAttribute ("from", s_sprintf ("%s/%s", serv->screen, res.c_str()));
@@ -1011,7 +1011,7 @@ UBYTE CLIMMXMPP::XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
     new gloox::Tag (x, "composing");
     m_client->send (msgs);
 
-    Event *event = QueueEnqueueData2 (serv->conn, QUEUE_XMPP_RESEND_ACK, m_serv->our_seq, 120, msg, &SnacCallbackXmpp, &SnacCallbackXmppCancel);
+    Event *event = QueueEnqueueData2 (serv->conn, QUEUE_XMPP_RESEND_ACK, m_serv->conn->our_seq, 120, msg, &SnacCallbackXmpp, &SnacCallbackXmppCancel);
     event->cont = cont;
 
     return RET_OK;
@@ -1293,20 +1293,20 @@ Event *ConnectionInitXMPPServer (Server *serv)
     if (!strchr (serv->screen, '@'))
     {
         const char *jid;
-        if (!serv->server)
-            serv->server = "jabber.com";
-        jid = s_sprintf ("%s@%s", serv->screen, serv->server);
+        if (!serv->conn->server)
+            serv->conn->server = strdup ("jabber.com");
+        jid = s_sprintf ("%s@%s", serv->screen, serv->conn->server);
         s_repl (&serv->screen, jid);
     }
 
     XMPPCallbackClose (serv->conn);
 
-    sp = s_sprintf ("%s", s_wordquote (s_sprintf ("%s:%lu", serv->server, serv->port)));
+    sp = s_sprintf ("%s", s_wordquote (s_sprintf ("%s:%lu", serv->conn->server, serv->conn->port)));
     rl_printf (i18n (2620, "Opening XMPP connection for %s at %s...\n"),
         s_wordquote (serv->screen), sp);
 
-    if (!serv->port)
-        serv->port = ~0;
+    if (!serv->conn->port)
+        serv->conn->port = ~0;
 
     serv->c_open = &ConnectionInitXMPPServer;
     serv->conn->reconnect = &XMPPCallbackReconn;
@@ -1323,7 +1323,7 @@ Event *ConnectionInitXMPPServer (Server *serv)
     }
     else
         event = QueueEnqueueData (serv->conn, QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 5,
-                                  NULL, serv->cont, NULL, &XMPPCallBackTimeout);
+                                  NULL, serv->conn->cont, NULL, &XMPPCallBackTimeout);
 
     CLIMMXMPP *l = new CLIMMXMPP (serv);
     serv->xmpp_private = l;

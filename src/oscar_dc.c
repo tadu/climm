@@ -114,7 +114,7 @@ Event *ConnectionInitPeer (Connection *list)
     list->ip          = 0;
     s_repl (&list->server, NULL);
     list->port        = ConnectionPrefVal (list->serv, CO_OSCAR_DC_PORT);
-    list->cont        = list->serv->cont ? list->serv->cont : ContactUIN (list->serv, list->serv->oscar_uin);
+    list->cont        = list->serv->conn->cont;
 
     UtilIOConnectTCP (list);
     return NULL;
@@ -803,7 +803,7 @@ static void TCPSendInitv6 (Connection *peer)
     PacketWriteB4 (pak, peer->serv->conn->our_outside_ip); /* our (remote) IP  */
     PacketWriteB4 (pak, peer->serv->conn->our_local_ip);   /* our (local)  IP  */
     PacketWrite1  (pak, ConnectionPrefVal (peer->serv, CO_OSCAR_DC_MODE) & 15);               /* connection type  */
-    PacketWrite4  (pak, peer->serv->port);           /* our (other) port */
+    PacketWrite4  (pak, peer->serv->conn->port);           /* our (other) port */
     PacketWrite4  (pak, peer->our_session);          /* session id       */
 
     DebugH (DEB_TCP, "HS %d uin %s CONNECT pak %p peer %p",
@@ -855,7 +855,7 @@ static void TCPSendInit (Connection *peer)
     PacketWriteB4 (pak, peer->serv->conn->our_outside_ip); /* our (remote) IP  */
     PacketWriteB4 (pak, peer->serv->conn->our_local_ip);   /* our (local)  IP  */
     PacketWrite1  (pak, ConnectionPrefVal (peer->serv, CO_OSCAR_DC_MODE) & 15);               /* connection type  */
-    PacketWrite4  (pak, peer->serv->port);           /* our (other) port */
+    PacketWrite4  (pak, peer->serv->conn->port);           /* our (other) port */
     PacketWrite4  (pak, peer->our_session);          /* session id       */
     PacketWrite4  (pak, 0x00000050);
     PacketWrite4  (pak, 0x00000003);
@@ -982,7 +982,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
         if (port && port2 && port != port2)
             FAIL (11);
 
-        peer->version = (peer->serv->version > nver ? nver : peer->serv->version);
+        peer->version = (peer->serv->pref_version > nver ? nver : peer->serv->pref_version);
 
         if (!peer->our_session)
             peer->our_session = peer->version > 6 ? cont->dc->cookie : sid;

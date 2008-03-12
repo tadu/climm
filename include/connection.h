@@ -31,17 +31,13 @@ struct Connection_s
 {
     UWORD     type;           /* connection type - TYPE_*                 */
     UBYTE     version;        /* protocol version in this session         */
-
-    Contact  *cont;           /* the user this connection is for          */
-    char     *server;         /* the remote server name                   */
-    UDWORD    port;           /* the port the server is listening on      */
-    
-    UWORD     our_seq;        /* current primary sequence number          */
-
-
     jump_conn_open_f *c_open;  /* function to call to open        */
     Connection       *oscar_file;  /* associated file saving session           */
 
+    UWORD     our_seq;        /* current primary sequence number          */
+    Contact  *cont;           /* the user this connection is for          */
+    char     *server;         /* the remote server name                   */
+    UDWORD    port;           /* the port the server is listening on      */
     UDWORD    ip;             /* the remote ip (host byte order)          */
     UDWORD    our_local_ip;   /* LAN-internal IP (host byte order)        */
     UDWORD    our_outside_ip; /* the IP address the server sees from us   */
@@ -101,18 +97,14 @@ struct Connection_s
 struct Server_s
 {
     UWORD     type;           /* connection type - TYPE_*                 */
-    UBYTE     version;        /* protocol version in this session         */
-
-    Contact  *cont;           /* the user this connection is for          */
-    char     *server;         /* the remote server name                   */
-    UDWORD    port;           /* the port the server is listening on      */
-    
-    UWORD     our_seq;        /* current primary sequence number          */
-
-
+    UBYTE     pref_version;        /* protocol version in this session         */
     jump_serv_open_f *c_open;  /* function to call to open        */
     Connection            *oscar_dc;  /* associated session           */
 
+    UWORD     foo_our_seq;        /* current primary sequence number          */
+    Contact  *foo_cont;           /* the user this connection is for          */
+    char     *foo_server;         /* the remote server name                   */
+    UDWORD    foo_port;           /* the port the server is listening on      */
     UDWORD    foo_ip;             /* the remote ip (host byte order)          */
     UDWORD    foo_our_local_ip;   /* LAN-internal IP (host byte order)        */
     UDWORD    foo_our_outside_ip; /* the IP address the server sees from us   */

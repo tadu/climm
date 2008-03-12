@@ -348,7 +348,7 @@ static JUMP_F(CmdUserRandomSet)
     if (!s_parseint (&args, &arg1))
     {
         rl_print (i18n (1704, "Groups:\n"));
-        rl_printf ("  %2d %s\n", uiG.conn->version > 6 ? 0 : -1, i18n (1716, "None"));
+        rl_printf ("  %2d %s\n", uiG.conn->pref_version > 6 ? 0 : -1, i18n (1716, "None"));
         rl_printf ("  %2d %s\n",  1, i18n (1705, "General"));
         rl_printf ("  %2d %s\n",  2, i18n (1706, "Romance"));
         rl_printf ("  %2d %s\n",  3, i18n (1707, "Games"));
@@ -2128,7 +2128,7 @@ static JUMP_F(CmdUserStatusMeta)
                 }
                 break;
             case 4:
-                if (!(cont = uiG.conn->cont))
+                if (!(cont = uiG.conn->conn->cont))
                     return 0;
                 if (uiG.conn->type == TYPE_SERVER)
                 {
@@ -2261,7 +2261,7 @@ static JUMP_F(CmdUserStatusWide)
         ContactGroupD (cgoff);
     }
 
-    cont = uiG.conn->cont;
+    cont = uiG.conn->conn->cont;
     rl_printf ("%s%s%s %s", COLCONTACT, cont->screen, COLNONE, COLQUOTE);
     ReadLineAnalyzeWidth (on, &width);
     colleft = (rl_columns - width) / 2 - 2;
@@ -4059,16 +4059,16 @@ static JUMP_F(CmdUserConn)
             
             for (i = 0; (servl = ServerNr (i)); i++)
             {
-                Contact *cont = servl->cont;
+                Contact *cont = servl->conn->cont;
                 rl_printf (i18n (2597, "%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n"),
-                          i + 1, ServerStrType (servl), servl->version,
+                          i + 1, ServerStrType (servl), servl->pref_version,
 #ifdef ENABLE_SSL
                           servl->foo_ssl_status == SSL_STATUS_OK ? " SSL" : "",
 #else
                           "",
 #endif
                           cont ? cont->nick : "", ContactStatusStr (servl->status),
-                          servl->server ? servl->server : s_ip (servl->foo_ip), UD2UL (servl->port),
+                          servl->foo_server ? servl->foo_server : s_ip (servl->foo_ip), UD2UL (servl->foo_port),
                           servl->foo_connect & CONNECT_FAIL ? i18n (1497, "failed") :
                           servl->foo_connect & CONNECT_OK   ? i18n (1934, "connected") :
                           servl->foo_connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
@@ -4079,7 +4079,7 @@ static JUMP_F(CmdUserConn)
                          servl->type, servl->foo_sok, t1 = strdup (s_ip (servl->foo_ip)),
                          servl->foo_connect, t2 = strdup (s_ip (servl->foo_our_local_ip)),
                          t3 = strdup (s_ip (servl->foo_our_outside_ip)),
-                         UD2UL (servl->foo_our_session), servl->our_seq, servl->oscar_snac_seq);
+                         UD2UL (servl->foo_our_session), servl->foo_our_seq, servl->oscar_snac_seq);
 #ifdef ENABLE_SSL
                     rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), servl, servl->foo_serv, servl->oscar_dc, servl->foo_ssl_status);
 #else
@@ -4206,7 +4206,7 @@ static JUMP_F(CmdUserConn)
             {
                 uiG.conn = servl;
                 rl_printf (i18n (2603, "Selected connection %ld (version %d, UIN %s) as current connection.\n"),
-                          UD2UL (nr), servl->version, servl->screen);
+                          UD2UL (nr), servl->pref_version, servl->screen);
             }
             break;
         
@@ -4624,7 +4624,7 @@ static JUMP_F(CmdUserUpdate)
     MetaGeneral *user;
     OPENCONN;
     
-    if (!(cont = uiG.conn->cont))
+    if (!(cont = uiG.conn->conn->cont))
         return 0;
     if (!(user = CONTACT_GENERAL(cont)))
         return 0;
@@ -4762,7 +4762,7 @@ static JUMP_F(CmdUserOther)
     int temp;
     OPENCONN;
     
-    if (!(cont = uiG.conn->cont))
+    if (!(cont = uiG.conn->conn->cont))
         return 0;
     if (!(more = CONTACT_MORE(cont)))
         return 0;

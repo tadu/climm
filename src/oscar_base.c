@@ -187,13 +187,13 @@ void FlapChannel4 (Server *serv, Packet *pak)
         assert (strchr (tlv[5].str.txt, ':'));
         FlapCliGoodbye (serv);
 
-        serv->port = atoi (strchr (tlv[5].str.txt, ':') + 1);
+        serv->conn->port = atoi (strchr (tlv[5].str.txt, ':') + 1);
         *strchr (tlv[5].str.txt, ':') = '\0';
-        s_repl (&serv->server, tlv[5].str.txt);
+        s_repl (&serv->conn->server, tlv[5].str.txt);
         serv->conn->ip = 0;
 
         rl_printf (i18n (2511, "Redirect to server %s:%s%ld%s... "),
-                  s_wordquote (serv->server), COLQUOTE, UD2UL (serv->port), COLNONE);
+                  s_wordquote (serv->conn->server), COLQUOTE, UD2UL (serv->conn->port), COLNONE);
 
         serv->conn->connect = 8;
         serv->oscar_tlv = tlv;
@@ -313,12 +313,12 @@ Packet *FlapC (UBYTE channel)
 
 void FlapSend (Server *serv, Packet *pak)
 {
-    if (!serv->our_seq)
-        serv->our_seq = rand () & 0x7fff;
-    serv->our_seq++;
-    serv->our_seq &= 0x7fff;
+    if (!serv->conn->our_seq)
+        serv->conn->our_seq = rand () & 0x7fff;
+    serv->conn->our_seq++;
+    serv->conn->our_seq &= 0x7fff;
 
-    PacketWriteAtB2 (pak, 2, pak->id = serv->our_seq);
+    PacketWriteAtB2 (pak, 2, pak->id = serv->conn->our_seq);
     PacketWriteAtB2 (pak, 4, pak->len - 6);
     
     if (prG->verbose & DEB_PACK8)
@@ -433,24 +433,26 @@ Event *ConnectionInitServer (Server *serv)
     Event *event;
     val_t v;
     
-    if (!serv->passwd || !*serv->passwd || !serv->port)
+    if (!serv->passwd || !*serv->passwd || !serv->conn->port)
         return NULL;
     serv->oscar_uin = atoi (serv->screen);
     if (!serv->oscar_uin && ~serv->flags & CONN_WIZARD)
         return NULL;
-    if (!serv->server || !*serv->server)
-        s_repl (&serv->server, "login.icq.com");
+    if (!serv->conn->server || !*serv->conn->server)
+        s_repl (&serv->conn->server, "login.icq.com");
 
     if (serv->conn->sok != -1)
         sockclose (serv->conn->sok);
     serv->conn->sok = -1;
-    serv->cont = cont = serv->oscar_uin ? ContactUIN (serv, serv->oscar_uin) : NULL;
-    serv->our_seq  = rand () & 0x7fff;
+    if (!serv->conn->cont && serv->oscar_uin)
+        serv->conn->cont = ContactUIN (serv, serv->oscar_uin);
+    cont = serv->conn->cont;
+    serv->conn->our_seq  = rand () & 0x7fff;
     serv->conn->connect  = 0;
     serv->conn->dispatch = &SrvCallBackReceive;
     serv->conn->reconnect= &SrvCallBackReconn;
     serv->conn->close    = &FlapCliGoodbyeConn;
-    s_repl (&serv->server, serv->pref_server);
+    s_repl (&serv->conn->server, serv->pref_server);
     if (serv->status == ims_offline)
         serv->status = serv->pref_status;
     
@@ -463,10 +465,10 @@ Event *ConnectionInitServer (Server *serv)
     }
     else
         event = QueueEnqueueData (serv->conn, QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 12,
-                                  NULL, serv->cont, NULL, &SrvCallBackTimeout);
+                                  NULL, serv->conn->cont, NULL, &SrvCallBackTimeout);
 
     rl_printf (i18n (2512, "Opening v8 connection to %s:%s%ld%s for %s%s%s... "),
-              s_wordquote (serv->server), COLQUOTE, UD2UL (serv->port), COLNONE, COLCONTACT,
+              s_wordquote (serv->conn->server), COLQUOTE, UD2UL (serv->conn->port), COLNONE, COLCONTACT,
               !cont ? i18n (2513, "new UIN") : cont->nick ? cont->nick 
               : cont->screen, COLNONE);
 
@@ -477,7 +479,7 @@ Event *ConnectionInitServer (Server *serv)
         if (!conn)
         {
             conn = ServerChild (serv, NULL, TYPE_MSGLISTEN);
-            conn->version = serv->version;
+            conn->version = serv->pref_version;
             conn->c_open = &ConnectionInitPeer;
             serv->oscar_dc = conn;
         }
@@ -498,7 +500,7 @@ static void SrvCallBackReconn (Connection *conn)
     serv = conn->serv;
     cg = serv->contacts;
 
-    if (!(cont = serv->cont))
+    if (!(cont = serv->conn->cont))
         return;
     
     if (!(event = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
@@ -657,7 +659,7 @@ Server *SrvRegisterUIN (Server *serv, const char *pass)
         assert (serv->type == TYPE_SERVER);
         
         news->flags   = serv->flags;
-        news->version = serv->version;
+        news->pref_version = serv->pref_version;
         news->pref_status  = ims_online;
         news->pref_server  = strdup (serv->pref_server);
         news->pref_port    = serv->pref_port;
@@ -665,7 +667,7 @@ Server *SrvRegisterUIN (Server *serv, const char *pass)
     }
     else
     {
-        news->version = 8;
+        news->pref_version = 8;
         news->pref_status  = ims_online;
         news->pref_server  = strdup ("login.icq.com");
         news->pref_port    = 5190;
@@ -674,8 +676,8 @@ Server *SrvRegisterUIN (Server *serv, const char *pass)
     }
     news->oscar_uin = 0;
     s_repl (&news->screen, "");
-    news->server = strdup (news->pref_server);
-    news->port = news->pref_port;
+    news->conn->server = strdup (news->pref_server);
+    news->conn->port = news->pref_port;
     news->passwd = strdup (pass);
     news->c_open = &ConnectionInitServer;
     return news;
