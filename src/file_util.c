@@ -1267,7 +1267,6 @@ int Read_RC_File (FILE *rcf)
                 break;
 #endif
             default:
-                serv->type = 0;
                 serv->c_open = NULL;
                 break;
         }
