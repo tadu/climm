@@ -349,7 +349,7 @@ int Read_RC_File (FILE *rcf)
     strc_t line, par;
     const char *args, *p;
     Contact *cont = NULL, *lastcont = NULL;
-    Server *serv, *oldserv = NULL, *tserv;
+    Server *serv = NULL, *oldserv = NULL, *tserv;
     ContactGroup *cg = NULL;
     int section, dep = 0;
     val_t v;
