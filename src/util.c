@@ -200,13 +200,20 @@ void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype
 
     mytext = (text ? text : "");
     mynick = (cont && strcmp (cont->nick, cont->screen) ? cont->nick : "");
+#if ENABLE_CONT_HIER
     myscreen = strdup (cont && cont->parent ? s_sprintf ("%s/%s", cont->parent->screen, cont->screen) : cont ? cont->screen : "");
+#else
+    myscreen = strdup (cont ? cont->screen : "");
+#endif
     myagent = (cont && cont->version ? cont->version : "");
     mytype = (type == ev_msg ? "msg" : type == ev_on ? "on" : type == ev_off ? "off" : 
               type == ev_beep ? "beep" : type == ev_status ? "status" : "other");
     myscript = strdup (s_realpath (script));
-    mygroup =  (cont && cont->group && cont->group->name ? cont->group->name :
-                cont && cont->parent && cont->parent->group && cont->parent->group->name ? cont->parent->group->name : "global");
+    mygroup =  (cont && cont->group && cont->group->name ? cont->group->name
+#if ENABLE_CONT_HIER
+                : cont && cont->parent && cont->parent->group && cont->parent->group->name ? cont->parent->group->name
+#endif
+                : "global");
 
 #if HAVE_SETENV
     setenv ("CLIMM_TEXT", mytext, 1);   setenv ("MICQ_TEXT", mytext, 1);
@@ -222,7 +229,9 @@ void EventExec (Contact *cont, const char *script, evtype_t type, UDWORD msgtype
     s_init (&cmd, "", 100);
     s_cat  (&cmd, myscript);
     s_catf (&cmd, " %s", cont && cont->serv ? ConnectionServerType (cont->serv->type)
+#if ENABLE_CONT_HIER
                        : cont && cont->parent && cont->parent->serv ? ConnectionServerType (cont->parent->serv->type)
+#endif
                        : "global");
     s_catf (&cmd, " '%s'", _squash_shell_chars (&buf, myscreen));
     s_catf (&cmd, " '%s'", _squash_shell_chars (&buf, mynick));
