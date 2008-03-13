@@ -25,10 +25,6 @@ extern "C" {
 #include "oscar_dc_file.h"
 }
 
-#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000907
-#define CLIMM_FILE_TRANSFER
-#endif
-
 #include <cassert>
 #include <map>
 #include <gloox/gloox.h>
@@ -39,7 +35,7 @@ extern "C" {
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
 #include <gloox/connectiontcpbase.h>
 #endif
-#ifdef CLIMM_FILE_TRANSFER
+#ifdef CLIMM_XMPP_FILE_TRANSFER
 #include <gloox/socks5bytestream.h>
 #include <gloox/siprofilefthandler.h>
 #include <gloox/socks5bytestreamdatahandler.h>
@@ -55,7 +51,7 @@ extern "C" {
     static jump_conn_f XMPPCallbackClose;
     static jump_conn_err_f XMPPCallbackError;
     static void XMPPCallBackDoReconn (Event *event);
-#ifdef CLIMM_FILE_TRANSFER
+#ifdef CLIMM_XMPP_FILE_TRANSFER
     static jump_conn_f XMPPFTCallbackDispatch;
     static jump_conn_f XMPPFTCallbackClose;
     static jump_conn_err_f XMPPFTCallbackError;
@@ -64,7 +60,7 @@ extern "C" {
     //void PeerFileIODispatchClose (Connection *ffile);
 }
 
-#ifdef CLIMM_FILE_TRANSFER
+#ifdef CLIMM_XMPP_FILE_TRANSFER
 std::map<UWORD, std::string> l_tSeqTranslate;
 std::map<const std::string, std::string> sid2id;
 std::map<const std::string, Contact *> sid2cont;
@@ -72,7 +68,7 @@ std::map<const std::string, Contact *> sid2cont;
 
 class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
                  public gloox::PresenceHandler,    public gloox::SubscriptionHandler,
-#ifdef CLIMM_FILE_TRANSFER
+#ifdef CLIMM_XMPP_FILE_TRANSFER
                  public gloox::SIProfileFTHandler,
                  public gloox::SOCKS5BytestreamDataHandler,
 #endif
@@ -82,7 +78,7 @@ class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler
         Server *m_serv;
         gloox::Client *m_client;
         char *m_stamp;
-#ifdef CLIMM_FILE_TRANSFER
+#ifdef CLIMM_XMPP_FILE_TRANSFER
         gloox::SIProfileFT *m_pFT;
 #endif
 
@@ -116,7 +112,7 @@ class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler
 #else
         virtual void  handleMessage (gloox::Stanza *stanza);
 #endif
-#ifdef CLIMM_FILE_TRANSFER
+#ifdef CLIMM_XMPP_FILE_TRANSFER
         virtual void  handleFTRequestError (gloox::Stanza *stanza);
         virtual void  handleFTSOCKS5Bytestream (gloox::SOCKS5Bytestream *s5b);
         virtual void handleFTRequest (const gloox::JID & from, const std::string & id, const std::string & sid,
@@ -162,7 +158,7 @@ CLIMMXMPP::CLIMMXMPP (Server *serv)
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
     m_client->setPresence (gloox::PresenceAvailable, 5);
 
-#ifdef CLIMM_FILE_TRANSFER
+#ifdef CLIMM_XMPP_FILE_TRANSFER
     m_pFT = new gloox::SIProfileFT (m_client, this);
     //m_pFT->addStreamHost (gloox::JID ("proxy.jabber.org"), "208.245.212.98", 7777);
 #endif
@@ -1065,36 +1061,36 @@ void CLIMMXMPP::XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const ch
     m_client->send (pres);
 }
 
-#ifdef CLIMM_FILE_TRANSFER
+#ifdef CLIMM_XMPP_FILE_TRANSFER
 
 void CLIMMXMPP::handleSOCKS5Data (gloox::SOCKS5Bytestream *s5b, const std::string &data)
 {
-    Contact *cont = sid2cont[sid];
+    Contact *cont = ContactFindScreen (m_serv->contacts, s5b->initiator().full().c_str());
     Connection *fpeer = ServerFindChild (m_serv, cont, TYPE_XMPPDIRECT);
     assert (fpeer);
-    int len = write (fpeer->assoc->sok, data.c_str(), data.length());
+    int len = write (fpeer->xmpp_file->sok, data.c_str(), data.length());
     if (len != data.length())
     {
         rl_log_for (cont->screen, COLCONTACT);
         rl_printf (i18n (2575, "Error writing to file (%lu bytes written out of %u).\n"), len, data.length());
         //TCPClose (fpeer);
     }
-    fpeer->assoc->done += len;
-    if (fpeer->assoc->len == fpeer->assoc->done)
+    fpeer->xmpp_file->xmpp_file_done += len;
+    if (fpeer->xmpp_file->xmpp_file_len == fpeer->xmpp_file->xmpp_file_done)
     {
         ReadLinePromptReset ();
         rl_log_for (cont->screen, COLCONTACT);
         rl_print  (i18n (2166, "Finished receiving file.\n"));
 #if HAVE_FSYNC
-        fsync (fpeer->assoc->sok);
+        fsync (fpeer->xmpp_file->sok);
 #endif
-        close (fpeer->assoc->sok);
-        fpeer->assoc->sok = -1;
+        close (fpeer->xmpp_file->sok);
+        fpeer->xmpp_file->sok = -1;
     }
-    else if (fpeer->assoc->len)
+    else if (fpeer->xmpp_file->xmpp_file_len)
     {
         ReadLinePromptUpdate (s_sprintf ("[%s%ld %02d%%%s] %s%s",
-                  COLINCOMING, fpeer->assoc->done, (int)((100.0 * fpeer->assoc->done) / fpeer->assoc->len),
+                  COLINCOMING, fpeer->xmpp_file->xmpp_file_done, (int)((100.0 * fpeer->xmpp_file->xmpp_file_done) / fpeer->xmpp_file->xmpp_file_len),
                   COLNONE, COLSERVER, i18n (2467, "climm>")));
     }
 }
@@ -1111,7 +1107,8 @@ void CLIMMXMPP::handleSOCKS5Open (gloox::SOCKS5Bytestream *s5b)
 
 void CLIMMXMPP::handleSOCKS5Close (gloox::SOCKS5Bytestream *s5b)
 {
-    Connection *fpeer = ServerFindChild (m_serv, sid2cont[sid], TYPE_XMPPDIRECT);
+    Contact *cont = ContactFindScreen (m_serv->contacts, s5b->initiator().full().c_str());
+    Connection *fpeer = ServerFindChild (m_serv, cont, TYPE_XMPPDIRECT);
     assert (fpeer);
     ConnectionD (fpeer);
 }
@@ -1125,7 +1122,7 @@ void CLIMMXMPP::handleFTSOCKS5Bytestream (gloox::SOCKS5Bytestream *s5b)
 {
     strc_t name;
     int len, off;
-    Contact *cont = ContactFindScreen (m_serv->contacts, s5b->initiator().bare().c_str());
+    Contact *cont = ContactFindScreen (m_serv->contacts, s5b->initiator().full().c_str());
     s5b->registerSOCKS5BytestreamDataHandler (this);
     //if (prG->verbose)
         rl_printf (i18n (2709, "Opening file listener connection at %slocalhost%s:%s%lp%s... "),
@@ -1136,7 +1133,7 @@ void CLIMMXMPP::handleFTSOCKS5Bytestream (gloox::SOCKS5Bytestream *s5b)
         gloox::ConnectionTCPBase *conn = dynamic_cast<gloox::ConnectionTCPBase *>(s5b->connectionImpl());
         if (!conn)
             return;
-        Connection *child = ServerFindChild (m_serv, sid2cont[sid], TYPE_XMPPDIRECT);
+        Connection *child = ServerFindChild (m_serv, cont, TYPE_XMPPDIRECT);
         if (!child)
             return; //Failed
 
@@ -1164,7 +1161,6 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     l_tSeqTranslate[seq] = sid;
     sid2id[sid] = id; //This will be changed in the 1.0 release of gloox :)
     GetBothContacts (from, m_serv, &cont, &contr, 0);
-    sid2cont[sid] = contr;
 
     Opt *opt2 = OptC ();
     OptSetVal (opt2, CO_BYTES, size);
@@ -1211,11 +1207,11 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     for (p = buf + pos; *p; p++)
         if (*p == '/')
             *p = '_';
-    child->assoc = ffile;
+    child->xmpp_file = ffile;
     s_repl (&ffile->server, buf);
     ffile->connect = CONNECT_FAIL;
-    ffile->len = size;
-    ffile->done = offset;
+    ffile->xmpp_file_len = size;
+    ffile->xmpp_file_done = offset;
     //ffile->close = &PeerFileIODispatchClose;
 }
     
@@ -1423,7 +1419,7 @@ BOOL XMPPCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
     return 0;
 }
 
-#ifdef CLIMM_FILE_TRANSFER
+#ifdef CLIMM_XMPP_FILE_TRANSFER
 void XMPPCallBackFileAccept (Event *event)
 {
     Connection *conn = event->conn;
@@ -1460,10 +1456,10 @@ void XMPPCallBackFileAccept (Event *event)
     else
     {
         Connection *conn = ServerFindChild (m_serv, sid2cont[sid], TYPE_XMPPDIRECT);
-        Connection *ffile = conn->assoc;
+        Connection *ffile = conn->xmpp_file;
         Contact *cont = res->parent;
         assert (ffile->type == TYPE_FILEXMPP);
-        ffile->sok = open (ffile->server, O_CREAT | O_WRONLY | (ffile->done ? O_APPEND : O_TRUNC), 0660);
+        ffile->sok = open (ffile->server, O_CREAT | O_WRONLY | (ffile->xmpp_file_done ? O_APPEND : O_TRUNC), 0660);
         if (ffile->sok == -1)
         {
             int rc = errno;
@@ -1471,7 +1467,7 @@ void XMPPCallBackFileAccept (Event *event)
             {
                 mkdir (s_sprintf ("%sfiles", PrefUserDir (prG)), 0700);
                 mkdir (s_sprintf ("%sfiles" _OS_PATHSEPSTR "%s", PrefUserDir (prG), cont->screen), 0700);
-                ffile->sok = open (ffile->server, O_CREAT | O_WRONLY | (ffile->done ? O_APPEND : O_TRUNC), 0660);
+                ffile->sok = open (ffile->server, O_CREAT | O_WRONLY | (ffile->xmpp_file_done ? O_APPEND : O_TRUNC), 0660);
             }
             if (ffile->sok == -1)
             {

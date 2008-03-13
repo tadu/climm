@@ -1071,7 +1071,7 @@ static JUMP_F(CmdUserPeer)
     int i;
     ANYCONN;
 
-#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
+#if CLIMM_XMPP_FILE_TRANSFER
     if (uiG.conn->type != TYPE_XMPP_SERVER)
 #endif
         if (!uiG.conn || !(list = uiG.conn->oscar_dc))

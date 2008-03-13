@@ -33,6 +33,7 @@ struct Connection_s
     UBYTE     version;        /* protocol version in this session         */
     jump_conn_open_f *c_open;  /* function to call to open        */
     Connection       *oscar_file;  /* associated file saving session           */
+#define xmpp_file oscar_file
 
     UWORD     our_seq;        /* current primary sequence number          */
     Contact  *cont;           /* the user this connection is for          */
@@ -57,6 +58,8 @@ struct Connection_s
     UDWORD    our_session;    /* session ID                               */
     UDWORD    oscar_file_len;            /* used for file transfer                   */
     UDWORD    oscar_file_done;           /* used for file transfer                   */
+#define xmpp_file_len    oscar_file_len            /* used for file transfer                   */
+#define xmpp_file_done   oscar_file_done           /* used for file transfer                   */
     Server                *serv;   /* parent session               */
     jump_conn_f *dispatch;     /* function to call on select()    */
     jump_conn_f *reconnect;    /* function to call for reconnect  */
