@@ -42,11 +42,11 @@
 #endif
 #include <assert.h>
 
-#define Connection2Server(c) ((Server *)(c))
-#define Server2Connection(c) ((Connection *)(c))
+#define ServerListLen      5
 #define ConnectionListLen 10
 
 typedef struct ConnectionList_s ConnectionList;
+typedef struct ServerList_s     ServerList;
 
 struct ConnectionList_s
 {
@@ -55,7 +55,15 @@ struct ConnectionList_s
 };
 
 
-static ConnectionList slist = { NULL, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
+struct ServerList_s
+{
+    ServerList *more;
+    Server     *serv[ServerListLen];
+};
+
+
+static ConnectionList clist = { NULL, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
+static ServerList     slist = { NULL, {0, 0, 0, 0, 0} };
 
 /*
  * Creates a new session.
@@ -64,43 +72,48 @@ static ConnectionList slist = { NULL, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
 #undef ServerC
 Server *ServerC (UWORD type DEBUGPARAM)
 {
-    ConnectionList *cl;
-    Connection *conn = ConnectionC (type);
-    Connection **ncp = NULL;
+    Connection *conn;
     Server *serv;
-    int i;
-    
+    ServerList *cl;
+    int i, j;
+
+    conn = ConnectionC (type & ~TYPEF_ANY_SERVER);
     if (!conn)
         return NULL;
-    conn->type |= TYPEF_ANY_SERVER;
-    
+
     cl = &slist;
-    i = 0;
-    while (cl && cl->conn[i])
+    i = j = 0;
+    while (cl->serv[ServerListLen - 1] && cl->more)
+        cl = cl->more, j += ServerListLen;
+    if (cl->serv[ServerListLen - 1])
     {
-        if (!ncp && ~cl->conn[i]->type & TYPEF_ANY_SERVER)
-            ncp = &cl->conn[i];
-        else if (cl->conn[i] == conn)
-        {
-            if (!ncp)
-                break;
-            assert (ncp != &cl->conn[i]);
-            cl->conn[i] = *ncp;
-            *ncp = conn;
-        }
-        i++;
-        if (i >= ConnectionListLen || !cl->conn[i])
-        {
-            cl = cl->more;
-            i = 0;
-        }
+        cl->more = calloc (1, sizeof (ServerList));
+        
+        if (!cl->more)
+            return NULL;
+
+        cl = cl->more;
+        j += ServerListLen;
     }
-    serv = Connection2Server (conn);
+    while (cl->serv[i])
+        i++, j++;
+
+    if (!(serv = calloc (1, sizeof (Server))))
+    {
+        ConnectionD (conn);
+        return NULL;
+    }
+    cl->serv[i] = serv;
+    
     conn->serv = serv;
     serv->conn = conn;
+
     serv->logfd = -1;
     serv->flags = 0;
     serv->status = ims_offline;
+    assert (type & TYPEF_ANY_SERVER);
+    serv->type = type;
+
     Debug (DEB_CONNECT, "<=S= %p create %d", serv, serv->type);
     return serv;
 }
@@ -116,9 +129,9 @@ Connection *ConnectionC (UWORD type DEBUGPARAM)
     Connection *conn;
     int i, j;
 
-    cl = &slist;
+    cl = &clist;
     i = j = 0;
-    type &= ~TYPEF_ANY_SERVER;
+    assert (~type & TYPEF_ANY_SERVER);
     while (cl->conn[ConnectionListLen - 1] && cl->more)
         cl = cl->more, j += ConnectionListLen;
     if (cl->conn[ConnectionListLen - 1])
@@ -177,7 +190,7 @@ Connection *ConnectionNr (int i)
 {
     ConnectionList *cl;
     
-    for (cl = &slist; cl && i >= ConnectionListLen; cl = cl->more)
+    for (cl = &clist; cl && i >= ConnectionListLen; cl = cl->more)
         i -= ConnectionListLen;
     
     if (!cl || i < 0)
@@ -191,20 +204,15 @@ Connection *ConnectionNr (int i)
  */
 Server *ServerNr (int i)
 {
-    ConnectionList *cl;
-    Connection *conn;
+    ServerList *cl;
     
-    for (cl = &slist; cl && i >= ConnectionListLen; cl = cl->more)
-        i -= ConnectionListLen;
+    for (cl = &slist; cl && i >= ServerListLen; cl = cl->more)
+        i -= ServerListLen;
     
     if (!cl || i < 0)
         return NULL;
     
-    conn = cl->conn[i];
-    if (!conn || ~conn->type & TYPEF_ANY_SERVER)
-        return NULL;
-    
-    return Connection2Server (conn);
+    return cl->serv[i];
 }
 
 /*
@@ -222,13 +230,13 @@ Connection *ServerFindChild (const Server *parent, const Contact *cont, UWORD ty
     {
         if (cont)
         {
-            for (cl = &slist; cl; cl = cl->more)
+            for (cl = &clist; cl; cl = cl->more)
                 for (i = 0; i < ConnectionListLen; i++)
                     if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->cont == cont && conn->serv == parent)
                         return conn;
         }
         else
-            for (cl = &slist; cl; cl = cl->more)
+            for (cl = &clist; cl; cl = cl->more)
                 for (i = 0; i < ConnectionListLen; i++)
                     if ((conn = cl->conn[i]) && (conn->type & type) == type && (conn->connect & CONNECT_OK) && conn->serv == parent)
                         return conn;
@@ -237,18 +245,18 @@ Connection *ServerFindChild (const Server *parent, const Contact *cont, UWORD ty
     {
         if (cont)
         {
-            for (cl = &slist; cl; cl = cl->more)
+            for (cl = &clist; cl; cl = cl->more)
                 for (i = 0; i < ConnectionListLen; i++)
                     if ((conn = cl->conn[i]) && (conn->type & type) == type && conn->cont == cont)
                         return conn;
         }
         else
         {
-            for (cl = &slist; cl; cl = cl->more)
+            for (cl = &clist; cl; cl = cl->more)
                 for (i = 0; i < ConnectionListLen; i++)
                     if ((conn = cl->conn[i]) && (conn->type & type) == type && (conn->connect & CONNECT_OK))
                         return conn;
-            for (cl = &slist; cl; cl = cl->more)
+            for (cl = &clist; cl; cl = cl->more)
                 for (i = 0; i < ConnectionListLen; i++)
                     if ((conn = cl->conn[i]) && (conn->type & type) == type)
                         return conn;
@@ -263,26 +271,19 @@ Connection *ServerFindChild (const Server *parent, const Contact *cont, UWORD ty
  */
 Server *ServerFindScreen (UWORD type, const char *screen)
 {
-    ConnectionList *cl;
-    Connection *conn;
+    ServerList *cl;
+    Server *serv;
     int i;
 
     assert (type);    
     assert (screen);
-    
-    type |= TYPEF_ANY_SERVER;
+    assert (type & TYPEF_ANY_SERVER);
     
     for (cl = &slist; cl; cl = cl->more)
-        for (i = 0; i < ConnectionListLen; i++)
-        {
-            if ((conn = cl->conn[i]) && (conn->type & type) == type
-                && conn->serv && conn->serv->conn == conn
-                && conn->serv->screen && !strcmp (conn->serv->screen, screen))
-                return conn->serv;
-            if (~conn->type & TYPEF_ANY_SERVER)
-                return NULL;
-        }
-
+        for (i = 0; i < ServerListLen; i++)
+            if ((serv = cl->serv[i]) && (serv->type & type) == type
+                && serv->screen && !strcmp (serv->screen, screen))
+                return serv;
     return NULL;
 }
 
@@ -297,7 +298,7 @@ UDWORD ConnectionFindNr (const Connection *conn)
     if (!conn)
         return -1;
 
-    for (i = 0, cl = &slist; cl; cl = cl->more)
+    for (i = 0, cl = &clist; cl; cl = cl->more)
         for (j = i; i < j + ConnectionListLen; i++)
             if (cl->conn[i % ConnectionListLen] == conn)
                 return i;
@@ -309,9 +310,17 @@ UDWORD ConnectionFindNr (const Connection *conn)
  */
 UDWORD ServerFindNr (const Server *serv)
 {
+    ServerList *cl;
+    int i, j;
+
     if (!serv)
         return -1;
-    return ConnectionFindNr (serv->conn);
+
+    for (i = 0, cl = &slist; cl; cl = cl->more)
+        for (j = i; i < j + ServerListLen; i++)
+            if (cl->serv[i % ServerListLen] == serv)
+                return i;
+    return -1;
 }
 
 /*
@@ -320,10 +329,26 @@ UDWORD ServerFindNr (const Server *serv)
 #undef ServerD
 void ServerD (Server *serv DEBUGPARAM)
 {
-    Connection *conn = Server2Connection (serv);
+    ConnectionList *cl;
+    Connection *clc;
+    int j;
+
     s_repl (&serv->screen, NULL);
-    ConnectionD (conn);
-    Debug (DEB_CONNECT, "=S=> %p closed.", conn);
+    for (cl = &clist; cl; cl = cl->more)
+        for (j = 0; j < ConnectionListLen; j++)
+            if ((clc = cl->conn[j]) && clc->serv == serv)
+            {
+                clc->serv = NULL;
+                ConnectionD (clc);
+                cl = &clist;
+                j = -1;
+            }
+
+    ConnectionD (serv->conn);
+    serv->conn = NULL;
+    free (serv);
+
+    Debug (DEB_CONNECT, "=S=> %p closed.", serv);
 }
 
 /*
@@ -355,24 +380,14 @@ void ConnectionD (Connection *conn DEBUGPARAM)
     s_free (conn->server);
     conn->server  = NULL;
 
-    for (cl = &slist; cl; cl = cl->more)
+    for (cl = &clist; cl; cl = cl->more)
         for (j = 0; j < ConnectionListLen; j++)
             if ((clc = cl->conn[j]) && clc->oscar_file == conn)
                 clc->oscar_file = NULL;
 
-    for (cl = &slist; cl; cl = cl->more)
-        for (j = 0; j < ConnectionListLen; j++)
-            if ((clc = cl->conn[j]) && clc->serv == Connection2Server (conn))
-            {
-                clc->serv = NULL;
-                ConnectionD (clc DEBUGFOR);
-                cl = &slist;
-                j = -1;
-            }
-
     QueueCancel (conn);
 
-    for (k = 0, cl = &slist; cl; cl = cl->more)
+    for (k = 0, cl = &clist; cl; cl = cl->more)
     {
         for (i = 0; i < ConnectionListLen; i++, k++)
             if (cl->conn[i] == conn)
@@ -391,7 +406,6 @@ void ConnectionD (Connection *conn DEBUGPARAM)
     }
 
     Debug (DEB_CONNECT, "===> %p[%d] closed.", conn, k);
-
     free (conn);
 }
 
@@ -400,32 +414,32 @@ void ConnectionD (Connection *conn DEBUGPARAM)
  */
 const char *ConnectionStrType (Connection *conn)
 {
-    switch (conn->type & ~TYPEF_ANY_SERVER) {
+    switch (conn->type) {
         case TYPE_XMPP_SERVER & ~TYPEF_ANY_SERVER:
-            return i18n (2604, "xmpp");
-        case TYPE_MSN_TEMP & ~TYPEF_ANY_SERVER:
-            return i18n (2584, "msn temp");
+            return i18n (9999, "xmpp main i/o");
         case TYPE_MSN_SERVER & ~TYPEF_ANY_SERVER:
-            return i18n (2585, "msn server");
-        case TYPE_MSN_CHAT & ~TYPEF_ANY_SERVER:
-            return i18n (2586, "msn chat");
+            return i18n (9999, "msn main i/o");
         case TYPE_SERVER & ~TYPEF_ANY_SERVER:
-            return i18n (1889, "server");
-        case TYPE_MSGLISTEN & ~TYPEF_ANY_SERVER:
+            return i18n (9999, "icq main i/o");
+        case TYPE_MSN_TEMP:
+            return i18n (2584, "msn temp");
+        case TYPE_MSN_CHAT:
+            return i18n (2586, "msn chat");
+        case TYPE_MSGLISTEN:
             return i18n (1947, "listener");
-        case TYPE_MSGDIRECT & ~TYPEF_ANY_SERVER:
+        case TYPE_MSGDIRECT:
             return i18n (1890, "peer-to-peer");
-        case TYPE_FILELISTEN & ~TYPEF_ANY_SERVER:
+        case TYPE_FILELISTEN:
             return i18n (2089, "file listener");
-        case TYPE_FILEDIRECT & ~TYPEF_ANY_SERVER:
+        case TYPE_FILEDIRECT:
             return i18n (2090, "file peer-to-peer");
-        case TYPE_FILE & ~TYPEF_ANY_SERVER:
+        case TYPE_FILE:
             return i18n (2067, "file io");
-        case TYPE_XMPPDIRECT & ~TYPEF_ANY_SERVER:
+        case TYPE_XMPPDIRECT:
             return i18n (9999, "xmpp peer-to-peer");
-        case TYPE_FILEXMPP & ~TYPEF_ANY_SERVER:
+        case TYPE_FILEXMPP:
             return i18n (9999, "xmpp file io");
-        case TYPE_REMOTE & ~TYPEF_ANY_SERVER:
+        case TYPE_REMOTE:
             return i18n (2225, "scripting");
         default:
             return i18n (1745, "unknown");
@@ -438,11 +452,9 @@ const char *ServerStrType (Server *serv)
         case TYPE_XMPP_SERVER:
             return i18n (2604, "xmpp");
         case TYPE_MSN_SERVER:
-            return i18n (2585, "msn server");
+            return i18n (9999, "msn");
         case TYPE_SERVER:
-            return i18n (1889, "server");
-        case TYPE_REMOTE:
-            return i18n (2225, "scripting");
+            return i18n (9999, "icq");
         default:
             return i18n (1745, "unknown");
     }

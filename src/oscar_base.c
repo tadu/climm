@@ -67,7 +67,7 @@ void SrvCallBackFlap (Event *event)
     }
     
     assert (event->type == QUEUE_FLAP);
-    ASSERT_SERVER (event->conn);
+    ASSERT_SERVER_CONN (event->conn);
     
     serv = event->conn->serv;
 
@@ -529,13 +529,14 @@ static void SrvCallBackReconn (Connection *conn)
 
 static void SrvCallBackDoReconn (Event *event)
 {
-    if (event->conn && event->conn->type == TYPE_SERVER)
+    if (!event || !event->conn)
     {
-        QueueEnqueue (event);
-        ConnectionInitServer (event->conn->serv);
-    }
-    else
         EventD (event);
+        return;
+    }
+    ASSERT_SERVER_CONN (event->conn);
+    QueueEnqueue (event);
+    ConnectionInitServer (event->conn->serv);
 }
 
 static void SrvCallBackTimeout (Event *event)
@@ -547,7 +548,7 @@ static void SrvCallBackTimeout (Event *event)
         EventD (event);
         return;
     }
-    ASSERT_SERVER (conn);
+    ASSERT_SERVER_CONN (conn);
     
     if (conn->connect & CONNECT_MASK && ~conn->connect & CONNECT_OK)
     {

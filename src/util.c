@@ -25,7 +25,7 @@
 /*
  * Log the event provided to the log with a time stamp.
  */
-int putlog (Server *conn, time_t stamp, Contact *cont, 
+int putlog (Server *serv, time_t stamp, Contact *cont, 
             status_t status, UDWORD nativestatus, enum logtype level, UWORD type, const char *log)
 {
     char buffer[LOG_MAX_PATH + 1];                   /* path to the logfile */
@@ -78,14 +78,14 @@ int putlog (Server *conn, time_t stamp, Contact *cont,
 
     pos = strchr (cont->nick, ' ') ? "\"" : "";
     
-    switch (conn->type)
+    switch (serv->type)
     {
         case TYPE_MSN_SERVER:
         case TYPE_XMPP_SERVER:
         case TYPE_SERVER:
             s_catf (&t, "[%s:%s]!%s %s %s%s%s[%s:%s+%lX %s]",
-                ConnectionServerType (conn->type), conn->screen, username, indic, pos, cont->nick, pos,
-                ConnectionServerType (conn->type), cont->screen, UD2UL (nativestatus), ContactStatusStr (status));
+                ConnectionServerType (serv->type), serv->screen, username, indic, pos, cont->nick, pos,
+                ConnectionServerType (serv->type), cont->screen, UD2UL (nativestatus), ContactStatusStr (status));
             break;
         case TYPE_MSGLISTEN:
         case TYPE_MSGDIRECT:

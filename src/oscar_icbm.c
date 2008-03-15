@@ -327,7 +327,7 @@ static void SnacCallbackType2Cancel2 (Event *event)
 
 static void SnacCallbackType2Ack (Event *event)
 {
-    Connection *serv = event->conn;
+    Connection *conn = event->conn;
     Contact *cont = event->cont;
     Event *aevent;
     UDWORD opt_ref;
@@ -338,10 +338,10 @@ static void SnacCallbackType2Ack (Event *event)
         EventD (event);
         return;
     }
-    aevent = QueueDequeue (serv, QUEUE_TYPE2_RESEND, opt_ref);
+    aevent = QueueDequeue (conn, QUEUE_TYPE2_RESEND, opt_ref);
     assert (aevent);
     assert (cont);
-    ASSERT_SERVER (serv);
+    ASSERT_SERVER_CONN (conn);
     
     msg = aevent->data;
     assert (msg);
@@ -601,7 +601,13 @@ UBYTE SnacCliSendmsg (Server *serv, Contact *cont, UBYTE format, Message *msg)
 
 static void SnacSrvCallbackSendack (Event *event)
 {
-    if (event && event->conn && event->pak && event->conn->type == TYPE_SERVER)
+    if (!event || !event->conn)
+    {
+        EventD (event);
+        return;
+    }
+    ASSERT_SERVER_CONN (event->conn);
+    if (event->pak)
     {
         SnacSend (event->conn->serv, event->pak);
         event->pak = NULL;

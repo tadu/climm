@@ -1095,7 +1095,7 @@ int Read_RC_File (FILE *rcf)
                     PrefParseInt (i);
 
                     serv->pref_version = i;
-                    if (!serv->type || serv->type == TYPEF_ANY_SERVER)
+                    if (serv->type == TYPEF_ANY_SERVER)
                     {
                         serv->type = TYPE_SERVER;
                         dep = 43;
@@ -1563,8 +1563,6 @@ void PrefReadStat (FILE *stf)
     
     for (i = 0; (serv = ServerNr (i)); i++)
     {
-        if (serv->type == TYPE_REMOTE)
-            continue;
         if (!serv->contacts)
         {
             serv->contacts = cg = ContactGroupC (serv, 0, s_sprintf ("contacts-%s-%s", ConnectionServerType (serv->type), serv->screen));
@@ -1754,11 +1752,10 @@ int PrefWriteConfFile (void)
             fprintf (rcf, "host %s\n",   s_quote (ss->pref_server));
         if (ss->pref_port && ss->pref_port != -1)
             fprintf (rcf, "port %lu\n",    UD2UL (ss->pref_port));
-        if (ss->type & TYPEF_ANY_SERVER)
-            fprintf (rcf, "screen %s\n",   s_quote (ss->screen));
+        fprintf (rcf, "screen %s\n",   s_quote (ss->screen));
         if (ss->pref_passwd)
             fprintf (rcf, "password %s\n", s_quote (ss->pref_passwd));
-        else if (!k)
+        else
             fprintf (rcf, "# password\n");
         if (ss->pref_status || !k)
             fprintf (rcf, "status %s\n",  ContactStatusStr (ss->pref_status));

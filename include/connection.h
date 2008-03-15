@@ -70,31 +70,6 @@ struct Connection_s
     UDWORD    stat_real_pak_rcvd;
     UDWORD    stat_pak_sent;
     UDWORD    stat_pak_rcvd;
-
-    char     *foo_screen;
-    status_t  foo_status;         /* own status                               */
-    UBYTE     foo_flags;          /* connection flags                         */
-    status_t  foo_pref_status;
-    char     *foo_pref_server;
-    UDWORD    foo_pref_port;
-    char     *foo_pref_passwd;
-    char     *foo_passwd;         /* the password for this user               */
-    SOK_T     foo_logfd;
-    ContactGroup *foo_contacts;   /* The contacts for this connection         */
-    Connection            *foo_conn;   /* main I/O connection          */
-    UDWORD    foo_nativestatus;   /* own ICQ extended status                  */
-    idleflag_t foo_idle_flag;     /* the idle status                          */
-    Opt       foo_copts;
-    
-    void     *foo_xmpp_private;   /* private data for XMPP connections        */
-
-    void     *foo_oscar_tlv;            /* temporary during v8 connect              */
-    UDWORD    foo_oscar_uin;            /* the uin of this server connection        */
-    UWORD     foo_oscar_type2_seq;     /* sequence number for dc and type-2        */
-    UWORD     foo_oscar_snac_seq;       /* current secondary sequence number        */
-    UDWORD    foo_oscar_icq_seq;       /* current old-ICQ sequence number          */
-    UWORD     foo_oscar_privacy_tag;         /* F*cking ICQ needs to change the value */
-    UBYTE     foo_oscar_privacy_value;       /* when switching between visible and invisible */
 };
 
 struct Server_s
@@ -103,39 +78,6 @@ struct Server_s
     UBYTE     pref_version;        /* protocol version in this session         */
     jump_serv_open_f *c_open;  /* function to call to open        */
     Connection            *oscar_dc;  /* associated session           */
-
-    UWORD     foo_our_seq;        /* current primary sequence number          */
-    Contact  *foo_cont;           /* the user this connection is for          */
-    char     *foo_server;         /* the remote server name                   */
-    UDWORD    foo_port;           /* the port the server is listening on      */
-    UDWORD    foo_ip;             /* the remote ip (host byte order)          */
-    UDWORD    foo_our_local_ip;   /* LAN-internal IP (host byte order)        */
-    UDWORD    foo_our_outside_ip; /* the IP address the server sees from us   */
-    SOK_T     foo_sok;            /* socket for connection to server          */
-    UWORD     foo_connect;        /* connection setup status                  */
-    Packet   *foo_incoming;       /* packet we're receiving                   */
-    Packet   *foo_outgoing;       /* packet we're sending                     */
-#if ENABLE_SSL
-#if ENABLE_GNUTLS
-    gnutls_session foo_ssl;       /* The SSL data structure for GnuTLS        */
-#else
-    SSL *foo_ssl;                 /* SSL session struct for OpenSSL           */
-#endif
-    ssl_status_t foo_ssl_status;  /* SSL status (INIT,OK,FAILED,...)          */
-#endif
-    UDWORD    foo_our_session;    /* session ID                               */
-    UDWORD    foo_oscar_file_len;            /* used for file transfer                   */
-    UDWORD    foo_oscar_file_done;           /* used for file transfer                   */
-    Server                *foo_serv; /* parent session               */
-    jump_conn_f *foo_dispatch;     /* function to call on select()    */
-    jump_conn_f *foo_reconnect;    /* function to call for reconnect  */
-    jump_conn_err_f *foo_error;    /* function to call for i/o errors */
-    jump_conn_f *foo_close;        /* function to call to close       */
-    jump_conn_f *foo_utilio;       /* private to util_io.c            */
-    UDWORD    foo_stat_real_pak_sent;
-    UDWORD    foo_stat_real_pak_rcvd;
-    UDWORD    foo_stat_pak_sent;
-    UDWORD    foo_stat_pak_rcvd;
 
     char     *screen;
     status_t  status;         /* own status                               */
@@ -215,8 +157,7 @@ val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
 
 
 #define TYPEF_ANY_SERVER    1  /* any server connection  */
-#define TYPEF_SAVEME        2  /* a connection to be saved in config */
-#define TYPEF_SERVER        4  /* ICQ server connection  */
+#define TYPEF_OSCAR         4  /* ICQ server connection  */
 #define TYPEF_ANY_PEER      8  /* any peer connection    */
 #define TYPEF_ANY_DIRECT   16  /* " && established       */
 #define TYPEF_ANY_LISTEN   32  /* " && listening         */
@@ -233,24 +174,25 @@ val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
 /* any conn->type may be only any of those values:
  * do not use the flags above unless you _really_ REALLY know what you're doing
  */
-#define TYPE_SERVER        (TYPEF_ANY_SERVER | TYPEF_SAVEME | TYPEF_SERVER     | TYPEF_HAVEUIN)
-#define TYPE_MSGLISTEN     (TYPEF_ANY_PEER | TYPEF_ANY_MSG  | TYPEF_ANY_LISTEN | TYPEF_HAVEUIN)
-#define TYPE_MSGDIRECT     (TYPEF_ANY_PEER | TYPEF_ANY_MSG  | TYPEF_ANY_DIRECT | TYPEF_HAVEUIN)
-#define TYPE_FILELISTEN    (TYPEF_ANY_PEER | TYPEF_ANY_FILE | TYPEF_ANY_LISTEN | TYPEF_HAVEUIN)
-#define TYPE_FILEDIRECT    (TYPEF_ANY_PEER | TYPEF_ANY_FILE | TYPEF_ANY_DIRECT | TYPEF_HAVEUIN)
-#define TYPE_CHATLISTEN    (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_LISTEN | TYPEF_HAVEUIN)
-#define TYPE_CHATDIRECT    (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_DIRECT | TYPEF_HAVEUIN)
-#define TYPE_XMPPDIRECT    (TYPEF_ANY_PEER | TYPEF_ANY_FILE | TYPEF_XMPP)
-#define TYPE_FILE          (TYPEF_FILE | TYPEF_SERVER)
-#define TYPE_FILEXMPP      (TYPEF_FILE | TYPEF_XMPP)
-#define TYPE_REMOTE        (TYPEF_SAVEME | TYPEF_REMOTE)
-#define TYPE_MSN_TEMP      TYPEF_MSN
-#define TYPE_MSN_SERVER    (TYPEF_ANY_SERVER | TYPEF_SAVEME | TYPEF_MSN)
-#define TYPE_MSN_CHAT      (TYPEF_MSN | TYPEF_MSN_CHAT)
-#define TYPE_XMPP_SERVER   (TYPEF_ANY_SERVER | TYPEF_SAVEME | TYPEF_XMPP)
+#define TYPE_SERVER        (TYPEF_ANY_SERVER | TYPEF_OSCAR | TYPEF_HAVEUIN)
+#define TYPE_XMPP_SERVER   (TYPEF_ANY_SERVER | TYPEF_XMPP)
+#define TYPE_MSN_SERVER    (TYPEF_ANY_SERVER | TYPEF_MSN)
 
-#define ASSERT_ANY_SERVER(s)  (assert (s), assert ((s)->type & TYPEF_ANY_SERVER))
-#define ASSERT_SERVER(s)      (assert (s), assert ((s)->type == TYPE_SERVER))
+#define TYPE_MSGLISTEN     (TYPEF_ANY_PEER | TYPEF_ANY_MSG  | TYPEF_ANY_LISTEN)
+#define TYPE_MSGDIRECT     (TYPEF_ANY_PEER | TYPEF_ANY_MSG  | TYPEF_ANY_DIRECT)
+#define TYPE_FILELISTEN    (TYPEF_ANY_PEER | TYPEF_ANY_FILE | TYPEF_ANY_LISTEN)
+#define TYPE_FILEDIRECT    (TYPEF_ANY_PEER | TYPEF_ANY_FILE | TYPEF_ANY_DIRECT)
+#define TYPE_CHATLISTEN    (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_LISTEN)
+#define TYPE_CHATDIRECT    (TYPEF_ANY_PEER | TYPEF_ANY_CHAT | TYPEF_ANY_DIRECT)
+#define TYPE_XMPPDIRECT    (TYPEF_ANY_PEER | TYPEF_ANY_FILE | TYPEF_XMPP)
+#define TYPE_FILE          (TYPEF_FILE | TYPEF_OSCAR)
+#define TYPE_FILEXMPP      (TYPEF_FILE | TYPEF_XMPP)
+#define TYPE_REMOTE        TYPEF_REMOTE
+#define TYPE_MSN_TEMP      (TYPEF_ANY_PEER | TYPEF_MSN)
+#define TYPE_MSN_CHAT      (TYPEF_MSN | TYPEF_MSN_CHAT)
+
+#define ASSERT_SERVER(s)      { Server *__s = (s); assert (__s); assert (__s->type == TYPE_SERVER); }
+#define ASSERT_SERVER_CONN(c) { Connection *__c = (c); assert (__c); ASSERT_SERVER (__c->serv); }
 
 #define CONNERR_WRITE       1
 #define CONNERR_READ        2

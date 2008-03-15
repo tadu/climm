@@ -123,7 +123,7 @@ static UWORD proto_type (const char *proto_name)
     UWORD type;
 
     if (!strcmp (proto_name, "icq"))
-        type = TYPEF_HAVEUIN | TYPEF_ANY_SERVER;
+        type = TYPE_SERVER;
     else
         type = ConnectionServerNType (proto_name, 0);
 

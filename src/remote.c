@@ -58,9 +58,17 @@ static void RemoteClose (Connection *remo);
  */
 Event *RemoteOpen (Connection *remo)
 {
-    if (!remo->server)
+    const char *path = NULL;
+
+    if (!OptGetStr (&prG->copts, CO_SCRIPT_PATH, &path) && !remo->server)
+    {
         remo->server = strdup ("scripting");
-    s_repl (&remo->server, s_realpath (remo->server));
+        OptSetStr (&prG->copts, CO_SCRIPT_PATH, remo->server);
+    }
+    if (!remo->server || strcmp (remo->server, path))
+        s_repl (&remo->server, path);
+    if (*remo->server != '/')
+        s_repl (&remo->server, s_realpath (remo->server));
 
     rl_printf (i18n (2223, "Opening scripting FIFO at %s... "), s_wordquote (remo->server));
 

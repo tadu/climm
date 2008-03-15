@@ -57,7 +57,7 @@
 #endif
 
 #define ASSERT_ANY_DIRECT(s)  (assert (s), assert ((s)->type & TYPEF_ANY_DIRECT), assert ((s)->serv), ASSERT_ANY_LISTEN ((s)->serv->oscar_dc))
-#define ASSERT_ANY_LISTEN(s)  (assert (s), assert ((s)->type & TYPEF_ANY_LISTEN), ASSERT_ANY_SERVER ((s)->serv))
+#define ASSERT_ANY_LISTEN(s)  (assert (s), assert ((s)->type & TYPEF_ANY_LISTEN), assert ((s)->serv))
 
 #ifdef ENABLE_PEER2PEER
 

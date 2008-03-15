@@ -310,7 +310,7 @@ static void CallbackMeta (Event *event)
 {
     Contact *cont;
     
-    assert (event && event->conn && event->conn->type & TYPEF_ANY_SERVER);
+    assert (event && event->conn && event->conn->serv && event->conn == event->conn->serv->conn);
 
     cont = event->cont;
     if (!cont)

@@ -1271,7 +1271,8 @@ static void XMPPCallBackTimeout (Event *event)
         EventD (event);
         return;
     }
-    assert (conn->type == TYPE_XMPP_SERVER);
+    assert (conn->serv);
+    assert (conn->serv->type == TYPE_XMPP_SERVER);
     if (~conn->connect & CONNECT_OK)
         rl_print ("# XMPP timeout\n");
     EventD (event);
@@ -1386,13 +1387,15 @@ static void XMPPCallbackReconn (Connection *conn)
 
 static void XMPPCallBackDoReconn (Event *event)
 {
-    if (event->conn && event->conn->type == TYPE_XMPP_SERVER)
+    if (!event || !event->conn)
     {
-        QueueEnqueue (event);
-        ConnectionInitXMPPServer (event->conn->serv);
-    }
-    else
         EventD (event);
+        return;
+    }
+    assert (event->conn->serv);
+    assert (event->conn->serv->type == TYPE_XMPP_SERVER);
+    QueueEnqueue (event);
+    ConnectionInitXMPPServer (event->conn->serv);
 }
 
 void XMPPCallbackClose (Connection *conn)
@@ -1441,7 +1444,8 @@ void XMPPCallBackFileAccept (Event *event)
         EventD (event);
         return;
     }
-    assert (conn->type == TYPE_XMPP_SERVER);
+    assert (conn->serv);
+    assert (conn->serv->type == TYPE_XMPP_SERVER);
     assert (event->cont);
     assert (event->cont->parent);
 

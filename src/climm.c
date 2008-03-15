@@ -101,9 +101,6 @@ static void Idle_Check (Server *serv)
     status_t news = ims_offline;
     status_noi_t noinv = ContactClearInv (serv->status);
 
-    if (~serv->type & TYPEF_ANY_SERVER)
-        return;
-
     if ((noinv == imr_dnd || noinv == imr_occ || noinv == imr_ffc)
         || ~serv->conn->connect & CONNECT_OK)
     {
@@ -564,7 +561,7 @@ static void Init (int argc, char *argv[])
     
     if (!uingiven)
         for (i = 0; (serv = ServerNr (i)); i++)
-            if (serv->c_open && serv->flags & CONN_AUTOLOGIN && serv->type & TYPEF_ANY_SERVER)
+            if (serv->c_open && serv->flags & CONN_AUTOLOGIN)
                 if (!serv->passwd || !*serv->passwd)
                 {
                     strc_t pwd;
@@ -640,7 +637,7 @@ int main (int argc, char *argv[])
 
         for (i = 0; (conn = ConnectionNr (i)); i++)
         {
-            if (conn->connect & CONNECT_OK && conn->type & TYPEF_ANY_SERVER && conn->serv)
+            if (conn->connect & CONNECT_OK && conn->serv && conn == conn->serv->conn)
                 Idle_Check (conn->serv);
             if (conn->sok < 0 || !conn->dispatch)
                 continue;

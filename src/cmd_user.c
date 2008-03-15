@@ -190,7 +190,7 @@ static jump_t jump[] = {
     { &CmdUserOther,         "other",        0,   0 },
     { &CmdUserAbout,         "about",        0,   0 },
     { &CmdUserConn,          "conn",         0,   0 },
-    { &CmdUserConn,          "login",        0,   2 },
+    { &CmdUserConn,          "login",        0, 202 },
 #ifdef ENABLE_PEER2PEER
     { &CmdUserPeer,          "peer",         0,   0 },
     { &CmdUserPeer,          "tcp",          0,   0 },
@@ -4021,8 +4021,8 @@ static JUMP_F(CmdUserUptime)
  */
 static JUMP_F(CmdUserConn)
 {
-    int i;
-    UDWORD nr;
+    int i, ok = 0;
+    UDWORD nr = 0;
     strc_t par;
     Server *servl = NULL;
     Connection *connl = NULL;
@@ -4030,23 +4030,70 @@ static JUMP_F(CmdUserConn)
 
     if (!data)
     {
-        if      (s_parsekey (&args, "login"))  data = 2;
-        else if (s_parsekey (&args, "open"))   data = 2;
-        else if (s_parsekey (&args, "select")) data = 3;
-        else if (s_parsekey (&args, "delete")) data = 4;
-        else if (s_parsekey (&args, "remove")) data = 4;
-        else if (s_parsekey (&args, "close"))  data = 5;
-        else if (s_parsekey (&args, "logoff")) data = 5;
-        else if (s_parserem (&args))           data = 0;
-        else                                   data = 1;
+        if      (s_parsekey (&args, "login"))   data = 202;
+        else if (s_parsekey (&args, "open"))    data = 102;
+        else if (s_parsekey (&args, "select"))  data = 203;
+        else if (s_parsekey (&args, "delete"))  data = 104;
+        else if (s_parsekey (&args, "remove"))  data = 104;
+        else if (s_parsekey (&args, "discard")) data = 204;
+        else if (s_parsekey (&args, "close"))   data = 105;
+        else if (s_parsekey (&args, "logoff"))  data = 205;
+        else if (s_parserem (&args))            data = 0;
+        else                                    data = 1;
+    }
+    if (data > 200)
+    {
+        targs = args;
+        if (s_parseint (&targs, &nr) && (servl = ServerNr (nr - 1)))
+            args = targs;
+        else if ((par = s_parse (&args)))
+        {
+            servl = ServerFindScreen (0, par->txt);
+            if (!servl && s_parserem (&args))
+            {
+                if (nr)
+                    rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), UD2UL (nr), par->txt);
+                else
+                    rl_printf (i18n (2599, "There is no connection for %s.\n"), par->txt);
+                return 0;
+            }
+            if (!servl)
+                args = targs;
+        }
+        if (!servl)
+        {
+            if (ServerFindNr (uiG.conn) != (UDWORD)-1)
+                servl = uiG.conn;
+            else
+                servl = ServerNr (0);
+            if (!servl)
+            {
+                rl_printf (i18n (2600, "No connection selected.\n"));
+                return 0;
+            }
+        }
+    }
+    else if (data > 100)
+    {
+        if (!s_parseint (&args, &nr))
+            rl_printf (i18n (1894, "There is no connection number %ld.\n"), UD2UL (0));
+        else if (!(connl = ConnectionNr (nr - 1)))
+            rl_printf (i18n (1894, "There is no connection number %ld.\n"), UD2UL (nr));
+        else
+            ok = 1;
+        if (!ok)
+            return 0;
     }
      
     switch (data)
     {
         case 0:
             rl_print (i18n (1892, "conn                    List available connections.\n"));
-            rl_print (i18n (2094, "conn login [pass]       Open current/first server connection.\n"));
-            rl_print (i18n (1893, "conn login <nr> [pass]  Open connection <nr>.\n"));
+            rl_print (i18n (2094, "conn login [pass]       Log in to current/first server connection.\n"));
+            rl_print (i18n (1893, "conn login <nr> [pass]  Log in to server connection <nr>.\n"));
+            rl_print (i18n (9999, "conn logoff <nr>        Log off from server connection <nr>.\n"));
+            rl_print (i18n (9999, "conn discard <nr>       Discard server connection <nr>.\n"));
+            rl_print (i18n (9999, "conn open <nr>          Open connection <nr>.\n"));
             rl_print (i18n (2156, "conn close <nr>         Close connection <nr>.\n"));
             rl_print (i18n (2095, "conn remove <nr>        Remove connection <nr>.\n"));
             rl_print (i18n (2097, "conn select <nr>        Select connection <nr> as server connection.\n"));
@@ -4063,30 +4110,30 @@ static JUMP_F(CmdUserConn)
                 rl_printf (i18n (2597, "%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n"),
                           i + 1, ServerStrType (servl), servl->pref_version,
 #ifdef ENABLE_SSL
-                          servl->foo_ssl_status == SSL_STATUS_OK ? " SSL" : "",
+                          servl->conn->ssl_status == SSL_STATUS_OK ? " SSL" : "",
 #else
                           "",
 #endif
                           cont ? cont->nick : "", ContactStatusStr (servl->status),
-                          servl->foo_server ? servl->foo_server : s_ip (servl->foo_ip), UD2UL (servl->foo_port),
-                          servl->foo_connect & CONNECT_FAIL ? i18n (1497, "failed") :
-                          servl->foo_connect & CONNECT_OK   ? i18n (1934, "connected") :
-                          servl->foo_connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
+                          servl->conn->server ? servl->conn->server : s_ip (servl->conn->ip), UD2UL (servl->conn->port),
+                          servl->conn->connect & CONNECT_FAIL ? i18n (1497, "failed") :
+                          servl->conn->connect & CONNECT_OK   ? i18n (1934, "connected") :
+                          servl->conn->connect & CONNECT_MASK ? i18n (1911, "connecting") : i18n (1912, "closed"));
                 if (prG->verbose)
                 {
                     char *t1, *t2, *t3;
                     rl_printf (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n"),
-                         servl->type, servl->foo_sok, t1 = strdup (s_ip (servl->foo_ip)),
-                         servl->foo_connect, t2 = strdup (s_ip (servl->foo_our_local_ip)),
-                         t3 = strdup (s_ip (servl->foo_our_outside_ip)),
-                         UD2UL (servl->foo_our_session), servl->foo_our_seq, servl->oscar_snac_seq);
+                         servl->type, servl->conn->sok, t1 = strdup (s_ip (servl->conn->ip)),
+                         servl->conn->connect, t2 = strdup (s_ip (servl->conn->our_local_ip)),
+                         t3 = strdup (s_ip (servl->conn->our_outside_ip)),
+                         UD2UL (servl->conn->our_session), servl->conn->our_seq, servl->oscar_snac_seq);
 #ifdef ENABLE_SSL
-                    rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), servl, servl->foo_serv, servl->oscar_dc, servl->foo_ssl_status);
+                    rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), servl, servl->conn->serv, servl->oscar_dc, servl->conn->ssl_status);
 #else
-                    rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), servl, servl->foo_serv, servl->oscar_dc);
+                    rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), servl, servl->conn->serv, servl->oscar_dc);
 #endif
                     rl_printf (i18n (2454, "    open %p reconn %p close %p err %p dispatch %p\n"),
-                              servl->c_open, servl->foo_reconnect, servl->foo_close, servl->foo_error, servl->foo_dispatch);
+                              servl->c_open, servl->conn->reconnect, servl->conn->close, servl->conn->error, servl->conn->dispatch);
                     free (t1);
                     free (t2);
                     free (t3);
@@ -4098,8 +4145,6 @@ static JUMP_F(CmdUserConn)
             for (i = 0; (connl = ConnectionNr (i)); i++)
             {
                 Contact *cont = connl->cont;
-                if (connl->type & TYPEF_ANY_SERVER)
-                    continue;
                 rl_printf (i18n (2597, "%02d %-15s version %d%s for %s (%s), at %s:%ld %s\n"),
                           i + 1, ConnectionStrType (connl), connl->version,
 #ifdef ENABLE_SSL
@@ -4107,7 +4152,7 @@ static JUMP_F(CmdUserConn)
 #else
                           "",
 #endif
-                          cont ? cont->nick : "", ContactStatusStr (connl->foo_status),
+                          cont ? cont->nick : "", connl->serv ? ContactStatusStr (connl->serv->status) : "",
                           connl->server ? connl->server : s_ip (connl->ip), UD2UL (connl->port),
                           connl->connect & CONNECT_FAIL ? i18n (1497, "failed") :
                           connl->connect & CONNECT_OK   ? i18n (1934, "connected") :
@@ -4119,7 +4164,7 @@ static JUMP_F(CmdUserConn)
                          connl->type, connl->sok, t1 = strdup (s_ip (connl->ip)),
                          connl->connect, t2 = strdup (s_ip (connl->our_local_ip)),
                          t3 = strdup (s_ip (connl->our_outside_ip)),
-                         UD2UL (connl->our_session), connl->our_seq, connl->foo_oscar_snac_seq);
+                         UD2UL (connl->our_session), connl->our_seq, connl->serv ? connl->serv->oscar_snac_seq : 0);
 #ifdef ENABLE_SSL
                     rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), connl, connl->serv, connl->oscar_file, connl->ssl_status);
 #else
@@ -4135,37 +4180,17 @@ static JUMP_F(CmdUserConn)
             rl_print (COLEXDENT "\r");
             break;
             
-        case 2:
-            targs = args;
-            nr = 0;
+        case 102:
+            if (connl->connect & CONNECT_OK)
+                rl_printf (i18n (9999, "Connection #%ld is already open.\n"), UD2UL (nr));
+            else if (!connl->c_open)
+                rl_printf (i18n (9999, "Don't know how to open connection type %s for #%ld.\n"),
+                    ConnectionStrType (connl), UD2UL (nr));
+            else
+                connl->c_open (connl);
+            break;
 
-            if (s_parseint (&targs, &nr) && (servl = ServerNr (nr - 1)))
-                args = targs;
-            else if ((par = s_parse (&args)))
-            {
-                servl = ServerFindScreen (0, par->txt);
-                if (!servl && s_parserem (&args))
-                {
-                    if (nr)
-                        rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), UD2UL (nr), par->txt);
-                    else
-                        rl_printf (i18n (2599, "There is no connection for %s.\n"), par->txt);
-                    break;
-                }
-                if (!servl)
-                    args = targs;
-            }
-            if (!servl)
-            {
-                if (ServerFindNr (uiG.conn) != (UDWORD)-1)
-                    servl = uiG.conn;
-                else
-                    servl = ServerNr (0);
-                if (!servl)
-                    rl_printf (i18n (2600, "No connection selected.\n"));
-            }
-            if (!servl)
-                break;
+        case 202:
             if ((targs = s_parserem (&args)))
                 s_repl (&servl->passwd, targs);
             if (servl->conn->connect & CONNECT_OK)
@@ -4179,63 +4204,30 @@ static JUMP_F(CmdUserConn)
                 servl->c_open (servl);
             break;
 
-        case 3:
-            targs = args;
-            nr = 0;
-
-            if (s_parseint (&targs, &nr) && (servl = ServerNr (nr - 1)))
-                args = targs;
-            else if ((par = s_parse (&args)))
-            {
-                servl = ServerFindScreen (0, par->txt);
-                if (!servl)
-                {
-                    if (nr)
-                        rl_printf (i18n (2598, "There is no connection number %ld and no connection for UIN %s.\n"), UD2UL (nr), par->txt);
-                    else
-                        rl_printf (i18n (2599, "There is no connection for %s.\n"), par->txt);
-                }
-            }
-            else
-                rl_printf (i18n (2600, "No connection selected.\n"));
-            if (!servl)
-                break;
-            if (~servl->type & TYPEF_ANY_SERVER)
-                rl_printf (i18n (2098, "Connection %ld is not a server connection.\n"), UD2UL (nr));
+        case 203:
+            uiG.conn = servl;
+            rl_printf (i18n (2603, "Selected connection %ld (version %d, UIN %s) as current connection.\n"),
+                       UD2UL (nr), servl->pref_version, servl->screen);
+            break;
+        
+        case 104:
+            if (connl->serv && connl->serv->conn == connl)
+                rl_printf (i18n (9999, "Connection #%ld is a server's main i/o connection.\n"), UD2UL (nr));
             else
             {
-                uiG.conn = servl;
-                rl_printf (i18n (2603, "Selected connection %ld (version %d, UIN %s) as current connection.\n"),
-                          UD2UL (nr), servl->pref_version, servl->screen);
+                rl_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), UD2UL (nr));
+                ConnectionD (connl);
             }
             break;
         
-        case 4:
-            if (!s_parseint (&args, &nr))
-                nr = 0;
-
-            connl = ConnectionNr (nr - 1);
-            if (!connl)
-            {
-                rl_printf (i18n (1894, "There is no connection number %ld.\n"), UD2UL (nr));
-                break;
-            }
-            if (connl->serv->conn == connl)
-            {
-                rl_printf (i18n (2102, "Connection %ld is a configured connection.\n"), UD2UL (nr));
-                break;
-            }
-            rl_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), UD2UL (nr));
-            ConnectionD (connl);
+        case 204:
+            rl_printf (i18n (9999, "Discarding server connection %ld completely.\n"), UD2UL (nr));
+            ServerD (servl);
             break;
         
-        case 5:
-            if (!s_parseint (&args, &nr))
-                nr = 0;
-
-            connl = ConnectionNr (nr - 1);
-            if (!connl)
-                rl_printf (i18n (1894, "There is no connection number %ld.\n"), UD2UL (nr));
+        case 105:
+            if (connl->serv && connl->serv->conn == connl)
+                rl_printf (i18n (9999, "Connection #%ld is a server's main i/o connection.\n"), UD2UL (nr));
             else if (connl->close)
             {
                 rl_printf (i18n (2185, "Closing connection %ld.\n"), UD2UL (nr));
@@ -4245,6 +4237,14 @@ static JUMP_F(CmdUserConn)
             {
                 rl_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), UD2UL (nr));
                 ConnectionD (connl);
+            }
+            break;
+
+        case 205:
+            if (servl->conn && servl->conn->close)
+            {
+                rl_printf (i18n (9999, "Logging of from connection %ld.\n"), UD2UL (nr));
+                servl->conn->close (connl);
             }
     }
     return 0;
@@ -4898,7 +4898,7 @@ void CmdUserCallbackTodo (Event *event)
     const char *args;
     strc_t par;
     
-    if (event && event->conn && event->conn->type & TYPEF_ANY_SERVER
+    if (event && event->conn && event->conn->serv && event->conn == event->conn->serv->conn
         && OptGetStr (event->opt, CO_CLIMMCOMMAND, &args))
     {
         tconn = uiG.conn;

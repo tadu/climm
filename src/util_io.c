@@ -101,7 +101,7 @@ void UtilIOConnectUDP (Connection *conn)
 
     if (conn->sok < 0)
     {
-        if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+        if (prG->verbose || (conn->serv && conn == conn->serv->conn))
         {
             rl_print (i18n (1055, "Socket creation failed"));
             rl_print (".\n");
@@ -109,7 +109,7 @@ void UtilIOConnectUDP (Connection *conn)
         conn->sok = -1;
         return;
     }
-    if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+    if (prG->verbose || (conn->serv && conn == conn->serv->conn))
         rl_print (i18n (1056, "Socket created, attempting to connect.\n"));
 
     if (prG->s5Use)
@@ -120,7 +120,7 @@ void UtilIOConnectUDP (Connection *conn)
 
         if (bind (conn->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr)) < 0)
         {
-            if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+            if (prG->verbose || (conn->serv && conn == conn->serv->conn))
                 rl_print (i18n (1637, "Can't bind socket to free port\n"));
             conn->sok = -1;
             return;
@@ -136,7 +136,7 @@ void UtilIOConnectUDP (Connection *conn)
             host_struct = gethostbyname (prG->s5Host);
             if (!host_struct)
             {
-                if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+                if (prG->verbose || (conn->serv && conn == conn->serv->conn))
                 {
                     rl_printf (i18n (1596, "[SOCKS] Can't find hostname %s: %s."), prG->s5Host, hstrerror (h_errno));
                     rl_print ("\n");
@@ -151,7 +151,7 @@ void UtilIOConnectUDP (Connection *conn)
         s5Sok = socket (AF_INET, SOCK_STREAM, 0);       /* create the unconnected socket */
         if (s5Sok < 0)
         {
-            if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+            if (prG->verbose || (conn->serv && conn == conn->serv->conn))
                 rl_print (i18n (1597, "[SOCKS] Socket creation failed\n"));
             conn->sok = -1;
             return;
@@ -159,7 +159,7 @@ void UtilIOConnectUDP (Connection *conn)
         conct = connect (s5Sok, (struct sockaddr *) &s5sin, sizeof (s5sin));
         if (conct == -1)        /* did we connect ? */
         {
-            if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+            if (prG->verbose || (conn->serv && conn == conn->serv->conn))
             {
                 rl_print (i18n (1598, "[SOCKS] Connection request refused"));
                 rl_print (".\n");
@@ -179,7 +179,7 @@ void UtilIOConnectUDP (Connection *conn)
         {
             if (res != 2 || buf[0] != 5 || buf[1] != 2) /* username/password authentication */
             {
-                if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+                if (prG->verbose || (conn->serv && conn == conn->serv->conn))
                 {
                     rl_print (i18n (1599, "[SOCKS] Authentication method incorrect"));
                     rl_print (".\n");
@@ -197,7 +197,7 @@ void UtilIOConnectUDP (Connection *conn)
             res = recv (s5Sok, buf, 2, 0);
             if (res != 2 || buf[0] != 1 || buf[1] != 0)
             {
-                if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+                if (prG->verbose || (conn->serv && conn == conn->serv->conn))
                 {
                     rl_print (i18n (1600, "[SOCKS] Authorization failure"));
                     rl_print (".\n");
@@ -211,7 +211,7 @@ void UtilIOConnectUDP (Connection *conn)
         {
             if (res != 2 || buf[0] != 5 || buf[1] != 0) /* no authentication required */
             {
-                if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+                if (prG->verbose || (conn->serv && conn == conn->serv->conn))
                 {
                     rl_print (i18n (1599, "[SOCKS] Authentication method incorrect"));
                     rl_print (".\n");
@@ -235,7 +235,7 @@ void UtilIOConnectUDP (Connection *conn)
         res = recv (s5Sok, buf, 10, 0);
         if (res != 10 || buf[0] != 5 || buf[1] != 0)
         {
-            if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+            if (prG->verbose || (conn->serv && conn == conn->serv->conn))
             {
                 rl_print (i18n (1601, "[SOCKS] General SOCKS server failure"));
                 rl_print (".\n");
@@ -252,7 +252,7 @@ void UtilIOConnectUDP (Connection *conn)
         host_struct = gethostbyname (conn->server);
         if (!host_struct)
         {
-            if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+            if (prG->verbose || (conn->serv && conn == conn->serv->conn))
             {
                 rl_printf (i18n (1948, "Can't find hostname %s: %s."), conn->server, hstrerror (h_errno));
                 rl_print ("\n");
@@ -278,7 +278,7 @@ void UtilIOConnectUDP (Connection *conn)
 
     if (conct == -1)            /* did we connect ? */
     {
-        if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+        if (prG->verbose || (conn->serv && conn == conn->serv->conn))
             rl_printf (i18n (1966, " Connection refused on port %ld at %s\n"), UD2UL (conn->port), conn->server);
         conn->sok = -1;
         return;
@@ -288,7 +288,7 @@ void UtilIOConnectUDP (Connection *conn)
     getsockname (conn->sok, (struct sockaddr *) &sin, &length);
     conn->our_local_ip = ntohl (sin.sin_addr.s_addr);
 
-    if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+    if (prG->verbose || (conn->serv && conn == conn->serv->conn))
         rl_printf (i18n (1053, "Connected to %s, waiting for response\n"), conn->server);
 }
 
@@ -298,7 +298,7 @@ void UtilIOConnectUDP (Connection *conn)
 #define CONN_CHECK_EXTRA   
 #endif
 #define CONN_FAIL(s)  { const char *t = s;      \
-                        if (t) if (prG->verbose || conn->type & TYPEF_ANY_SERVER) \
+                        if (t) if (prG->verbose || (conn->serv && conn == conn->serv->conn)) \
                             rl_printf    ("%s [%d]\n", t, __LINE__);  \
                         EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip)); \
                         if (conn->sok > 0)          \
@@ -309,7 +309,7 @@ void UtilIOConnectUDP (Connection *conn)
                         conn->dispatch (conn);           \
                         return; }
 #define CONN_FAIL_RC(s) { int rc = errno;                  \
-                          if (prG->verbose || conn->type & TYPEF_ANY_SERVER) \
+                          if (prG->verbose || (conn->serv && conn == conn->serv->conn)) \
                           rl_print (i18n (1949, "failed:\n"));\
                           CONN_FAIL (s_sprintf  ("%s: %s (%d).", s, strerror (rc), rc)) }
 #define CONN_CHECK(s) { if (rc == -1) { rc = errno;            \
@@ -405,7 +405,7 @@ void UtilIOConnectTCP (Connection *conn DEBUGPARAM)
         if (rc >= 0)
         {
             rl_print ("");
-            if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+            if (prG->verbose || (conn->serv && conn == conn->serv->conn))
                 if (rl_pos () > 0)
                      rl_print (i18n (1634, "ok.\n"));
             if (prG->s5Use)
@@ -433,7 +433,7 @@ void UtilIOConnectTCP (Connection *conn DEBUGPARAM)
 #endif
         {
             rl_print ("");
-            if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+            if (prG->verbose || (conn->serv && conn == conn->serv->conn))
                 if (rl_pos () > 0)
                     rl_print ("\n");
             QueueEnqueueData (conn, QUEUE_CON_TIMEOUT, conn->ip,
@@ -699,7 +699,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
         memset (pak->data, 0, 6);
     }
     
-    if (conn->type == TYPE_SERVER)
+    if (conn->serv && conn->serv->type == TYPE_SERVER)
     {
         len = off = 6;
         if (pak->len >= off)
@@ -764,7 +764,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
 
     if ((rc && rc != ECONNRESET) || !conn->reconnect)
     {
-        if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+        if (prG->verbose || (conn->serv && conn == conn->serv->conn))
         {
             Contact *cont;
             if ((cont = conn->cont))
@@ -905,7 +905,7 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
 
     if ((rc && rc != ECONNRESET) || !conn->reconnect)
     {
-        if (prG->verbose || conn->type & TYPEF_ANY_SERVER)
+        if (prG->verbose || (conn->serv && conn == conn->serv->conn))
         {
             Contact *cont;
             

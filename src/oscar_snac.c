@@ -146,7 +146,7 @@ void SnacCallback (Event *event)
     UWORD family;
     Event *refevent;
     
-    ASSERT_SERVER(event->conn);
+    ASSERT_SERVER_CONN (event->conn);
     
     family     = PacketReadB2 (pak);
     pak->cmd   = PacketReadB2 (pak);

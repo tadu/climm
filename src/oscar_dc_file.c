@@ -77,7 +77,7 @@ Connection *PeerFileCreate (Server *serv)
 {
     Connection *flist;
     
-    ASSERT_ANY_SERVER(serv);
+    assert (serv);
     
     if (!serv->oscar_dc || serv->oscar_dc->version < 6)
         return NULL;

@@ -48,6 +48,7 @@
 #include "buildmark.h"
 #include "util_ui.h"
 #include "util_rl.h"
+#include <assert.h>
 
 static void SrvCallBackKeepalive (Event *event);
 
@@ -74,7 +75,13 @@ static SNAC SNACv[] = {
  */
 static void SrvCallBackKeepalive (Event *event)
 {
-    if (event->conn && event->conn->connect & CONNECT_OK && event->conn->type == TYPE_SERVER)
+    if (!event || !event->conn)
+    {
+        EventD (event);
+        return;
+    }
+    ASSERT_SERVER_CONN (event->conn);
+    if (event->conn->connect & CONNECT_OK)
     {
         FlapCliKeepalive (event->conn->serv);
         event->due = time (NULL) + 30;

@@ -38,9 +38,9 @@ void       TCPDispatchConn    (Connection *peer);
 void       TCPClose           (Connection *peer);
 void       TCPPrint           (Packet *pak, Connection *peer, BOOL out);
 
-#define ASSERT_MSGLISTEN(s)   (assert (s), assert ((s)->type == TYPE_MSGLISTEN), assert ((s)->serv->oscar_dc == (s)), ASSERT_ANY_SERVER ((s)->serv))
+#define ASSERT_MSGLISTEN(s)   (assert (s), assert ((s)->type == TYPE_MSGLISTEN), assert ((s)->serv), assert ((s)->serv->oscar_dc == (s)))
 #define ASSERT_MSGDIRECT(s)   (assert (s), assert ((s)->type == TYPE_MSGDIRECT), assert ((s)->serv), ASSERT_MSGLISTEN ((s)->serv->oscar_dc))
-#define ASSERT_FILELISTEN(s)  (assert (s), assert ((s)->type == TYPE_FILELISTEN), ASSERT_ANY_SERVER ((s)->serv))
+#define ASSERT_FILELISTEN(s)  (assert (s), assert ((s)->type == TYPE_FILELISTEN), assert ((s)->serv))
 #define ASSERT_FILEDIRECT(s)  (assert (s), assert ((s)->type == TYPE_FILEDIRECT), assert ((s)->serv), ASSERT_FILELISTEN ((s)->serv->oscar_dc))
 #define ASSERT_FILE(s)        (assert (s), assert ((s)->type == TYPE_FILE), ASSERT_FILEDIRECT ((s)->serv))
 
