@@ -246,6 +246,28 @@ void ContactGroupSort (ContactGroup *group, contact_sort_func_t sort, int mode)
     }
 }
 
+void ContactGroupAdd (ContactGroup *group, ContactGroup *add)
+{
+    Contact *cont;
+    int i;
+    
+    assert (group);
+    for (i = 0; (cont = ContactIndex (add, i)); i++)
+        if (!ContactHas (group, cont))
+            ContactAdd (group, cont);
+}
+
+void ContactGroupSub (ContactGroup *group, ContactGroup *sub)
+{
+    Contact *cont;
+    int i;
+
+    if (!sub)
+        return;    
+    for (i = 0; (cont = ContactIndex (sub, i)); i++)
+        ContactRem (group, cont);
+}
+
 /*
  * Iterate through contacts on a contact group
  */
