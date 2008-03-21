@@ -105,7 +105,8 @@ static jump_t jump[] = {
     { &CmdUserResend,        "resend",       0,   0 },
     { &CmdUserVerbose,       "verbose",      0,   0 },
     { &CmdUserIgnoreStatus,  "i",            0,   0 },
-    { &CmdUserStatusDetail,  "status",       2,     2     + 8 },
+    { &CmdUserStatusDetail,  "status",       2,     2     + 8           + 512 },
+    { &CmdUserStatusDetail,  "s",            2,     2 + 4 + 8 + 16      + 512 },
     { &CmdUserStatusDetail,  "ww",           2,     2 },
     { &CmdUserStatusDetail,  "ee",           2, 1 + 2 },
     { &CmdUserStatusDetail,  "w",            2,         4 },
@@ -114,7 +115,6 @@ static jump_t jump[] = {
     { &CmdUserStatusDetail,  "eeg",          2, 1 + 2              + 32 },
     { &CmdUserStatusDetail,  "wg",           2,         4          + 32 },
     { &CmdUserStatusDetail,  "eg",           2, 1     + 4          + 32 },
-    { &CmdUserStatusDetail,  "s",            2,     2 + 4 + 8 + 16 },
     { &CmdUserStatusDetail,  "wwv",          2,     2                   + 64 },
     { &CmdUserStatusDetail,  "eev",          2, 1 + 2                   + 64 },
     { &CmdUserStatusDetail,  "wv",           2,         4               + 64 },
@@ -123,8 +123,7 @@ static jump_t jump[] = {
     { &CmdUserStatusDetail,  "eegv",         2, 1 + 2              + 32 + 64 },
     { &CmdUserStatusDetail,  "wgv",          2,         4          + 32 + 64 },
     { &CmdUserStatusDetail,  "egv",          2, 1     + 4          + 32 + 64 },
-    { &CmdUserStatusDetail,  "sv",           2,     2 + 4 + 8 + 16      + 64 },
-    { &CmdUserStatusDetail,  "_s",           2,   0 },
+    { &CmdUserStatusDetail,  "_s",           2,   -1 },
     { &CmdUserStatusMeta,    "ss",           2,   1 },
     { &CmdUserStatusMeta,    "meta",         2,   0 },
     { &CmdUserStatusWide,    "wide",         2,   1 },
@@ -1653,7 +1652,19 @@ static void __donecheck (UWORD data)
 
 }
 
-static void __showcontact (Server *serv, Contact *cont, UWORD data, const char *none_ul)
+static void __checkgroup (ContactGroup *cg, UWORD data)
+{
+   Contact *cont;
+   int i;
+
+   __initcheck ();
+   data = data ? 2 : 0;
+   for (i = 0; (cont = ContactIndex (cg, i)); i++)
+       __checkcontact (cont, data);
+  __donecheck (data);
+}
+
+static void __showcontact (Contact *cont, UWORD data)
 {
     Connection *peer;
     ContactAlias *alias;
@@ -1666,8 +1677,13 @@ static void __showcontact (Server *serv, Contact *cont, UWORD data, const char *
     val_t vclimm;
 #endif
     char tbuf[100];
+#ifdef CONFIG_UNDERLINE
+    static char *non_ul = "";
+    if (!non_ul || !*non_ul)
+        non_ul = strdup (s_sprintf ("%s%s", COLNONE, ESC "[4m"));
+#endif
     
-    peer = (serv && serv->oscar_dc) ? ServerFindChild (serv, cont, TYPE_MSGDIRECT) : NULL;
+    peer = (cont->serv && cont->serv->oscar_dc) ? ServerFindChild (cont->serv, cont, TYPE_MSGDIRECT) : NULL;
     
     stat = strdup (s_sprintf ("(%s)", s_status (cont->status, cont->nativestatus)));
     if (cont->version)
@@ -1797,8 +1813,102 @@ static void __showcontact (Server *serv, Contact *cont, UWORD data, const char *
 #if ENABLE_CONT_HIER
     if (prG->verbose)
         for (cont = cont->firstchild; cont; cont = cont->next)
-            __showcontact (serv, cont, data | 128, none_ul);
+            __showcontact (cont, data | 128);
 #endif
+}
+
+static void __showgroupverbose (ContactGroup *cg, UWORD data)
+{
+    Contact *cont;
+    int i, j;
+    char *t1, *t2;
+    UBYTE id;
+
+    __checkgroup (cg, data);
+    
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+    {
+        char tbuf[100];
+        val_t vseen, vonl;
+        time_t tseen, tonl;
+#ifdef WIP
+        val_t vclimm;
+        time_t tclimm;
+#endif
+        __showcontact (cont, data);
+        if (cont->dc)
+        {
+            rl_printf ("    %-15s %s / %s:%ld\n    %s %d    %s (%d)    %s %08lx\n",
+                  i18n (1642, "IP:"), t1 = strdup (s_ip (cont->dc->ip_rem)),
+                  t2 = strdup (s_ip (cont->dc->ip_loc)), UD2UL (cont->dc->port),
+                  i18n (1453, "TCP version:"), cont->dc->version,
+                  cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer")
+                    : i18n (1494, "Server Only"), cont->dc->type,
+                  i18n (2026, "TCP cookie:"), UD2UL (cont->dc->cookie));
+            free (t1);
+            free (t2);
+        }
+
+        if (!OptGetVal (&cont->copts, CO_TIMESEEN, &vseen))
+            vseen = -1;
+        tseen = vseen;
+        if (!OptGetVal (&cont->copts, CO_TIMEONLINE, &vonl))
+            vonl = -1;
+        tonl = vonl;
+#ifdef WIP
+        if (!OptGetVal (&cont->copts, CO_TIMECLIMM, &vclimm))
+            vclimm = -1;
+        tclimm = vclimm;
+#endif
+        if (tseen != (time_t)-1)
+        {
+            strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&tseen));
+            rl_printf ("    %-15s %s", i18n (2691, "Last seen:"), tbuf);
+        }
+        if (tonl != (time_t)-1)
+        {
+            strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&tonl));
+            rl_printf ("    %-15s %s", i18n (2692, "Online since:"), tbuf);
+        }
+        if (tseen != (time_t)-1 || tonl != (time_t)-1)
+            rl_print ("\n");
+#ifdef WIP
+        if (tclimm != (time_t)-1)
+        {
+            strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&tclimm));
+            rl_printf ("    %-15s %s\n", i18n (2693, "Using climm:"), tbuf);
+        }
+#endif
+
+        if (cont->ids)
+        {
+            ContactIDs *ids;
+            rl_printf ("    %s %u", i18n (2577, "SBL ids:"), cont->group ? cont->group->id : 0);
+            for (ids = cont->ids; ids; ids = ids->next)
+                rl_printf (", %u: %u/%u/%u", ids->type, ids->id, ids->tag, ids->issbl);
+            rl_printf ("\n");
+            
+        }
+        if (cont->group && cont->group != uiG.conn->contacts && cont->group->name)
+            rl_printf ("    %s %s \n", i18n (2536, "Group:"), cont->group->name);
+        for (j = id = 0; id < CAP_MAX; id++)
+            if (HAS_CAP (cont->caps, id))
+            {
+                Cap *cap = PacketCap (id);
+                if (j++)
+                    rl_print (", ");
+                else
+                    rl_printf ("    %s ", i18n (2192, "Capabilities:"));
+                rl_print (cap->name);
+                if (cap->name[4] == 'U' && cap->name[5] == 'N')
+                {
+                    rl_print (": ");
+                    rl_print (s_dump ((const UBYTE *)cap->cap, 16));
+                }
+            }
+        if (j)
+            rl_print ("\n");
+    }
 }
 
 int __sort_group (Contact *a, Contact *b, int mode)
@@ -1818,252 +1928,185 @@ int __sort_group (Contact *a, Contact *b, int mode)
     return strcasecmp (b->nick, a->nick);
 }
 
+void __center (const char *text, int is_shadow)
+{
+    Contact *cont = NULL;
+    int i, j;
+    rl_print (COLQUOTE);
+    if (text)
+    {
+        i = 0;
+        if (__totallen > c_strlen (text) + 1)
+        {
+            for (i = j = (__totallen - c_strlen (text) - 1) / 2; i >= 20; i -= 20)
+                rl_print ("====================");
+            rl_printf ("%.*s", (int)i, "====================");
+            rl_printf (" %s%s%s ", is_shadow ? COLQUOTE : COLCONTACT, text, COLQUOTE);
+            for (i = __totallen - j - c_strlen (text) - 2; i >= 20; i -= 20)
+                rl_print ("====================");
+        }
+        else
+            rl_printf (" %s%s%s ", is_shadow ? COLQUOTE : COLCONTACT, text, COLQUOTE);
+    }
+    else
+        for (i = __totallen; i >= 20; i -= 20)
+            rl_print ("====================");
+    rl_printf ("%.*s%s\n", i, "====================", COLNONE);
+}
+
+static void __showgroupshort (ContactGroup *cg, ContactGroup *dcg, ContactGroup *lcg, UWORD data)
+{
+    ContactGroup *tcg;
+    Contact *cont;
+    int is_shadow, j;
+    val_t val;
+    
+#ifdef CONFIG_UNDERLINE
+    __l = 0;
+#endif
+    tcg = ContactGroupC (NULL, 0, NULL);
+    assert (tcg);
+    for (j = 0; (cont = ContactIndex (cg, j)); j++)
+        if ((!lcg || ContactHas (lcg, cont)) && !ContactHas (tcg, cont) && (cg == cont->serv->contacts || cont->group == lcg))
+            ContactAdd (tcg, cont);
+    ContactGroupSub (tcg, dcg);
+    if (data & 32 && !ContactIndex (tcg, 0) && (!lcg || cg != lcg->serv->contacts))
+    {
+        ContactGroupD (tcg);
+        return;
+    }
+    is_shadow = ~data & 64 && data & 32 && ContactGroupPrefVal (lcg, CO_SHADOW);
+    __center (lcg && lcg != lcg->serv->contacts ? lcg->name : NULL, is_shadow);
+    if (!is_shadow)
+    {
+        ContactGroupSort (tcg, __sort_group, 0);
+        for (j = 0; (cont = ContactIndex (tcg, j)); j++)
+        {
+            if (data & 1 && __status (cont) < ss_dnd)
+                continue;
+            if (~data & 64 && OptGetVal (&cont->copts, CO_SHADOW, &val) && val)
+                continue;
+            __showcontact (cont, data);
+        }
+    }
+    ContactGroupD (tcg);
+}
+
 /*
  * Shows the contact list in a very detailed way.
  *
+ * data & 256: also include all server connections
  * data & 64: also show shadowed contacts
  * data & 32: sort by groups
  * data & 16: show _only_ own status
- * data & 8: show only given nicks
- * data & 4: show own status
+ * data & 8: show only given nicks overly verbose
+ * data & 4: show own status if no further group argument is given
  * data & 2: be verbose
  * data & 1: do not show offline
  */
 static JUMP_F(CmdUserStatusDetail)
 {
-    ContactGroup *cg = NULL, *tcg = NULL;
+    Server *serv;
+    ContactGroup *cg = NULL, *wcg = NULL, *dcg = NULL;
     Contact *cont = NULL;
-    int i, j, k;
-#ifdef CONFIG_UNDERLINE
-    char *non_ul;
-#endif
+    const char *targs;
+    int i, k, f;
     ANYCONN;
 
-    if (!data)
+    if (data == (UDWORD)-1)
         s_parseint (&args, &data);
     
-    if (~data & 16 && !(cg = s_parsecg (&args, uiG.conn)))
-        tcg = cg = NULL;
-
-    if ((data & 8) && !cg)
-        tcg = cg = s_parselistrem (&args, uiG.conn);
-
-    if (tcg)
+    do
     {
-        char *t1, *t2;
-#ifdef CONFIG_UNDERLINE
-        non_ul = strdup (s_sprintf ("%s%s", COLNONE, ESC "[4m"));
-#endif
-        UBYTE id;
-
-        __initcheck ();
-        for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            __checkcontact (cont, data);
-        __donecheck (data);
-        
-        for (i = 0; (cont = ContactIndex (cg, i)); i++)
+        f = 0;
+        if (data & 512)
+            f = 0;
+        else if (s_parsekey (&args, "multi"))
+            f = 1, data |= 256;
+        else if (s_parsekey (&args, "shadow"))
+            f = 1, data |= 64;
+        else if (s_parsekey (&args, "group"))
+            f = 1, data |= 32;
+        else if (s_parsekey (&args, "mine"))
+            f = 1, data |= 4;
+        else if (s_parsekey (&args, "long"))
+            f = 1, data |= 2;
+        else if (s_parsekey (&args, "online"))
+            f = 1, data |= 1;
+    } while (f);
+    
+    if (data & 8)
+    {
+        cg = s_parselist_s (&args, 1, 1, uiG.conn);
+        if (cg)
         {
-            char tbuf[100];
-            val_t vseen, vonl;
-            time_t tseen, tonl;
-#ifdef WIP
-            val_t vclimm;
-            time_t tclimm;
-#endif
-#ifdef CONFIG_UNDERLINE
-            __showcontact (uiG.conn, cont, data, non_ul);
-#else
-            __showcontact (uiG.conn, cont, data, "");
-#endif
-            if (cont->dc)
-            {
-                rl_printf ("    %-15s %s / %s:%ld\n    %s %d    %s (%d)    %s %08lx\n",
-                      i18n (1642, "IP:"), t1 = strdup (s_ip (cont->dc->ip_rem)),
-                      t2 = strdup (s_ip (cont->dc->ip_loc)), UD2UL (cont->dc->port),
-                      i18n (1453, "TCP version:"), cont->dc->version,
-                      cont->dc->type == 4 ? i18n (1493, "Peer-to-Peer")
-                        : i18n (1494, "Server Only"), cont->dc->type,
-                      i18n (2026, "TCP cookie:"), UD2UL (cont->dc->cookie));
-                free (t1);
-                free (t2);
-            }
-
-            if (!OptGetVal (&cont->copts, CO_TIMESEEN, &vseen))
-                vseen = -1;
-            tseen = vseen;
-            if (!OptGetVal (&cont->copts, CO_TIMEONLINE, &vonl))
-                vonl = -1;
-            tonl = vonl;
-#ifdef WIP
-            if (!OptGetVal (&cont->copts, CO_TIMECLIMM, &vclimm))
-                vclimm = -1;
-            tclimm = vclimm;
-#endif
-            if (tseen != (time_t)-1)
-            {
-                strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&tseen));
-                rl_printf ("    %-15s %s", i18n (2691, "Last seen:"), tbuf);
-            }
-            if (tonl != (time_t)-1)
-            {
-                strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&tonl));
-                rl_printf ("    %-15s %s", i18n (2692, "Online since:"), tbuf);
-            }
-            if (tseen != (time_t)-1 || tonl != (time_t)-1)
-                rl_print ("\n");
-#ifdef WIP
-            if (tclimm != (time_t)-1)
-            {
-                strftime (tbuf, sizeof (tbuf), " %Y-%m-%d %H:%M:%S", localtime (&tclimm));
-                rl_printf ("    %-15s %s\n", i18n (2693, "Using climm:"), tbuf);
-            }
-#endif
-
-            if (cont->ids)
-            {
-                ContactIDs *ids;
-                rl_printf ("    %s %u", i18n (2577, "SBL ids:"), cont->group ? cont->group->id : 0);
-                for (ids = cont->ids; ids; ids = ids->next)
-                    rl_printf (", %u: %u/%u/%u", ids->type, ids->id, ids->tag, ids->issbl);
-                rl_printf ("\n");
-                
-            }
-            if (cont->group && cont->group != uiG.conn->contacts && cont->group->name)
-                rl_printf ("    %s %s \n", i18n (2536, "Group:"), cont->group->name);
-            for (j = id = 0; id < CAP_MAX; id++)
-                if (HAS_CAP (cont->caps, id))
-                {
-                    Cap *cap = PacketCap (id);
-                    if (j++)
-                        rl_print (", ");
-                    else
-                        rl_printf ("    %s ", i18n (2192, "Capabilities:"));
-                    rl_print (cap->name);
-                    if (cap->name[4] == 'U' && cap->name[5] == 'N')
-                    {
-                        rl_print (": ");
-                        rl_print (s_dump ((const UBYTE *)cap->cap, 16));
-                    }
-                }
-            if (j)
-                rl_print ("\n");
+            __showgroupverbose (cg, data & 2);
+            return 0;
         }
-#ifdef CONFIG_UNDERLINE
-        s_free (non_ul);
-#endif
-        return 0;
     }
 
     if (data & 32)
     {
-        if (!(tcg = ContactGroupC (uiG.conn, 0, NULL)))
+        targs = args;
+        wcg = s_parselist_s (&targs, 1, 1, uiG.conn);
+        __checkgroup (wcg, data & 2);
+        while ((cg = s_parsecg_s (&args, DEFAULT_SEP, 1, uiG.conn)))
         {
-            rl_print (i18n (2118, "Out of memory.\n"));
-            return 0;
-        }
-        cg = uiG.conn->contacts;
-        for (j = 0; (cont = ContactIndex (cg, j)); j++)
-            if (!ContactHas (tcg, cont))
-                ContactAdd (tcg, cont);
-        for (i = 0; (cg = ContactGroupIndex (i)); i++)
-            if (cg->serv == uiG.conn && cg != uiG.conn->contacts && cg != tcg)
-                for (j = 0; (cont = ContactIndex (cg, j)); j++)
-                    ContactRem (tcg, cont);
-        cg = uiG.conn->contacts;
-    }
-
-    if (!cg)
-        cg = uiG.conn->contacts;
-
-    __initcheck ();
-    for (i = 0; (cont = ContactIndex (tcg && ~data & 32 ? tcg : cg, i)); i++)
-        __checkcontact (cont, data);
-    __donecheck (data);
-
-    if (data & 4)
-    {
-        if (uiG.conn)
-        {
-            rl_log_for (uiG.conn->screen, COLCONTACT);
-            if (~uiG.conn->conn->connect & CONNECT_OK)
-                rl_printf (i18n (2405, "Your status is %s (%s).\n"),
-                    i18n (1969, "offline"), s_status (uiG.conn->status, uiG.conn->nativestatus));
-            else
-                rl_printf (i18n (2211, "Your status is %s.\n"), s_status (uiG.conn->status, uiG.conn->nativestatus));
-        }
-        if (data & 16)
-            return 0;
-    }
-
-#ifdef CONFIG_UNDERLINE
-    non_ul = strdup (s_sprintf ("%s%s", COLNONE, ESC "[4m"));
-#endif
-    for (k = -1; (k == -1) ? (tcg ? (cg = tcg) : cg) : (cg = ContactGroupIndex (k)); k++)
-    {
-        char is_shadow;
-        if (k != -1 && (cg == uiG.conn->contacts || cg == tcg))
-            continue;
-        if (cg->serv != uiG.conn)
-            continue;
-#ifdef CONFIG_UNDERLINE
-        __l = 0;
-#endif
-        is_shadow = ~data & 64 && data & 32 && ContactGroupPrefVal (cg, CO_SHADOW);
-        rl_print (COLQUOTE);
-        if (cg != tcg && cg != uiG.conn->contacts && cg->name)
-        {
-            if (__totallen > c_strlen (cg->name) + 1)
+            if (!dcg)
             {
-                for (i = j = (__totallen - c_strlen (cg->name) - 1) / 2; i >= 20; i -= 20)
-                    rl_print ("====================");
-                rl_printf ("%.*s", (int)i, "====================");
-                rl_printf (" %s%s%s ", is_shadow ? COLQUOTE : COLCONTACT, cg->name, COLQUOTE);
-                for (i = __totallen - j - c_strlen (cg->name) - 2; i >= 20; i -= 20)
-                    rl_print ("====================");
+                f = 1;
+                dcg = ContactGroupC (NULL, 0, NULL);
             }
-            else
-                rl_printf (" %s%s%s ", is_shadow ? COLQUOTE : COLCONTACT, cg->name, COLQUOTE);
+            __showgroupshort (cg, dcg, cg, data | 64);
+            ContactGroupAdd (dcg, cg);
         }
-        else
-            for (i = __totallen; i >= 20; i -= 20)
-                rl_print ("====================");
-        rl_printf ("%.*s%s\n", (int)i, "====================", COLNONE);
-
-        if (!is_shadow)
-        {
-            val_t val;
-            char is_set;
-            is_set = OptGetVal (&cg->copts, CO_SHADOW, &val);
-            OptSetVal (&cg->copts, CO_SHADOW, 0);
-            ContactGroupSort (cg, __sort_group, 0);
-            for (j = 0; (cont = ContactIndex (cg, j)); j++)
-            {
-                if (data & 1 && __status (cont) < ss_dnd)
-                    continue;
-                if (data & 64 || !ContactPrefVal (cont, CO_SHADOW))
-#ifdef CONFIG_UNDERLINE
-                    __showcontact (uiG.conn, cont, data, non_ul);
-#else
-                    __showcontact (uiG.conn, cont, data, "");
-#endif
-            }
-            if (is_set)
-                OptSetVal (&cg->copts, CO_SHADOW, val);
-            else
-                OptUndef (&cg->copts, CO_SHADOW);
-        }
-        if (~data & 32)
-            break;
     }
-#ifdef CONFIG_UNDERLINE
-    s_free (non_ul);
-#endif
-    if (tcg)
-        ContactGroupD (tcg);
-    rl_print (COLQUOTE);
-    for (i = __totallen; i >= 20; i -= 20)
-        rl_print ("====================");
-    rl_printf ("%.*s%s\n", (int)i, "====================", COLNONE);
+    
+    for (i = 0; (serv = ServerNr (i)); i++)
+    {
+        if (~data & 256)
+            serv = uiG.conn;
+
+        if (data & (16 | 4) && !f)
+        {
+            if (serv)
+            {
+                rl_log_for (serv->screen, COLCONTACT);
+                if (~serv->conn->connect & CONNECT_OK)
+                    rl_printf (i18n (2405, "Your status is %s (%s).\n"),
+                        i18n (1969, "offline"), s_status (serv->status, serv->nativestatus));
+                else
+                    rl_printf (i18n (2211, "Your status is %s.\n"), s_status (serv->status, serv->nativestatus));
+            }
+            if (data & 16)
+                return 0;
+        }
+        
+        wcg = s_parselist_s (&args, 1, 1, serv);
+        if (!wcg && !f)
+            wcg = serv->contacts;
+        
+        if (wcg)
+        {
+            if (~data & 32)
+                __checkgroup (wcg, data & 2);
+
+            if (data & 32 && ContactIndex (wcg, 0))
+                for (k = 0; (cg = ContactGroupIndex (k)); k++)
+                {
+                    if (cg == serv->contacts || cg->serv != serv)
+                        continue;
+                    __showgroupshort (wcg, dcg, cg, data);
+                    if (!dcg)
+                        dcg = ContactGroupC (NULL, 0, NULL);
+                    ContactGroupAdd (dcg, cg);
+                }
+            __showgroupshort (wcg, dcg, NULL, data);
+        }
+        __center (NULL, 0);
+        if (~data & 256)
+            return 0;
+    }
     return 0;
 }
 
