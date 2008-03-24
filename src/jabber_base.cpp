@@ -1400,10 +1400,12 @@ static void XMPPCallBackDoReconn (Event *event)
 
 void XMPPCallbackClose (Connection *conn)
 {
-    if (conn->sok == -1)
+    if (!conn)
         return;
 
     CLIMMXMPP *j = getXMPPClient (conn->serv);
+    if (!j && conn->sok == -1)
+        return;
     if (!j)
     {
         rl_printf ("#Avoid spinning.\n");
@@ -1412,8 +1414,8 @@ void XMPPCallbackClose (Connection *conn)
     }
 
     j->getClient()->disconnect ();
-    delete j;
     conn->serv->xmpp_private = NULL;
+    delete j;
 }
 
 BOOL XMPPCallbackError (Connection *conn, UDWORD rc, UDWORD flags)

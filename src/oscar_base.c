@@ -398,7 +398,8 @@ void FlapCliHello (Server *serv)
 
 static void FlapCliGoodbyeConn (Connection *conn)
 {
-    FlapCliGoodbye (conn->serv);
+    if (conn)
+        FlapCliGoodbye (conn->serv);
 }
 
 void FlapCliGoodbye (Server *serv)

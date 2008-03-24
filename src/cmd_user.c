@@ -4287,7 +4287,7 @@ static JUMP_F(CmdUserConn)
             if (servl->conn && servl->conn->close)
             {
                 rl_printf (i18n (9999, "Logging of from connection %ld.\n"), UD2UL (nr));
-                servl->conn->close (connl);
+                servl->conn->close (servl->conn);
             }
     }
     return 0;
