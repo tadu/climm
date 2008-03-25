@@ -1603,11 +1603,11 @@ static sortstate_t __status (Contact *cont)
     return ss_on;
 }
 
-static UWORD __lenuin, __lenstat, __lenid, __totallen, __l;
+static UWORD __lenscreen, __lenstat, __lenid, __totallen, __l;
 
 static void __initcheck (void)
 {
-    __lenuin = __lenstat = __lenid = __l = 0;
+    __lenscreen = __lenstat = __lenid = __l = 0;
 }
 
 static void __checkcontact (Contact *cont, UWORD data)
@@ -1616,10 +1616,12 @@ static void __checkcontact (Contact *cont, UWORD data)
     UWORD width;
 
     ReadLineAnalyzeWidth (cont->screen, &width);
-    if (width > __lenuin)
-      __lenuin = width;
+    if (width > __lenscreen)
+      __lenscreen = width;
     
-    ReadLinePrintCont (cont->nick, "");
+    ReadLineAnalyzeWidth (cont->nick, &width);
+    if (width > uiG.nick_len && ~data & 128)
+        uiG.nick_len = width;
     
     if (data & 2)
         for (alias = cont->alias; alias; alias = alias->more)
@@ -1636,7 +1638,7 @@ static void __checkcontact (Contact *cont, UWORD data)
     }
 #if ENABLE_CONT_HIER
     for (cont = cont->firstchild; cont; cont = cont->next)
-        __checkcontact (cont, data);
+        __checkcontact (cont, data | 128);
 #endif
 }
 
@@ -1645,11 +1647,12 @@ static void __donecheck (UWORD data)
     __lenstat += 2;
     __lenid += 2;
     __totallen = 1 + uiG.nick_len + 1 + __lenstat + 1 + __lenid;
+#ifdef WIP
     if (prG->verbose)
         __totallen += 29;
+#endif
     if (data & 2)
-        __totallen += 2 + 3 + 2 + 1 + __lenuin + 19;
-
+        __totallen += 2 + 3 + 2 + 1 + __lenscreen + 19;
 }
 
 static void __checkgroup (ContactGroup *cg, UWORD data)
@@ -1723,7 +1726,7 @@ static void __showcontact (Contact *cont, UWORD data)
     {
 #if ENABLE_CONT_HIER
         if (data & 128)
-            rl_printf ("%s        %s", ul, ReadLinePrintWidth (cont->screen, "", nul, &__lenuin));
+            rl_printf ("%s        %s", ul, ReadLinePrintWidth (cont->screen, "", nul, &__lenscreen));
         else
 #endif
           rl_printf ("%s%s%c%c%c%2d%c%c%s %s", COLSERVER, ul,
@@ -1745,7 +1748,7 @@ static void __showcontact (Contact *cont, UWORD data)
               cont->dc && cont->dc->version && cont->dc->port && ~cont->dc->port &&
               cont->dc->ip_rem && ~cont->dc->ip_rem ? '^' : ' ',
              nul,
-             ReadLinePrintWidth (cont->screen, ul, nul, &__lenuin));
+             ReadLinePrintWidth (cont->screen, ul, nul, &__lenscreen));
     }
 
 #if ENABLE_CONT_HIER
@@ -1798,7 +1801,7 @@ static void __showcontact (Contact *cont, UWORD data)
             else
                 ul = "", nul = COLNONE;
 #endif
-        rl_printf ("%s%s+       %s", COLSERVER, ul, ReadLinePrintWidth (cont->screen, COLNONE, nul, &__lenuin));
+        rl_printf ("%s%s+       %s", COLSERVER, ul, ReadLinePrintWidth (cont->screen, COLNONE, nul, &__lenscreen));
         rl_printf ("%s%s %s%s ",
                   COLSERVER, ul, COLCONTACT,
                   ReadLinePrintWidth (alias->alias, ul, nul, &uiG.nick_len));
