@@ -774,40 +774,40 @@ BOOL ContactRem (ContactGroup *group, Contact *cont DEBUGPARAM)
  * Adds an alias to a contact.
  */
 #undef ContactAddAlias
-BOOL ContactAddAlias (Contact *cont, const char *nick DEBUGPARAM)
+int ContactAddAlias (Contact *cont, const char *nick DEBUGPARAM)
 {
     ContactAlias **caref;
     ContactAlias *ca;
     
     if (!strcmp (cont->nick, nick))
-        return TRUE;
+        return 1;
     
     for (caref = &cont->alias; *caref; caref = &(*caref)->more)
         if (!strcmp ((*caref)->alias, nick))
-            return TRUE;
+            return 1;
     
     if (!strcmp (cont->nick, cont->screen))
     {
         s_repl (&cont->nick, nick);
-        return TRUE;
+        return 2;
     }
     
     if (!strcmp (nick, cont->screen))
-        return TRUE;
+        return 1;
     
     ca = calloc (1, sizeof (ContactAlias));
     if (!ca)
-        return FALSE;
+        return 0;
     
     ca->alias = strdup (nick);
     if (!ca->alias)
     {
         free (ca);
-        return FALSE;
+        return 0;
     }
     *caref = ca;
     Debug (DEB_CONTACT, "addal #%d %s '%s' A'%s'", 0, cont->screen, cont->nick, nick);
-    return TRUE;
+    return 1;
 }
 
 
@@ -815,7 +815,7 @@ BOOL ContactAddAlias (Contact *cont, const char *nick DEBUGPARAM)
  * Removes an alias from a contact.
  */
 #undef ContactRemAlias
-BOOL ContactRemAlias (Contact *cont, const char *nick DEBUGPARAM)
+int ContactRemAlias (Contact *cont, const char *nick DEBUGPARAM)
 {
     ContactAlias **caref;
     ContactAlias *ca;
@@ -836,7 +836,7 @@ BOOL ContactRemAlias (Contact *cont, const char *nick DEBUGPARAM)
         free (cont->nick);
         cont->nick = nn;
         Debug (DEB_CONTACT, "remal #%d %s N'%s' '%s'", 0, cont->screen, cont->nick, nick);
-        return TRUE;
+        return 2;
     }
 
     for (caref = &cont->alias; *caref; caref = &(*caref)->more)
@@ -847,10 +847,10 @@ BOOL ContactRemAlias (Contact *cont, const char *nick DEBUGPARAM)
             *caref = (*caref)->more;
             free (ca);
             Debug (DEB_CONTACT, "remal #%d %s '%s' X'%s'", 0, cont->screen, cont->nick, nick);
-            return TRUE;
+            return 1;
         }
 
-    return FALSE;
+    return 0;
 }
                          /* -1   0   1 */
 int ContactStatusCmp (status_t a, status_t b)

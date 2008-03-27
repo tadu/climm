@@ -159,8 +159,8 @@ BOOL          ContactHas          (ContactGroup *group, Contact *cont);
 BOOL          ContactRem          (ContactGroup *group, Contact *cont DEBUGPARAM);
 void          ContactD            (Contact *cont DEBUGPARAM);
 
-BOOL          ContactAddAlias     (Contact *cont, const char *nick DEBUGPARAM);
-BOOL          ContactRemAlias     (Contact *cont, const char *nick DEBUGPARAM);
+int           ContactAddAlias     (Contact *cont, const char *nick DEBUGPARAM);
+int           ContactRemAlias     (Contact *cont, const char *nick DEBUGPARAM);
 
 #define ContactGroupC(s,i,n)       ContactGroupC(s,i,n DEBUGARGS)
 #define ContactGroupD(g)           ContactGroupD(g DEBUGARGS)
