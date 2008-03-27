@@ -1652,7 +1652,7 @@ static void __donecheck (UWORD data)
         __totallen += 29;
 #endif
     if (data & 2)
-        __totallen += 2 + 3 + 2 + 1 + __lenscreen + 19;
+        __totallen += 2 + 3 + 2 + 2 + __lenscreen + 19;
 }
 
 static void __checkgroup (ContactGroup *cg, UWORD data)
@@ -1662,7 +1662,7 @@ static void __checkgroup (ContactGroup *cg, UWORD data)
 
    __initcheck ();
    data = data ? 2 : 0;
-   for (i = 0; (cont = ContactIndex (cg, i)); i++)
+   for (i = 0; cg && (cont = ContactIndex (cg, i)); i++)
        __checkcontact (cont, data);
   __donecheck (data);
 }
@@ -1736,8 +1736,10 @@ static void __showcontact (Contact *cont, UWORD data)
              ContactPrefVal (cont,  CO_IGNORE)   ? '^' : ' ',
              cont->dc ? cont->dc->version : 0,
              ContactPrefVal (cont, CO_WANTSBL)  ? 
-               (ContactPrefVal (cont, CO_ISSBL) ? 'S' : '.') :
-                ContactPrefVal (cont, CO_ISSBL) ? 's' : ' ',
+               (ContactPrefVal (cont, CO_ISSBL) ? 
+                 (cont->oldflags & CONT_REQAUTH ? 'T' : 'S') : '.') :
+                ContactPrefVal (cont, CO_ISSBL) ?
+                 (cont->oldflags & CONT_REQAUTH ? 't' : 's') : ' ',
              peer ? (
 #ifdef ENABLE_SSL
               peer->connect & CONNECT_OK && peer->ssl_status == SSL_STATUS_OK ? '%' :
@@ -2052,7 +2054,10 @@ static JUMP_F(CmdUserStatusDetail)
     {
         targs = args;
         wcg = s_parselist_s (&targs, 1, 1, uiG.conn);
-        __checkgroup (wcg, data & 2);
+        if (wcg)
+            __checkgroup (wcg, data & 2);
+        else
+            data |= 1024;
         while ((cg = s_parsecg_s (&args, DEFAULT_SEP, 1, uiG.conn)))
         {
             if (!dcg)
@@ -2091,7 +2096,7 @@ static JUMP_F(CmdUserStatusDetail)
         
         if (wcg)
         {
-            if (~data & 32)
+            if (~data & 32 || data & 1024)
                 __checkgroup (wcg, data & 2);
 
             if (data & 32 && ContactIndex (wcg, 0))
