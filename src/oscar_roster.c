@@ -359,13 +359,39 @@ JUMP_SNAC_F(SnacSrvReplyroster)
  * CLI_ADDBUDDY - SNAC(13,8)
  */
 
-static void SnacCliRosterbulkone (Server *serv, Contact *cont, Packet *pak, UWORD type)
+static void SnacCliRosterbulkdata (Packet *pak, const char *name, UWORD tag, UWORD id, UWORD type)
 {
-    PacketWriteStrB     (pak, cont->screen);
-    PacketWriteB2       (pak, 0);
-    PacketWriteB2       (pak, ContactIDGet (cont, type));
+    PacketWriteStrB     (pak, name);
+    PacketWriteB2       (pak, tag);
+    PacketWriteB2       (pak, id);
     PacketWriteB2       (pak, type);
     PacketWriteBLen     (pak);
+}
+
+static void SnacCliRosterbulkone (Server *serv, ContactGroup *cg, Contact *cont, Packet *pak, UWORD type, UWORD subtype)
+{
+    SnacCliRosterbulkdata (pak, type == roster_group ? cg->name : cont->screen,
+                                type == roster_normal || type == roster_group ? ContactGroupID (cg) : 0,
+                                type == roster_group ? 0 : ContactIDGet (cont, type),
+                                type);
+    if (type == roster_normal && subtype != 10)
+    {
+        PacketWriteTLVStr   (pak, TLV_NICK, cont->nick);
+        if (cont->oldflags & CONT_REQAUTH)
+        {
+            PacketWriteTLV     (pak, TLV_REQAUTH);
+            PacketWriteTLVDone (pak);
+        }
+    }
+    else if (type == roster_group && subtype == 9)
+    {
+        Contact *cont;
+        int i;
+        PacketWriteTLV      (pak, TLV_GROUPITEMS);
+        for (i = 0; (cont = ContactIndex (cg, i)); i++)
+            PacketWriteB2   (pak, ContactIDGet (cont, roster_normal));
+        PacketWriteTLVDone  (pak);
+    }
     PacketWriteBLenDone (pak);
     QueueEnqueueData (serv->conn, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
 }
@@ -378,10 +404,8 @@ void SnacCliRosterbulkadd (Server *serv, ContactGroup *cs)
     int i;
     
     for (i = 0; (cont = ContactIndex (cs, i)); i++)
-    {
         if (cont->group && cont->group->serv && !ContactGroupPrefVal (cont->group, CO_ISSBL))
             SnacCliRosteradd (serv, cont->group, NULL);
-    }
     
     SnacCliAddstart (serv);
     pak = SnacC (serv, 19, 8, 0, 0);
@@ -396,36 +420,23 @@ void SnacCliRosterbulkadd (Server *serv, ContactGroup *cs)
             SnacSend (serv, pak);
             pak = SnacC (serv, 19, 8, 0, 0);
         }
-
         
-        PacketWriteStrB     (pak, cont->screen);
-        PacketWriteB2       (pak, ContactGroupID (cg));
-        PacketWriteB2       (pak, ContactIDGet (cont, roster_normal));
-        PacketWriteB2       (pak, roster_normal);
-        PacketWriteBLen     (pak);
-        PacketWriteTLVStr   (pak, TLV_NICK, cont->nick);
-        if (cont->oldflags & CONT_REQAUTH)
-        {
-            PacketWriteTLV     (pak, TLV_REQAUTH);
-            PacketWriteTLVDone (pak);
-        }
-        PacketWriteBLenDone (pak);
-        QueueEnqueueData (serv->conn, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
+        SnacCliRosterbulkone (serv, cg, cont, pak, roster_normal, 8);
 
         if (ContactPrefVal (cont, CO_HIDEFROM))
         {
             i++;
-            SnacCliRosterbulkone (serv, cont, pak, roster_invisible);
+            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_invisible, 8);
         }
         if (ContactPrefVal (cont, CO_INTIMATE))
         {
             i++;
-            SnacCliRosterbulkone (serv, cont, pak, roster_visible);
+            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_visible, 8);
         }
         if (ContactPrefVal (cont, CO_IGNORE))
         {
             i++;
-            SnacCliRosterbulkone (serv, cont, pak, roster_ignore);
+            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_ignore, 8);
         }
     }
     SnacSend (serv, pak);
@@ -438,43 +449,23 @@ void SnacCliRosterbulkadd (Server *serv, ContactGroup *cs)
 void SnacCliRosteradd (Server *serv, ContactGroup *cg, Contact *cont)
 {
     Packet *pak;
-    
+
+    assert (cg);
     if (cont)
     {
-        UWORD type = 0;
-        
         if (!ContactGroupPrefVal (cg, CO_ISSBL))
             SnacCliRosteradd (serv, cg, NULL);
         
         SnacCliAddstart (serv);
 
-        if (ContactPrefVal (cont, CO_HIDEFROM))
-            type = 3;
-        else if (ContactPrefVal (cont, CO_INTIMATE))
-            type = 2;
-
-        
         pak = SnacC (serv, 19, 8, 0, 0);
-        PacketWriteStrB     (pak, cont->screen);
-        PacketWriteB2       (pak, ContactGroupID (cg));
-        PacketWriteB2       (pak, ContactIDGet (cont, roster_normal));
-        PacketWriteB2       (pak, type);
-        PacketWriteBLen     (pak);
-        PacketWriteTLVStr   (pak, TLV_NICK, cont->nick);
-        if (cont->oldflags & CONT_REQAUTH)
-        {
-            PacketWriteTLV     (pak, TLV_REQAUTH);
-            PacketWriteTLVDone (pak);
-        }
-        PacketWriteBLenDone (pak);
-        QueueEnqueueData (serv->conn, QUEUE_CHANGE_ROSTER, pak->ref, 0x7fffffffL, NULL, cont, NULL, NULL);
-
+        SnacCliRosterbulkone (serv, cg, cont, pak, roster_normal, 8);
         if (ContactPrefVal (cont, CO_HIDEFROM))
-            SnacCliRosterbulkone (serv, cont, pak, roster_invisible);
+            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_invisible, 8);
         if (ContactPrefVal (cont, CO_INTIMATE))
-            SnacCliRosterbulkone (serv, cont, pak, roster_visible);
+            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_visible, 8);
         if (ContactPrefVal (cont, CO_IGNORE))
-            SnacCliRosterbulkone (serv, cont, pak, roster_ignore);
+            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_ignore, 8);
 
         SnacSend (serv, pak);
         SnacCliAddend (serv);
@@ -482,12 +473,7 @@ void SnacCliRosteradd (Server *serv, ContactGroup *cg, Contact *cont)
     else
     {
         pak = SnacC (serv, 19, 8, 0, 0);
-        PacketWriteStrB     (pak, cg->name);
-        PacketWriteB2       (pak, ContactGroupID (cg));
-        PacketWriteB2       (pak, 0);
-        PacketWriteB2       (pak, roster_group);
-        PacketWriteBLen     (pak);
-        PacketWriteBLenDone (pak);
+        SnacCliRosterbulkone (serv, cg, NULL, pak, roster_group, 8);
         SnacSend (serv, pak);
         OptSetVal (&cg->copts, CO_ISSBL, 1);
     }
@@ -499,11 +485,7 @@ void SnacCliRosterentryadd (Server *serv, const char *name, UWORD tag, UWORD id,
 
     SnacCliAddstart (serv);
     pak = SnacC (serv, 19, 8, 0, 0);
-    PacketWriteStrB     (pak, name);
-    PacketWriteB2       (pak, tag);
-    PacketWriteB2       (pak, id);
-    PacketWriteB2       (pak, type);
-    PacketWriteBLen     (pak);
+    SnacCliRosterbulkdata (pak, name, tag, id, type);
     if (tlv)
         PacketWriteTLVData (pak, tlv, data, len);
     PacketWriteBLenDone (pak);
@@ -517,46 +499,24 @@ void SnacCliRosterentryadd (Server *serv, const char *name, UWORD tag, UWORD id,
 void SnacCliRosterupdate (Server *serv, ContactGroup *cg, Contact *cont)
 {
     Packet *pak;
-    int i;
 
+    assert (cg);
     pak = SnacC (serv, 19, 9, 0, 0);
     if (cont)
     {
-        UWORD type = 0;
-        
-        if (ContactPrefVal (cont, CO_HIDEFROM))
-            type = 3;
-        else if (ContactPrefVal (cont, CO_INTIMATE))
-            type = 2;
+        if (!ContactGroupPrefVal (cg, CO_ISSBL))
+            SnacCliRosteradd (serv, cg, NULL);
 
-        PacketWriteStrB     (pak, cont->screen);
-        PacketWriteB2       (pak, ContactGroupID (cg));
-        PacketWriteB2       (pak, ContactIDGet (cont, roster_normal));
-        PacketWriteB2       (pak, type);
-        PacketWriteBLen     (pak);
-        PacketWriteTLVStr   (pak, TLV_NICK, cont->nick);
-        PacketWriteBLenDone (pak);
-
+        SnacCliRosterbulkone (serv, cg, cont, pak, roster_normal, 9);
         if (ContactPrefVal (cont, CO_HIDEFROM))
-            SnacCliRosterbulkone (serv, cont, pak, roster_invisible);
+            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_invisible, 9);
         if (ContactPrefVal (cont, CO_INTIMATE))
-            SnacCliRosterbulkone (serv, cont, pak, roster_visible);
+            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_visible, 9);
         if (ContactPrefVal (cont, CO_IGNORE))
-            SnacCliRosterbulkone (serv, cont, pak, roster_ignore);
+            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_ignore, 9);
     }
     else
-    {
-        PacketWriteStrB     (pak, cg->name);
-        PacketWriteB2       (pak, ContactGroupID (cg));
-        PacketWriteB2       (pak, 0);
-        PacketWriteB2       (pak, roster_group);
-        PacketWriteBLen     (pak);
-        PacketWriteTLV      (pak, TLV_GROUPITEMS);
-        for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            PacketWriteB2   (pak, ContactIDGet (cont, roster_normal));
-        PacketWriteTLVDone  (pak);
-        PacketWriteBLenDone (pak);
-    }
+        SnacCliRosterbulkone (serv, cg, NULL, pak, roster_group, 9);
     SnacSend (serv, pak);
 }
 
@@ -641,11 +601,7 @@ void SnacCliSetvisibility (Server *serv, char value, char islogin)
     if (serv->oscar_privacy_tag)
     {
         pak = SnacC (serv, 19, 9, 0, 0);
-        PacketWriteStrB     (pak, "");
-        PacketWriteB2       (pak, 0);
-        PacketWriteB2       (pak, serv->oscar_privacy_tag);
-        PacketWriteB2       (pak, roster_visibility);
-        PacketWriteBLen     (pak);
+        SnacCliRosterbulkdata (pak, "", 0, serv->oscar_privacy_tag, roster_visibility);
         PacketWriteTLV      (pak, TLV_PRIVACY);
         PacketWrite1        (pak, value);
         PacketWriteTLVDone  (pak);
@@ -669,11 +625,7 @@ void SnacCliSetlastupdate (Server *serv)
     Packet *pak;
     
     pak = SnacC (serv, 19, 9, 0, 0);
-    PacketWriteStrB     (pak, "LastUpdateDate");
-    PacketWriteB2       (pak, 0);
-    PacketWriteB2       (pak, 0x4141);
-    PacketWriteB2       (pak, roster_lastupd);
-    PacketWriteBLen     (pak);
+    SnacCliRosterbulkdata (pak, "LastUpdateDate", 0, 0x4141, roster_lastupd);
     PacketWriteTLV      (pak, TLV_LASTUPD);
     PacketWrite4        (pak, time (NULL));
     PacketWriteTLVDone  (pak);
@@ -693,12 +645,7 @@ void SnacCliRosterdeletegroup (Server *serv, ContactGroup *cg)
 
     SnacCliAddstart (serv);
     pak = SnacC (serv, 19, 10, 0, 0);
-    PacketWriteStrB     (pak, cg->name);
-    PacketWriteB2       (pak, ContactGroupID (cg));
-    PacketWriteB2       (pak, 0);
-    PacketWriteB2       (pak, roster_group);
-    PacketWriteBLen     (pak);
-    PacketWriteBLenDone (pak);
+    SnacCliRosterbulkone (serv, cg, NULL, pak, roster_group, 10);
     SnacSend (serv, pak);
     SnacCliAddend (serv);
 }
@@ -718,20 +665,13 @@ void SnacCliRosterdeletecontact (Server *serv, Contact *cont)
     pak = SnacC (serv, 19, 10, 0, 0);
 
     if ((ids = ContactIDHas (cont, roster_normal)) && ids->issbl)
-    {
-        PacketWriteStrB     (pak, cont->screen);
-        PacketWriteB2       (pak, ids->tag);
-        PacketWriteB2       (pak, ids->id);
-        PacketWriteB2       (pak, roster_normal);
-        PacketWriteBLen     (pak);
-        PacketWriteBLenDone (pak);
-    }
+        SnacCliRosterbulkone (serv, cont->group, cont, pak, roster_normal, 10);
     if ((ids = ContactIDHas (cont, roster_invisible)) && ids->issbl)
-        SnacCliRosterbulkone (serv, cont, pak, roster_invisible);
+        SnacCliRosterbulkone (serv, NULL, cont, pak, roster_invisible, 10);
     if ((ids = ContactIDHas (cont, roster_visible)) && ids->issbl)
-        SnacCliRosterbulkone (serv, cont, pak, roster_visible);
+        SnacCliRosterbulkone (serv, NULL, cont, pak, roster_visible, 10);
     if ((ids = ContactIDHas (cont, roster_ignore)) && ids->issbl)
-        SnacCliRosterbulkone (serv, cont, pak, roster_ignore);
+        SnacCliRosterbulkone (serv, NULL, cont, pak, roster_ignore, 10);
 
     SnacSend (serv, pak);
     SnacCliAddend (serv);
@@ -747,11 +687,7 @@ void SnacCliRosterentrydelete (Server *serv, RosterEntry *re)
 
     SnacCliAddstart (serv);
     pak = SnacC (serv, 19, 10, 0, 0);
-    PacketWriteStrB     (pak, re->name);
-    PacketWriteB2       (pak, re->tag);
-    PacketWriteB2       (pak, re->id);
-    PacketWriteB2       (pak, re->type);
-    PacketWriteBLen     (pak);
+    SnacCliRosterbulkdata (pak, re->name, re->tag, re->id, re->type);
     for (i = 0; i < 16 || re->tlv[i].tag; i++)
         if (re->tlv[i].tag)
             PacketWriteTLVData (pak, re->tlv[i].tag, re->tlv[i].str.txt, re->tlv[i].str.len);
@@ -766,11 +702,7 @@ void SnacCliRosterdelete (Server *serv, const char *name, UWORD tag, UWORD id, r
 
     SnacCliAddstart (serv);
     pak = SnacC (serv, 19, 10, 0, 0);
-    PacketWriteStrB     (pak, name);
-    PacketWriteB2       (pak, tag);
-    PacketWriteB2       (pak, id);
-    PacketWriteB2       (pak, type);
-    PacketWriteBLen     (pak);
+    SnacCliRosterbulkdata (pak, name, tag, id, type);
     PacketWriteBLenDone (pak);
     SnacSend (serv, pak);
     SnacCliAddend (serv);
