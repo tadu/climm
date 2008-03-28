@@ -240,6 +240,8 @@ JUMP_SNAC_F(SnacSrvReplyroster)
                 /* TLV_LOCALACT */
                 /* TLV_LOCALSOUND */
                 rref = &roster->normal;
+                if (TLVGet (re->tlv, TLV_REQAUTH) != (UWORD)-1)
+                    re->reqauth = 1;
                 break;
             case roster_group:
                 /* TLV_GROUPITEMS */

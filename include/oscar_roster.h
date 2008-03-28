@@ -37,6 +37,7 @@ struct RosterEntry_s {
   UWORD  tag;
   UWORD  id;
   UWORD  type;
+  unsigned short int reqauth:1;
 };
 
 struct Roster_s {

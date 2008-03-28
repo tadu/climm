@@ -68,7 +68,11 @@ static Contact *IMRosterCheckCont (Server *serv, RosterEntry *rc)
         return NULL;
 
     if (rc->type == roster_normal)
+    {
         OptSetVal (&cont->copts, CO_ISSBL, 1);
+        if (rc->reqauth)
+            cont->oldflags |= CONT_REQAUTH;
+    }
     ContactIDSet (cont, rc->type, rc->id, rc->tag);
     return cont;
 }
