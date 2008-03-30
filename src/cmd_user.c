@@ -1603,11 +1603,11 @@ static sortstate_t __status (Contact *cont)
     return ss_on;
 }
 
-static UWORD __lenscreen, __lenstat, __lenid, __totallen, __l;
+static UWORD __lenscreen, __lenstat, __lenid, __lenid2, __totallen, __l;
 
 static void __initcheck (void)
 {
-    __lenscreen = __lenstat = __lenid = __l = 0;
+    __lenscreen = __lenstat = __lenid = __lenid2 = __l = 0;
 }
 
 static void __checkcontact (Contact *cont, UWORD data)
@@ -1617,7 +1617,7 @@ static void __checkcontact (Contact *cont, UWORD data)
 
     ReadLineAnalyzeWidth (cont->screen, &width);
     if (width > __lenscreen)
-      __lenscreen = width;
+        __lenscreen = width;
     
     ReadLineAnalyzeWidth (cont->nick, &width);
     if (width > uiG.nick_len && ~data & 128)
@@ -1636,6 +1636,8 @@ static void __checkcontact (Contact *cont, UWORD data)
         if (width > __lenid)
             __lenid = width;
     }
+    if (cont->serv->type == TYPE_SERVER)
+        __lenid2 = 29;
 #if ENABLE_CONT_HIER
     for (cont = cont->firstchild; cont; cont = cont->next)
         __checkcontact (cont, data | 128);
@@ -1646,11 +1648,7 @@ static void __donecheck (UWORD data)
 {
     __lenstat += 2;
     __lenid += 2;
-    __totallen = 1 + uiG.nick_len + 1 + __lenstat + 1 + __lenid;
-#ifdef WIP
-    if (prG->verbose)
-        __totallen += 29;
-#endif
+    __totallen = 1 + uiG.nick_len + 1 + __lenstat + 1 + __lenid + __lenid2;
     if (data & 2)
         __totallen += 2 + 3 + 2 + 2 + __lenscreen + 19;
 }
