@@ -282,6 +282,8 @@ int main (int argc, char **argv)
             l++;
         while (!nooffset && strchr ("0123456789abcdefABCDEF", *l))
             l++;
+        if (*l == ':')
+            l++;
         for (i = 0; i < 16; i++)
         {
             if (*l == ' ') l++;
