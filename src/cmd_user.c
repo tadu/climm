@@ -4342,9 +4342,9 @@ static JUMP_F(CmdUserContact)
             const char *name;
             
             if ((cg = s_parsecg (&args, uiG.conn)))
-                SnacCliRosterdeletegroup (uiG.conn, cg);
+                SnacCliRosterdeletegroup (uiG.conn, cg, 3);
             else if ((cont = s_parsenick (&args, uiG.conn)))
-                SnacCliRosterdeletecontact (uiG.conn, cont);
+                SnacCliRosterdeletecontact (uiG.conn, cont, 3);
             else if ((name = s_parserem (&args)))
                 IMDeleteID (uiG.conn, 0, 0, name);
             return 0;
