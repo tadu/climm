@@ -59,16 +59,18 @@ void    OscarRosterD (Roster *roster);
 
 
 UDWORD SnacCliCheckroster (Server *serv);
-void SnacCliRosteradd (Server *serv, ContactGroup *cg, Contact *cont);
-void SnacCliRosterbulkadd (Server *serv, ContactGroup *cs);
 void SnacCliRosterentryadd (Server *serv, const char *name, UWORD tag, UWORD id, UWORD type, UWORD tlv, void *data, UWORD len);
-void SnacCliRosterupdate (Server *serv, ContactGroup *cg, Contact *cont);
-void SnacCliSetvisibility (Server *serv, char value, char islogin);
-void SnacCliSetlastupdate (Server *serv);
-void SnacCliRosterdeletegroup (Server *serv, ContactGroup *cg);
-void SnacCliRosterdeletecontact (Server *serv, Contact *cont);
+void SnacCliRosteraddgroup (Server *serv, ContactGroup *cg, int mode);
+void SnacCliRosteraddcontact (Server *serv, Contact *cont, int mode);
+void SnacCliRosterbulkadd (Server *serv, ContactGroup *cs);
+void SnacCliRosterupdategroup (Server *serv, ContactGroup *cg, int mode);
+void SnacCliRosterupdatecontact (Server *serv, Contact *cont, int mode);
+void SnacCliRosterdeletegroup (Server *serv, ContactGroup *cg, int mode);
+void SnacCliRosterdeletecontact (Server *serv, Contact *cont, int mode);
 void SnacCliRosterentrydelete (Server *serv, RosterEntry *entry);
 void SnacCliRosterdelete (Server *serv, const char *name, UWORD tag, UWORD id, roster_t type);
+void SnacCliSetvisibility (Server *serv, char value, char islogin);
+void SnacCliSetlastupdate (Server *serv);
 void SnacCliAddstart (Server *serv);
 void SnacCliAddend (Server *serv);
 void SnacCliGrantauth (Server *serv, Contact *cont);

@@ -372,10 +372,16 @@ static void SnacCliRosterbulkdata (Packet *pak, const char *name, UWORD tag, UWO
 
 static void SnacCliRosterbulkone (Server *serv, ContactGroup *cg, Contact *cont, Packet *pak, UWORD type, UWORD subtype)
 {
-    SnacCliRosterbulkdata (pak, type == roster_group ? cg->name : cont->screen,
-                                type == roster_normal || type == roster_group ? ContactGroupID (cg) : 0,
-                                type == roster_group ? 0 : ContactIDGet (cont, type),
-                                type);
+    UWORD tag = 0;
+    ContactIDs *ids;
+    
+    if (type == roster_normal && (ids = ContactIDHas (cont, roster_normal)) && ids->issbl)
+        tag = ids->tag;
+    else if (type == roster_group || type == roster_normal)
+        tag = ContactGroupID (cg);
+    
+    SnacCliRosterbulkdata (pak, type == roster_group ? cg->name : cont->screen, tag,
+                                type == roster_group ? 0 : ContactIDGet (cont, type), type);
     if (type == roster_normal && subtype != 10)
     {
         PacketWriteTLVStr   (pak, TLV_NICK, cont->nick);
@@ -391,7 +397,8 @@ static void SnacCliRosterbulkone (Server *serv, ContactGroup *cg, Contact *cont,
         int i;
         PacketWriteTLV      (pak, TLV_GROUPITEMS);
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
-            PacketWriteB2   (pak, ContactIDGet (cont, roster_normal));
+            if (cont->group == cg)
+                PacketWriteB2   (pak, ContactIDGet (cont, roster_normal));
         PacketWriteTLVDone  (pak);
     }
     PacketWriteBLenDone (pak);
@@ -407,7 +414,7 @@ void SnacCliRosterbulkadd (Server *serv, ContactGroup *cs)
     
     for (i = 0; (cont = ContactIndex (cs, i)); i++)
         if (cont->group && cont->group->serv && !ContactGroupPrefVal (cont->group, CO_ISSBL))
-            SnacCliRosteradd (serv, cont->group, NULL);
+            SnacCliRosteraddgroup (serv, cont->group, 3);
     
     SnacCliAddstart (serv);
     pak = SnacC (serv, 19, 8, 0, 0);
@@ -448,39 +455,6 @@ void SnacCliRosterbulkadd (Server *serv, ContactGroup *cs)
 /*
  * CLI_ADDBUDDY - SNAC(13,8)
  */
-void SnacCliRosteradd (Server *serv, ContactGroup *cg, Contact *cont)
-{
-    Packet *pak;
-
-    assert (cg);
-    if (cont)
-    {
-        if (!ContactGroupPrefVal (cg, CO_ISSBL))
-            SnacCliRosteradd (serv, cg, NULL);
-        
-        SnacCliAddstart (serv);
-
-        pak = SnacC (serv, 19, 8, 0, 0);
-        SnacCliRosterbulkone (serv, cg, cont, pak, roster_normal, 8);
-        if (ContactPrefVal (cont, CO_HIDEFROM))
-            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_invisible, 8);
-        if (ContactPrefVal (cont, CO_INTIMATE))
-            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_visible, 8);
-        if (ContactPrefVal (cont, CO_IGNORE))
-            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_ignore, 8);
-
-        SnacSend (serv, pak);
-        SnacCliAddend (serv);
-    }
-    else
-    {
-        pak = SnacC (serv, 19, 8, 0, 0);
-        SnacCliRosterbulkone (serv, cg, NULL, pak, roster_group, 8);
-        SnacSend (serv, pak);
-        OptSetVal (&cg->copts, CO_ISSBL, 1);
-    }
-}
-
 void SnacCliRosterentryadd (Server *serv, const char *name, UWORD tag, UWORD id, UWORD type, UWORD tlv, void *data, UWORD len)
 {
     Packet *pak;
@@ -495,31 +469,80 @@ void SnacCliRosterentryadd (Server *serv, const char *name, UWORD tag, UWORD id,
     SnacCliAddend (serv);
 }
 
+void SnacCliRosteraddgroup (Server *serv, ContactGroup *cg, int mode)
+{
+    Packet *pak;
+    assert (cg);
+
+    if (mode & 1)
+        SnacCliAddstart (serv);
+    pak = SnacC (serv, 19, 8, 0, 0);
+    SnacCliRosterbulkone (serv, cg, NULL, pak, roster_group, 8);
+    SnacSend (serv, pak);
+    OptSetVal (&cg->copts, CO_ISSBL, 1);
+    if (mode & 2)
+        SnacCliAddend (serv);
+}
+
+void SnacCliRosteraddcontact (Server *serv, Contact *cont, int mode)
+{
+    Packet *pak;
+    assert (cont);
+
+    if (mode & 1)
+        SnacCliAddstart (serv);
+    if (!ContactGroupPrefVal (cont->group, CO_ISSBL))
+        SnacCliRosteraddgroup (serv, cont->group, 0);
+    pak = SnacC (serv, 19, 8, 0, 0);
+    SnacCliRosterbulkone (serv, cont->group, cont, pak, roster_normal, 8);
+    if (ContactPrefVal (cont, CO_HIDEFROM))
+        SnacCliRosterbulkone (serv, NULL, cont, pak, roster_invisible, 8);
+    if (ContactPrefVal (cont, CO_INTIMATE))
+        SnacCliRosterbulkone (serv, NULL, cont, pak, roster_visible, 8);
+    if (ContactPrefVal (cont, CO_IGNORE))
+        SnacCliRosterbulkone (serv, NULL, cont, pak, roster_ignore, 8);
+    SnacSend (serv, pak);
+    if (mode & 2)
+        SnacCliAddend (serv);
+}
+
 /*
  * CLI_ROSTERUPDATE - SNAC(13,9)
  */
-void SnacCliRosterupdate (Server *serv, ContactGroup *cg, Contact *cont)
+void SnacCliRosterupdategroup (Server *serv, ContactGroup *cg, int mode)
 {
     Packet *pak;
-
     assert (cg);
-    pak = SnacC (serv, 19, 9, 0, 0);
-    if (cont)
-    {
-        if (!ContactGroupPrefVal (cg, CO_ISSBL))
-            SnacCliRosteradd (serv, cg, NULL);
 
-        SnacCliRosterbulkone (serv, cg, cont, pak, roster_normal, 9);
-        if (ContactPrefVal (cont, CO_HIDEFROM))
-            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_invisible, 9);
-        if (ContactPrefVal (cont, CO_INTIMATE))
-            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_visible, 9);
-        if (ContactPrefVal (cont, CO_IGNORE))
-            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_ignore, 9);
-    }
-    else
-        SnacCliRosterbulkone (serv, cg, NULL, pak, roster_group, 9);
+    if (mode & 1)
+        SnacCliAddstart (serv);
+    pak = SnacC (serv, 19, 9, 0, 0);
+    SnacCliRosterbulkone (serv, cg, NULL, pak, roster_group, 9);
     SnacSend (serv, pak);
+    if (mode & 2)
+        SnacCliAddend (serv);
+}
+
+void SnacCliRosterupdatecontact (Server *serv, Contact *cont, int mode)
+{
+    Packet *pak;
+    assert (cont);
+
+    if (mode & 1)
+        SnacCliAddstart (serv);
+    if (!ContactGroupPrefVal (cont->group, CO_ISSBL))
+        SnacCliRosteraddgroup (serv, cont->group, 0);
+    pak = SnacC (serv, 19, 9, 0, 0);
+    SnacCliRosterbulkone (serv, cont->group, cont, pak, roster_normal, 9);
+    if (ContactPrefVal (cont, CO_HIDEFROM))
+        SnacCliRosterbulkone (serv, NULL, cont, pak, roster_invisible, 9);
+    if (ContactPrefVal (cont, CO_INTIMATE))
+        SnacCliRosterbulkone (serv, NULL, cont, pak, roster_visible, 9);
+    if (ContactPrefVal (cont, CO_IGNORE))
+        SnacCliRosterbulkone (serv, NULL, cont, pak, roster_ignore, 9);
+    SnacSend (serv, pak);
+    if (mode & 2)
+        SnacCliAddend (serv);
 }
 
 /*
@@ -638,45 +661,47 @@ void SnacCliSetlastupdate (Server *serv)
 /*
  * CLI_ROSTERDELETE - SNAC(13,a)
  */
-void SnacCliRosterdeletegroup (Server *serv, ContactGroup *cg)
+void SnacCliRosterdeletegroup (Server *serv, ContactGroup *cg, int mode)
 {
     Packet *pak;
 
-    if (!cg->id)
-        return;
-
-    SnacCliAddstart (serv);
-    pak = SnacC (serv, 19, 10, 0, 0);
-    SnacCliRosterbulkone (serv, cg, NULL, pak, roster_group, 10);
-    SnacSend (serv, pak);
-    SnacCliAddend (serv);
+    if (mode & 1)
+        SnacCliAddstart (serv);
+    if (cg->id)
+    {
+        pak = SnacC (serv, 19, 10, 0, 0);
+        SnacCliRosterbulkone (serv, cg, NULL, pak, roster_group, 10);
+        SnacSend (serv, pak);
+    }
+    if (mode & 2)
+        SnacCliAddend (serv);
 }
 
 /*
  * CLI_ROSTERDELETE - SNAC(13,a)
  */
-void SnacCliRosterdeletecontact (Server *serv, Contact *cont)
+void SnacCliRosterdeletecontact (Server *serv, Contact *cont, int mode)
 {
     Packet *pak;
     ContactIDs *ids;
     
-    if (!cont->ids)
-        return;
-    
-    SnacCliAddstart (serv);
-    pak = SnacC (serv, 19, 10, 0, 0);
-
-    if ((ids = ContactIDHas (cont, roster_normal)) && ids->issbl)
-        SnacCliRosterbulkone (serv, cont->group, cont, pak, roster_normal, 10);
-    if ((ids = ContactIDHas (cont, roster_invisible)) && ids->issbl)
-        SnacCliRosterbulkone (serv, NULL, cont, pak, roster_invisible, 10);
-    if ((ids = ContactIDHas (cont, roster_visible)) && ids->issbl)
-        SnacCliRosterbulkone (serv, NULL, cont, pak, roster_visible, 10);
-    if ((ids = ContactIDHas (cont, roster_ignore)) && ids->issbl)
-        SnacCliRosterbulkone (serv, NULL, cont, pak, roster_ignore, 10);
-
-    SnacSend (serv, pak);
-    SnacCliAddend (serv);
+    if (mode & 1)
+        SnacCliAddstart (serv);
+    if (cont->ids)
+    {
+        pak = SnacC (serv, 19, 10, 0, 0);
+        if ((ids = ContactIDHas (cont, roster_normal)) && ids->issbl)
+            SnacCliRosterbulkone (serv, cont->group, cont, pak, roster_normal, 10);
+        if ((ids = ContactIDHas (cont, roster_invisible)) && ids->issbl)
+            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_invisible, 10);
+        if ((ids = ContactIDHas (cont, roster_visible)) && ids->issbl)
+            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_visible, 10);
+        if ((ids = ContactIDHas (cont, roster_ignore)) && ids->issbl)
+            SnacCliRosterbulkone (serv, NULL, cont, pak, roster_ignore, 10);
+        SnacSend (serv, pak);
+    }
+    if (mode & 2)
+        SnacCliAddend (serv);
 }
 
 /*
@@ -736,7 +761,7 @@ JUMP_SNAC_F(SnacSrvUpdateack)
             {
                 cont->oldflags |= CONT_REQAUTH;
                 OptSetVal (&cont->copts, CO_ISSBL, 0);
-                SnacCliRosteradd (serv, serv->contacts, cont);
+                SnacCliRosteraddcontact (serv, cont, 3);
             }
             break;
         case 10:

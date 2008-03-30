@@ -455,7 +455,7 @@ static void IMRosterAddup (Event *event)
             if (ContactGroupPrefVal (cg, CO_WANTSBL))
             {
                 cnt_groups++;
-                SnacCliRosteradd (serv, cg, NULL);
+                SnacCliRosteraddgroup (serv, cg, 3);
             }
     
     for (rc = roster->ignore; rc; rc = rc->next)
@@ -463,7 +463,7 @@ static void IMRosterAddup (Event *event)
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
         if (cont->group && cont->group->id && rg && rg->id && cont->group->id != rg->id)
-            SnacCliRosterupdate (serv, cont->group, cont);
+            SnacCliRosterupdatecontact (serv, cont, 3);
     }
 
     for (rc = roster->invisible; rc; rc = rc->next)
@@ -471,7 +471,7 @@ static void IMRosterAddup (Event *event)
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
         if (cont->group && cont->group->id && rg && rg->id && cont->group->id != rg->id)
-            SnacCliRosterupdate (serv, cont->group, cont);
+            SnacCliRosterupdatecontact (serv, cont, 3);
     }
 
     for (rc = roster->normal; rc; rc = rc->next)
@@ -479,7 +479,7 @@ static void IMRosterAddup (Event *event)
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
         if (cont->group && cont->group->id && rg && rg->id && cont->group->id != rg->id)
-            SnacCliRosterupdate (serv, cont->group, cont);
+            SnacCliRosterupdatecontact (serv, cont, 3);
     }
 
     for (rc = roster->visible; rc; rc = rc->next)
@@ -487,7 +487,7 @@ static void IMRosterAddup (Event *event)
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
         if (cont->group && cont->group->id && rg && rg->id && cont->group->id != rg->id)
-            SnacCliRosterupdate (serv, cont->group, cont);
+            SnacCliRosterupdatecontact (serv, cont, 3);
     }
 
     cg = ContactGroupC (NULL, 0, "");
