@@ -6,26 +6,27 @@
 void UtilUIDisplayMeta (Contact *cont);
 BOOL DebugReal (UDWORD level, const char *str, ...) __attribute__ ((format (__printf__, 2, 3)));
 
-#define DEB_PROTOCOL      0x00000008L
-#define DEB_PACKET        0x00000010L
-#define DEB_QUEUE         0x00000020L
-#define DEB_CONNECT       0x00000040L
-#define DEB_EVENT         0x00000080L
-#define DEB_EXTRA         0x00000100L
-#define DEB_CONTACT       0x00000200L
-#define DEB_OPTS          0x00000400L
-#define DEB_PACK5DATA     0x00000800L
-#define DEB_PACK8         0x00001000L
-#define DEB_PACK8DATA     0x00002000L
-#define DEB_MSG           0x00004000L
-#define DEB_PACKTCP       0x00010000L
-#define DEB_PACKTCPDATA   0x00020000L
-#define DEB_TCP           0x00200000L
-#define DEB_IO            0x00400000L
-#define DEB_SSL           0x00800000L
-#define DEB_XMPPIN        0x01000000L
-#define DEB_XMPPOUT       0x02000000L
-#define DEB_XMPPOTHER     0x04000000L
+#define DEB_PROTOCOL        0x00000008L
+#define DEB_PACKET          0x00000010L
+#define DEB_QUEUE           0x00000020L
+#define DEB_CONNECT         0x00000040L
+#define DEB_EVENT           0x00000080L
+#define DEB_EXTRA           0x00000100L
+#define DEB_CONTACT         0x00000200L
+#define DEB_OPTS            0x00000400L
+#define DEB_PACK5DATA       0x00000800L
+#define DEB_PACK8           0x00001000L
+#define DEB_PACK8DATA       0x00002000L
+#define DEB_PACK8DATAONLINE 0x00008000L
+#define DEB_MSG             0x00004000L
+#define DEB_PACKTCP         0x00010000L
+#define DEB_PACKTCPDATA     0x00020000L
+#define DEB_TCP             0x00200000L
+#define DEB_IO              0x00400000L
+#define DEB_SSL             0x00800000L
+#define DEB_XMPPIN          0x01000000L
+#define DEB_XMPPOUT         0x02000000L
+#define DEB_XMPPOTHER       0x04000000L
 
 #define AVPFMT "%s%-15s%s %s\n"
 

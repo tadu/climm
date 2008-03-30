@@ -247,10 +247,13 @@ void SnacPrint (Packet *pak)
 
     if (prG->verbose & DEB_PACK8DATA || ~prG->verbose & DEB_PACK8)
     {
-        char *f, *syn = strdup (s_sprintf ("gs%dx%ds", fam, cmd));
-        rl_print (f = PacketDump (pak, syn, COLDEBUG, COLNONE));
-        free (f);
-        free (syn);
+        if (fam != 3 || cmd != 11 || prG->verbose & DEB_PACK8DATAONLINE)
+        {
+            char *f, *syn = strdup (s_sprintf ("gs%dx%ds", fam, cmd));
+            rl_print (f = PacketDump (pak, syn, COLDEBUG, COLNONE));
+            free (f);
+            free (syn);
+        }
     }
 
     pak->rpos = opos;
