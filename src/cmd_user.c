@@ -4420,7 +4420,7 @@ static JUMP_F(CmdUserAsSession)
         args = targs;
     else if ((par = s_parse (&args)))
     {
-        tmpconn = ServerFindScreen (0, par->txt);
+        tmpconn = ServerFindScreen (TYPEF_ANY_SERVER, par->txt);
         if (!tmpconn && !quiet)
         {
             if (nr)
