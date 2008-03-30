@@ -106,7 +106,9 @@ static SNAC SNACS[] = {
     { 11,  2, "SRV_SETINTERVAL",     NULL },
     { 19,  3, "SRV_REPLYLISTS",      NULL },
     { 19,  6, "SRV_REPLYROSTER",     NULL },
+    { 19,  8, "SRV_ROSTERADD",       NULL },
     { 19,  9, "SRV_ROSTERUPDATE",    NULL },
+    { 19, 10, "SRV_ROSTERDELETE",    NULL },
     { 19, 14, "SRV_UPDATEACK",       NULL },
     { 19, 15, "SRV_REPLYROSTEROK",   NULL },
     { 19, 17, "SRV_ADDSTART",        NULL },
@@ -266,16 +268,39 @@ int main (int argc, char **argv)
     while ((line = UtilIOReadline (f)))
     {
         l = line->txt;
-        if (!nooffset)
-            out = *l == ' ' ? 0 : 1;
+        if (!nooffset && !out)
+            out = 2 + (*l == ' ' ? 0 : 1);
         int i;
         UDWORD hex;
         if (!*l)
             continue;
         if (!strncmp (l, "Incoming", 8) || !strncmp (l, "Outgoing", 8))
         {
+            if (PacketWritePos (pak[out&1]) > 0)
+            {
+                printf (out&1 ? "Outgoing partial v8 server packet:" : "Incoming partial v8 server packet:");
+                pak[out&1]->len = PacketReadAtB2 (pak[out&1], 4) + 6;
+                FlapPrint (pak[out&1], out&1);
+                pak[out&1]->wpos = 0;
+                pak[out&1]->rpos = 0;
+                pak[out&1]->len = 0;
+            }
             nooffset = 1;
-            out = !strncmp (l, "Outgoing", 8);
+            out = 2 + !strncmp (l, "Outgoing", 8);
+            continue;
+        }
+        if (strstr (l, "bytes) received:") || strstr (l, "bytes) sent:"))
+        {
+            if (PacketWritePos (pak[out&1]) > 0)
+            {
+                printf (out&1 ? "Outgoing partial v8 server packet:" : "Incoming partial v8 server packet:");
+                pak[out&1]->len = PacketReadAtB2 (pak[out&1], 4) + 6;
+                FlapPrint (pak[out&1], out&1);
+                pak[out&1]->wpos = 0;
+                pak[out&1]->rpos = 0;
+                pak[out&1]->len = 0;
+            }
+            out = 2 + (strstr (l, "bytes) sent:") ? 1 : 0);
             continue;
         }
         while (*l == ' ')
@@ -301,18 +326,18 @@ int main (int argc, char **argv)
             else if (*l >= 'A' && *l <= 'F')  hex += *l - 'A' + 10;
             else assert (0);
             l++;
-            PacketWrite1 (pak[out], hex);
-            if (PacketWritePos (pak[out]) >= 6)
+            PacketWrite1 (pak[out&1], hex);
+            if (PacketWritePos (pak[out&1]) >= 6)
             {
-                UWORD l = PacketReadAtB2 (pak[out], 4);
-                if (PacketWritePos (pak[out]) >= 6 + l)
+                UWORD l = PacketReadAtB2 (pak[out&1], 4);
+                if (PacketWritePos (pak[out&1]) >= 6 + l)
                 {
-                    printf (out ? "Outgoing v8 server packet:" : "Incoming v8 server packet:");
+                    printf (out&1 ? "Outgoing v8 server packet:" : "Incoming v8 server packet:");
                     
-                    FlapPrint (pak[out], out);
-                    pak[out]->wpos = 0;
-                    pak[out]->rpos = 0;
-                    pak[out]->len = 0;
+                    FlapPrint (pak[out&1], out&1);
+                    pak[out&1]->wpos = 0;
+                    pak[out&1]->rpos = 0;
+                    pak[out&1]->len = 0;
                 }
             }
         }
