@@ -662,7 +662,7 @@ void s_strrepl (str_t str, const char *old, const char *news)
     str->txt[str->len] = 0;
     while ((e = strstr (str->txt + d, old)))
     {
-        if (str->len + nlen - olen >= str->max)
+        if (str->len + nlen - olen + 1 >= str->max)
             s_blow (str, nlen - olen);
         d = e - str->txt;
         memmove (e + nlen, e + olen, str->len - d - olen + 1);
