@@ -683,6 +683,7 @@ UBYTE IMRoster (Server *serv, int mode)
     for (i = 0, cg = serv->contacts; (cont = ContactIndex (cg, i)); i++)
     {
         OptSetVal(&cont->copts, CO_ISSBL, 0);
+        cont->oldflags &= ~CONT_REQAUTH;
         for (ids = cont->ids; ids; ids = ids->next)
             ids->issbl = 0;
     }
