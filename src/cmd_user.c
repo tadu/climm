@@ -3000,19 +3000,11 @@ static JUMP_F(CmdUserAdd)
     Contact *cont = NULL, *cont2;
     char *cmd;
     strc_t par;
-    int i;
+    int i, rc;
     OPENCONN;
-
-    if (!data)
-        (cg = s_parsecg (&args, uiG.conn));
 
     if (data == 2)
     {
-        if (cg)
-        {
-            rl_printf (i18n (2448, "Contact group '%s' already exists.\n"), cg->name);
-            return 0;
-        }
         if (!(cg = s_parsecg (&args, uiG.conn)))
         {
             if (!(par = s_parse (&args)))
@@ -3021,15 +3013,27 @@ static JUMP_F(CmdUserAdd)
                 return 0;
             }
             if ((cg = ContactGroupC (uiG.conn, 0, par->txt)))
+            {
                 rl_printf (i18n (2245, "Added contact group '%s'.\n"), par->txt);
+                if (uiG.conn->type == TYPE_SERVER)
+                    SnacCliRosteraddgroup (uiG.conn, cg, 3);
+            }
             else
             {
                 rl_print (i18n (2118, "Out of memory.\n"));
                 return 0;
             }
         }
+        if (cg)
+        {
+            rl_printf (i18n (2448, "Contact group '%s' already exists.\n"), cg->name);
+            return 0;
+        }
     }
     
+    if (!data)
+        (cg = s_parsecg (&args, uiG.conn));
+
     if (cg)
     {
         if ((acg = s_parselistrem (&args, uiG.conn)))
@@ -3039,8 +3043,8 @@ static JUMP_F(CmdUserAdd)
                 if (!cont->group)
                 {
                     ContactCreate (uiG.conn, cont);
-                    if (uiG.conn->type == TYPE_SERVER)
-                        /* SnacCliAddcontact (uiG.conn, cont, NULL) */ ;
+                    if (uiG.conn->type == TYPE_SERVER && ContactPrefVal (cont, CO_WANTSBL))
+                        SnacCliRosteraddcontact (uiG.conn, cont, 3);
                     rl_printf (i18n (2590, "%s added as %s.\n"), cont->screen, cont->nick);
                 }
                 if (ContactHas (cg, cont))
@@ -3049,7 +3053,11 @@ static JUMP_F(CmdUserAdd)
                     {
                         rl_printf (i18n (2449, "Primary contact group for contact '%s' is now '%s'.\n"),
                                    cont->nick, cg->name);
+                        if (uiG.conn->type == TYPE_SERVER && ContactPrefVal (cont, CO_WANTSBL))
+                            SnacCliRosterdeletecontact (uiG.conn, cont, 1);
                         cont->group = cg;
+                        if (uiG.conn->type == TYPE_SERVER && ContactPrefVal (cont, CO_WANTSBL))
+                            SnacCliRosteraddcontact (uiG.conn, cont, 2);
                     }
                     else
                     {
@@ -3062,7 +3070,12 @@ static JUMP_F(CmdUserAdd)
                     rl_printf (i18n (2241, "Added '%s' to contact group '%s'.\n"), cont->nick, cg->name);
                     rl_printf (i18n (2449, "Primary contact group for contact '%s' is now '%s'.\n"),
                                cont->nick, cg->name);
+                    ContactGroup *cgo = cont->group;
+                    if (uiG.conn->type == TYPE_SERVER && ContactPrefVal (cont, CO_WANTSBL))
+                        SnacCliRosterdeletecontact (uiG.conn, cont, 1);
                     cont->group = cg;
+                    if (uiG.conn->type == TYPE_SERVER && ContactPrefVal (cont, CO_WANTSBL))
+                        SnacCliRosteraddcontact (uiG.conn, cont, 2);
                 }
                 else
                     rl_print (i18n (2118, "Out of memory.\n"));
@@ -3089,14 +3102,20 @@ static JUMP_F(CmdUserAdd)
         cmd[i---1] = 0;
     if (!cont->group)
     {
-        rl_printf (i18n (2590, "%s added as %s.\n"), cont->screen, cmd);
-        rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
-        if (c_strlen (cmd) > (UDWORD)uiG.nick_len)
-            uiG.nick_len = c_strlen (cmd);
-        ContactCreate (uiG.conn, cont);
-        ContactAddAlias (cont, cmd);
-        if (uiG.conn->type == TYPE_SERVER)
-            /* SnacCliAddcontact (uiG.conn, cont, NULL) */;
+        if ((cont2 = ContactFind (uiG.conn, cmd)))
+            rl_printf (i18n (2593, "'%s' (%s) is already used as a nick.\n"),
+                     cmd, cont2->screen);
+        else
+        {
+            rl_printf (i18n (2590, "%s added as %s.\n"), cont->screen, cmd);
+            rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
+            if (c_strlen (cmd) > (UDWORD)uiG.nick_len)
+                uiG.nick_len = c_strlen (cmd);
+            ContactCreate (uiG.conn, cont);
+            ContactAddAlias (cont, cmd);
+            if (uiG.conn->type == TYPE_SERVER && ContactPrefVal (cont, CO_WANTSBL))
+                SnacCliRosteraddcontact (uiG.conn, cont, 3);
+        }
     }
     else
     {
@@ -3108,8 +3127,11 @@ static JUMP_F(CmdUserAdd)
                      cmd, cont2->screen);
         else
         {
-            if (!ContactAddAlias (cont, cmd))
+            rc = ContactAddAlias (cont, cmd);
+            if (!rc)
                 return 0;
+            if (rc == 2 && uiG.conn->type == TYPE_SERVER && ContactPrefVal (cont, CO_WANTSBL))
+                SnacCliRosterupdatecontact (uiG.conn, cont, 3);
             rl_printf (i18n (2594, "Added '%s' as an alias for '%s' (%s).\n"),
                      cmd, cont->nick, cont->screen);
             rl_print (i18n (1754, "Note: You need to 'save' to write new contact list to disc.\n"));
