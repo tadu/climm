@@ -699,7 +699,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
         memset (pak->data, 0, 6);
     }
     
-    if (conn->serv && conn->serv->type == TYPE_SERVER)
+    if (conn->serv && conn->serv->conn == conn)
     {
         len = off = 6;
         if (pak->len >= off)
