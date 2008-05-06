@@ -533,6 +533,14 @@ bool CLIMMXMPP::handleXEP22and85 (gloox::Tag *t, Contact *cfrom, gloox::JID from
         else
             handleXEP22b (XEP22, from, tof, id);
     }
+    if (gloox::Tag *address = t->findChild ("addresses", "xmlns", "http://jabber.org/protocol/address"))
+    {
+        DropAttrib (address, "xmlns");
+        DropAllChildsTree (address, "address");
+        CheckInvalid (address);
+        ret = true;
+    }
+    
     if (gloox::Tag *active = t->findChild ("active", "xmlns", "http://jabber.org/protocol/chatstates"))
     {
         DropAttrib (active, "xmlns");
@@ -626,6 +634,8 @@ void CLIMMXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
             node = "GoogleTalk";
         else if (!strcmp (node.c_str(), "http://pidgin.im/caps"))
             node = "Pidgin";
+        else if (!strcmp (node.c_str(), "http://gaim.sf.net/caps"))
+            node = "Gaim";
         else if (!strcmp (node.c_str(), "http://kopete.kde.org/jabber/caps"))
             node = "Kopete";
         else if (!strcmp (node.c_str(), "http://psi-im.org/caps"))
