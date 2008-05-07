@@ -3067,10 +3067,10 @@ static JUMP_F(CmdUserAdd)
                 }
                 else if (ContactAdd (cg, cont))
                 {
+                    ContactGroup *cgo = cont->group;
                     rl_printf (i18n (2241, "Added '%s' to contact group '%s'.\n"), cont->nick, cg->name);
                     rl_printf (i18n (2449, "Primary contact group for contact '%s' is now '%s'.\n"),
                                cont->nick, cg->name);
-                    ContactGroup *cgo = cont->group;
                     if (uiG.conn->type == TYPE_SERVER && ContactPrefVal (cont, CO_WANTSBL))
                         SnacCliRosterdeletecontact (uiG.conn, cont, 1);
                     cont->group = cg;
