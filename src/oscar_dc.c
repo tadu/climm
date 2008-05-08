@@ -803,7 +803,7 @@ static void TCPSendInitv6 (Connection *peer)
     PacketWriteB4 (pak, peer->serv->conn->our_outside_ip); /* our (remote) IP  */
     PacketWriteB4 (pak, peer->serv->conn->our_local_ip);   /* our (local)  IP  */
     PacketWrite1  (pak, ConnectionPrefVal (peer->serv, CO_OSCAR_DC_MODE) & 15);               /* connection type  */
-    PacketWrite4  (pak, peer->serv->conn->port);           /* our (other) port */
+    PacketWrite4  (pak, peer->serv->oscar_dc->port);           /* our (other) port */
     PacketWrite4  (pak, peer->our_session);          /* session id       */
 
     DebugH (DEB_TCP, "HS %d uin %s CONNECT pak %p peer %p",
@@ -855,7 +855,7 @@ static void TCPSendInit (Connection *peer)
     PacketWriteB4 (pak, peer->serv->conn->our_outside_ip); /* our (remote) IP  */
     PacketWriteB4 (pak, peer->serv->conn->our_local_ip);   /* our (local)  IP  */
     PacketWrite1  (pak, ConnectionPrefVal (peer->serv, CO_OSCAR_DC_MODE) & 15);               /* connection type  */
-    PacketWrite4  (pak, peer->serv->conn->port);           /* our (other) port */
+    PacketWrite4  (pak, peer->serv->oscar_dc->port);           /* our (other) port */
     PacketWrite4  (pak, peer->our_session);          /* session id       */
     PacketWrite4  (pak, 0x00000050);
     PacketWrite4  (pak, 0x00000003);
