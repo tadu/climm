@@ -504,7 +504,7 @@ static void Init (int argc, char *argv[])
         {
             if (arg_u)
             {
-                if (!(serv = ServerFindScreen (0, arg_u)))
+                if (!(serv = ServerFindScreen (TYPEF_ANY_SERVER, arg_u)))
                 {
                     char *u = strdup (arg_u);
                     if (is_valid_icq_name (u))

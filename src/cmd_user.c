@@ -4119,7 +4119,7 @@ static JUMP_F(CmdUserConn)
             args = targs;
         else if ((par = s_parse (&args)))
         {
-            servl = ServerFindScreen (0, par->txt);
+            servl = ServerFindScreen (TYPEF_ANY_SERVER, par->txt);
             if (!servl && s_parserem (&args))
             {
                 if (nr)
