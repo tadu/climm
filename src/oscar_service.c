@@ -212,7 +212,10 @@ JUMP_SNAC_F(SnacSrvRates)
  */
 JUMP_SNAC_F(SnacSrvRateexceeded)
 {
-    rl_print (i18n (2188, "You're sending data too fast - stop typing now, or the server will disconnect!\n"));
+    Packet *pak = event->pak;
+    UWORD code = PacketReadB2 (pak);
+    if (code != 1)
+        rl_print (i18n (2188, "You're sending data too fast - stop typing now, or the server will disconnect!\n"));
 }
 
 /*
