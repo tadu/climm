@@ -195,6 +195,19 @@ Contact *s_parsenick_s (const char **input, const char *sep, BOOL any, Server *s
     }
     p = *input;
 
+    if (serv->type == TYPE_SERVER && s_parsekey (&p, "AIM:"))
+    {
+        t = s_parse (&p);
+        if (t)
+        {
+            *input = p;
+            if (alias)
+                *alias = t->txt;
+            return ContactScreen (serv, t->txt);
+        }
+        p = *input;
+    }
+
     if (serv->type == TYPE_SERVER && !strncasecmp (p, "AIM:", 4))
     {
         p += 4;
