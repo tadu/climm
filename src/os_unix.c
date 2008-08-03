@@ -1,5 +1,6 @@
 
 #include "climm.h"
+#include <limits.h>   /* INT_MAX */
 #if defined (HAVE_VALUES_H)
 #include <values.h>
 #endif
