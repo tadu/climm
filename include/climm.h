@@ -43,7 +43,7 @@ time_t portable_timegm (struct tm *tm);
 #define timelocal mktime
 #endif
 
-#if ENABLE_XMPP && defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000907 && 0
+#if ENABLE_XMPP && defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000907
 #define CLIMM_XMPP_FILE_TRANSFER
 #endif
 

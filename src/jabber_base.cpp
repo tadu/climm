@@ -63,7 +63,6 @@ extern "C" {
 #ifdef CLIMM_XMPP_FILE_TRANSFER
 std::map<UWORD, std::string> l_tSeqTranslate;
 std::map<const std::string, std::string> sid2id;
-std::map<const std::string, Contact *> sid2cont;
 #endif
 
 class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
@@ -1077,15 +1076,18 @@ void CLIMMXMPP::XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const ch
 
 void CLIMMXMPP::handleSOCKS5Data (gloox::SOCKS5Bytestream *s5b, const std::string &data)
 {
-    Contact *cont = ContactFindScreen (m_serv->contacts, s5b->initiator().full().c_str());
-    Connection *fpeer = ServerFindChild (m_serv, cont, TYPE_XMPPDIRECT);
+    Contact *cont, *contr;
+    Connection *fpeer;
+    
+    GetBothContacts (s5b->initiator().full(), m_serv, &cont, &contr, 0);
+    fpeer = ServerFindChild (m_serv, contr, TYPE_XMPPDIRECT);
     assert (fpeer);
+
     int len = write (fpeer->xmpp_file->sok, data.c_str(), data.length());
     if (len != data.length())
     {
-        rl_log_for (cont->screen, COLCONTACT);
+        rl_log_for (contr->screen, COLCONTACT);
         rl_printf (i18n (2575, "Error writing to file (%lu bytes written out of %u).\n"), len, data.length());
-        //TCPClose (fpeer);
     }
     fpeer->xmpp_file->xmpp_file_done += len;
     if (fpeer->xmpp_file->xmpp_file_len == fpeer->xmpp_file->xmpp_file_done)
@@ -1109,18 +1111,19 @@ void CLIMMXMPP::handleSOCKS5Data (gloox::SOCKS5Bytestream *s5b, const std::strin
 
 void CLIMMXMPP::handleSOCKS5Error (gloox::SOCKS5Bytestream *s5b, gloox::Stanza *stanza)
 {
-//    rl_printf (i1 8n (9999, "FT Error.\n"));
 }
 
 void CLIMMXMPP::handleSOCKS5Open (gloox::SOCKS5Bytestream *s5b)
 {
-//    rl_printf ("Connected!\n");
 }
 
 void CLIMMXMPP::handleSOCKS5Close (gloox::SOCKS5Bytestream *s5b)
 {
-    Contact *cont = ContactFindScreen (m_serv->contacts, s5b->initiator().full().c_str());
-    Connection *fpeer = ServerFindChild (m_serv, cont, TYPE_XMPPDIRECT);
+    Contact *cont, *contr;
+    Connection *fpeer;
+    
+    GetBothContacts (s5b->initiator(), m_serv, &cont, &contr, 0);
+    fpeer = ServerFindChild (m_serv, contr, TYPE_XMPPDIRECT);
     assert (fpeer);
     ConnectionD (fpeer);
 }
@@ -1134,27 +1137,27 @@ void CLIMMXMPP::handleFTSOCKS5Bytestream (gloox::SOCKS5Bytestream *s5b)
 {
     strc_t name;
     int len, off;
-    Contact *cont = ContactFindScreen (m_serv->contacts, s5b->initiator().full().c_str());
+    Contact *cont, *contr;
+    GetBothContacts (s5b->initiator(), m_serv, &cont, &contr, 0);
     s5b->registerSOCKS5BytestreamDataHandler (this);
-    //if (prG->verbose)
-        rl_printf (i18n (2709, "Opening file listener connection at %slocalhost%s:%s%lp%s... "),
-                  COLQUOTE, COLNONE, COLQUOTE, s5b->connectionImpl(), COLNONE);
+    rl_printf (i18n (2709, "Opening file listener connection at %slocalhost%s:%s%lp%s... "),
+               COLQUOTE, COLNONE, COLQUOTE, s5b->connectionImpl(), COLNONE);
     if (s5b->connect())
     {
         rl_print (i18n (1634, "ok.\n"));
         gloox::ConnectionTCPBase *conn = dynamic_cast<gloox::ConnectionTCPBase *>(s5b->connectionImpl());
         if (!conn)
             return;
-        Connection *child = ServerFindChild (m_serv, cont, TYPE_XMPPDIRECT);
+        Connection *child = ServerFindChild (m_serv, contr, TYPE_XMPPDIRECT);
         if (!child)
-            return; //Failed
+            return;
 
         /**
          * Insert socket into climms TCP handler
          */
         child->sok = conn->socket();
         child->connect = CONNECT_OK | CONNECT_SELECT_R;
-        child->xmpp_private = s5b;
+        child->xmpp_file_private = s5b;
     }
 }
 
@@ -1169,7 +1172,7 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     if (desc.size())
         pretty += " (" + desc + ")";
 
-    UWORD seq = ++m_serv->our_seq;
+    UWORD seq = ++m_serv->xmpp_file_seq;
     l_tSeqTranslate[seq] = sid;
     sid2id[sid] = id; //This will be changed in the 1.0 release of gloox :)
     GetBothContacts (from, m_serv, &cont, &contr, 0);
@@ -1184,7 +1187,7 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     OptSetVal (opt2, CO_FILEACCEPT, 0);
     OptSetStr (opt2, CO_REFUSE, i18n (2514, "refused (ignored)"));
     Event *e1 = QueueEnqueueData (m_serv->conn, QUEUE_USERFILEACK, seq, time (NULL) + 120,
-                           NULL, contr, opt2, &PeerFileTO); //Timeout Handler
+                           NULL, cont, opt2, &PeerFileTO); //Timeout Handler
     QueueEnqueueDep (m_serv->conn, 0, seq, e1,
                      NULL, contr, opt2, XMPPCallBackFileAccept); // Route whatever there ;)
     
@@ -1202,12 +1205,11 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     child->reconnect = NULL;
     child->error = &XMPPFTCallbackError;
     child->close = &XMPPFTCallbackClose;
-    s_repl (&child->screen, sid.c_str());
 
     /**
      * Create the output file
      */
-    Connection *ffile = ServerChild (child, contr, TYPE_FILEXMPP);
+    Connection *ffile = ServerChild (m_serv, contr, TYPE_FILEXMPP);
     char buf[200], *p;
     str_s filename = { (char *)name.c_str(), name.length(), name.length() };
     int pos = 0;
@@ -1224,7 +1226,6 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     ffile->connect = CONNECT_FAIL;
     ffile->xmpp_file_len = size;
     ffile->xmpp_file_done = offset;
-    //ffile->close = &PeerFileIODispatchClose;
 }
     
 void CLIMMXMPP::XMPPAcceptDenyFT (gloox::JID contact, std::string id, std::string sid, const char *reason)
@@ -1232,27 +1233,21 @@ void CLIMMXMPP::XMPPAcceptDenyFT (gloox::JID contact, std::string id, std::strin
     Connection *conn;
     if (!reason) 
         return m_pFT->acceptFT (contact, id, gloox::SIProfileFT::FTTypeS5B);
-
-    // We have done some preps 
-    // delete them
     m_pFT->declineFT (contact, id, gloox::SIManager::RequestRejected, reason);
-    conn = ServerFindChild (m_serv, sid2cont[sid], TYPE_XMPPDIRECT);
-    // If it is not found e crash... Godd idea, cause this should not happen
-    TCPClose(conn);
 }
 
-void XMPPFTCallbackClose(Connection *conn)
+void XMPPFTCallbackClose (Connection *conn)
 {
     if (conn->sok == -1)
         return;
 
-    gloox::SOCKS5Bytestream *s = (gloox::SOCKS5Bytestream *)(conn->xmpp_private);
+    gloox::SOCKS5Bytestream *s = (gloox::SOCKS5Bytestream *)(conn->xmpp_file_private);
     conn->sok = -1;
 }
 
 BOOL XMPPFTCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
 {
-    XMPPFTCallbackClose(conn);
+    XMPPFTCallbackClose (conn);
     return 0;
 }
 
@@ -1261,7 +1256,7 @@ void XMPPFTCallbackDispatch (Connection *conn)
     if (conn->sok == -1)
         return;
 
-    gloox::SOCKS5Bytestream *s = (gloox::SOCKS5Bytestream *)(conn->xmpp_private);
+    gloox::SOCKS5Bytestream *s = (gloox::SOCKS5Bytestream *)(conn->xmpp_file_private);
     if (!s)
     {
         rl_printf ("#Avoid spinning.\n");
@@ -1441,7 +1436,7 @@ void XMPPCallBackFileAccept (Event *event)
 {
     Connection *conn = event->conn;
     Contact *id, *res = NULL;
-    CLIMMXMPP *j = getXMPPClient (conn->serv);
+    CLIMMXMPP *j;
     UDWORD opt_acc;
     std::string seq, sid;
     char *reason = NULL;
@@ -1458,6 +1453,7 @@ void XMPPCallBackFileAccept (Event *event)
         EventD (event);
         return;
     }
+    j = getXMPPClient (conn->serv);
     assert (conn->serv);
     assert (conn->serv->type == TYPE_XMPP_SERVER);
     assert (event->cont);
@@ -1473,7 +1469,7 @@ void XMPPCallBackFileAccept (Event *event)
         OptGetStr (event->opt, CO_REFUSE, (const char **)&reason);
     else
     {
-        Connection *conn = ServerFindChild (m_serv, sid2cont[sid], TYPE_XMPPDIRECT);
+        Connection *conn = ServerFindChild (event->conn->serv, event->cont, TYPE_XMPPDIRECT);
         Connection *ffile = conn->xmpp_file;
         Contact *cont = res->parent;
         assert (ffile->type == TYPE_FILEXMPP);

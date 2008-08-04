@@ -1070,7 +1070,7 @@ static JUMP_F(CmdUserPeer)
     int i;
     ANYCONN;
 
-#if CLIMM_XMPP_FILE_TRANSFER
+#ifdef CLIMM_XMPP_FILE_TRANSFER
     if (uiG.conn->type != TYPE_XMPP_SERVER)
 #endif
         if (!uiG.conn || !(list = uiG.conn->oscar_dc))

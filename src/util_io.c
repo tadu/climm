@@ -1057,7 +1057,7 @@ void UtilIOSelect (void)
         if (rc != EINTR && rc != EAGAIN)
         {
             printf (i18n (1849, "Error on select: %s (%d)\n"), strerror (rc), rc);
-            exit (0);
+            assert (0);
         }
     }
 }

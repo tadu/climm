@@ -19,6 +19,7 @@ typedef enum {
 #include <gnutls/gnutls.h>
 #else
 #include <openssl/ssl.h>
+#define gnutls_session SSL *
 #endif
 #endif
 
@@ -48,11 +49,7 @@ struct Connection_s
     Packet   *outgoing;       /* packet we're sending                     */
     
 #if ENABLE_SSL
-#if ENABLE_GNUTLS
-    gnutls_session ssl;       /* The SSL data structure for GnuTLS        */
-#else
-    SSL *ssl;                 /* SSL session struct for OpenSSL           */
-#endif
+    gnutls_session ssl;       /* The SSL data structure                   */
     ssl_status_t ssl_status;  /* SSL status (INIT,OK,FAILED,...)          */
 #endif
     UDWORD    our_session;    /* session ID                               */
@@ -60,6 +57,7 @@ struct Connection_s
     UDWORD    oscar_file_done;           /* used for file transfer                   */
 #define xmpp_file_len    oscar_file_len            /* used for file transfer                   */
 #define xmpp_file_done   oscar_file_done           /* used for file transfer                   */
+    void *xmpp_file_private;   /* XMPP file transfer private */
     Server                *serv;   /* parent session               */
     jump_conn_f *dispatch;     /* function to call on select()    */
     jump_conn_f *reconnect;    /* function to call for reconnect  */
@@ -100,6 +98,7 @@ struct Server_s
     UDWORD    oscar_uin;            /* the uin of this server connection        */
     UWORD     oscar_type2_seq;     /* sequence number for dc and type-2        */
     UWORD     oscar_snac_seq;       /* current secondary sequence number        */
+#define xmpp_file_seq oscar_snac_seq
     UDWORD    oscar_icq_seq;       /* current old-ICQ sequence number          */
     UWORD     oscar_privacy_tag;         /* F*cking ICQ needs to change the value */
     UBYTE     oscar_privacy_value;       /* when switching between visible and invisible */

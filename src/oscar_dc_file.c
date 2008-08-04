@@ -60,6 +60,7 @@
 #include "im_response.h"
 #include "oscar_dc.h"
 #include "conv.h"
+#include "oscar_dc_file.h"
 
 static void PeerFileDispatchClose   (Connection *ffile);
 static void PeerFileDispatchDClose  (Connection *ffile);
@@ -119,11 +120,11 @@ void PeerFileTO (Event *event)
 /*
  * Handles user reaction to incoming file request
  */
-void PeerFileUser (UDWORD seq, Contact *cont, const char *reason, Connection *serv)
+void PeerFileUser (UDWORD seq, Contact *cont, const char *reason, Server *serv)
 {
     Event *event;
 
-    if (!(event = QueueDequeue2 (serv, QUEUE_USERFILEACK, seq, cont)))
+    if (!(event = QueueDequeue2 (serv->conn, QUEUE_USERFILEACK, seq, cont)))
     {
         rl_printf (i18n (2258, "No pending incoming file transfer request for %s with (sequence %ld) found.\n"),
                   cont ? cont->nick : "<?>", UD2UL (seq));
@@ -464,6 +465,7 @@ void PeerFileDispatch (Connection *fpeer)
 #endif
                 close (fpeer->oscar_file->sok);
                 fpeer->oscar_file->sok = -1;
+                fpeer->oscar_file->connect = CONNECT_OK;
             }
             else if (fpeer->oscar_file->oscar_file_len)
             {
