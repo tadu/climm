@@ -225,12 +225,12 @@ void CLIMMXMPP::onDisconnect (gloox::ConnectionError e)
 
 void CLIMMXMPP::onResourceBindError (gloox::ResourceBindError e)
 {
-    rl_printf ("onResourceBindError: Error %d.\n", e);
+    rl_printf ("#onResourceBindError: Error %d.\n", e);
 }
 
 void CLIMMXMPP::onSessionCreateError (gloox::SessionCreateError e)
 {
-    rl_printf ("onSessionCreateError: Error %d.\n", e);
+    rl_printf ("#onSessionCreateError: Error %d.\n", e);
 }
 
 bool CLIMMXMPP::onTLSConnect (const gloox::CertInfo &info)
@@ -401,6 +401,30 @@ static void GetBothContacts (const gloox::JID &j, Server *conn, Contact **b, Con
         ff = bb;
     *b = bb;
     *f = ff;
+}
+
+
+void CLIMMXMPPSave (Server *serv, const char *text, char in)
+{
+    const char *data;
+
+    if (serv->logfd < 0)
+    {
+        const char *dir, *file;
+        dir = s_sprintf ("%sdebug", PrefUserDir (prG));
+        mkdir (dir, 0700);
+        file = s_sprintf ("%sdebug" _OS_PATHSEPSTR "packets.xmpp.%s.%lu", PrefUserDir (prG), serv->screen, time (NULL));
+        serv->logfd = open (file, O_WRONLY | O_CREAT | O_APPEND, 0600);
+    }
+    if (serv->logfd < 0)
+        return;
+
+    data = s_sprintf ("%s %s%s\n", s_now, in & 1 ? "<<<" : ">>>", in & 2 ? " residual:" : ",");
+    write (serv->logfd, data, strlen (data));
+
+    text = s_ind (text);
+    write (serv->logfd, text, strlen (text));
+    write (serv->logfd, "\n", 1);
 }
 
 
@@ -786,7 +810,7 @@ void CLIMMXMPP::handleMessage (gloox::Stanza *s)
     if (!CheckInvalid (t))
     {
         std::string txml = t->xml();
-        rl_printf ("handleMessage %s\n", txml.c_str());
+        CLIMMXMPPSave (m_serv, txml.c_str(), 3);
     }
     delete t;
 }
@@ -871,7 +895,7 @@ void CLIMMXMPP::handlePresence (gloox::Stanza *s)
     if (!CheckInvalid (t))
     {
         std::string txml = t->xml();
-        rl_printf ("handlePresence %s\n", txml.c_str());
+        CLIMMXMPPSave (m_serv, txml.c_str(), 3);
     }
     delete t;
 }
@@ -890,29 +914,6 @@ void CLIMMXMPP::handleSubscription (gloox::Stanza *s)
                s->thread().c_str(), s->show(),
 #endif
                s->xml().c_str());
-}
-
-void CLIMMXMPPSave (Server *serv, const char *text, bool in)
-{
-    const char *data;
-
-    if (serv->logfd < 0)
-    {
-        const char *dir, *file;
-        dir = s_sprintf ("%sdebug", PrefUserDir (prG));
-        mkdir (dir, 0700);
-        file = s_sprintf ("%sdebug" _OS_PATHSEPSTR "packets.xmpp.%s.%lu", PrefUserDir (prG), serv->screen, time (NULL));
-        serv->logfd = open (file, O_WRONLY | O_CREAT | O_APPEND, 0600);
-    }
-    if (serv->logfd < 0)
-        return;
-
-    data = s_sprintf ("%s %s\n", s_now, in ? "<<<" : ">>>");
-    write (serv->logfd, data, strlen (data));
-
-    text = s_ind (text);
-    write (serv->logfd, text, strlen (text));
-    write (serv->logfd, "\n", 1);
 }
 
 void CLIMMXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message)
