@@ -136,6 +136,24 @@ ContactGroup *ContactGroupFind (Server *serv, UWORD id, const char *name)
 }
 
 /*
+ * Finds and/or creates a contact group.
+ */
+ContactGroup *ContactGroupFor (Contact *cont, ContactGroup *except)
+{
+    ContactGroup *cg;
+    int i;
+
+    if (cont->group != cont->serv->contacts && cont->group != except)
+        return cont->group;
+    if (!cont->serv)
+        return NULL;
+    for (i = 0; (cg = ContactGroupIndex (i)); i++)
+        if (cg->serv == cont->serv && cg != except && cg != cont->serv->contacts && ContactHas (cg, cont))
+            return cg;
+    return cont->serv->contacts;
+}
+
+/*
  * Returns the group id, if necessary create one
  */
 UWORD ContactGroupID (ContactGroup *group)
