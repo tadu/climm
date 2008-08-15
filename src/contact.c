@@ -1281,6 +1281,20 @@ val_t ContactPrefVal (Contact *ocont, UDWORD flag)
 }
 
 /*
+ * Query an option for a contact.
+ */
+val_t ContactPrefValCg (Contact *cont, ContactGroup *cg, UDWORD flag)
+{
+  ContactGroup *cgo = cont->group;
+  val_t res;
+  cont->group = cg;
+  res = ContactPrefVal (cont, flag);
+  cont->group = cgo;
+  return res;
+}
+  
+
+/*
  * Query a string option for a contact.
  */
 const char *ContactPrefStr (Contact *ocont, UDWORD flag)
