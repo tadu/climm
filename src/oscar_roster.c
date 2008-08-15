@@ -545,6 +545,26 @@ void SnacCliRosterupdatecontact (Server *serv, Contact *cont, int mode)
         SnacCliAddend (serv);
 }
 
+void SnacCliRostermovecontact (Server *serv, Contact *cont, ContactGroup *cg, int mode)
+{
+    char is, want;
+    is = ContactPrefVal (cont, CO_ISSBL);
+    want = ContactPrefVal (cont, CO_WANTSBL);
+    
+    if (!is && !want && mode == 3)
+        return;
+    
+    if (mode & 1)
+        SnacCliAddstart (serv);
+    if (is)
+        SnacCliRosterdeletecontact (uiG.conn, cont, 0);
+    cont->group = cg;
+    if (want)
+        SnacCliRosteraddcontact (uiG.conn, cont, 0);
+    if (mode & 2)
+        SnacCliAddend (serv);
+}
+
 /*
  * SRV_ROSTERADD
  */
