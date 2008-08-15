@@ -3005,28 +3005,25 @@ static JUMP_F(CmdUserAdd)
 
     if (data == 2)
     {
-        if (!(cg = s_parsecg (&args, uiG.conn)))
-        {
-            if (!(par = s_parse (&args)))
-            {
-                rl_print (i18n (2240, "No contact group given.\n"));
-                return 0;
-            }
-            if ((cg = ContactGroupC (uiG.conn, 0, par->txt)))
-            {
-                rl_printf (i18n (2245, "Added contact group '%s'.\n"), par->txt);
-                if (uiG.conn->type == TYPE_SERVER)
-                    SnacCliRosteraddgroup (uiG.conn, cg, 3);
-            }
-            else
-            {
-                rl_print (i18n (2118, "Out of memory.\n"));
-                return 0;
-            }
-        }
-        if (cg)
+        if ((cg = s_parsecg (&args, uiG.conn)))
         {
             rl_printf (i18n (2448, "Contact group '%s' already exists.\n"), cg->name);
+            return 0;
+        }
+        if (!(par = s_parse (&args)))
+        {
+            rl_print (i18n (2240, "No contact group given.\n"));
+            return 0;
+        }
+        if ((cg = ContactGroupC (uiG.conn, 0, par->txt)))
+        {
+            rl_printf (i18n (2245, "Added contact group '%s'.\n"), par->txt);
+            if (uiG.conn->type == TYPE_SERVER)
+                SnacCliRosteraddgroup (uiG.conn, cg, 3);
+        }
+        else
+        {
+            rl_print (i18n (2118, "Out of memory.\n"));
             return 0;
         }
     }
@@ -3047,17 +3044,15 @@ static JUMP_F(CmdUserAdd)
                         SnacCliRosteraddcontact (uiG.conn, cont, 3);
                     rl_printf (i18n (2590, "%s added as %s.\n"), cont->screen, cont->nick);
                 }
-                if (ContactHas (cg, cont))
+                else if (ContactHas (cg, cont))
                 {
                     if (cont->group != cg)
                     {
                         rl_printf (i18n (2449, "Primary contact group for contact '%s' is now '%s'.\n"),
                                    cont->nick, cg->name);
-                        if (uiG.conn->type == TYPE_SERVER && ContactPrefVal (cont, CO_ISSBL))
-                            SnacCliRosterdeletecontact (uiG.conn, cont, 3);
+                        if (uiG.conn->type == TYPE_SERVER)
+                            SnacCliRostermovecontact (cont->serv, cont, cg, 3);
                         cont->group = cg;
-                        if (uiG.conn->type == TYPE_SERVER && ContactPrefVal (cont, CO_WANTSBL))
-                            SnacCliRosteraddcontact (uiG.conn, cont, 3);
                     }
                     else
                     {
@@ -3070,11 +3065,9 @@ static JUMP_F(CmdUserAdd)
                     rl_printf (i18n (2241, "Added '%s' to contact group '%s'.\n"), cont->nick, cg->name);
                     rl_printf (i18n (2449, "Primary contact group for contact '%s' is now '%s'.\n"),
                                cont->nick, cg->name);
-                    if (uiG.conn->type == TYPE_SERVER && ContactPrefVal (cont, CO_ISSBL))
-                        SnacCliRosterdeletecontact (uiG.conn, cont, 3);
+                    if (uiG.conn->type == TYPE_SERVER)
+                        SnacCliRostermovecontact (cont->serv, cont, cg, 3);
                     cont->group = cg;
-                    if (uiG.conn->type == TYPE_SERVER && ContactPrefVal (cont, CO_WANTSBL))
-                        SnacCliRosteraddcontact (uiG.conn, cont, 3);
                 }
                 else
                     rl_print (i18n (2118, "Out of memory.\n"));
@@ -3160,7 +3153,7 @@ static JUMP_F(CmdUserAdd)
  */
 static JUMP_F(CmdUserRemove)
 {
-    ContactGroup *cg = NULL, *acg, *ocg;
+    ContactGroup *cg = NULL, *acg, *ncg;
     Contact *cont = NULL;
     const char *oldalias;
     char *screen;
@@ -3185,12 +3178,11 @@ static JUMP_F(CmdUserRemove)
         while ((cont = ContactIndex (cg, 0)))
         {
             did = 1;
-            ocg = cont->group;
-            if (uiG.conn->type == TYPE_SERVER && cont->group == cg && ContactPrefVal (cont, CO_ISSBL))
-                SnacCliRosterdeletecontact (uiG.conn, cont, 3);
+            ncg = ContactGroupFor (cont, cg);
+            if (uiG.conn->type == TYPE_SERVER && cont->group == cg)
+                SnacCliRostermovecontact (cont->serv, cont, ncg, 3);
             ContactRem (cg, cont);
-            if (uiG.conn->type == TYPE_SERVER && cont->group != ocg && ContactPrefVal (cont, CO_WANTSBL))
-                SnacCliRosteraddcontact (uiG.conn, cont, 3);
+            ContactAdd (ncg, cont);
             if (data != 4)
                 rl_printf (i18n (2243, "Removed contact '%s' from group '%s'.\n"),
                     cont->nick, cg->name);
@@ -3214,13 +3206,13 @@ static JUMP_F(CmdUserRemove)
             return 0;
         for (i = 0; (cont = ContactIndex (acg, i)); i++)
         {
-            ContactGroup *ocg = cont->group;
-            if (uiG.conn->type == TYPE_SERVER && cont->group == cg && ContactPrefVal (cont, CO_ISSBL))
-                SnacCliRosterdeletecontact (uiG.conn, cont, 3);
-            if (ContactRem (cg, cont))
+            if (ContactHas (cg, cont))
             {
-                if (uiG.conn->type == TYPE_SERVER && cont->group != ocg && ContactPrefVal (cont, CO_WANTSBL))
-                    SnacCliRosteraddcontact (uiG.conn, cont, 3);
+                ncg = ContactGroupFor (cont, cg);
+                if (uiG.conn->type == TYPE_SERVER && cont->group == cg)
+                    SnacCliRostermovecontact (uiG.conn, cont, ncg, 3);
+                ContactRem (cg, cont);
+                ContactAdd (ncg, cont);
                 did = 1;
                 rl_printf (i18n (2243, "Removed contact '%s' from group '%s'.\n"),
                           cont->nick, cg->name);
