@@ -3187,8 +3187,8 @@ static JUMP_F(CmdUserRemove)
         }
         if (data == 4 || (data == 0 && !all))
         {
-            ContactGroupD (cg);
             SnacCliRosterdeletegroup (uiG.conn, cg, 3);
+            ContactGroupD (cg);
             did = 1;
         }
     }
