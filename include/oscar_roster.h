@@ -20,7 +20,7 @@ typedef enum {
   roster_icon = 20,
   roster_wierd25 = 25,
   roster_wierd29 = 29,
-  roster_wierd32 = 32
+  roster_wierd37 = 37
 } roster_t;
 
 jump_snac_f SnacSrvReplylists, SnacSrvReplyroster, SnacSrvUpdateack,
