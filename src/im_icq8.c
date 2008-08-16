@@ -348,15 +348,14 @@ static void IMRosterAdddown (Event *event)
         cg = IMRosterCheckGroup (serv, rg);
         if (!cg)
         {
-            rl_printf ("## %d %s\n", rg->tag, rg->name);
             cg = ContactGroupC (serv, rg->tag, rg->name);
             OptSetVal (&cg->copts, CO_ISSBL, 1);
+            rl_printf (i18n (9999, "Added contact group %s (#%d).\n"), rg->name, rg->tag);
             cnt_groups++;
         }
         else if (cg && strcmp (rg->name, cg->name))
         {
             s_repl (&cg->name, rg->name);
-            rl_printf ("##> %s\n", cg->name);
             mod_groups++;
         }
     }
@@ -400,15 +399,14 @@ static void IMRosterOverwritedown (Event *event)
         cg = IMRosterCheckGroup (serv, rg);
         if (!cg)
         {
-            rl_printf ("## %d %s\n", rg->tag, rg->name);
             cg = ContactGroupC (serv, rg->tag, rg->name);
             OptSetVal (&cg->copts, CO_ISSBL, 1);
+            rl_printf (i18n (9999, "Added contact group %s (#%d).\n"), rg->name, rg->tag);
             cnt_groups++;
         }
         else if (strcmp (rg->name, cg->name))
         {
             s_repl (&cg->name, rg->name);
-            rl_printf ("##> %s\n", cg->name);
             mod_groups++;
         }
     }
@@ -440,7 +438,7 @@ static void IMRosterAddup (Event *event)
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
     Server *serv = event->conn->serv;
-    ContactGroup *cg;
+    ContactGroup *cg, *tcg;
     Contact *cont;
     int i, cnt_groups = 0, cnt_normal = 0;
     
@@ -448,8 +446,8 @@ static void IMRosterAddup (Event *event)
         return;
     
     for (rg = roster->groups; rg; rg = rg->next)
-        IMRosterCheckGroup (serv, rg);
-    
+        cg = IMRosterCheckGroup (serv, rg);
+
     for (i = 0; (cg = ContactGroupIndex (i)); i++)
         if (cg->serv == serv && !ContactGroupPrefVal (cg, CO_ISSBL))
             if (ContactGroupPrefVal (cg, CO_WANTSBL))
@@ -462,32 +460,30 @@ static void IMRosterAddup (Event *event)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        if (cont->group && cont->group->id && rg && rg->id && cont->group->id != rg->id)
-            SnacCliRosterupdatecontact (serv, cont, 3);
     }
 
     for (rc = roster->invisible; rc; rc = rc->next)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        if (cont->group && cont->group->id && rg && rg->id && cont->group->id != rg->id)
-            SnacCliRosterupdatecontact (serv, cont, 3);
     }
 
+    cg = ContactGroupC (NULL, 0, "");
     for (rc = roster->normal; rc; rc = rc->next)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        if (cont->group && cont->group->id && rg && rg->id && cont->group->id != rg->id)
-            SnacCliRosterupdatecontact (serv, cont, 3);
+        tcg = IMRosterCheckGroup (serv, rg);
+        if (tcg && cont->group && tcg != cont->group && tcg == cont->group->serv->contacts)
+            ContactAdd (cg, cont);
     }
+    SnacCliRosterbulkmove (serv, cg, 3);
+    ContactGroupD (cg);
 
     for (rc = roster->visible; rc; rc = rc->next)
     {
         cont = IMRosterCheckCont (serv, rc);
         rg = IMRosterGroup (roster, rc->tag);
-        if (cont->group && cont->group->id && rg && rg->id && cont->group->id != rg->id)
-            SnacCliRosterupdatecontact (serv, cont, 3);
     }
 
     cg = ContactGroupC (NULL, 0, "");
@@ -511,9 +507,9 @@ static void IMRosterDiff (Event *event)
     Roster *roster = event->data;
     RosterEntry *rg, *rc;
     Server *serv = event->conn->serv;
-    ContactGroup *cg;
+    ContactGroup *cg, *tcg;
     Contact *cont;
-    int i, cnt_more = 0;
+    int i, cnt_more = 0, cnt_auto = 0;
     int cnt_groups = 0, cnt_ignored = 0, cnt_hidden = 0, cnt_intimate = 0, cnt_normal = 0;
     
     if (!roster)
@@ -632,6 +628,10 @@ static void IMRosterDiff (Event *event)
         }
         if (rg->tag != cont->group->id)
         {
+            tcg = IMRosterCheckGroup (serv, rg);
+            if (tcg && cont->group && tcg != cont->group && tcg == cont->group->serv->contacts)
+                cnt_auto++;
+
             rl_printf (i18n (2707, "Contact %s/%s (#%d) is in group %s (#%d) on the server, but in group %s (#%d) locally.\n"),
                        cont->screen, cont->nick, rc->id, rg && rg->name ? rg->name : "?", rg->tag,
                        cont->group == serv->contacts ? "(none)" : cont->group->name, cont->group->id);
@@ -652,7 +652,7 @@ static void IMRosterDiff (Event *event)
                cnt_ignored, cnt_hidden, cnt_intimate, cnt_more);
     if (prG->autoupdate == 5)
     {
-        if (cnt_more)
+        if (cnt_more || cnt_auto)
             IMRoster (serv, IMROSTER_UPLOAD);
         else
             prG->autoupdate++;
