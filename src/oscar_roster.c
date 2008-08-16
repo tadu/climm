@@ -310,6 +310,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
                 /* TLV_ALLOWIDLE  */
             case roster_wierd25:
             case roster_wierd29:
+            case roster_wierd32:
                 break;
             default:
                 rl_printf ("#Unknown type %d: %s %d %d.\n", re->type, re->name, re->tag, re->id);
@@ -341,10 +342,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
             CliFinishLogin (serv);
 
         if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
-        {
-            rl_printf ("#\n# Server side contact list activated, authorization restrictions apply.\n#\n");
             SnacCliRosterack (serv);
-        }
         event2->callback (event2);
     }
     else
