@@ -61,6 +61,7 @@ static SNAC SNACS[] = {
     {  1, 18, "SRV_MIGRATIONREQ",    SnacServerpause},
     {  1, 19, "SRV_MOTD",            SnacSrvMotd},
     {  1, 24, "SRV_FAMILIES2",       SnacSrvFamilies2},
+    {  1, 33, "SRV_BUDDYICON",       NULL },
     {  2,  1, "SRV_LOCATIONERR",     SnacSrvLocationerr},
     {  2,  3, "SRV_REPLYLOCATION",   SnacSrvReplylocation},
     {  2,  6, "SRV_USERINFO",        SnacSrvUserinfo},
