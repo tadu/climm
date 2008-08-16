@@ -63,6 +63,7 @@ void SnacCliRosterentryadd (Server *serv, const char *name, UWORD tag, UWORD id,
 void SnacCliRosteraddgroup (Server *serv, ContactGroup *cg, int mode);
 void SnacCliRosteraddcontact (Server *serv, Contact *cont, int mode);
 void SnacCliRostermovecontact (Server *serv, Contact *cont, ContactGroup *cg, int mode);
+void SnacCliRosterbulkmove (Server *serv, ContactGroup *cg, int mode);
 void SnacCliRosterbulkadd (Server *serv, ContactGroup *cs);
 void SnacCliRosterupdategroup (Server *serv, ContactGroup *cg, int mode);
 void SnacCliRosterupdatecontact (Server *serv, Contact *cont, int mode);

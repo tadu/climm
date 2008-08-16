@@ -565,6 +565,40 @@ void SnacCliRostermovecontact (Server *serv, Contact *cont, ContactGroup *cg, in
         SnacCliAddend (serv);
 }
 
+void SnacCliRosterbulkmove (Server *serv, ContactGroup *cg, int mode)
+{
+    Packet *pakd, *paka;
+    Contact *cont;
+    ContactIDs *ids;
+    int i;
+
+    if (!ContactIndex (cg, 0) && mode == 3)
+        return;
+
+    if (mode & 1)
+        SnacCliAddstart (serv);
+
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+        if (!ContactGroupPrefVal (cont->group, CO_ISSBL))
+            SnacCliRosteraddgroup (serv, cont->group, 0);
+
+    pakd = SnacC (serv, 19, 10, 0, 0);
+    paka = SnacC (serv, 19, 8, 0, 0);
+    
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+    {
+        if (cont->ids && (ids = ContactIDHas (cont, roster_normal)) && ids->issbl)
+            SnacCliRosterbulkone (serv, cont->group, cont, pakd, roster_normal, 10);
+        if (ContactPrefVal (cont, CO_WANTSBL))
+            SnacCliRosterbulkone (serv, cont->group, cont, paka, roster_normal, 8);
+    }
+    SnacSend (serv, pakd);
+    SnacSend (serv, paka);
+
+    if (mode & 2)
+        SnacCliAddend (serv);
+}
+
 /*
  * SRV_ROSTERADD
  */
