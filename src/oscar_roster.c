@@ -545,6 +545,8 @@ void SnacCliRosterupdatecontact (Server *serv, Contact *cont, int mode)
 
 void SnacCliRostermovecontact (Server *serv, Contact *cont, ContactGroup *cg, int mode)
 {
+    Packet *pakd, *paka;
+    ContactIDs *ids;
     char is, want;
     is = ContactPrefVal (cont, CO_ISSBL);
     want = ContactPrefVal (cont, CO_WANTSBL);
