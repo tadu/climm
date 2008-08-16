@@ -2896,7 +2896,7 @@ static JUMP_F(CmdUserTogInvis)
 {
     ContactGroup *cg;
     Contact *cont;
-    int i;
+    int i, j;
     OPENCONN;
 
     if ((cg = s_parselistrem (&args, uiG.conn)))
@@ -2917,14 +2917,14 @@ static JUMP_F(CmdUserTogInvis)
             }
             else
             {
-                i = ContactPrefVal (cont, CO_INTIMATE);
+                j = ContactPrefVal (cont, CO_INTIMATE);
                 OptSetVal (&cont->copts, CO_INTIMATE, 0);
                 OptSetVal (&cont->copts, CO_HIDEFROM, 1);
                 if (uiG.conn->type == TYPE_SERVER)
                 {
                     ContactIDs *cid;
                     SnacCliAddinvis (uiG.conn, cont);
-                    if (i || ContactIsInv (uiG.conn->status))
+                    if (j || ContactIsInv (uiG.conn->status))
                         SnacCliSetstatus (uiG.conn, uiG.conn->status, 3);
                     if ((cid = ContactIDHas (cont, roster_visible)) && cid->issbl)
                         SnacCliRosterdelete (cont->serv, cont->screen, cid->tag, cid->id, roster_visible);
@@ -2944,7 +2944,7 @@ static JUMP_F(CmdUserTogVisible)
     ContactGroup *cg;
     Contact *cont;
     Event *event;
-    int i;
+    int i, j;
     OPENCONN;
 
     if ((cg = s_parselistrem (&args, uiG.conn)))
@@ -2968,7 +2968,7 @@ static JUMP_F(CmdUserTogVisible)
             }
             else
             {
-                i = ContactPrefVal (cont, CO_HIDEFROM);
+                j = ContactPrefVal (cont, CO_HIDEFROM);
                 OptSetVal (&cont->copts, CO_HIDEFROM, 0);
                 OptSetVal (&cont->copts, CO_INTIMATE, 1);
                 if (uiG.conn->type == TYPE_SERVER)
@@ -2978,7 +2978,7 @@ static JUMP_F(CmdUserTogVisible)
                     if ((cid = ContactIDHas (cont, roster_invisible)) && cid->issbl)
                         SnacCliRosterdelete (cont->serv, cont->screen, cid->tag, cid->id, roster_invisible);
                     SnacCliRosterentryadd (cont->serv, cont->screen, 0, ContactIDGet (cont, roster_visible), roster_visible, 0, NULL, 0);
-                    if (i || !ContactIsInv (uiG.conn->status))
+                    if (j || !ContactIsInv (uiG.conn->status))
                         SnacCliSetstatus (uiG.conn, uiG.conn->status, 3);
                 }
                 rl_printf (i18n (1671, "Always visible to %s now.\n"), cont->nick);
@@ -3046,19 +3046,17 @@ static JUMP_F(CmdUserAdd)
                 }
                 else if (ContactHas (cg, cont))
                 {
+                    if (uiG.conn->type == TYPE_SERVER)
+                        SnacCliRostermovecontact (cont->serv, cont, cg, 3);
                     if (cont->group != cg)
                     {
                         rl_printf (i18n (2449, "Primary contact group for contact '%s' is now '%s'.\n"),
                                    cont->nick, cg->name);
-                        if (uiG.conn->type == TYPE_SERVER)
-                            SnacCliRostermovecontact (cont->serv, cont, cg, 3);
                         cont->group = cg;
                     }
                     else
-                    {
                         rl_printf (i18n (2591, "Contact group '%s' already has contact '%s' (%s).\n"),
                                    cg->name, cont->nick, cont->screen);
-                    }
                 }
                 else if (ContactAdd (cg, cont))
                 {
