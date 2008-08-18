@@ -4360,7 +4360,7 @@ static JUMP_F(CmdUserGmail)
         since = isince;
     else if (s_parsekey (&args, "more"))
         since = 1;
-    else if ((par = s_parse (&args)))
+    else if (strchr ("0123456789", *args) && (par = s_parse (&args)))
     {
         struct tm stamp;
         memset (&stamp, 0, sizeof (struct tm));
