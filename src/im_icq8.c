@@ -489,9 +489,10 @@ static void IMRosterAddup (Event *event)
     cg = ContactGroupC (NULL, 0, "");
     for (i = 0; (cont = ContactIndex (serv->contacts, i)); i++)
         if (!ContactPrefVal (cont, CO_ISSBL))
-            if (ContactPrefVal (cont, CO_WANTSBL) && !ContactPrefVal (cont, CO_IGNORE))
+            if (ContactPrefVal (cont, CO_WANTSBL) && !ContactPrefVal (cont, CO_IGNORE) && cnt_normal < 25)
             {
                 cnt_normal++;
+                cont->oldflags |= CONT_REQAUTH;
                 ContactAdd (cg, cont);
             }
     if (ContactIndex (cg, 0))

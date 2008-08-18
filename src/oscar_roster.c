@@ -492,6 +492,7 @@ void SnacCliRosteraddcontact (Server *serv, Contact *cont, int mode)
     if (!ContactGroupPrefVal (cont->group, CO_ISSBL))
         SnacCliRosteraddgroup (serv, cont->group, 0);
     pak = SnacC (serv, 19, 8, 0, 0);
+    cont->oldflags |= CONT_REQAUTH;
     SnacCliRosterbulkone (serv, cont->group, cont, pak, roster_normal, 8);
     if (ContactPrefVal (cont, CO_HIDEFROM))
         SnacCliRosterbulkone (serv, NULL, cont, pak, roster_invisible, 8);
