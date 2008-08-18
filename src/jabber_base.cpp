@@ -1069,12 +1069,12 @@ bool CLIMMXMPP::handleIq (gloox::Stanza *stanza)
             time_t t = atoll (dato.c_str ()) / 1000ULL;
             rl_printf ("%s ", s_time (&t));
             rl_printf ("%s%s %s%s%s", COLMESSAGE, sub.c_str (), COLQUOTE, COLSINGLE, snip.c_str ());
-            rl_printf ("\n");
+            rl_print ("\n");
             gloox::Tag::TagList mls = (*mlit)->findChild ("senders")->findChildren ("sender");
             gloox::Tag::TagList::iterator mlsit =mls.begin ();
             for ( ; mlsit !=mls.end(); mlsit++)
             {
-                if ((*mlsit)->hasAttribute ("unread", "1"))
+                if (!ismail || (*mlsit)->hasAttribute ("unread", "1"))
                 {
                     std::string email = (*mlsit)->findAttribute ("address");
                     std::string name = (*mlsit)->findAttribute ("name");
