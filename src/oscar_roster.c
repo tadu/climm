@@ -309,6 +309,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
                 /* TLV_VISIBILITY */
                 /* TLV_ALLOWIDLE  */
             case roster_wierd25:
+            case roster_wierd27:
             case roster_wierd29:
             case roster_wierd32:
                 break;

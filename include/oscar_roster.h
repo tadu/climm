@@ -19,6 +19,7 @@ typedef enum {
   roster_importt = 19,
   roster_icon = 20,
   roster_wierd25 = 25,
+  roster_wierd27 = 27,
   roster_wierd29 = 29,
   roster_wierd32 = 32
 } roster_t;
