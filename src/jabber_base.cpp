@@ -132,7 +132,7 @@ class CLIMMXMPP: public gloox::ConnectionListener, public gloox::MessageHandler,
         virtual void  handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message);
 
         // GMail support
-        void sendIqGmail (int64_t newer = 0, std::string newertid = "", std::string q = "", bool isauto = 0);
+        void sendIqGmail (int64_t newer = 0, std::string newertid = "", std::string q = "", bool isauto = 1);
         std::string gmail_new_newertid;
         std::string gmail_newertid;
         std::string gmail_query;
