@@ -1,5 +1,173 @@
 -*- coding: utf-8 -*-
 
+2008-08-18 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* 0.6.3
+
+2008-08-18 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* add queue type for gmail mail checks
+	* limit to 25 contacts during contact upload to reduce rate limit
+	  exceeds
+	* automatically add auth req flag for newly added contacts 
+	* add support for Gmail queries and results
+	* add gmail command to query emails on GoogleMail
+	* do not add a contact twice to a group while loading status file
+	* climm-6.2.1-fix-lost-not-auto-serv.patch - thanks komar
+	* ICQ server doesn't have a problem with duplicated ids as long as
+	  the tags differ, so allow that too, as otherwise contacts will be
+	  shown as local only that are, in fact, on the server 
+	* ignore roster type 27 (unknown)
+	* update translations
+	* make conn close sort of synonymous to conn logoff again
+	* automatic i18n update, update de and en
+	* do not try to interpret parameter as date unless it starts with a
+	  digit
+	* show senders of unread email, or of all email returned due to an
+	  explicit search
+
+2008-08-16 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* add function to get pref value of a contact assuming it's group
+	  would be the specified one 
+	* add function to determine another group a contact belongs to
+	* add function to move contact between groups in one transaction
+	* ... and use.
+	* write XML residuals into debug log file instead of scrolling the
+	  user to death
+	* add function to move contacts in bulk
+	* add new id for iChat
+	* use bulk move function in contact upload
+	* fix variable re-usage that caused tog(in)vis with several
+	  arguments to loop until SIGPIPE from ICQ server
+	* also update the group if it is (locally) already in the group
+	  to make it sync to the server if needed 
+	* ignore buddy icon requests as we do not support buddy icons
+	* ignore roster type 32 (whatever it is)
+	* when moving a single contact, only change the normal entry, do not
+	  touch visibility
+	* increment sub-version
+	* fix var used after free (-> segfault) on contact group remove
+
+2008-08-05 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix missing limits.h include for HPUX
+	* rem: try to also update server side list
+	* get file transfer back to work
+
+2008-06-12 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* OSCAR servers swamp us with rate exceeded messages that just
+	  update the rate info, so ignore those
+	* allow AIM: keyword to force the following word to be interpreted
+	  as AIM screen name without further syntax check
+	* modify parsing with AIM: once more. AIM:"..." skips the syntax
+	  check now.
+
+2008-05-22 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* Fix failed assertion
+
+2008-05-08 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix direct connections
+	* add - try to also update server side list
+	* properly re-set auth required flag
+	* ignore http://jabber.org/protocol/address tags
+	* fix compiler error, thanks rtc
+	* another wrong port number
+
+2008-04-01 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* another fix to eg et al display width
+	* show contacts awaiting authorization as T resp t instead of S resp s
+	* also get authreq status from returned contact list
+	* another eg output fix
+	* fix one failed assertion
+	* ignore colon to be able to parse licq logs
+	* make it properly detect ingoing/outgoing for licq dump
+	* add separate flag to show SRV_ONLINE packets since the ICQ servers
+	  tend to flood one with them 
+	* always explicitly specify whether to start/end a roster
+	  transaction
+	* use roster tag instead of group id as the former matches what the
+	  server has 
+	* fix segfault
+
+2008-03-27 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* add functions to add or subtract one contact group from another
+	* new flags for eg etc: multi, shadow, group, mine, long, online;
+	  discard sv command (functionally equivalent to s) 
+	* fix conn logoff
+	* recognise iChat
+	* fixes for too wide display of 'eg' et al
+	* change Contact{Add,Rem}Alias to return 2 if the added alias caused
+	  the nick to change 
+	* rework roster change code somewhat
+
+2008-03-16 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* Server vs Connection separation: final four members cleaned up,
+	  ready for real seperation 
+	* fix compilation without ENABLE_CONT_HIER
+	* fix potentially uninitialized variable
+	* don't set type to zero, as then the connection will not be saved
+	  and thus silently discarded
+	* disable file transfer until I have a chance to fix it
+	* Server/Connection split finished
+
+2008-03-10 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fixes to XMPP file transfer
+	* fix connections loading
+	* Server vs Connection separation: start deciding which member
+	  belongs to S vs C; renaming of some members
+	* ... and set oscar_uin sufficiently early
+	* save connection options on Server struct, not in the contact list
+	  contact group 
+	* save connection options on Server struct, not in the contact list
+	  contact group
+	* NEW FILE FORMAT! change creation of scripting and oscar peer2peer
+	  connections into global resp. connection option, so that we only
+	  need to save real Server structs 
+	* fix missing closing bracket (hpux) 
+	* Server vs Connection separation: dc port must also be an option,
+	  more hiding of unused struct members
+	* Server vs Connection separation: two more, one less connection
+	  flag
+	* Server vs Connection separation: two more, the smoke is clearing
+
+2008-03-08 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* fix a mem leak when removing aliases (removing the nick as alias
+	  should reset the nick to the screen name, not to nothing)
+	* allow to return back the alias that was actually used (preparation
+	  for #38)
+	* Rework rem* commands. Closes: #38
+	* Server vs Connection split missing in XMPP file transfer code
+	* proper Replaces: and Conflicts: versioning; thanks kosh
+	* Server vs Connection separation: ServerNr?() analogous to
+	  ConnectionNr?(); connection are now sorted server connections first.
+	  (23 fewer conversions) 
+	* Server vs Connection separation: ServerFindScreen?() instead of
+	  ConnectionFindScreen?); jabber file transfer sucks. (4 fewer
+	  conversions) 
+	* Server vs Connection separation: child connections are always
+	  childs of server connections (22 fewer conversions) 
+	* Server vs Connection separation: fill in ->serv pointer when
+	  creating Connection structure and use instead of Connection2Server
+	  (50 fewer conversions) 
+	* Server vs Connection separation: ServerC() ServerD() (7 fewer
+	  conversions)
+	* Server vs Connection separation: link conn to serv instead of
+	  Server2Connection() (56 fewer conversions)
+
+2008-03-05 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* update release script to my chroot builds
+	* fix compiler warnings of 64bit platforms
+	* prefer utmpx functions over utmp functions, prefer INT_MAX over MAXINT
+	* Remove ICQ6 compatibility (it has bitrotted to death anyways)
+	* get rid of remaining oldicq_* files
+	* Renaming: tcp.c -> oscar_dc.c, peer_file.c -> oscar_dc_file.c,
+	  tabs.c -> util_tabs.c 
+	* Connection/Server split
+
+2008-02-26 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
+	* get distribution code name from /etc/lsb-release
+	* restructure event script calls for less malloc() calls
+	* fix logging for messages sent to specific ressources 
+	* Throw back protocol violations (HTML where only plain text is
+	  allowed) back to offender (i.e. Pidgin)
+
 2008-02-25 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* do not call SnacCliAddcontact() ever until we have something
 	  better; closes #32

@@ -45,3 +45,7 @@
 2008-02-25: 0.6.2:
    switch to server based contact list (with several related updates), XMPP
    file transfer patch, fix and improve historyd, more fixes
+2008-08-19: 0.6.3:
+   Server/Connection split, remove ICQ6 support, improvements to ICQ roster
+   support, show T/t flag for contacts awaiting authorization, GoogleMail
+   support including gmail command
