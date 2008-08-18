@@ -966,7 +966,7 @@ void ContactIDSet (Contact *cont, UWORD type, UWORD id, UWORD tag)
     idp = ContactID (cont, type);
     for (i = 0; (c = ContactIndex (NULL, i)); i++)
         for (idt = c->ids; idt; idt = idt->next)
-            if (idt->id == id)
+            if (idt->id == id && idt->tag == tag)
             {
                 idt->id = 0;
                 idt->tag = 0;
