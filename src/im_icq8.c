@@ -350,7 +350,7 @@ static void IMRosterAdddown (Event *event)
         {
             cg = ContactGroupC (serv, rg->tag, rg->name);
             OptSetVal (&cg->copts, CO_ISSBL, 1);
-            rl_printf (i18n (9999, "Added contact group %s (#%d).\n"), rg->name, rg->tag);
+            rl_printf (i18n (2737, "Added contact group %s (#%d).\n"), rg->name, rg->tag);
             cnt_groups++;
         }
         else if (cg && strcmp (rg->name, cg->name))
@@ -401,7 +401,7 @@ static void IMRosterOverwritedown (Event *event)
         {
             cg = ContactGroupC (serv, rg->tag, rg->name);
             OptSetVal (&cg->copts, CO_ISSBL, 1);
-            rl_printf (i18n (9999, "Added contact group %s (#%d).\n"), rg->name, rg->tag);
+            rl_printf (i18n (2737, "Added contact group %s (#%d).\n"), rg->name, rg->tag);
             cnt_groups++;
         }
         else if (strcmp (rg->name, cg->name))

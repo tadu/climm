@@ -667,7 +667,7 @@ static JUMP_F(CmdUserHelp)
         else if (!strcasecmp (par->txt, "as"))
             CMD_USER_HELP  ("as <nr|uin> <cmd>", i18n (2562, "Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection."));
         else if (!strcasecmp (par->txt, "gmail"))
-            CMD_USER_HELP  ("gmail [<date>] [<query>]|more", i18n (9999, "Query emails matching <query> since <date>, or continue search."));
+            CMD_USER_HELP  ("gmail [<date>] [<query>]|more", i18n (2712, "Query emails matching <query> since <date>, or continue search."));
 #ifdef ENABLE_TCL
         /* Scripting */
         else if (!strcasecmp (par->txt, "tclscript"))
@@ -2635,7 +2635,7 @@ static JUMP_F(CmdUserOpt)
     {
         rl_printf (data & COF_CONTACT ? i18n (2416, "Options for contact %s:\n") :
                    data & COF_GROUP   ? i18n (2417, "Options for contact group %s:\n") :
-                   data & COF_SERVER  ? i18n (9999, "Options for server %s:\n")
+                   data & COF_SERVER  ? i18n (2713, "Options for server %s:\n")
                                       : i18n (2418, "Global options:\n"),
                    coptobj);
         
@@ -2733,7 +2733,7 @@ static JUMP_F(CmdUserOpt)
                 OptUndef (copts, flag);
             rl_printf (data & COF_CONTACT ? i18n (2431, "Undefining option %s for contact %s.\n") :
                        data & COF_GROUP   ? i18n (2432, "Undefining option %s for contact group %s.\n") :
-                       data & COF_SERVER  ? i18n (9999, "Undefining option %s for server %s.\n")
+                       data & COF_SERVER  ? i18n (2714, "Undefining option %s for server %s.\n")
                                           : i18n (2433, "Undefining global option %s%s.\n"),
                       coptname, coptobj);
         }
@@ -2745,20 +2745,20 @@ static JUMP_F(CmdUserOpt)
             if (!OptGetVal (copts, flag, &val) || ((flag & (COF_STRING | COF_COLOR)) && !OptGetStr (copts, flag, &res)))
                 rl_printf (data & COF_CONTACT ? i18n (2422, "Option %s for contact %s is undefined.\n") :
                            data & COF_GROUP   ? i18n (2423, "Option %s for contact group %s is undefined.\n") :
-                           data & COF_SERVER  ? i18n (9999, "Option %s for server %s is undefined.\n")
+                           data & COF_SERVER  ? i18n (2715, "Option %s for server %s is undefined.\n")
                                               : i18n (2424, "Option %s%s has no global value.\n"),
                           coptname, coptobj);
             else if (flag & (COF_BOOL | COF_NUMERIC))
                 rl_printf (data & COF_CONTACT ? i18n (2425, "Option %s for contact %s is %s%s%s.\n") :
                            data & COF_GROUP   ? i18n (2426, "Option %s for contact group %s is %s%s%s.\n") :
-                           data & COF_SERVER  ? i18n (9999, "Option %s for server %s is %s%s%s.\n")
+                           data & COF_SERVER  ? i18n (2716, "Option %s for server %s is %s%s%s.\n")
                                               : i18n (2427, "Option %s%s is globally %s%s%s.\n"),
                           coptname, coptobj, colquote, flag & COF_NUMERIC ? s_sprintf ("%ld", UD2UL (val))
                           : val ? i18n (1085, "on") : i18n (1086, "off"), colnone);
             else
                 rl_printf (data & COF_CONTACT ? i18n (2428, "Option %s for contact %s is %s.\n") :
                            data & COF_GROUP   ? i18n (2429, "Option %s for contact group %s is %s.\n") :
-                           data & COF_SERVER  ? i18n (9999, "Option %s for server %s is %s.\n")
+                           data & COF_SERVER  ? i18n (2717, "Option %s for server %s is %s.\n")
                                               : i18n (2430, "Option %s%s is globally %s.\n"),
                           coptname, coptobj, s_qquote (flag & COF_STRING  ? res : OptS2C (res)));
             free (coptname);
@@ -2776,7 +2776,7 @@ static JUMP_F(CmdUserOpt)
             OptSetStr (copts, flag, res);
             rl_printf (data & COF_CONTACT ? i18n (2434, "Setting option %s for contact %s to %s.\n") :
                        data & COF_GROUP   ? i18n (2435, "Setting option %s for contact group %s to %s.\n") :
-                       data & COF_SERVER  ? i18n (9999, "Setting option %s for server %s to %s.\n")
+                       data & COF_SERVER  ? i18n (2718, "Setting option %s for server %s to %s.\n")
                                           : i18n (2436, "Setting option %s%s globally to %s.\n"),
                       coptname, coptobj, s_qquote (res));
         }
@@ -2786,7 +2786,7 @@ static JUMP_F(CmdUserOpt)
             OptSetStr (copts, flag, res);
             rl_printf (data & COF_CONTACT ? i18n (2434, "Setting option %s for contact %s to %s.\n") :
                        data & COF_GROUP   ? i18n (2435, "Setting option %s for contact group %s to %s.\n") :
-                       data & COF_SERVER  ? i18n (9999, "Setting option %s for server %s to %s.\n")
+                       data & COF_SERVER  ? i18n (2718, "Setting option %s for server %s to %s.\n")
                                           : i18n (2436, "Setting option %s%s globally to %s.\n"),
                       coptname, coptobj, s_qquote (col));
             free (col);
@@ -2798,7 +2798,7 @@ static JUMP_F(CmdUserOpt)
             OptSetVal (copts, flag, atoi (par->txt));
             rl_printf (data & COF_CONTACT ? i18n (2437, "Setting option %s for contact %s to %s%d%s.\n") :
                        data & COF_GROUP   ? i18n (2438, "Setting option %s for contact group %s to %s%d%s.\n") :
-                       data & COF_SERVER  ? i18n (9999, "Setting option %s for server %s to %s%d%s.\n")
+                       data & COF_SERVER  ? i18n (2719, "Setting option %s for server %s to %s%d%s.\n")
                                           : i18n (2439, "Setting option %s%s globally to %s%d%s.\n"),
                       coptname, coptobj, colquote, atoi (par->txt), colnone);
         }
@@ -2807,7 +2807,7 @@ static JUMP_F(CmdUserOpt)
             OptSetVal (copts, flag, 1);
             rl_printf (data & COF_CONTACT ? i18n (2440, "Setting option %s for contact %s.\n") :
                        data & COF_GROUP   ? i18n (2441, "Setting option %s for contact group %s.\n") :
-                       data & COF_SERVER  ? i18n (9999, "Setting option %s for server %s.\n")
+                       data & COF_SERVER  ? i18n (2720, "Setting option %s for server %s.\n")
                                           : i18n (2442, "Setting option %s%s globally.\n"),
                       coptname, coptobj);
         }
@@ -2816,7 +2816,7 @@ static JUMP_F(CmdUserOpt)
             OptSetVal (copts, flag, 0);
             rl_printf (data & COF_CONTACT ? i18n (2443, "Clearing option %s for contact %s.\n") :
                        data & COF_GROUP   ? i18n (2444, "Clearing option %s for contact group %s.\n") :
-                       data & COF_SERVER  ? i18n (9999, "Clearing option %s for server %s.\n")
+                       data & COF_SERVER  ? i18n (2721, "Clearing option %s for server %s.\n")
                                           : i18n (2445, "Clearing option %s%s globally.\n"),
                       coptname, coptobj);
         }
@@ -4181,9 +4181,9 @@ static JUMP_F(CmdUserConn)
             rl_print (i18n (1892, "conn                    List available connections.\n"));
             rl_print (i18n (2094, "conn login [pass]       Log in to current/first server connection.\n"));
             rl_print (i18n (1893, "conn login <nr> [pass]  Log in to server connection <nr>.\n"));
-            rl_print (i18n (9999, "conn logoff <nr>        Log off from server connection <nr>.\n"));
-            rl_print (i18n (9999, "conn discard <nr>       Discard server connection <nr>.\n"));
-            rl_print (i18n (9999, "conn open <nr>          Open connection <nr>.\n"));
+            rl_print (i18n (2722, "conn logoff <nr>        Log off from server connection <nr>.\n"));
+            rl_print (i18n (2723, "conn discard <nr>       Discard server connection <nr>.\n"));
+            rl_print (i18n (2724, "conn open <nr>          Open connection <nr>.\n"));
             rl_print (i18n (2156, "conn close <nr>         Close connection <nr>.\n"));
             rl_print (i18n (2095, "conn remove <nr>        Remove connection <nr>.\n"));
             rl_print (i18n (2097, "conn select <nr>        Select connection <nr> as server connection.\n"));
@@ -4272,9 +4272,9 @@ static JUMP_F(CmdUserConn)
             
         case 102:
             if (connl->connect & CONNECT_OK)
-                rl_printf (i18n (9999, "Connection #%ld is already open.\n"), UD2UL (nr));
+                rl_printf (i18n (2725, "Connection #%ld is already open.\n"), UD2UL (nr));
             else if (!connl->c_open)
-                rl_printf (i18n (9999, "Don't know how to open connection type %s for #%ld.\n"),
+                rl_printf (i18n (2726, "Don't know how to open connection type %s for #%ld.\n"),
                     ConnectionStrType (connl), UD2UL (nr));
             else
                 connl->c_open (connl);
@@ -4302,7 +4302,7 @@ static JUMP_F(CmdUserConn)
         
         case 104:
             if (connl->serv && connl->serv->conn == connl)
-                rl_printf (i18n (9999, "Connection #%ld is a server's main i/o connection.\n"), UD2UL (nr));
+                rl_printf (i18n (2727, "Connection #%ld is a server's main i/o connection.\n"), UD2UL (nr));
             else
             {
                 rl_printf (i18n (2101, "Removing connection %ld and its dependents completely.\n"), UD2UL (nr));
@@ -4311,13 +4311,13 @@ static JUMP_F(CmdUserConn)
             break;
         
         case 204:
-            rl_printf (i18n (9999, "Discarding server connection %ld completely.\n"), UD2UL (nr));
+            rl_printf (i18n (2728, "Discarding server connection %ld completely.\n"), UD2UL (nr));
             ServerD (servl);
             break;
         
         case 105:
             if (connl->serv && connl->serv->conn == connl)
-                rl_printf (i18n (9999, "Connection #%ld is a server's main i/o connection.\n"), UD2UL (nr));
+                rl_printf (i18n (2727, "Connection #%ld is a server's main i/o connection.\n"), UD2UL (nr));
             else if (connl->close)
             {
                 rl_printf (i18n (2185, "Closing connection %ld.\n"), UD2UL (nr));
@@ -4333,7 +4333,7 @@ static JUMP_F(CmdUserConn)
         case 205:
             if (servl->conn && servl->conn->close)
             {
-                rl_printf (i18n (9999, "Logging of from connection %ld.\n"), UD2UL (nr));
+                rl_printf (i18n (2729, "Logging of from connection %ld.\n"), UD2UL (nr));
                 servl->conn->close (servl->conn);
             }
     }

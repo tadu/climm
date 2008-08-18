@@ -27,18 +27,9 @@
 1028:NO
 1029:Please enter YES or NO!
 1030:logged off
-1032:debug: double packet #%04lx type %04x (%s)\n
 1033:Incoming v8 server packet:
-1034:Maximum number of tries reached. Giving up.
 1038:Message canceled.\n
-1039:The server claims we're not connected.\n
-1043:All users found.
-1044:Too many users found.
-1045:Search Done.
-1046:Length
-1047:Extra Data
 1048:Error code: %ld\n
-1050:Login successful!
 1053:Connected to %s, waiting for response\n
 1055:Socket creation failed
 1056:Socket created, attempting to connect.\n
@@ -48,7 +39,6 @@
 1064:Automatically changed status to %s.\n
 1078:No translation available.
 1079:Translation (%s, %s) from %s, last modified on %s by %s, for climm %d.%d.%d%s.\n
-1082:Trying to reconnect... [try %d out of %d]\n
 1085:on
 1086:off
 1089:Unloaded translation.
@@ -375,8 +365,6 @@
 1437:Set status to "invisible".
 1438:Updates your basic info (email, nickname, etc.).
 1439:Sets your random user group.
-1440:Random User:
-1441:remote IP:
 1442:Please select one of the help topics below.
 1443:Commands relating to climm displays and configuration.
 1444:Commands relating to seeing and finding other users.
@@ -386,10 +374,7 @@
 1448:Message
 1449:User
 1450:Account
-1451:local  IP:
-1452:Status:
 1453:TCP version:
-1454:Connection:
 1455:Art
 1456:Cars
 1457:Celebrity Fans
@@ -429,7 +414,6 @@
 1492:50's
 1493:Peer-to-Peer
 1494:Server Only
-1495:No Random User Found
 1497:failed
 1499:Other
 1500:Nickname:
@@ -502,28 +486,15 @@
 1603:Enter position: 
 1604:Should the users be online?
 1605:Do you want your status to be available on the web? (YES/NO)
-1606:Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
 1612:This program was made without any help from Mirabilis or their consent.\n
 1613:No reverse engineering or decompilation of any Mirabilis code took place to make this program.\n
 1619:Warning:
 1621:users not returned.
 1622:Do you want to apply these changes? (YES/NO)
-1623:Double packet %04x.\n
-1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:Can't bind socket to free port\n
 1638:Couldn't create socket
-1640:Failed to update info.\n
-1641:User info successfully updated.\n
 1642:IP:
-1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
-1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
-1645:You entered an incorrect password.\n
-1646:Server is busy.\n
-1648:The response was %04x	
-1649:The version was %x	
-1650:\nThe SEQ was %04lx	
-1651:The size was %d\n
 1653:Offline
 1654:Online
 1655:Enter the user's e-mail address:
@@ -566,7 +537,6 @@
 1719:Shows how long climm has been running and some statistics.
 1721:Sending a blank message will put the client into multiline mode.\nUse . on a line by itself to end message.\nUse # on a line by itself to cancel the message.
 1743:Size mismatch in packet lengths.\n
-1744:server (v5)
 1745:unknown
 1746: nr type         sent/received packets/unique packets\n
 1747:total
@@ -576,8 +546,6 @@
 1767:Toggles auto cycling to away/not available.
 1770:Resend your last message to <contacts>.
 1771:You haven't sent a message to anyone yet!\n
-1774:Incoming packet:
-1775:Outgoing packet:
 1784:If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n
 1785:success.\n
 1786:I also need the port the socks server listens on. If unsure, press return for the default port.\n
@@ -604,10 +572,6 @@
 1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 1820:%s <option> [on|off|<value>] - control simple options.\n
 1822:    color:      use colored text output.\n
-1823:Incoming partial packet:
-1825:Discarded a %04x (%s) packet
-1826:Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
-1830:Discarding message to %s after %ld send attempts.  Message content:\n
 1833:Peer to peer TCP connection established.\n
 1842:Closing socket %d to %s.\n
 1843:Closing socket %d.\n
@@ -618,18 +582,13 @@
 1849:Error on select: %s (%d)\n
 1850:Timeout on connection with %s at %s:%ld\n
 1855:TCP connection to %s at %s:%ld failed.\n
-1856:Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n
 1857:Do you want to hide your IP from other contacts? (YES/NO)
-1867:Received a malformed (too short) packet - ignored.\n
-1868:Got a malformed (to long subpacket) multi-packet - remainder ignored.\n
-1869:Protocol versions less than 5 are not supported anymore.\n
 1870:peer off   <nick> - Closes direct connection(s) and don't try it again.\n
 1872:failed: %s (%d)\n
 1873:Work City:
 1874:Work State:
 1875:Personal interests:
 1876:Personal past background:
-1877:ok.\n
 1878:Error while reading from socket: %s (%d, %d)\n
 1879:Affiliations:
 1881:FLAP channel 1 out of data.\n
@@ -639,10 +598,9 @@
 1885:Connection v8 timed out.\n
 1887:Connections:
 1888:not webaware
-1889:server
 1890:peer-to-peer
 1892:conn                    List available connections.\n
-1893:conn login <nr> [pass]  Open connection <nr>.\n
+1893:conn login <nr> [pass]  Log in to server connection <nr>.\n
 1894:There is no connection number %ld.\n
 1895:Login failed:\n
 1896:Server closed connection:\n
@@ -693,7 +651,6 @@
 1961:URL: %s\n
 1966: Connection refused on port %ld at %s\n
 1967:More Info for
-1968:User found:\n
 1969:offline
 1970:online
 1971:do not disturb
@@ -786,13 +743,12 @@
 2090:file peer-to-peer
 2091:Queueing %s as %s for transfer.\n
 2092:TCP message %s discarded - lost session.\n
-2094:conn login [pass]       Open current/first server connection.\n
+2094:conn login [pass]       Log in to current/first server connection.\n
 2095:conn remove <nr>        Remove connection <nr>.\n
 2097:conn select <nr>        Select connection <nr> as server connection.\n
 2098:Connection %ld is not a server connection.\n
 2100:conn select <uin>       Select connection with UIN <uin> as server connection.\n
 2101:Removing connection %ld and its dependents completely.\n
-2102:Connection %ld is a configured connection.\n
 2103:contact show    Show server based contact list.\n
 2104:contact diff    Show server based contacts not on local contact list.\n
 2105:contact import  Import server based contact list as local contact list.\n
@@ -812,8 +768,6 @@
 2122:Note: You need to 'save' to write new password to disc.\n
 2123:%sSyntax error%s: Too few arguments: %s\n
 2124:%sSyntax error%s: Not an integer: %s\n
-2128: Description: %s%s%s\n
-2129:         URL: %s%s%s\n
 2131:Composing message to %s%s%s:\n
 2133:Color is %s%s%s.\n
 2134:Funny messages are %s%s%s.\n
@@ -868,7 +822,6 @@
 2211:Your status is %s.\n
 2212:changed status to %s
 2213:logged on (%s)
-2214:Info for %s%lu%s:\n
 2215:This climm can't convert between SJIS or EUC and unicode.\n
 2216:This climm doesn't know the '%s' encoding.\n
 2217:This climm can't convert between '%s' and unicode.\n
@@ -1056,7 +1009,6 @@
 2456:Unknown command %s, type %shelp%s for help.\n
 2457:Unknown configuration file format version %d.\n
 2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
-2459:Peer-to-peer connection not associated to server connection, discarding.\n
 2460:Contact group %s (id %s%d%s) not associated to server connection.\n
 2461:Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 2462:File transfer %s to port %s%ld%s.
@@ -1094,7 +1046,6 @@
 2507:Translation %s%s%s not found. Would you like to translate climm into your language?\n
 2508:No translation (%s) loaded (%s%d%s entries).\n
 2509:WSAStartup() for WinSocks 1.1 failed
-2510:Opening v5 connection to %s:%s%ld%s... 
 2511:Redirect to server %s:%s%ld%s... 
 2512:Opening v8 connection to %s:%s%ld%s for %s%s%s... 
 2513:new UIN
@@ -1168,7 +1119,6 @@
 2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
 2583:Location error: %d.\n
 2584:msn temp
-2585:msn server
 2586:msn chat
 2587:Couldn't load meta data for %s (%s).\n
 2588:Saved meta data for '%s' (%s).\n
@@ -1190,7 +1140,6 @@
 2604:xmpp
 2605:Automatic status change.
 2606:Found random chat partner UIN %s in chat group %d.\n
-2607:The new UIN is %s!\n
 2608:Your new UIN is: %s.\n
 2609:Warning: Server thinks our UIN is %s, when it is %s.\n
 2610:Information for %s%s%s (%s):\n
@@ -1289,3 +1238,31 @@
 2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
 2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
 2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
+2712:Query emails matching <query> since <date>, or continue search.
+2713:Options for server %s:\n
+2714:Undefining option %s for server %s.\n
+2715:Option %s for server %s is undefined.\n
+2716:Option %s for server %s is %s%s%s.\n
+2717:Option %s for server %s is %s.\n
+2718:Setting option %s for server %s to %s.\n
+2719:Setting option %s for server %s to %s%d%s.\n
+2720:Setting option %s for server %s.\n
+2721:Clearing option %s for server %s.\n
+2722:conn logoff <nr>        Log off from server connection <nr>.\n
+2723:conn discard <nr>       Discard server connection <nr>.\n
+2724:conn open <nr>          Open connection <nr>.\n
+2725:Connection #%ld is already open.\n
+2726:Don't know how to open connection type %s for #%ld.\n
+2727:Connection #%ld is a server's main i/o connection.\n
+2728:Discarding server connection %ld completely.\n
+2729:Logging of from connection %ld.\n
+2730:xmpp main i/o
+2731:msn main i/o
+2732:icq main i/o
+2733:xmpp peer-to-peer
+2734:xmpp file io
+2735:msn
+2736:icq
+2737:Added contact group %s (#%d).\n
+2738:Found %d new mails for %s.\n
+2739:Found %d mails for %s.\n

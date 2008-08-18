@@ -1050,10 +1050,10 @@ bool CLIMMXMPP::handleIq (gloox::Stanza *stanza)
         {
             ismail = 1;
             if (n || !strcmp (id.c_str () + strlen (id.c_str()) - 2, "-0"))
-                rl_printf (i18n (9999, "Found %d new mails for %s.\n"), n, from.c_str());
+                rl_printf (i18n (2738, "Found %d new mails for %s.\n"), n, from.c_str());
         }
         else
-            rl_printf (i18n (9999, "Found %d mails for %s.\n"), n, from.c_str());
+            rl_printf (i18n (2739, "Found %d mails for %s.\n"), n, from.c_str());
         if (!n)
             return true;
         gloox::Tag::TagList ml = mb->findChildren ("mail-thread-info");

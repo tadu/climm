@@ -416,11 +416,11 @@ const char *ConnectionStrType (Connection *conn)
 {
     switch (conn->type) {
         case TYPE_XMPP_SERVER & ~TYPEF_ANY_SERVER:
-            return i18n (9999, "xmpp main i/o");
+            return i18n (2730, "xmpp main i/o");
         case TYPE_MSN_SERVER & ~TYPEF_ANY_SERVER:
-            return i18n (9999, "msn main i/o");
+            return i18n (2731, "msn main i/o");
         case TYPE_SERVER & ~TYPEF_ANY_SERVER:
-            return i18n (9999, "icq main i/o");
+            return i18n (2732, "icq main i/o");
         case TYPE_MSN_TEMP:
             return i18n (2584, "msn temp");
         case TYPE_MSN_CHAT:
@@ -436,9 +436,9 @@ const char *ConnectionStrType (Connection *conn)
         case TYPE_FILE:
             return i18n (2067, "file io");
         case TYPE_XMPPDIRECT:
-            return i18n (9999, "xmpp peer-to-peer");
+            return i18n (2733, "xmpp peer-to-peer");
         case TYPE_FILEXMPP:
-            return i18n (9999, "xmpp file io");
+            return i18n (2734, "xmpp file io");
         case TYPE_REMOTE:
             return i18n (2225, "scripting");
         default:
@@ -452,9 +452,9 @@ const char *ServerStrType (Server *serv)
         case TYPE_XMPP_SERVER:
             return i18n (2604, "xmpp");
         case TYPE_MSN_SERVER:
-            return i18n (9999, "msn");
+            return i18n (2735, "msn");
         case TYPE_SERVER:
-            return i18n (9999, "icq");
+            return i18n (2736, "icq");
         default:
             return i18n (1745, "unknown");
     }
