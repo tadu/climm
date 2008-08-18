@@ -191,7 +191,9 @@ static jump_t jump[] = {
     { &CmdUserAbout,         "about",        0,   0 },
     { &CmdUserConn,          "conn",         0,   0 },
     { &CmdUserConn,          "login",        0, 202 },
+#ifdef ENABLE_XMPP
     { &CmdUserGmail,         "gmail",        0,   0 },
+#endif
 #ifdef ENABLE_PEER2PEER
     { &CmdUserPeer,          "peer",         0,   0 },
     { &CmdUserPeer,          "tcp",          0,   0 },
@@ -396,7 +398,11 @@ static JUMP_F(CmdUserHelp)
         "verbose, clear, sound, prompt, autoaway, auto, alias, unalias, lang, uptime, set, opt, optcontact, optgroup, optconnection, optglobal, save, q = quit = exit, x, !", NULL },
       { _i18n (2171, "Advanced"), "advanced",
         _i18n (2172, "Advanced commands."),
+#ifdef ENABLE_XMPP
         "meta, conn, peer, file, accept, contact, peek, peek2, peekall, as, gmail",
+#else
+        "meta, conn, peer, file, accept, contact, peek, peek2, peekall, as",
+#endif
         _i18n (2314, "These are advanced commands. Be sure to have read the manual pages for complete information.\n") },
 #ifdef ENABLE_TCL
       { _i18n (2342, "Scripting"), "scripting",
@@ -666,8 +672,10 @@ static JUMP_F(CmdUserHelp)
             CMD_USER_HELP  ("peekall [<contacts>]", "= peek all <contacts>");
         else if (!strcasecmp (par->txt, "as"))
             CMD_USER_HELP  ("as <nr|uin> <cmd>", i18n (2562, "Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection."));
+#ifdef ENABLE_XMPP
         else if (!strcasecmp (par->txt, "gmail"))
             CMD_USER_HELP  ("gmail [<date>] [<query>]|more", i18n (2712, "Query emails matching <query> since <date>, or continue search."));
+#endif
 #ifdef ENABLE_TCL
         /* Scripting */
         else if (!strcasecmp (par->txt, "tclscript"))
@@ -4343,6 +4351,7 @@ static JUMP_F(CmdUserConn)
     return 0;
 }
 
+#ifdef ENABLE_XMPP
 /*
  * Search GoogleMail
  */
@@ -4391,6 +4400,7 @@ static JUMP_F(CmdUserGmail)
     XMPPGoogleMail (uiG.conn, since, q ? q : "");
     return 0;
 }
+#endif
 
 /*
  * Download Contact List
