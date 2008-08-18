@@ -1,5 +1,5 @@
 # $Id$ Czech
-#  EN: __.i18n 2481 2008-02-16 23:31:15 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:cs
 1002:cs_CZ
@@ -28,18 +28,18 @@
 1028:NO
 1029:Prosím zadejte YES nebo NO!
 1030:odhlášený/á
-1032:ladění: double packet #%04lx type %04x (%s)\n
+1032.ladění: double packet #%04lx type %04x (%s)\n
 1033:Přichází v8 server packet:
-1034:Dosáhnul jsem maximálního počtu pokusů. Vzdávám to.
+1034.Dosáhnul jsem maximálního počtu pokusů. Vzdávám to.
 1038:Zpráva stornována.\n
-1039:Server oznamuje, že nejsme připojeni.\n
-1043:Všichni uživatelé byli nalezeni.
-1044:Bylo nalezeno příliš mnoho uživatelů.
-1045:Hledání dokončeno.
-1046:Délka
-1047:Extra Data
+1039.Server oznamuje, že nejsme připojeni.\n
+1043.Všichni uživatelé byli nalezeni.
+1044.Bylo nalezeno příliš mnoho uživatelů.
+1045.Hledání dokončeno.
+1046.Délka
+1047.Extra Data
 1048:Chybový kód: %ld\n
-1050:Uspěšné přihlášení!
+1050.Uspěšné přihlášení!
 1053:Připojeno k %s, čekám na odpověď\n
 1055:Vytváření socketu selhalo
 1056:Socket vytvořen, zkouším se připojit.\n
@@ -50,7 +50,7 @@
 1064:Status byl automaticky změněn na %s.\n
 1078:Překlad není k dispozici.
 1079:Překlad (%s, %s) od %s, naposledy změněn %s, upravil %s, pro climm %d.%d.%d%s.\n
-1082:Pokouším se obnovit spojení... [pokus %d z %d]\n
+1082.Pokouším se obnovit spojení... [pokus %d z %d]\n
 1085:zapnuto
 1086:vypnuto
 1089:Překlad zrušen.
@@ -378,8 +378,8 @@
 1437:Nastaví status na "invisible".
 1438:Aktualizuje vaše základní info (email, přezdívka, atd.).
 1439:Naství vaší náhodnou uživatelskou skupinu.
-1440:Náhodný uživatel:
-1441:vzdálená IP:
+1440.Náhodný uživatel:
+1441.vzdálená IP:
 1442:Prosím vyberte jedno z témat nápovědy uvedené níže.
 1443:Příkazy pro zobrazení a nastavení climm.
 1444:Příkazy pro prohlížení a vyhledávání dalších uživatelů.
@@ -389,10 +389,10 @@
 1448:Zpráva
 1449:Uživatel
 1450:Účet
-1451:lokální IP:
-1452:Stav:
+1451.lokální IP:
+1452.Stav:
 1453:TCP verze:
-1454:Spojení:
+1454.Spojení:
 1455:Umění
 1456:Automobily
 1457:Fankluby
@@ -432,7 +432,7 @@
 1492:50. láta
 1493:Peer-to-Peer
 1494:Jenom server
-1495:Náhodný uživatel nenalezen
+1495.Náhodný uživatel nenalezen
 1497:selhalo
 1499:Jiný
 1500:Přezdívka (nick):
@@ -505,7 +505,7 @@
 1603:Vložte pozici:
 1604:Měli by být uživatelé online?
 1605:Chcete aby byl váš status viditelný na webu? (YES/NO)
-1606:Přijato špatné ID sezení %08lx (správné: %08lx) s cmd %04x ignorováno.\n
+1606.Přijato špatné ID sezení %08lx (správné: %08lx) s cmd %04x ignorováno.\n
 1612:Tento program byl vytvořen bez jakékoli pomoci od Mirabilis nebo jejich souhlasu.\n
 1613:Při vytvoření tohoto programu nebylo použito zpětné inženýrství nebo dekompilace žádné části kódu Mirabilis.\n
 1618.UIN:
@@ -513,23 +513,21 @@
 1620.dosáhnuto maximálního počtu kontaktů. Požádejte průvodce, aby mě zvětšil!
 #_#1621:users not returned.
 1622:Chcete aplikovat tyto změny? (YES/NO)
-1623:Dvojitý packet %04x.\n
-1632:\nNestabilní spojení. Končím....
+1623.Dvojitý packet %04x.\n
+1632.\nNestabilní spojení. Končím....
 1634:v pořádku.\n
 1637:Nemohu přidělit socket volnému portu\n
 1638:Nemohu vytvořit socket.
 1639.Nové UIN je %ld!\n
-1640:Aktualizace informací selhala.\n
-1641:Uživatelské info úspěšně aktualizováno.\n
+1640.Aktualizace informací selhala.\n
+1641.Uživatelské info úspěšně aktualizováno.\n
 1642:IP:
-#_#1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
-#_#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
-1645:Zadali jste nesprávné heslo.\n
-1646:Server je zaneprázdněný.\n
-1648:Odpověď byla %04x	
-1649:Verze byla %x	
-1650:\nSEQ bylo %04lx	
-1651:Velikost byla %d\n
+1645.Zadali jste nesprávné heslo.\n
+1646.Server je zaneprázdněný.\n
+1648.Odpověď byla %04x	
+1649.Verze byla %x	
+1650.\nSEQ bylo %04lx	
+1651.Velikost byla %d\n
 1653:Offline
 1654:Online
 1655:Zadejte uživatelu e-mailovou adresu:
@@ -574,7 +572,7 @@
 1741.Nejprve musíte obdržet zprávu.\n
 1742.Nejprve musíte napsat zprávu.\n
 1743:Nesouhlasí velikost v délce packetu.\n
-1744:server (v5)
+1744.server (v5)
 1745:neznámý
 1746: nr typ         poslané/přijaté packety/unikátní pakety\n
 1747:celkem
@@ -585,8 +583,8 @@
 1767:Nastavuje automatické přepnutí na away/not available.
 1770:Znovu pošle vaší poslední zprávu kontaktu/ům <contacts>.
 1771:Ještě jste nikomu neposlal/a zprávu!\n
-1774:Příchozí packet:
-1775:Odchozí packet:
+1774.Příchozí packet:
+1775.Odchozí packet:
 1781.Vaše heslo pro UIN %ld:\n
 1782.Potřebujete heslo pro vaše nové UIN.\n
 1783.Vložte prosím heslo znovu, kvůli překlepům.\n
@@ -619,10 +617,10 @@
 1818:Varování: Byla nalezena neschvalovaná syntaxe v konfiguračním souboru '%s'!\n    Aktualizujte nebo použíte "save" pro uložení konfiguračního souboru a změny porovnejte.\n
 1820:%s <option> [on|off|<value>] - ovládá základní nastavení.\n
 1822:    color:      používat barevné zprávy pro výstup.\n
-1823:Přichází částečný packet:
-1825:Vyřazen %04x (%s) packet
-1826:Znovuposlání zprávy %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
-1830:Zahozena zpráva uživateli %s po %ld pokusech k odeslání.  Obsah zprávy:\n
+1823.Přichází částečný packet:
+1825.Vyřazen %04x (%s) packet
+1826.Znovuposlání zprávy %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
+1830.Zahozena zpráva uživateli %s po %ld pokusech k odeslání.  Obsah zprávy:\n
 1833:Peer to peer TCP spojení potvrzeno.\n
 1842:Uzavírající socket %d pro %s.\n
 1843:Uzavírající socket %d.\n
@@ -633,18 +631,18 @@
 1849:Chyba ve výběru: %s (%d)\n
 1850:Vypršení časového limitu spojení s %s na %s:%ld\n
 1855:TCP spojení s %s na %s:%ld selhalo.\n
-1856:Vyřazen %04x (%s) packet ze staré verze sezení %08lx (aktuální: %08lx).\n
+1856.Vyřazen %04x (%s) packet ze staré verze sezení %08lx (aktuální: %08lx).\n
 1857:Chcete skrýt vaší IP pro jiné kontakty? (YES/NO)
-1867:Přijat poškozený (příliš krátký) packet - ignorovaný.\n
-1868:Přijat poškozený (příliš dlouhý subpacket) multi-packet - zbytek ignorován.\n
-1869:Protokol nižší verze než 5 ještě není podporován.\n
+1867.Přijat poškozený (příliš krátký) packet - ignorovaný.\n
+1868.Přijat poškozený (příliš dlouhý subpacket) multi-packet - zbytek ignorován.\n
+1869.Protokol nižší verze než 5 ještě není podporován.\n
 1870:peer off   <nick> - Zavírá přímé/á spojení a nezkouší to znova.\n
 1872:selhalo: %s (%d)\n
 1873:Město zaměstnání:
 1874:Stát zaměstnání:
 1875:Osobní zájmy:
 1876:Osobní minulost:
-1877:ok.\n
+1877.ok.\n
 1878:Chyba při čtení socketu: %s (%d, %d)\n
 1879:Příbuzenství:
 1881:FLAP kanál 1 je bez dat.\n
@@ -654,11 +652,13 @@
 1885:Vypršel časový limit v8 spojení.\n
 1887:Spojení:
 1888:nelze zjistit status z webu
-1889:server
+1889.server
 1890:peer-to-peer
 1891.Spojení %ld je již otevřeno.\n
 1892:conn                    Seznam dostupných spojení.\n
-1893:conn login <nr> [pass]  Otevírá spojení <nr>.\n
+#-#1893:conn login <nr> [pass]  Otevírá spojení <nr>.\n
+#+#1893:conn login <nr> [pass]  Open connection <nr>.\n
+#_#1893:conn login <nr> [pass]  Log in to server connection <nr>.\n
 1894:Neexistuje spojení s číslem %ld.\n
 1895:Přihlašování selhalo:\n
 1896:Server ukončil spojení:\n
@@ -710,7 +710,7 @@
 1961:URL: %s\n
 1966: Spojení odmítnuto na portu %ld pro %s\n
 1967:Více informací pro
-1968:Uživatel nalezen:\n
+1968.Uživatel nalezen:\n
 1969:offline
 1970:online
 1971:do not disturb
@@ -805,14 +805,16 @@
 #_#2090:file peer-to-peer
 2091:Ve frontě čeká %s jako %s pro přenos.\n
 2092:TCP zpráva %s zahozena - ztráta sezení.\n
-2094:conn login [pass]       Otevře současné/první spojení se serverem.\n
+#-#2094:conn login [pass]       Otevře současné/první spojení se serverem.\n
+#+#2094:conn login [pass]       Open current/first server connection.\n
+#_#2094:conn login [pass]       Log in to current/first server connection.\n
 2095:conn remove <nr>        Odstraní spojení <nr>.\n
 2097:conn select <nr>        Vybere spojení <nr> jako spojení se serverem.\n
 2098:Spojení %ld není spojení se serverem.\n
 2099.Vybrané spojení %ld (verze %d, UIN %ld) jako současné spojení.\n
 2100:conn select <uin>       Vybere spojení s UIN <uin> jako spojení se serverem.\n
 2101:Odstranění spojení %ld a jeho závislostí je kompletní.\n
-2102:Spojení %ld je nastavené spojení.\n
+2102.Spojení %ld je nastavené spojení.\n
 2103:contact show    Zobrazí kontakty na straně serveru.\n
 2104:contact diff    Zobrazí kontakty na serveru, které nejsou v lokálním seznamu kontaktů.\n
 2105:contact import  Importuje kontakty ze serveru do lokálního seznamu kontaktů.\n
@@ -833,8 +835,8 @@
 2122:Poznámka: Použijte 'save' pro uložení nového hesla na disk.\n
 2123:%sSyntax error%s: Příliš málo parametrů: %s\n
 2124:%sSyntax error%s: Není celé číslo: %s\n
-2128: Popis: %s%s%s\n
-2129:         URL: %s%s%s\n
+2128. Popis: %s%s%s\n
+2129.         URL: %s%s%s\n
 2131:Psaní zprávy pro %s%s%s:\n
 2133:Barva je %s%s%s.\n
 2134:Zábavné zprávy jsou %s%s%s.\n
@@ -895,7 +897,7 @@
 2211:Váš status je %s.\n
 2212:změnil/a status na %s
 2213:přihlášený/á (%s)
-2214:Info pro %s%lu%s:\n
+2214.Info pro %s%lu%s:\n
 2215:Toto climm nedokáže konvertovat mezi SJIS nebo EUC a unicode.\n
 2216:Toto climm nezná kódování '%s'.\n
 2217:This climm nedokáže konvertovat mezi '%s' a unicode.\n
@@ -1034,7 +1036,9 @@
 2391:Case sensitive (rozlišuje velká/malá písmena) vyhledání vzoru <pattern> v log souboru kontaktu <contact>.
 2393:%Y-%m-%d
 2394: %I:%M %p
-2395:Zobrazí vaše poslední zprávy od/pro <contact> od časové hranice <date>.
+#-#2395:Zobrazí vaše poslední zprávy od/pro <contact> od časové hranice <date>.
+#+#2395:View your messages of <contact> since <date>.
+#_#2395:View your messages of <contact> or all contacts (for *) since <date>.
 2396:Parameter '%s' nemá korektní časový formát, má vyhovovat standardu ISO 8601. Zkuste '2004-01-31' nebo '2004-01-31T23:12:05'.\n
 2397:Nebylo nalezeno serverové sezení.\n
 2398:Nastaví nebo zobrazí volby pro skupinu, kontakt nebo globální nastavení.\n
@@ -1096,7 +1100,7 @@
 2456:Neznámý příkaz %s, napište %shelp%s pro nápovědu.\n
 2457:Neznámá verze formátu konfiguračního souboru %d.\n
 #_#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
-2459:Peer-to-peer spojení není asociováno se serverovým spojením, ruším.\n
+2459.Peer-to-peer spojení není asociováno se serverovým spojením, ruším.\n
 2460:Supina %s (id %s%d%s) není připojena k serverovému spojení.\n
 2461:Neschvalovaná syntaxe nalezena v konfiguračním souboru '%s'!\n    Prosím aktualizujte konfigurační soubor nebo použijte "save" pro jeho uložení a zkontrolujte změny.\n
 2462:Přenos souboru %s na portu %s%ld%s.
@@ -1149,7 +1153,7 @@
 2507:Překlad %s%s%s nenalezen. Nechcete přeložit climm do svého jazyka?\n
 2508:Český (%s) překlad načten (%s%d%s záznamů).\n
 2509:WSAStartup() pro WinSocks 1.1 selhalo
-2510:Otevírám v5 spojení na %s:%s%ld%s... 
+2510.Otevírám v5 spojení na %s:%s%ld%s... 
 2511:Přesměrováno na server %s:%s%ld%s... 
 2512:Otevírám v8 spojení na %s:%s%ld%s pro %s%s%s... 
 2513:nové UIN
@@ -1224,7 +1228,6 @@
 #_#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
 #_#2583:Location error: %d.\n
 #_#2584:msn temp
-#_#2585:msn server
 #_#2586:msn chat
 2587:Nemohu načíst meta data pro %s (%s).\n
 2588:Meta data pro '%s' (%s) byla uložena.\n
@@ -1246,7 +1249,7 @@
 #_#2604:xmpp
 #_#2605:Automatic status change.
 2606:Nalezen náhodný uživatel pro chat: UIN %s z chatové skupiny %d.\n
-2607:Nové UIN je %s!\n
+2607.Nové UIN je %s!\n
 2608:Vaše nové UIN je: %s.\n
 2609:Varování: Server si myslí že je vaše UIN %s, i když je %s.\n
 2610:Informace pro %s%s%s (%s):\n
@@ -1344,3 +1347,32 @@
 #_#2708:Contact %s/%s (#%d) exists only locally.\n
 #_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
 #_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
+#_#2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
+#_#2712:Query emails matching <query> since <date>, or continue search.
+#_#2713:Options for server %s:\n
+#_#2714:Undefining option %s for server %s.\n
+#_#2715:Option %s for server %s is undefined.\n
+#_#2716:Option %s for server %s is %s%s%s.\n
+#_#2717:Option %s for server %s is %s.\n
+#_#2718:Setting option %s for server %s to %s.\n
+#_#2719:Setting option %s for server %s to %s%d%s.\n
+#_#2720:Setting option %s for server %s.\n
+#_#2721:Clearing option %s for server %s.\n
+#_#2722:conn logoff <nr>        Log off from server connection <nr>.\n
+#_#2723:conn discard <nr>       Discard server connection <nr>.\n
+#_#2724:conn open <nr>          Open connection <nr>.\n
+#_#2725:Connection #%ld is already open.\n
+#_#2726:Don't know how to open connection type %s for #%ld.\n
+#_#2727:Connection #%ld is a server's main i/o connection.\n
+#_#2728:Discarding server connection %ld completely.\n
+#_#2729:Logging of from connection %ld.\n
+#_#2730:xmpp main i/o
+#_#2731:msn main i/o
+#_#2732:icq main i/o
+#_#2733:xmpp peer-to-peer
+#_#2734:xmpp file io
+#_#2735:msn
+#_#2736:icq
+#_#2737:Added contact group %s (#%d).\n
+#_#2738:Found %d new mails for %s.\n
+#_#2739:Found %d mails for %s.\n

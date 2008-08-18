@@ -1,5 +1,5 @@
 # $Id$
-#  EN: __.i18n 2481 2008-02-16 23:31:15 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 1001:de
 1002:de_CH
@@ -28,25 +28,20 @@
 1028:Nei
 1029:Bitte Iu oder Nei igä!
 1030:isch grad gschobe
-#-#1032:debug: Dopplets Päckli #%04x vom Typ %04x (%s)\n
-#+#1032:debug: Doppeltes Packet #%04x vom Typ %04x (%s)\n
-#_#1032:debug: double packet #%04lx type %04x (%s)\n
 1033:Igehends Server-Päckli (Version 8):
-1034:I gloube es het ke Sinn me (ha z mängisch probiert...)
+1034.I gloube es het ke Sinn me (ha z mängisch probiert...)
 #-#1038:Nachricht abbroche\n
 #+#1038:Message canceled\n
 #_#1038:Message canceled.\n
-#-#1039:Irgend öpper het da öppis gäg üs - der Server meint mir sige offline\n
-#_#1039:The server claims we're not connected.\n
-1043:Aui User gfunge.
-1044:Z viu User gfunge.
-1045:Fertig gsuecht.
-1046:Längi
-1047:Extra-Date
+1043.Aui User gfunge.
+1044.Z viu User gfunge.
+1045.Fertig gsuecht.
+1046.Längi
+1047.Extra-Date
 #-#1048:Fählercode: %d\n
 #+#1048:Error code: %d\n
 #_#1048:Error code: %ld\n
-1050:Login erfougrich!
+1050.Login erfougrich!
 1053:Uf %s verbunde, warte uf Antwort.\n
 1055:Ha ke Socket chönne erschteue!
 #-#1056:Socket becho, versueche z verbinde...\n
@@ -62,7 +57,7 @@
 #_#1064:Automatically changed status to %s.\n
 1078:Ke Übersetzig verfüegbar.
 1079:Übersetzig (%s, %s) vom %s, zletsch gänderet am %s vom %s, für climm %d.%d.%d%s.\n
-1082:Versueche nomau z verbinde... [Versuech %d vo %d]\n
+1082.Versueche nomau z verbinde... [Versuech %d vo %d]\n
 1085:i
 1086:us
 1089:I lösche d Übersetzig us em Schpicher.
@@ -438,10 +433,7 @@
 #_#1437:Set status to "invisible".
 1438:Änderet grundlegendi User-Infos (eMail-Adrässe, Nickname, usw).
 1439:Setzt die zufäuigi Usergruppe.
-1440:Zufäuige User:
-#-#1441:IP-Adrässe:
-#+#1441:IP:
-#_#1441:remote IP:
+1440.Zufäuige User:
 1442:Bitte wäu eis vo de Hiufe-Theme us.
 1443:Kommandos zum Konfiguriere vo climm.
 #-#1444:Kommandos zum finge vo angerne User.
@@ -452,12 +444,9 @@
 1448:Message
 1449:User
 1450:Account
-#-#1451:IP-Adresse 2:
-#+#1451:IP2:
-#_#1451:local  IP:
-1452:Schtatus:
+1452.Schtatus:
 1453:TCP-Version:
-1454:Verbindig:
+1454.Verbindig:
 1455:Kunscht
 1456:Outos
 1457:Fan
@@ -490,7 +479,6 @@
 1484:Wäutruum
 1485:Chleider
 1486:Fiire
-1486:Parties
 1487:Froue
 1488:Soziauwüsseschaft
 1489:60ger Jahr
@@ -499,7 +487,7 @@
 1492:50ger Jahr
 1493:User-zu-User
 1494:Nur Server
-1495:Ke zuefäuige User gefunden
+1495.Ke zuefäuige User gefunden
 1497:fäugschlage
 1499:Angers
 1500:Nickname:
@@ -572,9 +560,6 @@
 1603:Bitte d Position igä: 
 1604:Söu der User online si?
 1605:Söu di Schtatus im Web isehbar si? (Iu/Nei)
-#-#1606:Ha ne fauschi Session ID %08x becho (korrekt wär: %08x) mit em Kommando %04x ignoriert.\n
-#+#1606:Got a bad session ID %08x (correct: %08x) with cmd %04x ignored.\n
-#_#1606:Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
 1612:Das Programm isch ohni Hiuf oder Zueschtimmig vo Mirabilis erschteut worde.\n
 1613:Derzue isch ke Programmcode vo Mirabilis zrüggentwicklet oder zrüggübersetzt worde.\n
 1618.UIN:
@@ -582,40 +567,19 @@
 1620.Maximali Azau vo Kontakte erreicht! Bitte e Magier dermit beuftrage, mi z vergrössere!
 1621:Suechergäbniss ned zrügggä.
 1622:Möchtisch die Änderige anwände? (Iu/Nei)
-#-#1623:Dopplets Päckli %04X.\n
-#+#1623:Doubled packet %04X\n
-#-#1632:\nVerbindig inschtabil. Beände...
-#+#1632:\nConnection unstable. Exiting....
 #-#1634:OK\n
-#_#1623:Double packet %04x.\n
-#_#1632:\nConnection unstable. Exiting....
 #_#1634:ok.\n
 1637:Cha der Socket zu kem freie Port verbinde\n
 1638:Ha der Verbindigsändpunkt ned chönne erzüge
 1639.Di nöii Usernummere isch %ld!\n
-1640:Aktualisiere vo de Infos fäugschlage.\n
-1641:Userinformatione erfougrich aktualisiert.\n
+1640.Aktualisiere vo de Infos fäugschlage.\n
+1641.Userinformatione erfougrich aktualisiert.\n
 #-#1642:IP-Adrässe
 #+#1642:IP
 #_#1642:IP:
-#-#1643:Beschtätiget SRV_X1 0x021C Fertig mit Kontaktlischte (?)\n
-#+#1643:Acknowleged SRV_X1 0x021C Done Contact list?\n
-#_#1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
-#-#1644:Beschtätiget SRV_X2 0x00E6 Fertig mit aute Nachrichte (?)\n
-#+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
-#_#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
-1645:Das Passwort isch ned richtig.\n
-1646:Der Server isch beschäftiget.\n
-#-#1648:D Antwort isch %04X gsi
-#+#1648:The response was %04X	
-#_#1648:The response was %04x	
-#-#1649:D Version isch %X gsi
-#+#1649:The version was %X	
-#_#1649:The version was %x	
-#-#1650:D Fougenummere isch %04X gsi
-#+#1650:\nThe SEQ was %04X	
-#_#1650:\nThe SEQ was %04lx	
-1651:D Grössi isch %d gsi\n
+1645.Das Passwort isch ned richtig.\n
+1646.Der Server isch beschäftiget.\n
+1651.D Grössi isch %d gsi\n
 1653:offline
 1654:online
 1655:Gib d eMail-Adrässe vom User i:
@@ -677,7 +641,7 @@
 #_#1719:Shows how long climm has been running and some statistics.
 1721:Bire lääre Nachricht chöi mehreri Zile igä wärde.\nDerbi bedütet e Zile nume mit . ds Ändi vor Nachricht.\nE Zile nume mit # verwirft d Nachricht.
 1743:Argl!!! Päckli hei die fauschi Grössi.\n
-1744:Server (v5)
+1744.Server (v5)
 1745:Unbekannt
 #_#1746: nr type         sent/received packets/unique packets\n
 1747:Gsamt
@@ -692,8 +656,8 @@
 #-#1770:Sändet die letschti Nachricht a ne nöie User.
 #_#1770:Resend your last message to <contacts>.
 1771:No ke Nachricht a irgendöpper verschickt!\n
-1774:Igehends Päckli:
-1775:Usgehends Päckli:
+1774.Igehends Päckli:
+1775.Usgehends Päckli:
 1782.Du bruchsch es Passwort für die nöii Usernummere.\n
 1783.Anti-Tippfähler-Massnahm: Bitte Passwort nomau igä.\n
 1784:We de hinger eme Firewall bisch muesch evtl. SOCKS5 bruche. Wenn ja, bitte gib der Rächnername oder d IP-Adrässe vom Firewall i. Süsch chasch eifach Enter drücke.\n
@@ -736,13 +700,8 @@
 #_#1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 #_#1820:%s <option> [on|off|<value>] - control simple options.\n
 #_#1822:    color:      use colored text output.\n
-1823:Igehends Unger-Päckli:
-1825:Schmeisse es Päckli vom Typ %04x (%s) wäg.
-#-#1826:Schicke es Päckli vom Typ %04x (%s), Sequänz-Nummere %04x, nomau (Versuech #%d, Längi %d).\n
-#+#1826:Resending message %04x (%s) sequence %04x (attempt #%d, len %d).\n
-#-#1830:D Nachricht a %s ha ni nach %d Versueche wäggschmisse. Inhaut:\n
-#+#1830:Discarding message to %s after %d send attempts.  Message content:\n
-#_#1830:Discarding message to %s after %ld send attempts.  Message content:\n
+1823.Igehends Unger-Päckli:
+1825.Schmeisse es Päckli vom Typ %04x (%s) wäg.
 1833:Diräkti Verbindig aufboue.\n
 1842:Tue d Verbindig (Verbindigsändpunkt Nr. %d) zu %s zue.\n
 1843:Tue der Verbindigsändpunkt Nr. %d zue.\n
@@ -759,17 +718,8 @@
 #-#1855:Diräkt-Verbidig zu %s bi %s:%d isch fäugschlage.\n
 #+#1855:TCP connection to %s at %s:%d failed.\n
 #_#1855:TCP connection to %s at %s:%ld failed.\n
-#-#1856:Ha es %04x (%s) Päckli vo re aute Sitzig %08x wäggschmisse (aktuelli Sitzig: %08x).\n
-#+#1856:Discarded a %04x (%s) packet from old session %08x (current: %08x).\n
-#_#1856:Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n
 1857:Möchtisch dini IP-Adrässe vor angerne Users verschtecke? (Iu/Nei)
-#-#1867:Ha es z churzes Päckli becho - ignoriert.\n
-#+#1867:Got a malformed (too short) packet - ignored.\n
-#_#1867:Received a malformed (too short) packet - ignored.\n
-1868:Ha es Multi-Päckli mit eme z länge Subpäckli becho - der Räscht wird ignoriert.\n
-#-#1869:Versione unger 5 wärde nümme ungerschtützt.\n
-#+#1869:Protocoll versions less than 5 are not supported anymore.\n
-#_#1869:Protocol versions less than 5 are not supported anymore.\n
+1868.Ha es Multi-Päckli mit eme z länge Subpäckli becho - der Räscht wird ignoriert.\n
 #-#1870:    off   <nick> - Schautet d Benutzig vo Diräkt-Verbindige ab.\n
 #_#1870:peer off   <nick> - Closes direct connection(s) and don't try it again.\n
 1872:fäugschlage: %s (%d).\n
@@ -777,7 +727,7 @@
 1874:Arbeitsschtaat:
 1875:Persönlechi Interässe:
 1876:Persönleche Hingergrund:
-1877:OK.\n
+1877.OK.\n
 1878:Fähler bim Läse vom Socket: %s (%d, %d)\n
 1879:Verbindige:
 1881:Der FLAP Channel 1 het kener Date me.\n
@@ -791,10 +741,12 @@
 #-#1888:Ned Internetbewusst (not webaware)
 #+#1888:Not webaware
 #_#1888:not webaware
-1889:Server
+1889.Server
 1890:Diräktverbindig
 1892:conn                   Zeig au verfüegbare Verbindige a.\n
-1893:conn login <nr> [pass] Tuet d Verbindig <nr> uf.\n
+#-#1893:conn login <nr> [pass] Tuet d Verbindig <nr> uf.\n
+#+#1893:conn login <nr> [pass]  Open connection <nr>.\n
+#_#1893:conn login <nr> [pass]  Log in to server connection <nr>.\n
 1894:Es git ke Verbindig Nr. %ld.\n
 1895:Login fäugschlage:\n
 1896:Der Server het d Verbindig zueta:\n
@@ -853,9 +805,6 @@
 #+#1966: Conection Refused on port %d at %s\n
 #_#1966: Connection refused on port %ld at %s\n
 1967:Me Infos für
-#-#1968:Benutzer gfunge
-#+#1968:User found
-#_#1968:User found:\n
 1969:offline
 1970:online
 1971:ned schtöre
@@ -975,13 +924,15 @@
 2090:Dateiübertragig
 2091:Reihe "%s" aus "%s" id Warteschlange für Dateiübertragig i.\n
 2092:TCP Nachricht %s wäggschmisse - ha d Sitzig verlore.\n
-2094:conn login [pass]       Erschti Serververbindig uftue.\n
+#-#2094:conn login [pass]       Erschti Serververbindig uftue.\n
+#+#2094:conn login [pass]       Open current/first server connection.\n
+#_#2094:conn login [pass]       Log in to current/first server connection.\n
 2095:conn remove <nr>        Verbindig Nummere <nr> zuetue.\n
 2097:conn select <nr>        Wäu d Verbindig Nummere <nr> aus Serververbindig.\n
 2098:D Verbindig %ld isch ned e Serververbindig.\n
 2100:conn select <uin>       D Verbindig mit der UIN <uin> aus Serververbindig wähle.\n
 2101:D Verbindig %ld u ihri Abhängigkeite wärde komplett entfärnt.\n
-2102:D Verbindig %ld isch e konfigurierti Verbindig.\n
+2102.D Verbindig %ld isch e konfigurierti Verbindig.\n
 2103:contact show    Die serversitigi Kontaktlischte azeige.\n
 2104:contact diff    Aui serversitige Kontakte azeige wo ned uf der lokale Kontaktlischte si.\n
 2105:contact import  Aui serversitige Kontakte zur lokale Kontaktlischte derzuetue.\n
@@ -1012,8 +963,8 @@
 #_#2122:Note: You need to 'save' to write new password to disc.\n
 2123:%sSyntaxfähler%s: Z weni Argumänt: "%s"\n
 2124:%sSyntaxfähler%s: Ke ganzi Zau:    "%s"\n
-2128: Beschriebig: %s%s%s\n
-2129:         URL: %s%s%s\n
+2128. Beschriebig: %s%s%s\n
+2129.         URL: %s%s%s\n
 2131:Schribe e Nachricht a %s%s%s:\n
 2133:D Farb isch %s%s%s.\n
 2134:Luschtigi Nachrichte si %s%s%s.\n
@@ -1068,7 +1019,6 @@
 #_#2211:Your status is %s.\n
 #_#2212:changed status to %s
 #_#2213:logged on (%s)
-#_#2214:Info for %s%lu%s:\n
 #_#2215:This climm can't convert between SJIS or EUC and unicode.\n
 #_#2216:This climm doesn't know the '%s' encoding.\n
 #_#2217:This climm can't convert between '%s' and unicode.\n
@@ -1196,7 +1146,7 @@
 #_#2391:Case sensitive search of <pattern> in log file of <contact>.
 #_#2393:%Y-%m-%d
 #_#2394: %I:%M %p
-#_#2395:View your messages of <contact> since <date>.
+#_#2395:View your messages of <contact> or all contacts (for *) since <date>.
 #_#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
 #_#2397:No server session found.\n
 #_#2398:Set or display options for a contact group, a contact or global.\n
@@ -1256,7 +1206,6 @@
 #_#2456:Unknown command %s, type %shelp%s for help.\n
 #_#2457:Unknown configuration file format version %d.\n
 #_#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
-#_#2459:Peer-to-peer connection not associated to server connection, discarding.\n
 #_#2460:Contact group %s (id %s%d%s) not associated to server connection.\n
 #_#2461:Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 #_#2462:File transfer %s to port %s%ld%s.
@@ -1294,7 +1243,6 @@
 #_#2507:Translation %s%s%s not found. Would you like to translate climm into your language?\n
 #_#2508:No translation (%s) loaded (%s%d%s entries).\n
 #_#2509:WSAStartup() for WinSocks 1.1 failed
-#_#2510:Opening v5 connection to %s:%s%ld%s... 
 #_#2511:Redirect to server %s:%s%ld%s... 
 #_#2512:Opening v8 connection to %s:%s%ld%s for %s%s%s... 
 #_#2513:new UIN
@@ -1368,7 +1316,6 @@
 #_#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
 #_#2583:Location error: %d.\n
 #_#2584:msn temp
-#_#2585:msn server
 #_#2586:msn chat
 #_#2587:Couldn't load meta data for %s (%s).\n
 #_#2588:Saved meta data for '%s' (%s).\n
@@ -1390,7 +1337,7 @@
 #_#2604:xmpp
 #_#2605:Automatic status change.
 #_#2606:Found random chat partner UIN %s in chat group %d.\n
-2607:Di nöii Usernummere isch %s!\n
+2607.Di nöii Usernummere isch %s!\n
 #_#2608:Your new UIN is: %s.\n
 #_#2609:Warning: Server thinks our UIN is %s, when it is %s.\n
 #_#2610:Information for %s%s%s (%s):\n
@@ -1488,3 +1435,32 @@
 #_#2708:Contact %s/%s (#%d) exists only locally.\n
 #_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
 #_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
+#_#2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
+#_#2712:Query emails matching <query> since <date>, or continue search.
+#_#2713:Options for server %s:\n
+#_#2714:Undefining option %s for server %s.\n
+#_#2715:Option %s for server %s is undefined.\n
+#_#2716:Option %s for server %s is %s%s%s.\n
+#_#2717:Option %s for server %s is %s.\n
+#_#2718:Setting option %s for server %s to %s.\n
+#_#2719:Setting option %s for server %s to %s%d%s.\n
+#_#2720:Setting option %s for server %s.\n
+#_#2721:Clearing option %s for server %s.\n
+#_#2722:conn logoff <nr>        Log off from server connection <nr>.\n
+#_#2723:conn discard <nr>       Discard server connection <nr>.\n
+#_#2724:conn open <nr>          Open connection <nr>.\n
+#_#2725:Connection #%ld is already open.\n
+#_#2726:Don't know how to open connection type %s for #%ld.\n
+#_#2727:Connection #%ld is a server's main i/o connection.\n
+#_#2728:Discarding server connection %ld completely.\n
+#_#2729:Logging of from connection %ld.\n
+#_#2730:xmpp main i/o
+#_#2731:msn main i/o
+#_#2732:icq main i/o
+#_#2733:xmpp peer-to-peer
+#_#2734:xmpp file io
+#_#2735:msn
+#_#2736:icq
+#_#2737:Added contact group %s (#%d).\n
+#_#2738:Found %d new mails for %s.\n
+#_#2739:Found %d mails for %s.\n

@@ -1,5 +1,5 @@
 # $Id$ Chinese/Taiwan (中文)
-#  EN: __.i18n 2481 2008-02-16 23:31:15 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
 #-#1000:big5
 #+#1000:iso-8859-1
 #_#1000:UTF-8
@@ -30,18 +30,18 @@
 1028:NO
 1029:請輸入 YES 或 NO﹗
 1030:登出。
-1032:debug: double packet #%04lx type %04x (%s)\n
+1032.debug: double packet #%04lx type %04x (%s)\n
 1033:接收到的 v8 伺服器封包:
-1034:已到達最大的嘗試次數，放棄了。
+1034.已到達最大的嘗試次數，放棄了。
 1038:訊息已被取消。\n
-1039:伺服器指我們沒有連線。\n
-1043:找到所有使用者。
-1044:找到太多使用者。
-1045:已完成搜尋。
-1046:長度
-1047:額外數據
+1039.伺服器指我們沒有連線。\n
+1043.找到所有使用者。
+1044.找到太多使用者。
+1045.已完成搜尋。
+1046.長度
+1047.額外數據
 1048:錯誤碼: %ld\n
-1050:成功登入﹗
+1050.成功登入﹗
 1053:已連線到 %s，正等待回覆\n
 1055:建立 socket 失敗
 1056:已建立 socket，正嘗試連線。\n
@@ -52,7 +52,7 @@
 1064:自動改變狀態為 %s。\n
 1078:沒有翻譯。
 #_#1079:Translation (%s, %s) from %s, last modified on %s by %s, for climm %d.%d.%d%s.\n
-1082:嘗試再次連線中... [%d 次嘗試中的第 %d 次]\n
+1082.嘗試再次連線中... [%d 次嘗試中的第 %d 次]\n
 1085:開啟
 1086:關閉
 1089:除去翻譯。
@@ -382,8 +382,8 @@
 1437:設定狀態為 "invisible"。
 1438:更新閣下的基本個人資料 (如電郵、 nickname 等)。
 1439:設定閣下的隨意用戶小組。
-1440:隨意用戶: 
-1441:遠端 IP:
+1440.隨意用戶: 
+1441.遠端 IP:
 1442:請從以下選擇一個題目。
 1443:與 climm 之顯示及設定有關的指令。
 #-#1444:與找尋及觀察其他用戶有關的指令。
@@ -395,10 +395,10 @@
 1448:Message
 1449:User
 1450:Account
-1451:本機 IP: 
-1452:狀態: 
+1451.本機 IP: 
+1452.狀態: 
 1453:TCP 版本:
-1454:連線: 
+1454.連線: 
 1455:藝術
 1456:汽車
 1457:名人 Fans
@@ -438,7 +438,7 @@
 1492:五十年代
 1493:Peer-to-Peer
 1494:限於伺服器
-1495:找不到隨意使用者
+1495.找不到隨意使用者
 1497:失敗
 1499:其他
 1500:Nickname:
@@ -511,7 +511,7 @@
 1603:輸入崗位: 
 1604:用家應該在線嗎﹖
 1605:想在網上顯示你的狀態嗎﹖ (YES/NO)
-1606:Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
+1606.Received a bad session ID %08lx (correct: %08lx) with cmd %04x ignored.\n
 1612:這程式並無透過 Mirabilis 的協助或許可而寫成。\n
 1613:寫這程式時沒有反工程或反編譯任何 Mirabilis 碼。\n
 1618.UIN:
@@ -519,28 +519,20 @@
 1620.已達到最大的好友數目，請向精靈要求把我加大吧﹗
 1621:用戶還未回來。
 1622:要套用這些變更嗎﹖ (YES/NO)
-#-#1623:雙重封包 %04X\n
-#+#1623:Doubled packet %04X\n
-#-#1632:\n連線不穩定，正在退出....
-#+#1632:\nConnection unstable. Exiting....
-#_#1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:Can't bind socket to free port\n
 1638:無法建立 socket
 1639.新的 UIN 是 %ld!\n
-1640:更新個人資料失敗。\n
-1641:成功更新用戶個人資料。\n
+1640.更新個人資料失敗。\n
+1641.成功更新用戶個人資料。\n
 1642:IP:
-1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
-#-#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
-#+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
-#_#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
-1645:輸入了不正確的密碼。\n
-1646:伺服器很煩忙。\n
-1648:反應是 %04x	
-1649:版本是 %x	
-1650:\nThe SEQ was %04lx	
-1651:大小是 %d\n
+1643.Acknowledged SRV_X1 0x021C Done Contact list?\n
+1645.輸入了不正確的密碼。\n
+1646.伺服器很煩忙。\n
+1648.反應是 %04x	
+1649.版本是 %x	
+1650.\nThe SEQ was %04lx	
+1651.大小是 %d\n
 1653:離線
 1654:上線
 1655:請輸入用戶的電郵地址:
@@ -591,7 +583,7 @@
 1741.必定要先收到一個訊息。\n
 1742.必定要先寫一個訊息。\n
 1743:封包大小不相配。\n
-1744:伺服器 (v5)
+1744.伺服器 (v5)
 1745:不明
 1746: nr 類別           寄出/收到的封包/獨特的封包\n
 1747:總共
@@ -602,8 +594,8 @@
 1767:切換自動循環至 away/not available。
 1770:重送上一個訊息給 <contacts>。
 1771:還沒有發出訊息給任何人﹗\n
-1774:接收到的封包:
-1775:發出的封包:
+1774.接收到的封包:
+1775.發出的封包:
 1781.閣下 UIN %ld 的密碼:\n
 1782.閣下的新 UIN 需要密碼。\n
 1783.為免打錯字，請再次輸入密碼。\n
@@ -641,11 +633,10 @@
 #_#1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 1820:%s <option> [on|off|<value>] - 控制簡單的選擇。\n
 1822:    color:      使用顏色文字輸出。\n
-1823:進來不完整的封包:
-1825:捨棄了一個 %04x (%s) 封包
-1826:Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
+1823.進來不完整的封包:
+1825.捨棄了一個 %04x (%s) 封包
+1826.Resending message %04x (%s) sequence %04lx (attempt #%ld, len %d).\n
 ###1830:%ld 傳送嘗試後拾棄給 %s 的訊息，訊息內容:\n
-#_#1830:Discarding message to %s after %ld send attempts.  Message content:\n
 1833:Peer to peer TCP 連線已建立。\n
 1842:正在關閉 socket %d 至 %s。\n
 1843:正在關閉 socket %d。\n
@@ -656,18 +647,18 @@
 1849:選擇錯誤: %s (%d)\n
 1850:與 %s 於 %s:%ld 的連線已過時\n
 1855:TCP 連線至 %s 於 %s:%ld 失敗了。\n
-1856:Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n
+1856.Discarded a %04x (%s) packet from old session %08lx (current: %08lx).\n
 1857:想向其他用戶隱藏你的 IP 嗎﹖ (YES/NO)
-1867:收到一個畸形 (太短) 的封包 — 略過。\n
-1868:有一個畸形的 (太長的子封包) 多封包 — 略過多餘的。\n
-1869:協定版本早過五的已不再支援。\n
+1867.收到一個畸形 (太短) 的封包 — 略過。\n
+1868.有一個畸形的 (太長的子封包) 多封包 — 略過多餘的。\n
+1869.協定版本早過五的已不再支援。\n
 1870:peer off   <nick> - 關閉直接連線並不再嘗試。\n
 1872:失敗: %s (%d)\n
 1873:工作城市:
 1874:工作州名:
 1875:個人興趣:
 1876:個人過去背景:
-1877:ok.\n
+1877.ok.\n
 1878:讀取 socket: %s (%d, %d) 時發生錯誤\n
 1879:所屬團體:
 1881:FLAP channel 1 out of data.\n
@@ -677,11 +668,13 @@
 1885:v8 連線超時。\n
 1887:連線:
 1888:not webaware
-1889:伺服器
+1889.伺服器
 1890:peer-to-peer
 1891.連線 %ld 已經開啟。\n
 1892:conn                    例出有效的連線。\n
-1893:conn login <nr> [pass]   開啟連線 <nr>。\n
+#-#1893:conn login <nr> [pass]   開啟連線 <nr>。\n
+#+#1893:conn login <nr> [pass]  Open connection <nr>.\n
+#_#1893:conn login <nr> [pass]  Log in to server connection <nr>.\n
 1894:沒有連線號碼 %ld。\n
 1895:登入失敗:\n
 1896:伺服器關閉了連線:\n
@@ -735,7 +728,7 @@
 1961:URL: %s\n
 1966: 連線被拒絕在 port %ld 於 %s\n
 1967:更多資料關於
-1968:找到用戶:\n
+1968.找到用戶:\n
 1969:offline
 1970:online
 1971:do not disturb
@@ -834,14 +827,16 @@
 2090:file peer-to-peer
 2091:%s 正排隊為 %s 預備傳送。\n
 2092:TCP 訊息 %s 被捨棄 - 失去連線。\n
-2094:conn login [pass]       開啟第一個伺服器連線。\n
+#-#2094:conn login [pass]       開啟第一個伺服器連線。\n
+#+#2094:conn login [pass]       Open current/first server connection.\n
+#_#2094:conn login [pass]       Log in to current/first server connection.\n
 2095:conn remove <nr>        移除連線 <nr>。\n
 2097:conn select <nr>        選擇連線 <nr> 為伺服器連線。\n
 2098:連線 %ld 並非伺服器連線。\n
 2099.選擇了連線 %ld (version %d, UIN %ld) 為目前的連線。\n
 2100:conn select <uin>       選擇與 UIN <uin> 的連線為伺服器連線。\n
 2101:正在移除 %ld 及所有關的連線。\n
-2102:連線 %ld 是已設定的連線。\n
+2102.連線 %ld 是已設定的連線。\n
 #-#2103:contact show    顯示伺服器端的好友列表。\n
 #+#2103:contact show    Show server side contact list.\n
 #_#2103:contact show    Show server based contact list.\n
@@ -879,8 +874,8 @@
 #+#2124:%sSyntax error%s: Not an integer: '%s'\n
 #_#2124:%sSyntax error%s: Not an integer: %s\n
 2126.是 offline，訊息已在伺服器排隊。\n
-2128:        描述: %s%s%s\n
-2129:         URL: %s%s%s\n
+2128.        描述: %s%s%s\n
+2129.         URL: %s%s%s\n
 2131:撰寫訊息給 %s%s%s:\n
 2133:顏色文字是 %s%s%s。\n
 2134:趣怪訊息是 %s%s%s。\n
@@ -964,7 +959,7 @@
 2211:你的狀態是 %s。\n
 2212:改變狀態為 %s
 2213:登入 (%s)
-2214:Info for %s%lu%s:\n
+2214.Info for %s%lu%s:\n
 2215:這個 climm 無法切換於 SJIS 或 EUC 與 unicode之間。\n
 2216:這個 climm 不懂得 '%s' 編碼。\n
 2217:這個 climm 無法切換於 '%s' 與 unicode 之間。\n
@@ -1115,7 +1110,7 @@
 #_#2391:Case sensitive search of <pattern> in log file of <contact>.
 #_#2393:%Y-%m-%d
 #_#2394: %I:%M %p
-#_#2395:View your messages of <contact> since <date>.
+#_#2395:View your messages of <contact> or all contacts (for *) since <date>.
 #_#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
 #_#2397:No server session found.\n
 #_#2398:Set or display options for a contact group, a contact or global.\n
@@ -1175,7 +1170,6 @@
 #_#2456:Unknown command %s, type %shelp%s for help.\n
 #_#2457:Unknown configuration file format version %d.\n
 #_#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
-#_#2459:Peer-to-peer connection not associated to server connection, discarding.\n
 #_#2460:Contact group %s (id %s%d%s) not associated to server connection.\n
 #_#2461:Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 #_#2462:File transfer %s to port %s%ld%s.
@@ -1213,7 +1207,6 @@
 #_#2507:Translation %s%s%s not found. Would you like to translate climm into your language?\n
 #_#2508:No translation (%s) loaded (%s%d%s entries).\n
 #_#2509:WSAStartup() for WinSocks 1.1 failed
-#_#2510:Opening v5 connection to %s:%s%ld%s... 
 #_#2511:Redirect to server %s:%s%ld%s... 
 #_#2512:Opening v8 connection to %s:%s%ld%s for %s%s%s... 
 #_#2513:new UIN
@@ -1287,7 +1280,6 @@
 #_#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
 #_#2583:Location error: %d.\n
 #_#2584:msn temp
-#_#2585:msn server
 #_#2586:msn chat
 #_#2587:Couldn't load meta data for %s (%s).\n
 2588:已為 '%s' 儲存了 meta 資訊 (%s)。\n
@@ -1309,7 +1301,7 @@
 #_#2604:xmpp
 #_#2605:Automatic status change.
 2606:找到隨意聊天拍當 UIN %s 於興趣小組 %d。\n
-2607:新的 UIN 是 %s!\n
+2607.新的 UIN 是 %s!\n
 2608:閣下的新 UIN 是:%s。\n
 2609:警告: 伺服器以為我們的 UIN 是 %s，但其實是 %s。\n
 2610:%s%s%s (%s) 的個人資料:\n
@@ -1407,3 +1399,32 @@
 #_#2708:Contact %s/%s (#%d) exists only locally.\n
 #_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
 #_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
+#_#2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
+#_#2712:Query emails matching <query> since <date>, or continue search.
+#_#2713:Options for server %s:\n
+#_#2714:Undefining option %s for server %s.\n
+#_#2715:Option %s for server %s is undefined.\n
+#_#2716:Option %s for server %s is %s%s%s.\n
+#_#2717:Option %s for server %s is %s.\n
+#_#2718:Setting option %s for server %s to %s.\n
+#_#2719:Setting option %s for server %s to %s%d%s.\n
+#_#2720:Setting option %s for server %s.\n
+#_#2721:Clearing option %s for server %s.\n
+#_#2722:conn logoff <nr>        Log off from server connection <nr>.\n
+#_#2723:conn discard <nr>       Discard server connection <nr>.\n
+#_#2724:conn open <nr>          Open connection <nr>.\n
+#_#2725:Connection #%ld is already open.\n
+#_#2726:Don't know how to open connection type %s for #%ld.\n
+#_#2727:Connection #%ld is a server's main i/o connection.\n
+#_#2728:Discarding server connection %ld completely.\n
+#_#2729:Logging of from connection %ld.\n
+#_#2730:xmpp main i/o
+#_#2731:msn main i/o
+#_#2732:icq main i/o
+#_#2733:xmpp peer-to-peer
+#_#2734:xmpp file io
+#_#2735:msn
+#_#2736:icq
+#_#2737:Added contact group %s (#%d).\n
+#_#2738:Found %d new mails for %s.\n
+#_#2739:Found %d mails for %s.\n

@@ -1,5 +1,5 @@
 # $Id$ Romana (Romanian)
-#  EN: __.i18n 2481 2008-02-16 23:31:15 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 1001:ro
 1002:ro_RO
@@ -28,18 +28,17 @@
 1028:NU
 1029:Introduceti DA sau NU, va rog!
 1030:s-a deconectat
-#_#1032:debug: double packet #%04lx type %04x (%s)\n
 1033:Pachet server v8 care vine:
-1034:Numarul maxim de incercari a fost atins. Cedez.
+1034.Numarul maxim de incercari a fost atins. Cedez.
 1038:Mesajul a fost anulat.\n
-1039:Serverul afirma ca nu sintem conectati.\n
-1043:Toti utilizatorii au fost gasiti.
-1044:Au fost gasiti foarte multi utilizatori.
-1045:Cautare Terminata.
-1046:Lungime
-1047:Date suplimentare
+1039.Serverul afirma ca nu sintem conectati.\n
+1043.Toti utilizatorii au fost gasiti.
+1044.Au fost gasiti foarte multi utilizatori.
+1045.Cautare Terminata.
+1046.Lungime
+1047.Date suplimentare
 1048:Cod eroare: %ld\n
-1050:Conectare reusita!
+1050.Conectare reusita!
 1053:Conectat la %s, asteptam raspuns\n
 1055:Crearea socketului a esuat
 1056:Un socket a fost creat; incercam sa ne conectam.\n
@@ -50,7 +49,7 @@
 1064:Starea a fost automat schimbata in %s.\n
 1078:Traducere nu exista.
 1079:Traducere (%s, %s) din %s, ultima modificare facuta la %s de %s, pentru climm %d.%d.%d%s.\n
-1082:Incerc sa ma reconectez... [incercarea %d din %d]\n
+1082.Incerc sa ma reconectez... [incercarea %d din %d]\n
 #_#1085:on
 #_#1086:off
 #_#1089:Unloaded translation.
@@ -382,8 +381,8 @@
 1437:Seteaza starea la "invizibil".
 1438:Reinnoieste informatia d-stra de baza (emailul, nickname-ul, etc.).
 1439:Indicati grupa d-stra pentru utilizatori aliatori.
-1440:Utilizator aliator:
-1441:IP indepartat:
+1440.Utilizator aliator:
+1441.IP indepartat:
 1442:Va rugam sa alegeti una din temele de ajutor propuse mai jos.
 1443:Comenzi ce tin de display si configurare.
 #-#1444:Comenzi ce tin de gasirea si vederea altor utilizatori.
@@ -395,10 +394,10 @@
 1448:Mesaj
 1449:Utilizator
 1450:Cont
-1451:IP local:
-1452:Stare:
+1451.IP local:
+1452.Stare:
 1453:Versiunea TCP:
-1454:Conectare:
+1454.Conectare:
 1455:Arte
 1456:Automobile
 1457:Fanii celebritatilor
@@ -438,7 +437,7 @@
 1492:Anii '50
 #_#1493:Peer-to-Peer
 1494:Doar prin intermediul serverului
-1495:Nici un utilizator aleatoriu nu a fost gasit
+1495.Nici un utilizator aleatoriu nu a fost gasit
 1497:esec
 1499:Altele
 1500:Nickname:
@@ -511,7 +510,7 @@
 #_#1603:Enter position: 
 1604:E necesar utilizatorii sa fie conectati?
 1605:Doriti starea sa va fie aratata pe web? (DA/NU)
-1606:A fost primit un ID de sesiune rau %08lx (corect: %08lx) cu cmd %04x ignorat.\n
+1606.A fost primit un ID de sesiune rau %08lx (corect: %08lx) cu cmd %04x ignorat.\n
 1612:Acest program a fost creata fara vre-un ajutor de la Mirabilis si fara acordul lor.\n
 1613:Nu s-a utilizat cod de la Mirabilis pentru crearea acestui program.\n
 1618.UIN:
@@ -519,26 +518,19 @@
 1620.numarul maximal de contacte a fost atins. Rugati vrajitorul sa v-o mareasca!
 1621:nu au fost intorsi utilizatori.
 1622:Doriti sa aplicati aceste schimbari? (DA/NU)
-#-#1623:%04X pachet dublat\n
-#+#1623:Doubled packet %04X\n
-#-#1632:\nConexiune instabila. Iesire....
-#+#1632:\nConnection unstable. Exiting....
-#_#1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:socketul nu poate fi legat de un port liber\n
 1638:N-am putut crea un socket
 1639.Noul UIN este %ld!\n
-1640:Innoirea informatiei a esuat.\n
-1641:Informatia utilizatorului innoita cu succes.\n
+1640.Innoirea informatiei a esuat.\n
+1641.Informatia utilizatorului innoita cu succes.\n
 1642:IP:
-#_#1643:Acknowledged SRV_X1 0x021C Done Contact list?\n
-#_#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
-1645:Ati introdus gresit parola.\n
-1646:Serverul este ocupat.\n
-1648:Raspunsul a fost %04x	
-1649:Versiunea a fost %x	
-1650:\nSEQ a fost %04lx	
-1651:Marimea a fost %d\n
+1645.Ati introdus gresit parola.\n
+1646.Serverul este ocupat.\n
+1648.Raspunsul a fost %04x	
+1649.Versiunea a fost %x	
+1650.\nSEQ a fost %04lx	
+1651.Marimea a fost %d\n
 1653:Deconectat
 1654:Conectat
 1655:Introduceti adresa email a utilizatorului:
@@ -589,7 +581,7 @@
 1741.E necesar sa primiti un mesaj inainte.\n
 1742.E necesar sa scrieti un mesaj inainte.\n
 1743:Marimea nu se incadreaza in limita lungimii pachetului.\n
-1744:server (v5)
+1744.server (v5)
 1745:necunoscut
 1746: nr tip         trimise/primite pachete/unice pachete\n
 1747:total
@@ -600,8 +592,8 @@
 #_#1767:Toggles auto cycling to away/not available.
 1770:Trimite ultimul mesaj catre <contacts>.
 1771:D-stra pana ce nu ati trimis nici un mesaj nimanui!\n
-1774:Pachetul primit:
-1775:Pachetul trimis:
+1774.Pachetul primit:
+1775.Pachetul trimis:
 1781.Parola pentru UIN %ld:\n
 1782.Este necesara o parola pentru UIN-ul d-stra nou.\n
 1783.Pentru a preveni erori, va rugam sa introduceti inca o data parola d-stra \n 
@@ -636,10 +628,10 @@
 #_#1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 1820:%s <optiune> [on|off|<valoare>] - controleaza optiuni simple.\n
 1822:    color:      afiseaza textul utilizand culori.\n
-1823:Pachet partial care vine:
-1825:Am ignorat un pachet %04x (%s)
-1826:Trimit din nou mesajul %04x (%s) secventa %04lx (incercare #%ld, lungime %d).\n
-1830:Ignor mesaj pentru %s dupa %ld incercari de a trimite.  Continutul mesajului:\n
+1823.Pachet partial care vine:
+1825.Am ignorat un pachet %04x (%s)
+1826.Trimit din nou mesajul %04x (%s) secventa %04lx (incercare #%ld, lungime %d).\n
+1830.Ignor mesaj pentru %s dupa %ld incercari de a trimite.  Continutul mesajului:\n
 1833:Conexiune TCP "Peer to peer" stabilita.\n
 1842:Inchidere socket %d catre %s.\n
 1843:Inchidere socket %d.\n
@@ -650,18 +642,18 @@
 1849:Greseala la alegere: %s (%d)\n
 1850:Timpul conexiunii cu %s a expirat la %s:%ld\n
 1855:Conexiunea TCP catre %s la %s:%ld a esuat.\n
-1856:Un pachet %04x (%s) din sesiunea veche %08lx (curenta: %08lx) a fost ignorat.\n
+1856.Un pachet %04x (%s) din sesiunea veche %08lx (curenta: %08lx) a fost ignorat.\n
 1857:Doriti sa ascundeti Ip-ul d-stra de alte contacte? (DA/NU)
-1867:Am primit un pachet rau (prea scurt) - l-am ignorat.\n
-1868:Am primit un pachet rau (subpachet prea lung) multi-pachet - restul ignorat.\n
-1869:Protocoalele cu versiunile mai mici de 5 nu mai sunt suportate.\n
+1867.Am primit un pachet rau (prea scurt) - l-am ignorat.\n
+1868.Am primit un pachet rau (subpachet prea lung) multi-pachet - restul ignorat.\n
+1869.Protocoalele cu versiunile mai mici de 5 nu mai sunt suportate.\n
 1870:peer off   <nick> - Inchide conexiunea/conexiunile directa/directe si nu o/le mai incerca.\n
 1872:esec: %s (%d)\n
 1873:Orasul unde lucrati:
 1874:Statul in care lucrati:
 1875:Interese personale:
 1876:Trecut personal:
-1877:bine.\n
+1877.bine.\n
 1878:Eroare la citirea din socket: %s (%d, %d)\n
 #_#1879:Affiliations:
 1881:canalul FLAP 1 nu are date.\n
@@ -671,11 +663,13 @@
 1885:Conexiune v8 cu timpul expirat.\n
 1887:Conectari:
 1888:nu stie de web
-1889:server
+1889.server
 #_#1890:peer-to-peer
 1891.Conexiunea %ld e deja deschisa.\n
 1892:conn                    Listeaza conexiunile disponibile.\n
-1893:conn login <nr> [pass]  Deschide conexiunea <nr>.\n
+#-#1893:conn login <nr> [pass]  Deschide conexiunea <nr>.\n
+#+#1893:conn login <nr> [pass]  Open connection <nr>.\n
+#_#1893:conn login <nr> [pass]  Log in to server connection <nr>.\n
 1894:Nu exista conexiunea cu nr %ld.\n
 #_#1895:Login failed:\n
 1896:Serverul a inchis conexiunea:\n
@@ -729,7 +723,7 @@
 #_#1961:URL: %s\n
 1966: Conexiune la portul %ld la %s refuzata\n
 1967:Mai multa informatie pentru
-1968:Utilizator gasit:\n
+1968.Utilizator gasit:\n
 1969:deconectat
 1970:conectat
 1971:nu ma deranjati
@@ -826,14 +820,16 @@
 #_#2090:file peer-to-peer
 2091:Pun pe %s in coada ca %s pentru transfer.\n
 2092:Mesajul TCP %s ignorat - sesiune pierduta.\n
-2094:conn login [pass]       Deschide prima conexiune server.\n
+#-#2094:conn login [pass]       Deschide prima conexiune server.\n
+#+#2094:conn login [pass]       Open current/first server connection.\n
+#_#2094:conn login [pass]       Log in to current/first server connection.\n
 2095:conn remove <nr>        Sterge conexiunea <nr>.\n
 2097:conn select <nr>        Selecteaza conexiunea <nr> pentru a fi conexiune server.\n
 2098:Conexiunea %ld nu e conexiune la server.\n
 2099.Conexiunea selectata %ld (versiunea %d, UIN %ld) va fi curenta.\n
 2100:conn select <uin>       Selectaza conexiunea cu UINul <uin> pentru a fi server.\n
 2101:Sterg complet conexiunea %ld si cele ce depind de ea.\n
-2102:Conexiunea %ld e una configurata.\n
+2102.Conexiunea %ld e una configurata.\n
 #-#2103:contact show    Arata lista de contacte de pe server.\n
 #+#2103:contact show    Show server side contact list.\n
 #_#2103:contact show    Show server based contact list.\n
@@ -871,8 +867,7 @@
 #+#2124:%sSyntax error%s: Not an integer: '%s'\n
 #_#2124:%sSyntax error%s: Not an integer: %s\n
 2126.e deconectat, mesaj pus in coada pe server.\n
-2128: Descriere: %s%s%s\n
-#_#2129:         URL: %s%s%s\n
+2128. Descriere: %s%s%s\n
 2131:Compunere mesaj catre%s%s%s:\n
 2133:Culoarea este %s%s%s.\n
 2134:Mesajele hazlii sunt %s%s%s.\n
@@ -952,7 +947,7 @@
 2211:Starea dvs. este %s.\n
 2212:am schimbat starea in %s
 2213:conectat la (%s)
-2214:Info pentru %s%lu%s:\n
+2214.Info pentru %s%lu%s:\n
 2215:Acest climm nu poate converti din SJIS sau EUC in unicode si invers.\n
 2216:Acest climm nu stie de codificarea '%s'.\n
 2217:Acest climm nu poate converti din '%s' in unicode si invers.\n
@@ -1101,7 +1096,7 @@
 #_#2391:Case sensitive search of <pattern> in log file of <contact>.
 #_#2393:%Y-%m-%d
 #_#2394: %I:%M %p
-#_#2395:View your messages of <contact> since <date>.
+#_#2395:View your messages of <contact> or all contacts (for *) since <date>.
 #_#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
 #_#2397:No server session found.\n
 #_#2398:Set or display options for a contact group, a contact or global.\n
@@ -1161,7 +1156,6 @@
 #_#2456:Unknown command %s, type %shelp%s for help.\n
 #_#2457:Unknown configuration file format version %d.\n
 #_#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
-#_#2459:Peer-to-peer connection not associated to server connection, discarding.\n
 #_#2460:Contact group %s (id %s%d%s) not associated to server connection.\n
 #_#2461:Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 #_#2462:File transfer %s to port %s%ld%s.
@@ -1199,7 +1193,6 @@
 #_#2507:Translation %s%s%s not found. Would you like to translate climm into your language?\n
 #_#2508:No translation (%s) loaded (%s%d%s entries).\n
 #_#2509:WSAStartup() for WinSocks 1.1 failed
-#_#2510:Opening v5 connection to %s:%s%ld%s... 
 #_#2511:Redirect to server %s:%s%ld%s... 
 #_#2512:Opening v8 connection to %s:%s%ld%s for %s%s%s... 
 #_#2513:new UIN
@@ -1273,7 +1266,6 @@
 #_#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
 #_#2583:Location error: %d.\n
 #_#2584:msn temp
-#_#2585:msn server
 #_#2586:msn chat
 #_#2587:Couldn't load meta data for %s (%s).\n
 2588:Meta datele pentru '%s' (%s) au fost salvate.\n
@@ -1295,7 +1287,7 @@
 #_#2604:xmpp
 #_#2605:Automatic status change.
 2606:Am gasit un partener aleatoriu pentru discutii cu UINul %s in grupul de discutii %d.\n
-2607:Noul UIN este %s!\n
+2607.Noul UIN este %s!\n
 2608:UINul dvs. este: %s.\n
 2609:Preintampinare: Serverul crede ca UINul nostru e %s, cand e %s.\n
 2610:Informatie despre %s%s%s (%s):\n
@@ -1393,3 +1385,32 @@
 #_#2708:Contact %s/%s (#%d) exists only locally.\n
 #_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
 #_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
+#_#2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
+#_#2712:Query emails matching <query> since <date>, or continue search.
+#_#2713:Options for server %s:\n
+#_#2714:Undefining option %s for server %s.\n
+#_#2715:Option %s for server %s is undefined.\n
+#_#2716:Option %s for server %s is %s%s%s.\n
+#_#2717:Option %s for server %s is %s.\n
+#_#2718:Setting option %s for server %s to %s.\n
+#_#2719:Setting option %s for server %s to %s%d%s.\n
+#_#2720:Setting option %s for server %s.\n
+#_#2721:Clearing option %s for server %s.\n
+#_#2722:conn logoff <nr>        Log off from server connection <nr>.\n
+#_#2723:conn discard <nr>       Discard server connection <nr>.\n
+#_#2724:conn open <nr>          Open connection <nr>.\n
+#_#2725:Connection #%ld is already open.\n
+#_#2726:Don't know how to open connection type %s for #%ld.\n
+#_#2727:Connection #%ld is a server's main i/o connection.\n
+#_#2728:Discarding server connection %ld completely.\n
+#_#2729:Logging of from connection %ld.\n
+#_#2730:xmpp main i/o
+#_#2731:msn main i/o
+#_#2732:icq main i/o
+#_#2733:xmpp peer-to-peer
+#_#2734:xmpp file io
+#_#2735:msn
+#_#2736:icq
+#_#2737:Added contact group %s (#%d).\n
+#_#2738:Found %d new mails for %s.\n
+#_#2739:Found %d mails for %s.\n

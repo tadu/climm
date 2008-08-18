@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n 2481 2008-02-16 23:31:15 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -28,18 +28,18 @@
 1028:Nein
 1029:Bitte Ja oder Nein eingeben!
 1030:hat sich ausgeloggt
-1032:debug: Doppeltes Packet #%04lx vom Typ %04x (%s)\n
+1032.debug: Doppeltes Packet #%04lx vom Typ %04x (%s)\n
 1033:Eingehendes Server-Paket (Version 8):
-1034:Maximale Anzahl an Versuchen erreicht - gebe auf.
+1034.Maximale Anzahl an Versuchen erreicht - gebe auf.
 1038:Nachricht abgebrochen.\n
-1039:Der Server behauptet, wir wären nicht verbunden.\n
-1043:Alle Benutzer gefunden.
-1044:Zu viele Benutzer gefunden.
-1045:Suche beendet.
-1046:Länge
-1047:Extra-Daten
+1039.Der Server behauptet, wir wären nicht verbunden.\n
+1043.Alle Benutzer gefunden.
+1044.Zu viele Benutzer gefunden.
+1045.Suche beendet.
+1046.Länge
+1047.Extra-Daten
 1048:Fehlerkode: %ld\n
-1050:Login erfolgreich!
+1050.Login erfolgreich!
 1053:Nach %s verbunden, warte auf Antwort.\n
 1055:Konnte keinen Socket erstellen.
 1056:Socket erhalten, versuche zu verbinden.\n
@@ -50,7 +50,7 @@
 1064:Automatischer Statuswechsel nach %s.\n
 1078:Keine Übersetzung verfügbar.
 1079:Übersetzung (%s, %s) von %s, zuletzt geändert am %s von %s, für climm %d.%d.%d%s.\n
-1082:Versuche, neu zu verbinden... [Versuch %d von %d]\n
+1082.Versuche, neu zu verbinden... [Versuch %d von %d]\n
 1085:an
 1086:aus
 1089:Entferne Übersetzung aus dem Speicher.
@@ -388,8 +388,8 @@
 1437:-unsichtbar-
 1438:Ändert grundlegende Benutzer-Informationen (eMail-Adresse, Spitzname, usw).
 1439:Setzt die zufällige Benutzergruppe.
-1440:Zufälliger Benutzer:
-1441:äußere IP:
+1440.Zufälliger Benutzer:
+1441.äußere IP:
 1442:Bitte wähle eines der Hilfe-Themen.
 1443:Kommandos, um climm zu konfigurieren.
 1444:Kommandos, um andere User zu sehen oder finden.
@@ -399,10 +399,10 @@
 1448:Nachricht
 1449:Benutzer
 1450:Konto
-1451:lokale IP:
-1452:Status:
+1451.lokale IP:
+1452.Status:
 1453:TCP-Version:
-1454:Verbindung:
+1454.Verbindung:
 1455:Kunst
 1456:Autos
 1457:Fan
@@ -442,7 +442,7 @@
 1492:50iger Jahre
 1493:Benutzer-zu-Benutzer
 1494:Nur Server
-1495:Kein zufälliger Benutzer gefunden
+1495.Kein zufälliger Benutzer gefunden
 1497:fehlgeschlagen
 1499:Anderes
 1500:Spitzname:
@@ -515,7 +515,7 @@
 1603:Bitte Position eingeben: 
 1604:Soll der Benutzer online sein?
 1605:Soll Ihr Status im Web einsehbar sein? (Ja/Nein)
-1606:Paket mit falscher Sitzungskennung ID %08lx (richtig: %08lx) mit Kommando %04x ignoriert.\n
+1606.Paket mit falscher Sitzungskennung ID %08lx (richtig: %08lx) mit Kommando %04x ignoriert.\n
 1612:Dieses Programm wurde ohne Hilfe / Zustimmung von Mirabilis erstellt.\n
 1613:Dazu wurde kein Programmcode von Mirabilis zurückentwickelt oder zurückübersetzt.\n
 1618.Benutzernummer:
@@ -523,23 +523,23 @@
 1620.Maximale Anzahl an Kontakten erreicht.
 1621:Suchergebnisse nicht zurückgegeben.
 1622:Möchten Sie die Änderungen anwenden? (JA/NEIN)
-1623:Doppeltes Paket %04x.\n
-1632:\nVerbindung instabil. Beende...
+1623.Doppeltes Paket %04x.\n
+1632.\nVerbindung instabil. Beende...
 1634:ok.\n
 1637:Kann Kommunikationsendpunkt nicht mit einem freien Anschluß verknüpfen.\n
 1638:Konnte Verbindungsendpunkt nicht erzeugen
 1639.Die neue Benutzernummer ist %ld!\n
-1640:Aktualisieren der Informationen fehlgeschlagen.\n
-1641:Benutzerinformationen erfolgreich aktualisiert.\n
+1640.Aktualisieren der Informationen fehlgeschlagen.\n
+1641.Benutzerinformationen erfolgreich aktualisiert.\n
 1642:IP:
-1643:Bestätigt SRV_X1 0x021C Fertig mit Kontaktliste (?)\n
-1644:Bestätigt SRV_X2 0x00E6 Fertig mit alten Nachrichten (?)\n
-1645:Sie haben ein ungültiges Paßwort eingegeben.\n
-1646:Der Server ist beschäftigt.\n
-1648:Die Antwort war %04x	
-1649:Die Version war %x	
-1650:\nDie Folgenummer war %04lx	
-1651:Die Größe war %d\n
+1643.Bestätigt SRV_X1 0x021C Fertig mit Kontaktliste (?)\n
+1644.Bestätigt SRV_X2 0x00E6 Fertig mit alten Nachrichten (?)\n
+1645.Sie haben ein ungültiges Paßwort eingegeben.\n
+1646.Der Server ist beschäftigt.\n
+1648.Die Antwort war %04x	
+1649.Die Version war %x	
+1650.\nDie Folgenummer war %04lx	
+1651.Die Größe war %d\n
 1653:Abgeklemmt
 1654:Verbunden
 1655:Geben Sie die eMail-Adresse des Benutzers ein:
@@ -584,7 +584,7 @@
 1741.Man muß erst eine Nachricht empfangen.\n
 1742.Man muß erst eine Nachricht schreiben.\n
 1743:Längendifferenz in Paketlängenangaben.\n
-1744:Server (v5)
+1744.Server (v5)
 1745:Unbekannt
 1746: Nr Type                aus/eingehend Pakete/identische Pakete\n
 1747:Gesamt
@@ -595,8 +595,8 @@
 1767:Schaltet die automatische Abwesenheitsschaltung an oder ab.
 1770:Sendet die letzte Nachricht erneut an alle <contacts>.
 1771:Noch keine Nachricht an irgendwen verschickt!\n
-1774:Eingehendes Paket:
-1775:Ausgehendes Paket:
+1774.Eingehendes Paket:
+1775.Ausgehendes Paket:
 1781.Bitte Paßwort für Benutzernummer %ld eingeben:\n
 1782.Sie benötigen ein Paßwort für Ihre neue Benutzernummer.\n
 1783.Um Tippfehler zu vermeiden, geben Sie Ihr Paßwort bitte erneut ein.\n
@@ -629,10 +629,10 @@
 1818:Warnung: Veraltete Syntax in der Konfigurationsdatei gefunden!\nBitte neu erstellen oder mit "save" überschreiben und auf Änderungen prüfen.\n
 1820:%s <option> [an|aus|<value>] - einfache Optionen ändern.\n
 1822:    color:      Farbe verwenden.\n
-1823:Eingehendes Unter-Paket:
-1825:Werfe ein Paket vom Typ %04x (%s) weg.
-1826:Sende Paket vom Typ %04x (%s), Sequenz-Nummer %04lx, erneut (Versuch #%ld, Länge %d).\n
-1830:Werfe Nachricht an %s nach %ld Versuchen weg. Inhalt der Nachricht:\n
+1823.Eingehendes Unter-Paket:
+1825.Werfe ein Paket vom Typ %04x (%s) weg.
+1826.Sende Paket vom Typ %04x (%s), Sequenz-Nummer %04lx, erneut (Versuch #%ld, Länge %d).\n
+1830.Werfe Nachricht an %s nach %ld Versuchen weg. Inhalt der Nachricht:\n
 1833:Direkte Verbindung aufgebaut.\n
 1842:Schließe Verbindung (Verbindungsendpunkt Nr. %d) zu %s.\n
 1843:Schließe Verbindungsendpunkt Nr. %d.\n
@@ -643,18 +643,18 @@
 1849:Fehler beim Warten auf Eingabe: %s (%d)\n
 1850:Zeitüberschreibtung bei Verbindung mit %s zu %s:%ld.\n
 1855:Direkt-Verbindung zu %s bei %s:%ld ist fehlgeschlagen.\n
-1856:Werfe ein Paket vom Typ %04x (%s) von alter Sitzung %08lx (aktuell: %08lx) weg.\n
+1856.Werfe ein Paket vom Typ %04x (%s) von alter Sitzung %08lx (aktuell: %08lx) weg.\n
 1857:Möchten Sie Ihre IP-Adresse vor anderen Benutzern verbergen? (Ja/Nein)
-1867:Empfange fehlerhaftes (zu kurzes) packet - ignored.\n
-1868:Empfange fehlerhaftes (zu kurzes Unterpaket) Mehrfach-Paket - Rest ignoriert.\n
-1869:Versionen kleiner als 5 werden nicht mehr unterstützt.\n
+1867.Empfange fehlerhaftes (zu kurzes) packet - ignored.\n
+1868.Empfange fehlerhaftes (zu kurzes Unterpaket) Mehrfach-Paket - Rest ignoriert.\n
+1869.Versionen kleiner als 5 werden nicht mehr unterstützt.\n
 1870:peer off   <nick> - Schaltet die Benutzung von Direkt-Verbindungen ab.\n
 1872:fehlgeschlagen: %s (%d).\n
 1873:Arbeits-Stadt:
 1874:Arbeits-Staat:
 1875:Persönliche Interessen:
 1876:Persönlicher vergangener Hintergrund:
-1877:ok.\n
+1877.ok.\n
 1878:Fehler beim Lesen vom Kommunikationsendpunkt: %s (%d, %d)\n
 1879:Mitgliedschaften:
 1881:FLAP auf Kanal 1 hat zu wenig Daten.\n
@@ -664,11 +664,13 @@
 1885:Zeitüberschreitung bei v8-Server-Verbindung.\n
 1887:Verbindungen:
 1888:nicht webaware
-1889:Server
+1889.Server
 1890:Direktverbindung
 1891.Verbindung %ld ist bereits geöffnet.\n
 1892:conn                    Liste verfügbare Verbindungen auf.\n
-1893:conn login <nr> [pass]  Öffnet Verbindung <nr>.\n
+#-#1893:conn login <nr> [pass]  Öffnet Verbindung <nr>.\n
+#+#1893:conn login <nr> [pass]  Open connection <nr>.\n
+#_#1893:conn login <nr> [pass]  Log in to server connection <nr>.\n
 1894:Es gibt keine Verbindung Nummer %ld.\n
 1895:Login fehlgeschlagen:\n
 1896:Der Server hat die Verbindung geschlossen:\n
@@ -720,7 +722,7 @@
 1961:URL: %s\n
 1966: Verbindung verweigert zu Anschluß %ld zu %s.\n
 1967:Mehr Information für
-1968:Benutzer gefunden:\n
+1968.Benutzer gefunden:\n
 1969:nicht verbunden
 1970:verbunden
 1971:nicht stören
@@ -815,14 +817,16 @@
 2090:Dateiübertragung
 2091:Sende "%s" als "%s".\n
 2092:Direktverbindungsnachricht %s weggeworfen - Verbindung verschwunden.\n
-2094:conn login [pass]       Öffne aktuelle/erste Server-Verbindung.\n
+#-#2094:conn login [pass]       Öffne aktuelle/erste Server-Verbindung.\n
+#+#2094:conn login [pass]       Open current/first server connection.\n
+#_#2094:conn login [pass]       Log in to current/first server connection.\n
 2095:conn remove <nr>        Entferne Verbindung <nr>.\n
 2097:conn select <nr>        Wähle Verbindung <nr> als aktuelle Server-Verbindung aus.\n
 2098:Verbindung %ld ist keine Server-Verbindung.\n
 2099.Wähle Verbindung %ld (Version %d, Benutzernummer %ld) als aktuelle Server-Verbindung.\n
 2100:conn select <uin>       Wähle Verbindung mit Benutzernummer <uin> als aktive Server-Verbindung.\n
 2101:Entferne Verbindung %ld und davon abhängige Verbindungen vollständig.\n
-2102:Verbindung %ld ist eine konfigurierte Verbindung.\n
+2102.Verbindung %ld ist eine konfigurierte Verbindung.\n
 2103:contact show    Zeige Server-seitige Kontaktliste.\n
 2104:contact diff    Zeige Server-seitige Kontakte, die nicht auf der lokalen Kontaktliste sind.\n
 2105:contact import  Importiere Server-seitige Kontaktliste in die lokale Kontaktliste.\n
@@ -844,8 +848,8 @@
 2123:%sSyntax-Fehler%s: Zu wenige Argumente: %s\n
 2124:%sSyntax-Fehler%s: Keine ganze Zahl: %s\n
 2126.ist nicht verbunden, die Nachricht wird auf dem Server eingereiht.\n
-2128: Beschreibung: %s%s%s\n
-2129:          URL: %s%s%s\n
+2128. Beschreibung: %s%s%s\n
+2129.          URL: %s%s%s\n
 2131:Erstelle Nachricht an %s%s%s:\n
 2133:Farbe ist %s%s%s.\n
 2134:Lustige Meldungen sind %s%s%s.\n
@@ -907,7 +911,7 @@
 2211:Dein Status ist %s.\n
 2212:ist jetzt %s
 2213:hat sich eingeloggt (%s)
-2214:Informationen über %s%lu%s:\n
+2214.Informationen über %s%lu%s:\n
 2215:Dieses climm kann nicht zwischen SJIS oder EUC und Unicode konvertieren.\n
 2216:Dieses climm kennt die Kodierung "%s" nicht.\n
 2217:Dieses climm kann nicht zwischen "%s" und Unicode konvertieren.\n
@@ -1040,7 +1044,9 @@
 2391:Suche nach <pattern> in der Log-Datei von <contact> (beachte Großschreibung).
 2393:%d.%m.%Y
 2394: %H:%M
-2395:Zeigt die Nachrichten von <contact> ab dem Datum <date> an.
+#-#2395:Zeigt die Nachrichten von <contact> ab dem Datum <date> an.
+#+#2395:View your messages of <contact> since <date>.
+#_#2395:View your messages of <contact> or all contacts (for *) since <date>.
 2396:Parameter '%s' ist nicht im ISO 8601 Format (Bsp.: '2004-01-31' oder '2004-01-31T23:12:05').\n
 2397:Keine Server-Verbindung gefunden.\n
 2398:Setze oder zeige Option für Kontaktgruppe, Kontakt oder global an.
@@ -1103,7 +1109,7 @@
 2456:Unbekanntes Kommando %s, tippe %shelp%s für Hilfe.\n
 2457:Unbekanntes Konfigurationsdateiformatsversion %d.\n
 2458:Kann %s nicht in die Tab-Liste tun; tippe selber "%sopt %s tabspool 1%s".\n
-2459:Direktverbindung gehört zu keiner Server-Verbindung, wird ignoriert.\n
+2459.Direktverbindung gehört zu keiner Server-Verbindung, wird ignoriert.\n
 2460:Kontaktgruppe %s (Kennung %s%d%s) gehört zu keiner Server-Verbindung.\n
 2461:Veraltete Syntax in der Konfigurationsdatei "%s" gefunden!\n    Bitte neu erstellen oder mit "save" überschreiben und auf Änderungen prüfen.\n
 2462:Dateiübertragung %s nach Port %s%ld%s.
@@ -1154,7 +1160,7 @@
 2507:Übersetzung %s%s%s nicht gefunden. Beiträge von Übersetzungen sind immer willkommen!\n
 2508:Deutsche Übersetzung (%s) geladen (%s%d%s Einträge).\n
 2509:WSAStartup() für WinSocks 1.1 fehlgeschlagen.
-2510:Baue Verbindung mit v5-Server %s:%s%ld%s auf...
+2510.Baue Verbindung mit v5-Server %s:%s%ld%s auf...
 2511:Weiterleitung zu Server %s:%s%ld%s... 
 2512:Baue Verbindung mit v8-Server %s:%s%ld%s für %s%s%s auf...
 2513:neue UIN
@@ -1229,7 +1235,7 @@
 2582:Tcl-Skriptausführung benötigt die Tcl-Bibliothek 8.4.\n
 2583:Fehler vom Location-Dienst: %d.\n
 2584:MSN (temp. Eintrag)
-2585:MSN-Server
+2585.MSN-Server
 2586:MSN-Chat
 2587:Konnte Metadaten für Kontakt %s (%s) nicht laden.\n
 2588:Metadaten für "%s" (%s) gespeichert.\n
@@ -1251,7 +1257,7 @@
 2604:XMPP
 2605:Automatischer Statuswechsel.
 2606:Zufälligen Plauderpartner mit Benutzernummer %s in Interessengruppe %d gefunden.\n
-2607:Die neue Benutzernummer ist %s!\n
+2607.Die neue Benutzernummer ist %s!\n
 2608:Ihre neue Benutzernummer ist: %s.\n
 2609:Warnung: Der Server hält unsere Benutzernummer für %s, obwohl sie %s ist.\n
 2610:Informationen über %s%s%s (%s):\n
@@ -1349,6 +1355,35 @@
 2708:Kontakt %s/%s (#%d) existiert nur lokal.\n
 #_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
 2710:Kontakt %s/%s ist normal (#%d) auf dem Server, aber ignoriert (#%d,#%d) lokal.\n
+#_#2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
+#_#2712:Query emails matching <query> since <date>, or continue search.
+#_#2713:Options for server %s:\n
+#_#2714:Undefining option %s for server %s.\n
+#_#2715:Option %s for server %s is undefined.\n
+#_#2716:Option %s for server %s is %s%s%s.\n
+#_#2717:Option %s for server %s is %s.\n
+#_#2718:Setting option %s for server %s to %s.\n
+#_#2719:Setting option %s for server %s to %s%d%s.\n
+#_#2720:Setting option %s for server %s.\n
+#_#2721:Clearing option %s for server %s.\n
+#_#2722:conn logoff <nr>        Log off from server connection <nr>.\n
+#_#2723:conn discard <nr>       Discard server connection <nr>.\n
+#_#2724:conn open <nr>          Open connection <nr>.\n
+#_#2725:Connection #%ld is already open.\n
+#_#2726:Don't know how to open connection type %s for #%ld.\n
+#_#2727:Connection #%ld is a server's main i/o connection.\n
+#_#2728:Discarding server connection %ld completely.\n
+#_#2729:Logging of from connection %ld.\n
+#_#2730:xmpp main i/o
+#_#2731:msn main i/o
+#_#2732:icq main i/o
+#_#2733:xmpp peer-to-peer
+#_#2734:xmpp file io
+#_#2735:msn
+#_#2736:icq
+#_#2737:Added contact group %s (#%d).\n
+#_#2738:Found %d new mails for %s.\n
+#_#2739:Found %d mails for %s.\n
 2999.max.
 # Those are the funny messages. Substract 2000 to get the normal message.
 3620.Du hast zu viele Freunde, wie wär's mit mehr RL?

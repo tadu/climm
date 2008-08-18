@@ -1,5 +1,5 @@
 # $Id$ (Indonesian)
-#  EN: __.i18n 2481 2008-02-16 23:31:15 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 1001:id
 1002:id_ID
@@ -28,18 +28,18 @@
 1028:TIDAK
 1029:Tolong jawab YA atau TIDAK!
 1030:keluar
-1032:debug: paket ganda #%04lx type %04x (%s)\n
+1032.debug: paket ganda #%04lx type %04x (%s)\n
 1033:Paket server v8 datang:
-1034:Sudah mencapai jumlah percobaan maksimum. Menyerah.
+1034.Sudah mencapai jumlah percobaan maksimum. Menyerah.
 1038:Pesan dibatalkan.\n
-1039:Server menyatakan bahwa kita tidak terhubung.\n
-1043:Semua user ketemu.
-1044:Terlalu banyak user yang ditemukan.
-1045:Pencarian Selesai.
-1046:Panjang
-1047:Data Tambahan
+1039.Server menyatakan bahwa kita tidak terhubung.\n
+1043.Semua user ketemu.
+1044.Terlalu banyak user yang ditemukan.
+1045.Pencarian Selesai.
+1046.Panjang
+1047.Data Tambahan
 1048:Kode Kesalahan: %ld\n
-1050:Login sukses!
+1050.Login sukses!
 1053:Terhubung ke %s, sedang menunggu jawaban\n
 1055:Pembuatan soket gagal
 1056:Soket berhasil dibuat, mencoba untuk terhubung.\n
@@ -50,7 +50,7 @@
 1064:Otomatis berubah status menjadi %s.\n
 1078:Tidak ada terjemahan yang tersedia.
 1079:Terjemahan (%s, %s) dari %s, terakhir di perbaiki pada %s oleh %s, untuk climm %d.%d.%d%s.\n
-1082:Mencoba untuk terhubung kembali... [percobaan ke %d dari %d]\n
+1082.Mencoba untuk terhubung kembali... [percobaan ke %d dari %d]\n
 1085:hidup
 1086:mati
 1089:Penterjemah dihilangkan.
@@ -380,8 +380,8 @@
 1437:Set status ke "tidak terlihat".
 1438:Update informasi dasar Anda (email, nickname, dll.).
 1439:Set grup user acak Anda.
-1440:User Acak:
-1441:IP remote:
+1440.User Acak:
+1441.IP remote:
 1442:Silahkan pilih salah satu topik dibawah.
 1443:Perintah-perintah yang berhubungan dengan tampilan climm dan konfigurasi.
 #-#1444:Perintah-perintah yang berhubungan dengan pencarian dan melihat user lain.
@@ -393,10 +393,10 @@
 1448:Pesan
 1449:User
 1450:Account
-1451:IP lokal:
-1452:Status:
+1451.IP lokal:
+1452.Status:
 1453:Versi TCP:
-1454:Koneksi:
+1454.Koneksi:
 1455:Seni
 1456:Mobil
 1457:Fan Selebriti
@@ -436,7 +436,7 @@
 1492:50an
 1493:Peer-to-Peer
 1494:Hanya Server
-1495:Tidak Ada User Acak yang Ketemu
+1495.Tidak Ada User Acak yang Ketemu
 1497:gagal
 1499:Lainnya
 1500:Nickname:
@@ -509,7 +509,7 @@
 1603:Masukkan posisi:
 1604:Haruskah user online?
 1605:Anda ingin status Anda tersedia di web? (YA/TIDAK)
-1606:Menerima sesi buruk dengan ID %08lx (yang benar: %08lx) dengan cmd %04x diabaikan.\n
+1606.Menerima sesi buruk dengan ID %08lx (yang benar: %08lx) dengan cmd %04x diabaikan.\n
 1612:Program ini dibuat tanpa bantuan dari Mirabilis atau rekanan mereka.\n
 1613:Tidak ada pendekodean dari kode program Mirabilis yang digunakan untuk membuat program ini.\n
 1618.UIN:
@@ -517,28 +517,20 @@
 1620.jumlah maksimal kontak terpenuhi. Tanyakan ke penyihir untuk memperbesar aku!
 1621:user tidak mengembalikan.
 1622:Anda menyetujui perubahan tersebut? (YA/TIDAK)
-#-#1623:Paket Dobel %04X\n
-#+#1623:Doubled packet %04X\n
-#-#1632:\nKoneksi tidak stabil. Keluar....
-#+#1632:\nConnection unstable. Exiting....
-#_#1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:Tidak dapat mem-bind soket untuk membebaskan port\n
 1638:Tidak dapat membuat soket
 1639.UIN baru adalah %ld!\n
-1640:Gagal untuk memperbaharui informasi.\n
-1641:Informasi user berhasil diperbaharui.\n
+1640.Gagal untuk memperbaharui informasi.\n
+1641.Informasi user berhasil diperbaharui.\n
 1642:IP:
-1643:Telah diketahui SRV_X1 0x021C Daftar kontak selesai?\n
-#-#1644:Telah diketahui SRV_X2 0x00E6 Pesan lama selesai?\n
-#+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
-#_#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
-1645:Anda memasukkan password yang salah.\n
-1646:Server sedang sibuk.\n
-1648:Respon-nya adalah %04x	
-1649:Versinya adalah %x	
-1650:\nSEQ-nya adalah %04lx	
-1651:Ukurannya adalah %d\n
+1643.Telah diketahui SRV_X1 0x021C Daftar kontak selesai?\n
+1645.Anda memasukkan password yang salah.\n
+1646.Server sedang sibuk.\n
+1648.Respon-nya adalah %04x	
+1649.Versinya adalah %x	
+1650.\nSEQ-nya adalah %04lx	
+1651.Ukurannya adalah %d\n
 1653:Offline
 1654:Online
 1655:Masukkan alamat e-mail user:
@@ -589,7 +581,7 @@
 1741.Harus menerima pesan dulu.\n
 1742.Harus menulis pesan dulu.\n
 1743:Ukuran tidak sesuai dalam panjang paket.\n
-1744:server (v5)
+1744.server (v5)
 1745:tidak diketahui
 1746: nr type         sent/received packets/unique packets\n
 1747:total
@@ -600,8 +592,8 @@
 1767:Menganti perputaran otomatis ke jauh/tidak ditempat.
 1770:Mengirim ulang pesan terakhir Anda kepada <contacts>.
 1771:Anda belum mengirim pesan kepada siapapun!\n
-1774:Paket masuk:
-1775:Paket keluar:
+1774.Paket masuk:
+1775.Paket keluar:
 1781.Password Anda untuk UIN %ld:\n
 1782.Anda memerlukan password untuk UIN baru Anda.\n
 1783.Untuk mencegah kesalahan pengetikan, tolong masukkan password Anda lagi.\n
@@ -638,10 +630,10 @@
 #_#1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 1820:%s <option> [on|off|<value>] - kontrol pilihan sederhana.\n
 1822:    color:      menggunakan keluaran text berwarna.\n
-1823:Potongan paket masuk:
-1825:Paket %04x (%s) dihilangkan
-1826:Mengirim ulang pesan %04x (%s) urutan %04lx (usaha #%ld, len %d).\n
-1830:Menghilangkan pesan ke %s setelah %ld usaha pengiriman.  Isi pesan:\n
+1823.Potongan paket masuk:
+1825.Paket %04x (%s) dihilangkan
+1826.Mengirim ulang pesan %04x (%s) urutan %04lx (usaha #%ld, len %d).\n
+1830.Menghilangkan pesan ke %s setelah %ld usaha pengiriman.  Isi pesan:\n
 1833:Koneksi Peer to peer TCP terlaksana.\n
 1842:Menutup soket %d ke %s.\n
 1843:Menutup soket %d.\n
@@ -652,18 +644,18 @@
 1849:Kesalahan pada pilihan: %s (%d)\n
 1850:Timeout pada koneksi dengan %s pada %s:%ld\n
 1855:Koneksi TCP ke %s pada %s:%ld gagal.\n
-1856:Paket %04x (%s) dihilangkan dari sesi lama %08lx (sekarang: %08lx).\n
+1856.Paket %04x (%s) dihilangkan dari sesi lama %08lx (sekarang: %08lx).\n
 1857:Anda ingin menyembunyikan IP Anda dari kontak yang lain? (YA/TIDAK)
-1867:Paket malformed diterima (terlalu pendek) - diabaikan.\n
-1868:Mendapat multi-paket malformed (sub paket terlalu panjang) - pengingat diabaikan.\n
-1869:Protokol versi sebelum 5 sudah tidak didukung lagi.\n
+1867.Paket malformed diterima (terlalu pendek) - diabaikan.\n
+1868.Mendapat multi-paket malformed (sub paket terlalu panjang) - pengingat diabaikan.\n
+1869.Protokol versi sebelum 5 sudah tidak didukung lagi.\n
 1870:peer off   <nick> - Tutup koneksi langsung dan jangan dicoba lagi.\n
 1872:gagal: %s (%d)\n
 1873:Kota Perusahaan:
 1874:Propinsi Perusahaan:
 1875:Kesenangan Pribadi:
 1876:Latar belakang pribadi sebelumnya:
-1877:ok.\n
+1877.ok.\n
 1878:Salah sewaktu membaca dari soket: %s (%d, %d)\n
 1879:Affiliasi:
 1881:FLAP saluran 1 kehabisan data.\n
@@ -673,11 +665,13 @@
 1885:Koneksi v8 timeout.\n
 1887:Keneksi:
 1888:tidak webaware
-1889:server
+1889.server
 1890:peer-to-peer
 1891.Koneksi %ld sudah terbuka.\n
 1892:conn                    Daftar koneksi yang tersedia.\n
-1893:conn login <nr> [pass]  Membuka koneksi <nr>.\n
+#-#1893:conn login <nr> [pass]  Membuka koneksi <nr>.\n
+#+#1893:conn login <nr> [pass]  Open connection <nr>.\n
+#_#1893:conn login <nr> [pass]  Log in to server connection <nr>.\n
 1894:Tidak ada nomor koneksi %ld.\n
 1895:Login gagal:\n
 1896:Server menutup koneksi:\n
@@ -731,7 +725,7 @@
 1961:URL: %s\n
 1966: Koneksi ditolak pada port %ld pada %s\n
 1967:Informasi tambahan untuk
-1968:User ketemu:\n
+1968.User ketemu:\n
 1969:offline
 1970:online
 1971:jangan diganggu
@@ -830,14 +824,16 @@
 2090:file peer-to-peer
 2091:Mengantri %s sebagai %s untuk transfer.\n
 2092:Pesan TCP %s dihapus - sesi telah hilang.\n
-2094:conn login [pass]       Membuka koneksi server pertama.\n
+#-#2094:conn login [pass]       Membuka koneksi server pertama.\n
+#+#2094:conn login [pass]       Open current/first server connection.\n
+#_#2094:conn login [pass]       Log in to current/first server connection.\n
 2095:conn remove <nr>        Menutup koneksi <nr>.\n
 2097:conn select <nr>        Pilih koneksi <nr> sebagai koneksi ke server.\n
 2098:Koneksi %ld bukan koneksi ke server.\n
 2099.Koneksi terpilih %ld (versi %d, UIN %ld) sebagai koneksi aktif.\n
 2100:conn select <uin>       Memilih koneksi dengan UIN <uin> sebagai koneksi ke server.\n
 2101:Menghilangkan koneksi %ld dan tergantung total.\n
-2102:Koneksi %ld adalah koneksi yang terkonfigurasi.\n
+2102.Koneksi %ld adalah koneksi yang terkonfigurasi.\n
 #-#2103:contact show    Menampilkan daftar kontak pada sisi server.\n
 #+#2103:contact show    Show server side contact list.\n
 #_#2103:contact show    Show server based contact list.\n
@@ -875,8 +871,8 @@
 #+#2124:%sSyntax error%s: Not an integer: '%s'\n
 #_#2124:%sSyntax error%s: Not an integer: %s\n
 2126.sedang offline, pesan antri di server.\n
-2128:   Deskripsi: %s%s%s\n
-2129:         URL: %s%s%s\n
+2128.   Deskripsi: %s%s%s\n
+2129.         URL: %s%s%s\n
 2131:Menulis pesan kepada %s%s%s:\n
 2133:Warna adalah %s%s%s.\n
 2134:Pesan lucunya %s%s%s.\n
@@ -958,7 +954,7 @@
 2211:Status Anda adalah %s.\n
 2212:berubah status menjadi %s
 2213:masuk (%s)
-2214:Info untuk %s%lu%s:\n
+2214.Info untuk %s%lu%s:\n
 2215:climm ini tidak dapat mengkonversi antara SJIS atau EUC dan unicode.\n
 2216:climm ini tidak mengetahui pengkodean '%s'.\n
 2217:climm ini tidak dapat mengkonversi antara '%s' dan unicode.\n
@@ -1109,7 +1105,7 @@
 #_#2391:Case sensitive search of <pattern> in log file of <contact>.
 #_#2393:%Y-%m-%d
 #_#2394: %I:%M %p
-#_#2395:View your messages of <contact> since <date>.
+#_#2395:View your messages of <contact> or all contacts (for *) since <date>.
 #_#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
 #_#2397:No server session found.\n
 #_#2398:Set or display options for a contact group, a contact or global.\n
@@ -1169,7 +1165,6 @@
 #_#2456:Unknown command %s, type %shelp%s for help.\n
 #_#2457:Unknown configuration file format version %d.\n
 #_#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
-#_#2459:Peer-to-peer connection not associated to server connection, discarding.\n
 #_#2460:Contact group %s (id %s%d%s) not associated to server connection.\n
 #_#2461:Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 #_#2462:File transfer %s to port %s%ld%s.
@@ -1207,7 +1202,6 @@
 #_#2507:Translation %s%s%s not found. Would you like to translate climm into your language?\n
 #_#2508:No translation (%s) loaded (%s%d%s entries).\n
 #_#2509:WSAStartup() for WinSocks 1.1 failed
-#_#2510:Opening v5 connection to %s:%s%ld%s... 
 #_#2511:Redirect to server %s:%s%ld%s... 
 #_#2512:Opening v8 connection to %s:%s%ld%s for %s%s%s... 
 #_#2513:new UIN
@@ -1281,7 +1275,6 @@
 #_#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
 #_#2583:Location error: %d.\n
 #_#2584:msn temp
-#_#2585:msn server
 #_#2586:msn chat
 #_#2587:Couldn't load meta data for %s (%s).\n
 2588:Telah disimpan meta data untuk '%s' (%s).\n
@@ -1303,7 +1296,7 @@
 #_#2604:xmpp
 #_#2605:Automatic status change.
 2606:Ditemukan partner bicara acak dengan UIN %s pada grup bicara %d.\n
-2607:UIN baru adalah %s!\n
+2607.UIN baru adalah %s!\n
 2608:UIN baru Anda adalah: %s.\n
 2609:Peringatan: Server mengira UIN kita adalah %s, sewaktu %s.\n
 2610:Informasi untuk %s%s%s (%s):\n
@@ -1401,3 +1394,32 @@
 #_#2708:Contact %s/%s (#%d) exists only locally.\n
 #_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
 #_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
+#_#2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
+#_#2712:Query emails matching <query> since <date>, or continue search.
+#_#2713:Options for server %s:\n
+#_#2714:Undefining option %s for server %s.\n
+#_#2715:Option %s for server %s is undefined.\n
+#_#2716:Option %s for server %s is %s%s%s.\n
+#_#2717:Option %s for server %s is %s.\n
+#_#2718:Setting option %s for server %s to %s.\n
+#_#2719:Setting option %s for server %s to %s%d%s.\n
+#_#2720:Setting option %s for server %s.\n
+#_#2721:Clearing option %s for server %s.\n
+#_#2722:conn logoff <nr>        Log off from server connection <nr>.\n
+#_#2723:conn discard <nr>       Discard server connection <nr>.\n
+#_#2724:conn open <nr>          Open connection <nr>.\n
+#_#2725:Connection #%ld is already open.\n
+#_#2726:Don't know how to open connection type %s for #%ld.\n
+#_#2727:Connection #%ld is a server's main i/o connection.\n
+#_#2728:Discarding server connection %ld completely.\n
+#_#2729:Logging of from connection %ld.\n
+#_#2730:xmpp main i/o
+#_#2731:msn main i/o
+#_#2732:icq main i/o
+#_#2733:xmpp peer-to-peer
+#_#2734:xmpp file io
+#_#2735:msn
+#_#2736:icq
+#_#2737:Added contact group %s (#%d).\n
+#_#2738:Found %d new mails for %s.\n
+#_#2739:Found %d mails for %s.\n

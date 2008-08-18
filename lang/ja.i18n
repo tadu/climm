@@ -1,5 +1,5 @@
 # $Id$ <Japanese in Japanese> (Japanese)
-#  EN: __.i18n 2481 2008-02-16 23:31:15 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 1001:ja
 1002:ja_JP
@@ -28,18 +28,18 @@
 1028:No
 1029:Yes か No を入力してください
 1030:がログアウトしました
-1032:デバック: ダブル パケット #%04lx タイプ %04x (%s)。\n
+1032.デバック: ダブル パケット #%04lx タイプ %04x (%s)。\n
 1033:受信した v8 サーバパケット:
-1034:リトライの最大値になりました。終了します。
+1034.リトライの最大値になりました。終了します。
 1038:メッセージの送信をキャンセルしました
-1039:サーバから接続を拒否されました
-1043:すべてのユーザーを見つけました
-1044:たくさんのユーザを見つけました
-1045:検索を終了します
-1046:長さ
-1047:付加データ
+1039.サーバから接続を拒否されました
+1043.すべてのユーザーを見つけました
+1044.たくさんのユーザを見つけました
+1045.検索を終了します
+1046.長さ
+1047.付加データ
 1048:エラーコード: %ld\n
-1050:ログインに成功しました
+1050.ログインに成功しました
 1053:%s に接続します。  応答を待っています\n
 1055:ソケットの作成に失敗しました
 1056:接続に使用するソケットを作成しました
@@ -50,7 +50,7 @@
 1064:ステータスを自動的に %s に変更しました。\n
 1078:利用できる翻訳がありません
 1079:翻訳  (%s, %s) %s から, 最終変更日:%s (変更者:%s), climm バージョン %d.%d.%d%s 用。\n
-1082:再接続を行います...[%d回目(最大 %d回まで)]\n
+1082.再接続を行います...[%d回目(最大 %d回まで)]\n
 1085:on
 1086:off
 1089:翻訳の使用をやめました
@@ -380,8 +380,8 @@
 1437:ステータスを「不可視」に変更します
 1438:ニックネーム/メールアドレスなど基本的なユーザ情報を更新します。
 1439:ランダムユーザグループに登録します。
-1440:ランダムユーザ:
-1441:リモート IP:
+1440.ランダムユーザ:
+1441.リモート IP:
 1442:表示したいヘルプのトピックを以下のものから選択してください:
 1443:climm の設定に関するコマンドについて
 #-#1444:他のユーザの情報や検索、ステータスの表示などのコマンドについて
@@ -393,10 +393,10 @@
 1448:Message
 1449:User
 1450:Account
-1451:ローカル IP:
-1452:ステータス:
+1451.ローカル IP:
+1452.ステータス:
 1453:バージョン:
-1454:接続状態:
+1454.接続状態:
 1455:芸術
 1456:車
 1457:芸能ファン
@@ -436,7 +436,7 @@
 1492:1950年代
 1493:ピア・ツー・ピア ネットワーク
 1494:サーバ限定
-1495:ランダムユーザは見つかりませんでした
+1495.ランダムユーザは見つかりませんでした
 1497:失敗
 1499:その他
 1500:ニックネーム:
@@ -509,7 +509,7 @@
 1603:場所を入力してください:
 1604:ユーザはオンラインにするべきですか?
 1605:現在のステータスを Web で確認できるようにしますか? (yes or no)
-1606:不正なセッション ID %08lx を受信しました(正しくは: %08lx) コマンド要求 %04x を無視します。\n
+1606.不正なセッション ID %08lx を受信しました(正しくは: %08lx) コマンド要求 %04x を無視します。\n
 1612:このプログラムの作成にはMirabilis社から援助も承認も受けていません。\n
 1613:また、作成にはMirabilis社のプログラムに対して解析を行っていません。\n
 1618.UIN:
@@ -517,28 +517,20 @@
 1620.コンタクトリストに登録できる最大数になりました。
 1621:ユーザは戻ってきていません
 1622:これらの変更を反映させますか? (yes or no)
-#-#1623:重複したパケット %04X\n
-#+#1623:Doubled packet %04X\n
-#-#1632:\n接続が不安定です。終了します...
-#+#1632:\nConnection unstable. Exiting....
-#_#1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:空きポートが見つからないので、ソケット接続を行うことができません\n
 1638:ソケットを作成できません
 1639.新しい UIN は %ld です\n
-1640:ユーザ情報の更新に失敗しました。\n
-1641:ユーザ情報の更新に成功しました。\n
+1640.ユーザ情報の更新に失敗しました。\n
+1641.ユーザ情報の更新に成功しました。\n
 1642:IP:
-1643:SRV_X1 0x021C を受け取りました。コンタクトリストを終了してよろしいですか?\n
-#-#1644:SRV_X2 0x00E6 を受け取りました。古いメッセージを終了してよろしいですか?\n
-#+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
-#_#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
-1645:あなたの入力したパスワードは間違っています。\n
-1646:サーバは使用中です。\n
-1648:応答は %04x でした。
-1649:バージョンは %x でした。
-1650:\nSEQ は %04lx でした。
-1651:サイズは %d でした。\n
+1643.SRV_X1 0x021C を受け取りました。コンタクトリストを終了してよろしいですか?\n
+1645.あなたの入力したパスワードは間違っています。\n
+1646.サーバは使用中です。\n
+1648.応答は %04x でした。
+1649.バージョンは %x でした。
+1650.\nSEQ は %04lx でした。
+1651.サイズは %d でした。\n
 1653:オフライン
 1654:オンライン
 1655:ユーザのメールアドレスを入力してください:
@@ -589,7 +581,7 @@
 1741.まずメッセージを受け取らなければなりません。\n
 1742.まずメッセージを書かなければなりません。\n
 1743:パケットの長さが合っていません。\n
-1744:サーバ (v5)
+1744.サーバ (v5)
 1745:未知
 1746: nr タイプ     送信パケット / 受信パケット / 個のパケット\n
 1747:合計
@@ -600,8 +592,8 @@
 1767:不在/応答不可の自動サイクルを切り替えます。\n
 1770:<contacts> へ最後のメッセージを送り直します。
 1771:まだ誰にもへメッセージを送っていません!\n
-1774:受信パケット:
-1775:送信パケット:
+1774.受信パケット:
+1775.送信パケット:
 1781.あなたの UIN のパスワードは %ld:\n
 1782.新しい UIN にはパスワードが必要です。\n
 1783.もう一度入力してください。\n
@@ -638,10 +630,10 @@
 #_#1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 1820:%s <option> [on|off|<値>] - 単純なオプションをコントロールします。\n
 1822:    color: 色つきでメッセージを出します。\n
-1823:一部だけ受信したパケット:
-1825:%04x (%s) パケットを廃棄しました。
-1826:メッセージ %04x (%s) 配列 %04lx (試行回数 #%ld 長さ %d)を再び送っています。\n
-1830:%s へのメッセージを廃棄しました。%ld 回送信を試行しました。廃棄されたメッセージの内容:\n
+1823.一部だけ受信したパケット:
+1825.%04x (%s) パケットを廃棄しました。
+1826.メッセージ %04x (%s) 配列 %04lx (試行回数 #%ld 長さ %d)を再び送っています。\n
+1830.%s へのメッセージを廃棄しました。%ld 回送信を試行しました。廃棄されたメッセージの内容:\n
 1833:ピア・ツー・ピア TCP 接続が確立しました。\n
 1842:ソケット %d を閉じます。%s への接続でした。\n
 1843:ソケット %d を閉じます。\n
@@ -652,18 +644,18 @@
 1849:select でのエラー: %s (%d)\n
 1850:%s との %s:%ld での接続がタイムアウトしました。\n
 1855:%s への %s:%ld での TCP 接続が失敗しました。\n
-1856:パケット %04x (%s) を廃棄しました。古いセッション %08lx (現在: %08lx) からでした。\n
+1856.パケット %04x (%s) を廃棄しました。古いセッション %08lx (現在: %08lx) からでした。\n
 1857:他の人のコンタクトから IP を隠したいですか？(yes/no)
-1867:不正な(短すぎる)受信パケット - 無視します。\n
-1868:不正な(サブパケットが長すぎる)複数の受信パケット - 残りを無視します。\n
-1869:プロトコルバージョン4以下はもうサポートされていません。\n
+1867.不正な(短すぎる)受信パケット - 無視します。\n
+1868.不正な(サブパケットが長すぎる)複数の受信パケット - 残りを無視します。\n
+1869.プロトコルバージョン4以下はもうサポートされていません。\n
 1870:peer off <ニックネーム> - 直接接続を閉じ、二度と直接接続しなくなります。\n
 1872:失敗しました: %s (%d)\n
 1873:働いている区市町村:
 1874:働いている都道府県:
 1875:個人的関心:
 1876:個人的経歴:
-1877:ok.\n
+1877.ok.\n
 1878:ソケットから読み込む間にエラーがありました:%s(%d,%d)\n
 1879:交友関係:
 1881:FLAP チャンネル 1 にデータがありません。\n
@@ -673,11 +665,13 @@
 1885:v8 接続はタイムアウトしました。\n
 1887:接続:
 1888:ウェブ通知機能はオフになっています。
-1889:サーバ
+1889.サーバ
 1890:ピア・ツー・ピア
 1891.接続 %ld はすでに開いています。\n
 1892:conn                    利用可能な接続を挙げます。\n
-1893:conn login <nr> [pass]  <nr> への接続を開きます。\n
+#-#1893:conn login <nr> [pass]  <nr> への接続を開きます。\n
+#+#1893:conn login <nr> [pass]  Open connection <nr>.\n
+#_#1893:conn login <nr> [pass]  Log in to server connection <nr>.\n
 1894:接続番号 %ld はありません。\n
 1895:ログインに失敗しました:\n
 1896:サーバは接続を切断しました:\n
@@ -731,7 +725,7 @@
 1961:URL: %s\n
 1966:ポート %ld での %s への接続は拒否されました。\n
 1967:次のものに関する詳細情報:
-1968:ユーザが見つかりました。\n
+1968.ユーザが見つかりました。\n
 1969:オフライン
 1970:オンライン
 1971:邪魔しないで
@@ -830,14 +824,16 @@
 2090:ファイルピア・ツー・ピア
 2091:転送のために %s を %s としてキューに入れます。\n
 2092:TCP メッセージ %s は廃棄されました - セッションが失われました。\n
-2094:conn login [pass]            最初のサーバ接続を開きます。\n
+#-#2094:conn login [pass]            最初のサーバ接続を開きます。\n
+#+#2094:conn login [pass]       Open current/first server connection.\n
+#_#2094:conn login [pass]       Log in to current/first server connection.\n
 2095:conn remove <接続番号>        <接続番号> の接続を取り除きます。\n
 2097:conn select <接続番号>        サーバ接続として <接続番号> を選びます。\n
 2098:接続 %ld はサーバ接続ではありません。\n
 2099.接続 %ld (バージョン %d, UIN %ld) を現在の接続として選択しました。\n
 2100:conn select <UIN>             サーバ接続として <UIN> で接続します。\n
 2101:接続 %ld とそれに関する接続全てを完全に切ります。\n
-2102:接続 %ld は設定がなされています。\n
+2102.接続 %ld は設定がなされています。\n
 #-#2103:contact show    サーバ側のコンタクトリストを表示します。\n
 #+#2103:contact show    Show server side contact list.\n
 #_#2103:contact show    Show server based contact list.\n
@@ -875,8 +871,8 @@
 #+#2124:%sSyntax error%s: Not an integer: '%s'\n
 #_#2124:%sSyntax error%s: Not an integer: %s\n
 2126.はオフラインです。メッセージはサーバに保存されます。\n
-2128:      説明: %s%s%s\n
-2129:       URL: %s%s%s\n
+2128.      説明: %s%s%s\n
+2129.       URL: %s%s%s\n
 2131:%s%s%s へのメッセージを書いています:\n
 2133:色は %s%s%s です。\n
 2134:おもしろいメッセージは %s%s%s です。\n
@@ -958,7 +954,7 @@
 2211:あなたのステータスは %s です。\n
 2212:ステータスを %s へ変えました
 2213:%s がログオンしました
-2214:%s%lu%s についての情報:\n
+2214.%s%lu%s についての情報:\n
 2215:この climm は SJIS と EUC と UTF-8 の間の変換ができません。\n
 2216:この climm は「%s」エンコードを使えません。\n
 2217:この climm は「%s」と UTF-8 の間の変換ができません。\n
@@ -1119,7 +1115,9 @@
 #+#2393:%m/%d/%Y
 #_#2393:%Y-%m-%d
 2394: %I:%M %p
-2395: 眺めは <ニックネーム> からメッセージを受け取った、<日付> から。
+#-#2395: 眺めは <ニックネーム> からメッセージを受け取った、<日付> から。
+#+#2395:View your messages of <contact> since <date>.
+#_#2395:View your messages of <contact> or all contacts (for *) since <date>.
 #-#2396:変数 '%s' に間違った日付表示形式、それが ISO 8601 の標準形式でなければならないある。試みの '2004-31-01' か '2004-31-01T23:12:05' ください。\n
 #+#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-31-01' or '2004-31-01T23:12:05'.\n
 #_#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
@@ -1181,7 +1179,6 @@
 #_#2456:Unknown command %s, type %shelp%s for help.\n
 #_#2457:Unknown configuration file format version %d.\n
 #_#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
-#_#2459:Peer-to-peer connection not associated to server connection, discarding.\n
 #_#2460:Contact group %s (id %s%d%s) not associated to server connection.\n
 #_#2461:Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 #_#2462:File transfer %s to port %s%ld%s.
@@ -1219,7 +1216,6 @@
 #_#2507:Translation %s%s%s not found. Would you like to translate climm into your language?\n
 #_#2508:No translation (%s) loaded (%s%d%s entries).\n
 #_#2509:WSAStartup() for WinSocks 1.1 failed
-#_#2510:Opening v5 connection to %s:%s%ld%s... 
 #_#2511:Redirect to server %s:%s%ld%s... 
 #_#2512:Opening v8 connection to %s:%s%ld%s for %s%s%s... 
 #_#2513:new UIN
@@ -1293,7 +1289,6 @@
 #_#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
 #_#2583:Location error: %d.\n
 #_#2584:msn temp
-#_#2585:msn server
 #_#2586:msn chat
 #_#2587:Couldn't load meta data for %s (%s).\n
 2588:「%s」(%s) についてのメタデータを保存しました。\n
@@ -1315,7 +1310,7 @@
 #_#2604:xmpp
 #_#2605:Automatic status change.
 2606:チャットグループ %s に UIN %d のランダムチャットパートナーを見つけました。\n
-2607:新しい UIN は %s です\n
+2607.新しい UIN は %s です\n
 2608:あなたの新しい UIN は: %s。\n
 2609:警告: サーバはわたしたちの UIN が %s の場合、UIN は %s であると考えます。\n
 2610:%s%s%s (%s) についての情報:\n
@@ -1413,3 +1408,32 @@
 #_#2708:Contact %s/%s (#%d) exists only locally.\n
 #_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
 #_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
+#_#2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
+#_#2712:Query emails matching <query> since <date>, or continue search.
+#_#2713:Options for server %s:\n
+#_#2714:Undefining option %s for server %s.\n
+#_#2715:Option %s for server %s is undefined.\n
+#_#2716:Option %s for server %s is %s%s%s.\n
+#_#2717:Option %s for server %s is %s.\n
+#_#2718:Setting option %s for server %s to %s.\n
+#_#2719:Setting option %s for server %s to %s%d%s.\n
+#_#2720:Setting option %s for server %s.\n
+#_#2721:Clearing option %s for server %s.\n
+#_#2722:conn logoff <nr>        Log off from server connection <nr>.\n
+#_#2723:conn discard <nr>       Discard server connection <nr>.\n
+#_#2724:conn open <nr>          Open connection <nr>.\n
+#_#2725:Connection #%ld is already open.\n
+#_#2726:Don't know how to open connection type %s for #%ld.\n
+#_#2727:Connection #%ld is a server's main i/o connection.\n
+#_#2728:Discarding server connection %ld completely.\n
+#_#2729:Logging of from connection %ld.\n
+#_#2730:xmpp main i/o
+#_#2731:msn main i/o
+#_#2732:icq main i/o
+#_#2733:xmpp peer-to-peer
+#_#2734:xmpp file io
+#_#2735:msn
+#_#2736:icq
+#_#2737:Added contact group %s (#%d).\n
+#_#2738:Found %d new mails for %s.\n
+#_#2739:Found %d mails for %s.\n

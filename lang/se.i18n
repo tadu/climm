@@ -1,5 +1,5 @@
 # $Id$ (Swedish)
-#  EN: __.i18n 2481 2008-02-16 23:31:15 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 1001:sv
 1002:sv_SE
@@ -28,18 +28,18 @@
 1028:NEJ
 1029:Svara JA eller NEJ!
 1030:loggade av
-1032:debug: dubbelt paket #%04lx av typ %04x (%s)\n
+1032.debug: dubbelt paket #%04lx av typ %04x (%s)\n
 1033:Inkommande v8 serverpaket:
-1034:Har försökt max antal gånger, ger upp.
+1034.Har försökt max antal gånger, ger upp.
 1038:Meddelandet avbrutet.\n
-1039:Servern anser inte att vi är anslutna.\n
-1043:Sökningen avslutad.
-1044:Sökningen gav för många svar.
-1045:Sökning klar.
-1046:Längd
-1047:Extra infomation
+1039.Servern anser inte att vi är anslutna.\n
+1043.Sökningen avslutad.
+1044.Sökningen gav för många svar.
+1045.Sökning klar.
+1046.Längd
+1047.Extra infomation
 1048:Felkod: %ld\n
-1050:Inloggning klar!
+1050.Inloggning klar!
 1053:Ansluten till %s, väntar på svar\n
 1055:Anslutningen misslyckades
 1056:Ansluten, försöker logga in\n
@@ -52,7 +52,7 @@
 #-#1079:Ingen översättning, använder standardspråk.\n
 #+#1079:Translation (%s, %s) from %s, last modified on %s by %s, for mICQ %d.%d.%d%s.\n
 #_#1079:Translation (%s, %s) from %s, last modified on %s by %s, for climm %d.%d.%d%s.\n
-1082:Försöker återansluta... [försök %d av %d]\n
+1082.Försöker återansluta... [försök %d av %d]\n
 1085:på
 1086:av
 1089:Tog bort översättning.
@@ -382,8 +382,8 @@
 1437:Ändra status till osynlig.
 1438:Uppdaterar informationen om dig själv (e-mail, namn, etc.).
 1439:Ställer in din slumpmässiga användargrupp.
-1440:Slumpmässig användare:
-1441:IP-adress:
+1440.Slumpmässig användare:
+1441.IP-adress:
 1442:Vänligen välj ett ämne ur hjälpen.
 1443:Kommandon relaterade till climm.se's uppvisning och konfiguration.
 #-#1444:Kommandon relaterade till att hitta andra användare.
@@ -395,10 +395,10 @@
 1448:Meddelande
 1449:Användare
 1450:Konto
-1451:Lokal IP:
-1452:Status:
+1451.Lokal IP:
+1452.Status:
 1453:TCP-version:
-1454:Anslutning:
+1454.Anslutning:
 1455:Konst
 1456:Bilar
 1457:Kändisdyrkare
@@ -438,7 +438,7 @@
 1492:50-talet
 1493:Direktkontakt
 1494:Server enbart
-1495:Hittade ingen slumpvis användare
+1495.Hittade ingen slumpvis användare
 1497:misslyckades
 1499:Övrigt
 1500:ICQ-namn:
@@ -511,7 +511,7 @@
 1603:Skriv in arbetsbefattning:
 1604:Ska användarna vara online?
 1605:Skall din status vara synlig från webben? (JA/NEJ)
-1606:Mottog ett felaktigt sessions ID %08lx (korrekt: %08lx) med kommando %04x ignorerat.\n
+1606.Mottog ett felaktigt sessions ID %08lx (korrekt: %08lx) med kommando %04x ignorerat.\n
 1612:Detta program har utvecklats helt utan hjälp från Mirabilis.\n
 1613:Vi har ej försökt dekompilera någon av Mirabilis källkod.\n
 1618.UIN:
@@ -519,28 +519,20 @@
 1620.maximala antalet kontakter nått. Be en trollkarl förstora mig!
 1621:användare inte returnerade.
 1622:Vill du använda dessa ändringar? (JA/NEJ)
-#-#1623:Dubblerat paket %04X\n
-#+#1623:Doubled packet %04X\n
-#-#1632:\nAnslutningen instabil. Avbryter...
-#+#1632:\nConnection unstable. Exiting....
-#_#1632:\nConnection unstable. Exiting....
 1634:ok.\n
 1637:Kan inte binda socket till ledig port\n
 1638:Kunde inte skapa socket
 1639.Det nya ICQ-nummret är %ld!\n
-1640:Misslyckades med att uppdatera informationen.\n
-1641:Informationen uppdaterad.\n
+1640.Misslyckades med att uppdatera informationen.\n
+1641.Informationen uppdaterad.\n
 1642:IP:
-1643:Bekräftad SRV_X1 0x021C Klar Kontaktlista?\n
-#-#1644:Bekräftad SRV_X2 0x00E6 Klar gamla meddelanden?\n
-#+#1644:Acknowleged SRV_X2 0x00E6 Done old messages?\n
-#_#1644:Acknowledged SRV_X2 0x00E6 Done old messages?\n
-1645:Felaktigt lösenord.\n
-1646:Servern är överbelastad.\n
-1648: Svaret var %04x	
-1649:Versionen var %x	
-1650:\nSEQ var %04lx
-1651:Storleken var %d\n
+1643.Bekräftad SRV_X1 0x021C Klar Kontaktlista?\n
+1645.Felaktigt lösenord.\n
+1646.Servern är överbelastad.\n
+1648. Svaret var %04x	
+1649.Versionen var %x	
+1650.\nSEQ var %04lx
+1651.Storleken var %d\n
 1653:Ej inloggad
 1654:Inloggad
 1655:Ange e-post adress:
@@ -591,7 +583,7 @@
 1741.Måste mottaga ett meddelande först.\n
 1742.Måste skriva ett meddelande först.\n
 1743:Diskrepans mellan paketens längd.\n
-1744:server (v5)
+1744.server (v5)
 1745:Lista
 1746:Osynlig lista
 1747:Synlig lista
@@ -602,8 +594,8 @@
 1767:Aktiver autobyte till borta/ej tillgänglig.
 1770:Återsänd ditt senaste meddelande till <kontakter>.
 1771:Du har inte skickat ett enda meddelande till någon än!\n
-1774:Inkommande paket:
-1775:Utgående paket:
+1774.Inkommande paket:
+1775.Utgående paket:
 1781.Ditt lösenord för UIN %ld:\n
 1782.Du behöver ett lösenord till ditt nya UIN.\n
 1783.För att undvika stavfel, var vänlig ange lösenord en gång till.\n
@@ -640,10 +632,10 @@
 #_#1818:Warning: Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 1820:%s <option> [på|av|<värde>] - kontrollera enkla inställningar.\n
 1822:    färg:      använd färgtext.\n
-1823:Inkommande partiellt paket:
-1825:Kasserade ett %04x (%s)-paket
-1826:Återsänder meddelande %04x (%s) sekvens %04lx (försök #%ld, len %d).\n
-1830:Kasserar meddelande %s efter %ld misslyckade sändförsök. Meddelandetext:\n
+1823.Inkommande partiellt paket:
+1825.Kasserade ett %04x (%s)-paket
+1826.Återsänder meddelande %04x (%s) sekvens %04lx (försök #%ld, len %d).\n
+1830.Kasserar meddelande %s efter %ld misslyckade sändförsök. Meddelandetext:\n
 1833:Peer-to-peer TCP-anslutning etablerad.\n
 1842:Stänger socket %d till %s.\n
 1843:Stänge socket %d.\n
@@ -654,18 +646,18 @@
 1849:Fel vid val: %s (%d)\n
 1850:Avbrott vid anslutning med %s vid %s:%ld\n
 1855:TCP-anslutning till %s vid %s:%ld misslyckades.\n
-1856:Kastade bort ett %04x (%s) paket från den gamla sessionen %08lx (aktiv: %08lx).\n
+1856.Kastade bort ett %04x (%s) paket från den gamla sessionen %08lx (aktiv: %08lx).\n
 1857:Vill du gömma ditt IP från de på din kontaktlista (JA/NEJ)
-1867:Mottog ett felformaat (för kort) paket - ignorerat.\n
-1868:Mottog ett felformaat (för långt delpaket) multi-paket - resten ignoreras.\n
-1869:Protokoll versioner mindre än 5 supportas inte längre.\n
+1867.Mottog ett felformaat (för kort) paket - ignorerat.\n
+1868.Mottog ett felformaat (för långt delpaket) multi-paket - resten ignoreras.\n
+1869.Protokoll versioner mindre än 5 supportas inte längre.\n
 1870:peer off   <namn> - Stänger direkt-anslutning(ar) och försök inte igen.\n
 1872:misslyckades: %s (%d)\n
 1873:Arbetsstad:
 1874:Arbetsstat:
 1875:Egna intressen:
 1876:Tidigare bakgrund:
-1877:ok.\n
+1877.ok.\n
 1878:Fel vid läsning från socket: %s (%d, %d)\n
 1879:Medlemsskap:
 1881:FLAP kanal 1 slut på data.\n
@@ -675,11 +667,13 @@
 1885:Anslutning v8 avbröts.\n
 1887:Anslutningar:
 1888:inte webmedveten
-1889:server
+1889.server
 1890:partner-till-partner
 1891.Anslutning %ld är redan öppen.\n
 1892:conn                    Lista tillgänglia anslutningar.\n
-1893:conn login <nr> [pass]  Öppna anslutning <nr>.\n
+#-#1893:conn login <nr> [pass]  Öppna anslutning <nr>.\n
+#+#1893:conn login <nr> [pass]  Open connection <nr>.\n
+#_#1893:conn login <nr> [pass]  Log in to server connection <nr>.\n
 1894:Det finns ingen anslutning med nummer %ld.\n
 1895:Inloggning misslyckades:\n
 1896:Servern stängde anslutningen:\n
@@ -732,7 +726,7 @@
 1961:URL: %s\n
 1966: Anslutning avslagen via port %ld på %s\n
 1967:Mer information om
-1968:Användare hittad:\n
+1968.Användare hittad:\n
 1969:ej inloggad
 1970:inloggad
 1971:stör ej
@@ -831,14 +825,16 @@
 2090:fil partner-till-partner
 2091:Köar upp %s som %s för överföring.\n
 2092:TCP-meddelande %s ignorerat - session avbruten.\n
-2094:conn login [pass]       Öppna första server-anslutningen.\n
+#-#2094:conn login [pass]       Öppna första server-anslutningen.\n
+#+#2094:conn login [pass]       Open current/first server connection.\n
+#_#2094:conn login [pass]       Log in to current/first server connection.\n
 2095:conn remove <nr>        Ta bort anslutning <nr>.\n
 2097:conn select <nr>        Välj anslutning <nr> som server-anslutning.\n
 2098:Anslutning %ld är inte en server-anslutning.\n
 2099.Valde anslutning %ld (version %d, UIN %ld) som aktiv anslutning.\n
 2100:conn select <uin>       Väljd anslutning med UIN <uin> som server-anslutning.\n
 2101:Tar bort anslutning %ld fullständigt och det som beror på den.\n
-2102:Anslutning %ld är en konfigurerad anslutning.\n
+2102.Anslutning %ld är en konfigurerad anslutning.\n
 #-#2103:contact show    Visa kontaktlistan som finns på servern.\n
 #+#2103:contact show    Show server side contact list.\n
 #_#2103:contact show    Show server based contact list.\n
@@ -876,8 +872,8 @@
 #+#2124:%sSyntax error%s: Not an integer: '%s'\n
 #_#2124:%sSyntax error%s: Not an integer: %s\n
 2126.är nedkopplad, meddelande uppköat på servern.\n
-2128: Beskrivning: %s%s%s\n
-2129: URL:         %s%s%s\n
+2128. Beskrivning: %s%s%s\n
+2129. URL:         %s%s%s\n
 2131:Skriver meddelande till %s%s%s:\n
 2133:Färg är %s%s%s.\n
 2134:Skojiga meddelanden är %s%s%s.\n
@@ -959,7 +955,7 @@
 2211:Din status är %s.\n
 2212:bytte status till %s
 2213:Loggade in (%s)
-2214:Info om %s%lu%s:\n
+2214.Info om %s%lu%s:\n
 2215:Denna climm kan inte konvertera mellan SJIS eller EUC och unicode.\n
 2216:Denna climm kan inte tolka '%s'-kodningen.\n
 2217:Denna climm kan inte konvertera mellan '%s' och unicode.\n
@@ -1114,7 +1110,7 @@
 #_#2391:Case sensitive search of <pattern> in log file of <contact>.
 #_#2393:%Y-%m-%d
 #_#2394: %I:%M %p
-#_#2395:View your messages of <contact> since <date>.
+#_#2395:View your messages of <contact> or all contacts (for *) since <date>.
 #_#2396:Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n
 #_#2397:No server session found.\n
 #_#2398:Set or display options for a contact group, a contact or global.\n
@@ -1174,7 +1170,6 @@
 #_#2456:Unknown command %s, type %shelp%s for help.\n
 #_#2457:Unknown configuration file format version %d.\n
 #_#2458:Can't tab spool %s; type "%sopt %s tabspool 1%s" manually.\n
-#_#2459:Peer-to-peer connection not associated to server connection, discarding.\n
 #_#2460:Contact group %s (id %s%d%s) not associated to server connection.\n
 #_#2461:Deprecated syntax found in configuration file '%s'!\n    Please update or "save" the configuration file and check for changes.\n
 #_#2462:File transfer %s to port %s%ld%s.
@@ -1212,7 +1207,6 @@
 #_#2507:Translation %s%s%s not found. Would you like to translate climm into your language?\n
 #_#2508:No translation (%s) loaded (%s%d%s entries).\n
 #_#2509:WSAStartup() for WinSocks 1.1 failed
-#_#2510:Opening v5 connection to %s:%s%ld%s... 
 #_#2511:Redirect to server %s:%s%ld%s... 
 #_#2512:Opening v8 connection to %s:%s%ld%s for %s%s%s... 
 #_#2513:new UIN
@@ -1286,7 +1280,6 @@
 #_#2582:Install the Tcl 8.4 library and enjoy scripting in climm!\n
 #_#2583:Location error: %d.\n
 #_#2584:msn temp
-#_#2585:msn server
 #_#2586:msn chat
 #_#2587:Couldn't load meta data for %s (%s).\n
 2588:Sparade metadata för '%s' (%s).\n
@@ -1308,7 +1301,7 @@
 #_#2604:xmpp
 #_#2605:Automatic status change.
 2606:Hittade slumpmässig chat partner UIN %s i chat grupp %d.\n
-2607:Det nya ICQ-nummret är %s!\n
+2607.Det nya ICQ-nummret är %s!\n
 2608:Ditt nya UIN är: %s.\n
 #_#2609:Warning: Server thinks our UIN is %s, when it is %s.\n
 2610:Information om %s%s%s (%s):\n
@@ -1406,3 +1399,32 @@
 #_#2708:Contact %s/%s (#%d) exists only locally.\n
 #_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
 #_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
+#_#2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
+#_#2712:Query emails matching <query> since <date>, or continue search.
+#_#2713:Options for server %s:\n
+#_#2714:Undefining option %s for server %s.\n
+#_#2715:Option %s for server %s is undefined.\n
+#_#2716:Option %s for server %s is %s%s%s.\n
+#_#2717:Option %s for server %s is %s.\n
+#_#2718:Setting option %s for server %s to %s.\n
+#_#2719:Setting option %s for server %s to %s%d%s.\n
+#_#2720:Setting option %s for server %s.\n
+#_#2721:Clearing option %s for server %s.\n
+#_#2722:conn logoff <nr>        Log off from server connection <nr>.\n
+#_#2723:conn discard <nr>       Discard server connection <nr>.\n
+#_#2724:conn open <nr>          Open connection <nr>.\n
+#_#2725:Connection #%ld is already open.\n
+#_#2726:Don't know how to open connection type %s for #%ld.\n
+#_#2727:Connection #%ld is a server's main i/o connection.\n
+#_#2728:Discarding server connection %ld completely.\n
+#_#2729:Logging of from connection %ld.\n
+#_#2730:xmpp main i/o
+#_#2731:msn main i/o
+#_#2732:icq main i/o
+#_#2733:xmpp peer-to-peer
+#_#2734:xmpp file io
+#_#2735:msn
+#_#2736:icq
+#_#2737:Added contact group %s (#%d).\n
+#_#2738:Found %d new mails for %s.\n
+#_#2739:Found %d mails for %s.\n
