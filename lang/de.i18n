@@ -668,9 +668,7 @@
 1890:Direktverbindung
 1891.Verbindung %ld ist bereits geöffnet.\n
 1892:conn                    Liste verfügbare Verbindungen auf.\n
-#-#1893:conn login <nr> [pass]  Öffnet Verbindung <nr>.\n
-#+#1893:conn login <nr> [pass]  Open connection <nr>.\n
-#_#1893:conn login <nr> [pass]  Log in to server connection <nr>.\n
+1893:conn login <nr> [pass]  Mit Server-Verbindung <nr> einloggen.\n
 1894:Es gibt keine Verbindung Nummer %ld.\n
 1895:Login fehlgeschlagen:\n
 1896:Der Server hat die Verbindung geschlossen:\n
@@ -817,9 +815,7 @@
 2090:Dateiübertragung
 2091:Sende "%s" als "%s".\n
 2092:Direktverbindungsnachricht %s weggeworfen - Verbindung verschwunden.\n
-#-#2094:conn login [pass]       Öffne aktuelle/erste Server-Verbindung.\n
-#+#2094:conn login [pass]       Open current/first server connection.\n
-#_#2094:conn login [pass]       Log in to current/first server connection.\n
+2094:conn login [pass]       Mit aktueller/erster Server-Verbindung einloggen.\n
 2095:conn remove <nr>        Entferne Verbindung <nr>.\n
 2097:conn select <nr>        Wähle Verbindung <nr> als aktuelle Server-Verbindung aus.\n
 2098:Verbindung %ld ist keine Server-Verbindung.\n
@@ -1044,9 +1040,7 @@
 2391:Suche nach <pattern> in der Log-Datei von <contact> (beachte Großschreibung).
 2393:%d.%m.%Y
 2394: %H:%M
-#-#2395:Zeigt die Nachrichten von <contact> ab dem Datum <date> an.
-#+#2395:View your messages of <contact> since <date>.
-#_#2395:View your messages of <contact> or all contacts (for *) since <date>.
+2395:Zeigt die Nachrichten von <contact> (or mit * von allen) ab dem Datum <date> an.
 2396:Parameter '%s' ist nicht im ISO 8601 Format (Bsp.: '2004-01-31' oder '2004-01-31T23:12:05').\n
 2397:Keine Server-Verbindung gefunden.\n
 2398:Setze oder zeige Option für Kontaktgruppe, Kontakt oder global an.
@@ -1353,27 +1347,27 @@
 2706:Kontakt %s/%s ist normal (#%d) auf dem Server, aber sichtbar (#%d,#%d) lokal.\n
 2707:Kontakt %s/%s (#%d) ist in Gruppe %s (#%d) auf dem Server, aber in Gruppe %s (#%d) lokal.\n
 2708:Kontakt %s/%s (#%d) existiert nur lokal.\n
-#_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
+2709:Öffne Verbindungsannahme für Dateiübertragung auf %slocalhost%s:%s%lp%s... 
 2710:Kontakt %s/%s ist normal (#%d) auf dem Server, aber ignoriert (#%d,#%d) lokal.\n
-#_#2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
-#_#2712:Query emails matching <query> since <date>, or continue search.
-#_#2713:Options for server %s:\n
-#_#2714:Undefining option %s for server %s.\n
-#_#2715:Option %s for server %s is undefined.\n
-#_#2716:Option %s for server %s is %s%s%s.\n
-#_#2717:Option %s for server %s is %s.\n
-#_#2718:Setting option %s for server %s to %s.\n
-#_#2719:Setting option %s for server %s to %s%d%s.\n
-#_#2720:Setting option %s for server %s.\n
-#_#2721:Clearing option %s for server %s.\n
-#_#2722:conn logoff <nr>        Log off from server connection <nr>.\n
-#_#2723:conn discard <nr>       Discard server connection <nr>.\n
-#_#2724:conn open <nr>          Open connection <nr>.\n
-#_#2725:Connection #%ld is already open.\n
+2711:historyd <contact|*> [<date> [<count>]] -- Zeige geloggte Nachrichten von <contact> (oder mit * von allen) seit <date>.\n
+2712:Durchsuche e-Mails nach <query> seit <date> oder suche weiter.
+2713:Optionen für Server %s:\n
+2714:Lösche Option %s für Server %s.\n
+2715:Option %s für Server %s ist undefiniert.\n
+2716:Option %s für Server %s ist %s%s%s.\n
+2717:Option %s für Server %s ist %s.\n
+2718:Setze Option %s für Server %s auf %s.\n
+2719:Setze Option %s für Server %s auf %s%d%s.\n
+2720:Setze Option %s für Server %s.\n
+2721:Setze Option %s für Server %s zurück.\n
+2722:conn logoff <nr>        Aus Server-Verbindung <nr> ausloggen.\n
+2723:conn discard <nr>       Server-Verbindung <nr> komplett entfernen.\n
+2724:conn open <nr>          Verbindung <nr> öffnen.\n
+2725:Verbindung Nummer %ld ist bereits geöffnet.\n
 #_#2726:Don't know how to open connection type %s for #%ld.\n
-#_#2727:Connection #%ld is a server's main i/o connection.\n
-#_#2728:Discarding server connection %ld completely.\n
-#_#2729:Logging of from connection %ld.\n
+2727:Verbindung Nummer %ld ist die Haupt-Verbindung zu einem Server.\n
+2728:Entferne Server-Verbindung %ld vollständig.\n
+2729:Logge von Verbindung %ld aus.\n
 #_#2730:xmpp main i/o
 #_#2731:msn main i/o
 #_#2732:icq main i/o
@@ -1381,9 +1375,9 @@
 #_#2734:xmpp file io
 #_#2735:msn
 #_#2736:icq
-#_#2737:Added contact group %s (#%d).\n
-#_#2738:Found %d new mails for %s.\n
-#_#2739:Found %d mails for %s.\n
+2737:Kontaktgruppe  %s (#%d) hinzugefügt.\n
+2738:Habe %d neue e-Mails für %s gefunden.\n
+2739:Habe %d e-Mails für %s gefunden.\n
 2999.max.
 # Those are the funny messages. Substract 2000 to get the normal message.
 3620.Du hast zu viele Freunde, wie wär's mit mehr RL?
