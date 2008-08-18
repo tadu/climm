@@ -620,6 +620,7 @@ const char *QueueType (UDWORD type)
         case QUEUE_TYPE2_RESEND_ACK: return "TYPE2_R_ACK";
         case QUEUE_TYPE4_RESEND_ACK: return "TYPE4_R_ACK";
         case QUEUE_XMPP_RESEND_ACK:  return "XMPP_R_ACK";
+        case QUEUE_XMPP_GMAIL:       return "XMPP_GMAIL";
         case QUEUE_ACKNOWLEDGE:    return "ACKNOWLEDGE";
         case QUEUE_USERFILEACK:    return "USERFILEACK";
         case QUEUE_TOGVIS:         return "TOGVIS";
