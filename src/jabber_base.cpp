@@ -30,6 +30,8 @@ extern "C" {
 #include <gloox/gloox.h>
 #include <gloox/client.h>
 #include <gloox/connectionlistener.h>
+#include <gloox/disco.h>
+#include <gloox/discohandler.h>
 #include <gloox/messagehandler.h>
 #include <gloox/subscriptionhandler.h>
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
@@ -65,8 +67,9 @@ std::map<UWORD, std::string> l_tSeqTranslate;
 std::map<const std::string, std::string> sid2id;
 #endif
 
-class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler,
+class CLIMMXMPP: public gloox::ConnectionListener, public gloox::MessageHandler,
                  public gloox::PresenceHandler,    public gloox::SubscriptionHandler,
+                 public gloox::DiscoHandler,       public gloox::IqHandler,
 #ifdef CLIMM_XMPP_FILE_TRANSFER
                  public gloox::SIProfileFTHandler,
                  public gloox::SOCKS5BytestreamDataHandler,
@@ -127,11 +130,35 @@ class CLIMMXMPP : public gloox::ConnectionListener, public gloox::MessageHandler
         virtual void  handlePresence (gloox::Stanza *stanza);
         virtual void  handleSubscription (gloox::Stanza *stanza);
         virtual void  handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message);
+
+        // GMail support
+        void sendIqGmail (int64_t newer = 0, std::string newertid = "", std::string q = "", bool isauto = 0);
+        std::string gmail_new_newertid;
+        std::string gmail_newertid;
+        std::string gmail_query;
+        int64_t gmail_new_newer;
+        int64_t gmail_newer;
+        
+        // IqHandler
+        virtual bool handleIq (gloox::Stanza *stanza);
+        virtual bool handleIqID (gloox::Stanza *stanza, int context);
+        
+        // DiscoHandler 
+        virtual void handleDiscoInfoResult (gloox::Stanza *stanza, int context);
+        virtual void handleDiscoItemsResult (gloox::Stanza *stanza, int context);
+        virtual void handleDiscoError (gloox::Stanza *stanza, int context);
+        virtual bool handleDiscoSet (gloox::Stanza *stanza);
+
         gloox::Client *getClient () { return m_client; }
         UBYTE XMPPSendmsg (Server *conn, Contact *cont, Message *msg);
         void  XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *msg);
         void  XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const char *msg);
 };
+
+static inline CLIMMXMPP *getXMPPClient (Server *serv)
+{
+    return serv ? (CLIMMXMPP *)serv->xmpp_private : NULL;
+}
 
 CLIMMXMPP::CLIMMXMPP (Server *serv)
 {
@@ -154,6 +181,7 @@ CLIMMXMPP::CLIMMXMPP (Server *serv)
     m_client->logInstance ().registerLogHandler (gloox::LogLevelDebug,   gloox::LogAreaAll, this);
     m_client->disco()->setVersion ("climm", BuildVersionStr, BuildPlatformStr);
     m_client->disco()->setIdentity ("client", "console");
+    m_client->disco()->registerDiscoHandler (this);
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
     m_client->setPresence (gloox::PresenceAvailable, 5);
 
@@ -184,6 +212,7 @@ CLIMMXMPP::~CLIMMXMPP ()
 void CLIMMXMPP::onConnect ()
 {
     m_serv->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
+    m_client->disco()->getDiscoInfo (m_client->jid().server(), "", this, 0);
 //    m_client->send (gloox::Stanza::createPresenceStanza (gloox::JID (""), "", gloox::PresenceChat));
 }
 
@@ -419,7 +448,7 @@ void CLIMMXMPPSave (Server *serv, const char *text, char in)
     if (serv->logfd < 0)
         return;
 
-    data = s_sprintf ("%s %s%s\n", s_now, in & 1 ? "<<<" : ">>>", in & 2 ? " residual:" : ",");
+    data = s_sprintf ("%s %s%s\n", s_now, in & 1 ? "<<<" : ">>>", in & 2 ? " residual:" : "");
     write (serv->logfd, data, strlen (data));
 
     text = s_ind (text);
@@ -956,6 +985,163 @@ void CLIMMXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std
         DebugH (DEB_XMPPOTHER, "%s/%s: %s", lt, la, message.c_str());
 }
 
+/****************** GoogleMail ******************/
+
+void CLIMMXMPP::sendIqGmail (int64_t newer, std::string newertid, std::string q, bool isauto)
+{
+    gloox::Tag *iq = new gloox::Tag ("iq", "type", "get", 0);
+    iq->addAttribute ("from", m_client->jid().full ());
+    iq->addAttribute ("to", m_client->jid().bare ());
+    iq->addAttribute ("id", s_sprintf ("%s-%s-%x", isauto ? "mail" : "mailq", m_stamp, m_serv->conn->our_seq++));
+    if (newer == 1000ULL)
+    {
+        newer = gmail_newer;
+        newertid = gmail_newertid;
+        q = gmail_query;
+    }
+    if (isauto)
+    {
+        newer = gmail_new_newer;
+        newertid = gmail_new_newertid;
+    }
+    else
+        gmail_query = q;
+    gloox::Tag *qq = new gloox::Tag ("query", "xmlns", "google:mail:notify", 0);
+    if (newer != 0)
+        qq->addAttribute ("newer-than-time", s_sprintf ("%llu", newer));
+    if (*newertid.c_str ())
+        qq->addAttribute ("newer-than-tid", newertid);
+    if (*q.c_str ())
+        qq->addAttribute ("q", q);
+    iq->addChild (qq);
+    m_client->send (iq);
+}
+
+static void sendIqGmailReqs (Event *event)
+{
+    if (!event->conn)
+    {
+        EventD (event);
+        return;
+    }
+    CLIMMXMPP *j = getXMPPClient (event->conn->serv);
+    assert (j);
+    j->sendIqGmail ((event->due - 300ULL)*1000ULL, "", "", 1);
+    event->due += 300;
+    QueueEnqueue (event);
+}
+
+/****************** IqHandler **********/
+
+bool CLIMMXMPP::handleIq (gloox::Stanza *stanza)
+{
+    if (gloox::Tag *mb = stanza->findChild ("mailbox", "xmlns", "google:mail:notify"))
+    {
+        int n = 0;
+        int ismail = 0;
+        if (mb->hasAttribute ("total-matched"))
+        {
+            std::string a = mb->findAttribute ("total-matched");
+            n = atoi (a.c_str());
+        }
+        std::string from = stanza->from().bare();
+        std::string id = stanza->id();
+        if (!strncmp (id.c_str (), "mail-", 5))
+        {
+            ismail = 1;
+            if (n || !strcmp (id.c_str () + strlen (id.c_str()) - 2, "-0"))
+                rl_printf (i18n (9999, "Found %d new mails for %s.\n"), n, from.c_str());
+        }
+        else
+            rl_printf (i18n (9999, "Found %d mails for %s.\n"), n, from.c_str());
+        if (!n)
+            return true;
+        gloox::Tag::TagList ml = mb->findChildren ("mail-thread-info");
+        gloox::Tag::TagList::iterator mlit = ml.begin();
+        std::string ntid;
+        Contact *cont = m_serv->conn->cont;
+        for ( ; mlit != ml.end(); mlit++)
+        {
+            std::string sub = (*mlit)->findChild ("subject")->cdata();
+            std::string snip = (*mlit)->findChild ("snippet")->cdata();
+            std::string dato = (*mlit)->findAttribute ("date");
+            ntid = (*mlit)->findAttribute ("tid");
+            time_t t = atoll (dato.c_str ()) / 1000ULL;
+            rl_printf ("%s ", s_time (&t));
+            rl_printf ("%s%s %s%s%s", COLMESSAGE, sub.c_str (), COLQUOTE, COLSINGLE, snip.c_str ());
+            rl_printf ("\n");
+            gloox::Tag::TagList mls = (*mlit)->findChild ("senders")->findChildren ("sender");
+            gloox::Tag::TagList::iterator mlsit =mls.begin ();
+            for ( ; mlsit !=mls.end(); mlsit++)
+            {
+                if ((*mlsit)->hasAttribute ("unread", "1"))
+                {
+                    std::string email = (*mlsit)->findAttribute ("address");
+                    std::string name = (*mlsit)->findAttribute ("name");
+                    rl_printf ("            %s%s%s <%s%s%s>\n", COLQUOTE, name.c_str(), COLNONE, COLCONTACT, email.c_str(), COLNONE);
+                }
+            }
+        }
+        std::string foundnewer = mb->findAttribute ("result-time");
+        if (ismail)
+        {
+            gmail_new_newer = atoll (foundnewer.c_str ());
+            gmail_new_newertid = ntid;
+        }
+        else
+        {
+            gmail_newer = atoll (foundnewer.c_str ());
+            gmail_newertid = ntid;
+        }
+        return true;
+    }
+    CLIMMXMPPSave (m_serv, stanza->xml().c_str(), 3);
+}
+
+bool CLIMMXMPP::handleIqID (gloox::Stanza *stanza, int context)
+{
+    return 0;
+}
+
+/****************** DiscoHandler ****************/
+
+void CLIMMXMPP::handleDiscoInfoResult (gloox::Stanza *stanza, int context)
+{
+    if (stanza->from().server() == m_client->jid().server())
+    {
+        gloox::Tag *id = stanza->findChild ("query");
+        if (id)
+        {
+            if (id->hasChild ("feature", "var", "google:mail:notify"))
+            {
+                sendIqGmail ();
+                QueueEnqueueData2 (m_serv->conn, QUEUE_XMPP_GMAIL, 0, 300, NULL, &sendIqGmailReqs, NULL);
+                m_client->registerIqHandler (this, "google:mail:notify");
+            }
+            return;
+        }
+    }
+    CLIMMXMPPSave (m_serv, stanza->xml().c_str(), 3);
+}
+
+void CLIMMXMPP::handleDiscoItemsResult (gloox::Stanza *stanza, int context)
+{
+    CLIMMXMPPSave (m_serv, stanza->xml().c_str(), 3);
+}
+
+void CLIMMXMPP::handleDiscoError (gloox::Stanza *stanza, int context)
+{
+    CLIMMXMPPSave (m_serv, stanza->xml().c_str(), 3);
+}
+
+bool CLIMMXMPP::handleDiscoSet (gloox::Stanza *stanza)
+{
+    CLIMMXMPPSave (m_serv, stanza->xml().c_str(), 3);
+    return 0;
+}
+
+/**************/
+
 static void SnacCallbackXmpp (Event *event)
 {
     Message *msg = (Message *)event->data;
@@ -1337,11 +1523,6 @@ Event *ConnectionInitXMPPServer (Server *serv)
     return event;
 }
 
-static inline CLIMMXMPP *getXMPPClient (Server *serv)
-{
-    return serv ? (CLIMMXMPP *)serv->xmpp_private : NULL;
-}
-
 void XMPPCallbackDispatch (Connection *conn)
 {
     if (conn->sok == -1)
@@ -1524,3 +1705,10 @@ void XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const char *msg)
     j->XMPPAuthorize (serv, cont, how, msg);
 }
 
+void  XMPPGoogleMail (Server *serv, time_t since, const char *query)
+{
+    CLIMMXMPP *j = getXMPPClient (serv);
+    assert (j);
+    assert (query);
+    j->sendIqGmail (since * 1000ULL, "", query, 0);
+}
