@@ -4317,7 +4317,10 @@ static JUMP_F(CmdUserConn)
         
         case 105:
             if (connl->serv && connl->serv->conn == connl)
-                rl_printf (i18n (2727, "Connection #%ld is a server's main i/o connection.\n"), UD2UL (nr));
+            {
+                rl_printf (i18n (2729, "Logging of from connection %ld.\n"), UD2UL (nr));
+                connl->close (connl);
+            }
             else if (connl->close)
             {
                 rl_printf (i18n (2185, "Closing connection %ld.\n"), UD2UL (nr));
