@@ -1630,8 +1630,6 @@ int PrefWriteStatusFile (void)
     fprintf (stf, "\n# The contact list section.\n");
     for (k = 0; (ss = ServerNr (k)); k++)
     {
-        if (!ss->flags)
-            continue;
         if (!ss->oscar_uin && (ss->type & TYPEF_HAVEUIN))
             continue;
 
@@ -1740,8 +1738,6 @@ int PrefWriteConfFile (void)
 
     for (k = 0; (ss = ServerNr (k)); k++)
     {
-        if (!ss->flags)
-            continue;
         if (!strcmp (ConnectionServerType (ss->type), "unknown"))
             continue;
 
