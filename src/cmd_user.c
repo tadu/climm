@@ -49,6 +49,7 @@
 #include "util_ssl.h"
 #include "util_alias.h"
 #include "util_otr.h"
+#include "jabber_base.h"
 
 #define MAX_STR_BUF 256                 /* buffer length for history */
 #define DEFAULT_HISTORY_COUNT 10        /* count of last messages of history */
@@ -67,7 +68,7 @@ static jump_f
     CmdUserTabs, CmdUserLast, CmdUserHistory, CmdUserFind, CmdUserUptime,
     CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserConn, CmdUserContact,
-    CmdUserAnyMess, CmdUserGetAuto, CmdUserOpt, CmdUserPrompt;
+    CmdUserAnyMess, CmdUserGetAuto, CmdUserOpt, CmdUserPrompt, CmdUserGmail;
 
 #ifdef ENABLE_PEER2PEER
 static jump_f CmdUserPeer;
@@ -190,6 +191,7 @@ static jump_t jump[] = {
     { &CmdUserAbout,         "about",        0,   0 },
     { &CmdUserConn,          "conn",         0,   0 },
     { &CmdUserConn,          "login",        0, 202 },
+    { &CmdUserGmail,         "gmail",        0,   0 },
 #ifdef ENABLE_PEER2PEER
     { &CmdUserPeer,          "peer",         0,   0 },
     { &CmdUserPeer,          "tcp",          0,   0 },
@@ -394,7 +396,7 @@ static JUMP_F(CmdUserHelp)
         "verbose, clear, sound, prompt, autoaway, auto, alias, unalias, lang, uptime, set, opt, optcontact, optgroup, optconnection, optglobal, save, q = quit = exit, x, !", NULL },
       { _i18n (2171, "Advanced"), "advanced",
         _i18n (2172, "Advanced commands."),
-        "meta, conn, peer, file, accept, contact, peek, peek2, peekall, as",
+        "meta, conn, peer, file, accept, contact, peek, peek2, peekall, as, gmail",
         _i18n (2314, "These are advanced commands. Be sure to have read the manual pages for complete information.\n") },
 #ifdef ENABLE_TCL
       { _i18n (2342, "Scripting"), "scripting",
@@ -664,6 +666,8 @@ static JUMP_F(CmdUserHelp)
             CMD_USER_HELP  ("peekall [<contacts>]", "= peek all <contacts>");
         else if (!strcasecmp (par->txt, "as"))
             CMD_USER_HELP  ("as <nr|uin> <cmd>", i18n (2562, "Execute <cmd> with connection <nr> or connection for uin <uin> as current server connection."));
+        else if (!strcasecmp (par->txt, "gmail"))
+            CMD_USER_HELP  ("gmail [<date>] [<query>]|more", i18n (9999, "Query emails matching <query> since <date>, or continue search."));
 #ifdef ENABLE_TCL
         /* Scripting */
         else if (!strcasecmp (par->txt, "tclscript"))
@@ -4333,6 +4337,55 @@ static JUMP_F(CmdUserConn)
                 servl->conn->close (servl->conn);
             }
     }
+    return 0;
+}
+
+/*
+ * Search GoogleMail
+ */
+static JUMP_F(CmdUserGmail)
+{
+    UDWORD isince;
+    time_t since;
+    strc_t par;
+    const char *q;
+
+    if (uiG.conn->type != TYPE_XMPP_SERVER)
+        return 0;
+    
+    if (s_parseint (&args, &isince))
+        since = isince;
+    else if (s_parsekey (&args, "more"))
+        since = 1;
+    else if ((par = s_parse (&args)))
+    {
+        struct tm stamp;
+        memset (&stamp, 0, sizeof (struct tm));
+        if ((strlen (par->txt) == 10 &&
+             sscanf (par->txt, "%4d-%2d-%2d",
+                     &stamp.tm_year, &stamp.tm_mon, &stamp.tm_mday) == 3) ||
+            (strlen (par->txt) == 19 &&
+             sscanf (par->txt, "%4d-%2d-%2dT%2d:%2d:%2d",
+                     &stamp.tm_year, &stamp.tm_mon, &stamp.tm_mday,
+                     &stamp.tm_hour, &stamp.tm_min, &stamp.tm_sec) == 6))
+        {
+            stamp.tm_mon--;
+            stamp.tm_year -= 1900;
+            stamp.tm_isdst = -1;
+            since = timelocal (&stamp);
+            if (since < 10)
+                since = 0;
+        }
+        else
+        {
+            rl_printf (i18n (2396, "Parameter '%s' has a wrong date format, it has to be ISO 8601 compliant. Try '2004-01-31' or '2004-01-31T23:12:05'.\n"), par->txt);
+            return 0;
+        }
+    }
+    else
+        since = 0;
+    q = s_parserem (&args);
+    XMPPGoogleMail (uiG.conn, since, q ? q : "");
     return 0;
 }
 
