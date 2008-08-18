@@ -1456,7 +1456,8 @@ void PrefReadStat (FILE *stf)
 
                     if (cg != cg->serv->contacts)
                     {
-                        ContactAdd (cg, cont);
+                        if (!ContactHas (cg, cont))
+                            ContactAdd (cg, cont);
                         if (cont->group == cg->serv->contacts)
                             cont->group = cg;
                     }
