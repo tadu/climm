@@ -71,7 +71,7 @@ static void ContactGroupInit (void)
 ContactGroup *ContactGroupC (Server *serv, UWORD id, const char *name DEBUGPARAM)
 {
     ContactGroup *cg;
-    int i;
+    int i, j;
     
     if (!cnt_groups)
         ContactGroupInit ();
@@ -86,8 +86,9 @@ ContactGroup *ContactGroupC (Server *serv, UWORD id, const char *name DEBUGPARAM
         if (!ncgp)
             return NULL;
         cnt_groups = ncgp;
-        cnt_groups[i] = NULL;
         cnt_count *= 2;
+        for (j = i; j < cnt_count; j++)
+            cnt_groups[j] = NULL;
     }
 
     if (!(cg = calloc (1, sizeof (ContactGroup))))
