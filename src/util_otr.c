@@ -431,7 +431,11 @@ int OTRMsgIn (Contact *cont, fat_srv_msg_t *msg)
     if (otr_text && msg->samehtml && strchr (otr_text, '<'))
     { /* throw message back to broken client (e.g. Pidgin) */
         Message *msg = MsgC ();
+#if ENABLE_CONT_HIER
         msg->cont = cont->parent ? cont->parent : cont;
+#else
+        msg->cont = cont;
+#endif
         msg->type = MSG_NORM;
         msg->send_message = strdup (s_sprintf ("Your broken client sent HTML tags in plain text field, so your message could not be delivered. Please report this as an error to the author of %s.", cont->version ? cont->version : "(unknown client)"));
         msg->otrinjected = 1;
