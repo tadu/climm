@@ -38,7 +38,7 @@ test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
 %setup -q -n climm-%{version}
 
 %build
-%configure --disable-dependency-tracking CFLAGS=-O4 \
+%configure --disable-dependency-tracking CFLAGS=-O2 \
 	%{!?_without_tcl:--enable-tcl}%{?_without_tcl:--disable-tcl} \
 	%{!?_without_ssl:--enable-ssl}%{?_without_ssl:--disable-ssl} \
 	%{!?_without_xmpp:--enable-xmpp}%{?_without_xmpp:--disable-xmpp} \
@@ -83,6 +83,9 @@ test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Tue Aug 19 2008 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream release 0.6.3
+
 * Mon Feb 25 2008 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream release 0.6.2
 
