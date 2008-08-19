@@ -1057,12 +1057,14 @@ bool CLIMMXMPP::handleIq (gloox::Stanza *stanza)
             rl_printf (i18n (2739, "Found %d mails for %s.\n"), n, from.c_str());
         if (!n)
             return true;
-        gloox::Tag::TagList ml = mb->findChildren ("mail-thread-info");
+        gloox::Tag::TagList ml = mb->children ();
         gloox::Tag::TagList::iterator mlit = ml.begin();
         std::string ntid;
         Contact *cont = m_serv->conn->cont;
         for ( ; mlit != ml.end(); mlit++)
         {
+            if ((*mlit)->name() != "mail-thread-info")
+                continue;
             std::string sub = (*mlit)->findChild ("subject")->cdata();
             std::string snip = (*mlit)->findChild ("snippet")->cdata();
             std::string dato = (*mlit)->findAttribute ("date");
@@ -1071,10 +1073,12 @@ bool CLIMMXMPP::handleIq (gloox::Stanza *stanza)
             rl_printf ("%s ", s_time (&t));
             rl_printf ("%s%s %s%s%s", COLMESSAGE, sub.c_str (), COLQUOTE, COLSINGLE, snip.c_str ());
             rl_print ("\n");
-            gloox::Tag::TagList mls = (*mlit)->findChild ("senders")->findChildren ("sender");
-            gloox::Tag::TagList::iterator mlsit =mls.begin ();
+            gloox::Tag::TagList mls = (*mlit)->findChild ("senders")->children ();
+            gloox::Tag::TagList::iterator mlsit = mls.begin ();
             for ( ; mlsit !=mls.end(); mlsit++)
             {
+                if ((*mlsit)->name() != "sender")
+                    continue;
                 if (!ismail || (*mlsit)->hasAttribute ("unread", "1"))
                 {
                     std::string email = (*mlsit)->findAttribute ("address");
