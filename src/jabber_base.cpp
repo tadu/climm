@@ -132,7 +132,7 @@ class CLIMMXMPP: public gloox::ConnectionListener, public gloox::MessageHandler,
         virtual void  handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message);
 
         // GMail support
-        void sendIqGmail (int64_t newer = 0, std::string newertid = "", std::string q = "", bool isauto = 1);
+        void sendIqGmail (int64_t newer = 0ULL, std::string newertid = "", std::string q = "", bool isauto = 1);
         std::string gmail_new_newertid;
         std::string gmail_newertid;
         std::string gmail_query;
@@ -989,7 +989,8 @@ void CLIMMXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std
 
 void CLIMMXMPP::sendIqGmail (int64_t newer, std::string newertid, std::string q, bool isauto)
 {
-    gloox::Tag *iq = new gloox::Tag ("iq", "type", "get", 0);
+    gloox::Tag *iq = new gloox::Tag ("iq");
+    iq->addAttribute ("type", "get");
     iq->addAttribute ("from", m_client->jid().full ());
     iq->addAttribute ("to", m_client->jid().bare ());
     iq->addAttribute ("id", s_sprintf ("%s-%s-%x", isauto ? "mail" : "mailq", m_stamp, m_serv->conn->our_seq++));
@@ -1006,14 +1007,14 @@ void CLIMMXMPP::sendIqGmail (int64_t newer, std::string newertid, std::string q,
     }
     else
         gmail_query = q;
-    gloox::Tag *qq = new gloox::Tag ("query", "xmlns", "google:mail:notify", 0);
+    gloox::Tag *qq = new gloox::Tag (iq, "query");
+    qq->addAttribute ("xmlns", "google:mail:notify");
     if (newer != 0)
         qq->addAttribute ("newer-than-time", s_sprintf ("%llu", newer));
     if (*newertid.c_str ())
         qq->addAttribute ("newer-than-tid", newertid);
     if (*q.c_str ())
         qq->addAttribute ("q", q);
-    iq->addChild (qq);
     m_client->send (iq);
 }
 
