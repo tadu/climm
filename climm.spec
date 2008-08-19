@@ -1,6 +1,6 @@
 Summary:		text/line based ICQ client with many features%{?_without_tcl: [no Tcl]}%{?_without_ssl: [no SSL]}%{?_without_xmpp: [no XMPP]}
 Name:			climm
-Version:		0.6.2
+Version:		0.6.3
 Release:		1%{?_without_tcl:.notcl}%{?_without_ssl:.nossl}%{?_without_xmll:.noxmpp}
 Source:			climm-%{version}.tgz
 URL:			http://www.climm.org/
