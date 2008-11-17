@@ -63,6 +63,13 @@ man1it_DATA = it/climm.1
 #man7itdir   = @mandir@/it/man7
 #man7it_DATA = it/climmcmds.7
 
+man1sedir   = @mandir@/se/man1
+man1se_DATA = se/climm.1
+man5sedir   = @mandir@/se/man5
+man5se_DATA = se/climmrc.5
+man7sedir   = @mandir@/se/man7
+man7se_DATA = se/climmcmds.7
+
 man_MANS    = climm.1    climmcmds.7    climmrc.5
 doc_DIST    = README README.SOCKS5 commands.txt icq091.txt html/*.html html/*.gif
 

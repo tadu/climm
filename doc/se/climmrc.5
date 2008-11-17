@@ -1,0 +1,600 @@
+.\"     $Id: climmrc.5 2227 2007-04-09 14:33:56Z kuhlmann $ -*- nroff -*-
+.\" EN: $Id: climmrc.5 2227 2007-04-09 14:33:56Z kuhlmann $
+.TH CLIMMRC 5 climm
+.SH NAMN
+.B ~/.climm/climmrc
+\- Konfigurationsfilen f\(:or climm
+.SH BESKRIVNING
+Denna manualsida beskriver konfigurationsfilem f\(:or climm. Den best\(oar av
+flera sektioner som inleds med 
+.IR [sektion] ,
+d\(:ar
+.I sektion
+\(:ar namnet p\(oa sektionen. Fil- eller katalognamn som anges \(:ar relativa till
+baskatalogen, som vanligtvis \(:ar ~/.climm/.
+.SH ANSLUTNINGAR
+En
+.B Connection
+-sektion beskriver en anslutning i ICQ. Vanligtvis finns det tv\(oa som \(:ar \(:ar
+relaterade till varandra: en anslutning till ICQ-servern, och en anslutning
+f\(:or att lyssna efter klient-till-klient-kommunikation. Man kan ocks\(oa ha en
+fj\(:arrstyrningars-anslutning: det inneb\(:ar att en FIFO \(:oppnas, och att
+textrader l\(:ases fr\(oan denna och tolkas p\(oa samma s\(:att som inmatade rader.
+.TP
+.BI type \ <typ>\ [auto]
+S\(:att anslutnings typen till
+.IR typ ,
+som kan vara
+.B icq5
+f\(:or en anslutning till en ICQ v5 server,
+.B icq8
+f\(:or en anslutning till en ICQ v8 server,
+.B peer
+F\(:or en anslutning som lyssnar efter klient-till-klient-kommunikation, eller
+.B remote
+f\(:or en fj\(:arrkontroll-FIFO. Om
+.I auto
+anges skapa denna anslutning vid uppstart. Man vill antagligen g\(:ora detta,
+om man inte har flera UIN, i vilket fall detta ska s\(:atta f\(:or den anslutning
+som motsvarar det UIN som anv\(:ands.
+.TP
+.BI version \ <nr>
+S\(:att versionen av det anv\(:anda protokollet f\(:or denna anslutning till
+.IR nr .
+V\(:anligen notera att f\(:or en server-anslutning st\(:ods versionerna
+.BR 5 ,
+.B 7
+och
+.B 8, 
+medan klient-till-klient-anslutningar st\(:oder
+.BR 6 ,
+.B 7
+och
+.BR 8 .
+Fj\(:arrkontroll-FIFO har ingen version.
+.TP
+.BI server \ <server>
+S\(:att server att ansluta till till
+.IR server .
+Standardv\(:ardet \(:ar
+.IR login.icq.com .
+Anv\(:ands ej f\(:or klient-till-klient-anslutningar. F\(:or fj\(:arrkontroll-FIFO \(:ar
+detta s\(:okv\(:agen f\(:or den FIFO som ska skapas.
+.TP
+.BI port \ <port>
+S\(:att porten att ansluta till p\(oa servern till
+.IR port ,
+eller den f\(:orsta porten att lyssna efter klient-till-klient-anslutningar
+till
+.IR port .
+.TP
+.BI uin \ <uin>
+S\(:att UIN att logga in med till
+.IR uin .
+Anv\(:ands ej f\(:or klient-till-klient-anslutningar och f\(:or fj\(:arrkontroll-FIFO.
+.TP
+.BI password \ [<l\(:osenord>]
+S\(:att l\(:osenordet att logga in med till
+.IR l\(:osenord .
+Anv\(:ands ej f\(:or klient-till-klient-anslutningar. Om ej angivet, fr\(oaga efter
+l\(:osenord vid start. Not: BeOS-anv\(:andare m\(oaste ange l\(:osenord.
+.TP
+.BI status \ <nr>
+S\(:att inloggningsstatus till
+.IR nr .
+Status kan vara:
+.RS
+.TP
+0
+inloggad
+.TP
+1
+borta
+.TP
+5
+ej tillg\(:anglig
+.TP
+17
+upptagen
+.TP
+19
+st\(:or ej
+.TP
+32
+tillg\(:anglig f\(:or chat
+.TP
+256
+osynlig
+.RE
+
+.RS
+F\(:or klient-till-klient-anslutningar, anv\(:ands f\(:oljande f\(:or inst\(:allningen f\(:or
+direktanslutningen:
+.TP
+1
+Bakom en brandv\(:agg och kan inte ta emot n\(oagon anslutning. F\(:ors\(:ok inte ens.
+.TP
+2
+Bakom en brandv\(:agg, men anv\(:ander SOCKS och kan ta emot anslutningar.
+.TP
+4
+Inte bakom n\(oagon brandv\(:agg. Detta \(:ar standardv\(:ardet.
+.RE
+.RS
+Fj\(:arrkontroll-FIFO anv\(:ander inte denna inst\(:allning.
+.RE
+.SH GENERELLA INST\(:ALLNINGAR
+.B General
+-sektionen inkluderar inst\(:allningarna f\(:or SOCKS 5, som kan slutligen kan
+komma att flyttas till en egen sektion, generella inst\(:allningar, samt n\(oagra
+str\(:angar att ers\(:atta.
+.TP
+.BI s5_use \ <nummer>
+S\(:att
+.I nummer
+till 0 f\(:or att sl\(oa av och 1 f\(:or att sl\(oa p\(oa.
+.TP
+.BI s5_host \ <server>
+Anslut till socks 5 proxyserver med namnet
+.IR server .
+.TP
+.BI s5_port \ <port>
+Anslut till socks 5 proxyserver som lyssnar p\(oa port
+.IR port .
+.TP
+.BI s5_auth \ <nummer>
+S\(:att
+.I nummer
+till 0 f\(:or att avst\(oa fr\(oan verifiering och till 1 f\(:or att genomf\(:ora
+verifiering.
+.TP
+.BI s5_name \ <namn>
+Identifiera anv\(:andaren med namnet
+.I name
+f\(:or socks 5 proxyservern.
+.TP
+.BI s5_pass \ <l\(:osenord>
+Verifiera anv\(:andaren med l\(:osenordet
+.I l\(:osenord
+f\(:or socks 5 proxyservern.
+.PP
+Ett par s\(:arskilda inst\(:allningar \(:ar vanligtvis placerade i b\(:orjan av
+climmrc-filen:
+.TP
+.BI encoding\ file\  <kodning>
+Ange kodningen som anv\(:ands f\(:or str\(:angar i denna filen som
+.IR kodning .
+climm kommer alltid att skriva denna fil med kodningen UTF-8.
+.TP
+.BI encoding\ local\  <kodning>
+Ange anv\(:andarens terminalkodning som
+.IR kodning .
+Detta ers\(:atter kodningen som erh\(oallits fr\(oan milj\(:ovariabler.
+.br
+.B Notera:
+Att anv\(:anda detta orsakar att spr\(oaket flaggas som trasig, vilket f\(:ororsakar
+att tecken utanf\(:or iso-8859-1-intervallet i inmatningshanteringen kommer
+att skrivas ut som hexadecimala unicode kodpunkter d\(oa deras sk\(:armbredd inte
+kan erh\(oallas med wcwidth() l\(:angre. Anv\(:and d\(:arf\(:or alltid spr\(oakinst\(:allningen
+LC_CTYPE f\(:or att ers\(:atta den anv\(:anda teckenkodningen.
+.TP
+.BI encoding\ remote\  <kodning>
+S\(:att kodningen som anv\(:ands f\(:or meta data p\(oa servern, inklusive
+l\(:osenordet, till
+.IR kodning .
+Denna kodning anv\(:ands ocks\(oa f\(:or kommunikation med andra kontakter vars
+klient int f\(:orst\(oar UTF-8-meddelanden om ingen specifik kodning s\(:atts f\(:or
+denna kontakt. 
+F\(:or\(oaldrat fr.o.m. climm 0.5; anv\(:and den global inst\(:allningen
+.I encoding
+ist\(:allet.
+.TP
+.BI format \ <nr>
+S\(:att formatet f\(:or konfigurationsfilen till
+.IR nr .
+Format 2 \(:ar det nuvarande formatet, men format 1 accepteras ocks\(oa.
+.PP
+Nu de \(:ovriga inst\(:allningarna:
+.TP
+.BI verbose \ <niv\(oa>
+S\(:att debugniv\(oan vid start till
+.IR niv\(oa .
+.TP
+.BI auto_away \ <tid>
+S\(:att tiden tills status s\(:atts till borta till
+.I tid
+sekunder. S\(:att till
+.I 0
+f\(:or att sl\(oa av.
+.TP
+.BI Screen_width \ <bredd>
+S\(:att standardsk\(:armbredden till
+.IR bredd .
+Om inte angiven eller
+.IR 0 , 
+antas sk\(:armbredden vara 
+.IR 80
+tecken. Detta beh\(:ovs s\(:allan eftersom sk\(:armbredden vanligtvis kan h\(:arledas i
+k\(:ortid.
+.TP
+.BI set \ delbs\ on|off
+Om satt till
+.BR on ,
+l\(oat ta bort-tecknet fungera som baksteg. Om satt till
+.BR off ,
+l\(oat det fungera som ta bort-tecknet.
+.TP
+.BI set \ funny\ on|off
+Sl\(oa av eller p\(oa "roliga" meddelanden.
+.TP
+.BI set \ color\ on|off
+Sl\(oa av eller p\(oa anv\(:andning av f\(:arg.
+.TP
+.BI set \ hermit\ on|off
+Om satt till
+.BR on ,
+ignorera alla meddelanden fr\(oan alla som inte finns p\(oa kontaktlistan.
+F\(:or\(oaldrat sedan climm 0.5, s\(:att den globala inst\(:allningen
+.I ignore
+till
+.I on
+f\(:or samma effekt.
+.TP
+.BI set \ log\ on|off
+Sl\(oa av eller p\(oa loggning.
+F\(:or\(oaldrat sedan climm 0.5, s\(:att den globala inst\(:allningen
+.I logmess
+till
+.I on
+f\(:or samma effekt.
+.TP
+.BI set \ logonoff\ on|off
+Vid loggning, sl\(oa p\(oa eller av loggning av status\(:andring vid
+inloggnings/utloggnings.
+F\(:or\(oaldrat sedan climm 0.5, s\(:att den globala inst\(:allningen
+.IR logmess \ och \ logchange
+till
+.I on
+f\(:or samma effekt.
+.TP
+.BI set \ auto\ on|off
+Sl\(oa p\(oa eller av automatiska svar (svarsmeddelanden).
+.TP
+.BI set \ autosave\ on|off
+Sl\(oa p\(oa eller av autosparning av climmrc.
+.TP
+.BI set \ autofinger\ on|off
+Sl\(oa p\(oa eller av autofingring av nya UIN.
+.TP
+.BI set \ linebreak\ <typ>
+Konfigurera radbrytningstyp f\(:or inkommande meddelanden till
+.IR typ ,
+vilken kan vara
+.B simple
+f\(:or att bara radbryta som vanligt,
+.B break
+f\(:or att f\(oa en radbrytning f\(:ore varje meddelande,
+.B indent
+f\(:or att f\(oa en radbrytning och indentering av meddelandet och
+.B smart
+f\(:or att f\(oa en radbrytning bara om meddelandet inte f\(:or plats p\(oa raden.
+.TP
+.BI set \ tabs\ simple|cycle|cycleall
+F\(:or\(oaldrat sedan climm 0.5, eftersom den anv\(:ander en mycket f\(:orb\(:attrad
+tabb-hantering som har alla de tidigare funktionerna.
+.TP
+.BI set \ silent\ <typ>
+Undertryck en del utskrifter, mer specifikt status\(:andringar om satt till
+.B on
+och status\(:andringar, inloggningar och utloggningar om satt till
+.BR complete .
+F\(:or\(oaldrat sedan climm 0.5, s\(:att de globala inst\(:allningarna
+.IR showchange \ och \ showonoff
+till
+.I on
+f\(:or samma effekt.
+.TP
+.BI options \ <inst\(:allningar>
+S\(:att globala inst\(:allnignar. Se kommandot
+.I opt
+f\(:or detaljer.
+.TP
+.BI chat \ <nr>
+S\(:att den slumpm\(:assiga chat-gruppen till
+.IR nr .
+Anv\(:and
+.B \-1
+f\(:or att sl\(oa av, och
+.B 49
+f\(:or climm (vilket \(:ar standardv\(:ardet).
+.TP
+.B autoupdate \ <niv\(oa>
+Nuvarande niv\(oa av automatisk konfigurationsuppdateringar som genomf\(:orts.
+Kommer att \(:oka varje g\(oang konfigurationen uppdateras till nya
+standardv\(:arden. G\(:or inte misstaget att s\(:atta denna till 0 f\(:or att sl\(oa av d\(oa
+detta kommer att ha effekten att alla uppdateringar g\(:ors om.
+.PP
+Slutligen kan n\(oagra kan str\(:angar definieras:
+.TP
+.BI color\ scheme \ <nr>
+V\(:alj f\(:argschema nummer
+.IR nr .
+.TP
+.BI color \ <anv\(:andningsomr\(oade>\ <f\(:arg>
+V\(:alj f\(:argen
+.IR f\(:arg
+f\(:or
+.IR anv\(:andningsomr\(oade .
+.IR anv\(:andningsomr\(oade
+kan vara n\(oagon av
+.BR none ,
+.BR server ,
+.BR client ,
+.BR message ,
+.BR contact ,
+.BR sent ,
+.BR ack ,
+.BR error ,
+.BR debug
+eller
+.BR incoming ,
+medan
+.IR f\(:arg
+kan vara n\(oagon av
+.BR black ,
+.BR red ,
+.BR green ,
+.BR yellow ,
+.BR blue ,
+.BR magenta ,
+.BR cyan ,
+.BR white ,
+.BR none ,
+eller
+.BR bold
+eller en kombination av dessa
+.RB ( bold ,
+m\(oaste dock komma sist f\(:or att f\(oa effekt), eller n\(oagon str\(:ang f\(:or att be
+anv\(:andarens terminal att v\(:alja den \(:onskade f\(:argen.
+.TP
+.BI logplace \ <fil>|<katalog>
+S\(:att filen att logga till till
+.IR fil ,
+eller katalogen att logga till till
+.IR katalog .
+V\(:anligen notera att en s\(:okv\(:ag antas vara en katalog om den avslutas med ett
+.IR / .
+.TP
+.BI sound \ on|beep|off|event
+Ange vad som h\(:ander om ett pip ska genereras.
+.B on
+eller
+.B beep
+kommer att pipa, 
+.B off
+g\(:or ingenting, medan
+.B event
+kommer att anropa skriptet f\(:or h\(:andelser.
+.TP
+.BI event \ <skript>
+S\(:att skriptet att exekvera vid h\(:andelser till
+.IR skript .
+Det anropas med f\(:oljande parametrar:
+.br
+1. Meddelande typ, f\(:orn\(:arvarande endast
+.BR icq .
+.br
+2. UIN f\(:or kontakten som denna h\(:andelse relaterar till, eller 0.
+.br
+3. Namnet p\(oa kontakten denna h\(:andelse relaterar till, eller den tomma
+str\(:angen.
+.br
+4. Str\(:angen
+.BR global .
+.br
+5. Typen av h\(:andelse, som kan vara
+.BR msg ,
+.BR on ,
+.BR off ,
+.BR beep
+eller
+.BR status ,
+d\(:ar
+.BR on \ och \ off
+representerar inloggande och utloggande kotnakter. Denna lista \(:ar inte
+n\(:odv\(:andigtvis fullst\(:andig.
+.br
+6. F\(:or meddelande, meddelandetypen, f\(:or utloggande kotnakt, f\(:oreg\(oaende
+status, f\(:or inloggande kontakter eller status\(:andringar, dess nya status,
+annars 0.
+.br
+7. Meddelandets text.
+.br
+8. Kontaktens klientprogramnamn.
+.br
+Notera att av s\(:akerhetssk\(:al kommer apostrofer att ers\(:attas med
+citationstecken, och meddelande texten kan trunkeras.
+.TP
+.BI auto \ <status>\ <str\(:ang>
+S\(:att det automatiska svaret f\(:or status
+.I status
+till
+.IR str\(:ang .
+Denna inst\(:allning kan repeteras f\(:or alla m\(:ojliva v\(:arden
+.BR away ,
+.BR na ,
+.BR dnd ,
+.BR occ ,
+.BR inv ,
+och
+.B ffc
+f\(:or
+.IR status .
+.TP
+.BI prompt_strftime \ <strftime_format>
+S\(:att format f\(:or inst\(:allning %T som anv\(:ands i 
+.IR anv\(:andauppmaningen .
+F\(:or detaljer se climmcmds(7) och strftime(3).
+.SH STR\(:ANGAR
+.B Strings
+-sektionen inneh\(oaller kommando-alias.
+.TP
+.BI prompt \ <anv\(:andaruppmaning>
+S\(:att anv\(:andaruppmaningen till
+.IR anv\(:andaruppmaning .
+F\(:or detaljer se kommandot
+.IR prompt 
+i climmcmds(7).
+.TP
+.BI alter \ <gammalt>\ <nytt>
+Byt namn p\(oa kommandot
+.I gammalt
+till
+.IR nytt .
+Notera det gamla namnet kan fortfarande anv\(:andas, om det inte st\(oar i
+konflikt med n\(oagot
+.I nytt
+namn.
+F\(:or m\(:ojliga kommandonamn, se
+.BR climmcmds (7).
+Denna inst\(:allning kan repeteras s\(oa m\(oanga g\(oanger som \(:onskas.
+.br
+Notera: Denna inst\(:allning \(:ar f\(:or\(oaldrad, anv\(:and
+.I alias
+ist\(:allet.
+.TP
+.BI alias\ [auto[expand]] \ <alias>\ <expansion>
+Definiera ett alias vid namn
+.I alias
+som ers\(:atts med
+.IR expansion .
+Om
+.I auto
+eller
+.I autoexpand
+nyckelordet \(:ar angivet, sker expansionen ocks\(oa n\(:ar mellanslags eller
+retur trycks ner, direkt efter aliaset.
+Om str\(:angen
+.B %s
+finns i 
+.IR expansion ,
+kommer varje f\(:orekomst att ers\(:attas med de givna argumenten n\(:ar aliaset
+aktiverades, annars l\(:aggs de till p\(oa slutet.
+Om str\(:angen
+.B %r
+finns i 
+.IR expansion ,
+kommer varje f\(:orekomst att ers\(:attas med namnet eller, om namnet inte \(:ar
+tillg\(:anglig, UIN f\(:or den kontkt som skickade det senaste meddelandet, eller
+om s\(oadan saknas den tomma str\(:angen.
+Om str\(:angen
+.B %a
+finns i
+.IR expansion ,
+kommer varje f\(:orekomst att ers\(:attas med namnet eller, om namnet inte \(:ar
+tillg\(:angligt, UIN f\(:or den kontakt som det senaste meddelandet skickades
+till, eller om s\(oadan saknas den tomma str\(:angen.
+.br
+Nytt f\(:or 0.4.10. Auto-expanderande alias nytt f\(:or 0.5.0.4.
+.SH GRUPPER
+.B Group
+-sektionen inneh\(oaller en kontaktgrupp och kan repeteras s\(oa m\(oanga g\(oanger som
+kr\(:avs. Notera att f\(:or format 2, sparas den i filen BASE/status, inte i
+BASE/climmrc.
+Den kan inneh\(oalla f\(:oljande kommandon:
+.TP
+.BI server \ <typ>\ <uin>
+S\(:att serveranslutningen som denna kontaktgrupp h\(:or till till en av typen
+.IR typ ,
+som f\(:orn\(:arvarande kan vara
+.BR icqv8
+f\(:or ICQ serveranslutningar version 8 eller
+.BR icqv5
+f\(:or ICQ serveranslutningar version 5, 
+och f\(:or UIN
+.IR uin .
+Om detta kommando inte \(:ar angivet, antas gruppen h\(:ora till den f\(:orsta
+aktiva serveranslutningen.
+.TP
+.BI label \ <etikett>
+S\(:att etiketten f\(:or denna kontaktgrupp till
+.IR etikett .
+Om den \(:ar
+.BI contacts- <typ> - <uin>,
+\(:ar den kontaktlistan f\(:or denna serveranslutning. Notera att f\(:or format 2 av
+filen BASE/status \(:ar detta f\(:or\(oaldrat, eftersom kontakterna distribueras
+till serveranslutningarna enligt serverinst\(:allningen i deras Contacts-sektion.
+.TP
+.BI id \ <id>
+S\(:att id f\(:or denna kontaktgrupp till
+.IR id .
+.B 0
+inneb\(:ar att inget id definierats. Detta kommer att s\(:attas vid nerladdning
+eller uppladdning av en kontaktlista.
+.TP
+.BI options \ <inst\(:allningar>...
+Definiera inst\(:allningar f\(:or denna kontaktgrupp. Se kommandot
+.I opt
+f\(:or detaljer.
+.TP
+.BI entry \ <id>\ <uin>
+L\(:agg till kontakt med UIN
+.I uin
+som id
+.I id
+till denna kontaktgrupp. Notera att
+.I id 
+\(:ar f\(:or\(oaldrat sedan climm 0.5 och kommer alltid att vara 0. Id s\(:atts i
+.I Contacts
+-sektionen ist\(:allet.
+.SH KONTAKTER (f\(:or\(oaldrat format)
+.B Contacts
+-sektionen inneh\(oaller (den globala) kontaktlistan. Det \(:ar f\(:or\(oaldrat i detta
+format.
+.TP
+.I [*][~][^] uin namn
+G\(:or anv\(:andaren med UIN
+.I uin
+k\(:and under namnet 
+.IR namn .
+Om
+.B *
+ange, kan anv\(:andaren se dig medan du \(:ar osynlig. Om
+.B ~
+\(:ar angivet, ser anv\(:andaren dig alltid som utloggad. Om
+.B ^
+\(:ar angivet, ignorera denna anv\(:andare.
+Om ett uin f\(:orekommer flera g\(oanger, kommer alla utom den f\(:orsta att
+behandlas som alias.
+.SH KONTAKTER
+.B Contacts
+-sektionen inneh\(oaller en kontaktlista f\(:or en serveranslutning. Den
+repeteras f\(:or varje serveransluting. 
+Notera att den sparas i filen BASE/status, inte i BASE/climmrc.
+Den kan ha f\(:oljande kommandon:
+.TP
+.BI server \ <typ>\ <uin>
+Definiera serveranslutningen denna kontaktlista g\(:aller f\(:or, med samma
+syntax som i 
+.I Group
+-sektionen.
+.TP
+.BI entry \ <id>\ <uin>\ <namn>...
+L\(:agger till anv\(:andaren med UIN
+.I uin
+och id
+.I id
+till denna kontaktlista, med namn och godtyckligt m\(oanga alias
+.IR namn .
+.TP
+.BI options \ <inst\(:allningar>...
+Definiera inst\(:allningar f\(:or f\(:oreg\(oaende kontakt. Se kommandot
+.I opt
+f\(:or detaljer.
+.SH SE \(:AVEN
+.BR climm (1),
+.BR climmcmds (7)
+.SH UPPHOVSMAN
+Denna manualsida \(:ar baserad p\(oa den engelska utg\(oavan av motsvarande
+manualsida f\(:or climm och har \(:oversatts av Sebastian Rasmussen
+.IR <sebras@hotmail.com> .

@@ -1,0 +1,195 @@
+.\"     $Id: climm.1,v 1.20 2008/08/08 18:15:55 sebras Exp $ -*- nroff -*-
+.\" SE: $Id: climm.1,v 1.20 2008/08/08 18:15:55 sebras Exp $
+.TH CLIMM 1 climm
+.SH NAMN
+.B climm
+\- en liten ICQ-klient f\(:or textl\(:age
+.SH SYNOPSIS
+.B climm
+.I [\-h]
+.I [\-c]
+.I [\-b <baskatalog>]
+.I [\-i <spr\(oak>]
+.I [\-v[niv\(oa]]
+.I [\-l <loggplats>]
+.I [\-u <UIN>]
+.I [\-p <l\(:osenord>]
+.I [\-s <status>]
+.I [\-C <kommandon>]
+.SH BESKRIVNING
+.B climm
+\(:ar en text-baserad ICQ-klient som har st\(:od f\(:or m\(oanga av de funktioner som
+Mirabilis ICQ-klient tillhandah\(oaller. climm till\(oater \(:andring av anv\(:andarens
+l\(:osenord, registrering av nya konto, uppdatering av anv\(:andarinformation,
+s\(:okning efter andra anv\(:andare, skickande av SMS, \(:oppnande av 
+direkt-anslutningar, skickning av bekr\(:aftade meddelanden, fil\(:overf\(:oringar,
+detektering av andra anv\(:andares klienter, skickning av UTF-8-kodade 
+meddelanden, exekvering av godtyckliga kommandon vid varje h\(:andelse, etc.
+.SH FLAGGOR
+.TP
+.BI \-h|\-\-help
+Visar en kort hj\(:alptext och avsluta.
+.TP
+.BI \-c|\-\-nocolor
+Sl\(oa av anv\(:andning av f\(:arg.
+.TP
+.BI \-b|\-\-basedir \ <baskatalog>
+Ange
+.I baskatalog
+som baskatalog i vilken climm letar efter sina filer, speciellt dess
+climmrc-fil.
+.TP
+.BI \-i|\-\-i18n \ <spr\(oak>
+Anv\(:and spr\(oaket
+.I spr\(oak
+ist\(:allet f\(:or spr\(oaket som detekterats fr\(oan milj\(:ovariabler.
+.TP
+.BI \-v|\-\-verbose [niv\(oa]
+S\(:att utf\(:orlig mod, eller s\(:att debug niv\(oan till
+.IR niv\(oa .
+.TP
+.BI \-l|\-\-logplace \ <fil>|<katalog>
+Ange
+.I fil
+som fil att skriva logg till, eller ange
+.I katalog
+som en katalog att skapa per-anv\(:andar-loggfiler i.
+.TP
+.BI \-u|\-\-uin \ <uin>
+Logga in med
+.I uin
+enbart. Kan repeteras.
+.TP
+.BI \-p|\-\-passwd \ <l\(:osenord>
+Logga in med
+.I l\(:osenord
+som l\(:osenord. Kan repeteras f\(:or varje
+.I \-u
+flagga.
+.TP
+.BI \-s|\-\-status \ <status>
+Logga in med
+.I status
+som status, vilken kan anges numeriskt eller
+.BR osy ,
+.BR ste ,
+.BR upp ,
+.BR eh ,
+.BR borta ,
+.BR tfc ,
+eller
+.BR utl[oggad] .
+.TP
+.BI \-C|\-\-cmd \ <kommandon>
+Exekvera climm-kommandon
+.I kommandon
+efter inloggning ist\(:allet f\(:or standard
+.I eg
+kommandot.
+.SH ANV\(:ANDNING
+Vid f\(:orsta starten (f\(:or en given baskatalog), kommer climm att be om ett 
+UIN, eller registrera ett nytt. Efter den f\(:orsta inloggningen s\(oa kommer
+serverns kontaktlista att importeras automatiskt.
+.br
+Grundl\(:aggande kommandon inkluderar
+.I msg
+f\(:or att skicka meddelande till andra kontakter (prova att trycka p\(oa
+<tab>-tangenten flera g\(oanger p\(oa en tom inmatningsrad f\(:or att f\(oa upp
+msg-kommandon f\(:or att skicka meddelande till kontakter du nyligen 
+samtalat med),
+.I add
+f\(:or att l\(:agga till nya kontakter,
+.IR update ,\  other ,\ och\  about
+f\(:or att \(:andra din metadata p\(oa ICQ-servern, och, naturligtvis,
+to change your meta data on the ICQ server, and, of course,
+.I help
+f\(:or hj\(:alp. En komplett lista av kommandon finns tillg\(:anglig i mansidan
+.BR climm (7).
+.SH FUNKTIONER
+.B climm
+\(:ar v\(:aldigt portabel och k\(:or p\(oa Linux, DOS, OS/2, Win32, BeOS, AmigaOS,
+GNU HURD och andra moderna unix system.
+.B climm version 0.5
+fungerar att k\(:ora p\(oa Linux, AIX, HPUX, Tru64, AmigaOs, devlice BeOS och
+andra unixar. De \(:ovriga porteringarna kan (eller inte) fungera och om
+n\(oagon vill testa dem s\(oa \(:ar de v\(:alkomna att g\(:ora s\(oa.
+.SH HISTORIA
+.TP
+16 Aug 1998
+Matthew D. Smith sl\(:apper climm till v\(:arlden.
+F\(:oljs av 12 daterade versioenr till den 25:e september 1998.
+.TP
+05 Jan 2001
+Matthew D. Smith avlider efter en bilolycka.
+Anv\(:andarna forts\(:atter d\(:ar Matthew l\(:amnade, formalisserar och
+\(oaterupptar utvecklingen under namnet 
+.BR climm 
+under BSD-licensen.
+.TP
+10 June 2002
+Version 0.4.9 sl\(:apps under licensen GPL, och implementerar
+slutligen version 8 av ICQ-protokollet, utvecklat av
+R\(:udiger Kuhlmann.
+.SH NYHETSBREV
+climms nyhetsbrev \(:ar
+.IR climm\-list@climm.org .
+Information om abonnemang och arkiv finns tillg\(:angligt p\(oa
+.IR http://www.climm.org/pipermail/climm\-list/ .
+.SH NERLADDNING
+Via HTTP fr\(oan
+.IR http://www.climm.org/download .
+.br
+F\(:or att f\(oa den senaste versionen fr\(oan CVS, skriv:
+.br
+cvs \-d:pserver:anonymous@climm.org:/var/lib/cvs co climm
+.br
+.SH SE ÄVEN
+.BR climmrc (5),
+.BR climm (7)
+.SH FILER
+.TP
+.I ~/.climmrc
+F\(:or\(oaldrad gammal konfigurationsfil f\(:or climm.
+.TP
+.I ~/.climm/
+Standard baskatalog d\(:ar climm letar efter sina filer.
+.TP
+.I BAS/climmrc
+Konfigurationsfil f\(:or climm. Inneh\(oaller global konfiguration.
+.TP
+.I BAS/status
+Konfigurationsfil f\(:or climm. Inneh\(oaller kontaktlistan och 
+inst\(:allningar f\(:or kontakter.
+.TP
+.I BAS/i18n/*.i18n
+Lokal ers\(:attning f\(:or climms \(:overs\(:attningsfiler.
+.TP
+.I ~/.climm/i18n/*.i18n
+Alternativ plats f\(:or lokal ers\(:attning f\(:or climms \(:overs\(:attningsfiler.
+.TP
+.I BAS/contacts/
+Katalog d\(:ar metadata f\(:or kontakter sparas.
+.TP
+.I BAS/history/
+Standard katalog f\(:or loggfiler.
+.TP
+.I BAS/files/
+Katalog dit inkommande filer fr\(oan \(:overf\(:oringar sparas.
+.TP
+.I BAS/remote-control
+Gammal standard plats f\(:or FIFOn som anv\(:ands f\(:or skriptning. Namnet bytat d\(oa det f\(:orvirrade anv\(:andare.
+.TP
+.I BAS/scripting
+Standard plats f\(:or FIFOn som anv\(:ands f\(:or skriptning.
+.TP
+.I PREFIX/share/climm/*.i18n
+Internationaliseringsfiler inneh\(oallandes \(:overs\(:attningar av alla
+str\(:angar som climm skriver ut.
+.SH BUGGAR
+Skicka bugrapporter eller kommentarer till R\(:udiger Kuhlmann
+.I <climm@ruediger\-kuhlmann.de>
+(p\(oa tyska eller engelska).
+.SH UPPHOVSMAN
+Denna manualsida \(:ar baserad p\(oa den engelska utg\(oavan av motsvarande
+manualsida f\(:or climm och har \(:oversatts av Sebastian Rasmussen
+.IR <sebras@hotmail.com> .

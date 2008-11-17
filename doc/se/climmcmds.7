@@ -1,0 +1,1347 @@
+.\"     $Id: climm.7 2293 2007-05-12 22:36:21Z kuhlmann $ -*- nroff -*-
+.\" EN: $Id: climm.7 2293 2007-05-12 22:36:21Z kuhlmann $
+.TH CLIMM 7 climm
+.SH NAMN
+climm \- interaktiva kommandon
+.SH BESKRIVNING
+Denna manualsida beskriver de kommandon som kan anv\(:andas i climm. Denna
+sida inneh\(oaller samma information som hj\(:alptexten, men \(:ar mer precis och 
+utf\(:orligare.
+Notation: klammrar
+.RB ( [] )
+betecknar valfria parametrar, medan hak-parenteser
+.RB ( <> )
+betecknar parametrar (till skillnad fr\(oan nyckelord).
+Specifikt betecknar
+.I <uin>
+ett godtyckligt UIN, medan
+.I <kontakter>
+betecknar en komma-separerad lista av kontakter, det vill s\(:aga av UIN och
+namn. Om det \(:ar den sista parametern s\(oa kan kontakterna ocks\(oa separeras
+av mellanslag.
+.SH KOMMANDO F\(:OR ATT SKICKA MEDDELANDEN
+.TP
+.BI msg \ <kontakter>\ [<meddelande>]
+Skicka ett meddelande till alla
+.IR kontakter .
+Utan
+.IR mddelande ,
+eller om 
+.I meddelande
+avslutas med ett bak\(oat-snedstreck
+.RB ( \(rs ),
+s\(oa sl\(oas flerrads-l\(:aget p\(oa. F\(:or att skicka flerrads-meddelandet, skriv
+en punkt
+.RB ( . )
+ensam p\(oa en rad. F\(:or att avbryta meddelandet, skriv ett br\(:adg\(oards-tecken
+.RB ( # )
+ensamt p\(oa en rad.
+.br
+Utg\(oaende och inkommande meddelanden markeras olika beroende p\(oa vilken
+\(:overf\(:oringsmetod som anv\(:ants.
+.B \(Fo\(Fo\(Fo
+och
+.B \(Fc\(Fc\(Fc
+betecknar meddelande som skickats via en direkt-anslutning.
+.B \(Fo%\(Fo
+och
+.B \(Fc%\(Fc
+betecknar meddelande som skickats via en krypterad direkt-anslutning
+(kr\(:aver att GnuTLS eller OpenSSL sl\(oas p\(oa vid kompilering).
+.B \(Fo<<
+och
+.B >>\(Fc
+betecknar icq8-meddelande (ocks\(oa k\(:anda som typ\-2\-meddelande).
+Slutligen betecknar
+.B <<<
+och
+.B >>>
+icq5-meddelande som ocks\(oa kan kallas typ\-1, typ\-4 eller
+utloggad-meddelande. Dessa typer av meddelande bekr\(:aftas ej.
+.br
+I f\(:orsta hand skickas meddelandet via en existerande direkt-anslutning; om
+ingen \(:ar etablerad initieras en s\(oadan i bakgrunden f\(:or kommande
+meddelanden. Om ingen direkt-anslutning \(:ar \(:oppen, eller om meddelandet inte
+bekr\(:aftats efter en viss tid, avbryts anslutningen och n\(:asta transportmetod
+anv\(:ands: s\(:andning som typ\-2\-meddelande. Detta steg hoppas \(:over om
+klienten inte informerat om att den kan ta emot dem. Om detta hoppas \(:over,
+tar f\(:or l\(oang tid eller returnerar ett fel, e.g. att klienten har loggat ut
+under tiden, s\(oa skickas meddelandet som ett vanligt typ\-4\-meddelande.
+.br
+Om klienten informerar om att den kan ta emot dem, skickas meddelanden
+UTF\-8-kodade och korrekt uppm\(:arkta. Annars skickas meddelanden kodade i
+klientens konfigurerade kodning, eller om ej angiven standardkodningen f\(:or
+fj\(:arrklienten. typ\-1, typ\-4 och utloggad-meddelande kan ej m\(:arkas upp med
+kodning s\(oa lyckad \(:overf\(:oring av icke\-USASCII\-tecken bygger p\(oa korrekt
+konfiguration och heuristik.
+.TP
+.BI a \ [<meddelande>]
+Skicka ett meddelande till den senaste person som du skickade ett
+meddelande till. Auto-expanderande alias f\(:or
+.BR msg\ %a .
+.TP
+.BI r \ [<meddelande>]
+Svara p\(oa senast mottagna meddelande. Auto-expanderande alias f\(:or
+.BR msg\ %r .
+.TP
+.BI url \ <kontakter>\ <url>\ <meddelande>
+Skicka ett
+.I meddelande
+ang\(oaende en
+.I url
+till alla
+.IR kontakter .
+.TP
+.BI sms \ [<namn>]\ [<mobil>]\ <meddelande>
+Skicka ett SMS\-meddelande
+.I meddelande
+tll mobiltelefonnummer
+.IR mobil ,
+p\(oa formen +<landskod><nummer>, eller till mobiltelefonnummret f\(:or
+.IR namn ,
+som kommer att s\(:attas till
+.IR mobil
+om inte redan satt. Det \(:ar inte till\(oatet att ange
+.IR mobil
+om
+.IR namn
+redan har ett mobiltelefonnummer angivet. Ogiltiga mobiltelefonnummer
+kommer att tas bort fr\(oan
+.IR namn s
+meta data.
+.TP
+.BI chat \ <kontakter>\ [<meddelande>]
+Skickar ett
+.I meddelande
+till 
+.I kontakter
+precis som kommandot
+.B msg .
+Efter att meddelandet skickats (eller avbryts), sl\(oas flerrads-l\(:aget p\(oa och
+meddelande skickas tills ett tomt meddelande avbryts. Att avbryta ett
+icke-tomt meddelande kommer bara att avbryta meddelandet i sig,
+vilket till\(oater att ytterligare flerrads-meddelande kan skickas.
+.TP
+.BI getauto \ [auto|away|na|dnd|occ|ffc]\ [<kontakter>]
+Beg\(:ar automeddelande fr\(oan
+.IR kontakter
+f\(:or given status, d\(:ar
+.B away
+\(:ar borta,
+.B na
+\(:ar ej h\(:ar,
+.B dnd
+\(:ar st\(:or ej,
+.B occ
+\(:ar upptagen och
+.B ffc
+\(:ar tillg\(:anglig f\(:or chat. Om
+.B auto
+eller ingenting angivets h\(:amtas automeddelandet f\(:or kontakternas respektive
+status. Kontakter som inte \(:ar i den statusen kommer att hopppas \(:over.
+Nytt fr\(oan 0.4.10.
+.TP
+.BI auth \ [req|grant|deny|add]\ <kontakter>
+Till\(oat eller neka alla
+.I kontakter
+att addera dig till deras lista, beg\(:ar fr\(oan alla
+.I kontakter
+att till\(oata dig att addera dem till din kontaktlista, eller ber\(:atta f\(:or
+.I kontakter
+att du lagt till dem till din kontaklista.
+.TP
+.BI resend \ <kontakter>
+Oms\(:and det senaste meddelandet till ytterligare
+.IR kontakter .
+.TP
+.BI last \ [<kontakter>]
+Vista det senaste meddelandet som tagits emot fr\(oan
+.IR kontakt ,
+eller fr\(oan alla som redan skickat ett meddelande.
+.TP
+.BI h \ <kontakt>\ [<sista>\ [<antal>]]
+.TP
+.BI history \ <kontakt>\ [<sista>\ [<antal>]]
+Visa meddelande fr\(oan
+.I kontakt
+fr\(oan loggfilerna. B\(:orja p\(oa det
+.I sista
+meddelandet fr\(oan slutet, eller det
+.I \-sista
+meddelandet om
+.I sista
+\(:ar negativt, d\(:ar standardv\(:ardet motsvarar det 20:e sista meddelandet, och
+visa ett
+.I antal
+meddelande, d\(:ar standardantalet \(:ar 20 stycken om ej angivet.
+.TP
+.BI historyd \ <kontakt|*>\ <datum>\ [<antal>]
+Visa meddelande fr\(oan
+.I kontakt
+eller alla kontakter (om * angivets) fr\(oan loggfilerna. B\(:orja p\(oa
+.IR datum ,
+som m\(oaste angive p\(oa ISO 8601-format, eller
+YYYY\-MM\-DD eller YYYY\-MM\-DDTHH:MM:SS,
+och visa ett
+.I antal
+meddelanden, d\(:ar sytandardv\(:ardet \(:ar 20 stycken om aj angivet.
+.TP
+.BI find\ <kontankt>\ <m\(:onster>
+
+Leta efter gemen/versal-oberoende
+.I m\(:onster
+i loggfilen f\(:or en
+.IR kontakt .
+.TP
+.BI finds\ <kontakt>\ <m\(:onster>
+Leta efter gemen/versal-k\(:ansligt
+.I m\(:onster
+i loggfilen f\(:or en
+.IR kontakt .
+.TP
+.B tabs 
+Visa en lista av anv\(:andare som kan tabbas runt mellan.
+.SH KOMMANDON R\(:ORANDE STATUS
+.TP
+.B login
+Ett inbygget kort\-kommando f\(:or
+.IR conn\ login .
+\(:Oppnars den f\(:orsta server-anslutningen.
+.TP
+.BI online\  [ for \ <kontakter>\ [<meddelande>]]
+\(:Andra status till
+.IR inloggad ,
+eller \(:andra status till
+.I inloggad
+bara f\(:or de listade
+.I kontakterna
+och ange ett valfritt statusmeddelande
+.I medddelande 
+f\(:or dem.
+.TP
+.BI away\  [ for \ <kontakter>]\ [<meddelande>]
+\(:Andra status till
+.I borta
+och s\(:att tillf\(:alligt ett valfritt autosvarsmeddelande f\(:or denna status till
+.IR meddelande ,
+eller \(:andra status bara f\(:or de angivna
+.I kontakterna
+och ange ett valfritt statusmeddelande
+.I meddelande 
+f\(:or dem.
+.TP
+.BI na\  [ for \ <kontakter>]\ [<meddelande>]
+\(:Andra status till
+.IR ej h\(:ar
+och s\(:att tillf\(:alligt ett valfritt autosvarsmeddelande f\(:or denna status till
+.IR meddelande ,
+eller \(:andra status bara f\(:or de angivna
+.I kontakterna
+och ange ett valfritt statusmeddelande
+.I meddelande 
+f\(:or dem.
+.TP
+.BI occ\  [ for \ <kontakter>]\ [<meddelande>]
+\(:Andra status till
+.IR upptangen
+och s\(:att tillf\(:alligt ett valfritt autosvarsmeddelande f\(:or denna status till
+.IR meddelande ,
+eller \(:andra status bara f\(:or de angivna
+.I kontakterna
+och ange ett valfritt statusmeddelande
+.I meddelande 
+f\(:or dem.
+.TP
+.BI dnd\  [ for \ <kontakter>]\ [<meddelande>]
+\(:Andra status till
+.IR st\(:or ej
+och s\(:att tillf\(:alligt ett valfritt autosvarsmeddelande f\(:or denna status till
+.IR meddelande ,
+eller \(:andra status bara f\(:or de angivna
+.I kontakterna
+och ange ett valfritt statusmeddelande
+.I meddelande 
+f\(:or dem.
+.TP
+.BI ffc\  [ for \ <kontakter>]\ [<meddelande>]
+\(:Andra status till
+.IR tillg\(:anglig f\(:or chat
+och s\(:att tillf\(:alligt ett valfritt autosvarsmeddelande f\(:or denna status till
+.IR meddelande ,
+eller \(:andra status bara f\(:or de angivna
+.I kontakterna
+och ange ett valfritt statusmeddelande
+.I meddelande 
+f\(:or dem.
+.TP
+.BI inv\  [ for \ <kontakter>]\ [<meddelande>]
+\(:Andra status till
+.IR osynlig
+och s\(:att tillf\(:alligt ett valfritt autosvarsmeddelande f\(:or denna status till
+.IR meddelande ,
+eller \(:andra status bara f\(:or de angivna
+.I kontakterna
+och ange ett valfritt statusmeddelande
+.I meddelande 
+f\(:or dem.
+.TP
+.BI change \ [<nummer>\ [ for \ <kontakter>]\ [<meddelande>]]
+Utan ett 
+.IR nummer 
+listar det n\(oagra tillg\(:angliga moder.
+Annars, \(:andra statuts till
+.IR nummer
+och s\(:att tillf\(:alligt ett valfritt autosvarsmeddelande f\(:or denna status till
+.IR meddelande ,
+eller \(:andra status bara f\(:or de angivna
+.I kontakterna
+och ange ett valfritt statusmeddelande
+.I meddelande 
+f\(:or dem.
+.SH KOMMANDO F\(:OR ATT HITTA OCH SE ANDRA ANV\(:ANDARE
+.TP
+.BI f \ <kontakter>
+.TP
+.BI finger \ <kontakter>
+Visa all information om
+.IR kontakter .
+.TP
+.BI ss \ <kontakter>
+Visa all sparad informatin om
+.IR kontakter .
+.TP
+.B i
+Lista alla personer p\(oa din ignoreringslista.
+.TP
+.BI s \ [<kontakter>]
+Visa din nuvarande status, eller f\(:or alla angivna
+.I kontakter 
+i detal inklusive alla alias.
+.TP
+.BR e ,\  ee ,\  eg ,\  eeg ,\  ev ,\  eev ,\  egv ,\  eegv ,\  w ,\  ww ,\  wg ,\  wwg ,\  wv ,\  wwv ,\  wgv ,\  wwgv
+Lista delar av din kontaktlista. F\(:oljande flaggor visas i f\(:orsta kolumnen:
+.RS
+.TP
+.B +
+Denna kontakt \(:ar egentligen ingen riktigt kontakt, utan att alias f\(:or den
+f\(:oreg\(oaende. Bara f\(:or
+.BR ww .
+.TP
+.B #
+Denna kontakt \(:ar inte p\(oa din kontaktlista, men UIN har anv\(:ants n\(oagon g\(oang.
+Bara med
+.B w
+och
+.BR ww .
+.TP
+.B *
+Denna kontakt kommer att se din status \(:aven om du \(:ar osynlig.
+.TP
+.B \-
+Denna kontakt kommer inte att se dig alls.
+.TP
+.B ^
+Denna kontakt ignoreras: inga meddelanden, eller status\(:andringar.
+.PP
+Grupperna av kommandon som inkluderar
+.B ww*
+och
+.B ee*
+visar ytterligare en kolumn f\(:or flaggor f\(:or direkt-anslutningar. Om den f\(:orsta
+kolumnen \(:ar tom, visas detta i den f\(:orsta kontakten f\(:or alla kommandon om
+det inte \(:ar 
+.BR ^ .
+.TP
+.B &
+En direkt-anslutning till denna kontakt \(:ar etablerad.
+.TP
+.B \(ba
+En direkt-anslutning till denna kontakt has misslyckats.
+.TP
+.B :
+En direkt-anslutning h\(oaller p\(oa att etableras.
+.TP
+.B ^
+Ingen direkt-anslutning etablerad, men IP-adress och port-nummer \(:ar k\(:anda.
+.PP
+Ytterligare en kolumn finns f\(:or kommandon i grupperna
+.B ww*
+och
+.B ee*
+som visar status med avseende p\(oa servers kontaktlista s\(oa vitt den \(:ar
+k\(:and:
+.TP
+.B S
+Kontakten finns p\(oa serverns kontaktlista, och borde vara d\(:ar.
+.TP
+.B s
+Kontakten finns p\(oa serverns kontaktlistak, men borde inte vara d\(:ar.
+.TP
+.B .
+Kontakten finns inte p\(oa serverns kontaktlista, men borde vara d\(:ar. Detta
+inneb\(:ar vanligtvis att "till\(oatelse kr\(:avs".
+.TP
+.B \'\ \'
+Kontakten \(:ar inte p\(oa serverns kontaktlista och \(:onskas inte vara d\(:ar.
+.RE
+.TP
+.BI e \ [<grupp>]
+Lista alla personer som \(:ar inloggade p\(oa din kontaktlista. Skriv ocks\(oa ut
+din egen status.
+.TP
+.BI ee \ [<grupp>]
+Lista alla personer som \(:ar inloggade p\(oa din kontaktlista mer utf\(:orligt.
+.TP
+.BR eg ,\  eeg
+Som ovan, men sortera efter grupper. Nytt sedan 0.4.10.
+.TP
+.BR w ,\  ww ,\  wg ,\  wwg
+Som ovan, men inkludera \(:aven utloggade kontakter.
+.TP
+.BR ev ,\  eev ,\  egv ,\  eegv ,\  wv ,\  wwv ,\  wgv ,\  wwgv
+Som ovan men inkludera \(:aven g\(:omda kontakter (med 
+.B skugg -inst\(:allningen
+satt). Nytt sedan 0.5.
+.TP
+.B ewide
+Lista alla personer som \(:ar inloggade p\(oa din kontaktlista i sk\(:armbrett
+format.
+.TP
+.B wide
+Lista alla personer p\(oa din kontaktlista i sk\(:armbrett format.
+.TP
+.B search
+.TP
+.BI search \ <epost>
+.TP
+.BI search \ <kontakt>
+.TP
+.BI search \ <f\(:ornamn>\ <efternamn>
+S\(:ok efter en anv\(:andare med
+.I epost
+som sin epost-adress, med
+.I namn
+som deras namn (f\(oar ej inneh\(oalla tecknet @), eller med
+.I f\(:ornamn
+och 
+.I efternamn .
+Om ingen parameter anges, fr\(oaga efter namn, f\(:ornamn, efternamn,
+epost-adress och en hel rad med annan data att leta efter.
+.TP
+.BI rand \ [<nummer>]
+Leta efter en slumpm\(:assig anv\(:andare i intressegrupp
+.IR nummer .
+Om 
+.I nummer
+ej angivets, lista alla intressegrupper.
+.SH KOMMANDO SOM P\(oAVERKAR KONTAKTLISTAN
+Notera: kommandot
+.B save
+m\(oaste anv\(:andas f\(:or att spara de \(:andringar som g\(:ors av den lokala
+kontaktlistan.
+.TP
+.BI add \ <uin>\ <namn>
+L\(:agg till 
+.I uin
+till din kontaktlista som
+.IR namn .
+.TP
+.BI add \ <kontakt>\ <alias>
+.TP
+.BI addalias \ <kontakt>\ <alias>
+L\(:agg till
+.IR alias
+som alias f\(:or
+.IR namn .
+Nytt (addalias) sedan 0.4.10.
+.TP
+.BI add \ [<grupp>\ [<kontakter>]
+.TP
+.BI addgroup \ <grupp>\ [<kontakter>]
+L\(:agg till alla
+.IR kontakter
+till kontaktgruppen
+.IR grupp ,
+som skapas om den inte existerar och kommandot som angivets \(:ar
+.BI addgroup .
+Nytt sedan 0.4.10.
+.TP
+.BI rem \ <kontakter>
+Ta bort alias i
+.IR kontakter .
+Om n\(oagot nanm \(:ar det sista alias f\(:or denna kontakt,
+ta bort kontakten fullst\(:andigt.
+.br
+Notera: Detta kommando har en annan inneb\(:ord om den f\(:orsta
+parametern av kontakter \(:ar ett gruppnamn, s\(oa om du vill p\(oaverka alla
+kontakter i en grupp kan du inte anv\(:anda denna som den f\(:orsta 
+parametern; ange t.ex. en medlem i gruppen f\(:orst.
+.TP
+.BI remalias \ <kontakter>
+Ta bort alias i
+.IR kontakter .
+.br
+Modifierat f\(:or 0.6.3.
+.TP
+.BI rem\ all \ <kontakter>
+.TP
+.BI remcont \ <kontakter>
+Ta bort
+.IR kontakter
+fullst\(:andigt fr\(oan kontaktlistan.
+.br
+Nytt (remcont) sedan 0.6.3.
+.br
+Notera: Kommandot
+.B rem
+har en annan inneb\(:ord om den f\(:orsta parametern avkontakter \(:ar ett
+gruppnamn, s\(oa om du vill p\(oaverka alla kontakter i en grupp kan du
+inte anv\(:anda denna som f\(:orsta parametern; ange t.ex. en medlem i 
+gruppen f\(:orst.
+.TP
+.BI rem \ <grupp>\ <kontakter>
+.TP
+.BI remgroup \ <grupp>\ <kontakter>
+Ta bort alla
+.IR kontakter
+fr\(oan kontaktgruppen
+.IR grupp .
+Modifierat f\(:or 0.6.3.
+.TP
+.BI rem\ all \ <grupp>
+.TP
+.BI remgroup\ all \ <grupp>
+Ta bort alla kontakter fr\(oan kontaktgruppen
+.IR grupp .
+Ytterligare parametrar kommer att ignoreras. Om
+.B remgroup all
+anv\(:ands, kassera kontaktgruppen fullst\(:andigt.
+Modifierat f\(:or 0.6.3.
+.TP
+.BI togig \ <kontakter>
+Sl\(oar p\(oa eller av om
+.IR kontakternas
+meddelande och status\(:andringar ignoreras.
+.TP
+.BI toginv \ <kontakter>
+Sl\(oar p\(oa eller av om du \(:ar g\(:omd f\(:or
+.IR kontakterna .
+.TP
+.BI togvis \ <kontakter>
+Sl\(oar p\(oa eller av om 
+.I kontakterna
+kan se dig \(:aven om du \(:ar osynlig.
+.SH KOMMANDON SOM R\(:OR DITT ICQ-KONTO
+.TP
+.BI pass \ <l\(:osenord>
+\(:Andrar ditt icq-l\(:osenord till
+.IR l\(:osenord . 
+.br
+Notera: ditt l\(:osenord f\(oar inte starta med \('o (byten 0xf3).
+.br
+Notera: du m\(oaste anv\(:anda kommandot
+.B save
+f\(:or att g\(:ora denna \(:andring persisten om du sparar ditt l\(:osenord i filen
+.I ~/.climm/climmrc
+(se
+.BR climmrc (5)),
+annars kommer l\(:osenordet inte att matcha vid n\(:asta inloggningsf\(:ors\(:ok.
+.TP
+.B update
+Uppdatera din grundl\(:aggande anv\(:andarinformation (epost, namn, etc.).
+.TP
+.B other
+Uppdaterar din \(:ovriga anv\(:andarinformation s\(oa som \(oalder och k\(:on.
+.TP
+.B about
+Uppdaterar din beskrivande anv\(:andarinformation.
+.TP
+.BI setr \ [<nummer>]
+S\(:atter din slumpm\(:assiga anv\(:andargrupp till
+.IR nummer .
+Utan parametrar, listas de m\(:ojliga intressegrupperna.
+.TP
+.BI reg \ <l\(:osenord>
+Skapa ett nytt anv\(:andarkonto med
+.IR l\(:osenord .
+.SH KOMMANDO F\(:OR KONFIGURATION AV CLIMM
+.TP
+.BI verbose \ [<niv\(oa>]
+S\(:att climms debugniv\(oa till
+.IR niv\(oa ,
+eller visa den nuvarande debugniv\(oan. Debugniv\(oan \(:ar en m\(:angd flaggor:
+.RS
+.TP
+.B 8
+Visa protokollfel.
+.TP
+.B 16
+Visa skapade och borttagning av paket.
+.TP
+.B 32
+Visa skapade och borttagna k\(:o-h\(:andelser.
+.TP
+.B 64
+Visa skapade och borttagna anslutningar.
+.TP
+.B 256
+Visa v6\-paket och dess data.
+.TP
+.B 4096
+Visa v7/v8\-paket.
+.TP
+.B 8192
+Visa v7/v8\-paket hexadecimalt.
+.TP
+.B 16284
+Spara paketen till disk.
+.TP
+.B 65536
+Visa klient\-till\-klient\-paket.
+.TP
+.B 131072
+Visa klient\-till\-klient\-paket hexadecimalt.
+.TP
+.B 262144
+Spara paketen till disk.
+.TP
+.B 2097152
+Visa klient\-till\-klient\-handskakning.
+.TP
+.B 4194304
+Visa uppr\(:attning av I/O\-anslutning.
+.PP
+Men, vilken debugniv\(oa som helst som inte \(:ar noll kommer att orsaka att mer
+information skrivs ut och niv\(oaer som \(:ar st\(:orre \(:an ett \(:anny mer.
+.RE
+.TP
+.B clear
+Rensa sk\(:armen.
+.TP
+.BI sound\ [on|off|event]
+Sl\(oa p\(oa ljud om 
+.B on
+anges, eller sl\(oa av ljudet om
+.BR off ,
+anges, eller anropa skriptet
+.B event
+vid pip. Ny syntax sedan 0.4.10.
+.TP
+.BI prompt\ <anv\(:andaruppmaning>
+S\(:att anv\(:andaruppmaningen till
+.IR anv\(:andaruppmaning .
+F\(:oljande variabler kommer att tolkas och kan anv\(:andas i
+anv\(:andaruppmaningen:
+.RS
+.TP
+.B %U
+ers\(:atts med ditt nuvarande anv\(:andarnamn
+.TP
+.B %n
+ers\(:atts med ditt nuvarande namn
+.TP
+.B %S 
+ers\(:atts med en beskrivning av din status
+.TP
+.B %s 
+ers\(:atts med en kort beskrivning av din status
+.TP
+.B %P 
+ers\(:atts med servernamnet
+.TP
+.B %p 
+ers\(:atts med vilken typ av server (icq8, jabber, msn...)
+.TP
+.B %a 
+ers\(:atts med uin/namn som meddelande senast skickats till
+.TP
+.B %r
+ers\(:atts med uin/namn som meddelande senast togs emot fr\(oan
+.TP
+.B %t 
+ers\(:atts med tiden p\(oa formatet HH:MM:SS
+.TP
+.B %T 
+ers\(:atts med tiden p\(oa formatet givet av inst\(:allningen
+.B prompt_strftime .
+.TP
+.B %%
+%
+.TP
+.B %[0\-9]c
+s\(:atter f\(:orgrundsf\(:argen
+.TP
+.B %[0\-9]C
+s\(:atter bakgrundsf\(:argen
+.TP
+.B %[0\-1]b 
+fetstil. sl\(oa p\(oa = 1 (standardv\(:arde), sl\(oa av = 0
+.TP
+.B %[0\-1]u 
+understrykning. sl\(oa p\(oa = 1 (standardv\(:arde), sl\(oa av = 0
+.TP
+.B %[0\-1]i 
+inverterat; sl\(oa p\(oa = 1 (standardv\(:arde), sl\(oa av = 0. Byter f\(:orgrunds- och
+bakgrundsf\(:argerna med varandra.
+.TP
+.B %d 
+s\(:atter f\(:arger och stilar till standardv\(:ardena
+.TP
+.B \\\\b 
+baksteg
+.TP
+.B \\\\r 
+vagnretur
+.TP
+.B \\\\n 
+ny\-rad
+.TP
+.B \\\\t 
+horisontell tabulatur
+.TP
+.B \\\\e 
+ESC
+.TP
+.B \\\\\\\\
+bak\(oat\-snedstreck
+.PP
+Exempel:
+ prompt %4c%b%p%d://%1c%b%n%3c/%2c%b%s%8c %t%7c%b>%6c%r%7c%b<%6c%b%a%7c%b>
+.RE
+.TP
+.BI autoaway \ [<tid>|on|off]
+S\(:att tiden tills status \(:andras till borta till
+.IR tid ,
+eller sl\(oa p\(oa funktionen med senast angivna tid om 
+.I on
+anges, eller sl\(oa av funktionen och spara senast angivna tid om
+.I off
+anges. En tid som \(:ar 0 \(:ar ekvivalent med att ange
+.IR off .
+Om ingen parameter anges, visas den nuvarande inst\(:allningen.
+.TP
+.BI alias\ [auto[expand]] \ [<alias>\ [<expansion>]]
+Skapa ett nytt 
+.I alias
+som ers\(:atts med
+.IR expansion .
+Om inget 
+.I alias
+anges, lista alla nuvarande alias.
+Om ingen
+.I expansion
+ange, visa det angivna 
+.IR aliasets .
+Annars skapa ett nytt alias.
+Om
+.I auto
+eller
+.I autoexpand
+nyckelordet anges \(:ar det nya aliaset auto-expanderande, det vill s\(:aga, det
+expanderas omedelbart n\(:ar mellanslag eller retur-tangenten trycks ned
+direkt efter att aliaset skrivits in.
+.br
+Om str\(:angen
+.B %s
+finns i 
+.IR expansion ,
+ers\(:att varje f\(:orekomst med den givna parametern n\(:ar alias anv\(:ands, annars
+kommer de att l\(:aggas till p\(oa slutet.
+Om str\(:angen
+.B %r
+finns i
+.IR expansion ,
+ers\(:att varje f\(:orekomst med namnet, eller om namnet inte \(:ar tillg\(:angligt
+UIN, f\(:or kontakten som skickade det senaste meddelandet eller den tomma
+str\(:angen om s\(oadan saknas.
+Om str\(:angen
+.B %a
+finns i
+.IR expansion ,
+ers\(:att varje f\(:orekomst med namnet, eller om namnet inte \(:ar tillg\(:angligt
+UIN, f\(:or kontakten som det senaste meddelandet skickades till eller den
+tomma str\(:angen om s\(oadan saknas.
+.br
+Nytt sedan 0.4.10. Auto-expanderande alias nytt sedan 0.5.0.4.
+.TP
+.BI unalias \ <alias>
+Ta bort
+.IR alias .
+Nytt sedan 0.4.10.
+.TP
+.BI lang \ [<spr\(oak>|<nr>]\ ...
+Byt kodning och
+.I spr\(oak
+angivet som iso\-kod, eller skriv ut \(:overs\(:attning nummer
+.IR nr.
+F\(:or att v\(:alja standardspr\(oaket angivet av milj\(:ovariablerna
+.BR LANG ,
+.B LC_ALL
+och
+.BR LC_MESSAGES ,
+anv\(:and
+.BR ! ,
+.B auto
+eller
+.BR default .
+F\(:or att inte v\(:alja n\(oagon \(:overs\(:attning alls, anv\(:and
+.BR . ,
+.B none
+eller
+.BR unload .
+F\(:or att f\(oa debuginformation, anv\(:and prefixet
+.BR debug .
+.sp
+Filerna ~/.climm/i18n/*.i18n har h\(:ogre precedens \(:an de globala, filerna
+BASE/i18n/*.18n har \(:annu h\(:ogre precedens och de "roliga" texterna har h\(:ogre
+precedens \(:an standard texterna.
+.sp
+Det g\(oar att ange s\(oa m\(oanga parametrar som \(:onskas, f\(:or att t.ex. skriva ut
+str\(:ang nummer 117 p\(oa tyska och sedan byta tillbaka till standardspr\(oaket,
+anv\(:and "trans de 117 default".
+.TP
+.B uptime
+Visa hur l\(:ange climm har exekverat, samt lite statistik.
+.TP
+.BI set \ <inst\(:allning>\ <v\(:arde>
+S\(:att
+.I inst\(:allning
+till antingen p\(oa\-slaget om 
+.I on
+anges, eller av\-slaget om
+.I off
+anges, eller en inst\(:allnings\-specifik m\(:angd
+.IR v\(:arden .
+.I Inst\(:allning
+kan vara:
+.RS
+.TP
+.BR color :
+anv\(:and f\(:arger,
+.TP
+.BR delbs :
+tolka raderings\-tecken som baksteg,
+.TP
+.BR funny :
+anv\(:and roliga meddelanden,
+.TP
+.BR auto :
+skicka auto\-svar, t.ex. n\(:ar din status \(:ar borta,
+.TP
+.BR prompt :
+Typ av anv\(:andaruppmaning:
+.RS
+.TP
+.BR user
+anv\(:and anv\(:andaruppmaningen. Se kommandot prompt i climmcmd(7), och
+inst\(:allningar prompt och prompt_strftime i climmrc(5),
+.TP
+.BR uin
+ha det senaste namnet i prompten,
+.TP
+.BR simple
+enkel anv\(:andaruppmaning, som som standard \(:ar "climm>".
+.RE
+.TP
+.BR autosave :
+spara climmrc automatiskt,
+.TP
+.BR autofinger :
+fingra nya UIN automatiskt,
+.TP
+.BR linebreak :
+s\(:att radbrytnings\-typ f\(:or meddelanden. Om
+.B simple 
+anges, radbryt meddelandet efter namnet och radbryt sedan som vanligt, om
+.B break
+anges, l\(:agg till en radbrytning f\(:ore utskriften av varje inkommande
+meddelande, om
+.B indent
+anges, indentera ett meddelandes alla rader till samma niv\(oa som namnet,
+eller om 
+.B smart
+anges, l\(:agg till en radbrytning om meddelandet inte skulle f\(oatt plats p\(oa
+raden.
+.PP
+Nya sedan 0.4.10. Inst\(:allnignarna hermit, log, logonoff, silent och tabs
+borttagna sedan 0.5; anv\(:and kommandot
+.B opt
+ist\(:allet.
+.RE
+.TP
+.BI opt \ [<kontakt>|<kontaktgrupp>|connection|global\ [<inst\(:allning>\ [<v\(:arde>]]]
+S\(:att
+.I inst\(:allning
+f\(:or
+.IR kontakt ,
+eller
+.IR kontakt\ grupp ,
+f\(:or den aktiva anslutningen eller globalt till
+.IR v\(:arde ,
+eller visa nuvarande v\(:arde, eller visa alla inst\(:allningar och deras v\(:arden.
+.br
+N\(:ar inst\(:allningarna f\(:or kontakter l\(:ases in, \(:ar det inst\(:allningen f\(:or
+kontakten sj\(:alv som anv\(:ands om den \(:ar satt; annars om kontakten tillh\(:or en
+grupp, inst\(:allningen f\(:or gruppen om den \(:ar satt; annars, om kontakten
+tillh\(:or en server-anslutning (dvs. \(:ar inte borttagen \(:annu), inst\(:allningen
+f\(:or server-anslutningen om den \(:ar satt; annars den globala inst\(:allningen om
+den \(:ar satt. Om inst\(:allningen inte \(:ar satt anv\(:ands f\(:oljande standardv\(:arden:
+0 f\(:or decimaltalsinst\(:allningar, FALSKT f\(:or booleska inst\(:allningar, str\(:angen
+"ingen f\(:arg" f\(:or f\(:arginst\(:allningar samt den tomma str\(:angen f\(:or
+\(:ovriga str\(:anginst\(:allningar.
+.br
+N\(:ar inst\(:allningar f\(:or kontaktgrupper l\(:ases in, f\(:oljs samma procedur f\(:orutom
+att f\(:or f\(:orsta \(:ar att inst\(:allningar f\(:or anslutningar tas fr\(oan anslutningen,
+sedan global; och globala inst\(:allningar tas naturligtvis bara globalt.
+.br
+F\(:oljande inst\(:allningar existerar, med typ och effektomr\(oade:
+.RS
+.TP
+.BI colorscheme \ decimaltal\ global
+Nummret f\(:or f\(:argschemat som ska anv\(:a das. S\(:att till 0 f\(:or att sl\(oa av och
+anv\(:and f\(:argerna definierade nedan.
+.TP
+.BI colornone \ f\(:arg\ global
+F\(:argstr\(:angen f\(:or normaltext. Nyckelorden
+.BR black ,
+.BR red ,
+.BR green ,
+.BR yellow ,
+.BR blue ,
+.BR magenta ,
+.BR cyan ,
+.BR white ,
+.BR none ,
+och
+.BR bold
+tolkas och ers\(:atts av deras respektive ANSI-kontroll-sekvens. Notera att
+alla f\(:arger redan inkluderar
+.BR none ,
+s\(oa specificera alltid
+.B bold
+efter f\(:argen. All annan text tolkas som knotroll-tecken som skrivs ut
+of\(:or\(:andrade.
+.TP
+.BI colorserver \ f\(:arg\ global
+F\(:argstr\(:angen f\(:or server-text.
+.TP
+.BI colorclient \ f\(:arg\ global
+F\(:argstr\(:angen f\(:or klient-text.
+.TP
+.BI colorinvchar \ f\(:arg\ global
+F\(:argstr\(:angen som anv\(:ands n\(:ar f\(:or teckenkodningen ogiltiga byte\-sekvenser
+ska visas.
+.TP
+.BI colorerror \ f\(:arg\ global
+F\(:argstr\(:angen som anv\(:ands f\(:or fel.
+.TP
+.BI colordebug \ f\(:arg\ global
+F\(:argstr\(:angen som anv\(:ands f\(:or debug\-utskrifter.
+.TP
+.BI colorquote \ f\(:arg\ global
+F\(:argstr\(:angen som anv\(:ands f\(:or citerad text.
+.TP
+.BI webaware \ boolesk\ anslutning
+Huruvida nuvarande status ska vara tillg\(:angligt p\(oa webben.
+.TP
+.BI hideip \ boolesk\ anslutning
+Huruvida den (lokala) IP\-adressen ska d\(:oljas.
+.TP
+.BI dcauth \ boolesk\ anslutning
+Huruvida verifierade kontakter kan se (fj\(:arr\-) IP\-adressen.
+.TP
+.BI dccont \ boolesk\ anslutning
+Huruvida ontakter kan se (fj\(:arr\-) IP\-adressen.
+.TP
+.BI countaway \ boolesk\ anslutning
+Om satt, kommer inkommande meddelande att r\(:aknas och deras avs\(:andare visas
+om status manuellt \(:andras till n\(oagonting annat \(:an
+.I inloggad
+eller
+.I tillg\(:anglig f\(:or chat
+(med eller utan
+.IR osynlighet ).
+Annars g\(:ors detta bara om status automatiskt \(:andras till
+.I borta
+eller
+.I ej h\(:ar
+(med eller utan
+.IR osynlighet ).
+.TP
+.BI obeysbl \ boolesk\ anslutning
+Huruvida serverns kontaktlista ska laddas vid inloggning. Detta kommer att
+inneb\(:ara att verifiering kr\(:avs, vilket ignoreras f\(:or lokala kontaktlistor.
+.TP
+.BI ignore \ boolesk\ kontakt
+Huruvida alla meddelanden ska ignoreras f\(:or denna kontakt.
+.TP
+.BI hidefrom \ boolesk\ kontakt
+Huruvida du \(:ar osynlig f\(:or denna kontakt.
+.TP
+.BI intimate \ boolesk\ kontakt
+Huruvida du alltid \(:ar synlig f\(:or denna kontakt.
+.TP
+.BI logonoff \ boolesk\ kontakt
+Huruvida loggning av inloggning eller utloggning sker f\(:or denna kontakt.
+.TP
+.BI logchange \ boolesk\ kontakt
+Huruvida loggning av status\(:andringar sker f\(:or denna kontakt.
+.TP
+.BI logmess \ boolesk\ kontakt
+Huruvida loggning av meddelanden sker f\(:or denna kontakt.
+.TP
+.BI showonoff \ boolesk\ kontakt
+Huruvida inloggning och utloggning f\(:or denna kontakt visas.
+.TP
+.BI showchange \ boolesk\ kontakt
+Huruvida status\(:andringar f\(:or denna kontakt visas.
+.TP
+.BI autoauto \ boolesk\ kontakt
+Huruvida automatiska meddelanden beg\(:ars automatiskt vid status\(:andring f\(:or
+denna kontakt.
+.TP
+.BI hideack \ boolesk\ kontakt
+Huruvida bekr\(:aftelsemeddelanden f\(:or denna kontakt d\(:oljs.
+.br
+Notera: att anv\(:anda denna inst\(:allninge \(:ar en d\(oalig id\('e, eftersom du
+kommer att missa de meddelanden som skickas om utan bekr\(:aftelse.
+.TP
+.BI wantsbl \ boolesk\ kontakt
+Huruvida denna kontakt ska finnas p\(oa serverns kontaktlista.
+.TP
+.BI peekme \ boolesk\ kontakt
+Huruvida denna kontakt ska kikas p\(oa n\(:ar kommandot 
+.BR peek\ all \ eller \ peekall
+anv\(:ands.
+.TP
+.BI shadow \ boolesk\ kontakt
+Huruvida denna kontakt ska g\(:ommas fr\(oan visning i kontaktlistor s\(oa l\(:ange
+n\(oagon av *v\-kommandona inte anv\(:ands.
+.TP
+.BI local \ boolesk\ kontakt
+Huruvidia denna kontakt \(:ar en riktigt kontakt, eller bara ett namn p\(oa ett
+nummer.
+.TP
+.BI encoding \ string\ kontakt
+Kodningen som antas f\(:or meddelande vars kodning \(:ar odefinierad, i synnerhet
+f\(:or metadata p\(oa servern.
+.TP
+.BI tabspool \ decimaltal\ kontakt
+Huruvida kontakten l\(:aggs till i tabb-listan vid uppstart.
+.TP
+.BI autoaway \ string\ kontakt
+Meddelandet f\(:or status borta som skickas till denna kontakt.
+.TP
+.BI autona \ string\ kontakt
+Meddelandet f\(:or status ej h\(:ar som skickas till denna kontakt.
+.TP
+.BI autoocc \ string\ kontakt
+Meddelandet f\(:or status upptagen som skickas till denna kontakt.
+.TP
+.BI autodnd \ string\ kontakt
+Meddelandet f\(:or status st\(:or ej som skickas till denna kontakt.
+.TP
+.BI autoffc \ string\ kontakt
+Meddelandet f\(:or status tillg\(:anglig f\(:or chat som skickas till denna kontakt.
+.TP
+.BI colormessage \ string\ kontakt
+F\(:argstr\(:angen som anv\(:ands f\(:or meddelande fr\(oan denna kontakt.
+.TP
+.BI colorsent \ string\ kontakt
+F\(:argstr\(:angen som anv\(:ands f\(:or namnet n\(:ar meddelande skickas.
+.TP
+.BI colorack \ string\ kontakt
+F\(:argstr\(:angen som anv\(:ands f\(:or namnet n\(:ar meddelande bekr\(:aftas.
+.TP
+.BI colorincoming \ string\ kontakt
+F\(:argstr\(:angen som anv\(:ands f\(:or namnet n\(:ar meddelande tas emot.
+.TP
+.BI colorcontact \ string\ kontakt
+F\(:argstr\(:angen som annas anv\(:ands f\(:or namnet.
+.PP
+Nytt sedan 0.5.
+.RE
+.TP
+.BI optcontact \ <kontakt>\ [<inst\(:allning>\ [<v\(:arde>]]
+S\(:att eller visa
+.I inst\(:allning
+eller alla inst\(:allningar f\(:or
+.IR kontakt .
+Nytt sedan 0.5.
+.TP
+.BI optgroup \ <grupp>\ [<inst\(:allning>\ [<v\(:arde>]]
+S\(:att eller visa
+.I inst\(:allning
+eller alla inst\(:allningar f\(:or kontakgruppen
+.IR grupp .
+Nytt sedan 0.5.
+.TP
+.BI optconnection \ [<inst\(:allning>\ [<v\(:arde>]]
+S\(:att eller visa anslutningsinst\(:allning
+.IR inst\(:allning .
+Nytt sedan 0.5.
+.TP
+.BI optglobal \ [<inst\(:allning>\ [<v\(:arde>]]
+S\(:att eller visa global
+.IR inst\(:allning .
+Nytt sedan 0.5.
+.TP
+.B save
+Sparar nuvarande inst\(:allninga i konfigurationsfilen
+.IR ~/.climm/climmrc ,
+om ingen annan angivits.
+Notera att detta kommer att ta bort alla kommentarer i filen.
+.TP
+.BI q \ [<meddelande>]
+.TP
+.BI quit \ [<meddelande>]
+.TP
+.BI exit \ [<meddelande>]
+Avsluta climm. Om angivet, skicka
+.I meddelande
+till alla kontakter p\(oa kontaktlista som tidigare skickats meddelande och
+som fortfarande \(:ar inloggade.
+.br
+Notera: climm kommer inte att inv\(:anta bekr\(:aftelser - om meddelandet inte
+tas emot av kontakten av n\(oagon anledning kommer det inte att oms\(:andas.
+.br
+Aliasen quit och exit \(:ar nya sedan 0.4.10.
+.TP
+.BI x \ [<meddelande>]
+Avsluta climm utan att spara. Om angivet, skicka
+.I meddelande
+till alla kontakter p\(oa kontaktlista som tidigare skickats meddelande och
+som fortfarande \(:ar inloggade.
+.br
+Notera: climm kommer inte att inv\(:anta bekr\(:aftelser - om meddelandet inte
+tas emot av kontakten av n\(oagon anledning kommer det inte att oms\(:andas.
+.br
+Aliasen quit och exit \(:ar nya sedan 0.4.10.
+Nytt sedan 0.5.
+.SH KOMMANDO F\(:OR AVANCERADE FUNKTIONER
+.TP
+.BI meta \ [show|load|save|set|get|rget]\ <kontakter>
+Hantera metadata f\(:or kontakter F\(:oljande under-kommandon finns:
+.RS
+.TP
+.B show
+Visar metadatan f\(:or alla angivna
+.IR kontakter .
+.TP
+.B load
+Laddar in metadatan f\(:or alla angivna
+.I kontakter
+och visar den.
+.TP
+.B save
+Sparar metadtan f\(:or alla angivna
+.I kontakter
+till fil.
+.TP
+.B set
+Laddar upp din metadata till servern.
+.TP
+.B get
+H\(:amta metadatan f\(:or alla angivna
+.I kontakter
+frn servern och visar den.
+.TP
+.B getr
+H\(:amtar metadatan f\(:or den kontakt som skickadet det senast mottagna
+meddelandet fr\(oan servern och visa den.
+.PP
+Nytt sedan 0.4.10.
+.RE
+.TP
+.BI file \ [...]
+Alias f\(:or
+.BR peer\ file .
+Nytt sedan 0.4.10.
+.TP
+.BI accept \ [...]
+Alias f\(:or
+.BR peer\ accept .
+Nytt sedan 0.4.10.4.
+.TP
+.BI peer \ <kommando>\ <uin|namn>
+Exekvera 
+.I kommando
+p\(oa anv\(:andaren som identifieras genom
+.I uin
+eller
+.IR namn .
+.RS
+.TP
+.B open
+\(:Oppna en klient-till-klient-anslutning \(:over TCP till anv\(:andaren.
+.TP
+.B close
+St\(:ang och start om en klient-till-klient-anslutning till anv\(:andaren.
+.TP
+.B off
+Avsluta f\(:ors\(:oken att etablera en s\(oadan anslutning f\(:or att skicka meddelande
+tills den \(:oppnas explict eller startas om.
+.TP
+.BI file \ <fil>\ <beskrivning>
+Skicka
+.I fil
+med
+.IR beskrivning .
+.TP
+.BI files \ [<fil>\ <namn>]...\ <beskrivning>
+Skicka filer till anv\(:anbdaren. Det kan f\(:orekomma godtyckligt m\(oanga par av 
+.I filer
+och 
+.I namn
+som presenteras f\(:or mottagaren. Om
+.IR namn
+\(:ar
+.RB \' / \',
+kommer filnamnet att skickas utan s\(:okv\(:ag, och om det \(:ar
+.RB \' . \'
+skickas samma namn.
+.TP
+.BR accept \ [<kontakt>]\ [<id>]
+Acceptera en inkommande fil-beg\(:aran fr\(oan
+.IR kontakt
+med givet
+.IR id .
+Om det bara finns en v\(:antande inkommande fil-beg\(:aran beh\(:ovs inte
+.IR kontakt \ och\  id
+parametrarna, annars \(:ar det odefinierat vilken fil-beg\(:aran som besvaras om
+flera skulle matcha.
+.TP
+.BR deny \ [<kontakt>]\ [<id>]\ [<anledning>]
+Neka en inkommande fil-beg\(:aran fr\(oan
+.IR kontakt
+med givet
+.IR id
+utav en given
+.IR anledning .
+.RE
+.TP
+.BI login \ [...]
+Alias f\(:or
+.BR conn\ login .
+Nytt sedan 0.4.10.4.
+.TP
+.BI conn \ [<kommando>\ <nr>]
+Lista alla anslutningar, eller exekvera
+.I kommando
+p\(oa anslutning nummer
+.IR nr .
+.RS
+.TP
+.B open
+\(:Oppna den angivna, eller den f\(:orsta, server-anslutningen. Ett valfritt
+l\(:osenord kan anges, som ers\(:atter det tidigare k\(:anda l\(:osenordet.
+.TP
+.B login
+\(:Oppna den angivna, eller den f\(:orsta, server-anslutningen. Ett valfritt
+l\(:osenord kan anges, som ers\(:atter det tidigare k\(:anda l\(:osenordet.
+.TP
+.B close
+St\(:ang den angivna anslutningen. Tillf\(:alliga anslutningar kommer att tas
+bort.
+.TP
+.B remove
+St\(:ang och tabort den angivna (tillf\(:alliga) anslutningen.
+.TP
+.B select
+V\(:alj den angivna server-anslutninge som den nuvarande.
+.I nr
+kan vara anslutnings-nummer eller UIN som anv\(:ands f\(:or anslutningen.
+.RE
+.TP
+.BI contact \ [<kommando>]
+Hantera servern kontaktlista:
+.RS
+.TP
+.B show
+Ladda ner serverns kontaktlista och visa den.
+.TP
+.B diff
+Ladda ner serverns kontaktlista och visa bara kontakter (par av uin/namn)
+som inte finns i den lokala kontaktlistan.
+.TP
+.B add
+Ladda ner serverns kontaktlista och l\(:agg till alla kontakter till den
+lokala kontaktlistan.
+.TP
+.B upload
+F\(:ors\(:ok att ladda upp lokala kontakter till serverns kontaktlista.
+.TP
+.B download
+Ladda ner kontakter fr\(oan serverns kontaktlista, men undvika att modifiera
+redan existerande kontakter.
+.TP
+.B import
+Ladda ner kontakter fr\(oan serverns kontaktlista och modifiera existerande
+kontakter.
+.br
+.B Notera:
+climm kommer alltid bara att f\(:ors\(:oka ladda upp de kontakter med
+kontaktinst\(:allningen
+.I wantsbl
+satt. Anv\(:and
+.I optglobal wantsbl on
+om du vill ladda upp alla dina kontakter.
+.RE
+.TP
+.BI peek \ [<kontakter>]\ [all]\ [<kontakter>]
+Kontroller f\(:or varje
+.I kontakt
+om denna verkligen \(:ar inloggad eller ej. Det speciella nyckelordet
+.B alla
+kommer att kontrollera alla kontakter som har kontaktinst\(:allningen
+.B peekme
+satt.
+.br
+Notera: En bug i ICQ\-protokollet utnyttjas f\(:or att lista ut om en kontakt
+\(:ar inloggad eller ej och kan d\(:armed sluta fungera n\(:ar som helst. Ingen
+ytterligare information f\(:orutom inloggningsstatus kan tas reda p\(oa p\(oa detta
+s\(:att.
+.TP
+.BI peek2 \ <kontakter>
+Inbyggt alias f\(:or 
+.B getauto\ away
+.IR kontakter .
+Kan anv\(:andas f\(:or att detectera n\(:arvarn av anv\(:andare av vissa klienter, men
+detta kan i sig detekteras av den andra anv\(:andarens klient. climm kan sedan
+0.5 inte detekteras p\(oa detta s\(:att, men kommer att detektera f\(:ors\(:ok fr\(oan
+andra klienter.
+.TP
+.BI peekall \ [<kontakter>]
+Inbyggt alias f\(:or 
+.BR peek\ <kontakter>\ all .
+.TP
+.BI as \ <nr|uin>\ <kommando>
+Exekvera 
+.I kommando
+som om anslutningsnummer
+.I nr
+eller
+.I uin
+vore den/det nuvarande.
+.SH KOMMANDO F\(:OR SKRIPTNING
+.TP
+.BI tclscript \ <fil>
+Exekvera tcl\-skriptet
+.IR fil ,
+som kan anges relativt climms baskatalog.
+.TP
+.BI tcl \ <str\(:ang>
+Exekvera tcl\-kommandot
+.IR str\(:ang .
+Skriv
+.I tcl climm help
+f\(:or att f\(oa en lista av climm\-specifika tcl\-kommandon.
+.SH SE \(:AVEN
+.BR climm (1),
+.BR climmrc (5)
+.SH UPPHOVSMAN
+Denna manualsida \(:ar baserad p\(oa den engelska utg\(oavan av motsvarande
+manualsida f\(:or climm och har \(:oversatts av Sebastian Rasmussen
+.I <sebras@hotmail.com> 
+och Mats Johansson
+.IR <zquig@hotmail.com> .
