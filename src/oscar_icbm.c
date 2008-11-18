@@ -161,6 +161,8 @@ JUMP_SNAC_F(SnacSrvAckmsg)
     }
 
     event = QueueDequeue (serv->conn, QUEUE_TYPE2_RESEND, seq_dc);
+    if (!event)
+        event = QueueDequeue2 (serv->conn, QUEUE_TYPE2_RESEND, 0, cont);
 
     if ((msgtype & 0x300) == 0x300)
         IMSrvMsg (cont, NOW, CV_ORIGIN_v8, msgtype, text);
