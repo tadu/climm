@@ -4299,7 +4299,13 @@ static JUMP_F(CmdUserConn)
             else if (!servl->passwd || !*servl->passwd)
                 rl_printf (i18n (2688, "No password given for %s.\n"), servl->screen);
             else
-                servl->c_open (servl);
+            {
+                Event *loginevent = servl->c_open (servl);
+                if (loginevent)
+                    QueueEnqueueDep (servl->conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, servl->conn->cont,
+                                     OptSetVals (NULL, CO_CLIMMCOMMAND, "eg", 0), &CmdUserCallbackTodo);
+                                                                                                              
+            }
             break;
 
         case 203:
