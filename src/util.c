@@ -119,7 +119,7 @@ int putlog (Server *serv, time_t stamp, Contact *cont,
     /* Check for '/' below doesn't work for empty strings. */
     assert (*prG->logplace != '\0');
 
-    snprintf (buffer, sizeof (buffer), s_realpath (prG->logplace));
+    snprintf (buffer, sizeof (buffer), "%s", s_realpath (prG->logplace));
     target += strlen (buffer);
     
     if (target[-1] == _OS_PATHSEP)

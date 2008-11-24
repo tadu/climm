@@ -206,7 +206,7 @@ void SnacPrint (Packet *pak, int out)
         char *f, *syn = strdup (s_sprintf ("gs%dx%ds", fam, cmd));
         f = PacketDump (pak, syn, COLDEBUG, COLNONE);
         free (syn);
-        printf (s_ind (f));
+        printf ("%s", s_ind (f));
         free (f);
     }
 

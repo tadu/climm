@@ -433,7 +433,7 @@ static JUMP_F(CmdUserHelp)
             if (myhelp[i].help)
                 rl_printf (i18n (2545, "     %s\n"), i18n (-1, myhelp[i].help));
             if (myhelp[i].warn)
-                rl_printf (i18n (-1, myhelp[i].warn));
+                rl_printf ("%s", i18n (-1, myhelp[i].warn));
         }
         return 0;
     }
@@ -3606,7 +3606,7 @@ static JUMP_F(CmdUserHistory)
         if (!prG->logplace || !*prG->logplace)
             prG->logplace = "history" _OS_PATHSEPSTR;
 
-        snprintf (buffer, sizeof (buffer), s_realpath (prG->logplace));
+        snprintf (buffer, sizeof (buffer), "%s", s_realpath (prG->logplace));
         target += strlen (buffer);
 
         if (target[-1] == _OS_PATHSEP)
@@ -3891,7 +3891,7 @@ static JUMP_F(CmdUserFind)
     if (!prG->logplace || !*prG->logplace)
         prG->logplace = "history" _OS_PATHSEPSTR;
 
-    snprintf (buffer, sizeof (buffer), s_realpath (prG->logplace));
+    snprintf (buffer, sizeof (buffer), "%s", s_realpath (prG->logplace));
     target += strlen (buffer);
 
     if (target[-1] == _OS_PATHSEP)
