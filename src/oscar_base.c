@@ -313,8 +313,6 @@ Packet *FlapC (UBYTE channel)
 
 void FlapSend (Server *serv, Packet *pak)
 {
-    if (!serv->conn->our_seq)
-        serv->conn->our_seq = rand () & 0x7fff;
     serv->conn->our_seq++;
     serv->conn->our_seq &= 0x7fff;
 
@@ -427,6 +425,13 @@ static jump_conn_f SrvCallBackReconn;
 static void SrvCallBackTimeout (Event *event);
 static void SrvCallBackDoReconn (Event *event);
 
+static const UWORD FlapStartSeqs[] = {
+  5695, 23595, 23620, 23049, 0x2886, 0x2493, 23620, 23049,
+  2853, 17372, 1255, 1796, 1657, 13606, 1930, 23918,
+  31234, 30120, 0x1BEA, 0x5342, 0x30CC, 0x2294, 0x5697, 0x25FA,
+  0x3303, 0x078A, 0x0FC5, 0x25D6, 0x26EE, 0x7570, 0x7F33, 0x4E94,
+  0x07C9, 0x7339, 0x42A8
+};
 
 Event *ConnectionInitServer (Server *serv)
 {
@@ -448,7 +453,7 @@ Event *ConnectionInitServer (Server *serv)
     if (!serv->conn->cont && serv->oscar_uin)
         serv->conn->cont = ContactUIN (serv, serv->oscar_uin);
     cont = serv->conn->cont;
-    serv->conn->our_seq  = rand () & 0x7fff;
+    serv->conn->our_seq  = rand () % ((sizeof FlapStartSeqs) / (sizeof FlapStartSeqs[0]));
     serv->conn->connect  = 0;
     serv->conn->dispatch = &SrvCallBackReceive;
     serv->conn->reconnect= &SrvCallBackReconn;
