@@ -696,6 +696,8 @@ void CLIMMXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
             node = "Miranda";
         else if (!strcmp (node.c_str(), "apple:ichat:caps") || !strcmp (node.c_str(), "http://www.apple.com/ichat/caps"))
             node = "iChat";
+        else if (!strcmp (node.c_str(), "http://telepathy.freedesktop.org/caps"))
+            node = "Telepathy";
         else if (!strcmp (node.c_str(), "http://trillian.im/caps"))
             node = "Trillian";
         if (ext.empty())
@@ -1607,6 +1609,7 @@ void XMPPCallbackClose (Connection *conn)
         return;
     }
 
+    QueueCancel (conn);
     j->getClient()->disconnect ();
     conn->serv->xmpp_private = NULL;
     delete j;
