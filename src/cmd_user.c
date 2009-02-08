@@ -2089,7 +2089,9 @@ static JUMP_F(CmdUserStatusDetail)
         {
             if (serv)
             {
+                UWORD nick_len = uiG.nick_len;
                 rl_log_for (serv->screen, COLCONTACT);
+                uiG.nick_len = nick_len;
                 if (~serv->conn->connect & CONNECT_OK)
                     rl_printf (i18n (2405, "Your status is %s (%s).\n"),
                         i18n (1969, "offline"), s_status (serv->status, serv->nativestatus));
