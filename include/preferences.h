@@ -8,13 +8,6 @@
 
 struct Preferences_s
 {
-    char  *s5Host;      /* socks 5 settings */
-    char  *s5Name;
-    char  *s5Pass;
-    UWORD  s5Port;
-    BOOL   s5Use;
-    BOOL   s5Auth;
-
     char  *locale;      /* the used locale (stripped of encoding) */
     char  *locale_orig; /* the original locale (as from ENV) */
     char  *locale_full; /* the original locale (... but not C/POSIX) */
@@ -42,8 +35,8 @@ struct Preferences_s
     SBYTE  chat;
     SBYTE  autoupdate;
 
-    char  *prompt_strftime;    /* user define prompt */
-    char  *prompt;             /* user define prompt */
+    char  *prompt_strftime;    /* user defined prompt */
+    char  *prompt;             /* user defined prompt */
 
 #ifdef ENABLE_TCL
     tcl_pref_p tclscript;

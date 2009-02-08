@@ -281,7 +281,7 @@ void TCPDispatchMain (Connection *list)
     peer->our_session = 0;
     peer->dispatch    = &TCPDispatchShake;
 
-    if (prG->s5Use)
+    if (ConnectionPrefVal (list->serv, CO_S5USE))
     {
         peer->sok = list->sok;
         list->sok = -1;

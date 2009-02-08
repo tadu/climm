@@ -236,9 +236,6 @@ void Initialize_RC_File ()
         rl_print (i18n (2618, "You may add more user accounts now. Enter nothing to not add more accounts.\n"));
     }
 
-    prG->s5Use = 0;
-    prG->s5Port = 0;
-
     rl_print (i18n (1784, "If you are firewalled, you may need to use a SOCKS5 server. If you do, please enter its hostname or IP address. Otherwise, or if unsure, just press return.\n"));
     rl_printf ("%s ", i18n (1094, "SOCKS5 server:"));
     fflush (stdout);
@@ -248,28 +245,28 @@ void Initialize_RC_File ()
     {
         if (strchr (line->txt, ':'))
         {
-            prG->s5Host = strdup (line->txt);
-            t = strchr (prG->s5Host, ':');
-            prG->s5Port = atoi (t + 1);
+            char *tmp = strdup (line->txt);
+            t = strchr (tmp, ':');
+            OptSetVal (&prG->copts, CO_S5PORT, atoi (t + 1));
             *t = '\0';
+            OptSetStr (&prG->copts, CO_S5HOST, tmp);
+            free (tmp);
         }
         else
         {
-            prG->s5Host = strdup (line->txt);
+            UWORD p = 0;
+            OptSetStr (&prG->copts, CO_S5HOST, line->txt);
             rl_print (i18n (1786, "I also need the port the socks server listens on. If unsure, press return for the default port.\n"));
             rl_printf ("%s ", i18n (1095, "SOCKS5 port:"));
             fflush (stdout);
             line = UtilIOReadline (stdin);
             if (line)
-                sscanf (line->txt, "%hu", &prG->s5Port);
+                sscanf (line->txt, "%hu", &p);
+            if (!p)
+                p = 1080;
+            OptSetVal (&prG->copts, CO_S5PORT, p);
         }
-        if (!prG->s5Port)
-            prG->s5Port = 1080;
-
-        prG->s5Use = 1;
-        prG->s5Auth = 0;
-        prG->s5Pass = NULL;
-        prG->s5Name = NULL;
+        OptSetVal (&prG->copts, CO_S5USE, 1);
 
         rl_print ("\n");
         rl_print (i18n (1787, "You probably need to authenticate yourself to the socks server. If so, you need to enter the user name the administrator of the socks server gave you. Otherwise, just press return.\n"));
@@ -278,14 +275,13 @@ void Initialize_RC_File ()
         line = UtilIOReadline (stdin);
         if (line && line->len)
         {
-            prG->s5Auth = 1;
-            prG->s5Name = strdup (line->txt);
+            OptSetStr (&prG->copts, CO_S5NAME, line->txt);
             rl_print (i18n (1788, "Now I also need the password for this user.\n"));
             rl_printf ("%s ", i18n (1097, "SOCKS5 password:"));
             fflush (stdout);
             line = UtilIOReadline (stdin);
             if (line && line->len)
-                prG->s5Pass = strdup (line->txt);
+                OptSetStr (&prG->copts, CO_S5PASS, line->txt);
         }
     }
     rl_print ("\n");
@@ -530,32 +526,37 @@ int Read_RC_File (FILE *rcf)
                 else if (!strcasecmp (cmd, "s5_use"))
                 {
                     PrefParseInt (i);
-                    prG->s5Use = i;
+                    OptSetVal (&prG->copts, CO_S5USE, i ? 1 : 0);
+                    dep = 55;
                 }
                 else if (!strcasecmp (cmd, "s5_host"))
                 {
                     PrefParse (tmp);
-                    prG->s5Host = strdup (tmp);
+                    OptSetStr (&prG->copts, CO_S5HOST, tmp);
+                    dep = 55;
                 }
                 else if (!strcasecmp (cmd, "s5_port"))
                 {
                     PrefParseInt (i);
-                    prG->s5Port = i;
+                    OptSetVal (&prG->copts, CO_S5PORT, i);
+                    dep = 55;
                 }
                 else if (!strcasecmp (cmd, "s5_auth"))
                 {
                     PrefParseInt (i);
-                    prG->s5Auth = i;
+                    dep = 55;
                 }
                 else if (!strcasecmp (cmd, "s5_name"))
                 {
                     PrefParse (tmp);
-                    prG->s5Name = strdup (tmp);
+                    OptSetStr (&prG->copts, CO_S5NAME, tmp);
+                    dep = 55;
                 }
                 else if (!strcasecmp (cmd, "s5_pass"))
                 {
                     PrefParse (tmp);
-                    prG->s5Pass = strdup (tmp);
+                    OptSetStr (&prG->copts, CO_S5PASS, tmp);
+                    dep = 55;
                 }
                 else if (!strcasecmp (cmd, "verbose"))
                 {
@@ -1253,7 +1254,7 @@ int Read_RC_File (FILE *rcf)
         {
             case TYPE_SERVER:
                 serv->c_open = &ConnectionInitServer;
-                if (prG->s5Use && !serv->pref_version)
+                if (!serv->pref_version)
                     serv->pref_version = 2;
                 break;
 #ifdef ENABLE_MSN
@@ -1760,24 +1761,7 @@ int PrefWriteConfFile (void)
         fprintf (rcf, "\n");
     }
 
-    fprintf (rcf, "\n[General]\n# Support for SOCKS5 server\n");
-    fprintf (rcf, "s5_use %d\n", prG->s5Use);
-    if (!prG->s5Host)
-        fprintf (rcf, "s5_host \"[none]\"\n");
-    else
-        fprintf (rcf, "s5_host %s\n", s_quote (prG->s5Host));
-    fprintf (rcf, "s5_port %d\n", prG->s5Port);
-    fprintf (rcf, "# If you need authentication, put 1 for s5_auth and fill your name/password\n");
-    fprintf (rcf, "s5_auth %d\n", prG->s5Auth);
-    if (!prG->s5Name)
-        fprintf (rcf, "s5_name \"[none]\"\n");
-    else
-        fprintf (rcf, "s5_name %s\n", s_quote (prG->s5Name));
-    if (!prG->s5Pass)
-        fprintf (rcf, "s5_pass \"[none]\"\n");
-    else
-        fprintf (rcf, "s5_pass %s\n", s_quote (prG->s5Pass));
-
+    fprintf (rcf, "\n[General]\n");
     fprintf (rcf, "\n#in seconds\nauto_away %lu\n", UD2UL (prG->away_time));
     fprintf (rcf, "\n#For dumb terminals that don't wrap set this.");
     fprintf (rcf, "\nScreen_Width %d\n", prG->screen);

@@ -503,3 +503,16 @@ val_t ConnectionPrefVal (Server *serv, UDWORD flag)
     return 0;
 }
 
+/*
+ * Query an option for a contact group
+ */
+const char *ConnectionPrefStr (Server *serv, UDWORD flag)
+{
+    const char *res = 0;
+    if (serv->contacts && OptGetStr (&serv->copts, flag, &res))
+        return res;
+    if (OptGetStr (&prG->copts, flag, &res))
+        return res;
+    return 0;
+}
+

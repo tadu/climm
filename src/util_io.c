@@ -112,7 +112,7 @@ void UtilIOConnectUDP (Connection *conn)
     if (prG->verbose || (conn->serv && conn == conn->serv->conn))
         rl_print (i18n (1056, "Socket created, attempting to connect.\n"));
 
-    if (prG->s5Use)
+    if (ConnectionPrefVal (conn->serv, CO_S5USE))
     {
         sin.sin_addr.s_addr = INADDR_ANY;
         sin.sin_family = AF_INET;
@@ -130,15 +130,15 @@ void UtilIOConnectUDP (Connection *conn)
         getsockname (conn->sok, (struct sockaddr *) &sin, &length);
         s5OurPort = ntohs (sin.sin_port);
 
-        s5sin.sin_addr.s_addr = inet_addr (prG->s5Host);
+        s5sin.sin_addr.s_addr = inet_addr (ConnectionPrefStr (conn->serv, CO_S5HOST));
         if (!~s5sin.sin_addr.s_addr)        /* name isn't n.n.n.n so must be DNS */
         {
-            host_struct = gethostbyname (prG->s5Host);
+            host_struct = gethostbyname (ConnectionPrefStr (conn->serv, CO_S5HOST));
             if (!host_struct)
             {
                 if (prG->verbose || (conn->serv && conn == conn->serv->conn))
                 {
-                    rl_printf (i18n (1596, "[SOCKS] Can't find hostname %s: %s."), prG->s5Host, hstrerror (h_errno));
+                    rl_printf (i18n (1596, "[SOCKS] Can't find hostname %s: %s."), ConnectionPrefStr (conn->serv, CO_S5HOST), hstrerror (h_errno));
                     rl_print ("\n");
                 }
                 conn->sok = -1;
@@ -147,7 +147,7 @@ void UtilIOConnectUDP (Connection *conn)
             s5sin.sin_addr = *((struct in_addr *) host_struct->h_addr);
         }
         s5sin.sin_family = AF_INET;     /* we're using the inet not appletalk */
-        s5sin.sin_port = htons (prG->s5Port);        /* port */
+        s5sin.sin_port = htons (ConnectionPrefVal (conn->serv, CO_S5PORT));        /* port */
         s5Sok = socket (AF_INET, SOCK_STREAM, 0);       /* create the unconnected socket */
         if (s5Sok < 0)
         {
@@ -169,13 +169,13 @@ void UtilIOConnectUDP (Connection *conn)
         }
         buf[0] = 5;             /* protocol version */
         buf[1] = 1;             /* number of methods */
-        if (!*prG->s5Name || !*prG->s5Pass || !prG->s5Auth)
+        if (!ConnectionPrefStr (conn->serv, CO_S5NAME) || !ConnectionPrefStr (conn->serv, CO_S5PASS))
             buf[2] = 0;         /* no authorization required */
         else
             buf[2] = 2;         /* method username/password */
         send (s5Sok, buf, 3, 0);
         res = recv (s5Sok, buf, 2, 0);
-        if (strlen (prG->s5Name) && strlen (prG->s5Pass) && prG->s5Auth)
+        if (buf[2])
         {
             if (res != 2 || buf[0] != 5 || buf[1] != 2) /* username/password authentication */
             {
@@ -189,10 +189,10 @@ void UtilIOConnectUDP (Connection *conn)
                 return;
             }
             buf[0] = 1;         /* version of subnegotiation */
-            buf[1] = strlen (prG->s5Name);
-            memcpy (&buf[2], prG->s5Name, buf[1]);
-            buf[2 + buf[1]] = strlen (prG->s5Pass);
-            memcpy (&buf[3 + buf[1]], prG->s5Pass, buf[2 + buf[1]]);
+            buf[1] = strlen (ConnectionPrefStr (conn->serv, CO_S5NAME));
+            memcpy (&buf[2], ConnectionPrefStr (conn->serv, CO_S5NAME), buf[1]);
+            buf[2 + buf[1]] = strlen (ConnectionPrefStr (conn->serv, CO_S5PASS));
+            memcpy (&buf[3 + buf[1]], ConnectionPrefStr (conn->serv, CO_S5PASS), buf[2 + buf[1]]);
             send (s5Sok, buf, buf[1] + buf[2 + buf[1]] + 3, 0);
             res = recv (s5Sok, buf, 2, 0);
             if (res != 2 || buf[0] != 1 || buf[1] != 0)
@@ -266,7 +266,7 @@ void UtilIOConnectUDP (Connection *conn)
     sin.sin_family = AF_INET;
     sin.sin_port = htons (conn->port);
 
-    if (prG->s5Use)
+    if (ConnectionPrefVal (conn->serv, CO_S5USE))
     {
         memcpy (&sin.sin_addr.s_addr, &buf[4], 4);
 
@@ -356,15 +356,15 @@ void UtilIOConnectTCP (Connection *conn DEBUGPARAM)
 #endif
     if (rc == -1)
         CONN_FAIL_RC (i18n (1950, "Couldn't set socket nonblocking"));
-    if (conn->server || conn->ip || prG->s5Use)
+    if (conn->server || conn->ip || ConnectionPrefVal (conn->serv, CO_S5USE))
     {
-        if (prG->s5Use)
+        if (ConnectionPrefVal (conn->serv, CO_S5USE) && ConnectionPrefStr (conn->serv, CO_S5HOST))
         {
             origserver = conn->server;
             origip     = conn->ip;
             origport   = conn->port;
-            conn->server = prG->s5Host;
-            conn->port   = prG->s5Port;
+            conn->server = strdup (ConnectionPrefStr (conn->serv, CO_S5HOST));
+            conn->port   = ConnectionPrefVal (conn->serv, CO_S5PORT);
             conn->ip     = -1;
         }
 
@@ -386,8 +386,9 @@ void UtilIOConnectTCP (Connection *conn DEBUGPARAM)
         }
         sin.sin_addr.s_addr = htonl (conn->ip);
         
-        if (prG->s5Use)
+        if (ConnectionPrefVal (conn->serv, CO_S5USE))
         {
+            free (conn->server);
             conn->server = origserver;
             conn->port   = origport;
             conn->ip     = origip;
@@ -408,7 +409,7 @@ void UtilIOConnectTCP (Connection *conn DEBUGPARAM)
             if (prG->verbose || (conn->serv && conn == conn->serv->conn))
                 if (rl_pos () > 0)
                      rl_print (i18n (1634, "ok.\n"));
-            if (prG->s5Use)
+            if (ConnectionPrefVal (conn->serv, CO_S5USE))
             {
                 QueueEnqueueData (conn, QUEUE_CON_TIMEOUT, conn->ip,
                                   time (NULL) + 10, NULL,
@@ -571,25 +572,28 @@ static void UtilIOConnectCallback (Connection *conn)
 
                 conn->connect += CONNECT_SOCKS_ADD;
             case 1:
-                if (!prG->s5Use)
+                if (!ConnectionPrefVal (conn->serv, CO_S5USE))
                     CONN_OK
 
                 conn->connect += CONNECT_SOCKS_ADD;
                 conn->connect |= CONNECT_SELECT_R;
                 conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
-                sockwrite (conn->sok, prG->s5Auth ? "\x05\x02\x02\x00" : "\x05\x01\x00", prG->s5Auth ? 4 : 3);
+                if (ConnectionPrefVal (conn->serv, CO_S5NAME) && ConnectionPrefVal (conn->serv, CO_S5PASS))
+                    sockwrite (conn->sok, "\x05\x02\x02\x00", 4);
+                else
+                    sockwrite (conn->sok, "\x05\x01\x00", 3);
                 return;
             case 2:
                 rc = sockread (conn->sok, buf, 2);
                 CONN_CHECK (i18n (1601, "[SOCKS] General SOCKS server failure"));
-                if (buf[0] != 5 || !(buf[1] == 0 || (buf[1] == 2 && prG->s5Auth)))
+                if (buf[0] != 5 || !(buf[1] == 0 || (buf[1] == 2 && ConnectionPrefVal (conn->serv, CO_S5NAME) && ConnectionPrefVal (conn->serv, CO_S5PASS))))
                     CONN_FAIL (i18n (1599, "[SOCKS] Authentication method incorrect"));
 
                 conn->connect += CONNECT_SOCKS_ADD;
                 if (buf[1] == 2)
                 {
-                    snprintf (buf, sizeof (buf), "%c%c%s%c%s%n", 1, (char) strlen (prG->s5Name), 
-                              prG->s5Name, (char) strlen (prG->s5Pass), prG->s5Pass, &len);
+                    snprintf (buf, sizeof (buf), "%c%c%s%c%s%n", 1, (char) strlen (ConnectionPrefStr (conn->serv, CO_S5NAME)), 
+                              ConnectionPrefStr (conn->serv, CO_S5NAME), (char) strlen (ConnectionPrefStr (conn->serv, CO_S5PASS)), ConnectionPrefStr (conn->serv, CO_S5NAME), &len);
                     sockwrite (conn->sok, buf, len);
                     return;
                 }
@@ -933,7 +937,7 @@ void UtilIOSendUDP (Connection *conn, Packet *pak)
     size_t s5len = 0;
     UBYTE *body = NULL, *data = pak->data;
 
-    if (prG->s5Use)
+    if (ConnectionPrefVal (conn->serv, CO_S5USE))
     {
         s5len = 10;
         body = malloc (pak->len + s5len);
@@ -964,10 +968,10 @@ Packet *UtilIOReceiveUDP (Connection *conn)
     Packet *pak;
     int s5len;
     
-    s5len = prG->s5Use ? 10 : 0;
+    s5len = ConnectionPrefVal (conn->serv, CO_S5USE) ? 10 : 0;
     pak = PacketC ();
     
-    pak->len = sockread (conn->sok, prG->s5Use ? pak->socks : pak->data, sizeof (pak->data) + s5len);
+    pak->len = sockread (conn->sok, ConnectionPrefVal (conn->serv, CO_S5USE) ? pak->socks : pak->data, sizeof (pak->data) + s5len);
     
     if (pak->len <= 4 + s5len || pak->len == (UWORD)-1)
     {

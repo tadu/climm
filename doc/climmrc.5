@@ -121,16 +121,15 @@ We\'re not firewalled at all. This is the default.
 .RS
 Remote control FIFOs do not use this setting.
 .RE
-.SH GENERAL
-The
-.B General
-section includes the options for SOCKS 5, that may be eventually
-moved to their own section, general options, and some strings to override.
 .TP
-.BI s5_use \ <number>
-Set
-.I number
-to 0 to disable and 1 to enable.
+.BI options \ <options>
+Define options for this server connection. These give default values for the
+contacts belonging to this server connection, as well as the following
+server specific settings:
+.RS
+.TP
+.BI s5_use
+Enable the use of a socks 5 proxy.
 .TP
 .BI s5_host \ <host>
 Connect to socks 5 proxy on host
@@ -139,11 +138,6 @@ Connect to socks 5 proxy on host
 .BI s5_port \ <port>
 Connect to socks 5 proxy listening on port
 .IR port .
-.TP
-.BI s5_auth \ <number>
-Set
-.I number
-to 0 to omit authentication and 1 to do authentication.
 .TP
 .BI s5_name \ <name>
 Identify as user
@@ -154,6 +148,11 @@ to socks 5 proxy.
 Authenticate with password
 .I password
 to socks 5 proxy.
+.RE
+.SH GENERAL
+The
+.B General
+section includes general options and some strings to override.
 .PP
 A few book-keeping options are usually placed at the beginning of
 the climmrc file:

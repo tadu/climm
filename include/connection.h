@@ -130,6 +130,7 @@ const char    *ConnectionStrType (Connection *conn);
 const char    *ConnectionServerType  (UWORD type);
 UWORD          ConnectionServerNType (const char *type, char del);
 val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
+const char    *ConnectionPrefStr (Server *conn, UDWORD flag);
 
 #define ConnectionC(t)       ConnectionC (t DEBUGARGS)
 #define ConnectionD(c)       ConnectionD (c DEBUGARGS)

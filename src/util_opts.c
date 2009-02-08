@@ -95,6 +95,11 @@ struct OptEntry_s OptList[] = {
   { "oscar_dc_port", CO_OSCAR_DC_PORT },
   { "scripting",     CO_SCRIPT        },
   { "scriptingpath", CO_SCRIPT_PATH   },
+  { "s5_use",        CO_S5USE         },
+  { "s5_port",       CO_S5PORT        },
+  { "s5_host",       CO_S5HOST        },
+  { "s5_name",       CO_S5NAME        },
+  { "s5_pass",       CO_S5PASS        },
 #ifdef ENABLE_OTR
   { "otrpolicy",     CO_OTRPOLICY     },
 #endif
