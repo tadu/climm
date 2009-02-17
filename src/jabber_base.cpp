@@ -212,6 +212,15 @@ CLIMMXMPP::~CLIMMXMPP ()
 void CLIMMXMPP::onConnect ()
 {
     m_serv->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
+    
+    gloox::Tag *iq = new gloox::Tag ("iq");
+    iq->addAttribute ("type", "get");
+    iq->addAttribute ("from", m_client->jid().full ());
+    iq->addAttribute ("id", s_sprintf ("roster-%s-%x", m_stamp, m_serv->conn->our_seq++));
+    gloox::Tag *qq = new gloox::Tag (iq, "query");
+    qq->addAttribute ("xmlns", "jabber:iq:roster");
+    m_client->send (iq);
+
     m_client->disco()->getDiscoInfo (m_client->jid().server(), "", this, 0);
 //    m_client->send (gloox::Stanza::createPresenceStanza (gloox::JID (""), "", gloox::PresenceChat));
 }
