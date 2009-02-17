@@ -299,7 +299,10 @@ static int cb_status_tui (Contact *cont, parentmode_t pm, change_t ch, const cha
 #endif
 
     if (text && *text)
-        rl_printf (". %s\n", s_wordquote (text));
+    {
+        rl_printf (". %s%s%s", COLQUOTE, COLSINGLE, text);
+        rl_print ("\n");
+    }
     else
         rl_print (".\n");
 
@@ -677,6 +680,7 @@ static int __IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWOR
         cont->flags = flags;
     cont->nativestatus = nativestatus;
     cont->oldflags &= ~CONT_SEENAUTO;
+    s_repl (&cont->status_message, text);
 
     cb_status_log (cont, ch, pm, text);
     
@@ -719,7 +723,7 @@ static int __IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWOR
             }
         }
         s_repl (&cont->parent->version, pcont->version);
-        hide |= __IMOnline (cont->parent, pcont->status, pcont->flags, pcont->nativestatus, text, hide | hide_noleaf);
+        hide |= __IMOnline (cont->parent, pcont->status, pcont->flags, pcont->nativestatus, pcont->status_message, hide | hide_noleaf);
     }
 #endif
     
@@ -850,8 +854,7 @@ void IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWORD native
     {
         egevent->due = time (NULL) + 3;
         QueueEnqueue (egevent);
-        if (!text || !*text)
-            hide = hide_hide;
+        hide = hide_hide;
     }
     
     if (status == cont->status && (status == ims_offline || flags == cont->flags) && (!text || !*text))

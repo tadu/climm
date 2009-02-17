@@ -113,6 +113,7 @@ struct Contact_s
     char  *version;
     char  *last_message;
     time_t last_time;
+    char  *status_message;
     
     ContactAlias *alias; /* alias of this entry */
 

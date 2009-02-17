@@ -1825,6 +1825,11 @@ static void __showcontact (Contact *cont, UWORD data)
     free (stat);
     s_free (ver);
     s_free (ver2);
+    if (cont->status_message && *cont->status_message)
+    {
+        rl_printf ("    %s%s%s", COLQUOTE, (data & 8) ? COLMSGINDENT : COLSINGLE, cont->status_message);
+        rl_print  ("\n");
+    }
 #if ENABLE_CONT_HIER
     if (prG->verbose)
         for (cont = cont->firstchild; cont; cont = cont->next)
@@ -2055,7 +2060,7 @@ static JUMP_F(CmdUserStatusDetail)
         cg = s_parselist_s (&args, 1, 1, uiG.conn);
         if (cg)
         {
-            __showgroupverbose (cg, data & 2);
+            __showgroupverbose (cg, data & 10);
             return 0;
         }
     }
