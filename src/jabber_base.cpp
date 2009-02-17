@@ -195,6 +195,9 @@ CLIMMXMPP::CLIMMXMPP (Server *serv)
     m_client->setInitialPriority (5);
 #endif
 
+    gmail_new_newer = 0ULL;
+    gmail_newer = 0ULL;
+
     m_client->connect (false);
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
     // Yes http proxy is now avail in gloox, but not used in climm, so != NULL
