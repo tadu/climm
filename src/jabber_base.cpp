@@ -698,6 +698,8 @@ void CLIMMXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
             node = "iChat";
         else if (!strcmp (node.c_str(), "http://telepathy.freedesktop.org/caps"))
             node = "Telepathy";
+        else if (!strcmp (node.c_str(), "http://talkgadget.google.com/client/caps"))
+            node = "TalkGadget";
         else if (!strcmp (node.c_str(), "http://trillian.im/caps"))
             node = "Trillian";
         if (ext.empty())
