@@ -133,6 +133,7 @@ class CLIMMXMPP: public gloox::ConnectionListener, public gloox::MessageHandler,
 
         // GMail support
         void sendIqGmail (int64_t newer = 0ULL, std::string newertid = "", std::string q = "", bool isauto = 1);
+        void sendIqTime (void);
         std::string gmail_new_newertid;
         std::string gmail_newertid;
         std::string gmail_query;
@@ -210,22 +211,6 @@ CLIMMXMPP::CLIMMXMPP (Server *serv)
 CLIMMXMPP::~CLIMMXMPP ()
 {
     s_free (m_stamp);
-}
-
-void CLIMMXMPP::onConnect ()
-{
-    m_serv->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
-    
-    gloox::Tag *iq = new gloox::Tag ("iq");
-    iq->addAttribute ("type", "get");
-    iq->addAttribute ("from", m_client->jid().full ());
-    iq->addAttribute ("id", s_sprintf ("roster-%s-%x", m_stamp, m_serv->conn->our_seq++));
-    gloox::Tag *qq = new gloox::Tag (iq, "query");
-    qq->addAttribute ("xmlns", "jabber:iq:roster");
-    m_client->send (iq);
-
-    m_client->disco()->getDiscoInfo (m_client->jid().server(), "", this, 0);
-//    m_client->send (gloox::Stanza::createPresenceStanza (gloox::JID (""), "", gloox::PresenceChat));
 }
 
 void CLIMMXMPP::onDisconnect (gloox::ConnectionError e)
@@ -1001,6 +986,33 @@ void CLIMMXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std
         DebugH (DEB_XMPPOTHER, "%s/%s: %s", lt, la, message.c_str());
 }
 
+/***************** Time Query *******************/
+
+void CLIMMXMPP::sendIqTime (void)
+{
+    gloox::Tag *iq = new gloox::Tag ("iq");
+    iq->addAttribute ("type", "get");
+    iq->addAttribute ("to", m_client->jid().bare ());
+    iq->addAttribute ("id", s_sprintf ("time-%s-%x", m_stamp, m_serv->conn->our_seq++));
+    gloox::Tag *qq = new gloox::Tag (iq, "time");
+    qq->addAttribute ("xmlns", "urn:xmpp:time");
+    m_client->send (iq);
+}
+
+static void sendIqTimeReqs (Event *event)
+{
+    if (!event->conn)
+    {
+        EventD (event);
+        return;
+    }
+    CLIMMXMPP *j = getXMPPClient (event->conn->serv);
+    assert (j);
+    j->sendIqTime ();
+    event->due += 300;
+    QueueEnqueue (event);
+}
+
 /****************** GoogleMail ******************/
 
 void CLIMMXMPP::sendIqGmail (int64_t newer, std::string newertid, std::string q, bool isauto)
@@ -1046,6 +1058,26 @@ static void sendIqGmailReqs (Event *event)
     j->sendIqGmail ((event->due - 300ULL)*1000ULL, "", "", 1);
     event->due += 300;
     QueueEnqueue (event);
+}
+
+/******************************************/
+
+void CLIMMXMPP::onConnect ()
+{
+    m_serv->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
+
+    gloox::Tag *iq = new gloox::Tag ("iq");
+    iq->addAttribute ("type", "get");
+    iq->addAttribute ("from", m_client->jid().full ());
+    iq->addAttribute ("id", s_sprintf ("roster-%s-%x", m_stamp, m_serv->conn->our_seq++));
+    gloox::Tag *qq = new gloox::Tag (iq, "query");
+    qq->addAttribute ("xmlns", "jabber:iq:roster");
+    m_client->send (iq);
+
+    QueueEnqueueData2 (m_serv->conn, QUEUE_SRV_KEEPALIVE, 0, 300, NULL, &sendIqTimeReqs, NULL);
+
+    m_client->disco()->getDiscoInfo (m_client->jid().server(), "", this, 0);
+//    m_client->send (gloox::Stanza::createPresenceStanza (gloox::JID (""), "", gloox::PresenceChat));
 }
 
 /****************** IqHandler **********/
