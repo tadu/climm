@@ -161,6 +161,21 @@ static inline CLIMMXMPP *getXMPPClient (Server *serv)
     return serv ? (CLIMMXMPP *)serv->xmpp_private : NULL;
 }
 
+static gloox::Presence StatusToGlooxstatus (status_t &status)
+{
+    switch (status)
+    {
+        case ims_online:   return gloox::PresenceAvailable;   break;
+        case ims_ffc:      return gloox::PresenceChat;        break;
+        case ims_away:     return gloox::PresenceAway;        break;
+        case ims_occ:      status = ims_dnd;
+        case ims_dnd:      return gloox::PresenceDnd;         break;
+        case ims_na:       return gloox::PresenceXa;          break;
+        case ims_offline:  status = ims_inv;
+        default:           return gloox::PresenceUnavailable; break;
+    }
+}
+
 CLIMMXMPP::CLIMMXMPP (Server *serv)
 {
     m_serv = serv;
@@ -184,7 +199,7 @@ CLIMMXMPP::CLIMMXMPP (Server *serv)
     m_client->disco()->setIdentity ("client", "console");
     m_client->disco()->registerDiscoHandler (this);
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
-    m_client->setPresence (gloox::PresenceAvailable, 5);
+    m_client->setPresence (StatusToGlooxstatus (m_serv->status), 5);
 
 #ifdef CLIMM_XMPP_FILE_TRANSFER
     m_pFT = new gloox::SIProfileFT (m_client, this);
@@ -192,7 +207,7 @@ CLIMMXMPP::CLIMMXMPP (Server *serv)
 #endif
 
 #else
-    m_client->setAutoPresence (true);
+    m_client->setAutoPresence (false);
     m_client->setInitialPriority (5);
 #endif
 
@@ -1065,6 +1080,8 @@ static void sendIqGmailReqs (Event *event)
 void CLIMMXMPP::onConnect ()
 {
     m_serv->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
+    
+    XMPPSetstatus (m_serv, NULL, m_serv->status, NULL);
 
     gloox::Tag *iq = new gloox::Tag ("iq");
     iq->addAttribute ("type", "get");
@@ -1266,20 +1283,9 @@ UBYTE CLIMMXMPP::XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
 
 void CLIMMXMPP::XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *msg)
 {
-    gloox::Presence p;
+    gloox::Presence p = StatusToGlooxstatus (status);
     gloox::JID j = cont ? gloox::JID (cont->screen) : gloox::JID ();
 
-    switch (status)
-    {
-        case ims_online:   p = gloox::PresenceAvailable;   break;
-        case ims_ffc:      p = gloox::PresenceChat;        break;
-        case ims_away:     p = gloox::PresenceAway;        break;
-        case ims_occ:      status = ims_dnd;
-        case ims_dnd:      p = gloox::PresenceDnd;         break;
-        case ims_na:       p = gloox::PresenceXa;          break;
-        case ims_offline:  status = ims_inv;
-        default:           p = gloox::PresenceUnavailable; break;
-    }
     gloox::Stanza *pres = gloox::Stanza::createPresenceStanza (j, msg ? msg : "", p);
     if (p != gloox::PresenceUnavailable)
     {
