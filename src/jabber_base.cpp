@@ -1081,7 +1081,7 @@ void CLIMMXMPP::onConnect ()
 {
     m_serv->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
     
-    XMPPSetstatus (m_serv, NULL, m_serv->status, NULL);
+    XMPPSetstatus (m_serv, NULL, m_serv->status, m_serv->conn->cont->status_message);
 
     gloox::Tag *iq = new gloox::Tag ("iq");
     iq->addAttribute ("type", "get");
@@ -1295,6 +1295,7 @@ void CLIMMXMPP::XMPPSetstatus (Server *serv, Contact *cont, status_t status, con
         vers->addAttribute ("ver", BuildVersionStr);
         // vers->addAttribute ("ext", "ext1 ext2");
     }
+    s_repl (&serv->conn->cont->status_message, msg);
     m_client->send (pres);
     m_serv->status = status;
     m_serv->nativestatus = p;
