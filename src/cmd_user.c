@@ -1825,6 +1825,11 @@ static void __showcontact (Contact *cont, UWORD data)
     free (stat);
     s_free (ver);
     s_free (ver2);
+    if (cont->cap_string && *cont->cap_string && data  & 8)
+    {
+        rl_printf ("    Cap: %s%s", COLMSGINDENT, cont->cap_string);
+        rl_print  ("\n");
+    }
     if (cont->status_message && *cont->status_message)
     {
         rl_printf ("    %s%s%s", COLQUOTE, (data & 8) ? COLMSGINDENT : COLSINGLE, cont->status_message);

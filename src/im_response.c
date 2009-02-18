@@ -723,6 +723,7 @@ static int __IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWOR
             }
         }
         s_repl (&cont->parent->version, pcont->version);
+        s_repl (&cont->parent->cap_string, pcont->cap_string);
         hide |= __IMOnline (cont->parent, pcont->status, pcont->flags, pcont->nativestatus, pcont->status_message, hide | hide_noleaf);
     }
 #endif

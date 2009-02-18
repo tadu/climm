@@ -114,6 +114,7 @@ struct Contact_s
     char  *last_message;
     time_t last_time;
     char  *status_message;
+    char  *cap_string;
     
     ContactAlias *alias; /* alias of this entry */
 

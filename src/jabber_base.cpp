@@ -714,10 +714,8 @@ void CLIMMXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
             node = "TalkGadget";
         else if (!strcmp (node.c_str(), "http://trillian.im/caps"))
             node = "Trillian";
-        if (ext.empty())
-            s_repl (&contr->version, s_sprintf ("%s %s", node.c_str(), ver.c_str()));
-        else
-            s_repl (&contr->version, s_sprintf ("%s %s [%s]", node.c_str(), ver.c_str(), ext.c_str()));
+        s_repl (&contr->cap_string, ext.c_str ());
+        s_repl (&contr->version, s_sprintf ("%s %s", node.c_str(), ver.c_str()));
         DropAttrib (caps, "xmlns");
         DropAttrib (caps, "xmlns:caps");
         DropAttrib (caps, "ver");
@@ -888,7 +886,10 @@ void CLIMMXMPP::handlePresence2 (gloox::Tag *s, gloox::JID from, gloox::JID to, 
     if (s->hasAttribute ("type", "unavailable") || s->hasAttribute ("type", "error"))
     {
         if (s->hasAttribute ("type", "error"))
+        {
             s_repl (&contr->version, "");
+            s_repl (&contr->cap_string, NULL);
+        }
         status = ims_offline;
         DropAttrib (s, "type");
 
