@@ -44,6 +44,7 @@ extern "C" {
 #include <gloox/siprofileft.h>
 #endif
 #include <gloox/presencehandler.h>
+#include <gloox/tag.h>
 #include <gloox/stanza.h>
 #include <gloox/disco.h>
 
@@ -394,6 +395,31 @@ static time_t ParseUTCDate (std::string str)
     return timegm (&tm);
 }
 
+static gloox::Tag *findNamespacedChild (gloox::Tag *tag, const char *childname, const char *childnamespace)
+{
+    gloox::Tag::TagList::const_iterator it = tag->children ().begin ();
+    while (it != tag->children ().end())
+    {
+        gloox::Tag::AttributeList::const_iterator ait = (*it)->attributes().begin ();
+        while (ait != (*it)->attributes().end ())
+        {
+            if ((*ait).first == "xmlns" && (*ait).second == childnamespace)
+            {
+                (*it)->attributes ().remove (*ait);
+                return *it;
+            }
+            if (!(*ait).first.compare (0, 6, "xmlns:") && (*ait).second == childnamespace)
+            {
+                (*it)->attributes ().remove (*ait);
+                return *it;
+            }
+            ait++;
+        }
+        it++;
+    }
+    return NULL;
+}
+
 static void GetBothContacts (const gloox::JID &j, Server *conn, Contact **b, Contact **f, bool crea)
 {
     Contact *bb, *ff, **t;
@@ -471,14 +497,13 @@ void CLIMMXMPPSave (Server *serv, const char *text, char in)
 
 void CLIMMXMPP::handleXEP8 (gloox::Tag *t)
 {
-    if (gloox::Tag *avatar = t->findChild ("x", "xmlns", "jabber:x:avatar"))
+    if (gloox::Tag *avatar = findNamespacedChild (t, "x", "jabber:x:avatar"))
     {
         if (gloox::Tag *hash = avatar->findChild ("hash"))
         {
             DropCData (hash);
             CheckInvalid (hash);
         }
-        DropAttrib (avatar, "xmlns");
         CheckInvalid (avatar);
     }
 }
@@ -588,52 +613,45 @@ void CLIMMXMPP::handleXEP22b (gloox::Tag *XEP22, gloox::JID from, std::string to
 bool CLIMMXMPP::handleXEP22and85 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id)
 {
     bool ret = false;
-    if (gloox::Tag *XEP22 = t->findChild ("x", "xmlns", "jabber:x:event"))
+    if (gloox::Tag *XEP22 = findNamespacedChild (t, "x", "jabber:x:event"))
     {
         ret = true;
-        DropAttrib (XEP22, "xmlns");
         if (!t->hasChild ("body"))
             handleXEP22a (XEP22, cfrom);
         else
             handleXEP22b (XEP22, from, tof, id);
     }
-    if (gloox::Tag *address = t->findChild ("addresses", "xmlns", "http://jabber.org/protocol/address"))
+    if (gloox::Tag *address = findNamespacedChild (t, "addresses", "http://jabber.org/protocol/address"))
     {
-        DropAttrib (address, "xmlns");
         DropAllChildsTree (address, "address");
         CheckInvalid (address);
         ret = true;
     }
     
-    if (gloox::Tag *active = t->findChild ("active", "xmlns", "http://jabber.org/protocol/chatstates"))
+    if (gloox::Tag *active = findNamespacedChild (t, "active", "http://jabber.org/protocol/chatstates"))
     {
-        DropAttrib (active, "xmlns");
         CheckInvalid (active);
         ret = true;
     }
-    if (gloox::Tag *composing = t->findChild ("composing", "xmlns", "http://jabber.org/protocol/chatstates"))
+    if (gloox::Tag *composing = findNamespacedChild (t, "composing", "http://jabber.org/protocol/chatstates"))
     {
-        DropAttrib (composing, "xmlns");
         CheckInvalid (composing);
         IMIntMsg (cfrom, NOW, ims_offline, INT_MSGCOMP, "");
         ret = true;
     }
-    if (gloox::Tag *paused = t->findChild ("paused", "xmlns", "http://jabber.org/protocol/chatstates"))
+    if (gloox::Tag *paused = findNamespacedChild (t, "paused", "http://jabber.org/protocol/chatstates"))
     {
-        DropAttrib (paused, "xmlns");
         CheckInvalid (paused);
         IMIntMsg (cfrom, NOW, ims_offline, INT_MSGNOCOMP, "");
         ret = true;
     }
-    if (gloox::Tag *inactive = t->findChild ("inactive", "xmlns", "http://jabber.org/protocol/chatstates"))
+    if (gloox::Tag *inactive = findNamespacedChild (t, "inactive", "http://jabber.org/protocol/chatstates"))
     {
-        DropAttrib (inactive, "xmlns");
         CheckInvalid (inactive);
         ret = true;
     }
-    if (gloox::Tag *gone = t->findChild ("gone", "xmlns", "http://jabber.org/protocol/chatstates"))
+    if (gloox::Tag *gone = findNamespacedChild (t, "gone", "http://jabber.org/protocol/chatstates"))
     {
-        DropAttrib (gone, "xmlns");
         CheckInvalid (gone);
         ret = true;
     }
@@ -644,19 +662,17 @@ bool CLIMMXMPP::handleXEP22and85 (gloox::Tag *t, Contact *cfrom, gloox::JID from
 
 void CLIMMXMPP::handleXEP27 (gloox::Tag *t)
 {
-    if (gloox::Tag *sig = t->findChild ("x", "xmlns", "jabber:x:signed"))
+    if (gloox::Tag *sig = findNamespacedChild (t, "x", "jabber:x:signed"))
     {
         DropCData (sig);
-        DropAttrib (sig, "xmlns");
         CheckInvalid (sig);
     }
 }
 
 void CLIMMXMPP::handleXEP71 (gloox::Tag *t)
 {
-    if (gloox::Tag *xhtmlim = t->findChild ("html", "xmlns", "http://jabber.org/protocol/xhtml-im"))
+    if (gloox::Tag *xhtmlim = findNamespacedChild (t, "html", "http://jabber.org/protocol/xhtml-im"))
     {
-        DropAttrib (xhtmlim, "xmlns");
         DropAllChildsTree (xhtmlim, "body");
         CheckInvalid (xhtmlim);
     }
@@ -666,7 +682,7 @@ void CLIMMXMPP::handleXEP71 (gloox::Tag *t)
 time_t CLIMMXMPP::handleXEP91 (gloox::Tag *t)
 {
     time_t date = NOW;
-    if (gloox::Tag *delay = t->findChild ("x", "xmlns", "jabber:x:delay"))
+    if (gloox::Tag *delay = findNamespacedChild (t, "x", "jabber:x:delay"))
     {
         struct tm;
         std::string dfrom = delay->findAttribute ("from");
@@ -674,7 +690,6 @@ time_t CLIMMXMPP::handleXEP91 (gloox::Tag *t)
         date = ParseUTCDate (stamp);
         if (date != NOW)
             DropAttrib (delay, "stamp");
-        DropAttrib (delay, "xmlns");
         DropAttrib (delay, "from");
         CheckInvalid (delay);
     }
@@ -684,8 +699,7 @@ time_t CLIMMXMPP::handleXEP91 (gloox::Tag *t)
 void CLIMMXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
 {
     gloox::Tag *caps;
-    if ((caps = t->findChild ("c", "xmlns", "http://jabber.org/protocol/caps"))
-        || (caps = t->findChild ("caps:c", "xmlns:caps", "http://jabber.org/protocol/caps")))
+    if ((caps = findNamespacedChild (t, "c", "http://jabber.org/protocol/caps")))
     {
         std::string node = caps->findAttribute ("node");
         std::string ver = caps->findAttribute ("ver");
@@ -716,8 +730,6 @@ void CLIMMXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
             node = "Trillian";
         s_repl (&contr->cap_string, ext.c_str ());
         s_repl (&contr->version, s_sprintf ("%s %s", node.c_str(), ver.c_str()));
-        DropAttrib (caps, "xmlns");
-        DropAttrib (caps, "xmlns:caps");
         DropAttrib (caps, "ver");
         DropAttrib (caps, "ext");
         DropAttrib (caps, "node");
@@ -727,9 +739,8 @@ void CLIMMXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
 
 void CLIMMXMPP::handleXEP136 (gloox::Tag *t)
 {
-    if (gloox::Tag *arc = t->findChild ("arc:record", "xmlns:arc", "http://jabber.org/protocol/archive"))
+    if (gloox::Tag *arc = findNamespacedChild (t, "record", "http://jabber.org/protocol/archive"))
     {
-        DropAttrib (arc, "xmlns:arc");
         DropAttrib (arc, "otr");
         CheckInvalid (arc);
     }
@@ -737,7 +748,7 @@ void CLIMMXMPP::handleXEP136 (gloox::Tag *t)
 
 void CLIMMXMPP::handleXEP153 (gloox::Tag *t, Contact *contr)
 {
-    if (gloox::Tag *vcard = t->findChild ("x", "xmlns", "vcard-temp:x:update"))
+    if (gloox::Tag *vcard = findNamespacedChild (t, "x", "vcard-temp:x:update"))
     {
         if (gloox::Tag *photo = vcard->findChild ("photo"))
         {
@@ -751,16 +762,14 @@ void CLIMMXMPP::handleXEP153 (gloox::Tag *t, Contact *contr)
             DropCData (nick);
             CheckInvalid (nick);
         }
-        DropAttrib (vcard, "xmlns");
         CheckInvalid (vcard);
     }
 }
 
 void CLIMMXMPP::handleGoogleNosave (gloox::Tag *t)
 {
-    if (gloox::Tag *nosave = t->findChild ("nos:x", "xmlns:nos", "google:nosave"))
+    if (gloox::Tag *nosave = findNamespacedChild (t, "x", "google:nosave"))
     {
-        DropAttrib (nosave, "xmlns:nos");
         DropAttrib (nosave, "value");
         CheckInvalid (nosave);
     }
@@ -768,9 +777,8 @@ void CLIMMXMPP::handleGoogleNosave (gloox::Tag *t)
 
 void CLIMMXMPP::handleGoogleSig (gloox::Tag *t)
 {
-    if (gloox::Tag *sig = t->findChild ("met:google-mail-signature", "xmlns:met", "google:metadata"))
+    if (gloox::Tag *sig = findNamespacedChild (t, "google-mail-signature", "google:metadata"))
     {
-        DropAttrib (sig, "xmlns:met");
         DropCData (sig);
         CheckInvalid (sig);
     }
@@ -778,11 +786,8 @@ void CLIMMXMPP::handleGoogleSig (gloox::Tag *t)
 
 void CLIMMXMPP::handleGoogleChatstate(gloox::Tag *t)
 {
-    if (gloox::Tag *chat = t->findChild ("cha:active", "xmlns:cha", "http://jabber.org/protocol/chatstates"))
-    {
-        DropAttrib (chat, "xmlns:cha");
+    if (gloox::Tag *chat = findNamespacedChild (t, "active", "http://jabber.org/protocol/chatstates"))
         CheckInvalid (chat);
-    }
 }
 
 
@@ -793,9 +798,9 @@ void CLIMMXMPP::handleMessage2 (gloox::Stanza *t, gloox::JID from, std::string t
     std::string body = t->body();
     std::string subject = t->subject();
     std::string html;
-    gloox::Tag *htmltag = t->findChild ("html", "xmlns", "http://jabber.org/protocol/xhtml-im");
+    gloox::Tag *htmltag = findNamespacedChild (t, "html", "http://jabber.org/protocol/xhtml-im");
     if (htmltag)
-        htmltag = htmltag->findChild ("body", "xmlns", "http://www.w3.org/1999/xhtml");
+        htmltag = findNamespacedChild (htmltag, "body", "http://www.w3.org/1999/xhtml");
     if (htmltag)
         html = htmltag->cdata();
     DropAttrib (t, "type");
@@ -1102,7 +1107,7 @@ void CLIMMXMPP::onConnect ()
 
 bool CLIMMXMPP::handleIq (gloox::Stanza *stanza)
 {
-    if (gloox::Tag *mb = stanza->findChild ("mailbox", "xmlns", "google:mail:notify"))
+    if (gloox::Tag *mb = findNamespacedChild (stanza, "mailbox", "google:mail:notify"))
     {
         int n = 0;
         int ismail = 0;
