@@ -841,13 +841,17 @@ void CLIMMXMPP::handleMessage (gloox::Stanza *s)
 {
     assert (s);
     assert (s->type() == gloox::StanzaMessage);
-
+    
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
     gloox::Stanza *t = new gloox::Stanza (s);
 #else
     gloox::Stanza *t = s->clone();
 #endif
-    handleMessage2 (t, s->from(), s->to().full(), s->id(), s->subtype ());
+
+    if (t->subtype() == gloox::StanzaMessageError)
+        DropAllChildsTree (t, "");
+    else
+        handleMessage2 (t, s->from(), s->to().full(), s->id(), s->subtype ());
 
     DropAttrib (t, "from");
     DropAttrib (t, "to");
@@ -933,7 +937,11 @@ void CLIMMXMPP::handlePresence (gloox::Stanza *s)
 #else
     gloox::Stanza *t = s->clone();
 #endif
-    handlePresence2 (t, s->from(), s->to(), s->status());
+
+    if (t->subtype() == gloox::StanzaPresenceError)
+        DropAllChildsTree (t, "");
+    else
+        handlePresence2 (t, s->from(), s->to(), s->status());
 
     DropAttrib (t, "from");
     DropAttrib (t, "to");
@@ -1107,6 +1115,9 @@ void CLIMMXMPP::onConnect ()
 
 bool CLIMMXMPP::handleIq (gloox::Stanza *stanza)
 {
+    if (stanza->subtype() == gloox::StanzaIqError)
+        DropAllChildsTree (stanza, "");
+    
     if (gloox::Tag *mb = findNamespacedChild (stanza, "mailbox", "google:mail:notify"))
     {
         int n = 0;
@@ -1172,6 +1183,7 @@ bool CLIMMXMPP::handleIq (gloox::Stanza *stanza)
         return true;
     }
     CLIMMXMPPSave (m_serv, stanza->xml().c_str(), 3);
+    return 0;
 }
 
 bool CLIMMXMPP::handleIqID (gloox::Stanza *stanza, int context)
