@@ -4802,7 +4802,7 @@ static JUMP_F(CmdUserUpdate)
     switch (status)
     {
         case 0:
-            ReadLinePromptSet (i18n (1553, "Enter Your New Nickname:"));
+            ReadLinePromptSet (i18n (1553, "Enter your new nickname:"));
             return 300;
         case 300:
             s_repl (&user->nick, args);
