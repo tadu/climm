@@ -186,7 +186,7 @@
 1248:Chile
 1249:China
 1250:Columbia
-1251:Costa Rice
+1251:Costa Rica
 1252:Croatia
 1253:Cuba
 1254:Cyprus
@@ -203,7 +203,7 @@
 1265:Eritrea
 1266:Estonia
 1267:Ethiopia
-1268:F.Y.R.O.M. (Former Yugoslavia)
+1268:Republic of Macedonia (F.Y.R.O.M.)
 1269:Faeroe Islands
 1270:Falkland Islands
 1271:Federated States of Micronesia
@@ -225,7 +225,7 @@
 1287:Grenada
 1288:Guadeloupe
 1289:Guam
-1290:Guantanomo Bay
+1290:Guantanamo Bay
 1291:Guatemala
 1292:Guinea
 1293:Guinea-Bissau
@@ -303,7 +303,7 @@
 1365:Togo
 1366:Tokelau
 1367:Tonga
-1368:Trinadad and Tabago
+1368:Trinidad and Tobago
 1369:Tunisia
 1370:Turkey
 1371:Turkmenistan
@@ -461,7 +461,7 @@
 1550:Enter new zip code (must be numeric):
 1551:Enter your country's phone ID number:
 1552:Enter your time zone (+/- 0-12):
-1553:Enter Your New Nickname:
+1553:Enter your new nickname:
 1554:Enter your new first name:
 1555:Enter your new last name:
 1556:Enter your new email address:
@@ -1235,7 +1235,7 @@
 2706:Contact %s/%s is normal (#%d) on the server, but visible (#%d,#%d) locally.\n
 2707:Contact %s/%s (#%d) is in group %s (#%d) on the server, but in group %s (#%d) locally.\n
 2708:Contact %s/%s (#%d) exists only locally.\n
-2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
+2709:Opening file listener connection at %slocalhost%s:%s%p%s... 
 2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
 2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
 2712:Query emails matching <query> since <date>, or continue search.
