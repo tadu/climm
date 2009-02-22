@@ -46,7 +46,7 @@ Einige andere ICQ-Programme basieren im Geiste auf climm, dennoch
 ist climm immernoch _das_ textbasierte ICQ-Programm schlechthin.
 
 [BuildPrepare]
-prepareBuild --enable-autopackage --enable-iconvrepl
+prepareBuild --enable-autopackage --enable-iconvrepl CFLAGS=-D_FORTIFY_SOURCE=0 CXXFLAGS=-D_FORTIFY_SOURCE=0
 mkdir -p "$build_root/doc" "$build_root/data"
 for f in $(< $source_dir/debian/docs) ChangeLog; do
   cp "$source_dir/$f" "$build_root/doc"
