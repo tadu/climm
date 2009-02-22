@@ -400,17 +400,29 @@ static gloox::Tag *findNamespacedChild (gloox::Tag *tag, const char *childname, 
     gloox::Tag::TagList::const_iterator it = tag->children ().begin ();
     while (it != tag->children ().end())
     {
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
         gloox::Tag::AttributeList::const_iterator ait = (*it)->attributes().begin ();
+#else
+        gloox::StringMap::iterator ait = (*it)->attributes().begin ();
+#endif
         while (ait != (*it)->attributes().end ())
         {
             if ((*ait).first == "xmlns" && (*ait).second == childnamespace)
             {
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
                 (*it)->attributes ().remove (*ait);
+#else
+                (*it)->attributes ().erase (ait);
+#endif
                 return *it;
             }
             if (!(*ait).first.compare (0, 6, "xmlns:") && (*ait).second == childnamespace)
             {
+#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
                 (*it)->attributes ().remove (*ait);
+#else
+                (*it)->attributes ().erase (ait);
+#endif
                 return *it;
             }
             ait++;
