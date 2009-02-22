@@ -57,31 +57,6 @@ tar -zcf climm-$VERSION.tgz climm-$VERSION
 fi
 
 #
-# debian (generic)
-#
-cp climm-$VERSION.tgz climm_$VERSION.orig.tar.gz
-cd climm-$VERSION
-export CLIMM_EXTRAVERSION="Official deb (generic)"
-DEB_BUILD_OPTIONS=autopackage fakeroot dpkg-buildpackage -tc -us -uc
-cd /tmp
-rm -rf climm-$VERSION
-mv climm_$VERSION-0_i386.deb $WEBDIR/binary/
-mv climm_$VERSION* $WEBDIR/deb/dists/sid/main/source/
-
-#
-# rpm (generic)
-#
-rm -rf /usr/src/rpm 2>/dev/null
-tar -zxvf climm-$VERSION.tgz climm-$VERSION/climm.spec
-export CLIMM_EXTRAVERSION="Official rpm (generic)"
-cp climm-$VERSION/climm.spec /usr/src/rpm/SPECS/
-cp climm-$VERSION.tgz /usr/src/rpm/SOURCES/
-rpmbuild --clean --nodeps -ba /usr/src/rpm/SPECS/climm.spec
-#rpm --clean -ta climm-$VERSION.tgz
-mv /usr/src/rpm/RPMS/i386/climm-$VERSION-1.i386.rpm $WEBDIR/binary/
-mv /usr/src/rpm/SRPMS/climm-$VERSION-1.src.rpm $WEBDIR/source/
-
-#
 # AmigaOS
 #
 tar -zxf climm-$VERSION.tgz
