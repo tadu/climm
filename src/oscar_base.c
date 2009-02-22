@@ -233,6 +233,7 @@ static void FlapSave (Server *serv, Packet *pak, BOOL in)
     UWORD seq, len;
     str_s str = { NULL, 0, 0 };
     const char *data;
+    size_t rc;
     char *dump;
     
     if (serv->logfd < 0)
@@ -252,7 +253,7 @@ static void FlapSave (Server *serv, Packet *pak, BOOL in)
     len = PacketReadB2 (pak);
     
     data = s_sprintf ("%s %s\n", s_now, in ? "<<<" : ">>>");
-    write (serv->logfd, data, strlen (data));
+    rc = write (serv->logfd, data, strlen (data));
     
     s_init (&str, "", 64);
     s_catf (&str, "%s FLAP  ch %d seq %08x length %04x\n",
@@ -292,7 +293,7 @@ static void FlapSave (Server *serv, Packet *pak, BOOL in)
 
     data = s_ind (str.txt);
     s_done (&str);
-    write (serv->logfd, data, strlen (data));
+    rc = write (serv->logfd, data, strlen (data));
     pak->rpos = oldrpos;
 }
 

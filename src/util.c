@@ -139,13 +139,14 @@ int putlog (Server *serv, time_t stamp, Contact *cont,
         {
             char symbuf[LOG_MAX_PATH + 1];                  /* path of a sym link */
             char *b = target - buffer + symbuf;
+            size_t rc;
 
             strncpy (symbuf, buffer, target - buffer);
             snprintf (b, symbuf + sizeof (symbuf) - b, "nick-%s.log", cont->nick);
 
             while ((b = strchr (b, _OS_PATHSEP)) != NULL)
                 *b = '_';
-            (void) symlink (target, symbuf);
+            rc = symlink (target, symbuf);
         }
 #endif
     }

@@ -5149,12 +5149,13 @@ static void CmdUserProcess (const char *command, time_t *idle_val, idleflag_t *i
         {
             if ('!' == args[0])
             {
+                size_t rc;
                 ReadLineTtyUnset ();
 #ifdef SHELL_COMMANDS
                 if (((unsigned char)args[1] < 31) || (args[1] & 128))
                     rl_printf (i18n (1660, "Invalid Command: %s\n"), args + 1);
                 else
-                    system (args + 1);
+                    rc = system (args + 1);
 #else
                 rl_print (i18n (1661, "Shell commands have been disabled.\n"));
 #endif

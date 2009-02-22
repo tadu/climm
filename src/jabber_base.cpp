@@ -474,6 +474,7 @@ static void GetBothContacts (const gloox::JID &j, Server *conn, Contact **b, Con
 void CLIMMXMPPSave (Server *serv, const char *text, char in)
 {
     const char *data;
+    size_t rc;
 
     if (serv->logfd < 0)
     {
@@ -487,11 +488,11 @@ void CLIMMXMPPSave (Server *serv, const char *text, char in)
         return;
 
     data = s_sprintf ("%s %s%s\n", s_now, in & 1 ? "<<<" : ">>>", in & 2 ? " residual:" : "");
-    write (serv->logfd, data, strlen (data));
+    rc = write (serv->logfd, data, strlen (data));
 
     text = s_ind (text);
-    write (serv->logfd, text, strlen (text));
-    write (serv->logfd, "\n", 1);
+    rc = write (serv->logfd, text, strlen (text));
+    rc = write (serv->logfd, "\n", 1);
 }
 
 
@@ -1352,7 +1353,7 @@ void CLIMMXMPP::handleSOCKS5Data (gloox::SOCKS5Bytestream *s5b, const std::strin
     if (len != data.length())
     {
         rl_log_for (contr->screen, COLCONTACT);
-        rl_printf (i18n (2575, "Error writing to file (%lu bytes written out of %u).\n"), len, data.length());
+        rl_printf (i18n (2575, "Error writing to file (%lu bytes written out of %u).\n"), (long unsigned int)len, data.length());
     }
     fpeer->xmpp_file->xmpp_file_done += len;
     if (fpeer->xmpp_file->xmpp_file_len == fpeer->xmpp_file->xmpp_file_done)
@@ -1405,7 +1406,7 @@ void CLIMMXMPP::handleFTSOCKS5Bytestream (gloox::SOCKS5Bytestream *s5b)
     Contact *cont, *contr;
     GetBothContacts (s5b->initiator(), m_serv, &cont, &contr, 0);
     s5b->registerSOCKS5BytestreamDataHandler (this);
-    rl_printf (i18n (2709, "Opening file listener connection at %slocalhost%s:%s%lp%s... "),
+    rl_printf (i18n (2709, "Opening file listener connection at %slocalhost%s:%s%p%s... "),
                COLQUOTE, COLNONE, COLQUOTE, s5b->connectionImpl(), COLNONE);
     if (s5b->connect())
     {

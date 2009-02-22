@@ -296,8 +296,8 @@ static void Init (int argc, char *argv[])
 #endif
         char buf[PATH_MAX + 2];
         const char *app, *oldbase;
-        buf[0] = '\0';
-        getcwd  (buf, PATH_MAX);
+        if (!getcwd (buf, PATH_MAX))
+            strcpy (buf,  "/");
         strcat (buf, _OS_PATHSEPSTR);
         app = arg_b[strlen (arg_b) - 1] == _OS_PATHSEP ? "" : _OS_PATHSEPSTR;
         oldbase = arg_b[0] == '.' && arg_b[1] == _OS_PATHSEP ? arg_b += 2, buf : PrefUserDir (prG);
