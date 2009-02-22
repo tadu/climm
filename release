@@ -1,11 +1,41 @@
-#!/bin/bash -x
+#!/bin/bash
 
 WEBDIR=~/Work/ICQ/climm-web
+VERSION=$1
+
+# svn cp svn+ssh://kuhlmann@svn.climm.org/var/lib/svn/climm/climm \
+#        svn+ssh://kuhlmann@svn.climm.org/var/lib/svn/climm/tags/climm-0.6.3
+
+#
+# Ubuntu from chroot
+#
+# packages=joe,libgloox-dev,fakeroot,debhelper,tcl8.4-dev,libotr2-dev
+# debootstrap --variant=buildd                            --include=$packages                 etch     chroot-Debian-4.0-0etch    http://ftp.de.debian.org/debian
+# debootstrap --variant=buildd                            --include=$packages,build-essential lenny    chroot-Debian-5.0-1lenny   http://ftp.de.debian.org/debian
+# debootstrap --variant=buildd --components=main,universe --include=$packages                 dapper   chroot-Ubuntu-6.06-1dapper
+# debootstrap --variant=buildd --components=main,universe --include=$packages                 edgy     chroot-Ubuntu-6.10-2edgy   http://old-releases.ubuntu.com/ubuntu/
+# debootstrap --variant=buildd --components=main,universe --include=$packages                 feisty   chroot-Ubuntu-7.04-3feisty http://old-releases.ubuntu.com/ubuntu/
+# debootstrap --variant=buildd --components=main,universe --include=$packages,build-essential gutsy    chroot-Ubuntu-7.10-4gutsy
+# debootstrap --variant=buildd --components=main,universe --include=$packages,build-essential hardy    chroot-Ubuntu-8.04-5hardy
+# debootstrap --variant=buildd --components=main,universe --include=$packages                 intrepid chroot-Ubuntu-8.10-6intrepid
+# debootstrap --variant=buildd --components=main,universe --include=$packages                 jaunty   chroot-Ubuntu-9.04-7jaunty
+
+# debootstrap --variant=buildd --components=main,universe --include=$packages,rpm             intrepid chroot-Generic-0generic
+#   autopackage-devel_1.0.10-2_i386.deb alienated from http://ftp.sunsite.dk/projects/autopackage/1.0.10/autopackage-devel-1.0.10-1.i386.rpm
+#   autopackage_1.0.10-2_i386.deb alienated from http://ftp.sunsite.dk/projects/autopackage/1.0.10/autopackage-1.0.10-1.i386.rpm
+# $EDITOR /usr/local/bin/relaytool
+#   /bin/sh -> /bin/bash
+#   --> functions=$( nm --extern-only -D "$lib" | awk '{ if (($2 == "T") || ($2 == "W")) print $3; }' | LC_ALL=C grep -v '\(\<_init\>\|\<_fini\>\)' | LC_ALL=C sort -u )
+#   --> variables=$( nm --extern-only -D "$lib" | awk '{ if (($2 == "D") || ($2 == "G") || ($2 == "B") || ($2 == "V")) print $3; }' | LC_ALL=C sort -u )
+# echo echo i686 > /bin/arch
+# chmod 755 /bin/arch
 
 #
 # setup
 #
 cd /tmp
+
+if [ ! -f climm-$VERSION.tgz ]; then
 rm -rf climm
 rm -rf climm-* climm_*
 svn co http://svn.climm.org/tags/climm${1:+-}${1}/
@@ -24,6 +54,7 @@ echo "$VERSION" > .is_release
 cd ..
 mv climm${1:+-}$1 climm-$VERSION
 tar -zcf climm-$VERSION.tgz climm-$VERSION
+fi
 
 #
 # debian (generic)
@@ -36,7 +67,6 @@ cd /tmp
 rm -rf climm-$VERSION
 mv climm_$VERSION-0_i386.deb $WEBDIR/binary/
 mv climm_$VERSION* $WEBDIR/deb/dists/sid/main/source/
-
 
 #
 # rpm (generic)
@@ -68,7 +98,6 @@ cp -a NEWS README AUTHORS TODO doc/README.i18n doc/README.logformat doc/icq091.t
 tar -zcf ../climm-$VERSION-AmigaOS.tgz -C $DESTDIR .
 cd /tmp
 rm -rf climm-$VERSION
-mv climm-$VERSION-AmigaOS.tgz $WEBDIR/binary/
 
 #
 # Autopackage
@@ -76,38 +105,61 @@ mv climm-$VERSION-AmigaOS.tgz $WEBDIR/binary/
 tar -zxf climm-$VERSION.tgz
 cd climm-$VERSION
 export CLIMM_EXTRAVERSION="Official Autopackage"
-./configure
+./configure --disable-dependency-tracking --enable-ssl --enable-tcl --enable-xmpp --enable-autopackage
 ./config.status --file autopackage/climm.apspec:autopackage/climm.apspec.in
 makeinstaller autopackage/climm.apspec
 mv climm-$VERSION.x86.package ..
 cd ..
 rm -rf climm-$VERSION
-mv climm-$VERSION.x86.package $WEBDIR/binary/
 
-#
-# Ubuntu from chroot
-#
-cd /tmp
+
+cd /tmp || exit 1
 for distri in \
-  Debian-4.0-0etch: \
-  Ubuntu-6.06-1dapper:noxmpp Ubuntu-6.10-2edgy:noxmpp Ubuntu-7.04-3feisty: Ubuntu-7.10-4gutsy: \
-  Ubuntu-8.04-5hardy:
+  Generic-0generic:autopackage:rpm \
+  Ubuntu-6.06-1dapper:noxmpp:deb Ubuntu-7.10-4gutsy::deb \
+  Ubuntu-6.10-2edgy:noxmpp:deb Ubuntu-7.04-3feisty::deb \
+  Generic-0generic:autopackage:package \
+  Ubuntu-8.04-5hardy::deb Ubuntu-8.10-6intrepid::deb Ubuntu-9.04-7jaunty::deb \
+  Debian-4.0-0etch::deb Debian-5.0-1lenny::deb \
+  Generic-0generic:autopackage:deb
 do
+  suff=${distri##*:}
   idist=${distri##*-}
-  idist=${idist%:*}
+  idist=${idist%%:*}
   distcode=${idist#[0-9]}
-  dist=${distri%:*}
+  dist=${distri%%:*}
   buildopts=${distri#*:}
-  sudo buildtarball $distri /tmp/climm-${VERSION}.tgz $buildopts
-  mv climm_$VERSION-$idist*.deb $WEBDIR/deb/dists/$distcode/main/binary-i386/
-  mv climm_$VERSION-$idist* climm_$VERSION.orig.tar.gz $WEBDIR/deb/dists/$distcode/main/source/
+  buildopts=${buildopts%:*}
+  (
+    echo "Building $distri (suff=$suff dist=$dist buildopts=$buildopts) ..." >&3
+    sudo buildtarball "$dist" "/tmp/climm-${VERSION}.tgz" "$buildopts" "$suff" "Official $suff ($dist)"
+    echo "... $distri done." >&3
+  ) 3>&1 >log.$distri 2>&1
 done
+echo "Waiting for builds to finish."
+wait
+echo "Done."
 
 #
 # final
 #
+
+mv climm-$VERSION-AmigaOS.tgz $WEBDIR/binary/
+mv climm-$VERSION.x86.package $WEBDIR/binary/
+
+mv climm_$VERSION-0generic_i386.deb $WEBDIR/binary/climm_$VERSION-0_i386.deb
+rm climm_$VERSION-0generic_*
+
+for d in climm_$VERSION-*_i386.deb; do
+  distcode=${d%_i386.deb}
+  distcode=${distcode##*[0-9]}
+  mv "$d" $WEBDIR/deb/dists/$distcode/main/binary-i386/
+  mv "${d%_i386.deb}"* $WEBDIR/deb/dists/$distcode/main/source/
+  cp climm-$VERSION.tgz $WEBDIR/deb/dists/$distcode/main/source/climm_$VERSION.orig.tar.gz
+done
+
 mv climm-$VERSION.tgz $WEBDIR/source/
+
 cd $WEBDIR
 find . -name "*[-_]$VERSION*" -exec md5sum  {} \; | sed "s/^/md5sum /"
 find . -name "*[-_]$VERSION*" -exec sha1sum {} \; | sed "s/^/sha1sum /"
-
