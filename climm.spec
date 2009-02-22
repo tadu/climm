@@ -38,7 +38,7 @@ test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
 %setup -q -n climm-%{version}
 
 %build
-%configure --disable-dependency-tracking CFLAGS="-O2 -march=i486" \
+%configure --disable-dependency-tracking \
 	%{!?_without_tcl:--enable-tcl}%{?_without_tcl:--disable-tcl} \
 	%{!?_without_ssl:--enable-ssl}%{?_without_ssl:--disable-ssl} \
 	%{!?_without_xmpp:--enable-xmpp}%{?_without_xmpp:--disable-xmpp} \
