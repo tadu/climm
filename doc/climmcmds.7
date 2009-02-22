@@ -236,7 +236,7 @@ for them.
 .TP
 .BI na\  [ for \ <contacts>]\ [<message>]
 Change status to
-.IR na (not\ available)
+.IR na\  (not\ available)
 and optionally set auto response temporarely for this status to
 .IR message ,
 or change status only for given
@@ -247,7 +247,7 @@ for them.
 .TP
 .BI occ\  [ for \ <contacts>]\ [<message>]
 Change status to
-.IR occ (occupied)
+.IR occ\  (occupied)
 and optionally set auto response temporarely for this status to
 .IR message ,
 or change status only for given
@@ -258,7 +258,7 @@ for them.
 .TP
 .BI dnd\  [ for \ <contacts>]\ [<message>]
 Change status to
-.IR dnd (do\ not\ disturb)
+.IR dnd\  (do\ not\ disturb)
 and optionally set auto response temporarely for this status to
 .IR message ,
 or change status only for given
@@ -269,7 +269,7 @@ for them.
 .TP
 .BI ffc\  [ for \ <contacts>]\ [<message>]
 Change status to
-.IR ffc (free\ for\ chat)
+.IR ffc\  (free\ for\ chat)
 and optionally set auto response temporarely for this status to
 .IR message ,
 or change status only for given
@@ -280,7 +280,7 @@ for them.
 .TP
 .BI inv\  [ for \ <contacts>]\ [<message>]
 Change status to
-.IR inv (invisible)
+.IR inv\  (invisible)
 and optionally set auto response temporarely for this status to
 .IR message ,
 or change status only for given
@@ -934,16 +934,23 @@ The color string to use for debug output.
 .BI colorquote \ color\ global
 The color string to use for quoted text.
 .TP
-.BI webaware \ boolean\ connection
-Whether the current status should be visible on the web.
+.BI scripting \ boolean\ global
+Open a scripting FIFO to accept commands as if entered through the command line.
 .TP
-.BI hideip \ boolean\ connection
-Whether to hide the (local) IP address.
+.BI scriptingpath \ string\ global
+The FIFO to open for those commands. If not set and scripting is on, BASDIR/scripting
+will be used.
 .TP
-.BI dcauth \ boolean\ connection
+.BI webaware \ boolean\ connection[ICQ]
+Whether the current status should be visible on the web site.
+.TP
+.BI hideip \ boolean\ connection[ICQ]
+Whether to hide the (local) IP address towards other users.
+.TP
+.BI dcauth \ boolean\ connection[ICQ]
 Whether authorized contacts can see the (remote) IP address.
 .TP
-.BI dccont \ boolean\ connection
+.BI dccont \ boolean\ connection[ICQ]
 Whether contacts can see the (remote) IP address.
 .TP
 .BI countaway \ boolean\ connection
@@ -962,10 +969,56 @@ or
 (with or without
 .IR invisible ).
 .TP
-.BI obeysbl \ boolean\ connection
+.BI obeysbl \ boolean\ connection[ICQ]
 Whether to load the server\-based contact list upon login. This will
 enforce required authorizations, which will be ignored for local
 contact lists.
+.TP
+.BI s5_use \ boolean\ connection
+Enable the use of a socks 5 proxy.
+.TP
+.BI s5_host \ string\ connection
+Connect to socks 5 proxy on the given host.
+.TP
+.BI s5_port \ integer\ connection
+Connect to socks 5 proxy listening on the given port number.
+.TP
+.BI s5_name \ string\ connection
+Identify as the given user to the socks 5 proxy.
+.TP
+.BI s5_pass \ string\ connection
+Authenticate with the given password to the socks 5 proxy.
+.TP
+.BI oscar_dc_port \ integer\ connection
+Define the minimum port to listen for incoming direct connection when using
+the oscar protocol. If the given port is in used, the port number actually
+used is increased until a free one is found.
+.TP
+.BI oscar_dc_mode \ integer\ connection
+.RS
+This integer is for flags how to handle direct connections:
+.TP
+1
+We\'re firewalled and can\'t receive any connection. Don\'t even try.
+.TP
+2
+We\'re firewalled, but use SOCKS and can receive connections.
+.TP
+4
+We\'re not firewalled at all. This is the default.
+.TP
+16
+Actually create a peer to peer connection. (Precisely, the connection
+is created if mode >= 16.) If the connection is not configured to be
+opened directly, it will be opened when it is needed.
+.TP
+32
+Create and open a peer to peer connection.
+.RE
+.TP
+.BI logstream \ boolean\ connection
+Log all data sent over the connection to the server into a file in
+BASEDIR/debug/.
 .TP
 .BI ignore \ boolean\ contact
 Whether to ignore all messages from this contact.
@@ -974,7 +1027,7 @@ Whether to ignore all messages from this contact.
 Whether to be invisible for this contact.
 .TP
 .BI intimate \ boolean\ contact
-Whether to be allways visible for this contact.
+Whether to be always visible for this contact.
 .TP
 .BI logonoff \ boolean\ contact
 Whether to log when this contacts goes online or offline.
@@ -1022,6 +1075,10 @@ in particular meta data on the server.
 .TP
 .BI tabspool \ integer\ contact
 Whether to add a contact to the tabs list upon startup.
+.TP
+.BI revealtime \ integer\ contact
+The time in seconds one's presence is revealed (even despite invisibility)
+towards the peer if a message is sent to him.
 .TP
 .BI autoaway \ string\ contact
 The autoaway string for status away to return to this contact.

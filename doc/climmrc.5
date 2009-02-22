@@ -15,9 +15,9 @@ to the base directory, which is usually ~/.climm/.
 .SH CONNECTIONS
 A
 .B Connection
-section describes a connection within ICQ. Typically, there are two of them,
-that are related to each other: a connection to the ICQ server, and a
-connection to listen to peer to peer communication. You may also have a
+section describes a server connection within climm. Typically, these are
+to connect to ICQ or XMPP servers.
+You may also have a
 remote control connection: that means a FIFO is opened, and lines read from
 it are interpreted in the same way as input lines.
 .TP
@@ -25,14 +25,11 @@ it are interpreted in the same way as input lines.
 Set the connection type to
 .IR type ,
 which can be
-.B icq5
-for a connection to an ICQ v5 server,
 .B icq8
-for a connection to an ICQ v8 server,
-.B peer
-for a connection listening to peer to peer communication, or
-.B remote
-for a remote control FIFO. If
+for a connection to an ICQ v8 server or
+.B xmpp
+for a connection to an XMPP server.
+If
 .I auto
 is given, create this connection on startup. You presumable want to do this,
 unless you have several UINs, then set this on the connection corresponding
@@ -105,50 +102,10 @@ free for chat
 256
 invisible
 .RE
-
-.RS
-For peer to peer connections, this is used for the direct connection setting:
-.TP
-1
-We\'re firewalled and can\'t receive any connection. Don\'t even try.
-.TP
-2
-We\'re firewalled, but use SOCKS and can receive connections.
-.TP
-4
-We\'re not firewalled at all. This is the default.
-.RE
-.RS
-Remote control FIFOs do not use this setting.
-.RE
 .TP
 .BI options \ <options>
-Define options for this server connection. These give default values for the
-contacts belonging to this server connection, as well as the following
-server specific settings:
-.RS
-.TP
-.BI s5_use
-Enable the use of a socks 5 proxy.
-.TP
-.BI s5_host \ <host>
-Connect to socks 5 proxy on host
-.IR host .
-.TP
-.BI s5_port \ <port>
-Connect to socks 5 proxy listening on port
-.IR port .
-.TP
-.BI s5_name \ <name>
-Identify as user
-.I name
-to socks 5 proxy.
-.TP
-.BI s5_pass \ <password>
-Authenticate with password
-.I password
-to socks 5 proxy.
-.RE
+Define options for this server connection. See the opt command in
+climmcmds(7) for a complete list.
 .SH GENERAL
 The
 .B General
