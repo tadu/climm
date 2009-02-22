@@ -84,7 +84,6 @@ extern struct OptEntry_s OptList[];
 #define CO_OBEYSBL       (COF_BOOL    | CO_SERVER  | 0x010003UL) /* this connection obeys the sbl         */
 #define CO_AWAYCOUNT     (COF_BOOL    | CO_SERVER  | 0x100003UL) /* this connection counts msgs even if _manual_ na/away/... */
 #define CO_LOGSTREAM     (COF_BOOL    | CO_SERVER  | 0x400003UL) /* this connection's stream is completely logged */
-#define CO_LOGSTREAM     (COF_BOOL    | CO_SERVER  | 0x400003UL) /* this connection's stream is completely logged */
 
 #define CO_SCRIPT        (COF_BOOL    | CO_GLOBAL  | 0x000104UL) /* open a scripting connection       */
 #define CO_S5USE         (COF_BOOL    | CO_SERVER  | 0x000404UL) /* use Socks 5 proxy                 */
