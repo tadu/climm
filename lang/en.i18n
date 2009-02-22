@@ -1,5 +1,5 @@
 # $Id$ English (English)
-#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:en
 1002:en_US
@@ -316,7 +316,7 @@
 1365:Togo
 1366:Tokelau
 1367:Tonga
-1368:Trinadad and Tobago
+1368:Trinidad and Tobago
 1369:Tunisia
 1370:Turkey
 1371:Turkmenistan
@@ -1337,7 +1337,7 @@
 2706:Contact %s/%s is normal (#%d) on the server, but visible (#%d,#%d) locally.\n
 2707:Contact %s/%s (#%d) is in group %s (#%d) on the server, but in group %s (#%d) locally.\n
 2708:Contact %s/%s (#%d) exists only locally.\n
-2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
+2709:Opening file listener connection at %slocalhost%s:%s%p%s... 
 2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
 2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
 2712:Query emails matching <query> since <date>, or continue search.

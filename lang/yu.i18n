@@ -1,5 +1,5 @@
 # $Id$ (Serbocroatian)
-#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 #_#1001:<lang>
 #_#1002:<lang_cc>
@@ -226,7 +226,9 @@
 1265:Eritrea
 1266:Estonija
 1267:Etiopija
-1268:Biv$a Jugoslavia
+#-#1268:Biv$a Jugoslavia
+#+#1268:F.Y.R.O.M. (Former Yugoslavia)
+#_#1268:Republic of Macedonia (F.Y.R.O.M.)
 1269:Faeroe Islands
 1270:Foklandska Ostrva
 1271:Federalne Drzave Mikronezije
@@ -248,7 +250,7 @@
 1287:Grenada
 1288:Gvadalupe
 1289:Guam
-1290:Guantanomo Bay
+#_#1290:Guantanamo Bay
 1291:Gvatemala
 1292:Gvineja
 1293:Gvineja-Bisao
@@ -326,7 +328,7 @@
 1365:Togo
 1366:Tokelau
 1367:Tonga
-1368:Trinadad and Tabago
+#_#1368:Trinidad and Tobago
 1369:Tunis
 1370:Turska
 1371:Turkmenistan
@@ -564,7 +566,7 @@
 #-#1552:Enter your time zone (+/- 0-12): 
 #_#1552:Enter your time zone (+/- 0-12):
 #-#1553:Unesite Va$ nadimak : 
-#_#1553:Enter Your New Nickname:
+#_#1553:Enter your new nickname:
 #-#1554:Unesite Va$e ime : 
 #_#1554:Enter your new first name:
 #-#1555:Unesite Va$e prezime : 
@@ -1345,7 +1347,7 @@
 #_#2706:Contact %s/%s is normal (#%d) on the server, but visible (#%d,#%d) locally.\n
 #_#2707:Contact %s/%s (#%d) is in group %s (#%d) on the server, but in group %s (#%d) locally.\n
 #_#2708:Contact %s/%s (#%d) exists only locally.\n
-#_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
+#_#2709:Opening file listener connection at %slocalhost%s:%s%p%s... 
 #_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
 #_#2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
 #_#2712:Query emails matching <query> since <date>, or continue search.

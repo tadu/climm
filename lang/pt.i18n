@@ -1,5 +1,5 @@
 # $Id$ Português (Brazillian)
-#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:pt
 1002:pt_BR
@@ -216,7 +216,9 @@
 1265:Eritréia
 1266:Estônia
 1267:Etiópia
-1268:Macedônia
+#-#1268:Macedônia
+#+#1268:F.Y.R.O.M. (Former Yugoslavia)
+#_#1268:Republic of Macedonia (F.Y.R.O.M.)
 1269:Ilhas de Faeroe
 1270:Ilhas Falkland
 1271:Estados Federados da Micronésia
@@ -238,7 +240,7 @@
 1287:Granada
 1288:Guadalupe
 1289:Guam
-1290:Baía Guantânomo
+1290:Baía Guantânamo
 1291:Guatemala
 1292:Guiné
 1293:Guiné-Bissau
@@ -316,7 +318,9 @@
 1365:Togo
 1366:Ilhas Tokelau
 1367:Tonga
-1368:Trinidad Tobago
+#-#1368:Trinidad Tobago
+#+#1368:Trinadad and Tabago
+#_#1368:Trinidad and Tobago
 1369:Tunísia
 1370:Turquia
 1371:Turcomenistão
@@ -480,7 +484,7 @@
 1550:Entre com o novo CEP (deve ser numérico):
 1551:Entre com o código de área telefônico do seu país:
 1552:Entre com o seu código de zona (+/- 0-12):
-1553:Entre Com o Seu Novo Apelido:
+1553:Entre com o seu novo apelido:
 1554:Entre com o seu primeiro nome:
 1555:Entre com o seu sobrenome:
 1556:Entre com o seu endereço de email:
@@ -1348,7 +1352,7 @@
 #_#2706:Contact %s/%s is normal (#%d) on the server, but visible (#%d,#%d) locally.\n
 #_#2707:Contact %s/%s (#%d) is in group %s (#%d) on the server, but in group %s (#%d) locally.\n
 #_#2708:Contact %s/%s (#%d) exists only locally.\n
-#_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
+#_#2709:Opening file listener connection at %slocalhost%s:%s%p%s... 
 #_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
 #_#2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
 #_#2712:Query emails matching <query> since <date>, or continue search.

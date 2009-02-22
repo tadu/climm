@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -223,7 +223,7 @@
 1265:Eritrea
 1266:Estland
 1267:Äthiopien
-1268:Ehemaliges Jugoslavien
+1268:Mazedonien (ehemaliges Jugoslavien)
 1269:Färöer Inseln
 1270:Falkland-Inseln
 1271:Vereinigte Staaten von Mikronesien
@@ -245,7 +245,7 @@
 1287:Grenada
 1288:Guadeloupe
 1289:Guam
-1290:Guantanomo-Bucht
+1290:Guantanamo-Bucht
 1291:Guatemala
 1292:Guinea
 1293:Guinea-Bissau
@@ -1347,7 +1347,7 @@
 2706:Kontakt %s/%s ist normal (#%d) auf dem Server, aber sichtbar (#%d,#%d) lokal.\n
 2707:Kontakt %s/%s (#%d) ist in Gruppe %s (#%d) auf dem Server, aber in Gruppe %s (#%d) lokal.\n
 2708:Kontakt %s/%s (#%d) existiert nur lokal.\n
-2709:Öffne Verbindungsannahme für Dateiübertragung auf %slocalhost%s:%s%lp%s... 
+2709:Öffne Verbindungsannahme für Dateiübertragung auf %slocalhost%s:%s%p%s... 
 2710:Kontakt %s/%s ist normal (#%d) auf dem Server, aber ignoriert (#%d,#%d) lokal.\n
 2711:historyd <contact|*> [<date> [<count>]] -- Zeige geloggte Nachrichten von <contact> (oder mit * von allen) seit <date>.\n
 2712:Durchsuche e-Mails nach <query> seit <date> oder suche weiter.

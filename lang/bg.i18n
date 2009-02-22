@@ -1,5 +1,5 @@
 # $Id$ (Bulgarian)
-#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 #_#1001:<lang>
 #_#1002:<lang_cc>
@@ -229,7 +229,9 @@
 1265:Еритрея
 1266:Естония
 1267:Етиопия
-1268:F.Y.R.O.M. (Бивша Югославия)
+#-#1268:F.Y.R.O.M. (Бивша Югославия)
+#+#1268:F.Y.R.O.M. (Former Yugoslavia)
+#_#1268:Republic of Macedonia (F.Y.R.O.M.)
 1269:Фаорски острови
 1270:Фолклендски острови
 1271:Federated States of Micronesia
@@ -251,7 +253,7 @@
 1287:Гренада
 1288:Гваделупа
 1289:Guam
-1290:Guantanomo Bay
+#_#1290:Guantanamo Bay
 1291:Гватемала
 1292:Гвинея
 1293:Гвинея-Бисау
@@ -329,7 +331,9 @@
 1365:Того
 1366:Tokelau
 1367:Тонга
-1368:Тринидад и Табаго
+#-#1368:Тринидад и Табаго
+#+#1368:Trinadad and Tabago
+#_#1368:Trinidad and Tobago
 1369:Тунизия
 1370:Турция
 1371:Тюркменистан
@@ -560,7 +564,7 @@
 #-#1552:Въведете часовата си зона (+/- 0-12):
 #_#1552:Enter your time zone (+/- 0-12):
 #-#1553:Въведете новия си псевдоним:
-#_#1553:Enter Your New Nickname:
+#_#1553:Enter your new nickname:
 #-#1554:Въведете новото си първо име:
 #_#1554:Enter your new first name:
 #-#1555:Въведете новата си фамилия:
@@ -1341,7 +1345,7 @@
 #_#2706:Contact %s/%s is normal (#%d) on the server, but visible (#%d,#%d) locally.\n
 #_#2707:Contact %s/%s (#%d) is in group %s (#%d) on the server, but in group %s (#%d) locally.\n
 #_#2708:Contact %s/%s (#%d) exists only locally.\n
-#_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
+#_#2709:Opening file listener connection at %slocalhost%s:%s%p%s... 
 #_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
 #_#2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
 #_#2712:Query emails matching <query> since <date>, or continue search.

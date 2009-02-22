@@ -1,5 +1,5 @@
 # $Id$ (Swedish)
-#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:sv
 1002:sv_SE
@@ -216,7 +216,9 @@
 1265:Eritrea
 1266:Estland
 1267:Etiopien
-1268:Makedonien
+#-#1268:Makedonien
+#+#1268:F.Y.R.O.M. (Former Yugoslavia)
+#_#1268:Republic of Macedonia (F.Y.R.O.M.)
 1269:Färöarna
 1270:Falklandsöarna
 1271:Mikronesien
@@ -238,7 +240,7 @@
 1287:Grenada
 1288:Guadeloupe
 1289:Guam
-1290:Guantanomobukten
+1290:Guantanamobukten
 1291:Guatemala
 1292:Guinea
 1293:Guinea-Bissau
@@ -316,7 +318,7 @@
 1365:Togo
 1366:Tokelau
 1367:Tonga
-1368:Trinadad och Tobago
+1368:Trinidad och Tobago
 1369:Tunisien
 1370:Turkiet
 1371:Turkmenistan
@@ -1338,7 +1340,7 @@
 2706:Kontakt %s/%s är normal (#%d) på servern, men synlig (#%d,#%d) lokalt.\n
 2707:Kontakt %s/%s (#%d) är i grupp %s (#%d) på servern, men i grupp %s (#%d) lokalt.\n
 2708:Kontakt %s/%s (#%d) existerar bara lokalt.\n
-2709:Öppnar fil-lyssnar-anslutning vid %slocalhost%s:%s%lp%s... 
+2709:Öppnar fil-lyssnar-anslutning vid %slocalhost%s:%s%p%s... 
 2710:Kontakt %s/%s är normal (#%d) på servern, men ignorerad (#%d,#%d) lokalt.\n
 2711:historyd <kontakt|*> [<datum> [<antal>]] -- Visa historiken för <kontakt> eller alla kontakter (ange *) sedan <datum>.\n
 2712:Efterfråga epost matchande <fråga> sedan <datum>, eller fortsätt söka.

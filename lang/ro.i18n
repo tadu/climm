@@ -1,5 +1,5 @@
 # $Id$ Romana (Romanian)
-#  EN: __.i18n 2601 2008-08-18 20:38:14 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 1001:ro
 1002:ro_RO
@@ -217,7 +217,7 @@
 #_#1265:Eritrea
 #_#1266:Estonia
 1267:Etiopia
-#_#1268:F.Y.R.O.M. (Former Yugoslavia)
+#_#1268:Republic of Macedonia (F.Y.R.O.M.)
 #_#1269:Faeroe Islands
 #_#1270:Falkland Islands
 1271:Statele Federale ale Micronesiei
@@ -239,7 +239,7 @@
 1287:Grenada
 1288:Guadelupa
 1289:Guam
-#_#1290:Guantanomo Bay
+#_#1290:Guantanamo Bay
 1291:Guatemala 
 1292:Guineea
 #_#1293:Guinea-Bissau
@@ -317,7 +317,7 @@
 1365:Togo
 1366:Tokelau
 1367:Tonga
-1368:I-le Trinidad si Tabago
+1368:I-le Trinidad si Tobago
 1369:Tunis
 1370:Turcia
 1371:Turkmenistan
@@ -1383,7 +1383,7 @@
 #_#2706:Contact %s/%s is normal (#%d) on the server, but visible (#%d,#%d) locally.\n
 #_#2707:Contact %s/%s (#%d) is in group %s (#%d) on the server, but in group %s (#%d) locally.\n
 #_#2708:Contact %s/%s (#%d) exists only locally.\n
-#_#2709:Opening file listener connection at %slocalhost%s:%s%lp%s... 
+#_#2709:Opening file listener connection at %slocalhost%s:%s%p%s... 
 #_#2710:Contact %s/%s is normal (#%d) on the server, but ignored (#%d,#%d) locally.\n
 #_#2711:historyd <contact|*> [<date> [<count>]] -- Show history of <contact> or all contacts (for *) since <date>.\n
 #_#2712:Query emails matching <query> since <date>, or continue search.
