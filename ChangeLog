@@ -1,5 +1,56 @@
 -*- coding: utf-8 -*-
 
+2009-02-22 Rüdiger Kuhlmann
+	* 0.6.4
+
+2009-02-22 Rüdiger Kuhlmann
+	* ignore all error stanzas until we do something useful with them
+	* fix more typos in english texts
+	* fix some compiler warnings in newer compilers
+	* updates to my release script
+	* update man page descriptions of options changed recently
+	* fix duplicate #define
+	* i18n updates (more or less automatic)
+
+2009-02-18 Rüdiger Kuhlmann
+	* add TalkGadget as known client
+	* request roster upon login - even if we do not do anything with
+	  this yet
+	* initialize GMail timestamps properly (caused email not to bo
+	  shown)
+	* remember text given with e.g. xmpp status messages
+	  + show in 's'
+	  + show shortened to current line in 'eg' etc
+	  + shorten to one line	when status change is shown
+	  + hide even status changes with text during login as it is now
+	  not lost otherwise 
+	* send time requests every 5 minutes to prevent timeouts
+	* preserve status and text between reconnects
+	* save client capability in contact to only show it using 's'
+	  instead of in 'eg' and upon login
+	* improve handling of XML namespaces
+
+2009-02-09 Rüdiger Kuhlmann
+	* unfuck ICQ for RU/UK users
+	* actually save dc port into config
+	* move socks 5 settings to connection specific options
+	* add Telepathy as known client
+	* fix failed assertion related to GoogleMail
+	* avoid expanding nick size for own screen names
+
+2008-11-24 Rüdiger Kuhlmann
+	* also execute eg after login command
+	* remove warnings where strings were used in place of format strings
+
+2008-11-18 Rüdiger Kuhlmann
+	* add se web translation from Sebastian Rasmussen
+	* en doc updates by Sebastian Rasmussen
+	* missing interpreter (thanks Sebastian Rasmussen)
+	* update se translation from Sebastian Rasmussen
+	* ... and use i18n-template to mark changed strings
+	* work around other client's errors in sequence numbering
+	  (patch from rtc)
+
 2008-08-18 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* 0.6.3
 
@@ -23,6 +74,14 @@
 	  digit
 	* show senders of unread email, or of all email returned due to an
 	  explicit search
+	* do not compile gmail command unless XMPP is compiled in
+	* ru/uk update
+	* prevent use of uninitialized values when extending contact group
+	  array
+	* gloox doesn't compile with -O4, so fall back to -O2
+	* fix compile error without CONTHIER
+	* use Tag constructor available also in older versions
+	* do not use 0.9.9 findChildren() method
 
 2008-08-16 Rüdiger Kuhlmann <info __at__ ruediger-kuhlmann __dot__ de>
 	* add function to get pref value of a contact assuming it's group

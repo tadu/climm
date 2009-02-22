@@ -29,8 +29,8 @@
  * $Id$
  */
 
-/*                         0.6.3.0 */
-#define CLIMM_BUILD_NUM 0x00060300
+/*                         0.6.4.0 */
+#define CLIMM_BUILD_NUM 0x00060400
 
 #include "climm.h"
 #include "buildmark.h"

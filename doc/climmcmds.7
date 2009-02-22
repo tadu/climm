@@ -975,24 +975,24 @@ enforce required authorizations, which will be ignored for local
 contact lists.
 .TP
 .BI s5_use \ boolean\ connection
-Enable the use of a socks 5 proxy.
+Enable the use of a socks 5 proxy. New for 0.6.4.
 .TP
 .BI s5_host \ string\ connection
-Connect to socks 5 proxy on the given host.
+Connect to socks 5 proxy on the given host. New for 0.6.4.
 .TP
 .BI s5_port \ integer\ connection
-Connect to socks 5 proxy listening on the given port number.
+Connect to socks 5 proxy listening on the given port number. New for 0.6.4.
 .TP
 .BI s5_name \ string\ connection
-Identify as the given user to the socks 5 proxy.
+Identify as the given user to the socks 5 proxy. New for 0.6.4.
 .TP
 .BI s5_pass \ string\ connection
-Authenticate with the given password to the socks 5 proxy.
+Authenticate with the given password to the socks 5 proxy. New for 0.6.4.
 .TP
 .BI oscar_dc_port \ integer\ connection
 Define the minimum port to listen for incoming direct connection when using
 the oscar protocol. If the given port is in used, the port number actually
-used is increased until a free one is found.
+used is increased until a free one is found. New for 0.6.4.
 .TP
 .BI oscar_dc_mode \ integer\ connection
 .RS
@@ -1014,6 +1014,9 @@ opened directly, it will be opened when it is needed.
 .TP
 32
 Create and open a peer to peer connection.
+.RE
+.RS
+New for 0.6.3.
 .RE
 .TP
 .BI logstream \ boolean\ connection
