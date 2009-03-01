@@ -241,7 +241,9 @@ static void FlapSave (Server *serv, Packet *pak, BOOL in)
         const char *dir, *file;
         dir = s_sprintf ("%sdebug", PrefUserDir (prG));
         mkdir (dir, 0700);
-        file = s_sprintf ("%sdebug" _OS_PATHSEPSTR "packets.icq8.%s.%lu", PrefUserDir (prG), serv->screen, time (NULL));
+        dir = s_sprintf ("%sdebug" _OS_PATHSEPSTR "packets.icq8.%s", PrefUserDir (prG), serv->screen);
+        mkdir (dir, 0700);
+        file = s_sprintf ("%sdebug" _OS_PATHSEPSTR "packets.icq8.%s/%lu", PrefUserDir (prG), serv->screen, time (NULL));
         serv->logfd = open (file, O_WRONLY | O_CREAT | O_APPEND, 0600);
     }
     if (serv->logfd < 0)
