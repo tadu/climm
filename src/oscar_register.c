@@ -210,6 +210,7 @@ JUMP_SNAC_F(SnacSrvLoginkey)
     /* compute md5 hash */
 #define AIM_MD5_STRING "AOL Instant Messenger (SM)"
 
+#if ENABLE_SSL
     ctx = ssl_md5_init ();
     if (!ctx)
         return;
@@ -218,6 +219,7 @@ JUMP_SNAC_F(SnacSrvLoginkey)
     ssl_md5_write (ctx, AIM_MD5_STRING, strlen (AIM_MD5_STRING));
     rc = ssl_md5_final (ctx, hash);
     if (rc)
+#endif
         return;
 
     SnacCliMd5login (serv, hash);

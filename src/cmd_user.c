@@ -68,7 +68,11 @@ static jump_f
     CmdUserTabs, CmdUserLast, CmdUserHistory, CmdUserFind, CmdUserUptime,
     CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserConn, CmdUserContact,
-    CmdUserAnyMess, CmdUserGetAuto, CmdUserOpt, CmdUserPrompt, CmdUserGmail;
+    CmdUserAnyMess, CmdUserGetAuto, CmdUserOpt, CmdUserPrompt;
+
+#ifdef ENABLE_XMPP
+static jump_f CmdUserGmail;
+#endif
 
 #ifdef ENABLE_PEER2PEER
 static jump_f CmdUserPeer;
