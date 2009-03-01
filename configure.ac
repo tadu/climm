@@ -45,9 +45,9 @@ AC_ARG_ENABLE([iconvrepl], AC_HELP_STRING([--enable-iconvrepl], [compile in icon
               ac_arg_use_iconvrepl=$enableval, ac_arg_use_iconvrepl=no)
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
-AC_ARG_ENABLE([xmpp], AC_HELP_STRING([--enable-xmpp], [enable XMPP (Jabber) chat network (BETA)]),
+AC_ARG_ENABLE([xmpp], AC_HELP_STRING([--enable-xmpp], [enable XMPP (Jabber) chat network (BETA) (set to iksemel to also create binary using libiksemel)]),
               ac_arg_use_xmpp=$enableval, ac_arg_use_xmpp=auto)
-AC_ARG_ENABLE([msn], AC_HELP_STRING([--enable-msn], [enable MSN chat network (EXPERIMENTAL BROKEN INCOMPLETE)]),
+AC_ARG_ENABLE([msn], AC_HELP_STRING([--enable-msn], [enable MSN chat network (NOT YET IMPLEMENTED)]),
               ac_arg_use_msn=$enableval, ac_arg_use_msn=auto)
 AC_ARG_ENABLE([tcl], AC_HELP_STRING([--disable-tcl], [disable Tcl scripting]),
               ac_arg_use_tcl=$enableval, ac_arg_use_tcl=auto)
@@ -370,14 +370,29 @@ if test "x$ac_arg_use_xmpp" != "xno"; then
     PKG_CHECK_MODULES(XMPP, gloox, ac_use_xmpp=yes, ac_use_xmpp=no)
   fi
 
-  if test "x$ac_use_xmpp$ac_arg_use_xmpp" = "xnoyes"; then
+  if test "x$ac_use_xmpp" = xno && test "x$ac_arg_use_xmpp" != xauto && test "x$ac_arg_use_xmpp" != xiksemel; then
     AC_MSG_FAILURE([cannot find XMPP library libgloox])
   fi
+  if test "x$ac_arg_use_xmpp" = xiksemel; then
+    PKG_CHECK_MODULES(IKS, iksemel, ac_use_xmpp=yes, ac_use_xmpp=no)
+    if test "x$ac_use_xmpp" = xno; then
+      AC_MSG_FAILURE([cannot find XMPP library libiksemel])
+    fi
+    AC_DEFINE(ENABLE_IKS, 1, [Enable XMPP chat network using iksemel])
+    ac_iksemel_version=`pkg-config --modversion iksemel | tr . " "`
+    ac_iksemel_version=`printf 0x%02x%02x $ac_iksemel_version`
+    if test "1${ac_iksemel_version#??}" -lt 10103;  then
+      AC_MSG_FAILURE([cannot find XMPP library libiksemel version 1.3 or newer, found: $ac_iksemel_version])
+    fi
+    AC_DEFINE_UNQUOTED(LIBIKS_VERSION, $ac_iksemel_version, [libiksemel version])
+    AC_SUBST(IKS_BIN, climmX, [binary using libiksemel if requested])
+    ac_use_xmpp=libgloox+libiksemel
+  fi
   ac_arg_use_xmpp=$ac_use_xmpp;
-  if test "x$ac_arg_use_xmpp" = "xyes"; then
+  if test "x$ac_arg_use_xmpp" != xno; then
     AC_SUBST(LIBXMPP, "libclimmxmpp.a", [Static lib to link if XMPP is enabled])
     AC_SUBST(L_LIBXMPP, "-L. -lclimmxmpp", [Static lib link option to link if XMPP is enabled])
-    AC_DEFINE(ENABLE_XMPP, 1, [Enable XMPP chat network using libgloox])
+    AC_DEFINE(ENABLE_XMPP, 1, [Enable XMPP chat network])
     ac_gloox_version=`pkg-config --modversion gloox | sed "s/^\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*/\1 \2 \3/"`
     ac_gloox_version=`printf 0x%02x%02x%02x $ac_gloox_version`
     AC_DEFINE_UNQUOTED(LIBGLOOX_VERSION, $ac_gloox_version, [libgloox version])

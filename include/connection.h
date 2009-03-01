@@ -4,6 +4,9 @@
 #define CLIMM_UTIL_CONNECTION_H
 
 #include "util_opts.h"
+#if ENABLE_IKS
+#include <iksemel.h>
+#endif
 
 #if ENABLE_SSL
 typedef enum {
@@ -92,7 +95,14 @@ struct Server_s
     idleflag_t idle_flag;     /* the idle status                          */
     Opt       copts;
 
+#if ENABLE_XMPP
     void     *xmpp_private;   /* private data for XMPP connections        */
+#endif
+#if ENABLE_IKS
+    char     *xmpp_stamp;
+    iksid    *xmpp_id;
+    iksfilter*xmpp_filter;
+#endif
 
     void     *oscar_tlv;            /* temporary during v8 connect              */
     UDWORD    oscar_uin;            /* the uin of this server connection        */
