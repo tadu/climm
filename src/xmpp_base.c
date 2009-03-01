@@ -149,7 +149,7 @@ static void XMPPCallbackReconn (Connection *conn)
 void XmppSaveLog (void *user_data, const char *text, size_t size, int in)
 {
     Server *serv = user_data;
-    iksparser *prs = serv->xmpp_private;
+    iksparser *prs = serv->xmpp_parser;
     const char *data;
     size_t rc;
 
@@ -229,7 +229,7 @@ static void GetBothContacts (iksid *j, Server *conn, Contact **b, Contact **f, c
 static int XmppHandleMessage (void *user_data, ikspak *pak)
 {
     Server *serv = user_data;
-    iksparser *prs = serv->xmpp_private;
+    iksparser *prs = serv->xmpp_parser;
 //    char *toX = iks_find_attrib (pak->x, "to");
 //    iksid *to = iks_id_new (iks_stack (pak->x), toX);
 
@@ -280,7 +280,7 @@ static int XmppHandleMessage (void *user_data, ikspak *pak)
 static int XmppHandlePresence (void *user_data, ikspak *pak)
 {
     Server *serv = user_data;
-    iksparser *prs = serv->xmpp_private;
+    iksparser *prs = serv->xmpp_parser;
 
     ContactGroup *tcg;
     Contact *contb, *contr, *c;
@@ -332,7 +332,7 @@ static int XmppUnknown (void *user_data, ikspak *pak)
 
 static void XmppLoggedIn (Server *serv)
 {
-    iksparser *prs = serv->xmpp_private;
+    iksparser *prs = serv->xmpp_parser;
 
     if (serv->xmpp_filter)
         iks_filter_delete (serv->xmpp_filter);
@@ -371,7 +371,7 @@ static int XmppSessionResult (void *user_data, ikspak *pak)
 static int XmppBindResult (void *user_data, ikspak *pak)
 {
     Server *serv = user_data;
-    iksparser *prs = serv->xmpp_private;
+    iksparser *prs = serv->xmpp_parser;
     if (pak->subtype == IKS_TYPE_RESULT)
     {
         iks *bind = iks_find_with_attrib (pak->x, "bind", "xmlns", "urn:ietf:params:xml:ns:xmpp-bind");
@@ -395,7 +395,7 @@ static int XmppBindResult (void *user_data, ikspak *pak)
 static int XmppStreamHook (void *user_data, int type, iks *node)
 {
     Server *serv = user_data;
-    iksparser *prs = serv->xmpp_private;
+    iksparser *prs = serv->xmpp_parser;
     switch (type)
     {
         case IKS_NODE_STOP:
@@ -465,7 +465,7 @@ static int XmppStreamHook (void *user_data, int type, iks *node)
 
 void XMPPCallbackDispatch (Connection *conn)
 {
-    iksparser *prs = conn->serv->xmpp_private;
+    iksparser *prs = conn->serv->xmpp_parser;
     int rc;
 
     assert (conn->sok >= 0);
@@ -488,8 +488,8 @@ void XMPPCallbackDispatch (Connection *conn)
                 if (!conn->serv->xmpp_id->resource)
                     conn->serv->xmpp_id = iks_id_new (iks_parser_stack (prs), s_sprintf ("%s@%s/%s", conn->serv->xmpp_id->user, conn->serv->xmpp_id->server, "iks"));
                 iks_set_log_hook (prs, XmppSaveLog);
-                assert  (!conn->serv->xmpp_private);
-                conn->serv->xmpp_private = prs;
+                assert  (!conn->serv->xmpp_parser);
+                conn->serv->xmpp_parser = prs;
                 rc = iks_connect_fd (prs, conn->sok);
                 if (rc != IKS_OK)
                 {
@@ -531,11 +531,11 @@ void XMPPCallbackClose (Connection *conn)
 
     QueueCancel (conn);
 
-    if (conn->serv->xmpp_private)
+    if (conn->serv->xmpp_parser)
     {
-        iksparser *prs = conn->serv->xmpp_private;
+        iksparser *prs = conn->serv->xmpp_parser;
         iks_parser_delete (prs);
-        conn->serv->xmpp_private = NULL;
+        conn->serv->xmpp_parser = NULL;
         conn->serv->xmpp_id = NULL;
         conn->serv->xmpp_filter = NULL;
     }
@@ -597,7 +597,7 @@ static void SnacCallbackXmppCancel (Event *event)
 
 UBYTE XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
 {
-    iksparser *prs = serv->xmpp_private;
+    iksparser *prs = serv->xmpp_parser;
 
     assert (cont);
     assert (msg->send_message);
@@ -643,7 +643,7 @@ static enum ikshowtype StatusToIksstatus (status_t *status)
 
 void XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *msg)
 {
-    iksparser *prs = serv->xmpp_private;
+    iksparser *prs = serv->xmpp_parser;
     enum ikshowtype p = StatusToIksstatus (&status);
     iks *x = iks_make_pres (p, msg);
     if (p != IKS_SHOW_UNAVAILABLE)

@@ -99,6 +99,7 @@ struct Server_s
     void     *xmpp_private;   /* private data for XMPP connections        */
 #endif
 #if ENABLE_IKS
+    iksparser*xmpp_parser;
     char     *xmpp_stamp;
     iksid    *xmpp_id;
     iksfilter*xmpp_filter;
