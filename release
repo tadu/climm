@@ -74,18 +74,6 @@ tar -zcf ../climm-$VERSION-AmigaOS.tgz -C $DESTDIR .
 cd /tmp
 rm -rf climm-$VERSION
 
-#
-# Autopackage
-#
-tar -zxf climm-$VERSION.tgz
-cd climm-$VERSION
-export CLIMM_EXTRAVERSION="Official Autopackage"
-./configure --disable-dependency-tracking --enable-ssl --enable-tcl --enable-xmpp --enable-autopackage
-./config.status --file autopackage/climm.apspec:autopackage/climm.apspec.in
-makeinstaller autopackage/climm.apspec
-mv climm-$VERSION.x86.package ..
-cd ..
-rm -rf climm-$VERSION
 
 
 cd /tmp || exit 1
@@ -124,6 +112,9 @@ mv climm-$VERSION.x86.package $WEBDIR/binary/
 
 mv climm_$VERSION-0generic_i386.deb $WEBDIR/binary/climm_$VERSION-0_i386.deb
 rm climm_$VERSION-0generic_*
+
+mv climm-$VERSION-1.i486.rpm $WEBDIR/binary/
+mv climm-$VERSION-1.src.rpm $WEBDIR/source/
 
 for d in climm_$VERSION-*_i386.deb; do
   distcode=${d%_i386.deb}
