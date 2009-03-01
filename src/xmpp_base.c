@@ -146,12 +146,23 @@ static void XMPPCallbackReconn (Connection *conn)
         cont->status = ims_offline;
 }
 
-void XmppSaveLog (void *user_data, const char *text, size_t size, int in)
+static void XmppSaveLog (void *user_data, const char *text, size_t size, int in)
 {
     Server *serv = user_data;
-    iksparser *prs = serv->xmpp_parser;
     const char *data;
     size_t rc;
+
+    data = s_sprintf ("%s%s %s%s\n",
+        iks_is_secure (serv->xmpp_parser) ? "SSL " :  "", s_now,
+        in & 1 ? "<<<" : ">>>", in & 2 ? " residual:" : "");
+
+    if (in)
+        DebugH (DEB_XMPPIN, "%s", data);
+    else
+        DebugH (DEB_XMPPOUT, "%s", data);
+    
+    if (!ConnectionPrefVal (serv, CO_LOGSTREAM))
+        return;
 
     if (serv->logfd < 0)
     {
@@ -166,9 +177,6 @@ void XmppSaveLog (void *user_data, const char *text, size_t size, int in)
     if (serv->logfd < 0)
         return;
 
-    data = s_sprintf ("%s%s %s%s\n",
-        iks_is_secure (prs) ? "SSL " :  "", s_now,
-        in & 1 ? "<<<" : ">>>", in & 2 ? " residual:" : "");
     rc = write (serv->logfd, data, strlen (data));
 
     text = s_ind (text);
@@ -226,10 +234,204 @@ static void GetBothContacts (iksid *j, Server *conn, Contact **b, Contact **f, c
     *f = ff;
 }
 
+static iks *find_with_ns_attrib (iks *tag, const char *childname, const char *childnamespace)
+{
+    iks *p, *a;
+    for (p = iks_first_tag (tag); p; p = iks_next_tag(p))
+    {
+        for (a = iks_attrib (p); a; a  = iks_next (a))
+        {
+            if (iks_type (a) != IKS_ATTRIBUTE)
+                continue;
+            if (strncmp (iks_name (a), "xmlns", 5))
+                continue;
+            if (strcmp (iks_cdata  (a), childnamespace))
+                continue;
+            if (!iks_name (a)[5] || iks_name (a)[5] == ':')
+                return p;
+        }
+    }
+    return NULL;
+}
+
+static enum ikshowtype StatusToIksstatus (status_t *status)
+{
+    switch (*status)
+    {
+        case ims_online:   return IKS_SHOW_AVAILABLE;   break;
+        case ims_ffc:      return IKS_SHOW_CHAT;        break;
+        case ims_away:     return IKS_SHOW_AWAY;        break;
+        case ims_occ:      *status = ims_dnd;
+        case ims_dnd:      return IKS_SHOW_DND;         break;
+        case ims_na:       return IKS_SHOW_XA;          break;
+        case ims_offline:  *status = ims_inv;
+        default:           return IKS_SHOW_UNAVAILABLE; break;
+    }
+}
+
+/****************** GoogleMail ******************/
+
+static void XmppSendIqGmail (Server *serv, int64_t newer, const char *newertid, const char *query)
+{
+    iks *x = iks_new ("iq");
+    iks_insert_attrib (x, "type", "get");
+    iks_insert_attrib (x, "to", serv->xmpp_id->partial);
+    iks_insert_attrib (x, "id", s_sprintf ("%s-%s-%x", query ? "mailq" : "mail", serv->xmpp_stamp, serv->conn->our_seq++));
+
+    iks *q = iks_insert (x, "query");
+    iks_insert_attrib (q, "xmlns", "google:mail:notify");
+    if (newer != 0)
+        iks_insert_attrib (q, "newer-than-time", s_sprintf ("%llu", newer));
+    if (newertid && *newertid)
+        iks_insert_attrib (q, "newer-than-tid", newertid);
+    if (query && *query)
+        iks_insert_attrib (q, "q", query);
+    iks_send (serv->xmpp_parser, x);
+    iks_delete (x);
+}
+
+static void sendIqGmailReqs (Event *event)
+{
+    Server *serv;
+    if (!event->conn)
+    {
+        EventD (event);
+        return;
+    }
+    serv = event->conn->serv;
+    XmppSendIqGmail (serv, serv->xmpp_gmail_new_newer, serv->xmpp_gmail_new_newertid, NULL);
+    event->due += 300;
+    QueueEnqueue (event);
+}
+
+/****************** IqHandler **********/
+
+static int XmppHandleIqGmail (void *user_data, ikspak *pak)
+{
+    Server *serv = user_data;
+    iks *mb = find_with_ns_attrib (pak->x, "mailbox", "google:mail:notify");
+    
+    if (!mb)
+        return IKS_FILTER_PASS;
+
+    int n = 0;
+    int ismail = 0;
+    char *n_s = iks_find_attrib (mb, "total-matched");
+    if (n_s)
+        n = atoi (n_s);
+
+    if (pak->id && !strncmp (pak->id, "mail-", 5))
+    {
+        ismail = 1;
+        if (n || !strcmp (pak->id + strlen (pak->id) - 2, "-0"))
+            rl_printf (i18n (2738, "Found %d new mails for %s.\n"), n, serv->xmpp_id->partial);
+    }
+    else
+        rl_printf (i18n (2739, "Found %d mails for %s.\n"), n, serv->xmpp_id->partial);
+    if (!n)
+        return IKS_FILTER_EAT;
+    
+    iks *mb_c;
+    char *ntid;
+    Contact *cont = serv->conn->cont;
+    for (mb_c = iks_first_tag (mb); mb_c; mb_c = iks_next_tag (mb_c))
+    {
+        if (iks_type (mb_c) != IKS_TAG || strcmp (iks_name (mb_c), "mail-thread-info"))
+            continue;
+        char *sub = iks_find_cdata (mb_c, "subject");
+        char *snip = iks_find_cdata (mb_c, "snippet");
+        char *dato = iks_find_attrib (mb_c, "date");
+        ntid = iks_find_attrib (mb_c, "tid");
+        time_t t = atoll (dato) / 1000ULL;
+        rl_printf ("%s ", s_time (&t));
+        rl_printf ("%s%s %s%s%s", COLMESSAGE, sub, COLQUOTE, COLSINGLE, snip);
+        rl_print ("\n");
+        iks *mb_s_c;
+        for (mb_s_c = iks_first_tag (iks_find (mb_c, "senders")); mb_s_c; mb_s_c = iks_next_tag (mb_s_c))
+        {
+            if (iks_type (mb_s_c) != IKS_TAG || strcmp (iks_name (mb_s_c), "sender"))
+                continue;
+            if (!ismail || (iks_find_attrib (mb_s_c, "unread") && !strcmp (iks_find_attrib (mb_s_c, "unread"), "1")))
+            {
+                char *email = iks_find_attrib (mb_s_c, "address");
+                char *name = iks_find_attrib (mb_s_c, "name");
+                rl_printf ("            %s%s%s <%s%s%s>\n", COLQUOTE, name, COLNONE, COLCONTACT, email, COLNONE);
+            }
+        }
+    }
+    char *foundnewer = iks_find_attrib (mb, "result-time");
+    if (ismail)
+    {
+        serv->xmpp_gmail_new_newer = atoll (foundnewer);
+        s_repl (&serv->xmpp_gmail_new_newertid, ntid);
+    }
+    else
+    {
+        serv->xmpp_gmail_newer = atoll (foundnewer);
+        s_repl (&serv->xmpp_gmail_newertid, ntid);
+    }
+    return IKS_FILTER_EAT;
+}
+
+static int XmppHandleIqDisco (void *user_data, ikspak *pak)
+{
+    Server *serv = user_data;
+    iksid *from = iks_id_new (iks_stack (pak->x), iks_find_attrib (pak->x, "from"));
+
+    if (!from  || strcmp (from->server, serv->xmpp_id->server) || from->resource || from->user)
+        return IKS_FILTER_PASS;
+    /* disco is from server */
+    if (iks_find_with_attrib (iks_find (pak->x, "query"), "feature", "var", "google:mail:notify"))
+    {
+        /* have Gmail, so  start requesting */
+        XmppSendIqGmail (serv, 0, NULL, NULL);
+        QueueEnqueueData2 (serv->conn, QUEUE_XMPP_GMAIL, 0, 300, NULL, &sendIqGmailReqs, NULL);
+        iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqGmail , serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_RESULT, IKS_RULE_NS, "google:mail:notify", IKS_RULE_DONE);
+        return IKS_FILTER_EAT;
+    }
+    return IKS_FILTER_PASS;
+}
+
+static int XmppHandleIqRoster (void *user_data, ikspak *pak)
+{
+    return IKS_FILTER_EAT;
+}
+
+static int XmppHandleIqTime (void *user_data, ikspak *pak)
+{
+    return IKS_FILTER_EAT;
+}
+
+/***************** Time Query *******************/
+
+static void XmppSendIqTime (Server *serv)
+{
+    iks *x = iks_new ("iq");
+    iks_insert_attrib (x, "type", "get");
+    iks_insert_attrib (iks_insert (x, "time"), "xmlns", "urn:xmpp:time");
+    iks_insert_attrib (x, "id", s_sprintf ("time-%s-%x", serv->xmpp_stamp, serv->conn->our_seq++));
+    iks_insert_attrib (x, "to", serv->xmpp_id->server);
+    iks_send (serv->xmpp_parser, x);
+    iks_delete (x);
+}
+
+static void sendIqTimeReqs (Event *event)
+{
+    if (!event->conn)
+    {
+        EventD (event);
+        return;
+    }
+    XmppSendIqTime (event->conn->serv);
+    event->due += 300;
+    QueueEnqueue (event);
+}
+
+/*********** handlers *************/
+
 static int XmppHandleMessage (void *user_data, ikspak *pak)
 {
     Server *serv = user_data;
-    iksparser *prs = serv->xmpp_parser;
 //    char *toX = iks_find_attrib (pak->x, "to");
 //    iksid *to = iks_id_new (iks_stack (pak->x), toX);
 
@@ -238,9 +440,9 @@ static int XmppHandleMessage (void *user_data, ikspak *pak)
 //    std::string body = t->body();
 //    std::string subject = t->subject();
 //    std::string html;
-//    gloox::Tag *htmltag = findNamespacedChild (t, "html", "http://jabber.org/protocol/xhtml-im");
+//    gloox::Tag *htmltag = find_with_ns_attrib (t, "html", "http://jabber.org/protocol/xhtml-im");
 //    if (htmltag)
-//        htmltag = findNamespacedChild (htmltag, "body", "http://www.w3.org/1999/xhtml");
+//        htmltag = find_with_ns_attrib (htmltag, "body", "http://www.w3.org/1999/xhtml");
 //    if (htmltag)
 //        html = htmltag->cdata();
 //    DropAttrib (t, "type");
@@ -280,14 +482,11 @@ static int XmppHandleMessage (void *user_data, ikspak *pak)
 static int XmppHandlePresence (void *user_data, ikspak *pak)
 {
     Server *serv = user_data;
-    iksparser *prs = serv->xmpp_parser;
-
-    ContactGroup *tcg;
-    Contact *contb, *contr, *c;
+//    ContactGroup *tcg;
+    Contact *contb, *contr; // , *c;
     status_t status;
 //    std::string pri;
 //    time_t delay;
-    char *statustext;
 
     GetBothContacts (pak->from, serv, &contb, &contr, 1);
 
@@ -332,8 +531,6 @@ static int XmppUnknown (void *user_data, ikspak *pak)
 
 static void XmppLoggedIn (Server *serv)
 {
-    iksparser *prs = serv->xmpp_parser;
-
     if (serv->xmpp_filter)
         iks_filter_delete (serv->xmpp_filter);
     serv->xmpp_filter = iks_filter_new ();
@@ -347,16 +544,19 @@ static void XmppLoggedIn (Server *serv)
 
     iks *x = iks_make_iq (IKS_TYPE_GET, IKS_NS_ROSTER);
     iks_insert_attrib (x, "id", s_sprintf ("roster-%s-%x", serv->xmpp_stamp, serv->conn->our_seq++));
-    iks_send (prs, x);
+    iks_send (serv->xmpp_parser, x);
     iks_delete (x);
+    iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqRoster, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_RESULT, IKS_RULE_NS, IKS_NS_ROSTER, IKS_RULE_DONE);
                                                                     
-//    QueueEnqueueData2 (serv->conn, QUEUE_SRV_KEEPALIVE, 0, 300, NULL, &sendIqTimeReqs, NULL);
-
+    QueueEnqueueData2 (serv->conn, QUEUE_SRV_KEEPALIVE, 0, 300, NULL, &sendIqTimeReqs, NULL);
+    iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqTime, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_NS, "urn:xmpp:time", IKS_RULE_DONE);
+    
     x = iks_make_iq (IKS_TYPE_GET, "http://jabber.org/protocol/disco#info");
     iks_insert_attrib (x, "id", s_sprintf ("disco-%s-%x", serv->xmpp_stamp, serv->conn->our_seq++));
     iks_insert_attrib (x, "to", serv->xmpp_id->server);
-    iks_send (prs, x);
+    iks_send (serv->xmpp_parser, x);
     iks_delete (x);
+    iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDisco, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_RESULT, IKS_RULE_NS, "http://jabber.org/protocol/disco#info", IKS_RULE_DONE);
 }
 
 static int XmppSessionResult (void *user_data, ikspak *pak)
@@ -371,14 +571,13 @@ static int XmppSessionResult (void *user_data, ikspak *pak)
 static int XmppBindResult (void *user_data, ikspak *pak)
 {
     Server *serv = user_data;
-    iksparser *prs = serv->xmpp_parser;
     if (pak->subtype == IKS_TYPE_RESULT)
     {
         iks *bind = iks_find_with_attrib (pak->x, "bind", "xmlns", "urn:ietf:params:xml:ns:xmpp-bind");
         char *newjid;
         if  (bind && (newjid = iks_find_cdata (bind, "jid")))
         {
-            iksid *newid = iks_id_new (iks_parser_stack (prs), newjid);
+            iksid *newid = iks_id_new (iks_parser_stack (serv->xmpp_parser), newjid);
             if (strchr (serv->screen,  '/'))
                 s_repl (&serv->screen, s_sprintf ("%s/%s", newid->partial, strchr (serv->screen,  '/')  + 1));
             else
@@ -463,7 +662,7 @@ static int XmppStreamHook (void *user_data, int type, iks *node)
     return IKS_OK;
 }
 
-void XMPPCallbackDispatch (Connection *conn)
+static void XMPPCallbackDispatch (Connection *conn)
 {
     iksparser *prs = conn->serv->xmpp_parser;
     int rc;
@@ -524,7 +723,7 @@ static void XMPPCallBackDoReconn (Event *event)
     ConnectionInitXMPPServer (event->conn->serv);
 }
 
-void XMPPCallbackClose (Connection *conn)
+static void XMPPCallbackClose (Connection *conn)
 {
     if (!conn)
         return;
@@ -533,8 +732,7 @@ void XMPPCallbackClose (Connection *conn)
 
     if (conn->serv->xmpp_parser)
     {
-        iksparser *prs = conn->serv->xmpp_parser;
-        iks_parser_delete (prs);
+        iks_parser_delete (conn->serv->xmpp_parser);
         conn->serv->xmpp_parser = NULL;
         conn->serv->xmpp_id = NULL;
         conn->serv->xmpp_filter = NULL;
@@ -549,13 +747,13 @@ void XMPPCallbackClose (Connection *conn)
     conn->connect = 0;
 }
 
-BOOL XMPPCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
+static BOOL XMPPCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
 {
     rl_printf ("#XMPPCallbackError: %p %lu %lu\n", conn, rc, flags);
     return 0;
 }
 
-
+/* **************** */
 
 static void SnacCallbackXmpp (Event *event)
 {
@@ -597,8 +795,6 @@ static void SnacCallbackXmppCancel (Event *event)
 
 UBYTE XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
 {
-    iksparser *prs = serv->xmpp_parser;
-
     assert (cont);
     assert (msg->send_message);
 
@@ -617,7 +813,7 @@ UBYTE XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
 //    new gloox::Tag (x, "displayed");
 //    new gloox::Tag (x, "composing");
 //    m_client->send (msgs);
-    iks_send (prs, x);
+    iks_send (serv->xmpp_parser, x);
     iks_delete (x);
 
     Event *event = QueueEnqueueData2 (serv->conn, QUEUE_XMPP_RESEND_ACK, serv->conn->our_seq, 120, msg, &SnacCallbackXmpp, &SnacCallbackXmppCancel);
@@ -626,24 +822,8 @@ UBYTE XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
     return RET_OK;
 }
 
-static enum ikshowtype StatusToIksstatus (status_t *status)
-{
-    switch (*status)
-    {
-        case ims_online:   return IKS_SHOW_AVAILABLE;   break;
-        case ims_ffc:      return IKS_SHOW_CHAT;        break;
-        case ims_away:     return IKS_SHOW_AWAY;        break;
-        case ims_occ:      *status = ims_dnd;
-        case ims_dnd:      return IKS_SHOW_DND;         break;
-        case ims_na:       return IKS_SHOW_XA;          break;
-        case ims_offline:  *status = ims_inv;
-        default:           return IKS_SHOW_UNAVAILABLE; break;
-    }
-}
-
 void XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *msg)
 {
-    iksparser *prs = serv->xmpp_parser;
     enum ikshowtype p = StatusToIksstatus (&status);
     iks *x = iks_make_pres (p, msg);
     if (p != IKS_SHOW_UNAVAILABLE)
@@ -661,16 +841,32 @@ void XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *ms
         serv->status = status;
         serv->nativestatus = p;
     }
-    iks_send (prs, x);
+    iks_send (serv->xmpp_parser, x);
     iks_delete (x);
 }
 
 void XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const char *msg)
 {
+    while (cont->parent && cont->parent->serv == cont->serv)
+        cont = cont->parent;
+
+    iks *x = iks_make_s10n (how == auth_grant ? IKS_TYPE_SUBSCRIBED
+                          : how == auth_deny  ? IKS_TYPE_UNSUBSCRIBED
+                          : how == auth_req   ? IKS_TYPE_SUBSCRIBE
+                                              : IKS_TYPE_UNSUBSCRIBE,
+                            cont->screen, msg);
+    iks_send (serv->xmpp_parser, x);
+    iks_delete (x);
 }
 
-void  XMPPGoogleMail (Server *serv, time_t since, const char *query)
+void XMPPGoogleMail (Server *serv, time_t since, const char *query)
 {
+    assert (query);
+    if (since == 1)
+        XmppSendIqGmail (serv, serv->xmpp_gmail_newer, serv->xmpp_gmail_newertid, serv->xmpp_gmail_query);
+    else
+        XmppSendIqGmail (serv, since * 1000ULL, NULL, query);
+    s_repl (&serv->xmpp_gmail_query, query);
 }
 
 #if 0
@@ -695,75 +891,17 @@ class CLIMMXMPP: public gloox::ConnectionListener, public gloox::MessageHandler,
     public :
         virtual void  onDisconnect (gloox::ConnectionError e);
         virtual void  handleSubscription (gloox::Stanza *stanza);
-        virtual void  handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message);
 
-        // GMail support
-        void sendIqGmail (int64_t newer = 0ULL, std::string newertid = "", std::string q = "", bool isauto = 1);
-        void sendIqTime (void);
-        std::string gmail_new_newertid;
-        std::string gmail_newertid;
-        std::string gmail_query;
-        int64_t gmail_new_newer;
-        int64_t gmail_newer;
-        
         // IqHandler
         virtual bool handleIq (gloox::Stanza *stanza);
         virtual bool handleIqID (gloox::Stanza *stanza, int context);
-        
-        // DiscoHandler 
-        virtual void handleDiscoInfoResult (gloox::Stanza *stanza, int context);
-        virtual void handleDiscoItemsResult (gloox::Stanza *stanza, int context);
-        virtual void handleDiscoError (gloox::Stanza *stanza, int context);
-        virtual bool handleDiscoSet (gloox::Stanza *stanza);
-
-        void  XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const char *msg);
 };
 
 CLIMMXMPP::CLIMMXMPP (Server *serv)
 {
     m_client->disco()->setVersion ("climm", BuildVersionStr, BuildPlatformStr);
     m_client->disco()->setIdentity ("client", "console");
-    m_client->disco()->registerDiscoHandler (this);
     m_client->setInitialPriority (5);
-
-    gmail_new_newer = 0ULL;
-    gmail_newer = 0ULL;
-}
-
-void CLIMMXMPP::onDisconnect (gloox::ConnectionError e)
-{
-    m_serv->conn->connect = 0;
-    if (m_serv->conn->sok != -1)
-        close (m_serv->conn->sok);
-    m_serv->conn->sok = -1;
-    switch (e)
-    {
-        case gloox::ConnNoError:
-            rl_printf ("#onDisconnect: NoError.\n");
-            break;
-        case gloox::ConnStreamError:
-            {
-                std::string sET = m_client->streamErrorText();
-                rl_printf ("#onDisconnect: Error %d: ConnStreamError: Error %d: %s\n",
-                           e, m_client->streamError(), sET.c_str());
-            }
-            break;
-        case gloox::ConnStreamClosed:
-        case gloox::ConnIoError:
-            XMPPCallbackReconn (m_serv->conn);
-            return;
-
-        case gloox::ConnOutOfMemory:          rl_printf ("#onDisconnect: Error OutOfMemory %d.\n", e); break;
-        case gloox::ConnNoSupportedAuth:      rl_printf ("#onDisconnect: Error NoSupportedAuth %d.\n", e); break;
-        case gloox::ConnTlsFailed:            rl_printf ("#onDisconnect: Error TlsFailed %d.\n", e); break;
-        case gloox::ConnAuthenticationFailed: rl_printf ("#onDisconnect: Error AuthenticationFailed %d.\n", e);
-            s_repl (&m_serv->passwd, NULL);
-            break;
-        case gloox::ConnUserDisconnected:     return;
-        case gloox::ConnNotConnected:         rl_printf ("#onDisconnect: Error NotConnected %d.\n", e); break;
-        default:
-            rl_printf ("#onDisconnect: Error %d.\n", e);
-    }
 }
 
 static bool DropChild (gloox::Tag *s, gloox::Tag *c)
@@ -881,46 +1019,9 @@ static time_t ParseUTCDate (std::string str)
     return timegm (&tm);
 }
 
-static gloox::Tag *findNamespacedChild (gloox::Tag *tag, const char *childname, const char *childnamespace)
-{
-    gloox::Tag::TagList::const_iterator it = tag->children ().begin ();
-    while (it != tag->children ().end())
-    {
-#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
-        gloox::Tag::AttributeList::const_iterator ait = (*it)->attributes().begin ();
-#else
-        gloox::StringMap::iterator ait = (*it)->attributes().begin ();
-#endif
-        while (ait != (*it)->attributes().end ())
-        {
-            if ((*ait).first == "xmlns" && (*ait).second == childnamespace)
-            {
-#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
-                (*it)->attributes ().remove (*ait);
-#else
-                (*it)->attributes ().erase (ait);
-#endif
-                return *it;
-            }
-            if (!(*ait).first.compare (0, 6, "xmlns:") && (*ait).second == childnamespace)
-            {
-#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
-                (*it)->attributes ().remove (*ait);
-#else
-                (*it)->attributes ().erase (ait);
-#endif
-                return *it;
-            }
-            ait++;
-        }
-        it++;
-    }
-    return NULL;
-}
-
 void CLIMMXMPP::handleXEP8 (gloox::Tag *t)
 {
-    if (gloox::Tag *avatar = findNamespacedChild (t, "x", "jabber:x:avatar"))
+    if (gloox::Tag *avatar = find_with_ns_attrib (t, "x", "jabber:x:avatar"))
     {
         if (gloox::Tag *hash = avatar->findChild ("hash"))
         {
@@ -1036,7 +1137,7 @@ void CLIMMXMPP::handleXEP22b (gloox::Tag *XEP22, gloox::JID from, std::string to
 bool CLIMMXMPP::handleXEP22and85 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id)
 {
     bool ret = false;
-    if (gloox::Tag *XEP22 = findNamespacedChild (t, "x", "jabber:x:event"))
+    if (gloox::Tag *XEP22 = find_with_ns_attrib (t, "x", "jabber:x:event"))
     {
         ret = true;
         if (!t->hasChild ("body"))
@@ -1044,36 +1145,36 @@ bool CLIMMXMPP::handleXEP22and85 (gloox::Tag *t, Contact *cfrom, gloox::JID from
         else
             handleXEP22b (XEP22, from, tof, id);
     }
-    if (gloox::Tag *address = findNamespacedChild (t, "addresses", "http://jabber.org/protocol/address"))
+    if (gloox::Tag *address = find_with_ns_attrib (t, "addresses", "http://jabber.org/protocol/address"))
     {
         DropAllChildsTree (address, "address");
         CheckInvalid (address);
         ret = true;
     }
     
-    if (gloox::Tag *active = findNamespacedChild (t, "active", "http://jabber.org/protocol/chatstates"))
+    if (gloox::Tag *active = find_with_ns_attrib (t, "active", "http://jabber.org/protocol/chatstates"))
     {
         CheckInvalid (active);
         ret = true;
     }
-    if (gloox::Tag *composing = findNamespacedChild (t, "composing", "http://jabber.org/protocol/chatstates"))
+    if (gloox::Tag *composing = find_with_ns_attrib (t, "composing", "http://jabber.org/protocol/chatstates"))
     {
         CheckInvalid (composing);
         IMIntMsg (cfrom, NOW, ims_offline, INT_MSGCOMP, "");
         ret = true;
     }
-    if (gloox::Tag *paused = findNamespacedChild (t, "paused", "http://jabber.org/protocol/chatstates"))
+    if (gloox::Tag *paused = find_with_ns_attrib (t, "paused", "http://jabber.org/protocol/chatstates"))
     {
         CheckInvalid (paused);
         IMIntMsg (cfrom, NOW, ims_offline, INT_MSGNOCOMP, "");
         ret = true;
     }
-    if (gloox::Tag *inactive = findNamespacedChild (t, "inactive", "http://jabber.org/protocol/chatstates"))
+    if (gloox::Tag *inactive = find_with_ns_attrib (t, "inactive", "http://jabber.org/protocol/chatstates"))
     {
         CheckInvalid (inactive);
         ret = true;
     }
-    if (gloox::Tag *gone = findNamespacedChild (t, "gone", "http://jabber.org/protocol/chatstates"))
+    if (gloox::Tag *gone = find_with_ns_attrib (t, "gone", "http://jabber.org/protocol/chatstates"))
     {
         CheckInvalid (gone);
         ret = true;
@@ -1085,7 +1186,7 @@ bool CLIMMXMPP::handleXEP22and85 (gloox::Tag *t, Contact *cfrom, gloox::JID from
 
 void CLIMMXMPP::handleXEP27 (gloox::Tag *t)
 {
-    if (gloox::Tag *sig = findNamespacedChild (t, "x", "jabber:x:signed"))
+    if (gloox::Tag *sig = find_with_ns_attrib (t, "x", "jabber:x:signed"))
     {
         DropCData (sig);
         CheckInvalid (sig);
@@ -1094,18 +1195,17 @@ void CLIMMXMPP::handleXEP27 (gloox::Tag *t)
 
 void CLIMMXMPP::handleXEP71 (gloox::Tag *t)
 {
-    if (gloox::Tag *xhtmlim = findNamespacedChild (t, "html", "http://jabber.org/protocol/xhtml-im"))
+    if (gloox::Tag *xhtmlim = find_with_ns_attrib (t, "html", "http://jabber.org/protocol/xhtml-im"))
     {
         DropAllChildsTree (xhtmlim, "body");
         CheckInvalid (xhtmlim);
     }
 }
 
-
 time_t CLIMMXMPP::handleXEP91 (gloox::Tag *t)
 {
     time_t date = NOW;
-    if (gloox::Tag *delay = findNamespacedChild (t, "x", "jabber:x:delay"))
+    if (gloox::Tag *delay = find_with_ns_attrib (t, "x", "jabber:x:delay"))
     {
         struct tm;
         std::string dfrom = delay->findAttribute ("from");
@@ -1122,7 +1222,7 @@ time_t CLIMMXMPP::handleXEP91 (gloox::Tag *t)
 void CLIMMXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
 {
     gloox::Tag *caps;
-    if ((caps = findNamespacedChild (t, "c", "http://jabber.org/protocol/caps")))
+    if ((caps = find_with_ns_attrib (t, "c", "http://jabber.org/protocol/caps")))
     {
         std::string node = caps->findAttribute ("node");
         std::string ver = caps->findAttribute ("ver");
@@ -1162,7 +1262,7 @@ void CLIMMXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
 
 void CLIMMXMPP::handleXEP136 (gloox::Tag *t)
 {
-    if (gloox::Tag *arc = findNamespacedChild (t, "record", "http://jabber.org/protocol/archive"))
+    if (gloox::Tag *arc = find_with_ns_attrib (t, "record", "http://jabber.org/protocol/archive"))
     {
         DropAttrib (arc, "otr");
         CheckInvalid (arc);
@@ -1171,7 +1271,7 @@ void CLIMMXMPP::handleXEP136 (gloox::Tag *t)
 
 void CLIMMXMPP::handleXEP153 (gloox::Tag *t, Contact *contr)
 {
-    if (gloox::Tag *vcard = findNamespacedChild (t, "x", "vcard-temp:x:update"))
+    if (gloox::Tag *vcard = find_with_ns_attrib (t, "x", "vcard-temp:x:update"))
     {
         if (gloox::Tag *photo = vcard->findChild ("photo"))
         {
@@ -1191,7 +1291,7 @@ void CLIMMXMPP::handleXEP153 (gloox::Tag *t, Contact *contr)
 
 void CLIMMXMPP::handleGoogleNosave (gloox::Tag *t)
 {
-    if (gloox::Tag *nosave = findNamespacedChild (t, "x", "google:nosave"))
+    if (gloox::Tag *nosave = find_with_ns_attrib (t, "x", "google:nosave"))
     {
         DropAttrib (nosave, "value");
         CheckInvalid (nosave);
@@ -1200,7 +1300,7 @@ void CLIMMXMPP::handleGoogleNosave (gloox::Tag *t)
 
 void CLIMMXMPP::handleGoogleSig (gloox::Tag *t)
 {
-    if (gloox::Tag *sig = findNamespacedChild (t, "google-mail-signature", "google:metadata"))
+    if (gloox::Tag *sig = find_with_ns_attrib (t, "google-mail-signature", "google:metadata"))
     {
         DropCData (sig);
         CheckInvalid (sig);
@@ -1209,7 +1309,7 @@ void CLIMMXMPP::handleGoogleSig (gloox::Tag *t)
 
 void CLIMMXMPP::handleGoogleChatstate(gloox::Tag *t)
 {
-    if (gloox::Tag *chat = findNamespacedChild (t, "active", "http://jabber.org/protocol/chatstates"))
+    if (gloox::Tag *chat = find_with_ns_attrib (t, "active", "http://jabber.org/protocol/chatstates"))
         CheckInvalid (chat);
 }
 
@@ -1295,281 +1395,4 @@ void CLIMMXMPP::handleSubscription (gloox::Stanza *s)
 #endif
                s->xml().c_str());
 }
-
-void CLIMMXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std::string &message)
-{
-    const char *lt = "";
-    const char *la = "";
-    switch (area)
-    {
-        case gloox::LogAreaClassParser: la = "parser"; break;
-#if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION < 0x000900
-        case gloox::LogAreaClassConnection: la = "conn"; break;
-#endif
-        case gloox::LogAreaClassClient: la = "client"; break;
-        case gloox::LogAreaClassClientbase: la = "clbase"; break;
-        case gloox::LogAreaClassComponent: la = "comp"; break;
-        case gloox::LogAreaClassDns: la = "dns"; break;
-        case gloox::LogAreaXmlIncoming: la = "xmlin"; break;
-        case gloox::LogAreaXmlOutgoing: la = "xmlout"; break;
-        case gloox::LogAreaUser: la = "user"; break;
-    }
-    switch (level)
-    {
-        case gloox::LogLevelDebug: lt = "debug"; break;
-        case gloox::LogLevelWarning: lt = "warn"; break;
-        case gloox::LogLevelError: lt = "error"; break;
-    }
-    if (area == gloox::LogAreaXmlIncoming)
-    {
-        if (ConnectionPrefVal (m_serv, CO_LOGSTREAM))
-            CLIMMXMPPSave (m_serv, message.c_str(), 1);
-        DebugH (DEB_XMPPIN, "%s/%s: %s", lt, la, message.c_str());
-    }
-    else if (area == gloox::LogAreaXmlOutgoing)
-    {
-        if (ConnectionPrefVal (m_serv, CO_LOGSTREAM))
-            CLIMMXMPPSave (m_serv, message.c_str(), 0);
-        DebugH (DEB_XMPPOUT, "%s/%s: %s", lt, la, message.c_str());
-    }
-    else
-        DebugH (DEB_XMPPOTHER, "%s/%s: %s", lt, la, message.c_str());
-}
-
-/***************** Time Query *******************/
-
-void CLIMMXMPP::sendIqTime (void)
-{
-    gloox::Tag *iq = new gloox::Tag ("iq");
-    iq->addAttribute ("type", "get");
-    iq->addAttribute ("to", m_client->jid().bare ());
-    iq->addAttribute ("id", s_sprintf ("time-%s-%x", m_stamp, m_serv->conn->our_seq++));
-    gloox::Tag *qq = new gloox::Tag (iq, "time");
-    qq->addAttribute ("xmlns", "urn:xmpp:time");
-    m_client->send (iq);
-}
-
-static void sendIqTimeReqs (Event *event)
-{
-    if (!event->conn)
-    {
-        EventD (event);
-        return;
-    }
-    CLIMMXMPP *j = getXMPPClient (event->conn->serv);
-    assert (j);
-    j->sendIqTime ();
-    event->due += 300;
-    QueueEnqueue (event);
-}
-
-/****************** GoogleMail ******************/
-
-void CLIMMXMPP::sendIqGmail (int64_t newer, std::string newertid, std::string q, bool isauto)
-{
-    gloox::Tag *iq = new gloox::Tag ("iq");
-    iq->addAttribute ("type", "get");
-    iq->addAttribute ("from", m_client->jid().full ());
-    iq->addAttribute ("to", m_client->jid().bare ());
-    iq->addAttribute ("id", s_sprintf ("%s-%s-%x", isauto ? "mail" : "mailq", m_stamp, m_serv->conn->our_seq++));
-    if (newer == 1000ULL)
-    {
-        newer = gmail_newer;
-        newertid = gmail_newertid;
-        q = gmail_query;
-    }
-    if (isauto)
-    {
-        newer = gmail_new_newer;
-        newertid = gmail_new_newertid;
-    }
-    else
-        gmail_query = q;
-    gloox::Tag *qq = new gloox::Tag (iq, "query");
-    qq->addAttribute ("xmlns", "google:mail:notify");
-    if (newer != 0)
-        qq->addAttribute ("newer-than-time", s_sprintf ("%llu", newer));
-    if (*newertid.c_str ())
-        qq->addAttribute ("newer-than-tid", newertid);
-    if (*q.c_str ())
-        qq->addAttribute ("q", q);
-    m_client->send (iq);
-}
-
-static void sendIqGmailReqs (Event *event)
-{
-    if (!event->conn)
-    {
-        EventD (event);
-        return;
-    }
-    CLIMMXMPP *j = getXMPPClient (event->conn->serv);
-    assert (j);
-    j->sendIqGmail ((event->due - 300ULL)*1000ULL, "", "", 1);
-    event->due += 300;
-    QueueEnqueue (event);
-}
-
-/****************** IqHandler **********/
-
-bool CLIMMXMPP::handleIq (gloox::Stanza *stanza)
-{
-    if (stanza->subtype() == gloox::StanzaIqError)
-        DropAllChildsTree (stanza, "");
-    
-    if (gloox::Tag *mb = findNamespacedChild (stanza, "mailbox", "google:mail:notify"))
-    {
-        int n = 0;
-        int ismail = 0;
-        if (mb->hasAttribute ("total-matched"))
-        {
-            std::string a = mb->findAttribute ("total-matched");
-            n = atoi (a.c_str());
-        }
-        std::string from = stanza->from().bare();
-        std::string id = stanza->id();
-        if (!strncmp (id.c_str (), "mail-", 5))
-        {
-            ismail = 1;
-            if (n || !strcmp (id.c_str () + strlen (id.c_str()) - 2, "-0"))
-                rl_printf (i18n (2738, "Found %d new mails for %s.\n"), n, from.c_str());
-        }
-        else
-            rl_printf (i18n (2739, "Found %d mails for %s.\n"), n, from.c_str());
-        if (!n)
-            return true;
-        gloox::Tag::TagList ml = mb->children ();
-        gloox::Tag::TagList::iterator mlit = ml.begin();
-        std::string ntid;
-        Contact *cont = m_serv->conn->cont;
-        for ( ; mlit != ml.end(); mlit++)
-        {
-            if ((*mlit)->name() != "mail-thread-info")
-                continue;
-            std::string sub = (*mlit)->findChild ("subject")->cdata();
-            std::string snip = (*mlit)->findChild ("snippet")->cdata();
-            std::string dato = (*mlit)->findAttribute ("date");
-            ntid = (*mlit)->findAttribute ("tid");
-            time_t t = atoll (dato.c_str ()) / 1000ULL;
-            rl_printf ("%s ", s_time (&t));
-            rl_printf ("%s%s %s%s%s", COLMESSAGE, sub.c_str (), COLQUOTE, COLSINGLE, snip.c_str ());
-            rl_print ("\n");
-            gloox::Tag::TagList mls = (*mlit)->findChild ("senders")->children ();
-            gloox::Tag::TagList::iterator mlsit = mls.begin ();
-            for ( ; mlsit !=mls.end(); mlsit++)
-            {
-                if ((*mlsit)->name() != "sender")
-                    continue;
-                if (!ismail || (*mlsit)->hasAttribute ("unread", "1"))
-                {
-                    std::string email = (*mlsit)->findAttribute ("address");
-                    std::string name = (*mlsit)->findAttribute ("name");
-                    rl_printf ("            %s%s%s <%s%s%s>\n", COLQUOTE, name.c_str(), COLNONE, COLCONTACT, email.c_str(), COLNONE);
-                }
-            }
-        }
-        std::string foundnewer = mb->findAttribute ("result-time");
-        if (ismail)
-        {
-            gmail_new_newer = atoll (foundnewer.c_str ());
-            gmail_new_newertid = ntid;
-        }
-        else
-        {
-            gmail_newer = atoll (foundnewer.c_str ());
-            gmail_newertid = ntid;
-        }
-        return true;
-    }
-    CLIMMXMPPSave (m_serv, stanza->xml().c_str(), 3);
-    return 0;
-}
-
-bool CLIMMXMPP::handleIqID (gloox::Stanza *stanza, int context)
-{
-    return 0;
-}
-
-/****************** DiscoHandler ****************/
-
-void CLIMMXMPP::handleDiscoInfoResult (gloox::Stanza *stanza, int context)
-{
-    if (stanza->from().server() == m_client->jid().server())
-    {
-        gloox::Tag *id = stanza->findChild ("query");
-        if (id)
-        {
-            if (id->hasChild ("feature", "var", "google:mail:notify"))
-            {
-                sendIqGmail ();
-                QueueEnqueueData2 (m_serv->conn, QUEUE_XMPP_GMAIL, 0, 300, NULL, &sendIqGmailReqs, NULL);
-                m_client->registerIqHandler (this, "google:mail:notify");
-            }
-            return;
-        }
-    }
-    CLIMMXMPPSave (m_serv, stanza->xml().c_str(), 3);
-}
-
-void CLIMMXMPP::handleDiscoItemsResult (gloox::Stanza *stanza, int context)
-{
-    CLIMMXMPPSave (m_serv, stanza->xml().c_str(), 3);
-}
-
-void CLIMMXMPP::handleDiscoError (gloox::Stanza *stanza, int context)
-{
-    CLIMMXMPPSave (m_serv, stanza->xml().c_str(), 3);
-}
-
-bool CLIMMXMPP::handleDiscoSet (gloox::Stanza *stanza)
-{
-    CLIMMXMPPSave (m_serv, stanza->xml().c_str(), 3);
-    return 0;
-}
-
-/**************/
-
-
-
-void CLIMMXMPP::XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const char *msg)
-{
-    gloox::JID j = gloox::JID (cont->screen);
-    gloox::Tag *pres = new gloox::Tag ("presence");
-    std::string res = m_client->resource();
-    pres->addAttribute ("from", s_sprintf ("%s/%s", serv->screen, res.c_str()));
-    while (cont->parent && cont->parent->serv == cont->serv)
-        cont = cont->parent;
-    pres->addAttribute ("to", cont->screen);
-    pres->addAttribute ("type", how == auth_grant ? "subscribed"
-                              : how == auth_deny  ? "unsubscribed"
-                              : how == auth_req   ? "subscribe"
-                                                  : "unsubscribe");
-    if (msg)
-        new gloox::Tag (pres, "status", msg);
-    m_client->send (pres);
-}
-
-UBYTE XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
-{
-    CLIMMXMPP *j = getXMPPClient (serv);
-    assert (j);
-    return j->XMPPSendmsg (serv, cont, msg);
-}
-
-void XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const char *msg)
-{
-    CLIMMXMPP *j = getXMPPClient (serv);
-    assert (j);
-    assert (cont);
-    j->XMPPAuthorize (serv, cont, how, msg);
-}
-
-void  XMPPGoogleMail (Server *serv, time_t since, const char *query)
-{
-    CLIMMXMPP *j = getXMPPClient (serv);
-    assert (j);
-    assert (query);
-    j->sendIqGmail (since * 1000ULL, "", query, 0);
-}
-
 #endif

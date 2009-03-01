@@ -103,6 +103,11 @@ struct Server_s
     char     *xmpp_stamp;
     iksid    *xmpp_id;
     iksfilter*xmpp_filter;
+    char     *xmpp_gmail_new_newertid;
+    char     *xmpp_gmail_newertid;
+    char     *xmpp_gmail_query;
+    int64_t   xmpp_gmail_new_newer;
+    int64_t   xmpp_gmail_newer;
 #endif
 
     void     *oscar_tlv;            /* temporary during v8 connect              */
