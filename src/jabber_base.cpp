@@ -1,4 +1,9 @@
 
+/*
+ * This code is OBSOLETE and about to be removed.
+ * No further features will be added.
+ */
+
 extern "C" {
 #include "climm.h"
 #include <sys/types.h>
