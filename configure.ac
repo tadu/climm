@@ -610,12 +610,14 @@ if test "x$CLIMM_EXTRAVERSION" != "x"; then
 fi
 
 if test "x$ac_use_autopackage" = xyes; then
-    LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $LIBS"'`'
-    LIBGCRYPT_LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $LIBGCRYPT_LIBS"'`'
-    LIBGNUTLS_LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $LIBGNUTLS_LIBS"'`'
-    LIBOTR_LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $LIBOTR_LIBS"'`'
-    LIBTCL_LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $LIBTCL_LIBS"'`'
-    XMPP_LIBS='`'"$RELAYTOOL --relay 'tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr' $XMPP_LIBS"'`'
+    relay_libs="tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr iksemel"
+    LIBS='`'"$RELAYTOOL --relay '$relay_libs' $LIBS"'`'
+    LIBGCRYPT_LIBS='`'"$RELAYTOOL --relay '$relay_libs' $LIBGCRYPT_LIBS"'`'
+    LIBGNUTLS_LIBS='`'"$RELAYTOOL --relay '$relay_libs' $LIBGNUTLS_LIBS"'`'
+    LIBOTR_LIBS='`'"$RELAYTOOL --relay '$relay_libs' $LIBOTR_LIBS"'`'
+    LIBTCL_LIBS='`'"$RELAYTOOL --relay '$relay_libs' $LIBTCL_LIBS"'`'
+    XMPP_LIBS='`'"$RELAYTOOL --relay '$relay_libs' $XMPP_LIBS"'`'
+    IKS_LIBS='`'"$RELAYTOOL --relay '$relay_libs' $IKS_LIBS"'`'
 fi
 
 AC_MSG_CHECKING([whether to enable XMPP chat network (BETA)])
