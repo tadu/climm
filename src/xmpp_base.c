@@ -507,7 +507,7 @@ static int XmppHandleIqXEP92 (void *user_data, ikspak *pak)
         iks *q = iks_insert (x, "query");
         iks_insert_attrib (q, "xmlns", "jabber:iq:version");
         iks_insert_cdata (iks_insert (q, "name"), "climm", 0);
-        iks_insert_cdata (iks_insert (q, "version"), BuildVersionStr, 0);
+        iks_insert_cdata (iks_insert (q, "version"), s_sprintf ("%s [iksemel]", BuildVersionStr), 0);
         iks_insert_cdata (iks_insert (q, "os"), BuildPlatformStr, 0);
         iks_send (serv->xmpp_parser, x);
         iks_delete (x);
@@ -548,6 +548,99 @@ static int XmppHandleIqDefault (void *user_data, ikspak *pak)
 
 /*********** other handlers *************/
 
+static int __SkipChar (const char **s, char c)
+{
+    if (**s == c && **s)
+        (*s)++;
+    if (**s)
+        return *((*s)++) - '0';
+    return 0;
+}
+
+static time_t ParseUTCDate (const char *s)
+{
+   struct tm tm;
+   tm.tm_year =  __SkipChar (&s, 0) * 1000;
+   tm.tm_year += __SkipChar (&s, 0) * 100;
+   tm.tm_year += __SkipChar (&s, 0) * 10;
+   tm.tm_year += __SkipChar (&s, 0) - 1900;
+   tm.tm_mon  =  __SkipChar (&s, '-') * 10;
+   tm.tm_mon  += __SkipChar (&s, 0) - 1;
+   tm.tm_mday =  __SkipChar (&s, '-') * 10;
+   tm.tm_mday += __SkipChar (&s, 0);
+   tm.tm_hour =  __SkipChar (&s, 'T') * 10;
+   tm.tm_hour += __SkipChar (&s, 0);
+   tm.tm_min  =  __SkipChar (&s, ':') * 10;
+   tm.tm_min  += __SkipChar (&s, 0);
+   tm.tm_sec  =  __SkipChar (&s, ':') * 10;
+   if (!*s)
+       return -1;
+   tm.tm_sec  += __SkipChar (&s, 0);
+   if (*s)
+       return -1;
+    return timegm (&tm);
+}
+
+static time_t XmppHandleXEP91 (iks *x)
+{
+    time_t date = NOW;
+    iks *delay;
+    if ((delay = find_with_ns_attrib (x, "x", "jabber:x:delay")))
+    {
+        struct tm;
+        char *dfrom = iks_find_attrib (delay, "from");
+        char *stamp = iks_find_attrib (delay, "stamp");
+        date = ParseUTCDate (stamp);
+//        if (date != NOW)
+//            DropAttrib (delay, "stamp");
+//        DropAttrib (delay, "from");
+//        CheckInvalid (delay);
+    }
+    return date;
+}
+
+static void XmppHandleXEP115 (iks *x, Contact *contr)
+{
+    iks *caps;
+    if ((caps = find_with_ns_attrib (x, "c", "http://jabber.org/protocol/caps")))
+    {
+        char *node = iks_find_attrib (caps, "node");
+        char *ver = iks_find_attrib (caps, "ver");
+        char *ext = iks_find_attrib (caps, "ext");
+        if (!strcmp (node, "http://www.climm.org/xmpp/caps"))
+            node = "climm";
+        else if (!strcmp (node, "http://mail.google.com/xmpp/client/caps"))
+            node = "GoogleMail";
+        else if (!strcmp (node, "http://www.google.com/xmpp/client/caps"))
+            node = "GoogleTalk";
+        else if (!strcmp (node, "http://pidgin.im/caps"))
+            node = "Pidgin";
+        else if (!strcmp (node, "http://gaim.sf.net/caps"))
+            node = "Gaim";
+        else if (!strcmp (node, "http://kopete.kde.org/jabber/caps"))
+            node = "Kopete";
+        else if (!strcmp (node, "http://psi-im.org/caps"))
+            node = "Psi";
+        else if (!strcmp (node, "http://miranda-im.org/caps"))
+            node = "Miranda";
+        else if (!strcmp (node, "apple:ichat:caps") || !strcmp (node, "http://www.apple.com/ichat/caps"))
+            node = "iChat";
+        else if (!strcmp (node, "http://telepathy.freedesktop.org/caps"))
+            node = "Telepathy";
+        else if (!strcmp (node, "http://talkgadget.google.com/client/caps"))
+            node = "TalkGadget";
+        else if (!strcmp (node, "http://trillian.im/caps"))
+            node = "Trillian";
+        s_repl (&contr->cap_string, ext);
+        s_repl (&contr->version, s_sprintf ("%s %s", node, ver));
+//        DropAttrib (caps, "ver");
+//        DropAttrib (caps, "ext");
+//        DropAttrib (caps, "node");
+//        CheckInvalid (caps);
+    }
+}
+
+
 static int XmppHandleMessage (void *user_data, ikspak *pak)
 {
     Server *serv = user_data;
@@ -577,8 +670,8 @@ static int XmppHandleMessage (void *user_data, ikspak *pak)
 //    handleGoogleSig (t);
 //    handleGoogleChatstate (t);
 //    handleXEP136 (t);
-//    delay = handleXEP91 (t);
-//    handleXEP115 (t, contr); // entity capabilities (used also for client version)
+    delay = XmppHandleXEP91 (pak->x);
+    XmppHandleXEP115 (pak->x, contr); // entity capabilities (used also for client version)
 //    if (handleXEP22and85 (t, contr, from, tof, id))
 //        return;
 //    DropAllChilds (t, "body");
@@ -614,7 +707,7 @@ static int XmppHandlePresence (void *user_data, ikspak *pak)
     Contact *contb, *contr; // , *c;
     status_t status;
 //    std::string pri;
-//    time_t delay;
+    time_t delay;
 
     GetBothContacts (pak->from, serv, &contb, &contr, 1);
 
@@ -625,7 +718,8 @@ static int XmppHandlePresence (void *user_data, ikspak *pak)
 //        CheckInvalid (priority);
 //    }
 
-//    delay = handleXEP91 (s);
+    delay = XmppHandleXEP91 (pak->x);
+    // FIXME: do something with it!
 
 //    handleXEP115 (s, contr); // entity capabilities (used also for client version)
 //    handleXEP153 (s, contb); // vcard-based avatar, nickname
@@ -968,7 +1062,7 @@ void XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *ms
         iks *caps = iks_insert (x, "c");
         iks_insert_attrib (caps, "xmlns", "http://jabber.org/protocol/caps");
         iks_insert_attrib (caps, "node", "http://www.climm.org/xmpp/caps");
-        iks_insert_attrib (caps, "ver", s_sprintf ("[iksemel] %s", BuildVersionStr));
+        iks_insert_attrib (caps, "ver", s_sprintf ("%s [iksemel]", BuildVersionStr));
     }
     if (cont)
         iks_insert_attrib (x, "to", cont->screen);
@@ -1118,40 +1212,6 @@ static void DropAllChildsTree (gloox::Tag *s, const std::string &a)
             }
         }
     }
-}
-
-static int __SkipChar (const char **s, char c)
-{
-    if (**s == c && **s)
-        (*s)++;
-    if (**s)
-        return *((*s)++) - '0';
-    return 0;
-}
-
-static time_t ParseUTCDate (std::string str)
-{
-   const char *s = str.c_str();
-   struct tm tm;
-   tm.tm_year =  __SkipChar (&s, 0) * 1000;
-   tm.tm_year += __SkipChar (&s, 0) * 100;
-   tm.tm_year += __SkipChar (&s, 0) * 10;
-   tm.tm_year += __SkipChar (&s, 0) - 1900;
-   tm.tm_mon  =  __SkipChar (&s, '-') * 10;
-   tm.tm_mon  += __SkipChar (&s, 0) - 1;
-   tm.tm_mday =  __SkipChar (&s, '-') * 10;
-   tm.tm_mday += __SkipChar (&s, 0);
-   tm.tm_hour =  __SkipChar (&s, 'T') * 10;
-   tm.tm_hour += __SkipChar (&s, 0);
-   tm.tm_min  =  __SkipChar (&s, ':') * 10;
-   tm.tm_min  += __SkipChar (&s, 0);
-   tm.tm_sec  =  __SkipChar (&s, ':') * 10;
-   if (!*s)
-       return -1;
-   tm.tm_sec  += __SkipChar (&s, 0);
-   if (*s)
-       return -1;
-    return timegm (&tm);
 }
 
 void CLIMMXMPP::handleXEP8 (gloox::Tag *t)
@@ -1334,64 +1394,6 @@ void CLIMMXMPP::handleXEP71 (gloox::Tag *t)
     {
         DropAllChildsTree (xhtmlim, "body");
         CheckInvalid (xhtmlim);
-    }
-}
-
-time_t CLIMMXMPP::handleXEP91 (gloox::Tag *t)
-{
-    time_t date = NOW;
-    if (gloox::Tag *delay = find_with_ns_attrib (t, "x", "jabber:x:delay"))
-    {
-        struct tm;
-        std::string dfrom = delay->findAttribute ("from");
-        std::string stamp = delay->findAttribute ("stamp");
-        date = ParseUTCDate (stamp);
-        if (date != NOW)
-            DropAttrib (delay, "stamp");
-        DropAttrib (delay, "from");
-        CheckInvalid (delay);
-    }
-    return date;
-}
-
-void CLIMMXMPP::handleXEP115 (gloox::Tag *t, Contact *contr)
-{
-    gloox::Tag *caps;
-    if ((caps = find_with_ns_attrib (t, "c", "http://jabber.org/protocol/caps")))
-    {
-        std::string node = caps->findAttribute ("node");
-        std::string ver = caps->findAttribute ("ver");
-        std::string ext = caps->findAttribute ("ext");
-        if (!strcmp (node.c_str(), "http://www.climm.org/xmpp/caps"))
-            node = "climm";
-        else if (!strcmp (node.c_str(), "http://mail.google.com/xmpp/client/caps"))
-            node = "GoogleMail";
-        else if (!strcmp (node.c_str(), "http://www.google.com/xmpp/client/caps"))
-            node = "GoogleTalk";
-        else if (!strcmp (node.c_str(), "http://pidgin.im/caps"))
-            node = "Pidgin";
-        else if (!strcmp (node.c_str(), "http://gaim.sf.net/caps"))
-            node = "Gaim";
-        else if (!strcmp (node.c_str(), "http://kopete.kde.org/jabber/caps"))
-            node = "Kopete";
-        else if (!strcmp (node.c_str(), "http://psi-im.org/caps"))
-            node = "Psi";
-        else if (!strcmp (node.c_str(), "http://miranda-im.org/caps"))
-            node = "Miranda";
-        else if (!strcmp (node.c_str(), "apple:ichat:caps") || !strcmp (node.c_str(), "http://www.apple.com/ichat/caps"))
-            node = "iChat";
-        else if (!strcmp (node.c_str(), "http://telepathy.freedesktop.org/caps"))
-            node = "Telepathy";
-        else if (!strcmp (node.c_str(), "http://talkgadget.google.com/client/caps"))
-            node = "TalkGadget";
-        else if (!strcmp (node.c_str(), "http://trillian.im/caps"))
-            node = "Trillian";
-        s_repl (&contr->cap_string, ext.c_str ());
-        s_repl (&contr->version, s_sprintf ("%s %s", node.c_str(), ver.c_str()));
-        DropAttrib (caps, "ver");
-        DropAttrib (caps, "ext");
-        DropAttrib (caps, "node");
-        CheckInvalid (caps);
     }
 }
 
