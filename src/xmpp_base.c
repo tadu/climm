@@ -56,6 +56,7 @@
 #include "buildmark.h"
 #include "preferences.h"
 #include "oscar_dc_file.h"
+#include "os.h"
 
 
 static jump_conn_f XMPPCallbackDispatch;
@@ -453,15 +454,65 @@ static int XmppHandleIqDisco (void *user_data, ikspak *pak)
         iks_insert_attrib (x, "id", pak->id);
         iks_insert_attrib (x, "to", pak->from->full);
         iks *q = iks_insert (x, "query");
-        iks_insert_attrib (x, "query", "http://jabber.org/protocol/disco#info");
-        iks_insert_attrib (x, "node", iks_find_attrib (pak->query, "node"));
+        iks_insert_attrib (q, "xmlns", "http://jabber.org/protocol/disco#info");
+        iks_insert_attrib (q, "node", iks_find_attrib (pak->query, "node"));
         iks *f = iks_insert (q, "feature");
         iks_insert_attrib (f, "var", "http://jabber.org/protocol/disco#info");
+             f = iks_insert (q, "feature");
+        iks_insert_attrib (f, "var", "jabber:iq:version");
+             f = iks_insert (q, "feature");
+        iks_insert_attrib (f, "var", "jabber:iq:last");
+        iks *i =  iks_insert (q, "identity");
+        iks_insert_attrib (i, "category", "client");
+        iks_insert_attrib (i, "type", "console");
+        iks_insert_attrib (i, "name", "climm");
         iks_send (serv->xmpp_parser, x);
         iks_delete (x);
         return IKS_FILTER_EAT;
     }
     
+    return IKS_FILTER_PASS;
+}
+
+static int XmppHandleIqXEP12 (void *user_data, ikspak *pak)
+{
+    Server *serv = user_data;
+
+    if (pak->subtype == IKS_TYPE_GET)
+    {
+        iks *x = iks_new ("iq");
+        iks_insert_attrib (x, "type", "result");
+        iks_insert_attrib (x, "id", pak->id);
+        iks_insert_attrib (x, "to", pak->from->full);
+        iks *q = iks_insert (x, "query");
+        iks_insert_attrib (q, "xmlns", "jabber:iq:last");
+        iks_insert_attrib (q, "seconds", s_sprintf ("%ld", uiG.idle_val ? os_DetermineIdleTime (time (NULL), uiG.idle_val) : 0));
+        iks_send (serv->xmpp_parser, x);
+        iks_delete (x);
+        return IKS_FILTER_EAT;
+    }
+    return IKS_FILTER_PASS;
+}
+
+static int XmppHandleIqXEP92 (void *user_data, ikspak *pak)
+{
+    Server *serv = user_data;
+
+    if (pak->subtype == IKS_TYPE_GET)
+    {
+        iks *x = iks_new ("iq");
+        iks_insert_attrib (x, "type", "result");
+        iks_insert_attrib (x, "id", pak->id);
+        iks_insert_attrib (x, "to", pak->from->full);
+        iks *q = iks_insert (x, "query");
+        iks_insert_attrib (q, "xmlns", "jabber:iq:version");
+        iks_insert_cdata (iks_insert (q, "name"), "climm", 0);
+        iks_insert_cdata (iks_insert (q, "version"), BuildVersionStr, 0);
+        iks_insert_cdata (iks_insert (q, "os"), BuildPlatformStr, 0);
+        iks_send (serv->xmpp_parser, x);
+        iks_delete (x);
+        return IKS_FILTER_EAT;
+    }
     return IKS_FILTER_PASS;
 }
 
@@ -638,6 +689,9 @@ static void XmppLoggedIn (Server *serv)
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDisco, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_NS, "http://jabber.org/protocol/disco#info", IKS_RULE_DONE);
+
+    iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqXEP92, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_NS, "jabber:iq:version", IKS_RULE_DONE);
+    iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqXEP12, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_NS, "jabber:iq:last", IKS_RULE_DONE);
     
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDefault, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_DONE);
 }
@@ -982,8 +1036,6 @@ class CLIMMXMPP: public gloox::ConnectionListener, public gloox::MessageHandler,
 
 CLIMMXMPP::CLIMMXMPP (Server *serv)
 {
-    m_client->disco()->setVersion ("climm", BuildVersionStr, BuildPlatformStr);
-    m_client->disco()->setIdentity ("client", "console");
     m_client->setInitialPriority (5);
 }
 
