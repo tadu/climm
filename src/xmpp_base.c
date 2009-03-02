@@ -202,7 +202,7 @@ static void XmppSaveLog (void *user_data, const char *text, size_t size, int in)
         dir = s_sprintf ("%sdebug" _OS_PATHSEPSTR "packets.xmpp.%s", PrefUserDir (prG), serv->screen);
         mkdir (dir, 0700);
         file = s_sprintf ("%sdebug" _OS_PATHSEPSTR "packets.xmpp.%s/%lu", PrefUserDir (prG), serv->screen, time (NULL));
-        serv->logfd = open (file, O_WRONLY | O_CREAT | O_APPEND, 0600);
+        serv->logfd = open (file, O_WRONLY | O_CREAT | O_APPEND | O_SYNC, 0600);
     }
     if (serv->logfd < 0)
         return;
@@ -299,7 +299,7 @@ static enum ikshowtype StatusToIksstatus (status_t *status)
     }
 }
 
-/****************** GoogleMail ******************/
+/****************** send stuff ******************/
 
 static void XmppSendIqGmail (Server *serv, int64_t newer, const char *newertid, const char *query)
 {
@@ -320,6 +320,17 @@ static void XmppSendIqGmail (Server *serv, int64_t newer, const char *newertid, 
     iks_delete (x);
 }
 
+static void XmppSendIqTime (Server *serv)
+{
+    iks *x = iks_new ("iq");
+    iks_insert_attrib (x, "type", "get");
+    iks_insert_attrib (iks_insert (x, "time"), "xmlns", "urn:xmpp:time");
+    iks_insert_attrib (x, "id", s_sprintf ("time-%s-%x", serv->xmpp_stamp, serv->conn->our_seq++));
+    iks_insert_attrib (x, "to", serv->xmpp_id->server);
+    iks_send (serv->xmpp_parser, x);
+    iks_delete (x);
+}
+
 static void sendIqGmailReqs (Event *event)
 {
     Server *serv;
@@ -330,6 +341,18 @@ static void sendIqGmailReqs (Event *event)
     }
     serv = event->conn->serv;
     XmppSendIqGmail (serv, serv->xmpp_gmail_new_newer, serv->xmpp_gmail_new_newertid, NULL);
+    event->due += 300;
+    QueueEnqueue (event);
+}
+
+static void sendIqTimeReqs (Event *event)
+{
+    if (!event->conn)
+    {
+        EventD (event);
+        return;
+    }
+    XmppSendIqTime (event->conn->serv);
     event->due += 300;
     QueueEnqueue (event);
 }
@@ -406,19 +429,39 @@ static int XmppHandleIqGmail (void *user_data, ikspak *pak)
 static int XmppHandleIqDisco (void *user_data, ikspak *pak)
 {
     Server *serv = user_data;
-    iksid *from = iks_id_new (iks_stack (pak->x), iks_find_attrib (pak->x, "from"));
-
-    if (!from  || strcmp (from->server, serv->xmpp_id->server) || from->resource || from->user)
-        return IKS_FILTER_PASS;
-    /* disco is from server */
-    if (iks_find_with_attrib (iks_find (pak->x, "query"), "feature", "var", "google:mail:notify"))
+    
+    if (pak->subtype == IKS_TYPE_RESULT)
     {
-        /* have Gmail, so  start requesting */
-        XmppSendIqGmail (serv, 0, NULL, NULL);
-        QueueEnqueueData2 (serv->conn, QUEUE_XMPP_GMAIL, 0, 300, NULL, &sendIqGmailReqs, NULL);
-        iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqGmail , serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_RESULT, IKS_RULE_NS, "google:mail:notify", IKS_RULE_DONE);
+        /*  what did we ask for? */
+        if (!pak->from || pak->from->resource || pak->from->user || strcmp (pak->from->server, serv->xmpp_id->server))
+           return IKS_FILTER_PASS;
+
+        /* disco is from server */
+        if (iks_find_with_attrib (iks_find (pak->x, "query"), "feature", "var", "google:mail:notify"))
+        {
+            /* have Gmail, so start requesting */
+            XmppSendIqGmail (serv, 0, NULL, NULL);
+            QueueEnqueueData2 (serv->conn, QUEUE_XMPP_GMAIL, 0, 300, NULL, &sendIqGmailReqs, NULL);
+            iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqGmail , serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_RESULT, IKS_RULE_NS, "google:mail:notify", IKS_RULE_DONE);
+            return IKS_FILTER_EAT;
+        }
+    }
+    else if (pak->subtype == IKS_TYPE_GET)
+    {
+        iks *x = iks_new ("iq");
+        iks_insert_attrib (x, "type", "result");
+        iks_insert_attrib (x, "id", pak->id);
+        iks_insert_attrib (x, "to", pak->from->full);
+        iks *q = iks_insert (x, "query");
+        iks_insert_attrib (x, "query", "http://jabber.org/protocol/disco#info");
+        iks_insert_attrib (x, "node", iks_find_attrib (pak->query, "node"));
+        iks *f = iks_insert (q, "feature");
+        iks_insert_attrib (f, "var", "http://jabber.org/protocol/disco#info");
+        iks_send (serv->xmpp_parser, x);
+        iks_delete (x);
         return IKS_FILTER_EAT;
     }
+    
     return IKS_FILTER_PASS;
 }
 
@@ -432,32 +475,27 @@ static int XmppHandleIqTime (void *user_data, ikspak *pak)
     return IKS_FILTER_EAT;
 }
 
-/***************** Time Query *******************/
-
-static void XmppSendIqTime (Server *serv)
+static int XmppHandleIqDefault (void *user_data, ikspak *pak)
 {
+    Server *serv = user_data;
+    if (pak->subtype == IKS_TYPE_ERROR || pak->subtype == IKS_TYPE_RESULT)
+        return IKS_FILTER_PASS;
     iks *x = iks_new ("iq");
-    iks_insert_attrib (x, "type", "get");
-    iks_insert_attrib (iks_insert (x, "time"), "xmlns", "urn:xmpp:time");
-    iks_insert_attrib (x, "id", s_sprintf ("time-%s-%x", serv->xmpp_stamp, serv->conn->our_seq++));
-    iks_insert_attrib (x, "to", serv->xmpp_id->server);
+    iks_insert_attrib (x, "type", "error");
+    iks_insert_attrib (x, "id", pak->id);
+    iks *e = iks_insert (x, "error");
+    iks_insert_attrib  (e, "type", "cancel");
+    iks *t = iks_insert (e, "feature-not-implemented");
+    iks_insert_attrib  (t, "xmlns", "urn:ietf:params:xml:ns:xmpp-stanzas");
+    iks *c = iks_tree (iks_string (iks_stack (x), iks_first_tag (x)), 0, NULL);
+    iks_insert_node (x, c);
     iks_send (serv->xmpp_parser, x);
+    iks_delete (c);
     iks_delete (x);
+    return IKS_FILTER_PASS;
 }
 
-static void sendIqTimeReqs (Event *event)
-{
-    if (!event->conn)
-    {
-        EventD (event);
-        return;
-    }
-    XmppSendIqTime (event->conn->serv);
-    event->due += 300;
-    QueueEnqueue (event);
-}
-
-/*********** handlers *************/
+/*********** other handlers *************/
 
 static int XmppHandleMessage (void *user_data, ikspak *pak)
 {
@@ -508,6 +546,15 @@ static int XmppHandleMessage (void *user_data, ikspak *pak)
 }
 
 
+static int XmppHandlePresenceErr (void *user_data, ikspak *pak)
+{
+    Server *serv = user_data;
+    Contact *contb, *contr;
+
+    GetBothContacts (pak->from, serv, &contb, &contr, 1);
+    IMOffline (contr);
+    return IKS_FILTER_EAT;
+}
 
 static int XmppHandlePresence (void *user_data, ikspak *pak)
 {
@@ -555,9 +602,12 @@ static int XmppHandlePresence (void *user_data, ikspak *pak)
 
 static int XmppUnknown (void *user_data, ikspak *pak)
 {
-    printf ("Got unexpected packet:\n  %s\n", iks_string (iks_stack (pak->x), pak->x));
+    XmppSaveLog (user_data, iks_string (iks_stack (pak->x), pak->x), 0, 2);
     return IKS_FILTER_EAT;
 }
+
+/***************** end handlers *******************/
+
 
 static void XmppLoggedIn (Server *serv)
 {
@@ -566,6 +616,7 @@ static void XmppLoggedIn (Server *serv)
     serv->xmpp_filter = iks_filter_new ();
     iks_filter_add_rule (serv->xmpp_filter, XmppUnknown, serv, IKS_RULE_DONE);
     iks_filter_add_rule (serv->xmpp_filter, XmppHandlePresence, serv, IKS_RULE_TYPE, IKS_PAK_PRESENCE, IKS_RULE_DONE);
+    iks_filter_add_rule (serv->xmpp_filter, XmppHandlePresenceErr, serv, IKS_RULE_TYPE, IKS_PAK_S10N, IKS_RULE_SUBTYPE, IKS_TYPE_ERROR, IKS_RULE_DONE);
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleMessage, serv, IKS_RULE_TYPE, IKS_PAK_MESSAGE, IKS_RULE_DONE);
 
     serv->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
@@ -586,7 +637,9 @@ static void XmppLoggedIn (Server *serv)
     iks_insert_attrib (x, "to", serv->xmpp_id->server);
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
-    iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDisco, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_RESULT, IKS_RULE_NS, "http://jabber.org/protocol/disco#info", IKS_RULE_DONE);
+    iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDisco, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_NS, "http://jabber.org/protocol/disco#info", IKS_RULE_DONE);
+    
+    iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDefault, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_DONE);
 }
 
 static int XmppSessionResult (void *user_data, ikspak *pak)
@@ -645,9 +698,9 @@ static int XmppStreamHook (void *user_data, int type, iks *node)
                 if (feat & IKS_STREAM_STARTTLS && !iks_is_secure (prs))
                     iks_start_tls (prs);
                 else if (feat & IKS_STREAM_SASL_MD5)
-                    iks_start_sasl (prs, IKS_SASL_DIGEST_MD5, serv->screen, serv->passwd);
+                    iks_start_sasl (prs, IKS_SASL_DIGEST_MD5, serv->xmpp_id->user, serv->passwd);
                 else if (feat & IKS_STREAM_SASL_PLAIN)
-                    iks_start_sasl (prs, IKS_SASL_PLAIN, serv->screen, serv->passwd);
+                    iks_start_sasl (prs, IKS_SASL_PLAIN, serv->xmpp_id->user, serv->passwd);
                 else
                 {
                     if (feat & (IKS_STREAM_BIND | IKS_STREAM_SESSION))
