@@ -640,6 +640,166 @@ static void XmppHandleXEP115 (iks *x, Contact *contr)
     }
 }
 
+static void XmppHandleXEP22a (Server *serv, iks *x, Contact *cfrom)
+{
+    char *refid;
+    int ref = -1;
+    int_msg_t type;
+    iks *ch;
+
+    if ((refid = iks_find_cdata (x, "id")))
+    {
+//        DropCData (tid);
+//        CheckInvalid (tid);
+    }
+    if (refid && !strncmp (refid, "xmpp-", 5) && !strncmp (refid + 5, serv->xmpp_stamp, 14)
+        && strlen (refid) > 19 && refid[19] == '-')
+        sscanf (refid + 20, "%x", &ref);
+
+    if ((ch =  iks_find (x, "offline")))
+    {
+        type = INT_MSGOFF;
+//        CheckInvalid (dotag);
+    }
+    else if ((ch = iks_find (x, "paused")))
+    {
+//        CheckInvalid (dotag);
+        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGNOCOMP, "");
+        ref = -1;
+    }
+    else if ((ch = iks_find (x, "delivered")))
+    {
+        type = INT_MSGACK_TYPE2;
+//        CheckInvalid (dotag);
+    }
+    else if ((ch = iks_find (x, "displayed")))
+    {
+        type = INT_MSGDISPL;
+//        CheckInvalid (dotag);
+    }
+    else if ((ch = iks_find (x, "composing")))
+    {
+//        CheckInvalid (dotag);
+        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGCOMP, "");
+        ref = -1;
+    }
+    else
+        ref = -1;
+
+    if (ref != -1)
+    {
+        Event *event = QueueDequeue (serv->conn, QUEUE_XMPP_RESEND_ACK, ref);
+        if (event)
+        {
+            Message *msg = (Message *)event->data;
+            assert (msg);
+            if (msg->send_message && !msg->otrinjected)
+            {
+                msg->type = type;
+                IMIntMsgMsg (msg, NOW, ims_offline);
+            }
+            event->attempts += 5;
+            QueueEnqueue (event);
+        }
+    }
+//    CheckInvalid (XEP22);
+}
+
+static void XmppHandleXEP22c (Server *serv, iksid *from, char *tof, char *id, char *type)
+{
+    iks *msg  = iks_make_msg (IKS_TYPE_CHAT, tof, NULL);
+    iks_insert_attrib (msg, "id", s_sprintf ("ack-%s-%x", serv->xmpp_stamp, ++serv->conn->our_seq));
+    iks *x = iks_insert (msg, "x");
+    iks_insert_attrib (x, "xmlns", "jabber:x:event");
+    iks_insert (x, type);
+    iks_insert_cdata (iks_insert (x, "id"), id, 0);
+    iks_send (serv->xmpp_parser, msg);
+    iks_delete (msg);
+}
+
+static void XmppHandleXEP22b (Server *serv, iks *x, iksid *from, char *tof, char *id)
+{
+    iks *ch;
+    if ((ch = iks_find (x, "delivered")))
+    {
+        XmppHandleXEP22c (serv, from, tof, id, "delivered");
+//        CheckInvalid (dotag);
+    }
+    if ((ch = iks_find (x, "displayed")))
+    {
+        XmppHandleXEP22c (serv, from, tof, id, "displayed");
+//        CheckInvalid (dotag);
+    }
+    if ((ch = iks_find (x, "composing")))
+    {
+//        CheckInvalid (dotag);
+    }
+    if ((ch = iks_find (x, "offline")))
+    {
+//        CheckInvalid (dotag);
+    }
+}
+
+static char XmppHandleXEP22 (Server *serv, iks *t, Contact *cfrom, iksid *from, char *tof, char *id)
+{
+    char ret = 0;
+    iks *ch;
+    if ((ch = find_with_ns_attrib (t, "x", "jabber:x:event")))
+    {
+        ret = 1;
+        if (!iks_find (t, "body"))
+        {
+            XmppHandleXEP22a (serv, ch, cfrom);
+            return 1;
+        }
+        else
+            XmppHandleXEP22b (serv, ch, from, tof, id);
+    }
+    return 0;
+}
+
+static char XmppHandleXEP85 (Server *serv, iks *t, Contact *cfrom, iksid *from, char *tof, char *id)
+{
+    char ret = 0;
+    iks *ch;
+    if ((ch = find_with_ns_attrib (t, "addresses", "http://jabber.org/protocol/address")))
+    {
+//        DropAllChildsTree (address, "address");
+//        CheckInvalid (address);
+        ret = 1;
+    }
+    
+    if ((ch = find_with_ns_attrib (t, "active", "http://jabber.org/protocol/chatstates")))
+    {
+//        CheckInvalid (active);
+        ret = 1;
+    }
+    if ((ch = find_with_ns_attrib (t, "composing", "http://jabber.org/protocol/chatstates")))
+    {
+//        CheckInvalid (composing);
+        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGCOMP, "");
+        ret = 1;
+    }
+    if ((ch = find_with_ns_attrib (t, "paused", "http://jabber.org/protocol/chatstates")))
+    {
+//        CheckInvalid (paused);
+        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGNOCOMP, "");
+        ret = 1;
+    }
+    if ((ch = find_with_ns_attrib (t, "inactive", "http://jabber.org/protocol/chatstates")))
+    {
+//        CheckInvalid (inactive);
+        ret = 1;
+    }
+    if ((ch = find_with_ns_attrib (t, "gone", "http://jabber.org/protocol/chatstates")))
+    {
+//        CheckInvalid (gone);
+        ret = 1;
+    }
+    if (ret && !iks_find (t, "body"))
+        return 1;
+    return 0;
+}
 
 static int XmppHandleMessage (void *user_data, ikspak *pak)
 {
@@ -672,8 +832,10 @@ static int XmppHandleMessage (void *user_data, ikspak *pak)
 //    handleXEP136 (t);
     delay = XmppHandleXEP91 (pak->x);
     XmppHandleXEP115 (pak->x, contr); // entity capabilities (used also for client version)
-//    if (handleXEP22and85 (t, contr, from, tof, id))
-//        return;
+    if (XmppHandleXEP22 (serv, pak->x, contr, pak->from, iks_find_attrib (pak->x, "to"), pak->id))
+        return IKS_FILTER_EAT;
+    if (XmppHandleXEP85 (serv, pak->x, contr, pak->from, iks_find_attrib (pak->x, "to"), pak->id))
+        return IKS_FILTER_EAT;
 //    DropAllChilds (t, "body");
 
     Opt *opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, iks_find_cdata (pak->x, "body"), 0);
@@ -733,10 +895,10 @@ static int XmppHandlePresence (void *user_data, ikspak *pak)
         IMOffline (contr);
         return IKS_FILTER_EAT;
     }
-    else if (pak->show == IKS_SHOW_CHAT) status = ims_ffc;
-    else if (pak->show == IKS_SHOW_AWAY) status = ims_away;
-    else if (pak->show == IKS_SHOW_DND) status = ims_dnd;
-    else if (pak->show == IKS_SHOW_XA) status = ims_na;
+    else if (pak->show == IKS_SHOW_CHAT)      status = ims_ffc;
+    else if (pak->show == IKS_SHOW_AWAY)      status = ims_away;
+    else if (pak->show == IKS_SHOW_DND)       status = ims_dnd;
+    else if (pak->show == IKS_SHOW_XA)        status = ims_na;
     else if (pak->show == IKS_SHOW_AVAILABLE) status = ims_online;
     else assert (0);
     
@@ -1037,13 +1199,12 @@ UBYTE XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
     iks *x = iks_make_msg (IKS_TYPE_CHAT, cont->screen, msg->send_message);
     iks_insert_attrib (x, "id", s_sprintf ("xmpp-%s-%x", serv->xmpp_stamp, ++serv->conn->our_seq));
     iks_insert_attrib (x, "from", serv->xmpp_id->full);
-//    gloox::Tag *x = new gloox::Tag (msgs, "x");
-//    x->addAttribute ("xmlns", "jabber:x:event");
-//    new gloox::Tag (x, "offline");
-//    new gloox::Tag (x, "delivered");
-//    new gloox::Tag (x, "displayed");
-//    new gloox::Tag (x, "composing");
-//    m_client->send (msgs);
+    iks *xx = iks_insert (x, "x");
+    iks_insert_attrib (xx, "xmlns", "jabber:x:event");
+    iks_insert (xx, "offline");
+    iks_insert (xx, "delivered");
+    iks_insert (xx, "displayed");
+    iks_insert (xx, "composing");
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
 
@@ -1063,6 +1224,7 @@ void XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *ms
         iks_insert_attrib (caps, "xmlns", "http://jabber.org/protocol/caps");
         iks_insert_attrib (caps, "node", "http://www.climm.org/xmpp/caps");
         iks_insert_attrib (caps, "ver", s_sprintf ("%s [iksemel]", BuildVersionStr));
+        iks_insert_cdata (iks_insert (x, "priority"), "5", 0);
     }
     if (cont)
         iks_insert_attrib (x, "to", cont->screen);
@@ -1101,37 +1263,18 @@ void XMPPGoogleMail (Server *serv, time_t since, const char *query)
 }
 
 #if 0
-
 class CLIMMXMPP: public gloox::ConnectionListener, public gloox::MessageHandler,
     private :
         void handleXEP8 (gloox::Tag *t);
-        bool handleXEP22and85 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id);
-        void handleXEP22a (gloox::Tag *XEP22, Contact *cfrom);
-        void handleXEP22b (gloox::Tag *XEP22, gloox::JID from, std::string tof, std::string id);
-        void handleXEP22c (gloox::JID from, std::string tof, std::string id, std::string type);
         void handleXEP27 (gloox::Tag *t);
         void handleXEP71 (gloox::Tag *t);
-        void handleXEP115 (gloox::Tag *t, Contact *contr);
         void handleXEP153 (gloox::Tag *t, Contact *contr);
         void handleGoogleNosave (gloox::Tag *t);
         void handleGoogleSig (gloox::Tag *t);
         void handleGoogleChatstate (gloox::Tag *t);
         void handleXEP136 (gloox::Tag *t);
-        time_t handleXEP91 (gloox::Tag *t);
-
-    public :
-        virtual void  onDisconnect (gloox::ConnectionError e);
-        virtual void  handleSubscription (gloox::Stanza *stanza);
-
-        // IqHandler
-        virtual bool handleIq (gloox::Stanza *stanza);
-        virtual bool handleIqID (gloox::Stanza *stanza, int context);
+        virtual void handleSubscription (gloox::Stanza *stanza);
 };
-
-CLIMMXMPP::CLIMMXMPP (Server *serv)
-{
-    m_client->setInitialPriority (5);
-}
 
 static bool DropChild (gloox::Tag *s, gloox::Tag *c)
 {
@@ -1225,158 +1368,6 @@ void CLIMMXMPP::handleXEP8 (gloox::Tag *t)
         }
         CheckInvalid (avatar);
     }
-}
-
-void CLIMMXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
-{
-    std::string refid;
-    int ref = -1;
-    int_msg_t type;
-
-    if (gloox::Tag *tid = XEP22->findChild ("id"))
-    {
-        refid = tid->cdata();
-        DropCData (tid);
-        CheckInvalid (tid);
-    }
-    if (!strncmp (refid.c_str(), "xmpp-", 5) && !strncmp (refid.c_str() + 5, m_stamp, 14)
-        && strlen (refid.c_str()) > 19 && refid.c_str()[19] == '-')
-        sscanf (refid.c_str() + 20, "%x", &ref);
-
-    if (gloox::Tag *dotag = XEP22->findChild ("offline"))
-    {
-        type = INT_MSGOFF;
-        CheckInvalid (dotag);
-    }
-    else if (gloox::Tag *dotag = XEP22->findChild ("paused"))
-    {
-        CheckInvalid (dotag);
-        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGNOCOMP, "");
-        ref = -1;
-    }
-    else if (gloox::Tag *dotag = XEP22->findChild ("delivered"))
-    {
-        type = INT_MSGACK_TYPE2;
-        CheckInvalid (dotag);
-    }
-    else if (gloox::Tag *dotag = XEP22->findChild ("displayed"))
-    {
-        type = INT_MSGDISPL;
-        CheckInvalid (dotag);
-    }
-    else if (gloox::Tag *dotag = XEP22->findChild ("composing"))
-    {
-        CheckInvalid (dotag);
-        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGCOMP, "");
-        ref = -1;
-    }
-    else
-        ref = -1;
-
-    if (ref != -1)
-    {
-        Event *event = QueueDequeue (m_serv->conn, QUEUE_XMPP_RESEND_ACK, ref);
-        if (event)
-        {
-            Message *msg = (Message *)event->data;
-            assert (msg);
-            if (msg->send_message && !msg->otrinjected)
-            {
-                msg->type = type;
-//                assert (msg->cont == cfrom); ->parent
-                IMIntMsgMsg (msg, NOW, ims_offline);
-            }
-            event->attempts += 5;
-            QueueEnqueue (event);
-        }
-    }
-
-    CheckInvalid (XEP22);
-}
-
-void CLIMMXMPP::handleXEP22c (gloox::JID from, std::string tof, std::string id, std::string type)
-{
-    gloox::Stanza *msg = gloox::Stanza::createMessageStanza (from, "");
-    msg->addAttribute ("id", s_sprintf ("ack-%s-%x", m_stamp, m_serv->conn->our_seq++));
-    std::string res = m_client->resource();
-    msg->addAttribute ("from", s_sprintf ("%s/%s", m_serv->screen, res.c_str()));
-    gloox::Tag *x = new gloox::Tag (msg, "x");
-    x->addAttribute ("xmlns", "jabber:x:event");
-    new gloox::Tag (x, type);
-    new gloox::Tag (x, "id", id);
-    m_client->send (msg);
-}
-
-void CLIMMXMPP::handleXEP22b (gloox::Tag *XEP22, gloox::JID from, std::string tof, std::string id)
-{
-    if (gloox::Tag *dotag = XEP22->findChild ("delivered"))
-    {
-        handleXEP22c (from, tof, id, "delivered");
-        CheckInvalid (dotag);
-    }
-    if (gloox::Tag *dotag = XEP22->findChild ("displayed"))
-    {
-        handleXEP22c (from, tof, id, "displayed");
-        CheckInvalid (dotag);
-    }
-    if (gloox::Tag *dotag = XEP22->findChild ("composing"))
-    {
-        CheckInvalid (dotag);
-    }
-    if (gloox::Tag *dotag = XEP22->findChild ("offline"))
-    {
-        CheckInvalid (dotag);
-    }
-}
-
-bool CLIMMXMPP::handleXEP22and85 (gloox::Tag *t, Contact *cfrom, gloox::JID from, std::string tof, std::string id)
-{
-    bool ret = false;
-    if (gloox::Tag *XEP22 = find_with_ns_attrib (t, "x", "jabber:x:event"))
-    {
-        ret = true;
-        if (!t->hasChild ("body"))
-            handleXEP22a (XEP22, cfrom);
-        else
-            handleXEP22b (XEP22, from, tof, id);
-    }
-    if (gloox::Tag *address = find_with_ns_attrib (t, "addresses", "http://jabber.org/protocol/address"))
-    {
-        DropAllChildsTree (address, "address");
-        CheckInvalid (address);
-        ret = true;
-    }
-    
-    if (gloox::Tag *active = find_with_ns_attrib (t, "active", "http://jabber.org/protocol/chatstates"))
-    {
-        CheckInvalid (active);
-        ret = true;
-    }
-    if (gloox::Tag *composing = find_with_ns_attrib (t, "composing", "http://jabber.org/protocol/chatstates"))
-    {
-        CheckInvalid (composing);
-        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGCOMP, "");
-        ret = true;
-    }
-    if (gloox::Tag *paused = find_with_ns_attrib (t, "paused", "http://jabber.org/protocol/chatstates"))
-    {
-        CheckInvalid (paused);
-        IMIntMsg (cfrom, NOW, ims_offline, INT_MSGNOCOMP, "");
-        ret = true;
-    }
-    if (gloox::Tag *inactive = find_with_ns_attrib (t, "inactive", "http://jabber.org/protocol/chatstates"))
-    {
-        CheckInvalid (inactive);
-        ret = true;
-    }
-    if (gloox::Tag *gone = find_with_ns_attrib (t, "gone", "http://jabber.org/protocol/chatstates"))
-    {
-        CheckInvalid (gone);
-        ret = true;
-    }
-    if (ret && !t->hasChild ("body"))
-        return true;
-    return false;
 }
 
 void CLIMMXMPP::handleXEP27 (gloox::Tag *t)
