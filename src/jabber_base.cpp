@@ -201,7 +201,7 @@ CLIMMXMPP::CLIMMXMPP (Server *serv)
     m_client->registerSubscriptionHandler (this);
     m_client->registerPresenceHandler (this);
     m_client->logInstance ().registerLogHandler (gloox::LogLevelDebug,   gloox::LogAreaAll, this);
-    m_client->disco()->setVersion ("climm", BuildVersionStr, BuildPlatformStr);
+    m_client->disco()->setVersion ("climm", s_sprintf ("%s gloox", BuildVersionStr), BuildPlatformStr);
     m_client->disco()->setIdentity ("client", "console");
     m_client->disco()->registerDiscoHandler (this);
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
@@ -1330,7 +1330,7 @@ void CLIMMXMPP::XMPPSetstatus (Server *serv, Contact *cont, status_t status, con
         gloox::Tag *vers = new gloox::Tag (pres, "c");
         vers->addAttribute ("xmlns", "http://jabber.org/protocol/caps");
         vers->addAttribute ("node", "http://www.climm.org/xmpp/caps");
-        vers->addAttribute ("ver", BuildVersionStr);
+        vers->addAttribute ("ver", s_sprintf ("%s gloox", BuildVersionStr));
         // vers->addAttribute ("ext", "ext1 ext2");
     }
     s_repl (&serv->conn->cont->status_message, msg);
