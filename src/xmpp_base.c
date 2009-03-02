@@ -721,7 +721,7 @@ static int XmppHandlePresence (void *user_data, ikspak *pak)
     delay = XmppHandleXEP91 (pak->x);
     // FIXME: do something with it!
 
-//    handleXEP115 (s, contr); // entity capabilities (used also for client version)
+    XmppHandleXEP115 (pak->x, contr); // entity capabilities (used also for client version)
 //    handleXEP153 (s, contb); // vcard-based avatar, nickname
 //    handleXEP27 (s);         // OpenPGP signature (obsolete)
 //    handleXEP8 (s);          // iq-based avatar (obsolete)
