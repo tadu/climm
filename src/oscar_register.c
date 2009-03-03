@@ -41,6 +41,7 @@
 #include "conv.h"
 #include "file_util.h"
 #include "util_ssl.h"
+#include "im_request.h"
 
 /*
  * SRV_REGREFUSED - SNAC(17,1)
@@ -153,8 +154,6 @@ JUMP_SNAC_F(SnacSrvNewuin)
     rl_printf (i18n (2608, "Your new UIN is: %s.\n"), cont->screen);
     if (serv->flags & CONN_WIZARD)
     {
-        assert (serv->c_open);
-
         serv->flags |= CONN_AUTOLOGIN;
         serv->flags |= CONN_INITWP;
 
@@ -166,7 +165,7 @@ JUMP_SNAC_F(SnacSrvNewuin)
 
         if (Save_RC () == -1)
             rl_print (i18n (1679, "Sorry saving your personal reply messages went wrong!\n"));
-        serv->c_open (serv);
+        IMLogin (serv);
     }
     else
         rl_print (i18n (2518, "You need to 'save' to write your new UIN to disc.\n"));

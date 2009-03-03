@@ -2882,7 +2882,7 @@ static JUMP_F(CmdUserRegister)
         if (!uiG.conn || uiG.conn->type == TYPE_SERVER)
         {
             Server *newc = SrvRegisterUIN (uiG.conn, par->txt);
-            ConnectionInitServer (newc);
+            IMLogin (newc);
         }
     }
     else
@@ -4247,7 +4247,7 @@ static JUMP_F(CmdUserConn)
                     rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), servl, servl->conn->serv, servl->oscar_dc);
 #endif
                     rl_printf (i18n (2454, "    open %p reconn %p close %p err %p dispatch %p\n"),
-                              servl->c_open, servl->conn->reconnect, servl->conn->close, servl->conn->error, servl->conn->dispatch);
+                              NULL, servl->conn->reconnect, servl->conn->close, servl->conn->error, servl->conn->dispatch);
                     free (t1);
                     free (t2);
                     free (t3);
@@ -4309,18 +4309,17 @@ static JUMP_F(CmdUserConn)
                 s_repl (&servl->passwd, targs);
             if (servl->conn->connect & CONNECT_OK)
                 rl_printf (i18n (2601, "Connection for %s is already open.\n"), servl->screen);
-            else if (!servl->c_open)
-                rl_printf (i18n (2602, "Don't know how to open connection type %s for %s.\n"),
-                    ServerStrType (servl), servl->screen);
             else if (!servl->passwd || !*servl->passwd)
                 rl_printf (i18n (2688, "No password given for %s.\n"), servl->screen);
             else
             {
-                Event *loginevent = servl->c_open (servl);
+                Event *loginevent = IMLogin (servl);
                 if (loginevent)
                     QueueEnqueueDep (servl->conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, servl->conn->cont,
                                      OptSetVals (NULL, CO_CLIMMCOMMAND, "eg", 0), &CmdUserCallbackTodo);
-                                                                                                              
+                else
+                    rl_printf (i18n (2602, "Don't know how to open connection type %s for %s.\n"),
+                        ServerStrType (servl), servl->screen);
             }
             break;
 

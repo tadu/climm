@@ -436,7 +436,7 @@ static const UWORD FlapStartSeqs[] = {
   0x07C9, 0x7339, 0x42A8
 };
 
-Event *ConnectionInitServer (Server *serv)
+Event *ConnectionInitOscarServer (Server *serv)
 {
     Contact *cont;
     Event *event;
@@ -455,6 +455,8 @@ Event *ConnectionInitServer (Server *serv)
     serv->conn->sok = -1;
     if (!serv->conn->cont && serv->oscar_uin)
         serv->conn->cont = ContactUIN (serv, serv->oscar_uin);
+    if (!serv->pref_version)
+        serv->pref_version = 2;
     cont = serv->conn->cont;
     serv->conn->our_seq  = rand () % ((sizeof FlapStartSeqs) / (sizeof FlapStartSeqs[0]));
     serv->conn->connect  = 0;
@@ -514,7 +516,7 @@ static void SrvCallBackReconn (Connection *conn)
     
     if (!(event = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
     {
-        ConnectionInitServer (serv);
+        ConnectionInitOscarServer (serv);
         return;
     }
     
@@ -545,7 +547,7 @@ static void SrvCallBackDoReconn (Event *event)
     }
     ASSERT_SERVER_CONN (event->conn);
     QueueEnqueue (event);
-    ConnectionInitServer (event->conn->serv);
+    ConnectionInitOscarServer (event->conn->serv);
 }
 
 static void SrvCallBackTimeout (Event *event)
@@ -689,7 +691,6 @@ Server *SrvRegisterUIN (Server *serv, const char *pass)
     news->conn->server = strdup (news->pref_server);
     news->conn->port = news->pref_port;
     news->passwd = strdup (pass);
-    news->c_open = &ConnectionInitServer;
     return news;
 }
 

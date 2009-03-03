@@ -77,7 +77,6 @@ struct Server_s
 {
     UWORD     type;           /* connection type - TYPE_*                 */
     UBYTE     pref_version;        /* protocol version in this session         */
-    jump_serv_open_f *c_open;  /* function to call to open        */
     Connection            *oscar_dc;  /* associated session           */
 
     char     *screen;

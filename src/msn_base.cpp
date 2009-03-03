@@ -102,7 +102,6 @@ Event *ConnectionInitMSNServer (Server *serv)
     
     cb->serv = serv;
     MyCallbackSetClimm (serv->conn, cb);
-    serv->c_open = &ConnectionInitMSNServer;
     serv->reconnect = &MsnCallbackReconn;
     serv->error = &MsnCallbackError;
     serv->close = &MsnCallbackClose;

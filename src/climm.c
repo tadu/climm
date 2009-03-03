@@ -36,7 +36,7 @@
 #include "oscar_dc.h"
 #include "util_tabs.h"
 #include "util_io.h"
-#include "oscar_base.h"
+#include "oscar_base.h" // IcqToStatus
 #include "util_tcl.h"
 #include "util_ssl.h"
 #include "util_otr.h"
@@ -491,7 +491,7 @@ static void Init (int argc, char *argv[])
     }
 
     for (i = 0; (serv = ServerNr (i)); i++)
-        if (serv->c_open && serv->flags & CONN_AUTOLOGIN)
+        if (serv->type & TYPEF_ANY_SERVER && serv->flags & CONN_AUTOLOGIN)
             serv->status = serv->pref_status;
 
     serv = NULL;
@@ -528,7 +528,8 @@ static void Init (int argc, char *argv[])
                     serv->status = arg_ss;
                 if (arg_p)
                     s_repl (&serv->passwd, arg_p);
-                if (serv->passwd && *serv->passwd && (!arg_s || arg_ss != ims_offline) && (loginevent = serv->c_open (serv)))
+                if (serv->passwd && *serv->passwd && (!arg_s || arg_ss != ims_offline)
+                    && (loginevent = IMLogin (serv)))
                     QueueEnqueueDep (serv->conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, serv->conn->cont,
                                      OptSetVals (NULL, CO_CLIMMCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                      &CmdUserCallbackTodo);
@@ -561,7 +562,7 @@ static void Init (int argc, char *argv[])
     
     if (!uingiven)
         for (i = 0; (serv = ServerNr (i)); i++)
-            if (serv->c_open && serv->flags & CONN_AUTOLOGIN)
+            if (serv->type & TYPEF_ANY_SERVER && serv->flags & CONN_AUTOLOGIN)
                 if (!serv->passwd || !*serv->passwd)
                 {
                     strc_t pwd;
@@ -576,9 +577,10 @@ static void Init (int argc, char *argv[])
     if (!uingiven)
     {
         for (i = 0; (serv = ServerNr (i)); i++)
-            if (serv->c_open && serv->flags & CONN_AUTOLOGIN)
+            if (serv->type & TYPEF_ANY_SERVER && serv->flags & CONN_AUTOLOGIN)
             {
-                if (serv->passwd && *serv->passwd && serv->status != ims_offline && (loginevent = serv->c_open (serv)))
+                if (serv->passwd && *serv->passwd && serv->status != ims_offline
+                    && (loginevent = IMLogin (serv)))
                          QueueEnqueueDep (serv->conn, QUEUE_CLIMM_COMMAND, 0, loginevent, NULL, serv->conn->cont,
                                           OptSetVals (NULL, CO_CLIMMCOMMAND, arg_C.len ? arg_C.txt : "eg", 0),
                                           &CmdUserCallbackTodo);

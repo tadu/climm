@@ -39,12 +39,10 @@
 #include "preferences.h"
 #include "util_io.h"
 #include "remote.h"
-#include "oscar_base.h"
+#include "oscar_base.h" /* IcqToStatus */
 #include "connection.h"
 #include "util_parse.h"
 #include "util_rl.h"
-#include "msn_base.h"
-#include "jabber_base.h"
 
 /****/
 #define USER_PROMPT "%4c%b%p%d://%1c%b%n%3c/%2c%b%s%8c %t%7c%b>%6c%r%7c%b<%6c%b%a%7c%b>"
@@ -64,7 +62,6 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
     if (servertype == TYPE_SERVER)
     {
         serv = ServerC (servertype);
-        serv->c_open = &ConnectionInitServer;
         
         serv->flags |= CONN_AUTOLOGIN;
         serv->pref_server = strdup ("login.icq.com");
@@ -99,7 +96,6 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
         const char *serverpart = strchr (user, '@') + 1;
     
         serv = ServerC (servertype);
-        serv->c_open = &ConnectionInitXMPPServer;
         
         serv->flags |= CONN_AUTOLOGIN;
         if (!strcmp (serverpart, "gmail.com") || !strcmp (serverpart, "gmail.com"))
@@ -135,7 +131,6 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
     else if (servertype == TYPE_MSN_SERVER)
     {
         serv = ServerC (servertype);
-        serv->c_open = &ConnectionInitMSNServer;
         
         serv->flags |= CONN_AUTOLOGIN;
         serv->pref_server = strdup (strchr (user, '@') + 1);
@@ -1250,27 +1245,6 @@ int Read_RC_File (FILE *rcf)
         s_repl (&serv->conn->server, serv->pref_server);
         s_repl (&serv->passwd, serv->pref_passwd);
         serv->status = serv->pref_status;
-        switch (serv->type)
-        {
-            case TYPE_SERVER:
-                serv->c_open = &ConnectionInitServer;
-                if (!serv->pref_version)
-                    serv->pref_version = 2;
-                break;
-#ifdef ENABLE_MSN
-            case TYPE_MSN_SERVER:
-                serv->c_open = &ConnectionInitMSNServer;
-                break;
-#endif
-#ifdef ENABLE_XMPP
-            case TYPE_XMPP_SERVER:
-                serv->c_open = &ConnectionInitXMPPServer;
-                break;
-#endif
-            default:
-                serv->c_open = NULL;
-                break;
-        }
         if (format < 2 && !serv->contacts)
         {
             serv->contacts = cg = ContactGroupC (serv, 0, s_sprintf ("contacts-%s-%s", ConnectionServerType (serv->type), serv->screen));

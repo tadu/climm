@@ -24,7 +24,7 @@ Packet *FlapC (UBYTE channel);
 void    FlapSend (Server *serv, Packet *pak);
 void    FlapPrint (Packet *pak);
 
-Event *ConnectionInitServer (Server *serv);
+Event *ConnectionInitOscarServer (Server *serv);
 Server *SrvRegisterUIN (Server *serv, const char *pass);
 
 status_t     IcqToStatus   (UDWORD status);

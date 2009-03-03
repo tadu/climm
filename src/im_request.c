@@ -26,6 +26,8 @@
 #include "oscar_service.h"
 #include "oscar_roster.h"
 #include "jabber_base.h"
+#include "oscar_base.h"
+#include "msn_base.h"
 #include "util_otr.h"
 
 static void CallbackMeta (Event *event);
@@ -417,3 +419,19 @@ void IMCliAuth (Contact *cont, const char *text, auth_t how)
         XMPPAuthorize (cont->serv, cont, how, text);
 #endif
 }
+
+Event *IMLogin (Server *serv)
+{
+    switch (serv->type)
+    {
+        case TYPE_SERVER:      return ConnectionInitOscarServer (serv);
+#ifdef ENABLE_MSN
+        case TYPE_MSN_SERVER:  return ConnectionInitMSNServer (serv);
+#endif
+#ifdef ENABLE_XMPP
+        case TYPE_XMPP_SERVER: return ConnectionInitXMPPServer(serv);
+#endif
+        default:               return NULL;
+    }
+}
+
