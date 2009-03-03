@@ -9,6 +9,7 @@ AC_INIT([climm], [0.6.4])
 AC_CONFIG_SRCDIR([include/climm.h])
 AC_CONFIG_LIBOBJ_DIR(replace)
 AC_CONFIG_HEADER(include/config.h)
+AC_CONFIG_AUX_DIR(build-aux)
 AC_CANONICAL_HOST
 
 AC_CHECK_PROG(AUTOMAKE, automake-1.9, automake-1.9)
