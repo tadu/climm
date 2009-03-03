@@ -41,6 +41,9 @@
 #include <fcntl.h>
 #include <assert.h>
 
+#define IKS_TRANS_USER_DATA Server
+#define IKS_FILTER_USER_DATA Server
+#define IKS_SOCK_USER_DATA Connection
 #include <iksemel.h>
 
 #include "jabber_base.h"
@@ -58,12 +61,78 @@
 #include "oscar_dc_file.h"
 #include "os.h"
 
-
 static jump_conn_f XMPPCallbackDispatch;
 static jump_conn_f XMPPCallbackReconn;
 static jump_conn_f XMPPCallbackClose;
 static jump_conn_err_f XMPPCallbackError;
 static void XMPPCallBackDoReconn (Event *event);
+
+static int  iks_climm_TConnect (iksparser *prs, Connection **socketptr, const char *server, int port)
+{
+    Server *serv = iks_stream_user_data (prs);
+    Connection *conn = serv->conn;
+    *socketptr = conn;
+    return IKS_OK;
+}
+
+static void iks_climm_TClose (Connection *conn)
+{
+    if (conn->sok >= 0)
+    {
+        close (conn->sok);
+        conn->sok = -1;
+    }
+}
+
+static int iks_climm_TSend (Connection *conn, const char *data, size_t len)
+{
+    size_t rc = 0;
+    while (len > 0) {
+        rc = sockwrite (conn->sok, data, len);
+        if (rc < 0)
+            return IKS_NET_RWERR;
+        len -= rc;
+        data += rc;
+    }
+    return IKS_OK;
+}
+
+static int iks_climm_TRecv (Connection *conn, char *buffer, size_t buf_len, int timeout)
+{
+    fd_set fds;
+    struct timeval tv;
+    size_t rc;
+
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
+    FD_ZERO (&fds);
+    FD_SET (conn->sok, &fds);
+    rc = select (conn->sok + 1, &fds, NULL, NULL, &tv);
+    if (rc < 0 && (errno == EAGAIN || errno == EINTR))
+        return 0;
+    if (rc < 0)
+        return -1;
+    if (!FD_ISSET  (conn->sok, &fds))
+    {
+        errno = EAGAIN;
+        return -1;
+    }
+    rc = sockread (conn->sok, buffer, buf_len);
+    if (rc > 0)
+        return rc;
+    if (errno == EAGAIN || errno == EINTR)
+        return 0;
+    return -1;
+}
+
+static const ikstransport iks_climm_transport = {
+    IKS_TRANSPORT_V1,
+    iks_climm_TConnect,
+    iks_climm_TSend,
+    iks_climm_TRecv,
+    iks_climm_TClose,
+    NULL,
+};
 
 static void XMPPCallBackTimeout (Event *event)
 {
@@ -177,9 +246,8 @@ static void XMPPCallbackReconn (Connection *conn)
         cont->status = ims_offline;
 }
 
-static void XmppSaveLog (void *user_data, const char *text, size_t size, int in)
+static void XmppSaveLog (Server *serv, const char *text, size_t size, int in)
 {
-    Server *serv = user_data;
     const char *data;
     size_t rc;
 
@@ -360,9 +428,8 @@ static void sendIqTimeReqs (Event *event)
 
 /****************** IqHandler **********/
 
-static int XmppHandleIqGmail (void *user_data, ikspak *pak)
+static int XmppHandleIqGmail (Server *serv, ikspak *pak)
 {
-    Server *serv = user_data;
     iks *mb = find_with_ns_attrib (pak->x, "mailbox", "google:mail:notify");
     
     if (!mb)
@@ -386,7 +453,7 @@ static int XmppHandleIqGmail (void *user_data, ikspak *pak)
         return IKS_FILTER_EAT;
     
     iks *mb_c;
-    char *ntid;
+    const char *ntid = "";
     Contact *cont = serv->conn->cont;
     for (mb_c = iks_first_tag (mb); mb_c; mb_c = iks_next_tag (mb_c))
     {
@@ -398,7 +465,7 @@ static int XmppHandleIqGmail (void *user_data, ikspak *pak)
         ntid = iks_find_attrib (mb_c, "tid");
         time_t t = atoll (dato) / 1000ULL;
         rl_printf ("%s ", s_time (&t));
-        rl_printf ("%s%s %s%s%s", COLMESSAGE, sub, COLQUOTE, COLSINGLE, snip);
+        rl_printf ("%s%s %s%s%s", COLMESSAGE, sub ? sub : "", COLQUOTE, COLSINGLE, snip ? snip : "");
         rl_print ("\n");
         iks *mb_s_c;
         for (mb_s_c = iks_first_tag (iks_find (mb_c, "senders")); mb_s_c; mb_s_c = iks_next_tag (mb_s_c))
@@ -409,7 +476,7 @@ static int XmppHandleIqGmail (void *user_data, ikspak *pak)
             {
                 char *email = iks_find_attrib (mb_s_c, "address");
                 char *name = iks_find_attrib (mb_s_c, "name");
-                rl_printf ("            %s%s%s <%s%s%s>\n", COLQUOTE, name, COLNONE, COLCONTACT, email, COLNONE);
+                rl_printf ("            %s%s%s <%s%s%s>\n", COLQUOTE, name ? name : "", COLNONE, COLCONTACT, email ? email : "", COLNONE);
             }
         }
     }
@@ -427,10 +494,8 @@ static int XmppHandleIqGmail (void *user_data, ikspak *pak)
     return IKS_FILTER_EAT;
 }
 
-static int XmppHandleIqDisco (void *user_data, ikspak *pak)
+static int XmppHandleIqDisco (Server *serv, ikspak *pak)
 {
-    Server *serv = user_data;
-    
     if (pak->subtype == IKS_TYPE_RESULT)
     {
         /*  what did we ask for? */
@@ -474,10 +539,8 @@ static int XmppHandleIqDisco (void *user_data, ikspak *pak)
     return IKS_FILTER_PASS;
 }
 
-static int XmppHandleIqXEP12 (void *user_data, ikspak *pak)
+static int XmppHandleIqXEP12 (Server *serv, ikspak *pak)
 {
-    Server *serv = user_data;
-
     if (pak->subtype == IKS_TYPE_GET)
     {
         iks *x = iks_new ("iq");
@@ -494,10 +557,8 @@ static int XmppHandleIqXEP12 (void *user_data, ikspak *pak)
     return IKS_FILTER_PASS;
 }
 
-static int XmppHandleIqXEP92 (void *user_data, ikspak *pak)
+static int XmppHandleIqXEP92 (Server *serv, ikspak *pak)
 {
-    Server *serv = user_data;
-
     if (pak->subtype == IKS_TYPE_GET)
     {
         iks *x = iks_new ("iq");
@@ -516,19 +577,18 @@ static int XmppHandleIqXEP92 (void *user_data, ikspak *pak)
     return IKS_FILTER_PASS;
 }
 
-static int XmppHandleIqRoster (void *user_data, ikspak *pak)
+static int XmppHandleIqRoster (Server *serv, ikspak *pak)
 {
     return IKS_FILTER_EAT;
 }
 
-static int XmppHandleIqTime (void *user_data, ikspak *pak)
+static int XmppHandleIqTime (Server *serv, ikspak *pak)
 {
     return IKS_FILTER_EAT;
 }
 
-static int XmppHandleIqDefault (void *user_data, ikspak *pak)
+static int XmppHandleIqDefault (Server *serv, ikspak *pak)
 {
-    Server *serv = user_data;
     if (pak->subtype == IKS_TYPE_ERROR || pak->subtype == IKS_TYPE_RESULT)
         return IKS_FILTER_PASS;
     iks *x = iks_new ("iq");
@@ -801,9 +861,8 @@ static char XmppHandleXEP85 (Server *serv, iks *t, Contact *cfrom, iksid *from, 
     return 0;
 }
 
-static int XmppHandleMessage (void *user_data, ikspak *pak)
+static int XmppHandleMessage (Server *serv, ikspak *pak)
 {
-    Server *serv = user_data;
 //    char *toX = iks_find_attrib (pak->x, "to");
 //    iksid *to = iks_id_new (iks_stack (pak->x), toX);
 
@@ -852,9 +911,8 @@ static int XmppHandleMessage (void *user_data, ikspak *pak)
 }
 
 
-static int XmppHandlePresenceErr (void *user_data, ikspak *pak)
+static int XmppHandlePresenceErr (Server *serv, ikspak *pak)
 {
-    Server *serv = user_data;
     Contact *contb, *contr;
 
     GetBothContacts (pak->from, serv, &contb, &contr, 1);
@@ -862,9 +920,8 @@ static int XmppHandlePresenceErr (void *user_data, ikspak *pak)
     return IKS_FILTER_EAT;
 }
 
-static int XmppHandlePresence (void *user_data, ikspak *pak)
+static int XmppHandlePresence (Server *serv, ikspak *pak)
 {
-    Server *serv = user_data;
 //    ContactGroup *tcg;
     Contact *contb, *contr; // , *c;
     status_t status;
@@ -907,9 +964,9 @@ static int XmppHandlePresence (void *user_data, ikspak *pak)
 }
 
 
-static int XmppUnknown (void *user_data, ikspak *pak)
+static int XmppUnknown (Server *serv, ikspak *pak)
 {
-    XmppSaveLog (user_data, iks_string (iks_stack (pak->x), pak->x), 0, 2);
+    XmppSaveLog (serv, iks_string (iks_stack (pak->x), pak->x), 0, 2);
     return IKS_FILTER_EAT;
 }
 
@@ -952,18 +1009,17 @@ static void XmppLoggedIn (Server *serv)
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDefault, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_DONE);
 }
 
-static int XmppSessionResult (void *user_data, ikspak *pak)
+static int XmppSessionResult (Server *serv, ikspak *pak)
 {
     if (pak->subtype != IKS_TYPE_RESULT)
-        XmppStreamError (user_data, s_sprintf ("Couldn't get session %s.", iks_string (iks_stack (pak->x), pak->x)));
+        XmppStreamError (serv, s_sprintf ("Couldn't get session %s.", iks_string (iks_stack (pak->x), pak->x)));
     else
-        XmppLoggedIn (user_data);
+        XmppLoggedIn (serv);
     return IKS_FILTER_EAT;
 }
 
-static int XmppBindResult (void *user_data, ikspak *pak)
+static int XmppBindResult (Server *serv, ikspak *pak)
 {
-    Server *serv = user_data;
     if (pak->subtype == IKS_TYPE_RESULT)
     {
         iks *bind = iks_find_with_attrib (pak->x, "bind", "xmlns", "urn:ietf:params:xml:ns:xmpp-bind");
@@ -984,9 +1040,8 @@ static int XmppBindResult (void *user_data, ikspak *pak)
     return IKS_FILTER_EAT;
 }
 
-static int XmppStreamHook (void *user_data, int type, iks *node)
+static int XmppStreamHook (Server *serv, int type, iks *node)
 {
-    Server *serv = user_data;
     iksparser *prs = serv->xmpp_parser;
     switch (type)
     {
@@ -1082,13 +1137,7 @@ static void XMPPCallbackDispatch (Connection *conn)
                 iks_set_log_hook (prs, XmppSaveLog);
                 assert  (!conn->serv->xmpp_parser);
                 conn->serv->xmpp_parser = prs;
-                rc = iks_connect_fd (prs, conn->sok);
-                if (rc != IKS_OK)
-                {
-                    XmppStreamError (conn->serv, "could not link in fd");
-                    return;
-                }
-                rc = iks_send_header (prs, conn->serv->xmpp_id->server);
+                rc = iks_connect_with (prs, conn->server, conn->port, conn->serv->xmpp_id->server, &iks_climm_transport);
                 if (rc != IKS_OK)
                 {
                     XmppStreamError (conn->serv, "could not send stream header");
