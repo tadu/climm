@@ -599,11 +599,10 @@ static void Init (int argc, char *argv[])
             path = "scripting";
             OptSetStr (&prG->copts, CO_SCRIPT_PATH, path);
         }
-        connr->c_open = &RemoteOpen;
         connr->serv = NULL;
         connr->server = strdup (path);
         if (connr->server && *connr->server)
-            connr->c_open (connr);
+            RemoteOpen (connr);
     }
 #endif
 }

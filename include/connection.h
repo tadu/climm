@@ -34,7 +34,6 @@ struct Connection_s
     Server   *serv;           /* parent session               */
     UWORD     type;           /* connection type - TYPE_*                 */
     UBYTE     version;        /* protocol version in this session         */
-    jump_conn_open_f *c_open;  /* function to call to open        */
 
     Contact  *cont;           /* the user this connection is for          */
     char     *server;         /* the remote server name                   */

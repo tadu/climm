@@ -488,11 +488,10 @@ Event *ConnectionInitOscarServer (Server *serv)
         {
             conn = ServerChild (serv, NULL, TYPE_MSGLISTEN);
             conn->version = serv->pref_version;
-            conn->c_open = &ConnectionInitPeer;
             serv->oscar_dc = conn;
         }
-        if (serv->oscar_dc && serv->oscar_dc->c_open && (v & 32))
-            serv->oscar_dc->c_open (serv->oscar_dc);
+        if (serv->oscar_dc && (v & 32))
+            ConnectionInitPeer (serv->oscar_dc);
     }
     return event;
 }

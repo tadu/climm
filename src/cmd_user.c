@@ -4282,7 +4282,7 @@ static JUMP_F(CmdUserConn)
                     rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), connl, connl->serv, connl->oscar_file);
 #endif
                     rl_printf (i18n (2454, "    open %p reconn %p close %p err %p dispatch %p\n"),
-                              connl->c_open, connl->reconnect, connl->close, NULL, connl->dispatch);
+                              NULL, connl->reconnect, connl->close, NULL, connl->dispatch);
                     free (t1);
                     free (t2);
                     free (t3);
@@ -4294,11 +4294,8 @@ static JUMP_F(CmdUserConn)
         case 102:
             if (connl->connect & CONNECT_OK)
                 rl_printf (i18n (2725, "Connection #%ld is already open.\n"), UD2UL (nr));
-            else if (!connl->c_open)
-                rl_printf (i18n (2726, "Don't know how to open connection type %s for #%ld.\n"),
-                    ConnectionStrType (connl), UD2UL (nr));
             else
-                connl->c_open (connl);
+                IMConnOpen (connl);
             break;
 
         case 202:

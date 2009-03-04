@@ -73,7 +73,6 @@ Event *RemoteOpen (Connection *remo)
     rl_printf (i18n (2223, "Opening scripting FIFO at %s... "), s_wordquote (remo->server));
 
     remo->connect     = 0;
-    remo->c_open      = &RemoteOpen;
     remo->dispatch    = &RemoteDispatch;
     remo->reconnect   = NULL;
     remo->close       = &RemoteClose;
@@ -103,7 +102,6 @@ static void RemoteClose (Connection *remo)
     sockclose (remo->sok);
     remo->sok = -1;
     remo->connect = 0;
-    remo->c_open = &RemoteOpen;
     unlink (remo->server);
 }
 

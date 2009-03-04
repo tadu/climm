@@ -29,6 +29,7 @@
 #include "oscar_base.h"
 #include "msn_base.h"
 #include "util_otr.h"
+#include "remote.h"
 
 static void CallbackMeta (Event *event);
 static void CallbackTogvis (Event *event);
@@ -489,3 +490,11 @@ void IMCallBackReconn (Connection *conn)
         cont->status = ims_offline;
 }
 
+void  IMConnOpen  (Connection *conn)
+{
+    if      (conn->type == TYPE_REMOTE)    RemoteOpen (conn);
+    else if (conn->type == TYPE_MSGDIRECT) ConnectionInitPeer (conn);
+    else
+        rl_printf (i18n (2726, "Don't know how to open connection type %s for #%ld.\n"),
+                         ConnectionStrType (conn), 0L);
+}

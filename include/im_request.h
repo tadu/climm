@@ -38,5 +38,6 @@ void  IMCliInfo   (Server *serv, Contact *cont, int group);
 void  IMCliAuth   (Contact *cont, const char *msg, auth_t how);
 Event*IMLogin     (Server *serv);
 void  IMCallBackReconn (Connection *conn);
+void  IMConnOpen  (Connection *conn);
 
 #endif /* CLIMM_IM_CLI_H */
