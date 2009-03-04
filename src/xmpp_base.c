@@ -62,10 +62,8 @@
 #include "os.h"
 
 static jump_conn_f XMPPCallbackDispatch;
-static jump_conn_f XMPPCallbackReconn;
 static jump_conn_f XMPPCallbackClose;
 static jump_conn_err_f XMPPCallbackError;
-static void XMPPCallBackDoReconn (Event *event);
 
 static int  iks_climm_TConnect (iksparser *prs, Connection **socketptr, const char *server, int port)
 {
@@ -189,7 +187,7 @@ Event *ConnectionInitXMPPServer (Server *serv)
     if (!serv->conn->port)
         serv->conn->port = ~0;
 
-    serv->conn->reconnect = &XMPPCallbackReconn;
+    serv->conn->reconnect = &IMCallBackReconn;
     serv->conn->error = &XMPPCallbackError;
     serv->conn->close = &XMPPCallbackClose;
     serv->conn->dispatch = &XMPPCallbackDispatch;
@@ -208,41 +206,6 @@ Event *ConnectionInitXMPPServer (Server *serv)
 
     UtilIOConnectTCP (serv->conn);
     return event;
-}
-
-static void XMPPCallbackReconn (Connection *conn)
-{
-    Server *serv = conn->serv;
-    ContactGroup *cg = serv->contacts;
-    Event *event;
-    Contact *cont;
-    int i;
-
-    if (!(cont = conn->cont))
-        return;
-
-    if (!(event = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
-    {
-        ConnectionInitXMPPServer (serv);
-        return;
-    }
-
-    conn->connect = 0;
-    rl_log_for (cont->nick, COLCONTACT);
-    if (event->attempts < 5)
-    {
-        rl_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << event->attempts);
-        event->due = time (NULL) + (10 << event->attempts);
-        event->callback = &XMPPCallBackDoReconn;
-        QueueEnqueue (event);
-    }
-    else
-    {
-        rl_print (i18n (2031, "Connecting failed too often, giving up.\n"));
-        EventD (event);
-    }
-    for (i = 0; (cont = ContactIndex (cg, i)); i++)
-        cont->status = ims_offline;
 }
 
 static void XmppSaveLog (Server *serv, const char *text, size_t size, int in)
@@ -374,7 +337,7 @@ static void XmppSendIqGmail (Server *serv, int64_t newer, const char *newertid, 
     iks *x = iks_new ("iq");
     iks_insert_attrib (x, "type", "get");
     iks_insert_attrib (x, "to", serv->xmpp_id->partial);
-    iks_insert_attrib (x, "id", s_sprintf ("%s-%s-%x", query ? "mailq" : "mail", serv->xmpp_stamp, serv->conn->our_seq++));
+    iks_insert_attrib (x, "id", s_sprintf ("%s-%s-%x", query ? "mailq" : "mail", serv->xmpp_stamp, serv->xmpp_sequence++));
 
     iks *q = iks_insert (x, "query");
     iks_insert_attrib (q, "xmlns", "google:mail:notify");
@@ -393,7 +356,7 @@ static void XmppSendIqTime (Server *serv)
     iks *x = iks_new ("iq");
     iks_insert_attrib (x, "type", "get");
     iks_insert_attrib (iks_insert (x, "time"), "xmlns", "urn:xmpp:time");
-    iks_insert_attrib (x, "id", s_sprintf ("time-%s-%x", serv->xmpp_stamp, serv->conn->our_seq++));
+    iks_insert_attrib (x, "id", s_sprintf ("time-%s-%x", serv->xmpp_stamp, serv->xmpp_sequence++));
     iks_insert_attrib (x, "to", serv->xmpp_id->server);
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
@@ -767,7 +730,7 @@ static void XmppHandleXEP22a (Server *serv, iks *x, Contact *cfrom)
 static void XmppHandleXEP22c (Server *serv, iksid *from, char *tof, char *id, char *type)
 {
     iks *msg  = iks_make_msg (IKS_TYPE_CHAT, tof, NULL);
-    iks_insert_attrib (msg, "id", s_sprintf ("ack-%s-%x", serv->xmpp_stamp, ++serv->conn->our_seq));
+    iks_insert_attrib (msg, "id", s_sprintf ("ack-%s-%x", serv->xmpp_stamp, ++serv->xmpp_sequence));
     iks *x = iks_insert (msg, "x");
     iks_insert_attrib (x, "xmlns", "jabber:x:event");
     iks_insert (x, type);
@@ -987,7 +950,7 @@ static void XmppLoggedIn (Server *serv)
     XMPPSetstatus (serv, NULL, serv->status, serv->conn->cont->status_message);
 
     iks *x = iks_make_iq (IKS_TYPE_GET, IKS_NS_ROSTER);
-    iks_insert_attrib (x, "id", s_sprintf ("roster-%s-%x", serv->xmpp_stamp, serv->conn->our_seq++));
+    iks_insert_attrib (x, "id", s_sprintf ("roster-%s-%x", serv->xmpp_stamp, serv->xmpp_sequence++));
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqRoster, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_RESULT, IKS_RULE_NS, IKS_NS_ROSTER, IKS_RULE_DONE);
@@ -996,7 +959,7 @@ static void XmppLoggedIn (Server *serv)
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqTime, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_NS, "urn:xmpp:time", IKS_RULE_DONE);
     
     x = iks_make_iq (IKS_TYPE_GET, "http://jabber.org/protocol/disco#info");
-    iks_insert_attrib (x, "id", s_sprintf ("disco-%s-%x", serv->xmpp_stamp, serv->conn->our_seq++));
+    iks_insert_attrib (x, "id", s_sprintf ("disco-%s-%x", serv->xmpp_stamp, serv->xmpp_sequence++));
     iks_insert_attrib (x, "to", serv->xmpp_id->server);
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
@@ -1123,7 +1086,7 @@ static void XMPPCallbackDispatch (Connection *conn)
             case 3:
                 assert (0);
             case 2:
-                XMPPCallbackReconn (conn);
+                IMCallBackReconn (conn);
                 return;
             case 1:
                 conn->connect |= CONNECT_SELECT_R | 4;
@@ -1149,19 +1112,6 @@ static void XMPPCallbackDispatch (Connection *conn)
     rc = iks_recv (prs, 0);
     if (rc != IKS_OK)
         XmppStreamError (conn->serv, s_sprintf ("failing with error code %d", rc));
-}
-
-static void XMPPCallBackDoReconn (Event *event)
-{
-    if (!event || !event->conn)
-    {
-        EventD (event);
-        return;
-    }
-    assert (event->conn->serv);
-    assert (event->conn->serv->type == TYPE_XMPP_SERVER);
-    QueueEnqueue (event);
-    ConnectionInitXMPPServer (event->conn->serv);
 }
 
 static void XMPPCallbackClose (Connection *conn)
@@ -1245,7 +1195,7 @@ UBYTE XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
         return RET_DEFER;
     
     iks *x = iks_make_msg (IKS_TYPE_CHAT, cont->screen, msg->send_message);
-    iks_insert_attrib (x, "id", s_sprintf ("xmpp-%s-%x", serv->xmpp_stamp, ++serv->conn->our_seq));
+    iks_insert_attrib (x, "id", s_sprintf ("xmpp-%s-%x", serv->xmpp_stamp, ++serv->xmpp_sequence));
     iks_insert_attrib (x, "from", serv->xmpp_id->full);
     iks *xx = iks_insert (x, "x");
     iks_insert_attrib (xx, "xmlns", "jabber:x:event");
@@ -1256,7 +1206,7 @@ UBYTE XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
 
-    Event *event = QueueEnqueueData2 (serv->conn, QUEUE_XMPP_RESEND_ACK, serv->conn->our_seq, 120, msg, &SnacCallbackXmpp, &SnacCallbackXmppCancel);
+    Event *event = QueueEnqueueData2 (serv->conn, QUEUE_XMPP_RESEND_ACK, serv->xmpp_sequence, 120, msg, &SnacCallbackXmpp, &SnacCallbackXmppCancel);
     event->cont = cont;
 
     return RET_OK;

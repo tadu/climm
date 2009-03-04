@@ -90,7 +90,7 @@ Connection *PeerFileCreate (Server *serv)
     if (!flist)
         return NULL;
 
-    flist->our_seq  = -1;
+    flist->oscar_dc_seq  = -1;
     flist->version  = serv->oscar_dc->version;
     flist->cont     = serv->oscar_dc->cont;
     flist->port     = ConnectionPrefVal (serv, CO_OSCAR_DC_PORT);
@@ -213,7 +213,7 @@ BOOL PeerFileAccept (Connection *peer, UWORD ackstatus, UDWORD port)
     ASSERT_FILEDIRECT(fpeer);
     
     fpeer->connect  = 0;
-    fpeer->our_seq  = 0;
+    fpeer->oscar_dc_seq  = 0;
     fpeer->port     = port;
     fpeer->ip       = peer->ip;
     s_repl (&fpeer->server, s_ip (fpeer->ip));
@@ -320,7 +320,7 @@ void PeerFileDispatch (Connection *fpeer)
             rl_log_for (cont->nick, COLCONTACT);
             rl_printf (i18n (2170, "Sending file at speed %lx to %s.\n"), UD2UL (speed), s_wordquote (ConvFromCont (name, cont)));
             
-            fpeer->our_seq = 1;
+            fpeer->oscar_dc_seq = 1;
             QueueRetry (fpeer, QUEUE_PEER_FILE, cont);
             return;
             
@@ -580,12 +580,12 @@ void PeerFileResend (Event *event)
     }
     else if (!event->seq)
     {
-        fpeer->our_seq = 0;
+        fpeer->oscar_dc_seq = 0;
         PeerPacketSend (fpeer, event->pak);
         PacketD (event->pak);
         event->pak = NULL;
     }
-    else if (event->seq != fpeer->our_seq)
+    else if (event->seq != fpeer->oscar_dc_seq)
     {
         event->due = time (NULL) + 10;
         QueueEnqueue (event);
@@ -675,8 +675,8 @@ void PeerFileResend (Event *event)
             rl_log_for (cont->nick, COLCONTACT);
             rl_printf (i18n (2087, "Finished sending file %s.\n"), opt_text);
             ConnectionD (fpeer->oscar_file);
-            fpeer->our_seq++;
-            event2 = QueueDequeue (fpeer, QUEUE_PEER_FILE, fpeer->our_seq);
+            fpeer->oscar_dc_seq++;
+            event2 = QueueDequeue (fpeer, QUEUE_PEER_FILE, fpeer->oscar_dc_seq);
             if (event2)
             {
                 QueueEnqueue (event2);
@@ -686,7 +686,7 @@ void PeerFileResend (Event *event)
             else
             {
                 rl_log_for (cont->nick, COLCONTACT);
-                rl_printf (i18n (2088, "Finished sending all %d files.\n"), fpeer->our_seq - 1);
+                rl_printf (i18n (2088, "Finished sending all %d files.\n"), fpeer->oscar_dc_seq - 1);
                 ConnectionD (fpeer);
             }
         }

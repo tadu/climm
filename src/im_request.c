@@ -435,3 +435,57 @@ Event *IMLogin (Server *serv)
     }
 }
 
+static void IMCallBackDoReconn (Event *event)
+{
+    if (!event || !event->conn)
+    {
+        EventD (event);
+        return;
+    }
+    assert (event->conn->serv);
+    QueueEnqueue (event);
+    IMLogin (event->conn->serv);
+}
+
+void IMCallBackReconn (Connection *conn)
+{
+    ContactGroup *cg;
+    Server *serv;
+    Event *event;
+    Contact *cont;
+    int i;
+
+    assert (conn);
+    assert (conn->serv);
+    assert (conn->serv->conn == conn);
+
+    serv = conn->serv;
+    cg = serv->contacts;
+    
+    if (!(cont = conn->cont))
+        return;
+    
+    if (!(event = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
+    {
+        IMLogin (serv);
+        return;
+    }
+    
+    conn->connect = 0;
+    rl_log_for (cont->nick, COLCONTACT);
+    if (event->attempts < 5)
+    {
+        rl_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << event->attempts);
+        event->due = time (NULL) + (10 << event->attempts);
+        event->callback = &IMCallBackDoReconn;
+        QueueEnqueue (event);
+    }
+    else
+    {
+        rl_print (i18n (2031, "Connecting failed too often, giving up.\n"));
+        EventD (event);
+    }
+    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+        cont->status = ims_offline;
+}
+

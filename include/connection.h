@@ -28,18 +28,15 @@ typedef enum {
 
 typedef void (jump_conn_f)(Connection *conn);
 typedef Event * (jump_conn_open_f)(Connection *conn);
-typedef Event * (jump_serv_open_f)(Server *serv);
 typedef BOOL (jump_conn_err_f)(Connection *conn, UDWORD rc, UDWORD flags);
 
 struct Connection_s
 {
+    Server   *serv;           /* parent session               */
     UWORD     type;           /* connection type - TYPE_*                 */
     UBYTE     version;        /* protocol version in this session         */
     jump_conn_open_f *c_open;  /* function to call to open        */
-    Connection       *oscar_file;  /* associated file saving session           */
-#define xmpp_file oscar_file
 
-    UWORD     our_seq;        /* current primary sequence number          */
     Contact  *cont;           /* the user this connection is for          */
     char     *server;         /* the remote server name                   */
     UDWORD    port;           /* the port the server is listening on      */
@@ -55,20 +52,24 @@ struct Connection_s
     gnutls_session ssl;       /* The SSL data structure                   */
     ssl_status_t ssl_status;  /* SSL status (INIT,OK,FAILED,...)          */
 #endif
-    UDWORD    our_session;    /* session ID                               */
+
+    Connection       *oscar_file;  /* associated file saving session           */
+    UDWORD    oscar_our_session;    /* session ID                               */
     UDWORD    oscar_file_len;            /* used for file transfer                   */
     UDWORD    oscar_file_done;           /* used for file transfer                   */
+    UWORD     oscar_dc_seq;
+
+    void *xmpp_file_private;   /* XMPP file transfer private */
+#define xmpp_file oscar_file
 #define xmpp_file_len    oscar_file_len            /* used for file transfer                   */
 #define xmpp_file_done   oscar_file_done           /* used for file transfer                   */
-    void *xmpp_file_private;   /* XMPP file transfer private */
-    Server                *serv;   /* parent session               */
+
     jump_conn_f *dispatch;     /* function to call on select()    */
     jump_conn_f *reconnect;    /* function to call for reconnect  */
     jump_conn_err_f *error;    /* function to call for i/o errors */
     jump_conn_f *close;        /* function to call to close       */
     jump_conn_f *utilio;       /* private to util_io.c            */
-    UDWORD    stat_real_pak_sent;
-    UDWORD    stat_real_pak_rcvd;
+
     UDWORD    stat_pak_sent;
     UDWORD    stat_pak_rcvd;
 };
@@ -96,6 +97,7 @@ struct Server_s
 
 #if ENABLE_XMPP
     void     *xmpp_private;   /* private data for XMPP connections        */
+    UWORD     xmpp_sequence;
 #endif
 #if ENABLE_IKS
     iksparser*xmpp_parser;
@@ -115,6 +117,7 @@ struct Server_s
     UWORD     oscar_snac_seq;       /* current secondary sequence number        */
 #define xmpp_file_seq oscar_snac_seq
     UDWORD    oscar_icq_seq;       /* current old-ICQ sequence number          */
+    UWORD     oscar_seq;        /* current primary sequence number          */
     UWORD     oscar_privacy_tag;         /* F*cking ICQ needs to change the value */
     UBYTE     oscar_privacy_value;       /* when switching between visible and invisible */
 };

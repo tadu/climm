@@ -3,16 +3,13 @@
 #ifndef CLIMM_UTIL_IO_H
 #define CLIMM_UTIL_IO_H
 
-void    UtilIOConnectUDP (Connection *conn);
 void    UtilIOConnectTCP (Connection *conn DEBUGPARAM);
 void    UtilIOConnectF   (Connection *conn);
 int     UtilIOError      (Connection *conn);
 void    UtilIOSocksAccept(Connection *conn);
-Packet *UtilIOReceiveUDP (Connection *conn);
 Packet *UtilIOReceiveTCP (Connection *conn);
 Packet *UtilIOReceiveF   (Connection *conn);
 BOOL    UtilIOSendTCP    (Connection *conn, Packet *pak);
-void    UtilIOSendUDP    (Connection *conn, Packet *pak);
 strc_t  UtilIOReadline   (FILE *fd);
 
 void    UtilIOSelectInit (int sec, int usec);

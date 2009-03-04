@@ -55,10 +55,8 @@ extern "C" {
 
 extern "C" {
     static jump_conn_f XMPPCallbackDispatch;
-    static jump_conn_f XMPPCallbackReconn;
     static jump_conn_f XMPPCallbackClose;
     static jump_conn_err_f XMPPCallbackError;
-    static void XMPPCallBackDoReconn (Event *event);
 #ifdef CLIMM_XMPP_FILE_TRANSFER
     static jump_conn_f XMPPFTCallbackDispatch;
     static jump_conn_f XMPPFTCallbackClose;
@@ -254,7 +252,7 @@ void CLIMMXMPP::onDisconnect (gloox::ConnectionError e)
             break;
         case gloox::ConnStreamClosed:
         case gloox::ConnIoError:
-            XMPPCallbackReconn (m_serv->conn);
+            IMCallBackReconn (m_serv->conn);
             return;
 
         case gloox::ConnOutOfMemory:          rl_printf ("#onDisconnect: Error OutOfMemory %d.\n", e); break;
@@ -598,7 +596,7 @@ void CLIMMXMPP::handleXEP22a (gloox::Tag *XEP22, Contact *cfrom)
 void CLIMMXMPP::handleXEP22c (gloox::JID from, std::string tof, std::string id, std::string type)
 {
     gloox::Stanza *msg = gloox::Stanza::createMessageStanza (from, "");
-    msg->addAttribute ("id", s_sprintf ("ack-%s-%x", m_stamp, m_serv->conn->our_seq++));
+    msg->addAttribute ("id", s_sprintf ("ack-%s-%x", m_stamp, m_serv->xmpp_sequence++));
     std::string res = m_client->resource();
     msg->addAttribute ("from", s_sprintf ("%s/%s", m_serv->screen, res.c_str()));
     gloox::Tag *x = new gloox::Tag (msg, "x");
@@ -1042,7 +1040,7 @@ void CLIMMXMPP::sendIqTime (void)
     gloox::Tag *iq = new gloox::Tag ("iq");
     iq->addAttribute ("type", "get");
     iq->addAttribute ("to", m_client->jid().bare ());
-    iq->addAttribute ("id", s_sprintf ("time-%s-%x", m_stamp, m_serv->conn->our_seq++));
+    iq->addAttribute ("id", s_sprintf ("time-%s-%x", m_stamp, m_serv->xmpp_sequence++));
     gloox::Tag *qq = new gloox::Tag (iq, "time");
     qq->addAttribute ("xmlns", "urn:xmpp:time");
     m_client->send (iq);
@@ -1070,7 +1068,7 @@ void CLIMMXMPP::sendIqGmail (int64_t newer, std::string newertid, std::string q,
     iq->addAttribute ("type", "get");
     iq->addAttribute ("from", m_client->jid().full ());
     iq->addAttribute ("to", m_client->jid().bare ());
-    iq->addAttribute ("id", s_sprintf ("%s-%s-%x", isauto ? "mail" : "mailq", m_stamp, m_serv->conn->our_seq++));
+    iq->addAttribute ("id", s_sprintf ("%s-%s-%x", isauto ? "mail" : "mailq", m_stamp, m_serv->xmpp_sequence++));
     if (newer == 1000ULL)
     {
         newer = gmail_newer;
@@ -1120,7 +1118,7 @@ void CLIMMXMPP::onConnect ()
     gloox::Tag *iq = new gloox::Tag ("iq");
     iq->addAttribute ("type", "get");
     iq->addAttribute ("from", m_client->jid().full ());
-    iq->addAttribute ("id", s_sprintf ("roster-%s-%x", m_stamp, m_serv->conn->our_seq++));
+    iq->addAttribute ("id", s_sprintf ("roster-%s-%x", m_stamp, m_serv->xmpp_sequence++));
     gloox::Tag *qq = new gloox::Tag (iq, "query");
     qq->addAttribute ("xmlns", "jabber:iq:roster");
     m_client->send (iq);
@@ -1301,7 +1299,7 @@ UBYTE CLIMMXMPP::XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
         return RET_DEFER;
 
     gloox::Stanza *msgs = gloox::Stanza::createMessageStanza (gloox::JID (cont->screen), msg->send_message);
-    msgs->addAttribute ("id", s_sprintf ("xmpp-%s-%x", m_stamp, ++m_serv->conn->our_seq));
+    msgs->addAttribute ("id", s_sprintf ("xmpp-%s-%x", m_stamp, ++m_serv->xmpp_sequence));
 
     std::string res = m_client->resource();
     msgs->addAttribute ("from", s_sprintf ("%s/%s", serv->screen, res.c_str()));
@@ -1313,7 +1311,7 @@ UBYTE CLIMMXMPP::XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
     new gloox::Tag (x, "composing");
     m_client->send (msgs);
 
-    Event *event = QueueEnqueueData2 (serv->conn, QUEUE_XMPP_RESEND_ACK, m_serv->conn->our_seq, 120, msg, &SnacCallbackXmpp, &SnacCallbackXmppCancel);
+    Event *event = QueueEnqueueData2 (serv->conn, QUEUE_XMPP_RESEND_ACK, m_serv->xmpp_sequence, 120, msg, &SnacCallbackXmpp, &SnacCallbackXmppCancel);
     event->cont = cont;
 
     return RET_OK;
@@ -1597,7 +1595,7 @@ Event *ConnectionInitXMPPServer (Server *serv)
     if (!serv->conn->port)
         serv->conn->port = ~0;
 
-    serv->conn->reconnect = &XMPPCallbackReconn;
+    serv->conn->reconnect = &IMCallBackReconn;
     serv->conn->error = &XMPPCallbackError;
     serv->conn->close = &XMPPCallbackClose;
     serv->conn->dispatch = &XMPPCallbackDispatch;
@@ -1634,54 +1632,6 @@ void XMPPCallbackDispatch (Connection *conn)
     }
 
     j->getClient()->recv (0);
-}
-
-static void XMPPCallbackReconn (Connection *conn)
-{
-    Server *serv = conn->serv;
-    ContactGroup *cg = serv->contacts;
-    Event *event;
-    Contact *cont;
-    int i;
-
-    if (!(cont = conn->cont))
-        return;
-
-    if (!(event = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
-    {
-        ConnectionInitXMPPServer (serv);
-        return;
-    }
-
-    conn->connect = 0;
-    rl_log_for (cont->nick, COLCONTACT);
-    if (event->attempts < 5)
-    {
-        rl_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << event->attempts);
-        event->due = time (NULL) + (10 << event->attempts);
-        event->callback = &XMPPCallBackDoReconn;
-        QueueEnqueue (event);
-    }
-    else
-    {
-        rl_print (i18n (2031, "Connecting failed too often, giving up.\n"));
-        EventD (event);
-    }
-    for (i = 0; (cont = ContactIndex (cg, i)); i++)
-        cont->status = ims_offline;
-}
-
-static void XMPPCallBackDoReconn (Event *event)
-{
-    if (!event || !event->conn)
-    {
-        EventD (event);
-        return;
-    }
-    assert (event->conn->serv);
-    assert (event->conn->serv->type == TYPE_XMPP_SERVER);
-    QueueEnqueue (event);
-    ConnectionInitXMPPServer (event->conn->serv);
 }
 
 void XMPPCallbackClose (Connection *conn)

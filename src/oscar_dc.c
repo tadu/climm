@@ -108,9 +108,9 @@ Event *ConnectionInitPeer (Connection *list)
               COLQUOTE, COLNONE, COLQUOTE, UD2UL (list->port), COLNONE);
 
     list->connect     = 0;
-    list->our_seq     = -1;
+    list->oscar_dc_seq     = -1;
     list->dispatch    = &TCPDispatchMain;
-    list->our_session = 0;
+    list->oscar_our_session = 0;
     list->ip          = 0;
     s_repl (&list->server, NULL);
     list->port        = ConnectionPrefVal (list->serv, CO_OSCAR_DC_PORT);
@@ -278,7 +278,7 @@ void TCPDispatchMain (Connection *list)
     if (list->version == 6)
         rl_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
 
-    peer->our_session = 0;
+    peer->oscar_our_session = 0;
     peer->dispatch    = &TCPDispatchShake;
 
     if (ConnectionPrefVal (list->serv, CO_S5USE))
@@ -630,7 +630,7 @@ static void TCPDispatchPeer (Connection *peer)
                     QueueEnqueueData (peer, QUEUE_TCP_RECEIVE, seq_in, 0, pak, cont,
                                       OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_dcssl, 0),
                                       &TCPCallBackReceive);
-                    peer->our_seq--;
+                    peer->oscar_dc_seq--;
                 break;
             }
         }
@@ -697,7 +697,6 @@ static Packet *TCPReceivePacket (Connection *peer)
         return NULL;
 
     peer->stat_pak_rcvd++;
-    peer->stat_real_pak_rcvd++;
 
     if (peer->connect & CONNECT_OK && peer->type == TYPE_MSGDIRECT)
     {
@@ -788,10 +787,8 @@ static void TCPSendInitv6 (Connection *peer)
     if (!(peer->connect & CONNECT_MASK))
         return;
 
-    if (!(peer->our_session))
-        peer->our_session = rand ();
-
-    peer->stat_real_pak_sent++;
+    if (!(peer->oscar_our_session))
+        peer->oscar_our_session = rand ();
 
     pak = PeerPacketC (peer, PEER_INIT);
     PacketWrite2  (pak, 6);                          /* TCP version      */
@@ -804,7 +801,7 @@ static void TCPSendInitv6 (Connection *peer)
     PacketWriteB4 (pak, peer->serv->conn->our_local_ip);   /* our (local)  IP  */
     PacketWrite1  (pak, ConnectionPrefVal (peer->serv, CO_OSCAR_DC_MODE) & 15);               /* connection type  */
     PacketWrite4  (pak, peer->serv->oscar_dc->port);           /* our (other) port */
-    PacketWrite4  (pak, peer->our_session);          /* session id       */
+    PacketWrite4  (pak, peer->oscar_our_session);          /* session id       */
 
     DebugH (DEB_TCP, "HS %d uin %s CONNECT pak %p peer %p",
                      peer->sok, peer->cont->screen, pak, peer);
@@ -831,7 +828,7 @@ static void TCPSendInit (Connection *peer)
     if (!(peer->connect & CONNECT_MASK))
         return;
 
-    if (!peer->our_session)
+    if (!peer->oscar_our_session)
     {
         Contact *cont;
 
@@ -840,10 +837,8 @@ static void TCPSendInit (Connection *peer)
             TCPClose (peer);
             return;
         }
-        peer->our_session = cont->dc->cookie;
+        peer->oscar_our_session = cont->dc->cookie;
     }
-
-    peer->stat_real_pak_sent++;
 
     pak = PeerPacketC (peer, PEER_INIT);
     PacketWrite2  (pak, peer->version);              /* TCP version      */
@@ -856,7 +851,7 @@ static void TCPSendInit (Connection *peer)
     PacketWriteB4 (pak, peer->serv->conn->our_local_ip);   /* our (local)  IP  */
     PacketWrite1  (pak, ConnectionPrefVal (peer->serv, CO_OSCAR_DC_MODE) & 15);               /* connection type  */
     PacketWrite4  (pak, peer->serv->oscar_dc->port);           /* our (other) port */
-    PacketWrite4  (pak, peer->our_session);          /* session id       */
+    PacketWrite4  (pak, peer->oscar_our_session);          /* session id       */
     PacketWrite4  (pak, 0x00000050);
     PacketWrite4  (pak, 0x00000003);
     PacketWrite4  (pak, 0);
@@ -881,8 +876,6 @@ static void TCPSendInitAck (Connection *peer)
     if (!(peer->connect & CONNECT_MASK))
         return;
 
-    peer->stat_real_pak_sent++;
-
     pak = PeerPacketC (peer, PEER_INITACK);
     PacketWrite1 (pak, 0);
     PacketWrite2 (pak, 0);
@@ -904,8 +897,6 @@ static void TCPSendInit2 (Connection *peer)
     
     if (!(peer->connect & CONNECT_MASK))
         return;
-    
-    peer->stat_real_pak_sent++;
     
     pak = PeerPacketC (peer, PEER_INIT2);
     PacketWrite4 (pak, 10);
@@ -984,9 +975,9 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
 
         peer->version = (peer->serv->pref_version > nver ? nver : peer->serv->pref_version);
 
-        if (!peer->our_session)
-            peer->our_session = peer->version > 6 ? cont->dc->cookie : sid;
-        if (sid  != peer->our_session)
+        if (!peer->oscar_our_session)
+            peer->oscar_our_session = peer->version > 6 ? cont->dc->cookie : sid;
+        if (sid  != peer->oscar_our_session)
             FAIL (8);
 
         if (ContactPrefVal (cont, CO_IGNORE))
@@ -1021,7 +1012,7 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
             if (peer2->sok == -1 && peer2->type == TYPE_FILEDIRECT)
             {
                 peer2->sok = peer->sok;
-                peer2->our_session = peer->our_session;
+                peer2->oscar_our_session = peer->oscar_our_session;
                 peer2->version = peer->version;
                 peer2->connect = peer->connect | CONNECT_SELECT_R;
                 peer2->dispatch = peer->dispatch;
@@ -1136,7 +1127,7 @@ void TCPClose (Connection *peer)
     }
     peer->sok     = -1;
     peer->connect = (peer->connect & CONNECT_MASK && !(peer->connect & CONNECT_OK)) ? CONNECT_FAIL : 0;
-    peer->our_session = 0;
+    peer->oscar_our_session = 0;
     if (peer->incoming)
     {
         PacketD (peer->incoming);
@@ -1300,16 +1291,14 @@ UBYTE PeerSendMsgFat (Connection *list, Contact *cont, Message *msg)
     ASSERT_MSGDIRECT(peer);
     
     pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-    SrvMsgAdvanced   (pak, peer->our_seq, msg->type, list->serv->status,
+    SrvMsgAdvanced   (pak, peer->oscar_dc_seq, msg->type, list->serv->status,
                       cont->status, -1, c_out_for (msg->send_message, cont, msg->type));
     PacketWrite4 (pak, TCP_COL_FG);      /* foreground color           */
     PacketWrite4 (pak, TCP_COL_BG);      /* background color           */
     if (CONT_UTF8 (cont, msg->type))
         PacketWriteDLStr (pak, CAP_GID_UTF8);
 
-    peer->stat_real_pak_sent++;
-
-    event = QueueEnqueueData2 (peer, QUEUE_TCP_RESEND, peer->our_seq--, 0, msg, &TCPCallBackResend, NULL);
+    event = QueueEnqueueData2 (peer, QUEUE_TCP_RESEND, peer->oscar_dc_seq--, 0, msg, &TCPCallBackResend, NULL);
     event->cont = cont;
     event->pak = pak;
     return RET_INPR;
@@ -1423,7 +1412,7 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     if (peer->version < 8)
     {
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-        SrvMsgAdvanced   (pak, peer->our_seq, MSG_FILE, list->serv->status,
+        SrvMsgAdvanced   (pak, peer->oscar_dc_seq, MSG_FILE, list->serv->status,
                           cont->status, -1, c_out_to_split (description, cont));
         PacketWrite2 (pak, 0);
         PacketWrite2 (pak, 0);
@@ -1434,18 +1423,16 @@ BOOL TCPSendFiles (Connection *list, Contact *cont, const char *description, con
     else
     {
         pak = PacketTCPC (peer, TCP_CMD_MESSAGE);
-        SrvMsgAdvanced   (pak, peer->our_seq, MSG_EXTENDED, list->serv->status,
+        SrvMsgAdvanced   (pak, peer->oscar_dc_seq, MSG_EXTENDED, list->serv->status,
                           cont->status, -1, "");
         SrvMsgGreet (pak, 0x29, description, 0, sumlen, filenames.txt);
     }
 
-    peer->stat_real_pak_sent++;
-    
     msg = MsgC ();
     msg->type = MSG_FILE;
     msg->send_message = strdup (description);
     msg->cont = cont;
-    event = QueueEnqueueData2 (peer, QUEUE_TCP_RESEND, peer->our_seq--, 0, msg, &TCPCallBackResend, NULL);
+    event = QueueEnqueueData2 (peer, QUEUE_TCP_RESEND, peer->oscar_dc_seq--, 0, msg, &TCPCallBackResend, NULL);
     event->cont = cont;
     event->pak = pak;
 

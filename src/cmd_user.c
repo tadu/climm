@@ -4093,7 +4093,7 @@ static JUMP_F(CmdUserUptime)
     double TimeDiff = difftime (time (NULL), uiG.start_time);
     Connection *connl;
     int Days, Hours, Minutes, Seconds, i;
-    int pak_sent = 0, pak_rcvd = 0, real_pak_sent = 0, real_pak_rcvd = 0;
+    int pak_sent = 0, pak_rcvd = 0;
 
     Seconds = (int) TimeDiff % 60;
     TimeDiff = TimeDiff / 60.0;
@@ -4117,15 +4117,12 @@ static JUMP_F(CmdUserUptime)
     {
         rl_printf ("%3d %-12s %7ld %7ld %7ld %7ld\n",
                  i + 1, ConnectionStrType (connl), UD2UL (connl->stat_pak_sent), UD2UL (connl->stat_pak_rcvd),
-                 UD2UL (connl->stat_real_pak_sent), UD2UL (connl->stat_real_pak_rcvd));
+                 -1L, -1L);
         pak_sent += connl->stat_pak_sent;
         pak_rcvd += connl->stat_pak_rcvd;
-        real_pak_sent += connl->stat_real_pak_sent;
-        real_pak_rcvd += connl->stat_real_pak_rcvd;
     }
     rl_printf ("    %-12s %7d %7d %7d %7d\n",
-             i18n (1747, "total"), pak_sent, pak_rcvd,
-             real_pak_sent, real_pak_rcvd);
+             i18n (1747, "total"), pak_sent, pak_rcvd, -1, -1);
     rl_printf (i18n (2073, "Memory usage: %ld packets processing.\n"), UD2UL (uiG.packets));
     return 0;
 }
@@ -4240,7 +4237,7 @@ static JUMP_F(CmdUserConn)
                          servl->type, servl->conn->sok, t1 = strdup (s_ip (servl->conn->ip)),
                          servl->conn->connect, t2 = strdup (s_ip (servl->conn->our_local_ip)),
                          t3 = strdup (s_ip (servl->conn->our_outside_ip)),
-                         UD2UL (servl->conn->our_session), servl->conn->our_seq, servl->oscar_snac_seq);
+                         UD2UL (servl->conn->oscar_our_session), servl->conn->oscar_dc_seq, servl->oscar_snac_seq);
 #ifdef ENABLE_SSL
                     rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), servl, servl->conn->serv, servl->oscar_dc, servl->conn->ssl_status);
 #else
@@ -4278,7 +4275,7 @@ static JUMP_F(CmdUserConn)
                          connl->type, connl->sok, t1 = strdup (s_ip (connl->ip)),
                          connl->connect, t2 = strdup (s_ip (connl->our_local_ip)),
                          t3 = strdup (s_ip (connl->our_outside_ip)),
-                         UD2UL (connl->our_session), connl->our_seq, connl->serv ? connl->serv->oscar_snac_seq : 0);
+                         UD2UL (connl->oscar_our_session), connl->oscar_dc_seq, connl->serv ? connl->serv->oscar_snac_seq : 0);
 #ifdef ENABLE_SSL
                     rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), connl, connl->serv, connl->oscar_file, connl->ssl_status);
 #else

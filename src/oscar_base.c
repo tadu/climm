@@ -52,6 +52,7 @@
 #include "contact.h"
 #include "conv.h"
 #include "oscar_dc.h"
+#include "im_request.h"
 
 static void FlapChannel1 (Server *serv, Packet *pak);
 static void FlapSave (Server *serv, Packet *pak, BOOL in);
@@ -77,7 +78,7 @@ void SrvCallBackFlap (Event *event)
                       PacketReadB2 (event->pak);
     
     serv->conn->stat_pak_rcvd++;
-    serv->conn->stat_real_pak_rcvd++;
+
     switch (event->pak->cmd)
     {
         case 1: /* Client login */
@@ -316,10 +317,10 @@ Packet *FlapC (UBYTE channel)
 
 void FlapSend (Server *serv, Packet *pak)
 {
-    serv->conn->our_seq++;
-    serv->conn->our_seq &= 0x7fff;
+    serv->oscar_seq++;
+    serv->oscar_seq &= 0x7fff;
 
-    PacketWriteAtB2 (pak, 2, pak->id = serv->conn->our_seq);
+    PacketWriteAtB2 (pak, 2, pak->id = serv->oscar_seq);
     PacketWriteAtB2 (pak, 4, pak->len - 6);
     
     if (prG->verbose & DEB_PACK8)
@@ -333,10 +334,8 @@ void FlapSend (Server *serv, Packet *pak)
         FlapSave (serv, pak, FALSE);
     
     serv->conn->stat_pak_sent++;
-    serv->conn->stat_real_pak_sent++;
     
-    sockwrite (serv->conn->sok, pak->data, pak->len);
-    PacketD (pak);
+    UtilIOSendTCP (serv->conn, pak);
 }
 
 /***********************************************/
@@ -424,9 +423,7 @@ void FlapCliKeepalive (Server *serv)
 }
 
 jump_conn_f SrvCallBackReceive;
-static jump_conn_f SrvCallBackReconn;
 static void SrvCallBackTimeout (Event *event);
-static void SrvCallBackDoReconn (Event *event);
 
 static const UWORD FlapStartSeqs[] = {
   5695, 23595, 23620, 23049, 0x2886, 0x2493, 23620, 23049,
@@ -458,10 +455,10 @@ Event *ConnectionInitOscarServer (Server *serv)
     if (!serv->pref_version)
         serv->pref_version = 2;
     cont = serv->conn->cont;
-    serv->conn->our_seq  = rand () % ((sizeof FlapStartSeqs) / (sizeof FlapStartSeqs[0]));
+    serv->oscar_seq  = rand () % ((sizeof FlapStartSeqs) / (sizeof FlapStartSeqs[0]));
     serv->conn->connect  = 0;
     serv->conn->dispatch = &SrvCallBackReceive;
-    serv->conn->reconnect= &SrvCallBackReconn;
+    serv->conn->reconnect= &IMCallBackReconn;
     serv->conn->close    = &FlapCliGoodbyeConn;
     s_repl (&serv->conn->server, serv->pref_server);
     if (serv->status == ims_offline)
@@ -500,56 +497,6 @@ Event *ConnectionInitOscarServer (Server *serv)
     return event;
 }
 
-static void SrvCallBackReconn (Connection *conn)
-{
-    ContactGroup *cg;
-    Server *serv;
-    Event *event;
-    Contact *cont;
-    int i;
-
-    serv = conn->serv;
-    cg = serv->contacts;
-
-    if (!(cont = serv->conn->cont))
-        return;
-    
-    if (!(event = QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL)))
-    {
-        ConnectionInitOscarServer (serv);
-        return;
-    }
-    
-    conn->connect = 0;
-    rl_log_for (cont->nick, COLCONTACT);
-    if (event->attempts < 5)
-    {
-        rl_printf (i18n (2032, "Scheduling v8 reconnect in %d seconds.\n"), 10 << event->attempts);
-        event->due = time (NULL) + (10 << event->attempts);
-        event->callback = &SrvCallBackDoReconn;
-        QueueEnqueue (event);
-    }
-    else
-    {
-        rl_print (i18n (2031, "Connecting failed too often, giving up.\n"));
-        EventD (event);
-    }
-    for (i = 0; (cont = ContactIndex (cg, i)); i++)
-        cont->status = ims_offline;
-}
-
-static void SrvCallBackDoReconn (Event *event)
-{
-    if (!event || !event->conn)
-    {
-        EventD (event);
-        return;
-    }
-    ASSERT_SERVER_CONN (event->conn);
-    QueueEnqueue (event);
-    ConnectionInitOscarServer (event->conn->serv);
-}
-
 static void SrvCallBackTimeout (Event *event)
 {
     Connection *conn = event->conn;
@@ -570,7 +517,7 @@ static void SrvCallBackTimeout (Event *event)
             sockclose (conn->sok);
             conn->sok = -1;
             QueueEnqueue (event);
-            SrvCallBackReconn (conn);
+            IMCallBackReconn (conn);
         }
         else
         {
@@ -610,7 +557,7 @@ void SrvCallBackReceive (Connection *conn)
             case 2:
             case 6:
                 conn->connect = 0;
-                SrvCallBackReconn (conn);
+                IMCallBackReconn (conn);
                 return;
             case 4:
                 break;
