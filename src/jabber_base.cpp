@@ -1484,7 +1484,6 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     child->connect = CONNECT_FAIL;
     child->dispatch = &XMPPFTCallbackDispatch;
     child->reconnect = NULL;
-    child->error = NULL;
     child->close = &XMPPFTCallbackClose;
 
     /**
@@ -1588,7 +1587,6 @@ Event *ConnectionInitXMPPServer (Server *serv)
         serv->conn->port = ~0;
 
     serv->conn->reconnect = NULL;
-    serv->conn->error = NULL;
     serv->conn->close = &XMPPCallbackClose;
     serv->conn->dispatch = &XMPPCallbackDispatch;
 

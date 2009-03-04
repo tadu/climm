@@ -28,7 +28,6 @@ typedef enum {
 
 typedef void (jump_conn_f)(Connection *conn);
 typedef Event * (jump_conn_open_f)(Connection *conn);
-typedef BOOL (jump_conn_err_f)(Connection *conn, UDWORD rc, UDWORD flags);
 
 struct Connection_s
 {
@@ -66,7 +65,6 @@ struct Connection_s
 
     jump_conn_f *dispatch;     /* function to call on select()    */
     jump_conn_f *reconnect;    /* function to call for reconnect  */
-    jump_conn_err_f *error;    /* function to call for i/o errors */
     jump_conn_f *close;        /* function to call to close       */
     jump_conn_f *utilio;       /* private to util_io.c            */
 
@@ -211,9 +209,6 @@ const char    *ConnectionPrefStr (Server *conn, UDWORD flag);
 
 #define ASSERT_SERVER(s)      { Server *__s = (s); assert (__s); assert (__s->type == TYPE_SERVER); }
 #define ASSERT_SERVER_CONN(c) { Connection *__c = (c); assert (__c); ASSERT_SERVER (__c->serv); }
-
-#define CONNERR_WRITE       1
-#define CONNERR_READ        2
 
 #define CONN_AUTOLOGIN   1
 #define CONN_WIZARD      2

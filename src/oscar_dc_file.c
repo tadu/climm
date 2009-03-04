@@ -65,8 +65,6 @@
 static void PeerFileDispatchClose   (Connection *ffile);
 static void PeerFileDispatchDClose  (Connection *ffile);
 static void PeerFileIODispatchClose (Connection *ffile);
-static void PeerFileDispatchW       (Connection *fpeer);
-static BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags);
 
 #define FAIL(x) { err = x; break; }
 #define PeerFileClose TCPClose
@@ -272,7 +270,19 @@ void PeerFileDispatch (Connection *fpeer)
     
     ASSERT_FILEDIRECT (fpeer);
     assert (fpeer->cont);
-    
+
+    if (fpeer->connect & CONNECT_SELECT_W && UtilIOSelectIs (fpeer->sok, WRITEFDS))
+    {
+        fpeer->connect &= ~CONNECT_SELECT_W;
+        if (fpeer->oscar_file->oscar_file_len)
+            ReadLinePromptUpdate (s_sprintf ("[%s%ld:%02d%%%s] %s%s",
+                          COLCONTACT, UD2UL (fpeer->oscar_file->oscar_file_done), (int)((100.0 * fpeer->oscar_file->oscar_file_done) / fpeer->oscar_file->oscar_file_len),
+                          COLNONE, COLSERVER, i18n (2467, "climm>")));
+        UtilIOSendTCP (fpeer, NULL);
+        QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->cont);
+        if (!UtilIOSelectIs (fpeer->sok, READFDS))
+            return;
+    }
     if (!(pak = UtilIOReceiveTCP (fpeer)))
         return;
 
@@ -489,51 +499,6 @@ void PeerFileDispatch (Connection *fpeer)
     }
 }
 
-static void PeerFileDispatchW (Connection *fpeer)
-{
-    Packet *pak = fpeer->outgoing;
-    
-    ASSERT_FILEDIRECT(fpeer);
-    
-    fpeer->outgoing = NULL;
-    fpeer->connect = CONNECT_OK | CONNECT_SELECT_R;
-    fpeer->dispatch = &PeerFileDispatch;
-    fpeer->oscar_file->connect = CONNECT_OK;
-
-    if (!UtilIOSendTCP (fpeer, pak))
-        TCPClose (fpeer);
-    
-    QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->cont);
-}
-
-static BOOL PeerFileError (Connection *fpeer, UDWORD rc, UDWORD flags)
-{
-    Contact *cont = fpeer->cont;
-    
-    ASSERT_FILEDIRECT(fpeer);
-    
-    switch (rc)
-    {
-        case EPIPE:
-            if (fpeer->close)
-                fpeer->close (fpeer);
-            return 1;
-        case EAGAIN:
-            if (flags == CONNERR_WRITE)
-            {
-                fpeer->connect = CONNECT_OK | CONNECT_SELECT_W;
-                fpeer->dispatch = &PeerFileDispatchW;
-                fpeer->oscar_file->connect = CONNECT_OK | 1;
-                if (fpeer->oscar_file->oscar_file_len)
-                    ReadLinePromptUpdate (s_sprintf ("[%s%ld:%02d%%%s] %s%s",
-                                  COLCONTACT, UD2UL (fpeer->oscar_file->oscar_file_done), (int)((100.0 * fpeer->oscar_file->oscar_file_done) / fpeer->oscar_file->oscar_file_len),
-                                  COLNONE, COLSERVER, i18n (2467, "climm>")));
-                return 1;
-            }
-    }
-    return 0;
-}
-
 void PeerFileResend (Event *event)
 {
     Contact *cont;
@@ -627,7 +592,7 @@ void PeerFileResend (Event *event)
         ffile->close = &PeerFileIODispatchClose;
         return;
     }
-    else if (!fpeer->oscar_file || fpeer->oscar_file->connect != CONNECT_OK)
+    else if (!fpeer->oscar_file || fpeer->connect & CONNECT_SELECT_W)
     {
         event->attempts++;
         event->due = time (NULL) + 3;
@@ -652,7 +617,6 @@ void PeerFileResend (Event *event)
         {
             pak->len += len;
             fpeer->oscar_file->oscar_file_done += len;
-            fpeer->error = &PeerFileError;
             PeerPacketSend (fpeer, pak);
             PacketD (pak);
 

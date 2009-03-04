@@ -769,8 +769,7 @@ void PeerPacketSend (Connection *peer, Packet *pak)
         if (PacketReadAt1 (pak, 0) == PEER_MSG || (!PacketReadAt1 (pak, 0) && peer->type == TYPE_MSGDIRECT && peer->version == 6)) 
             Encrypt_Pak (peer, tpak);
     
-    if (!UtilIOSendTCP (peer, tpak))
-        TCPClose (peer);
+    UtilIOSendTCP (peer, tpak);
 }
 
 

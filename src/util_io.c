@@ -543,9 +543,6 @@ Packet *UtilIOReceiveTCP (Connection *conn)
         return pak;
     }
 
-    if (conn->error && conn->error (conn, rc, CONNERR_READ))
-        return NULL;
-
     PacketD (pak);
     dc_close (conn);
     conn->sok = -1;
@@ -643,7 +640,7 @@ Packet *UtilIOReceiveF (Connection *conn)
 /*
  * Send packet via TCP. Consumes packet.
  */
-BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
+void UtilIOSendTCP (Connection *conn, Packet *pak)
 {
     UBYTE *data;
     ssl_errno_t ssl_rc = 0;
@@ -651,9 +648,18 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
 
     data = (void *) &pak->data;
     
-    if (conn->outgoing)
-        return FALSE;
-    conn->outgoing = pak;
+    if (!conn->outgoing)
+        conn->outgoing = pak;
+    else if (!pak)
+        pak = conn->outgoing;
+    else
+    {
+        // cannot handle two pakets in transit - tough luck
+        conn->connect = 0;
+        if (conn->close)
+            conn->close (conn);
+        return;
+    }
 
     while (1)
     {
@@ -671,13 +677,16 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
         PacketD (pak);
         conn->outgoing = NULL;
         conn->stat_pak_sent++;
-        return TRUE;
+        return;
     }
     
     rc = errno;
-
-    if (conn->error && conn->error (conn, rc, CONNERR_WRITE))
-        return TRUE;
+    
+    if (bytessend < 0 && rc == EAGAIN)
+    {
+        conn->connect |= CONNECT_SELECT_W;
+        return;
+    }
 
     conn->outgoing = NULL;
     PacketD (pak);
@@ -702,7 +711,6 @@ BOOL UtilIOSendTCP (Connection *conn, Packet *pak)
         conn->reconnect (conn);
     else
         conn->connect = 0;
-    return FALSE;
 }
 
 /*

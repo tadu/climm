@@ -4244,7 +4244,7 @@ static JUMP_F(CmdUserConn)
                     rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), servl, servl->conn->serv, servl->oscar_dc);
 #endif
                     rl_printf (i18n (2454, "    open %p reconn %p close %p err %p dispatch %p\n"),
-                              NULL, servl->conn->reconnect, servl->conn->close, servl->conn->error, servl->conn->dispatch);
+                              NULL, servl->conn->reconnect, servl->conn->close, NULL, servl->conn->dispatch);
                     free (t1);
                     free (t2);
                     free (t3);
@@ -4282,7 +4282,7 @@ static JUMP_F(CmdUserConn)
                     rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), connl, connl->serv, connl->oscar_file);
 #endif
                     rl_printf (i18n (2454, "    open %p reconn %p close %p err %p dispatch %p\n"),
-                              connl->c_open, connl->reconnect, connl->close, connl->error, connl->dispatch);
+                              connl->c_open, connl->reconnect, connl->close, NULL, connl->dispatch);
                     free (t1);
                     free (t2);
                     free (t3);

@@ -101,7 +101,6 @@ Event *ConnectionInitMSNServer (Server *serv)
     cb->serv = serv;
     MyCallbackSetClimm (serv->conn, cb);
     serv->reconnect = NULL;
-    serv->error = NULL;
     serv->close = &MsnCallbackClose;
     
     cb->mainConnection = new MSN::NotificationServerConnection (serv->screen, serv->passwd, *cb);
@@ -177,7 +176,6 @@ void CLIMMMSN::registerSocket (int s, int read, int write)
     conn->port = 0;
     conn->sok = s;
     conn->dispatch = &MsnCallbackDispatch;
-    conn->error = NULL;
     conn->close = &MsnCallbackClose;
     if (read)
         conn->connect |= CONNECT_SELECT_R;
@@ -388,7 +386,6 @@ void CLIMMMSN::gotNewConnection (MSN::Connection * msnconn)
         serv->conn->sok = conn->sok;
         conn->sok = -1;
         ConnectionD (conn);
-        serv->error = NULL;
         serv->close = &MsnCallbackClose;
         mainConnection->setState (MSN::MSN_STATUS_AVAILABLE);
         mainConnection->synchronizeLists (0);
@@ -431,7 +428,6 @@ int CLIMMMSN::connectToServer (std::string server, int port, bool *connected)
     }
     else
         conn->dispatch = &MsnCallbackConnected;
-    conn->error = NULL;
     conn->close = &MsnCallbackClose;
     return conn->sok;
 }

@@ -9,7 +9,7 @@ int     UtilIOError      (Connection *conn);
 void    UtilIOSocksAccept(Connection *conn);
 Packet *UtilIOReceiveTCP (Connection *conn);
 Packet *UtilIOReceiveF   (Connection *conn);
-BOOL    UtilIOSendTCP    (Connection *conn, Packet *pak);
+void    UtilIOSendTCP    (Connection *conn, Packet *pak);
 strc_t  UtilIOReadline   (FILE *fd);
 
 void    UtilIOSelectInit (int sec, int usec);
