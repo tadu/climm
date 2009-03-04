@@ -59,7 +59,6 @@ extern "C" {
 #ifdef CLIMM_XMPP_FILE_TRANSFER
     static jump_conn_f XMPPFTCallbackDispatch;
     static jump_conn_f XMPPFTCallbackClose;
-    static jump_conn_err_f XMPPFTCallbackError;
     static void XMPPCallBackFileAccept (Event *event);
 #endif
     //void PeerFileIODispatchClose (Connection *ffile);
@@ -1485,7 +1484,7 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     child->connect = CONNECT_FAIL;
     child->dispatch = &XMPPFTCallbackDispatch;
     child->reconnect = NULL;
-    child->error = &XMPPFTCallbackError;
+    child->error = NULL;
     child->close = &XMPPFTCallbackClose;
 
     /**
@@ -1525,12 +1524,6 @@ void XMPPFTCallbackClose (Connection *conn)
 
     gloox::SOCKS5Bytestream *s = (gloox::SOCKS5Bytestream *)(conn->xmpp_file_private);
     conn->sok = -1;
-}
-
-BOOL XMPPFTCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
-{
-    XMPPFTCallbackClose (conn);
-    return 0;
 }
 
 void XMPPFTCallbackDispatch (Connection *conn)
