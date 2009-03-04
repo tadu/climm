@@ -56,7 +56,6 @@ extern "C" {
 extern "C" {
     static jump_conn_f XMPPCallbackDispatch;
     static jump_conn_f XMPPCallbackClose;
-    static jump_conn_err_f XMPPCallbackError;
 #ifdef CLIMM_XMPP_FILE_TRANSFER
     static jump_conn_f XMPPFTCallbackDispatch;
     static jump_conn_f XMPPFTCallbackClose;
@@ -1596,7 +1595,7 @@ Event *ConnectionInitXMPPServer (Server *serv)
         serv->conn->port = ~0;
 
     serv->conn->reconnect = NULL;
-    serv->conn->error = &XMPPCallbackError;
+    serv->conn->error = NULL;
     serv->conn->close = &XMPPCallbackClose;
     serv->conn->dispatch = &XMPPCallbackDispatch;
 
@@ -1653,12 +1652,6 @@ void XMPPCallbackClose (Connection *conn)
     j->getClient()->disconnect ();
     conn->serv->xmpp_private = NULL;
     delete j;
-}
-
-BOOL XMPPCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
-{
-    rl_printf ("#XMPPCallbackError: %p %lu %lu\n", conn, rc, flags);
-    return 0;
 }
 
 #ifdef CLIMM_XMPP_FILE_TRANSFER

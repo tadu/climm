@@ -63,7 +63,6 @@
 
 static jump_conn_f XMPPCallbackDispatch;
 static jump_conn_f XMPPCallbackClose;
-static jump_conn_err_f XMPPCallbackError;
 
 static int  iks_climm_TConnect (iksparser *prs, Connection **socketptr, const char *server, int port)
 {
@@ -188,7 +187,7 @@ Event *ConnectionInitXMPPServer (Server *serv)
         serv->conn->port = ~0;
 
     serv->conn->reconnect = NULL;
-    serv->conn->error = &XMPPCallbackError;
+    serv->conn->error = NULL;
     serv->conn->close = &XMPPCallbackClose;
     serv->conn->dispatch = &XMPPCallbackDispatch;
     serv->conn->connect = 0;
@@ -1136,12 +1135,6 @@ static void XMPPCallbackClose (Connection *conn)
     }
 
     conn->connect = 0;
-}
-
-static BOOL XMPPCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
-{
-    rl_printf ("#XMPPCallbackError: %p %lu %lu\n", conn, rc, flags);
-    return 0;
 }
 
 /* **************** */

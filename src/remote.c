@@ -76,6 +76,7 @@ Event *RemoteOpen (Connection *remo)
     remo->c_open      = &RemoteOpen;
     remo->dispatch    = &RemoteDispatch;
     remo->reconnect   = NULL;
+    remo->error       = NULL;
     remo->close       = &RemoteClose;
     remo->ip          = 0;
     remo->port        = 0;

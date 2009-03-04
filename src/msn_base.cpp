@@ -55,7 +55,6 @@ class CLIMMMSN : public MSN::Callbacks
 
 extern "C" {
     static jump_conn_f MsnCallbackDispatch;
-    static jump_conn_err_f MsnCallbackError;
     static jump_conn_f MsnCallbackClose;
     static jump_conn_f MsnCallbackConnectedStub;
 }
@@ -102,7 +101,7 @@ Event *ConnectionInitMSNServer (Server *serv)
     cb->serv = serv;
     MyCallbackSetClimm (serv->conn, cb);
     serv->reconnect = NULL;
-    serv->error = &MsnCallbackError;
+    serv->error = NULL;
     serv->close = &MsnCallbackClose;
     
     cb->mainConnection = new MSN::NotificationServerConnection (serv->screen, serv->passwd, *cb);
@@ -152,19 +151,6 @@ void MsnCallbackClose (Connection *conn)
     delete c;
 }
 
-BOOL MsnCallbackError (Connection *conn, UDWORD rc, UDWORD flags)
-{
-    rl_printf ("MsnCallbackError: %p %lu %lu\n", conn, rc, flags);
-
-    CLIMMMSN *cb = MyCallbackFromClimm (conn);
-    MSN::Connection *c = cb->mainConnection->connectionWithSocket (conn->sok);
-
-    if (!c)
-        rl_printf ("FIXME: MSN: avoid spinning %d.\n", conn->sok);
-
-    return 0;
-}
-
 void CLIMMMSN::registerSocket (int s, int read, int write)
 {
     rl_printf ("CLIMMMSN::registerSocket %d %d %d...", s, read, write);
@@ -191,7 +177,7 @@ void CLIMMMSN::registerSocket (int s, int read, int write)
     conn->port = 0;
     conn->sok = s;
     conn->dispatch = &MsnCallbackDispatch;
-    conn->error = &MsnCallbackError;
+    conn->error = NULL;
     conn->close = &MsnCallbackClose;
     if (read)
         conn->connect |= CONNECT_SELECT_R;
@@ -402,7 +388,7 @@ void CLIMMMSN::gotNewConnection (MSN::Connection * msnconn)
         serv->conn->sok = conn->sok;
         conn->sok = -1;
         ConnectionD (conn);
-        serv->error = &MsnCallbackError;
+        serv->error = NULL;
         serv->close = &MsnCallbackClose;
         mainConnection->setState (MSN::MSN_STATUS_AVAILABLE);
         mainConnection->synchronizeLists (0);
@@ -445,7 +431,7 @@ int CLIMMMSN::connectToServer (std::string server, int port, bool *connected)
     }
     else
         conn->dispatch = &MsnCallbackConnected;
-    conn->error = &MsnCallbackError;
+    conn->error = NULL;
     conn->close = &MsnCallbackClose;
     return conn->sok;
 }

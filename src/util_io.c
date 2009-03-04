@@ -621,9 +621,6 @@ Packet *UtilIOReceiveF (Connection *conn)
         return pak;
     }
 
-    if (conn->error && conn->error (conn, rc, CONNERR_READ))
-        return NULL;
-
     PacketD (pak);
     sockclose (conn->sok);
     conn->sok = -1;
