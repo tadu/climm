@@ -629,21 +629,16 @@ Packet *UtilIOReceiveF (Connection *conn)
     conn->sok = -1;
     conn->incoming = NULL;
 
-    if (!conn->reconnect)
+    if (prG->verbose)
     {
-        if (prG->verbose)
+        Contact *cont;
+        if ((cont = conn->cont))
         {
-            Contact *cont;
-            if ((cont = conn->cont))
-            {
-                rl_log_for (cont->nick, COLCONTACT);
-                rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), strerror (rc), rc, rc);
-            }
+            rl_log_for (cont->nick, COLCONTACT);
+            rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), strerror (rc), rc, rc);
         }
-        conn->connect = 0;
     }
-    else
-        conn->reconnect (conn);
+    conn->connect = 0;
     return NULL;
 }
 #endif

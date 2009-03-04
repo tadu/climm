@@ -55,7 +55,6 @@ class CLIMMMSN : public MSN::Callbacks
 
 extern "C" {
     static jump_conn_f MsnCallbackDispatch;
-    static jump_conn_f MsnCallbackReconn;
     static jump_conn_err_f MsnCallbackError;
     static jump_conn_f MsnCallbackClose;
     static jump_conn_f MsnCallbackConnectedStub;
@@ -102,7 +101,7 @@ Event *ConnectionInitMSNServer (Server *serv)
     
     cb->serv = serv;
     MyCallbackSetClimm (serv->conn, cb);
-    serv->reconnect = &MsnCallbackReconn;
+    serv->reconnect = NULL;
     serv->error = &MsnCallbackError;
     serv->close = &MsnCallbackClose;
     
@@ -135,11 +134,6 @@ void MsnCallbackDispatch (Connection *conn)
         c->dataArrivedOnSocket ();
     else if (UtilIOSelectIs (conn->sok, WRITEFDS))
         c->socketIsWritable ();
-}
-
-void MsnCallbackReconn (Connection *conn)
-{
-    rl_printf ("MsnCallbackReconn: %p\n", conn);
 }
 
 void MsnCallbackClose (Connection *conn)
