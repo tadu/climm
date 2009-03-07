@@ -19,7 +19,7 @@ climm_SOURCES = autopackage_prefix.c conv.c file_util.c im_response.c climm.c \
        msg_queue.c util_tabs.c i18n.c util_table.c contact.c oscar_dc.c packet.c \
        cmd_user.c preferences.c util_io.c util_str.c util_parse.c \
        util_syntax.c util_rl.c util_alias.c connection.c oscar_dc_file.c \
-       oscar_base.c oscar_tlv.c oscar_snac.c \
+       oscar_base.c oscar_tlv.c oscar_snac.c io/io_tcp.c \
        oscar_service.c oscar_location.c oscar_contact.c oscar_icbm.c \
        oscar_bos.c oscar_roster.c oscar_oldicq.c oscar_register.c  \
        remote.c os.c util_tcl.c util_ssl.c im_icq8.c buildmark.c util_otr.c
@@ -29,7 +29,7 @@ climmX_SOURCES = autopackage_prefix.c conv.c file_util.c im_response.c climm.c \
        msg_queue.c util_tabs.c i18n.c util_table.c contact.c oscar_dc.c packet.c \
        cmd_user.c preferences.c util_io.c util_str.c util_parse.c \
        util_syntax.c util_rl.c util_alias.c connection.c oscar_dc_file.c \
-       oscar_base.c oscar_tlv.c oscar_snac.c \
+       oscar_base.c oscar_tlv.c oscar_snac.c io/io_tcp.c \
        oscar_service.c oscar_location.c oscar_contact.c oscar_icbm.c \
        oscar_bos.c oscar_roster.c oscar_oldicq.c oscar_register.c  \
        remote.c os.c util_tcl.c util_ssl.c im_icq8.c buildmark.c util_otr.c xmpp_base.c
