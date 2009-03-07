@@ -7,6 +7,7 @@
 #if ENABLE_IKS
 #include <iksemel.h>
 #endif
+#include "util_io.h"
 
 #if ENABLE_SSL
 typedef enum {
@@ -27,7 +28,6 @@ typedef enum {
 #endif
 
 typedef void (jump_conn_f)(Connection *conn);
-typedef Event * (jump_conn_open_f)(Connection *conn);
 
 struct Connection_s
 {
@@ -45,6 +45,9 @@ struct Connection_s
     UWORD     connect;        /* connection setup status                  */
     Packet   *incoming;       /* packet we're receiving                   */
     Packet   *outgoing;       /* packet we're sending                     */
+
+    Conn_Func  *funcs;        /* functions to call  for i/o               */
+    Dispatcher *dispatcher;   /* pointer to extra data for dispatching    */
     
 #if ENABLE_SSL
     gnutls_session ssl;       /* The SSL data structure                   */
@@ -122,11 +125,12 @@ struct Server_s
 #define CONNECT_MASK       0x00ff
 #define CONNECT_OK         0x0080
 #define CONNECT_FAIL       0x0100
-#define CONNECT_SELECT_R   0x0200
-#define CONNECT_SELECT_W   0x0400
-#define CONNECT_SELECT_X   0x0800
-#define CONNECT_SOCKS_ADD  0x1000
-#define CONNECT_SOCKS      0xf000
+#define CONNECT_SELECT_A   0x1000
+#define CONNECT_SELECT_R   0x2000
+#define CONNECT_SELECT_W   0x4000
+#define CONNECT_SELECT_X   0x8000
+#define CONNECT_SOCKS_ADD  0x0100
+#define CONNECT_SOCKS      0x0f00
 
 
 Server        *ServerC           (UWORD type DEBUGPARAM);

@@ -36,7 +36,7 @@
 #include "oscar_dc.h"
 #include "util_tabs.h"
 #include "util_io.h"
-#include "oscar_base.h" // IcqToStatus
+#include "oscar_base.h" /* IcqToStatus */
 #include "util_tcl.h"
 #include "util_ssl.h"
 #include "util_otr.h"
@@ -686,15 +686,16 @@ int main (int argc, char *argv[])
 
         for (i = 0; (conn = ConnectionNr (i)); i++)
         {
-            if (conn->sok < 0 || !conn->dispatch
-                || !UtilIOSelectIs (conn->sok, READFDS | WRITEFDS | EXCEPTFDS))
+            if (conn->sok < 0 || !conn->dispatch)
+                continue;
+            if (~conn->connect & CONNECT_SELECT_A && !UtilIOSelectIs (conn->sok, READFDS | WRITEFDS | EXCEPTFDS))
                 continue;
             if (conn->dispatch)
                 conn->dispatch (conn);
             else
             {
                 printf ("FIXME: avoid spinning.\n");
-                conn->connect &= ~(CONNECT_SELECT_R | CONNECT_SELECT_W | CONNECT_SELECT_X);
+                conn->connect &= ~(CONNECT_SELECT_R | CONNECT_SELECT_W | CONNECT_SELECT_X | CONNECT_SELECT_A);
             }
         }
 

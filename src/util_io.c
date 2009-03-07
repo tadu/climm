@@ -470,6 +470,77 @@ static void UtilIOTOConn (Event *event)
 #define ECONNRESET 0x424242
 #endif
 
+void UtilIOShowDisconnect (Connection *conn, int rc)
+{
+    switch (rc) {
+        case IO_CLOSED:
+            if (!errno)
+                errno = ECONNRESET;
+        case IO_RW:
+            if (prG->verbose || (conn->serv && conn == conn->serv->conn && errno != ECONNRESET))
+            {
+                Contact *cont;
+                if ((cont = conn->cont))
+                {
+                    rl_log_for (cont->nick, COLCONTACT);
+                    rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), conn->funcs->f_err (conn, conn->dispatcher), rc, errno);
+                }
+            }
+            break;
+        default:
+            assert (0);
+    }
+}
+
+int UtilIOFinishConnect (Connection *conn)
+{
+    int rc = conn->funcs->f_read (conn, conn->dispatcher, NULL, 0);
+    switch (rc) {
+        const char *t = NULL;
+    
+        case IO_CONNECTED: 
+            rl_print ("");
+            if (prG->verbose || (conn->serv && conn == conn->serv->conn))
+                if (rl_pos () > 0)
+                     rl_print (i18n (1634, "ok.\n"));
+            return IO_CONNECTED;
+
+        case IO_OK:
+            return IO_OK;
+
+        case IO_RW:
+        case IO_CLOSED:
+        case IO_NO_MEM:
+        case IO_NO_PARAM:
+            assert (0);
+
+        case IO_NO_SOCKET:
+            if (1) t = i18n (1638, "Couldn't create socket"); else
+        case IO_NO_NONBLOCK:
+            if (1) t = i18n (1950, "Couldn't set socket nonblocking"); else
+        case IO_NO_HOSTNAME:
+            if (1) t = i18n (1951, "Can't find hostname %s: %s (%d)."); else
+        case IO_NO_CONN:
+                   t = i18n (1952, "Couldn't open connection");
+            if (prG->verbose || (conn->serv && conn == conn->serv->conn))
+            {
+                Contact *cont = conn->cont;
+                rc = errno;
+                rl_log_for (cont->nick, COLCONTACT);
+                rl_printf (i18n (9999, "Opening connection to %s:%s%ld%s "),
+                          s_wordquote (conn->server), COLQUOTE, UD2UL (conn->port), COLNONE);
+                rl_print (i18n (1949, "failed:\n"));
+                rl_printf ("%s [%d]\n",
+                    s_sprintf  ("%s: %s (%d).", t, conn->funcs->f_err (conn, conn->dispatcher), rc),
+                    __LINE__);
+            }
+            return IO_RW;
+        default:
+            assert (0);
+    }
+}
+
+
 /*
  * Receive a packet via TCP.
  */
@@ -654,7 +725,7 @@ void UtilIOSendTCP (Connection *conn, Packet *pak)
         pak = conn->outgoing;
     else
     {
-        // cannot handle two pakets in transit - tough luck
+        /* cannot handle two pakets in transit - tough luck */
         conn->connect = 0;
         if (conn->close)
             conn->close (conn);

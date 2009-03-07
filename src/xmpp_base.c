@@ -60,6 +60,7 @@
 #include "preferences.h"
 #include "oscar_dc_file.h"
 #include "os.h"
+#include "io/io_tcp.h"
 
 static jump_conn_f XMPPCallbackDispatch;
 static jump_conn_f XMPPCallbackClose;
@@ -74,52 +75,26 @@ static int  iks_climm_TConnect (iksparser *prs, Connection **socketptr, const ch
 
 static void iks_climm_TClose (Connection *conn)
 {
-    if (conn->sok >= 0)
-    {
-        close (conn->sok);
-        conn->sok = -1;
-    }
+    conn->funcs->f_close (conn, conn->dispatcher);
 }
 
 static int iks_climm_TSend (Connection *conn, const char *data, size_t len)
 {
-    size_t rc = 0;
-    while (len > 0) {
-        rc = sockwrite (conn->sok, data, len);
-        if (rc < 0)
-            return IKS_NET_RWERR;
-        len -= rc;
-        data += rc;
-    }
+    int rc = conn->funcs->f_write (conn, conn->dispatcher, data, len);
+    if (rc < 0)
+        return IKS_NET_RWERR;
     return IKS_OK;
 }
 
-static int iks_climm_TRecv (Connection *conn, char *buffer, size_t buf_len, int timeout)
+static int iks_climm_TRecv (Connection *conn, char *data, size_t len, int timeout)
 {
-    fd_set fds;
-    struct timeval tv;
-    size_t rc;
-
-    tv.tv_sec = 0;
-    tv.tv_usec = 0;
-    FD_ZERO (&fds);
-    FD_SET (conn->sok, &fds);
-    rc = select (conn->sok + 1, &fds, NULL, NULL, &tv);
-    if (rc < 0 && (errno == EAGAIN || errno == EINTR))
-        return 0;
-    if (rc < 0)
-        return -1;
-    if (!FD_ISSET  (conn->sok, &fds))
+    int rc = conn->funcs->f_read (conn, conn->dispatcher, data, len);
+    if (!rc)
     {
         errno = EAGAIN;
         return -1;
     }
-    rc = sockread (conn->sok, buffer, buf_len);
-    if (rc > 0)
-        return rc;
-    if (errno == EAGAIN || errno == EINTR)
-        return 0;
-    return -1;
+    return rc;
 }
 
 static const ikstransport iks_climm_transport = {
@@ -202,7 +177,7 @@ Event *ConnectionInitXMPPServer (Server *serv)
         event = QueueEnqueueData (serv->conn, QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 5,
                                   NULL, serv->conn->cont, NULL, &XMPPCallBackTimeout);
 
-    UtilIOConnectTCP (serv->conn);
+    IOConnectTCP (serv->conn);
     return event;
 }
 
@@ -1078,17 +1053,16 @@ static void XMPPCallbackDispatch (Connection *conn)
     assert (conn->sok >= 0);
     if (!(conn->connect & (CONNECT_OK | 4)))
     {
-        switch  (conn->connect & 3)
-        {
-            case 0:
-            case 3:
-                assert (0);
-            case 2:
-                IMCallBackReconn (conn);
+        rc = UtilIOFinishConnect (conn);
+        switch (rc) {
+            case IO_RW:
+            case IO_OK:
                 return;
-            case 1:
-                conn->connect |= CONNECT_SELECT_R | 4;
-                conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~3;
+            case IO_CONNECTED: 
+                rl_print ("");
+                if (prG->verbose || (conn->serv && conn == conn->serv->conn))
+                    if (rl_pos () > 0)
+                         rl_print (i18n (1634, "ok.\n"));
                 prs = iks_stream_new (IKS_NS_CLIENT, conn->serv, &XmppStreamHook);
 
                 conn->serv->xmpp_id = iks_id_new (iks_parser_stack (prs), conn->serv->screen);
@@ -1105,6 +1079,8 @@ static void XMPPCallbackDispatch (Connection *conn)
                 }
                 conn->connect |= 4;
                 return;
+            default:
+                assert (0);
         }
     }
     rc = iks_recv (prs, 0);
@@ -1126,13 +1102,8 @@ static void XMPPCallbackClose (Connection *conn)
         conn->serv->xmpp_id = NULL;
         conn->serv->xmpp_filter = NULL;
     }
-    
-    if (conn->sok >= 0)
-    {
-        close (conn->sok);
-        conn->sok = -1;
-    }
-
+    if (conn->funcs)
+        conn->funcs->f_close (conn, conn->dispatcher);
     conn->connect = 0;
 }
 

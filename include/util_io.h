@@ -3,6 +3,40 @@
 #ifndef CLIMM_UTIL_IO_H
 #define CLIMM_UTIL_IO_H
 
+typedef struct Dispatcher_s
+{
+    UWORD  flags;
+    size_t err;
+    int    d_errno;
+    size_t outlen;
+    char  *outbuf;
+    char  *lasterr;
+} Dispatcher;
+
+typedef struct Conn_Func_s
+{
+    int   (*f_read) (Connection *c, Dispatcher *d, char *buf, size_t count);
+    int   (*f_write)(Connection *c, Dispatcher *d, const char *buf, size_t count);
+    void  (*f_close)(Connection *c, Dispatcher *d);
+    char *(*f_err)  (Connection *c, Dispatcher *d);
+} Conn_Func;
+
+enum io_err {
+    IO_OK = 0,
+    IO_NO_PARAM = -1000,
+    IO_NO_SOCKET,
+    IO_NO_NONBLOCK,
+    IO_NO_HOSTNAME,
+    IO_NO_MEM,
+    IO_NO_CONN,
+    IO_CONN_TO,
+    IO_CONNECTED,
+    IO_CLOSED,
+    IO_RW,
+
+    IO_MAX
+};
+
 void    UtilIOConnectTCP (Connection *conn DEBUGPARAM);
 void    UtilIOConnectF   (Connection *conn);
 int     UtilIOError      (Connection *conn);
@@ -11,6 +45,9 @@ Packet *UtilIOReceiveTCP (Connection *conn);
 Packet *UtilIOReceiveF   (Connection *conn);
 void    UtilIOSendTCP    (Connection *conn, Packet *pak);
 strc_t  UtilIOReadline   (FILE *fd);
+
+void    UtilIOShowDisconnect (Connection *conn, int rc);
+int     UtilIOFinishConnect (Connection *conn);
 
 void    UtilIOSelectInit (int sec, int usec);
 void    UtilIOSelectAdd  (FD_T sok, int nr);
