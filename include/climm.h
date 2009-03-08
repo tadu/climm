@@ -76,6 +76,7 @@ extern int libotr_is_present;
 #else
 #define libtcl8_4_is_present 1
 #define libgnutls_is_present 1
+#define libgnutls_symbol_is_present(s) 1
 #define libgcrypt_is_present 1
 #define libotr_is_present    1
 #endif

@@ -9,24 +9,6 @@
 #endif
 #include "util_io.h"
 
-#if ENABLE_SSL
-typedef enum {
-    SSL_STATUS_NA,       /* unknown / nothing done yet       */
-    SSL_STATUS_FAILED,   /* SSL handshake with peer failed   */
-    SSL_STATUS_OK,       /* SSL up and running               */
-    SSL_STATUS_INIT,     /* SSL handshake may start          */
-    SSL_STATUS_CLOSE,    /* SSL session to be terminated     */
-    SSL_STATUS_REQUEST,  /* SSL session has been requested   */
-    SSL_STATUS_HANDSHAKE /* SSL session handshake is ongoing */
-} ssl_status_t;
-#if ENABLE_GNUTLS
-#include <gnutls/gnutls.h>
-#else
-#include <openssl/ssl.h>
-#define gnutls_session SSL *
-#endif
-#endif
-
 typedef void (jump_conn_f)(Connection *conn);
 
 struct Connection_s
