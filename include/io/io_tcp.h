@@ -5,5 +5,6 @@
 #include "connection.h"
 
 void IOConnectTCP (Connection *conn);
+void IOListenTCP (Connection *conn);
 
 #endif /* CLIMM_IO_TCP_H */

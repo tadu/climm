@@ -1,4 +1,3 @@
-
 #include "climm.h"
 #include <errno.h>
 #if HAVE_SYS_TYPES_H
@@ -64,11 +63,16 @@ static inline struct hostent *gethostbyname(const char *name)
 }
 #endif
 
+#define BACKLOG 10
+
 static void  io_tcp_open  (Connection *c, Dispatcher *d);
 static int   io_tcp_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
 static int   io_tcp_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
 static void  io_tcp_close (Connection *c, Dispatcher *d);
 static char *io_tcp_err   (Connection *c, Dispatcher *d);
+
+static int   io_listen_tcp_accept(Connection *c, Dispatcher *d);
+static void  io_listen_tcp_open  (Connection *c, Dispatcher *d);
 
 enum io_tcp_dispatcher_flags {
     FLAG_OPEN,
@@ -79,8 +83,17 @@ enum io_tcp_dispatcher_flags {
 };
 
 static Conn_Func io_tcp_func = {
+    NULL,
     &io_tcp_read,
     &io_tcp_write,
+    &io_tcp_close,
+    &io_tcp_err
+};
+
+static Conn_Func io_listen_tcp_func = {
+    &io_listen_tcp_accept,
+    NULL,
+    NULL,
     &io_tcp_close,
     &io_tcp_err
 };
@@ -100,20 +113,68 @@ void IOConnectTCP (Connection *conn)
     io_tcp_open (conn, conn->dispatcher);
 }
 
+void IOListenTCP (Connection *conn)
+{
+    assert (conn);
+    conn->connect = CONNECT_SELECT_A;
+    if (conn->funcs && conn->funcs->f_close)
+        conn->funcs->f_close (conn, conn->dispatcher);
+    if (conn->dispatcher)
+       free (conn->dispatcher);
+    conn->dispatcher = calloc (1, sizeof (Dispatcher));
+    if (!conn->dispatcher)
+        return;
+    conn->funcs = &io_listen_tcp_func;
+    io_listen_tcp_open (conn, conn->dispatcher);
+}
+
 /*
  * Handles timeout on TCP connect
  */
 static void io_tcp_to (Event *event)
 {
-     Connection *conn = event->conn;
-     EventD (event);
-     conn->connect |= CONNECT_SELECT_A;
-     conn->dispatcher->flags = FLAG_TIMEOUT;
+    Connection *conn = event->conn;
+    EventD (event);
+    conn->connect |= CONNECT_SELECT_A;
+    conn->dispatcher->flags = FLAG_TIMEOUT;
 }
 
 static char *io_tcp_err (Connection *conn, Dispatcher *d)
 {
      return d->lasterr;
+}
+
+static char io_tcp_makesocket (Connection *conn, Dispatcher *d)
+{
+    int rc;
+
+    errno = 0;
+    conn->sok = socket (AF_INET, SOCK_STREAM, 0);
+    if (conn->sok < 0)
+    {
+        d->d_errno = errno;
+        d->err = IO_NO_SOCKET;
+        s_repl (&d->lasterr, strerror (errno));
+        return 0;
+    }
+#if HAVE_FCNTL
+    rc = fcntl (conn->sok, F_GETFL, 0);
+    if (rc != -1)
+        rc = fcntl (conn->sok, F_SETFL, rc | O_NONBLOCK);
+#elif defined(HAVE_IOCTLSOCKET)
+    origip = 1;
+    rc = ioctlsocket (conn->sok, FIONBIO, &origip);
+#endif
+    if (rc == -1)
+    {
+        close (conn->sok);
+        conn->sok = -1;
+        d->d_errno = errno;
+        d->err = IO_NO_NONBLOCK;
+        s_repl (&d->lasterr, strerror (rc));
+        return 0;
+    }
+    return 1;
 }
 
 /*
@@ -137,32 +198,8 @@ static void io_tcp_open (Connection *conn, Dispatcher *d)
         return;
     }
 
-    errno = 0;
-    conn->sok = socket (AF_INET, SOCK_STREAM, 0);
-    if (conn->sok < 0)
-    {
-        d->d_errno = errno;
-        d->err = IO_NO_SOCKET;
-        s_repl (&d->lasterr, strerror (rc));
+    if (!io_tcp_makesocket (conn, d))
         return;
-    }
-#if HAVE_FCNTL
-    rc = fcntl (conn->sok, F_GETFL, 0);
-    if (rc != -1)
-        rc = fcntl (conn->sok, F_SETFL, rc | O_NONBLOCK);
-#elif defined(HAVE_IOCTLSOCKET)
-    origip = 1;
-    rc = ioctlsocket (conn->sok, FIONBIO, &origip);
-#endif
-    if (rc == -1)
-    {
-        close (conn->sok);
-        conn->sok = -1;
-        d->d_errno = errno;
-        d->err = IO_NO_NONBLOCK;
-        s_repl (&d->lasterr, strerror (rc));
-        return;
-    }
 
     sin.sin_family = AF_INET;
     sin.sin_port = htons (conn->port);
@@ -232,6 +269,66 @@ static void io_tcp_open (Connection *conn, Dispatcher *d)
     }
 }
 
+/*
+ * Connect to listen
+ */
+static void io_listen_tcp_open (Connection *conn, Dispatcher *d)
+{
+    struct sockaddr_in sin;
+    socklen_t length;
+    int rc, i;
+
+    d->flags = FLAG_CONNECTING;
+    d->err = IO_OK;
+    
+    if (!io_tcp_makesocket (conn, d))
+        return;
+
+    sin.sin_family = AF_INET;
+    sin.sin_port = htons (conn->port);
+    sin.sin_addr.s_addr = INADDR_ANY;
+
+    if (bind (conn->sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
+    {
+#if defined(EADDRINUSE)
+        i = 0;
+        while ((rc = errno) == EADDRINUSE && conn->port  &&++i < 100)
+        {
+            rc = 0;
+            sin.sin_port = htons (++conn->port);
+            if (bind (conn->sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) == 0)
+                break;
+            rc = errno;
+        }
+#endif
+        if (rc)
+        {
+            close (conn->sok);
+            conn->sok = -1;
+            d->d_errno = errno;
+            d->err = IO_NO_BIND;
+            s_repl (&d->lasterr, strerror (rc));
+            return;
+        }
+    }
+
+    if (listen (conn->sok, BACKLOG) < 0)
+    {
+        close (conn->sok);
+        conn->sok = -1;
+        d->d_errno = errno;
+        d->err = IO_NO_LISTEN;
+        s_repl (&d->lasterr, strerror (rc));
+        return;
+    }
+
+    length = sizeof (struct sockaddr);
+    getsockname (conn->sok, (struct sockaddr *) &sin, &length);
+    conn->port = ntohs (sin.sin_port);
+    s_repl (&conn->server, "localhost");
+    d->flags = FLAG_CONNECTED;
+}
+
 static int io_tcp_connecting (Connection *conn, Dispatcher *d)
 {
     if (d->flags == FLAG_CONNECTED)
@@ -269,7 +366,8 @@ static int io_tcp_connecting (Connection *conn, Dispatcher *d)
             errno = d->d_errno;
             return d->err;
         }
-
+        
+        /* not reached  for listening connection  */
         length = sizeof (int);
 #ifdef SO_ERROR
         if (getsockopt (conn->sok, SOL_SOCKET, SO_ERROR, (void *)&rc, &length) < 0)
@@ -289,6 +387,42 @@ static int io_tcp_connecting (Connection *conn, Dispatcher *d)
         return IO_CONNECTED;
     }
     assert(0);
+}
+
+static int io_listen_tcp_accept (Connection *conn, Dispatcher *d)
+{
+    struct sockaddr_in sin;
+    socklen_t length;
+    int rc, sok;
+
+    if (d->flags != FLAG_OPEN)
+        return io_tcp_connecting (conn, d);
+    
+    length = sizeof (sin);
+    sok = accept (conn->sok, (struct sockaddr *)&sin, &length);
+
+    if (sok <= 0)
+        return IO_OK;
+
+#if HAVE_FCNTL
+    rc = fcntl (sok, F_GETFL, 0);
+    if (rc != -1)
+        rc = fcntl (sok, F_SETFL, rc | O_NONBLOCK);
+#elif HAVE_IOCTLSOCKET
+    {
+        int origip = 1;
+        rc = ioctlsocket (sok, FIONBIO, &origip);
+    }
+#endif
+    if (rc == -1)
+    {
+        close (sok);
+        d->d_errno = errno;
+        d->err = IO_NO_NONBLOCK;
+        s_repl (&d->lasterr, strerror (rc));
+        return IO_NO_NONBLOCK;
+    }
+    return sok;
 }
 
 static int io_tcp_read (Connection *conn, Dispatcher *d, char *buf, size_t count)

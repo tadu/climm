@@ -55,18 +55,12 @@ static char *io_gnutls_err   (Connection *c, Dispatcher *d);
 static int   io_gnutls_seterr     (int err, int gnutlserr, const char *msg);
 static void  io_gnutls_setconnerr (Dispatcher *d, int err, int gnutlserr, const char *msg);
 
-static char ssl_init_ok = -1;
-static char *ssl_lasterr = NULL;
+static char io_gnutls_init_ok = -1;
+static char *io_gnutls_lasterr = NULL;
 
 static gnutls_anon_client_credentials client_cred;
 static gnutls_anon_server_credentials server_cred;
 static gnutls_dh_params dh_parm;
-
-
-
-
-
-
 
 enum io_gnutls_dispatcher_flags {
     FLAG_OK,
@@ -74,6 +68,7 @@ enum io_gnutls_dispatcher_flags {
 };
 
 static Conn_Func io_gnutls_func = {
+    NULL,
     &io_gnutls_read,
     &io_gnutls_write,
     &io_gnutls_close,
@@ -84,13 +79,13 @@ char IOGnuTLSSupported (void)
 {
     int ret;
 
-    if (ssl_init_ok >= 0)
-        return ssl_init_ok;
+    if (io_gnutls_init_ok >= 0)
+        return io_gnutls_init_ok;
 
-    ssl_init_ok = 0;
+    io_gnutls_init_ok = 0;
     
     if (!libgnutls_is_present)
-        return ssl_init_ok = IO_GNUTLS_NOLIB;
+        return io_gnutls_init_ok = IO_GNUTLS_NOLIB;
 
     if ((ret = gnutls_global_init ()))
         return io_gnutls_seterr (IO_GNUTLS_INIT, ret, "gnutls_global_init");
@@ -126,7 +121,7 @@ char IOGnuTLSSupported (void)
 
     gnutls_anon_set_server_dh_params (server_cred, dh_parm);
 
-    ssl_init_ok = IO_GNUTLS_OK;
+    io_gnutls_init_ok = IO_GNUTLS_OK;
     return IO_GNUTLS_OK;
 }
 
@@ -136,7 +131,7 @@ int IOGnuTLSOpen (Connection *conn, char is_client)
     if (!d)
         return IO_GNUTLS_NOMEM;
 
-    if (!ssl_init_ok)
+    if (!io_gnutls_init_ok)
         return IO_GNUTLS_NOLIB;
 
     conn->connect |= CONNECT_SELECT_A;
@@ -152,7 +147,7 @@ int IOGnuTLSOpen (Connection *conn, char is_client)
 
 const char *IOGnuTLSInitError ()
 {
-    return ssl_lasterr;
+    return io_gnutls_lasterr;
 }
 
 
@@ -169,9 +164,9 @@ static void io_gnutls_to (Event *event)
 
 static int io_gnutls_seterr (int err, int gnutlserr, const char *msg)
 {
-    ssl_init_ok = err;
-    s_repl (&ssl_lasterr, s_sprintf ("%s [%d] %s [%d]", msg, err, gnutls_strerror (gnutlserr), gnutlserr));
-    return ssl_init_ok;
+    io_gnutls_init_ok = err;
+    s_repl (&io_gnutls_lasterr, s_sprintf ("%s [%d] %s [%d]", msg, err, gnutls_strerror (gnutlserr), gnutlserr));
+    return io_gnutls_init_ok;
 }
 
 static void io_gnutls_setconnerr (Dispatcher *d, int err, int gnutlserr, const char *msg)
@@ -314,11 +309,6 @@ static int io_gnutls_write (Connection *conn, Dispatcher *d, const char *buf, si
 {
     int rc = 0;
     
-    if (conn->ssl_status == SSL_STATUS_HANDSHAKE)
-    {
-        ssl_handshake (conn);
-        return 0;
-    }
     if (conn->ssl_status != SSL_STATUS_OK)
         return io_gnutls_connecting (conn, d);
 

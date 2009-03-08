@@ -25,10 +25,11 @@ typedef struct Dispatcher_s Dispatcher;
                             
 typedef struct Conn_Func_s
 {
-    int   (*f_read) (Connection *c, Dispatcher *d, char *buf, size_t count);
-    int   (*f_write)(Connection *c, Dispatcher *d, const char *buf, size_t count);
-    void  (*f_close)(Connection *c, Dispatcher *d);
-    char *(*f_err)  (Connection *c, Dispatcher *d);
+    int   (*f_accept)(Connection *c, Dispatcher *d);
+    int   (*f_read)  (Connection *c, Dispatcher *d, char *buf, size_t count);
+    int   (*f_write) (Connection *c, Dispatcher *d, const char *buf, size_t count);
+    void  (*f_close) (Connection *c, Dispatcher *d);
+    char *(*f_err)   (Connection *c, Dispatcher *d);
 } Conn_Func;
 
 struct Dispatcher_s
@@ -55,13 +56,18 @@ enum io_err {
     IO_OK = 0,
 
     IO_NO_PARAM = -1000,
+    IO_NO_MEM,
     IO_NO_SOCKET,
     IO_NO_NONBLOCK,
+
+    IO_NO_BIND,
+    IO_NO_LISTEN,
+
     IO_NO_HOSTNAME,
-    IO_NO_MEM,
     IO_NO_CONN,
     IO_CONN_TO,
     IO_CONNECTED,
+
     IO_CLOSED,
     IO_RW,
     
