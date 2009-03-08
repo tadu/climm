@@ -150,9 +150,35 @@ BOOL TCPDirectOpen (Connection *list, Contact *cont)
     peer->oscar_file= NULL;
     peer->close     = &PeerDispatchClose;
     peer->reconnect = &TCPDispatchReconn;
+    peer->dispatch  = &TCPDispatchConn;
+    s_repl (&peer->server, NULL);
 
-    TCPDispatchConn (peer);
+    if (peer->type == TYPE_MSGDIRECT)
+        peer->port = cont->dc->port;
 
+    if  (cont->dc->ip_rem && cont->dc->port)
+    {
+        peer->connect = 1;
+        peer->ip      = cont->dc->ip_rem;
+    }
+    else if (cont->dc->ip_loc && cont->dc->port)
+    {
+        peer->connect = 3;
+        peer->ip      = cont->dc->ip_loc;
+    }
+    else
+    {
+        peer->connect = CONNECT_FAIL;
+        return FALSE;
+    }
+
+    if (prG->verbose)
+    {
+        rl_log_for (cont->nick, COLCONTACT);
+        rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
+                  s_wordquote (s_ip (peer->ip)), COLQUOTE, UD2UL (peer->port), COLNONE);
+    }
+    UtilIOConnectTCP (peer);
     return TRUE;
 }
 
@@ -329,8 +355,6 @@ void TCPDispatchConn (Connection *peer)
     
     ASSERT_ANY_DIRECT (peer);
     
-    peer->dispatch = &TCPDispatchConn;
-
     while (1)
     {
         if (!(cont = peer->cont) || !cont->dc)
@@ -344,45 +368,8 @@ void TCPDispatchConn (Connection *peer)
         switch (peer->connect & CONNECT_MASK)
         {
             case 0:
-                if (!cont->dc->ip_rem || !cont->dc->port)
-                {
-                    peer->connect = 3;
-                    break;
-                }
-                if (peer->type == TYPE_MSGDIRECT)
-                    peer->port = cont->dc->port;
-                s_repl (&peer->server, NULL);
-                peer->ip      = cont->dc->ip_rem;
-                peer->connect = 1;
-                
-                if (prG->verbose)
-                {
-                    rl_log_for (cont->nick, COLCONTACT);
-                    rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
-                              s_wordquote (s_ip (peer->ip)), COLQUOTE, UD2UL (peer->port), COLNONE);
-                }
-                UtilIOConnectTCP (peer);
-                return;
             case 3:
-                if (!cont->dc->ip_loc || !cont->dc->port)
-                {
-                    peer->connect = CONNECT_FAIL;
-                    return;
-                }
-                if (peer->type == TYPE_MSGDIRECT)
-                    peer->port = cont->dc->port;
-                s_repl (&peer->server, NULL);
-                peer->ip      = cont->dc->ip_loc;
-                peer->connect = 3;
-                
-                if (prG->verbose)
-                {
-                    rl_log_for (cont->nick, COLCONTACT);
-                    rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
-                              s_wordquote (s_ip (peer->ip)), COLQUOTE, UD2UL (peer->port), COLNONE);
-                }
-                UtilIOConnectTCP (peer);
-                return;
+                assert (0);
             case 5:
             {
                 peer->connect = CONNECT_FAIL;
