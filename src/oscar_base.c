@@ -53,6 +53,7 @@
 #include "conv.h"
 #include "oscar_dc.h"
 #include "im_request.h"
+#include "io/io_tcp.h"
 
 static void FlapChannel1 (Server *serv, Packet *pak);
 static void FlapSave (Server *serv, Packet *pak, BOOL in);
@@ -128,14 +129,14 @@ static void FlapChannel1 (Server *serv, Packet *pak)
                 FlapCliHello (serv);
                 SnacCliRegisteruser (serv);
             }
-            else if (serv->conn->connect & 8)
+            else if (serv->oscar_tlv)
             {
                 TLV *tlv = serv->oscar_tlv;
                 
                 assert (tlv);
                 FlapCliCookie (serv, tlv[6].str.txt, tlv[6].str.len);
                 TLVD (tlv);
-                tlv = NULL;
+                serv->oscar_tlv = NULL;
             }
 #if ENABLE_SSL
             else if (libgcrypt_is_present)
@@ -198,7 +199,8 @@ void FlapChannel4 (Server *serv, Packet *pak)
 
         serv->conn->connect = 8;
         serv->oscar_tlv = tlv;
-        UtilIOConnectTCP (serv->conn);
+        IOConnectTCP (serv->conn);
+        rl_printf ("\n");
     }
 }
 
@@ -315,6 +317,123 @@ Packet *FlapC (UBYTE channel)
     return pak;
 }
 
+Packet *UtilIOReceiveTCP2 (Connection *conn)
+{
+    Packet *pak;
+    int rc, off, len;
+    
+    if (!(conn->connect & CONNECT_MASK))
+    {
+        rc = UtilIOFinishConnect (conn);
+        if (rc == IO_CONNECTED)
+            conn->connect |= 1;
+        else if (rc != IO_OK)
+        {
+            if (conn->reconnect && conn->connect & CONNECT_OK)
+                conn->reconnect (conn);
+            else
+                conn->connect = 0;
+        }
+        return NULL;
+    }
+
+    if (!(pak = conn->incoming))
+    {
+        conn->incoming = pak = PacketC ();
+        memset (pak->data, 0, 6);
+    }
+    
+    if (conn->serv && conn->serv->conn == conn)
+    {
+        len = off = 6;
+        if (pak->len >= off)
+            len = PacketReadAtB2 (pak, 4) + 6;
+    }
+    else
+    {
+        len = off = 2;
+        if (pak->len >= off)
+            len = PacketReadAt2 (pak, 0) + 2;
+    }
+    
+    if  (len < off)
+        len = off + 1;
+    
+    rc = conn->funcs->f_read (conn, conn->dispatcher, pak->data + pak->len, len - pak->len);
+    if (rc >= 0)
+    {
+        pak->len += rc;
+        if (pak->len < len)
+            return NULL;
+        if (len == off)
+            return NULL;
+        conn->incoming = NULL;
+        if (off == 2)
+        {
+            pak->len -= 2;
+            memmove (pak->data, pak->data + 2, pak->len);
+        }
+        return pak;
+    }
+    else
+    {
+        UtilIOShowDisconnect (conn, rc);
+
+        conn->funcs->f_close (conn, conn->dispatcher);
+
+        PacketD (conn->incoming);
+        conn->incoming = NULL;
+        
+        if (conn->reconnect && conn->connect & CONNECT_OK)
+            conn->reconnect (conn);
+        else
+            conn->connect = 0;
+        return NULL;
+    }
+}
+
+/*
+ * Send packet via TCP. Consumes packet.
+ */
+void UtilIOSendTCP2 (Connection *conn, Packet *pak)
+{
+    int rc;
+    
+    if (!(conn->connect & CONNECT_MASK))
+    {
+        rc = UtilIOFinishConnect (conn);
+        if (rc == IO_CONNECTED)
+            conn->connect |= 1;
+        else if (rc != IO_OK)
+        {
+            if (conn->reconnect && conn->connect & CONNECT_OK)
+                conn->reconnect (conn);
+            else
+                conn->connect = 0;
+        }
+        return;
+    }
+
+    rc = conn->funcs->f_write (conn, conn->dispatcher, pak->data, pak->len);
+    PacketD (pak);
+    
+    if (!rc)
+        return;
+
+    UtilIOShowDisconnect (conn, rc);
+
+    conn->funcs->f_close (conn, conn->dispatcher);
+
+    PacketD (conn->incoming);
+    conn->incoming = NULL;
+    
+    if (conn->reconnect && conn->connect & CONNECT_OK)
+        conn->reconnect (conn);
+    else
+        conn->connect = 0;
+}
+
+
 void FlapSend (Server *serv, Packet *pak)
 {
     serv->oscar_seq++;
@@ -335,7 +454,7 @@ void FlapSend (Server *serv, Packet *pak)
     
     serv->conn->stat_pak_sent++;
     
-    UtilIOSendTCP (serv->conn, pak);
+    UtilIOSendTCP2 (serv->conn, pak);
 }
 
 /***********************************************/
@@ -406,12 +525,14 @@ void FlapCliGoodbye (Server *serv)
 {
     Packet *pak;
     
+    EventD (QueueDequeue2 (serv->conn, QUEUE_DEP_WAITLOGIN, 0, NULL));
+
     if (!(serv->conn->connect & CONNECT_MASK))
         return;
     
     pak = FlapC (4);
     FlapSend (serv, pak);
-    
+
     sockclose (serv->conn->sok);
     serv->conn->sok = -1;
     serv->conn->connect = 0;
@@ -480,7 +601,8 @@ Event *ConnectionInitOscarServer (Server *serv)
               !cont ? i18n (2513, "new UIN") : cont->nick ? cont->nick 
               : cont->screen, COLNONE);
 
-    UtilIOConnectTCP (serv->conn);
+    IOConnectTCP (serv->conn);
+    rl_printf ("\n");
     if ((v = ConnectionPrefVal (serv, CO_OSCAR_DC_MODE)))
     {
         Connection *conn = serv->oscar_dc;
@@ -535,6 +657,7 @@ void SrvCallBackReceive (Connection *conn)
     Packet *pak;
     Server *serv = conn->serv;
 
+#if 0
     if (~conn->connect & CONNECT_OK)
     {
         switch (conn->connect & 7)
@@ -564,8 +687,8 @@ void SrvCallBackReceive (Connection *conn)
                 assert (0);
         }
     }
-
-    pak = UtilIOReceiveTCP (conn);
+#endif
+    pak = UtilIOReceiveTCP2 (conn);
     
     if (!pak)
         return;
