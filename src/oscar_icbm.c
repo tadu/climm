@@ -405,6 +405,45 @@ static void SnacCallbackType2 (Event *event)
     EventD (event);
 }
 
+void SnacCliSendIP (Server *serv, Contact *cont)
+{
+    Packet *pak;
+    UDWORD mtime = rand() % 0xffff, mid = rand() % 0xffff;
+    
+    assert (serv);
+    assert (cont);
+ 
+    serv->oscar_type2_seq--;
+    
+    pak = SnacC (serv, 4, 6, 0, 0);
+    PacketWriteB4        (pak, mtime);
+    PacketWriteB4        (pak, mid);
+    PacketWriteB2        (pak, 2);
+    PacketWriteCont      (pak, cont);
+    PacketWriteTLV       (pak, 5);
+      PacketWrite2       (pak, 0);
+      PacketWriteB4      (pak, mtime);
+      PacketWriteB4      (pak, mid);
+      PacketWriteCapID   (pak, CAP_ISICQ);
+      PacketWriteTLV2    (pak, 10, 1);
+      PacketWriteB4      (pak, 0x000f0000); /* empty TLV(15) */
+      PacketWriteTLV     (pak, 10001);
+        PacketWrite4     (pak, serv->conn->cont->uin);
+        PacketWriteB4    (pak, serv->conn->our_local_ip);
+        PacketWrite4     (pak, serv->oscar_dc->port);
+        PacketWrite1     (pak, 4);
+        PacketWrite4     (pak, serv->conn->our_outside_ip);
+        PacketWrite4     (pak, serv->oscar_dc->port);
+        PacketWrite2     (pak, serv->oscar_dc->version);
+        PacketWrite4     (pak, 0x0000002f);
+      PacketWriteTLVDone (pak);
+    PacketWriteTLVDone   (pak);
+    PacketWriteTLV       (pak, 19);
+      PacketWrite1       (pak, 1);
+    PacketWriteTLVDone   (pak);
+    SnacSend (serv, pak);
+}
+
 static UBYTE SnacCliSendmsg2 (Server *serv, Message *msg)
 {
     Packet *pak;

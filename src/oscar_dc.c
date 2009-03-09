@@ -1239,7 +1239,10 @@ UBYTE PeerSendMsgFat (Connection *list, Contact *cont, Message *msg)
     assert (msg->send_message);
 
     if (!cont->dc || !cont->dc->port)
+    {
+        SnacCliSendIP (list->serv, cont);
         return RET_DEFER;
+    }
     if (!cont->uin)
         return RET_DEFER;
     if (cont->uin == list->serv->oscar_uin || !(list->connect & CONNECT_MASK))
