@@ -29,6 +29,7 @@
 #include "oscar_service.h"
 #include "oscar_icbm.h"
 #include "oscar_base.h"
+#include "io/io_tcp.h"
 
 #include <unistd.h>
 #include <assert.h>
@@ -116,7 +117,7 @@ Event *ConnectionInitPeer (Connection *list)
     list->port        = ConnectionPrefVal (list->serv, CO_OSCAR_DC_PORT);
     list->cont        = list->serv->conn->cont;
 
-    UtilIOConnectTCP (list);
+    IOListenTCP (list);
     return NULL;
 }
 
@@ -158,12 +159,12 @@ BOOL TCPDirectOpen (Connection *list, Contact *cont)
 
     if  (cont->dc->ip_rem && cont->dc->port)
     {
-        peer->connect = 1;
+        peer->connect = 0;
         peer->ip      = cont->dc->ip_rem;
     }
     else if (cont->dc->ip_loc && cont->dc->port)
     {
-        peer->connect = 3;
+        peer->connect = 2;
         peer->ip      = cont->dc->ip_loc;
     }
     else
@@ -177,8 +178,9 @@ BOOL TCPDirectOpen (Connection *list, Contact *cont)
         rl_log_for (cont->nick, COLCONTACT);
         rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
                   s_wordquote (s_ip (peer->ip)), COLQUOTE, UD2UL (peer->port), COLNONE);
+        rl_printf ("\n");
     }
-    UtilIOConnectTCP (peer);
+    IOConnectTCP (peer);
     return TRUE;
 }
 
@@ -249,101 +251,61 @@ void TCPDispatchReconn (Connection *peer)
  */
 void TCPDispatchMain (Connection *list)
 {
-    struct sockaddr_in sin;
     Connection *peer;
-    socklen_t length;
     int rc;
  
     ASSERT_ANY_LISTEN(list);
-
-    if (list->connect & CONNECT_OK)
-    {
-        if ((rc = UtilIOError (list)))
-        {
-#ifndef __BEOS__
-            rl_printf (i18n (2051, "Error on socket: %s (%d)\n"), strerror (rc), rc);
-            if (list->sok > 0)
-                sockclose (list->sok);
-            list->sok = -1;
-            list->connect = 0;
-            return;
-#endif
-        }
-    }
-    else
-    {
-        switch (list->connect & 3)
-        {
-            case 1:
-                list->connect |= CONNECT_OK | CONNECT_SELECT_R | CONNECT_SELECT_X;
-                list->connect &= ~CONNECT_SELECT_W; /* & ~CONNECT_SELECT_X; */
-                if (list->type == TYPE_MSGLISTEN && list->serv && list->serv->type == TYPE_SERVER
-                    && (list->serv->conn->connect & CONNECT_OK))
-                    SnacCliSetstatus (list->serv, ims_online, 2);
-                break;
-            case 2:
-                list->connect = 0;
-                break;
-            default:
-                assert (0);
-        }
-        return;
-    }
-
-    peer = ServerChild (list->serv, list->cont, list->type == TYPE_MSGLISTEN ? TYPE_MSGDIRECT : TYPE_FILEDIRECT);
     
-    if (!peer)
+    if (~list->connect & CONNECT_OK)
     {
-        rl_print (i18n (1914, "Can't allocate connection structure.\n"));
-        list->connect = 0;
-        if (list->sok)
-            sockclose (list->sok);
+        rc = list->funcs->f_accept (list, list->dispatcher, NULL);
+        rc = UtilIOShowError (list, rc);
+        if (rc == IO_CONNECTED)
+        {
+            list->connect |= CONNECT_OK;
+            if (list->type == TYPE_MSGLISTEN && list->serv && list->serv->type == TYPE_SERVER
+                && (list->serv->conn->connect & CONNECT_OK))
+                SnacCliSetstatus (list->serv, ims_online, 2);
+        }
+        else if (rc != IO_OK)
+            list->connect = CONNECT_FAIL;
         return;
     }
 
     if (list->version == 6)
         rl_print (i18n (2046, "You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n"));
 
-    peer->oscar_our_session = 0;
-    peer->dispatch    = &TCPDispatchShake;
-
-    if (ConnectionPrefVal (list->serv, CO_S5USE))
+    peer = ServerChild (list->serv, list->cont, list->type == TYPE_MSGLISTEN ? TYPE_MSGDIRECT : TYPE_FILEDIRECT);
+    if (!peer)
     {
-        peer->sok = list->sok;
-        list->sok = -1;
-        list->connect = 0;
-        UtilIOSocksAccept (peer);
-        UtilIOConnectTCP (list);
+        rl_print (i18n (1914, "Can't allocate connection structure.\n"));
+        list->funcs->f_close (list, list->dispatcher);
+        return;
+    }
+
+    rc = list->funcs->f_accept (list, list->dispatcher, peer);
+    if  (rc <= 0)
+    {
+        rc = UtilIOShowError (list, rc);
+        switch (rc)
+        {
+            case IO_OK:
+            case IO_RW:
+                ConnectionD (peer);
+                return;
+            case IO_CONNECTED:
+            default:
+                assert (0);
+        }
     }
     else
     {
-        length = sizeof (sin);
-        peer->sok  = accept (list->sok, (struct sockaddr *)&sin, &length);
-        
-        if (peer->sok <= 0)
-        {
-            ConnectionD (peer);
-            return;
-        }
-#if HAVE_FCNTL
-        rc = fcntl (peer->sok, F_GETFL, 0);
-        if (rc != -1)
-            rc = fcntl (peer->sok, F_SETFL, rc | O_NONBLOCK);
-#elif HAVE_IOCTLSOCKET
-        {
-            UDWORD origip = 1;
-            rc = ioctlsocket (peer->sok, FIONBIO, &origip);
-        }
-#endif
-        if (rc == -1)
-        {
-            ConnectionD (peer);
-            return;
-        }
+        peer->oscar_our_session = 0;
+        peer->dispatch    = &TCPDispatchShake;
+        peer->sok =  rc;
+        peer->connect = 16 | CONNECT_SELECT_R;
+        peer->cont = NULL;
     }
-
-    peer->connect = 16 | CONNECT_SELECT_R;
-    peer->cont = NULL;
 }
 
 /*
@@ -352,65 +314,63 @@ void TCPDispatchMain (Connection *list)
 void TCPDispatchConn (Connection *peer)
 {
     Contact *cont;
+    int rc;
     
     ASSERT_ANY_DIRECT (peer);
-    
-    while (1)
-    {
-        if (!(cont = peer->cont) || !cont->dc)
-        {
-            TCPClose (peer);
-            return;
-        }
-        
-        DebugH (DEB_TCP, "Conn: uin %s nick %s state %x", cont->screen, cont->nick, peer->connect);
 
-        switch (peer->connect & CONNECT_MASK)
+    if (!(cont = peer->cont) || !cont->dc)
+    {
+        TCPClose (peer);
+        return;
+    }
+    
+    rc = peer->funcs->f_read (peer, peer->dispatcher, NULL, 0);
+    rc = UtilIOShowError (peer, rc);
+    if (rc == IO_CONNECTED)
+    {
+        if (prG->verbose)
         {
-            case 0:
-            case 3:
-                assert (0);
-            case 5:
-            {
-                peer->connect = CONNECT_FAIL;
-                sockclose (peer->sok);
-                peer->sok = -1;
-                return;
-            }
-            case 2:
-            case 4:
-                if (prG->verbose)
-                {
-                    rl_log_for (cont->nick, COLCONTACT);
-                    rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
-                              s_wordquote (s_ip (peer->ip)), COLQUOTE, UD2UL (peer->port), COLNONE);
-                    rl_print (i18n (1785, "success.\n"));
-                }
-                QueueEnqueueData (peer, QUEUE_TCP_TIMEOUT, peer->ip, time (NULL) + 10,
-                                  NULL, cont, NULL, &TCPCallBackTimeout);
-                peer->connect = 1 | CONNECT_SELECT_R;
-                peer->dispatch = &TCPDispatchShake;
-#ifdef ENABLE_SSL
-                /* We only set that status from here since we don't initialize
-                 * SSL for incoming connections.
-                 */
-                peer->ssl_status = SSL_STATUS_REQUEST;
-#endif
-                TCPDispatchShake (peer);
-                return;
-            case TCP_STATE_WAITING:
-            case TCP_STATE_WAITING + 2:
-                if (prG->verbose)
-                    rl_printf (i18n (1855, "TCP connection to %s at %s:%ld failed.\n"),
-                             cont->nick, s_ip (peer->ip), UD2UL (peer->port));
-                peer->connect = CONNECT_FAIL;
-                peer->sok = -1;
-                return;
-            case CONNECT_OK:
-                return;
-            default:
-                assert (0);
+            rl_log_for (cont->nick, COLCONTACT);
+            rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
+                      s_wordquote (s_ip (peer->ip)), COLQUOTE, UD2UL (peer->port), COLNONE);
+            rl_print (i18n (1785, "success.\n"));
         }
+        QueueEnqueueData (peer, QUEUE_TCP_TIMEOUT, peer->ip, time (NULL) + 10,
+                          NULL, cont, NULL, &TCPCallBackTimeout);
+        peer->connect = 1 | CONNECT_SELECT_R;
+        peer->dispatch = &TCPDispatchShake;
+#ifdef ENABLE_SSL
+        /* We only set that status from here since we don't initialize
+         * SSL for incoming connections.
+         */
+        peer->ssl_status = SSL_STATUS_REQUEST;
+#endif
+        TCPDispatchShake (peer);
+        return;
+        
+    }
+    else if (rc == IO_OK)
+        return;
+    else if (rc == IO_RW && peer->connect == 0)
+    {
+        peer->connect = 2;
+        peer->ip      = cont->dc->ip_loc;
+        if (prG->verbose)
+        {
+            rl_log_for (cont->nick, COLCONTACT);
+            rl_printf (i18n (2522, "Opening TCP connection at %s:%s%ld%s... "),
+                      s_wordquote (s_ip (peer->ip)), COLQUOTE, UD2UL (peer->port), COLNONE);
+        }
+        rl_printf ("\n");
+        IOConnectTCP (peer);
+    }
+    else
+    {
+        if (prG->verbose)
+            rl_printf (i18n (1855, "TCP connection to %s at %s:%ld failed.\n"),
+                     cont->nick, s_ip (peer->ip), UD2UL (peer->port));
+        peer->connect = CONNECT_FAIL;
+        return;
     }
 }
 
@@ -670,7 +630,7 @@ static Packet *TCPReceivePacket (Connection *peer)
     if (!(peer->connect & CONNECT_MASK))
         return NULL;
 
-    pak = UtilIOReceiveTCP (peer);
+    pak = UtilIOReceiveTCP2 (peer);
 
     if (!peer->connect)
     {
@@ -756,7 +716,7 @@ void PeerPacketSend (Connection *peer, Packet *pak)
         if (PacketReadAt1 (pak, 0) == PEER_MSG || (!PacketReadAt1 (pak, 0) && peer->type == TYPE_MSGDIRECT && peer->version == 6)) 
             Encrypt_Pak (peer, tpak);
     
-    UtilIOSendTCP (peer, tpak);
+    UtilIOSendTCP2 (peer, tpak);
 }
 
 
@@ -993,8 +953,8 @@ static Connection *TCPReceiveInit (Connection *peer, Packet *pak)
                 ConnectionD (peer);
                 return NULL;
             }
-            if ((peer2->connect & CONNECT_MASK) == (UDWORD)TCP_STATE_WAITING)
-                EventD (QueueDequeue (peer2, QUEUE_TCP_TIMEOUT, peer2->ip));
+/*            if ((peer2->connect & CONNECT_MASK) == (UDWORD)TCP_STATE_WAITING)
+                EventD (QueueDequeue (peer2, QUEUE_TCP_TIMEOUT, peer2->ip)); */
             if (peer2->sok == -1 && peer2->type == TYPE_FILEDIRECT)
             {
                 peer2->sok = peer->sok;
@@ -1502,7 +1462,8 @@ static void PeerCallbackReceiveAdvanced (Event *event)
     DebugH (DEB_TCP, "%p %p %p\n", event, event ? event->conn : NULL, event ? event->pak : NULL);
     if (event && event->conn && event->pak && event->conn->type & TYPEF_ANY_DIRECT)
         PeerPacketSend (event->conn, event->pak);
-#if ENABLE_SSL
+#if 0
+    // ENABLE_SSL
     switch (event->conn->ssl_status)
     {
         case SSL_STATUS_INIT:
@@ -1633,7 +1594,7 @@ static void TCPCallBackReceive (Event *event)
                  */
                 case MSG_SSL_OPEN:
                     if (!ostat && !strcmp (tmp, "1"))
-                        ssl_connect (peer, 1);
+                        ; /* ssl_connect (peer, 1); */
                     else
                     {
                         DebugH (DEB_SSL, "%s (%s) is not SSL capable", cont->nick, cont->screen);
