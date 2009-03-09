@@ -519,7 +519,9 @@ int UtilIOShowError (Connection *conn, int rc)
         case IO_NO_NONBLOCK:
             if (1) t = i18n (1950, "Couldn't set socket nonblocking"); else
         case IO_NO_HOSTNAME:
-            if (1) t = i18n (1951, "Can't find hostname %s: %s (%d)."); else
+            if (1) t = i18n (9999, "Can't find hostname"); else
+        case IO_CONN_TO:
+            if (1) t = i18n (9999, "Connection timed out"); else
         case IO_NO_CONN:
                    t = i18n (1952, "Couldn't open connection");
             if (prG->verbose || (conn->serv && conn == conn->serv->conn))
