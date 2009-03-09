@@ -5,8 +5,6 @@
 
 #include "contact.h"
 
-#define TCP_STATE_WAITING      32
-
 Event *ConnectionInitPeer   (Connection *list);
 
 /* Open, close, disallow connection of UIN with this listener */
