@@ -25,7 +25,7 @@ typedef struct Dispatcher_s Dispatcher;
                             
 typedef struct Conn_Func_s
 {
-    int   (*f_accept)(Connection *c, Dispatcher *d);
+    int   (*f_accept)(Connection *c, Dispatcher *d, Connection *newc);
     int   (*f_read)  (Connection *c, Dispatcher *d, char *buf, size_t count);
     int   (*f_write) (Connection *c, Dispatcher *d, const char *buf, size_t count);
     void  (*f_close) (Connection *c, Dispatcher *d);

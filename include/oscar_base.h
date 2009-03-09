@@ -24,6 +24,9 @@ Packet *FlapC (UBYTE channel);
 void    FlapSend (Server *serv, Packet *pak);
 void    FlapPrint (Packet *pak);
 
+Packet *UtilIOReceiveTCP2 (Connection *conn);
+void    UtilIOSendTCP2 (Connection *conn, Packet *pak);
+
 Event *ConnectionInitOscarServer (Server *serv);
 Server *SrvRegisterUIN (Server *serv, const char *pass);
 

@@ -184,13 +184,21 @@ static char *io_gnutls_err (Connection *conn, Dispatcher *d)
 static ssize_t io_gnutls_pull (gnutls_transport_ptr_t user_data, void *buf, size_t len)
 {
     Dispatcher *d = (Dispatcher *) user_data;
-    return d->conn->funcs->f_read (d->conn, d, buf, len);
+    int rc = d->conn->funcs->f_read (d->conn, d, buf, len);
+    if      (rc == IO_CLOSED)  return 0;
+    else if (rc == IO_OK)      { errno = EAGAIN; return -1; }
+    else if (rc < 0)           return -1;
+    else                       return rc;
 }
 
 static ssize_t io_gnutls_push (gnutls_transport_ptr_t user_data, const void *buf, size_t len)
 {
     Dispatcher *d = (Dispatcher *) user_data;
-    return d->conn->funcs->f_write (d->conn, d, buf, len);
+    int rc = d->conn->funcs->f_write (d->conn, d, buf, len);
+    if      (rc == IO_CLOSED)  return 0;
+    else if (rc == IO_OK)      { errno = EAGAIN; return -1; }
+    else if (rc < 0)           return -1;
+    else                       return rc;
 }
 
 /*
@@ -237,17 +245,10 @@ static int io_gnutls_connecting (Connection *conn, Dispatcher *d)
     {
         int ret = 0;
 
+        conn->connect &= ~CONNECT_SELECT_A;
         ret = gnutls_handshake (d->ssl);
         if (ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED)
-        {
-            conn->ssl_status = SSL_STATUS_HANDSHAKE;
-            conn->connect &= ~CONNECT_SELECT_R & ~CONNECT_SELECT_W;
-            if (gnutls_record_get_direction (d->ssl))
-               conn->connect |= CONNECT_SELECT_W;
-            else
-               conn->connect |= CONNECT_SELECT_R;
             return IO_OK;
-        }
 
         if (ret)
         {
@@ -257,7 +258,6 @@ static int io_gnutls_connecting (Connection *conn, Dispatcher *d)
         }
 
         conn->ssl_status = SSL_STATUS_OK;
-        conn->connect = CONNECT_OK | CONNECT_SELECT_R;
         return IO_CONNECTED;
     }
     assert(0);

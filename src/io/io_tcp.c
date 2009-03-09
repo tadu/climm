@@ -71,7 +71,7 @@ static int   io_tcp_write (Connection *c, Dispatcher *d, const char *buf, size_t
 static void  io_tcp_close (Connection *c, Dispatcher *d);
 static char *io_tcp_err   (Connection *c, Dispatcher *d);
 
-static int   io_listen_tcp_accept(Connection *c, Dispatcher *d);
+static int   io_listen_tcp_accept(Connection *c, Dispatcher *d, Connection *cn);
 static void  io_listen_tcp_open  (Connection *c, Dispatcher *d);
 
 enum io_tcp_dispatcher_flags {
@@ -101,7 +101,8 @@ static Conn_Func io_listen_tcp_func = {
 void IOConnectTCP (Connection *conn)
 {
     assert (conn);
-    conn->connect = CONNECT_SELECT_A;
+    conn->connect &= ~CONNECT_SELECT_R & ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
+    conn->connect |= CONNECT_SELECT_A;
     if (conn->funcs && conn->funcs->f_close)
         conn->funcs->f_close (conn, conn->dispatcher);
     if (conn->dispatcher)
@@ -116,7 +117,8 @@ void IOConnectTCP (Connection *conn)
 void IOListenTCP (Connection *conn)
 {
     assert (conn);
-    conn->connect = CONNECT_SELECT_A;
+    conn->connect &= ~CONNECT_SELECT_R & ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
+    conn->connect |= CONNECT_SELECT_A;
     if (conn->funcs && conn->funcs->f_close)
         conn->funcs->f_close (conn, conn->dispatcher);
     if (conn->dispatcher)
@@ -135,6 +137,7 @@ static void io_tcp_to (Event *event)
 {
     Connection *conn = event->conn;
     EventD (event);
+    conn->connect &= ~CONNECT_SELECT_R & ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
     conn->connect |= CONNECT_SELECT_A;
     conn->dispatcher->flags = FLAG_TIMEOUT;
 }
@@ -235,7 +238,8 @@ static void io_tcp_open (Connection *conn, Dispatcher *d)
     if (rc >= 0)
     {
         d->flags = FLAG_CONNECTED;
-        conn->connect = CONNECT_SELECT_R | CONNECT_SELECT_A;
+        conn->connect |= CONNECT_SELECT_R | CONNECT_SELECT_A;
+        conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
         return;
     }
 
@@ -253,7 +257,8 @@ static void io_tcp_open (Connection *conn, Dispatcher *d)
         QueueEnqueueData (conn, QUEUE_CON_TIMEOUT, conn->ip,
                           time (NULL) + 10, NULL,
                           conn->cont, NULL, &io_tcp_to);
-        conn->connect = CONNECT_SELECT_W | CONNECT_SELECT_X;
+        conn->connect |= CONNECT_SELECT_W | CONNECT_SELECT_X;
+        conn->connect &= ~CONNECT_SELECT_R & ~CONNECT_SELECT_A;
         d->flags = FLAG_CONNECTING;
         return;
     }
@@ -334,7 +339,8 @@ static int io_tcp_connecting (Connection *conn, Dispatcher *d)
     if (d->flags == FLAG_CONNECTED)
     {
         d->flags = FLAG_OPEN;
-        conn->connect = CONNECT_SELECT_R;
+        conn->connect |= CONNECT_SELECT_R;
+        conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~CONNECT_SELECT_A;
         EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip));
         return IO_CONNECTED;
     }
@@ -383,13 +389,14 @@ static int io_tcp_connecting (Connection *conn, Dispatcher *d)
         }
         d->flags = FLAG_OPEN;
         EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip));
-        conn->connect = CONNECT_SELECT_R;
+        conn->connect |= CONNECT_SELECT_R;
+        conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~CONNECT_SELECT_A;
         return IO_CONNECTED;
     }
     assert(0);
 }
 
-static int io_listen_tcp_accept (Connection *conn, Dispatcher *d)
+static int io_listen_tcp_accept (Connection *conn, Dispatcher *d, Connection *newconn)
 {
     struct sockaddr_in sin;
     socklen_t length;
@@ -419,9 +426,26 @@ static int io_listen_tcp_accept (Connection *conn, Dispatcher *d)
         close (sok);
         d->d_errno = errno;
         d->err = IO_NO_NONBLOCK;
-        s_repl (&d->lasterr, strerror (rc));
+        s_repl (&d->lasterr, strerror (errno));
         return IO_NO_NONBLOCK;
     }
+
+    assert (newconn);
+    newconn->connect |= CONNECT_SELECT_R;
+    newconn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~CONNECT_SELECT_A;
+    newconn->dispatcher = calloc (1, sizeof (Dispatcher));
+    if (!newconn->dispatcher)
+    {
+        close (sok);
+        d->d_errno = errno;
+        d->err = IO_NO_NONBLOCK;
+        s_repl (&d->lasterr, strerror (errno));
+        return IO_NO_MEM;
+    }
+    newconn->funcs = &io_tcp_func;
+    newconn->port = ntohs (sin.sin_port);
+    s_repl (&newconn->server, "local??host");
+    d->flags = FLAG_OPEN;
     return sok;
 }
 
