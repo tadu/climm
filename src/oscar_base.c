@@ -324,7 +324,7 @@ Packet *UtilIOReceiveTCP2 (Connection *conn)
     
     if (!(conn->connect & CONNECT_MASK))
     {
-        rc = UtilIOFinishConnect (conn);
+        rc = UtilIOShowError (conn, conn->funcs->f_read (conn, conn->dispatcher, NULL, 0));
         if (rc == IO_CONNECTED)
             conn->connect |= 1;
         else if (rc != IO_OK)
@@ -401,7 +401,7 @@ void UtilIOSendTCP2 (Connection *conn, Packet *pak)
     
     if (!(conn->connect & CONNECT_MASK))
     {
-        rc = UtilIOFinishConnect (conn);
+        rc = UtilIOShowError (conn, conn->funcs->f_read (conn, conn->dispatcher, NULL, 0));
         if (rc == IO_CONNECTED)
             conn->connect |= 1;
         else if (rc != IO_OK)

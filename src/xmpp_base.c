@@ -1053,7 +1053,7 @@ static void XMPPCallbackDispatch (Connection *conn)
     assert (conn->sok >= 0);
     if (!(conn->connect & (CONNECT_OK | 4)))
     {
-        rc = UtilIOFinishConnect (conn);
+        rc = UtilIOShowError (conn, conn->funcs->f_read (conn, conn->dispatcher, NULL, 0));
         switch (rc) {
             case IO_RW:
             case IO_OK:

@@ -18,7 +18,6 @@ typedef struct ssl_md5ctx_s ssl_md5ctx_t;
 
 #define ssl_errno_t int
 
-int SSLInit ();
 ssl_errno_t ssl_write (Connection *conn, UBYTE *data, UWORD len);
 ssl_errno_t ssl_read (Connection *conn, UBYTE *data, UWORD len);
 void ssl_close (Connection *conn DEBUGPARAM);

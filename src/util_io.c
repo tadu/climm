@@ -477,7 +477,7 @@ void UtilIOShowDisconnect (Connection *conn, int rc)
             if (!errno)
                 errno = ECONNRESET;
         case IO_RW:
-            if (prG->verbose || (conn->serv && conn == conn->serv->conn && errno != ECONNRESET))
+            if (prG->verbose || (conn->serv && conn == conn->serv->conn))
             {
                 Contact *cont;
                 if ((cont = conn->cont))
@@ -486,15 +486,15 @@ void UtilIOShowDisconnect (Connection *conn, int rc)
                     rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), conn->funcs->f_err (conn, conn->dispatcher), rc, errno);
                 }
             }
+            conn->funcs->f_close (conn, conn->dispatcher);
             break;
         default:
             assert (0);
     }
 }
 
-int UtilIOFinishConnect (Connection *conn)
+int UtilIOShowError (Connection *conn, int rc)
 {
-    int rc = conn->funcs->f_read (conn, conn->dispatcher, NULL, 0);
     switch (rc) {
         const char *t = NULL;
     
@@ -534,6 +534,7 @@ int UtilIOFinishConnect (Connection *conn)
                     s_sprintf  ("%s: %s (%d).", t, conn->funcs->f_err (conn, conn->dispatcher), rc),
                     __LINE__);
             }
+            conn->funcs->f_close (conn, conn->dispatcher);
             return IO_RW;
         default:
             assert (0);
