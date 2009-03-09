@@ -403,7 +403,7 @@ void IMCliAuth (Contact *cont, const char *text, auth_t how)
             if (!RET_IS_OK (SnacCliSendmsg (cont->serv, cont, 4, msg)))
                 MsgD (msg);
         }
-//        else
+        else
         {
             if (how == auth_deny)
                 SnacCliAuthorize (cont->serv, cont, 0, text);

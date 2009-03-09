@@ -183,7 +183,7 @@ JUMP_SNAC_F(SnacSrvUseronline)
     PacketReadB2 (pak);
     PacketReadB2 (pak);
     tlv = TLVRead (pak, PacketReadLeft (pak), -1);
-    if (tlv[10].str.len && CONTACT_DC (cont) && tlv[10].nr && ~tlv[10].nr)
+    if (tlv[10].str.len && CONTACT_DC (cont))
         cont->dc->ip_rem = tlv[10].nr;
     
     if (tlv[12].str.len && CONTACT_DC (cont))

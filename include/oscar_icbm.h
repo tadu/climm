@@ -13,8 +13,6 @@ void SrvMsgAdvanced (Packet *pak, UDWORD seq, UWORD type,
 void SrvMsgGreet (Packet *pak, UWORD cmd, const char *reason, UWORD port, UDWORD len, const char *msg);
 void SrvReceiveAdvanced (Server *serv, Event *inc_event, Packet *inc_pak, Event *ack_event);
 
-void SnacCliSendIP (Server *serv, Contact *cont);
-
 #define SnacCliReqicbm(serv)     SnacSend (serv, SnacC (serv, 4, 4, 0, 0))
 
 #endif

@@ -176,8 +176,11 @@ void FlapChannel4 (Server *serv, Packet *pak)
             rl_print (i18n (2328, "You logged in too frequently, please wait 30 minutes before trying again.\n"));
         if (tlv[8].nr == 5)
             s_repl (&serv->passwd, NULL);
-        
-        serv->conn->funcs->f_close (serv->conn, serv->conn->dispatcher);
+
+        if ((serv->conn->connect & CONNECT_MASK) && serv->conn->sok != -1)
+            sockclose (serv->conn->sok);
+        serv->conn->connect = 0;
+        serv->conn->sok = -1;
         TLVD (tlv);
         tlv = NULL;
     }
@@ -319,6 +322,21 @@ Packet *UtilIOReceiveTCP2 (Connection *conn)
     Packet *pak;
     int rc, off, len;
     
+    if (!(conn->connect & CONNECT_MASK))
+    {
+        rc = UtilIOShowError (conn, conn->funcs->f_read (conn, conn->dispatcher, NULL, 0));
+        if (rc == IO_CONNECTED)
+            conn->connect |= 1;
+        else if (rc != IO_OK)
+        {
+            if (conn->reconnect && conn->connect & CONNECT_OK)
+                conn->reconnect (conn);
+            else
+                conn->connect = 0;
+        }
+        return NULL;
+    }
+
     if (!(pak = conn->incoming))
     {
         conn->incoming = pak = PacketC ();
@@ -341,7 +359,7 @@ Packet *UtilIOReceiveTCP2 (Connection *conn)
     if  (len < off)
         len = off + 1;
     
-    rc = conn->funcs->f_read (conn, conn->dispatcher, (char *)(pak->data + pak->len), len - pak->len);
+    rc = conn->funcs->f_read (conn, conn->dispatcher, pak->data + pak->len, len - pak->len);
     if (rc >= 0)
     {
         pak->len += rc;
@@ -396,7 +414,7 @@ void UtilIOSendTCP2 (Connection *conn, Packet *pak)
         return;
     }
 
-    rc = conn->funcs->f_write (conn, conn->dispatcher, (const char *)pak->data, pak->len);
+    rc = conn->funcs->f_write (conn, conn->dispatcher, pak->data, pak->len);
     PacketD (pak);
     
     if (!rc)
@@ -670,22 +688,6 @@ void SrvCallBackReceive (Connection *conn)
         }
     }
 #endif
-
-    if (!(conn->connect & (1 | CONNECT_OK)))
-    {
-        int rc = UtilIOShowError (conn, conn->funcs->f_read (conn, conn->dispatcher, NULL, 0));
-        if (rc == IO_CONNECTED)
-            conn->connect |= 1;
-        else if (rc != IO_OK)
-        {
-            if (conn->reconnect && conn->connect & CONNECT_OK)
-                conn->reconnect (conn);
-            else
-                conn->connect = 0;
-        }
-        return;
-    }
-
     pak = UtilIOReceiveTCP2 (conn);
     
     if (!pak)
