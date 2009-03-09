@@ -60,6 +60,8 @@
 #include "im_response.h"
 #include "oscar_dc.h"
 #include "conv.h"
+#include "oscar_base.h"
+#include "io/io_tcp.h"
 #include "oscar_dc_file.h"
 
 static void PeerFileDispatchClose   (Connection *ffile);
@@ -99,7 +101,7 @@ Connection *PeerFileCreate (Server *serv)
         rl_printf (i18n (2519, "Opening file listener connection at %slocalhost%s:%s%ld%s... "),
                   COLQUOTE, COLNONE, COLQUOTE, UD2UL (flist->port), COLNONE);
 
-    UtilIOConnectTCP (flist);
+    IOConnectTCP (flist);
     
     return flist;
 }
@@ -278,12 +280,12 @@ void PeerFileDispatch (Connection *fpeer)
             ReadLinePromptUpdate (s_sprintf ("[%s%ld:%02d%%%s] %s%s",
                           COLCONTACT, UD2UL (fpeer->oscar_file->oscar_file_done), (int)((100.0 * fpeer->oscar_file->oscar_file_done) / fpeer->oscar_file->oscar_file_len),
                           COLNONE, COLSERVER, i18n (2467, "climm>")));
-        UtilIOSendTCP (fpeer, NULL);
+        UtilIOSendTCP2 (fpeer, NULL);
         QueueRetry (fpeer, QUEUE_PEER_FILE, fpeer->cont);
         if (!UtilIOSelectIs (fpeer->sok, READFDS))
             return;
     }
-    if (!(pak = UtilIOReceiveTCP (fpeer)))
+    if (!(pak = UtilIOReceiveTCP2 (fpeer)))
         return;
 
     if (prG->verbose & DEB_PACKTCP)
