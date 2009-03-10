@@ -730,11 +730,11 @@ void UtilIOSendTCP (Connection *conn, Packet *pak)
 
     data = (void *) &pak->data;
     
-    if (!conn->outgoing)
-        conn->outgoing = pak;
-    else if (!pak)
-        pak = conn->outgoing;
-    else
+//    if (!conn->outgo ing)
+//        conn->outgo ing = pak;
+//    else if (!pak)
+//        pak = conn->outgo ing;
+//    else
     {
         /* cannot handle two pakets in transit - tough luck */
         conn->connect = 0;
@@ -757,7 +757,6 @@ void UtilIOSendTCP (Connection *conn, Packet *pak)
             break;
         
         PacketD (pak);
-        conn->outgoing = NULL;
         conn->stat_pak_sent++;
         return;
     }
@@ -770,7 +769,6 @@ void UtilIOSendTCP (Connection *conn, Packet *pak)
         return;
     }
 
-    conn->outgoing = NULL;
     PacketD (pak);
 //    dc_close (conn);
     conn->sok = -1;

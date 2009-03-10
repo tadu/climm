@@ -1121,12 +1121,6 @@ void TCPClose (Connection *peer)
         PacketD (peer->incoming);
         peer->incoming = NULL;
     }
-    if (peer->outgoing)
-    {
-        PacketD (peer->outgoing);
-        peer->outgoing = NULL;
-    }
-    
     if (peer->type == TYPE_FILEDIRECT || !peer->cont)
     {
         peer->close = NULL;

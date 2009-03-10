@@ -26,7 +26,6 @@ struct Connection_s
     SOK_T     sok;            /* socket for connection to server          */
     UWORD     connect;        /* connection setup status                  */
     Packet   *incoming;       /* packet we're receiving                   */
-    Packet   *outgoing;       /* packet we're sending                     */
 
     Dispatcher *dispatcher;   /* pointer to extra data for dispatching    */
     
