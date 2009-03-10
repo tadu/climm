@@ -529,8 +529,6 @@ static void TCPDispatchPeer (Connection *peer)
 {
     Contact *cont;
     Packet *pak;
-    Event *event;
-    int i = 0;
     UWORD seq_in = 0, seq, cmd;
     
     ASSERT_MSGDIRECT (peer);
@@ -542,54 +540,25 @@ static void TCPDispatchPeer (Connection *peer)
     }
 
     peer->connect &= ~CONNECT_SELECT_W;
-    /* Recv all packets before doing anything else.
-         The objective is to delete any packets CANCELLED by the remote user. */
-    while (UtilIOSelectIs (peer->sok, READFDS | WRITEFDS) && i++ <= TCP_MSG_QUEUE)
-    {
-        if (!(pak = TCPReceivePacket (peer)))
-            return;
 
-        if (peer->version > 6)
-            PacketRead1 (pak);
-               PacketRead4 (pak);
-        cmd  = PacketReadAt2 (pak, PacketReadPos (pak));
-        seq  = PacketReadAt2 (pak, PacketReadPos (pak) + 4);
-        
-        /* Make sure this isn't a resend */
-        if ((seq_in == 0) || (seq < seq_in))
-        { 
-            seq_in = seq;
+    if (!(pak = TCPReceivePacket (peer)))
+        return;
 
-            /* Deal with CANCEL packets now */
-            switch (cmd)
-            {
-                case TCP_CMD_CANCEL:
-                    event = QueueDequeue (peer, QUEUE_TCP_RECEIVE, seq_in);
-                    if (!event)
-                        break;
-                    
-                    if (prG->verbose)
-                    {
-                        rl_printf (i18n (1807, "Cancelled incoming message (seq %04x) from %s\n"),
-                                 seq_in, cont->nick);
-                    }
-                    EventD (event);
-                    PacketD (pak);
-                    break;
-
-                default:
-                    /* Store the event in the recv queue for handling later */            
-                    QueueEnqueueData (peer, QUEUE_TCP_RECEIVE, seq_in, 0, pak, cont,
-                                      OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_dcssl, 0),
-                                      &TCPCallBackReceive);
-                    peer->oscar_dc_seq--;
-                break;
-            }
-        }
-
-        UtilIOSelectInit (0, 100000);
-        UtilIOSelectAdd (peer->sok, READFDS);
-        UtilIOSelect();
+    if (peer->version > 6)
+        PacketRead1 (pak);
+           PacketRead4 (pak);
+    cmd  = PacketReadAt2 (pak, PacketReadPos (pak));
+    seq  = PacketReadAt2 (pak, PacketReadPos (pak) + 4);
+    
+    /* Make sure this isn't a resend */
+    if ((seq_in == 0) || (seq < seq_in))
+    { 
+        seq_in = seq;
+        /* Store the event in the recv queue for handling later */            
+        QueueEnqueueData (peer, QUEUE_TCP_RECEIVE, seq_in, 0, pak, cont,
+                          OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_dcssl, 0),
+                          &TCPCallBackReceive);
+        peer->oscar_dc_seq--;
     }
 }
 
