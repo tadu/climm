@@ -316,6 +316,7 @@ Packet *FlapC (UBYTE channel)
 
 Packet *UtilIOReceiveTCP2 (Connection *conn)
 {
+    Contact *cont = conn->cont;
     Packet *pak;
     int rc, off, len;
     
@@ -357,6 +358,21 @@ Packet *UtilIOReceiveTCP2 (Connection *conn)
         }
         return pak;
     }
+
+    if (rc == IO_CONNECTED && conn->ssl_status == SSL_STATUS_OK)
+    {
+        if (prG->verbose)
+        {
+            rl_log_for (cont->nick, COLCONTACT);
+            rl_printf (i18n (2375, "SSL handshake ok.\n"));
+        }
+        TCLEvent (cont, "ssl", "ok");
+    }
+    else if (rc == IO_RW &&  conn->ssl_status == SSL_STATUS_FAILED)
+    {
+        TCLEvent (cont, "ssl", "failed handshake");
+        rl_printf (i18n (2533, "SSL handshake failed.\n"));
+    }
     else
     {
         UtilIOShowDisconnect (conn, rc);
@@ -370,8 +386,8 @@ Packet *UtilIOReceiveTCP2 (Connection *conn)
             conn->reconnect (conn);
         else
             conn->connect = 0;
-        return NULL;
     }
+    return NULL;
 }
 
 /*
