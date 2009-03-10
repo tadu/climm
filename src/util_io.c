@@ -98,7 +98,6 @@ void UtilIOClose (Connection *conn)
                           sockclose (conn->sok);     \
                         conn->sok = -1;               \
                         conn->connect += 2;            \
-                        conn->dispatch = conn->utilio;  \
                         conn->dispatch (conn);           \
                         return; }
 #define CONN_FAIL_RC(s) { int rc = errno;                  \
@@ -111,7 +110,6 @@ void UtilIOClose (Connection *conn)
                           CONN_FAIL (s_sprintf  ("%s: %s (%d).", s, strerror (rc), rc)) } }
 #define CONN_OK         { conn->connect++;                          \
                           EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip)); \
-                          conn->dispatch = conn->utilio;               \
                           conn->dispatch (conn);                        \
                           return; }
 
@@ -130,9 +128,8 @@ void UtilIOConnectTCP (Connection *conn DEBUGPARAM)
     struct hostent *host;
     char *origserver = NULL;
     UDWORD origport = 0, origip = 0;
+    assert(0);
     
-    conn->utilio   = conn->dispatch;
-
     Debug (DEB_IO, "UtilIOConnectCallback: %x", conn->connect);
 
     errno = 0;
@@ -233,7 +230,6 @@ void UtilIOConnectTCP (Connection *conn DEBUGPARAM)
             QueueEnqueueData (conn, QUEUE_CON_TIMEOUT, conn->ip,
                               time (NULL) + 10, NULL,
                               conn->cont, NULL, &UtilIOTOConn);
-            conn->utilio   = conn->dispatch;
             conn->dispatch = &UtilIOConnectCallback;
             conn->connect |= CONNECT_SELECT_W | CONNECT_SELECT_X;
             return;
@@ -352,6 +348,7 @@ static void UtilIOConnectCallback (Connection *conn)
     int rc, eno = 0, len;
     char buf[60];
 
+    assert (0);
     while (1)
     {
         eno = 0;
@@ -422,7 +419,6 @@ static void UtilIOConnectCallback (Connection *conn)
                 {
                     conn->connect &= ~CONNECT_SOCKS;
                     conn->connect |= 8 * CONNECT_SOCKS_ADD;
-                    conn->dispatch = conn->utilio;
                     EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip));
                     UtilIOConnectTCP (conn DEBUGNONE);
                     return;

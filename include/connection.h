@@ -47,7 +47,6 @@ struct Connection_s
 
     jump_conn_f *dispatch;     /* function to call on select()    */
     jump_conn_f *close;        /* function to call to close       */
-    jump_conn_f *utilio;       /* private to util_io.c            */
 
     UDWORD    stat_pak_sent;
     UDWORD    stat_pak_rcvd;
