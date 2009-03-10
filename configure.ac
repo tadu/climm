@@ -133,7 +133,7 @@ if test "x$ac_arg_use_dc" != "xno" || test "x$ac_arg_use_xmpp" != "xno"; then
         *)              AC_MSG_WARN([cannot find a suitable SSL library -- encrypted connection support disabled]) ;;
       esac
     fi
-    if test "x$ac_arg_use_ssl" = "xgnutls+openssl";  then
+    if test "x$ac_arg_use_ssl" = "xgnutls+openssl" &&  test "x$ac_arg_use_ssl" != "x$ac_use_ssl";  then
       case "$ac_use_ssl" in
         gnutls)         AC_MSG_FAILURE([cannot find OpenSSL library]) ;;
         openssl)        AC_MSG_FAILURE([cannot find GnuTLS library]) ;;

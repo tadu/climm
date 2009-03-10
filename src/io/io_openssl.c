@@ -201,8 +201,7 @@ io_openssl_err_t IOOpenSSLOpen (Connection *conn, char is_client)
     conn->connect |= CONNECT_SELECT_A;
     d->next = conn->dispatcher;
     conn->dispatcher = d;
-    d->next_funcs = conn->funcs;
-    conn->funcs = &io_openssl_func;
+    d->funcs = &io_openssl_func;
     d->conn = conn;
     
     io_openssl_open (conn, d, is_client);
@@ -239,7 +238,7 @@ static char *io_openssl_err (Connection *conn, Dispatcher *d)
 static ssize_t io_openssl_pull (openssl_transport_ptr_t user_data, void *buf, size_t len)
 {
     Dispatcher *d = (Dispatcher *) user_data;
-    int rc = d->conn->funcs->f_read (d->conn, d, buf, len);
+    int rc = d->conn->dispatcher->funcs->f_read (d->conn, d, buf, len);
     if      (rc == IO_CLOSED)  return 0;
     else if (rc == IO_OK)      { errno = EAGAIN; return -1; }
     else if (rc < 0)           return -1;
@@ -249,7 +248,7 @@ static ssize_t io_openssl_pull (openssl_transport_ptr_t user_data, void *buf, si
 static ssize_t io_openssl_push (openssl_transport_ptr_t user_data, const void *buf, size_t len)
 {
     Dispatcher *d = (Dispatcher *) user_data;
-    int rc = d->conn->funcs->f_write (d->conn, d, buf, len);
+    int rc = d->conn->dispatcher->funcs->f_write (d->conn, d, buf, len);
     if      (rc == IO_CLOSED)  return 0;
     else if (rc == IO_OK)      { errno = EAGAIN; return -1; }
     else if (rc < 0)           return -1;
@@ -490,8 +489,8 @@ static io_err_t io_openssl_write (Connection *conn, Dispatcher *d, const char *b
 
 static void io_openssl_close (Connection *conn, Dispatcher *d)
 {
-    if (d->next && d->next_funcs && d->next_funcs->f_close)
-        d->next_funcs->f_close (conn, d->next);
+    if (d->next && d->next->funcs && d->next->funcs->f_close)
+        d->next->funcs->f_close (conn, d->next);
 
     if (conn->dispatcher == d)
         conn->dispatcher = NULL;

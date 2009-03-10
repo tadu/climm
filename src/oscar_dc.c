@@ -260,7 +260,7 @@ void TCPDispatchMain (Connection *list)
     
     if (~list->connect & CONNECT_OK)
     {
-        rc = list->funcs->f_accept (list, list->dispatcher, NULL);
+        rc = list->dispatcher->funcs->f_accept (list, list->dispatcher, NULL);
         assert (rc < 0);
         rce = UtilIOShowError (list, rc);
         if (rce == IO_CONNECTED)
@@ -282,11 +282,11 @@ void TCPDispatchMain (Connection *list)
     if (!peer)
     {
         rl_print (i18n (1914, "Can't allocate connection structure.\n"));
-        list->funcs->f_close (list, list->dispatcher);
+        list->dispatcher->funcs->f_close (list, list->dispatcher);
         return;
     }
 
-    rc = list->funcs->f_accept (list, list->dispatcher, peer);
+    rc = list->dispatcher->funcs->f_accept (list, list->dispatcher, peer);
     if  (rc <= 0)
     {
         rce = UtilIOShowError (list, rc);
@@ -328,7 +328,7 @@ void TCPDispatchConn (Connection *peer)
         return;
     }
     
-    rc = peer->funcs->f_read (peer, peer->dispatcher, NULL, 0);
+    rc = peer->dispatcher->funcs->f_read (peer, peer->dispatcher, NULL, 0);
     assert (rc < 0);
     rce = UtilIOShowError (peer, rc);
     if (rce == IO_CONNECTED)
@@ -1073,7 +1073,7 @@ void TCPClose (Connection *peer)
                 rl_printf (i18n (1843, "Closing socket %d.\n"), peer->sok);
         }
     }
-    peer->funcs->f_close (peer, peer->dispatcher);
+    peer->dispatcher->funcs->f_close (peer, peer->dispatcher);
     peer->connect = connect;
     peer->oscar_our_session = 0;
     if (peer->incoming)
@@ -1477,7 +1477,7 @@ static void PeerCallbackReceiveAdvanced (Event *event)
             /* Could not figure out how to say good bye to licq correctly.
              * That's why we do a simple close.
              */
-            event->conn->funcs->f_close (event->conn, event->conn->dispatcher);
+            event->conn->dispatcher->funcs->f_close (event->conn, event->conn->dispatcher);
             break;
         default:
             DebugH (DEB_SSL, "SSL state on receive %d\n", event->conn->ssl_status);

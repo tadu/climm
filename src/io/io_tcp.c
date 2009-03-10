@@ -103,14 +103,14 @@ void IOConnectTCP (Connection *conn)
     assert (conn);
     conn->connect &= ~CONNECT_SELECT_R & ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
     conn->connect |= CONNECT_SELECT_A;
-    if (conn->funcs && conn->funcs->f_close)
-        conn->funcs->f_close (conn, conn->dispatcher);
+    if (conn->dispatcher && conn->dispatcher->funcs && conn->dispatcher->funcs->f_close)
+        conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
     if (conn->dispatcher)
        free (conn->dispatcher);
     conn->dispatcher = calloc (1, sizeof (Dispatcher));
     if (!conn->dispatcher)
         return;
-    conn->funcs = &io_tcp_func;
+    conn->dispatcher->funcs = &io_tcp_func;
     io_tcp_open (conn, conn->dispatcher);
 }
 
@@ -119,14 +119,14 @@ void IOListenTCP (Connection *conn)
     assert (conn);
     conn->connect &= ~CONNECT_SELECT_R & ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
     conn->connect |= CONNECT_SELECT_A;
-    if (conn->funcs && conn->funcs->f_close)
-        conn->funcs->f_close (conn, conn->dispatcher);
+    if (conn->dispatcher && conn->dispatcher->funcs && conn->dispatcher->funcs->f_close)
+        conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
     if (conn->dispatcher)
        free (conn->dispatcher);
     conn->dispatcher = calloc (1, sizeof (Dispatcher));
     if (!conn->dispatcher)
         return;
-    conn->funcs = &io_listen_tcp_func;
+    conn->dispatcher->funcs = &io_listen_tcp_func;
     io_listen_tcp_open (conn, conn->dispatcher);
 }
 
@@ -442,7 +442,7 @@ static int io_listen_tcp_accept (Connection *conn, Dispatcher *d, Connection *ne
         s_repl (&d->lasterr, strerror (errno));
         return IO_NO_MEM;
     }
-    newconn->funcs = &io_tcp_func;
+    newconn->dispatcher->funcs = &io_tcp_func;
     newconn->port = ntohs (sin.sin_port);
     s_repl (&newconn->server, "local??host");
     d->flags = FLAG_OPEN;

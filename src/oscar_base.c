@@ -177,7 +177,7 @@ void FlapChannel4 (Server *serv, Packet *pak)
         if (tlv[8].nr == 5)
             s_repl (&serv->passwd, NULL);
         
-        serv->conn->funcs->f_close (serv->conn, serv->conn->dispatcher);
+        serv->conn->dispatcher->funcs->f_close (serv->conn, serv->conn->dispatcher);
         TLVD (tlv);
         tlv = NULL;
     }
@@ -341,7 +341,7 @@ Packet *UtilIOReceiveTCP2 (Connection *conn)
     if  (len < off)
         len = off + 1;
     
-    rc = conn->funcs->f_read (conn, conn->dispatcher, (char *)(pak->data + pak->len), len - pak->len);
+    rc = conn->dispatcher->funcs->f_read (conn, conn->dispatcher, (char *)(pak->data + pak->len), len - pak->len);
     if (rc >= 0)
     {
         pak->len += rc;
@@ -361,7 +361,7 @@ Packet *UtilIOReceiveTCP2 (Connection *conn)
     {
         UtilIOShowDisconnect (conn, rc);
 
-        conn->funcs->f_close (conn, conn->dispatcher);
+        conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
 
         PacketD (conn->incoming);
         conn->incoming = NULL;
@@ -384,7 +384,7 @@ void UtilIOSendTCP2 (Connection *conn, Packet *pak)
     
     if (!(conn->connect & CONNECT_MASK))
     {
-        rc = conn->funcs->f_read (conn, conn->dispatcher, NULL, 0);
+        rc = conn->dispatcher->funcs->f_read (conn, conn->dispatcher, NULL, 0);
         assert (rc < 0);
         rce = UtilIOShowError (conn, rc);
         if (rce == IO_CONNECTED)
@@ -399,7 +399,7 @@ void UtilIOSendTCP2 (Connection *conn, Packet *pak)
         return;
     }
 
-    rce = conn->funcs->f_write (conn, conn->dispatcher, (const char *)pak->data, pak->len);
+    rce = conn->dispatcher->funcs->f_write (conn, conn->dispatcher, (const char *)pak->data, pak->len);
     PacketD (pak);
     
     if (rce == IO_OK)
@@ -407,7 +407,7 @@ void UtilIOSendTCP2 (Connection *conn, Packet *pak)
 
     UtilIOShowDisconnect (conn, rce);
 
-    conn->funcs->f_close (conn, conn->dispatcher);
+    conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
 
     PacketD (conn->incoming);
     conn->incoming = NULL;
@@ -676,7 +676,7 @@ void SrvCallBackReceive (Connection *conn)
 
     if (!(conn->connect & (1 | CONNECT_OK)))
     {
-        int rc = conn->funcs->f_read (conn, conn->dispatcher, NULL, 0);
+        int rc = conn->dispatcher->funcs->f_read (conn, conn->dispatcher, NULL, 0);
         assert (rc < 0);
         io_err_t rce = UtilIOShowError (conn, rc);
         if (rce == IO_CONNECTED)

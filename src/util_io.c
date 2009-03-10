@@ -483,10 +483,10 @@ void UtilIOShowDisconnect (Connection *conn, io_err_t rc)
                 if ((cont = conn->cont))
                 {
                     rl_log_for (cont->nick, COLCONTACT);
-                    rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), conn->funcs->f_err (conn, conn->dispatcher), rc, errno);
+                    rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), conn->dispatcher->funcs->f_err (conn, conn->dispatcher), rc, errno);
                 }
             }
-            conn->funcs->f_close (conn, conn->dispatcher);
+            conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
             break;
         default:
             assert (0);
@@ -533,10 +533,10 @@ io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
                           s_wordquote (conn->server), COLQUOTE, UD2UL (conn->port), COLNONE);
                 rl_print (i18n (1949, "failed:\n"));
                 rl_printf ("%s [%d]\n",
-                    s_sprintf  ("%s: %s (%d).", t, conn->funcs->f_err (conn, conn->dispatcher), e),
+                    s_sprintf  ("%s: %s (%d).", t, conn->dispatcher->funcs->f_err (conn, conn->dispatcher), e),
                     __LINE__);
             }
-            conn->funcs->f_close (conn, conn->dispatcher);
+            conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
             return IO_RW;
         default:
             assert (0);

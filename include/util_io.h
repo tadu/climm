@@ -46,11 +46,11 @@ typedef enum io_err_e {
 
 typedef struct Conn_Func_s
 {
-    int      (*f_accept)(Connection *c, Dispatcher *d, Connection *newc);
-    int      (*f_read)  (Connection *c, Dispatcher *d, char *buf, size_t count);
-    io_err_t (*f_write) (Connection *c, Dispatcher *d, const char *buf, size_t count);
-    void     (*f_close) (Connection *c, Dispatcher *d);
-    char    *(*f_err)   (Connection *c, Dispatcher *d);
+    int      (* const f_accept)(Connection *c, Dispatcher *d, Connection *newc);
+    int      (* const f_read)  (Connection *c, Dispatcher *d, char *buf, size_t count);
+    io_err_t (* const f_write) (Connection *c, Dispatcher *d, const char *buf, size_t count);
+    void     (* const f_close) (Connection *c, Dispatcher *d);
+    char    *(* const f_err)   (Connection *c, Dispatcher *d);
 } Conn_Func;
 
 #include "io/io_gnutls.h"
@@ -58,7 +58,8 @@ typedef struct Conn_Func_s
 
 struct Dispatcher_s
 {
-/* io_tcp + io_gnutls */
+    Conn_Func *funcs;
+/* io_tcp + io_gnutls + io_openssl */
     int    d_errno;
     char  *lasterr;
 /* io_tcp */
@@ -80,7 +81,6 @@ struct Dispatcher_s
 /* io_gnutls + io_openssl */
     Connection *conn;
     Dispatcher *next;
-    Conn_Func *next_funcs;
 /*    ssl_status_t ssl_status;  / * SSL status (INIT,OK,FAILED,...)          */
 
 #endif

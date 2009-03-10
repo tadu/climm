@@ -28,7 +28,6 @@ struct Connection_s
     Packet   *incoming;       /* packet we're receiving                   */
     Packet   *outgoing;       /* packet we're sending                     */
 
-    Conn_Func  *funcs;        /* functions to call  for i/o               */
     Dispatcher *dispatcher;   /* pointer to extra data for dispatching    */
     
 #if ENABLE_SSL

@@ -75,12 +75,12 @@ static int  iks_climm_TConnect (iksparser *prs, Connection **socketptr, const ch
 
 static void iks_climm_TClose (Connection *conn)
 {
-    conn->funcs->f_close (conn, conn->dispatcher);
+    conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
 }
 
 static int iks_climm_TSend (Connection *conn, const char *data, size_t len)
 {
-    io_err_t rc = conn->funcs->f_write (conn, conn->dispatcher, data, len);
+    io_err_t rc = conn->dispatcher->funcs->f_write (conn, conn->dispatcher, data, len);
     if (rc != IO_OK)
         return IKS_NET_RWERR;
     return IKS_OK;
@@ -88,7 +88,7 @@ static int iks_climm_TSend (Connection *conn, const char *data, size_t len)
 
 static int iks_climm_TRecv (Connection *conn, char *data, size_t len, int timeout)
 {
-    int rc = conn->funcs->f_read (conn, conn->dispatcher, data, len);
+    int rc = conn->dispatcher->funcs->f_read (conn, conn->dispatcher, data, len);
     if (rc == IO_OK)
     {
         errno = EAGAIN;
@@ -1053,7 +1053,7 @@ static void XMPPCallbackDispatch (Connection *conn)
     assert (conn->sok >= 0);
     if (!(conn->connect & (CONNECT_OK | 4)))
     {
-        rc = UtilIOShowError (conn, conn->funcs->f_read (conn, conn->dispatcher, NULL, 0));
+        rc = UtilIOShowError (conn, conn->dispatcher->funcs->f_read (conn, conn->dispatcher, NULL, 0));
         switch (rc) {
             case IO_RW:
             case IO_OK:
@@ -1102,8 +1102,8 @@ static void XMPPCallbackClose (Connection *conn)
         conn->serv->xmpp_id = NULL;
         conn->serv->xmpp_filter = NULL;
     }
-    if (conn->funcs)
-        conn->funcs->f_close (conn, conn->dispatcher);
+    if (conn->dispatcher && conn->dispatcher->funcs)
+        conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
     conn->connect = 0;
 }
 
