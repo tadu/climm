@@ -150,18 +150,6 @@ const char *IOGnuTLSInitError ()
     return io_gnutls_lasterr;
 }
 
-
-/*
- * Handles timeout on TCP connect
- */
-static void io_gnutls_to (Event *event)
-{
-    Connection *conn = event->conn;
-    EventD (event);
-    conn->connect |= CONNECT_SELECT_A;
-    conn->dispatcher->flags = FLAG_TIMEOUT;
-}
-
 static io_gnutls_err_t io_gnutls_seterr (io_gnutls_err_t err, int gnutlserr, const char *msg)
 {
     io_gnutls_init_ok = err;
