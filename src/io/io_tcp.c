@@ -472,7 +472,10 @@ static int io_tcp_read (Connection *conn, Dispatcher *d, char *buf, size_t count
     FD_SET (conn->sok, &fds);
     rc = select (conn->sok + 1, &fds, NULL, NULL, &tv);
     if (rc < 0 && (errno == EAGAIN || errno == EINTR))
+    {
+        conn->connect |= CONNECT_SELECT_R;
         return IO_OK;
+    }
     if (rc < 0)
     {
         s_repl (&d->lasterr, strerror (errno));
@@ -489,7 +492,10 @@ static int io_tcp_read (Connection *conn, Dispatcher *d, char *buf, size_t count
     if (rc == 0)
         return IO_CLOSED;
     if (errno == EAGAIN || errno == EINTR)
+    {
+        conn->connect |= CONNECT_SELECT_R;
         return IO_OK;
+    }
     s_repl (&d->lasterr, strerror (errno));
     return IO_RW;
 }
@@ -546,15 +552,22 @@ static io_err_t io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, 
     }
     if (len > 0)
     {
+#if defined(SIGPIPE)
+        signal (SIGPIPE, SIG_IGN);
+#endif
         rc = sockwrite (conn->sok, buf, len);
         if (rc < 0)
         {
             s_repl (&d->lasterr, strerror (errno));
             return IO_RW;
         }
+        if  (rc == 0)
+            return IO_CLOSED;
         len -= rc;
         buf += rc;
     }
+    else
+        conn->connect &= ~CONNECT_SELECT_W;
     if (len <= 0)
         return IO_OK;
     return io_tcp_appendbuf (conn, d, buf, len);
