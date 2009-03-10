@@ -1,7 +1,8 @@
 /*
- * TLS Diffie Hellmann extension.
+ * TLS Diffie Hellmann extension. (OpenSSL part)
  *
  * climm TLS extension Copyright (C) © 2003-2007 Roman Hoog Antink
+ * Reorganized for new i/o schema by Rüdiger Kuhlmann
  *
  * This extension is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -51,88 +52,6 @@
 #define TCLMessage(from, text) {}
 #define TCLEvent(from, type, data) {}
 #endif
-
-#if ENABLE_GNUTLS
-#include <gnutls/gnutls.h>                                                                                                        
-#include <gcrypt.h>                                                                                                               
-#else /* ENABLE_GNUTLS */
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <openssl/dh.h>
-#include <openssl/opensslv.h>
-#include <openssl/md5.h>
-#endif /* ENABLE_GNUTLS */
-
-
-#if ENABLE_GNUTLS
-struct ssl_md5ctx_s {
-    gcry_md_hd_t h;
-};
-
-ssl_md5ctx_t *ssl_md5_init ()
-{
-    ssl_md5ctx_t *ctx = malloc (sizeof *ctx);
-    if (!ctx)
-        return NULL;
-    gcry_error_t err = gcry_md_open (&ctx->h, GCRY_MD_MD5, 0);
-    if (gcry_err_code (err))
-    {
-        free (ctx);
-        return NULL;
-    }
-    return ctx;
-}
-
-void ssl_md5_write (ssl_md5ctx_t *ctx, char *buf, size_t len)
-{
-    if (!ctx)
-        return;
-    gcry_md_write (ctx->h, buf, len);
-}
-
-int ssl_md5_final (ssl_md5ctx_t *ctx, char *buf)
-{
-    if (!ctx)
-        return -1;
-    gcry_md_final (ctx->h);
-    unsigned char *hash = gcry_md_read (ctx->h, 0);
-    assert (hash);
-    memcpy (buf, hash, 16);
-    gcry_md_close (ctx->h);
-    free (ctx);
-    return 0;
-}
-#else
-struct ssl_md5ctx_s {
-    MD5_CTX ctx;
-};
-
-ssl_md5ctx_t *ssl_md5_init ()
-{
-    ssl_md5ctx_t *ctx = malloc (sizeof *ctx);
-    if (!ctx)
-        return NULL;
-    MD5_Init (&ctx->ctx);
-    return ctx;
-}
-
-void ssl_md5_write (ssl_md5ctx_t *ctx, char *buf, size_t len)
-{
-    if (!ctx)
-        return;
-    MD5_Update (&ctx->ctx, buf, len);
-}
-
-int ssl_md5_final (ssl_md5ctx_t *ctx, char *buf)
-{
-    if (!ctx)
-        return -1;
-    MD5_Final ((unsigned char *)buf, &ctx->ctx);
-    free (ctx);
-    return 0;
-}
-#endif
-
 
 /*
  * Check whether peer supports SSL

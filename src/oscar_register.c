@@ -42,6 +42,7 @@
 #include "file_util.h"
 #include "util_ssl.h"
 #include "im_request.h"
+#include "util_md5.h"
 
 /*
  * SRV_REGREFUSED - SNAC(17,1)
@@ -194,7 +195,7 @@ JUMP_SNAC_F(SnacSrvLoginkey)
 {
     Server *serv = event->conn->serv;
     char hash[16];
-    ssl_md5ctx_t *ctx;
+    util_md5ctx_t *ctx;
     int rc;
     size_t len = strlen (serv->passwd);
     strc_t key;
@@ -209,16 +210,14 @@ JUMP_SNAC_F(SnacSrvLoginkey)
     /* compute md5 hash */
 #define AIM_MD5_STRING "AOL Instant Messenger (SM)"
 
-#if ENABLE_SSL
-    ctx = ssl_md5_init ();
+    ctx = util_md5_init ();
     if (!ctx)
         return;
-    ssl_md5_write (ctx, key->txt, key->len);
-    ssl_md5_write (ctx, serv->passwd, len > 8 ? 8 : len);
-    ssl_md5_write (ctx, AIM_MD5_STRING, strlen (AIM_MD5_STRING));
-    rc = ssl_md5_final (ctx, hash);
+    util_md5_write (ctx, key->txt, key->len);
+    util_md5_write (ctx, serv->passwd, len > 8 ? 8 : len);
+    util_md5_write (ctx, AIM_MD5_STRING, strlen (AIM_MD5_STRING));
+    rc = util_md5_final (ctx, hash);
     if (rc)
-#endif
         return;
 
     SnacCliMd5login (serv, hash);
