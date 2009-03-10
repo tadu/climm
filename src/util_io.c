@@ -632,7 +632,7 @@ Packet *UtilIOReceiveTCP (Connection *conn)
     conn->sok = -1;
     conn->incoming = NULL;
 
-    if ((rc && rc != ECONNRESET) || !conn->reconnect)
+//    if ((rc && rc != ECONNRESET) || !conn->reco nnect)
     {
         if (prG->verbose || (conn->serv && conn == conn->serv->conn))
         {
@@ -645,9 +645,9 @@ Packet *UtilIOReceiveTCP (Connection *conn)
         }
         conn->connect = 0;
     }
-    if (conn->reconnect)
-        conn->reconnect (conn);
-    else
+//    if (conn->reco nnect)
+//        conn->reco nnect (conn);
+//    else
         conn->connect = 0;
     return NULL;
 }
@@ -779,7 +779,7 @@ void UtilIOSendTCP (Connection *conn, Packet *pak)
 //    dc_close (conn);
     conn->sok = -1;
 
-    if ((rc && rc != ECONNRESET) || !conn->reconnect)
+//    if ((rc && rc != ECONNRESET) || !conn->reco nnect)
     {
         if (prG->verbose || (conn->serv && conn == conn->serv->conn))
         {
@@ -793,9 +793,9 @@ void UtilIOSendTCP (Connection *conn, Packet *pak)
         }
         conn->connect = 0;
     }
-    if (conn->reconnect)
-        conn->reconnect (conn);
-    else
+//    if (conn->reco nnect)
+//        conn->reco nnect (conn);
+//    else
         conn->connect = 0;
 }
 

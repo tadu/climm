@@ -160,7 +160,6 @@ BOOL TCPDirectOpen (Connection *list, Contact *cont)
     peer->cont      = cont;
     peer->oscar_file= NULL;
     peer->close     = &PeerDispatchClose;
-    peer->reconnect = &TCPDispatchReconn;
     peer->dispatch  = &TCPDispatchConn;
     s_repl (&peer->server, NULL);
 

@@ -100,7 +100,6 @@ Event *ConnectionInitMSNServer (Server *serv)
     
     cb->serv = serv;
     MyCallbackSetClimm (serv->conn, cb);
-    serv->reconnect = NULL;
     serv->close = &MsnCallbackClose;
     
     cb->mainConnection = new MSN::NotificationServerConnection (serv->screen, serv->passwd, *cb);

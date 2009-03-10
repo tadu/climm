@@ -314,6 +314,15 @@ Packet *FlapC (UBYTE channel)
     return pak;
 }
 
+void OscarDispatchReconn (Connection *conn)
+{
+    if (conn->serv->conn != conn)
+        TCPDispatchReconn (conn);
+    else if (conn->connect & CONNECT_OK)
+        IMCallBackReconn (conn);
+}
+
+
 Packet *UtilIOReceiveTCP2 (Connection *conn)
 {
     Contact *cont = conn->cont;
@@ -381,10 +390,7 @@ Packet *UtilIOReceiveTCP2 (Connection *conn)
         PacketD (conn->incoming);
         conn->incoming = NULL;
         
-        if (conn->reconnect && conn->connect & CONNECT_OK)
-            conn->reconnect (conn);
-        else
-            conn->connect = 0;
+        OscarDispatchReconn (conn);
     }
     return NULL;
 }
@@ -405,12 +411,7 @@ void UtilIOSendTCP2 (Connection *conn, Packet *pak)
         if (rce == IO_CONNECTED)
             conn->connect |= 1;
         else if (rce != IO_OK)
-        {
-            if (conn->reconnect && conn->connect & CONNECT_OK)
-                conn->reconnect (conn);
-            else
-                conn->connect = 0;
-        }
+            OscarDispatchReconn (conn);
         return;
     }
 
@@ -426,10 +427,7 @@ void UtilIOSendTCP2 (Connection *conn, Packet *pak)
     PacketD (conn->incoming);
     conn->incoming = NULL;
     
-    if (conn->reconnect && conn->connect & CONNECT_OK)
-        conn->reconnect (conn);
-    else
-        conn->connect = 0;
+    OscarDispatchReconn (conn);
 }
 
 
@@ -578,7 +576,6 @@ Event *ConnectionInitOscarServer (Server *serv)
     serv->oscar_seq  = rand () % ((sizeof FlapStartSeqs) / (sizeof FlapStartSeqs[0]));
     serv->conn->connect  = 0;
     serv->conn->dispatch = &SrvCallBackReceive;
-    serv->conn->reconnect= &IMCallBackReconn;
     serv->conn->close    = &FlapCliGoodbyeConn;
     s_repl (&serv->conn->server, serv->pref_server);
     if (serv->status == ims_offline)
@@ -696,12 +693,7 @@ void SrvCallBackReceive (Connection *conn)
         if (rce == IO_CONNECTED)
             conn->connect |= 1;
         else if (rce != IO_OK)
-        {
-            if (conn->reconnect && conn->connect & CONNECT_OK)
-                conn->reconnect (conn);
-            else
-                conn->connect = 0;
-        }
+            OscarDispatchReconn (conn);
         return;
     }
 

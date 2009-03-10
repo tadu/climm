@@ -1483,7 +1483,6 @@ void CLIMMXMPP::handleFTRequest (const gloox::JID & from, const std::string & id
     child->sok = -1;
     child->connect = CONNECT_FAIL;
     child->dispatch = &XMPPFTCallbackDispatch;
-    child->reconnect = NULL;
     child->close = &XMPPFTCallbackClose;
 
     /**

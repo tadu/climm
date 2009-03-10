@@ -183,7 +183,6 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     fpeer->oscar_file_len       = opt_bytes;
     fpeer->oscar_file_done      = 0;
     fpeer->close     = &PeerFileDispatchDClose;
-    fpeer->reconnect = &TCPDispatchReconn;
 
     IMIntMsgFat (cont, NOW, ims_offline, INT_FILE_ACKING, "", opt_files, 0, opt_bytes);
     
@@ -218,7 +217,6 @@ BOOL PeerFileAccept (Connection *peer, UWORD ackstatus, UDWORD port)
     fpeer->ip       = peer->ip;
     s_repl (&fpeer->server, s_ip (fpeer->ip));
     fpeer->close    = &PeerFileDispatchDClose;
-    fpeer->reconnect = &TCPDispatchReconn;
     
     if (prG->verbose)
         rl_printf (i18n (2520, "Opening file transfer connection to %s:%s%ld%s... \n"),

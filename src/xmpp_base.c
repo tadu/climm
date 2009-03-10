@@ -161,7 +161,6 @@ Event *ConnectionInitXMPPServer (Server *serv)
     if (!serv->conn->port)
         serv->conn->port = ~0;
 
-    serv->conn->reconnect = NULL;
     serv->conn->close = &XMPPCallbackClose;
     serv->conn->dispatch = &XMPPCallbackDispatch;
     serv->conn->connect = 0;
