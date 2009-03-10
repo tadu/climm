@@ -1468,7 +1468,10 @@ static void PeerCallbackReceiveAdvanced (Event *event)
     switch (event->conn->ssl_status)
     {
         case SSL_STATUS_INIT:
-            IOGnuTLSOpen (event->conn, 0);
+            if (IOGnuTLSSupported () == IO_GNUTLS_OK)
+                IOGnuTLSOpen (event->conn, 0);
+            else if (IOOpenSSLSupported () == IO_OPENSSL_OK)
+                IOOpenSSLOpen (event->conn, 0);
             break;
         case SSL_STATUS_CLOSE:
             /* Could not figure out how to say good bye to licq correctly.
@@ -1594,7 +1597,12 @@ static void TCPCallBackReceive (Event *event)
                  */
                 case MSG_SSL_OPEN:
                     if (!ostat && !strcmp (tmp, "1"))
-                        IOGnuTLSOpen (peer, 1);
+                    {
+                        if (IOGnuTLSSupported () == IO_GNUTLS_OK)
+                            IOGnuTLSOpen (peer, 1);
+                        else if (IOOpenSSLSupported () == IO_OPENSSL_OK)
+                            IOOpenSSLOpen (peer, 1);
+                    }
                     else
                     {
                         DebugH (DEB_SSL, "%s (%s) is not SSL capable", cont->nick, cont->screen);

@@ -473,17 +473,25 @@ static void Init (int argc, char *argv[])
     TabInit ();
 
 #ifdef ENABLE_SSL
-    switch (IOGnuTLSSupported ())
     {
-        case IO_GNUTLS_OK: break;
-        case IO_GNUTLS_NOLIB:
-            rl_printf (i18n (2581, "Install the GnuTLS library and enjoy encrypted connections to peers!\n"));
-            break;
-        case IO_GNUTLS_INIT:
-            rl_printf (i18n (2374, "SSL error: %s [%d]\n"), IOGnuTLSInitError (), 0);
-            rl_printf (i18n (2371, "SSL init failed.\n"));
-            break;
-        default: assert(0);
+        io_gnutls_err_t rcgnutls = IOGnuTLSSupported ();
+        io_openssl_err_t rcopenssl = rcgnutls == IO_GNUTLS_OK ? IO_OPENSSL_NOLIB : IOOpenSSLSupported ();
+        
+        if (rcgnutls != IO_GNUTLS_OK && rcopenssl != IO_OPENSSL_OK)
+        {
+            if (rcgnutls == IO_GNUTLS_INIT)
+            {
+                rl_printf (i18n (2374, "SSL error: %s [%d]\n"), IOGnuTLSInitError (), 0);
+                rl_printf (i18n (2371, "SSL init failed.\n"));
+            }
+            else if (rcopenssl == IO_OPENSSL_INIT)
+            {
+                rl_printf (i18n (2374, "SSL error: %s [%d]\n"), IOOpenSSLInitError (), 0);
+                rl_printf (i18n (2371, "SSL init failed.\n"));
+            }
+            else
+                rl_printf (i18n (2581, "Install the GnuTLS library and enjoy encrypted connections to peers!\n"));
+        }
     }
 #endif
 

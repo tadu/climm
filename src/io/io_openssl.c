@@ -45,13 +45,9 @@
 
 #include <errno.h>
 
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <openssl/dh.h>
-#include <openssl/opensslv.h>
-#include <openssl/md5.h>
+io_openssl_err_t io_openssl_init_ok = IO_OPENSSL_UNINIT;
 
-static SSL_CTX *gSSL_CTX;
+#if ENABLE_OPENSSL
 
 static void             io_openssl_open  (Connection *c, Dispatcher *d, char is_client);
 static int              io_openssl_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
@@ -60,9 +56,15 @@ static void             io_openssl_close (Connection *c, Dispatcher *d);
 static char            *io_openssl_err   (Connection *c, Dispatcher *d);
 static io_openssl_err_t io_openssl_seterr (io_openssl_err_t err, int opensslerr, const char *msg);
 static void             io_openssl_setconnerr (Dispatcher *d, io_openssl_err_t err, int opensslerr, const char *msg);
-
-static io_openssl_err_t io_openssl_init_ok = IO_OPENSSL_UNINIT;
 static char            *io_openssl_lasterr = NULL;
+
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/dh.h>
+#include <openssl/opensslv.h>
+#include <openssl/md5.h>
+
+static SSL_CTX *gSSL_CTX;
 
 enum io_openssl_dispatcher_flags {
     FLAG_OK,
@@ -508,3 +510,5 @@ static void io_openssl_close (Connection *conn, Dispatcher *d)
     }
     conn->ssl_status = conn->ssl_status == SSL_STATUS_OK ? SSL_STATUS_NA : SSL_STATUS_FAILED;
 }
+
+#endif

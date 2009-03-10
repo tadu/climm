@@ -116,10 +116,12 @@ if test "x$ac_arg_use_dc" != "xno" || test "x$ac_arg_use_xmpp" != "xno"; then
         AC_CHECK_LIB([crypto], [DH_free], , [ac_use_openssl=no])
         AC_CHECK_LIB([ssl], [SSL_new], , [ac_use_openssl=no
                                           LIBS="$temp_LIBS"])
-        if test "x$ac_use_ssl" = "xno"; then
-          ac_use_ssl=$ac_use_openssl
-        else
-          ac_use_ssl=$ac_use_ssl+$ac_use_openssl
+        if test "x$ac_use_openssel" != "xno"; then
+          if test "x$ac_use_ssl" = "xno"; then
+            ac_use_ssl=$ac_use_openssl
+          else
+            ac_use_ssl=$ac_use_ssl+$ac_use_openssl
+          fi
         fi
       fi
     fi
@@ -131,7 +133,7 @@ if test "x$ac_arg_use_dc" != "xno" || test "x$ac_arg_use_xmpp" != "xno"; then
         *)              AC_MSG_WARN([cannot find a suitable SSL library -- encrypted connection support disabled]) ;;
       esac
     fi
-    if test "x$ac_arg_use_ssl" = "gnutls+openssl";  then
+    if test "x$ac_arg_use_ssl" = "xgnutls+openssl";  then
       case "$ac_use_ssl" in
         gnutls)         AC_MSG_FAILURE([cannot find OpenSSL library]) ;;
         openssl)        AC_MSG_FAILURE([cannot find GnuTLS library]) ;;

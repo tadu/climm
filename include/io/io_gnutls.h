@@ -20,7 +20,7 @@ const char     *IOGnuTLSInitError (void);
 #else
 #define IOGnuTLSSupported() IO_GNUTLS_NOLIB
 #define IOGnuTLSOpen(c,i)
-#define IOGnuTLSLastError(c) ""
+#define IOGnuTLSInitError(c) ""
 #endif
 
 #endif /* CLIMM_IO_TCP_H */

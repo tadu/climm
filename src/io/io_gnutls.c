@@ -42,10 +42,11 @@
 #include "contact.h"
 #include "packet.h"
 #include "io/io_gnutls.h"
-#include <gnutls/gnutls.h>
-#include <gcrypt.h>
-
 #include <errno.h>
+
+io_gnutls_err_t io_gnutls_init_ok = IO_GNUTLS_UNINIT;
+
+#if ENABLE_GNUTLS
 
 static void            io_gnutls_open  (Connection *c, Dispatcher *d, char is_client);
 static int             io_gnutls_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
@@ -54,9 +55,10 @@ static void            io_gnutls_close (Connection *c, Dispatcher *d);
 static char           *io_gnutls_err   (Connection *c, Dispatcher *d);
 static io_gnutls_err_t io_gnutls_seterr (io_gnutls_err_t err, int gnutlserr, const char *msg);
 static void            io_gnutls_setconnerr (Dispatcher *d, io_gnutls_err_t err, int gnutlserr, const char *msg);
-
-static io_gnutls_err_t io_gnutls_init_ok = IO_GNUTLS_UNINIT;
 static char           *io_gnutls_lasterr = NULL;
+
+#include <gnutls/gnutls.h>
+#include <gcrypt.h>
 
 static gnutls_anon_client_credentials client_cred;
 static gnutls_anon_server_credentials server_cred;
@@ -361,3 +363,5 @@ static void io_gnutls_close (Connection *conn, Dispatcher *d)
     }
     conn->ssl_status = conn->ssl_status == SSL_STATUS_OK ? SSL_STATUS_NA : SSL_STATUS_FAILED;
 }
+
+#endif

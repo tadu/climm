@@ -1233,8 +1233,9 @@ static JUMP_F(CmdUserPeer)
                 break;
 #ifdef ENABLE_SSL
             case 8:
-                for (i = 0; (cont = ContactIndex (cg, i)); i++)
-                    TCPSendSSLReq (list, cont);
+                if (IOGnuTLSSupported () == IO_GNUTLS_OK || IOOpenSSLSupported () == IO_OPENSSL_OK)
+                    for (i = 0; (cont = ContactIndex (cg, i)); i++)
+                        TCPSendSSLReq (list, cont);
                 break;
 #endif
             case 10:
