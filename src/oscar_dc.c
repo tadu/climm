@@ -30,6 +30,7 @@
 #include "oscar_icbm.h"
 #include "oscar_base.h"
 #include "io/io_tcp.h"
+#include "io/io_gnutls.h"
 
 #include <unistd.h>
 #include <assert.h>
@@ -1039,9 +1040,6 @@ static Connection *TCPReceiveInit2 (Connection *peer, Packet *pak)
 static void PeerDispatchClose (Connection *conn)
 {
     conn->connect = 0;
-#ifdef ENABLE_SSL
-    ssl_close (conn);
-#endif
     TCPClose (conn);
 }
 
@@ -1051,6 +1049,7 @@ static void PeerDispatchClose (Connection *conn)
 void TCPClose (Connection *peer)
 {
     assert (peer);
+    UWORD connect = (peer->connect & CONNECT_MASK && !(peer->connect & CONNECT_OK)) ? CONNECT_FAIL : 0;
     
     if (peer->oscar_file)
     {
@@ -1069,10 +1068,9 @@ void TCPClose (Connection *peer)
             else
                 rl_printf (i18n (1843, "Closing socket %d.\n"), peer->sok);
         }
-        sockclose (peer->sok);
     }
-    peer->sok     = -1;
-    peer->connect = (peer->connect & CONNECT_MASK && !(peer->connect & CONNECT_OK)) ? CONNECT_FAIL : 0;
+    peer->funcs->f_close (peer, peer->dispatcher);
+    peer->connect = connect;
     peer->oscar_our_session = 0;
     if (peer->incoming)
     {
@@ -1462,19 +1460,17 @@ static void PeerCallbackReceiveAdvanced (Event *event)
     DebugH (DEB_TCP, "%p %p %p\n", event, event ? event->conn : NULL, event ? event->pak : NULL);
     if (event && event->conn && event->pak && event->conn->type & TYPEF_ANY_DIRECT)
         PeerPacketSend (event->conn, event->pak);
-#if 0
-    // ENABLE_SSL
+#if ENABLE_SSL
     switch (event->conn->ssl_status)
     {
         case SSL_STATUS_INIT:
-            ssl_connect (event->conn, 0);
+            IOGnuTLSOpen (event->conn, 0);
             break;
         case SSL_STATUS_CLOSE:
             /* Could not figure out how to say good bye to licq correctly.
              * That's why we do a simple close.
              */
-            if (event->conn->close)
-                event->conn->close (event->conn);
+            event->conn->funcs->f_close (event->conn, event->conn->dispatcher);
             break;
         default:
             DebugH (DEB_SSL, "SSL state on receive %d\n", event->conn->ssl_status);
@@ -1594,7 +1590,7 @@ static void TCPCallBackReceive (Event *event)
                  */
                 case MSG_SSL_OPEN:
                     if (!ostat && !strcmp (tmp, "1"))
-                        ; /* ssl_connect (peer, 1); */
+                        IOGnuTLSOpen (peer, 1);
                     else
                     {
                         DebugH (DEB_SSL, "%s (%s) is not SSL capable", cont->nick, cont->screen);

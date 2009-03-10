@@ -392,6 +392,7 @@ int ssl_connect (Connection *conn, BOOL is_client DEBUGPARAM)
 #ifdef ENABLE_TCL
     Contact *cont = conn->cont;
 #endif
+    assert(0);
 
     Debug (DEB_SSL, "ssl_connect");
     if (!ssl_init_ok || (conn->ssl_status != SSL_STATUS_NA && conn->ssl_status != SSL_STATUS_INIT && conn->ssl_status != SSL_STATUS_REQUEST))
@@ -453,6 +454,7 @@ ssl_errno_t ssl_read (Connection *conn, UBYTE *data, UWORD len_p)
     int tmp;
 #endif
     Contact *cont = conn->cont;
+    assert(0);
     
     if (conn->ssl_status == SSL_STATUS_HANDSHAKE)
     {
@@ -547,6 +549,7 @@ ssl_errno_t ssl_write (Connection *conn, UBYTE *data, UWORD len_p)
     int tmp;
 #endif
     Contact *cont = conn->cont;
+    assert  (0);
     
     if (conn->ssl_status == SSL_STATUS_HANDSHAKE)
     {
@@ -613,6 +616,7 @@ int ssl_handshake (Connection *conn DEBUGPARAM)
 {
     Contact *cont = conn->cont;
     int ret = 0;
+    assert(0);
 
 #if ENABLE_GNUTLS
     ret = gnutls_handshake (conn->ssl);
@@ -695,6 +699,7 @@ int ssl_handshake (Connection *conn DEBUGPARAM)
 void ssl_close (Connection *conn DEBUGPARAM)
 {
     DebugH (DEB_SSL, "ssl_close");
+    assert(0);
 
     if (conn->ssl_status == SSL_STATUS_OK)
     {
@@ -715,6 +720,7 @@ void ssl_close (Connection *conn DEBUGPARAM)
 void ssl_disconnect (Connection *conn DEBUGPARAM)
 {
     DebugH (DEB_SSL, "ssl_disconnect");
+    assert (0);
 
     if (conn->ssl_status == SSL_STATUS_OK)
     {
