@@ -75,7 +75,7 @@ static int  iks_climm_TConnect (iksparser *prs, Connection **socketptr, const ch
 
 static void iks_climm_TClose (Connection *conn)
 {
-    conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
+    UtilIOClose (conn);
 }
 
 static int iks_climm_TSend (Connection *conn, const char *data, size_t len)
@@ -1102,9 +1102,7 @@ static void XMPPCallbackClose (Connection *conn)
         conn->serv->xmpp_id = NULL;
         conn->serv->xmpp_filter = NULL;
     }
-    if (conn->dispatcher && conn->dispatcher->funcs)
-        conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
-    conn->connect = 0;
+    UtilIOClose (conn);
 }
 
 /* **************** */

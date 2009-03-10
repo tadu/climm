@@ -76,6 +76,15 @@ struct hostent *gethostbyname(const char *name)
 static void UtilIOTOConn (Event *event);
 static void UtilIOConnectCallback (Connection *conn);
 
+void UtilIOClose (Connection *conn)
+{
+    if (conn && conn->dispatcher && conn->dispatcher->funcs && conn->dispatcher->funcs->f_close)
+        conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
+    assert (!conn || conn->sok < 0);
+    assert (!conn || conn->connect == 0);
+    assert (!conn || !conn->dispatcher);
+}
+
 #ifdef __AMIGA__
 #define CONN_CHECK_EXTRA   if (rc == 11) return;  /* UAE sucks */
 #else
@@ -485,7 +494,7 @@ void UtilIOShowDisconnect (Connection *conn, io_err_t rc)
                     rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), conn->dispatcher->funcs->f_err (conn, conn->dispatcher), rc, errno);
                 }
             }
-            conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
+            UtilIOClose (conn);
             break;
         default:
             assert (0);
@@ -535,7 +544,7 @@ io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
                     s_sprintf  ("%s: %s (%d).", t, conn->dispatcher->funcs->f_err (conn, conn->dispatcher), e),
                     __LINE__);
             }
-            conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
+            UtilIOClose (conn);
             return IO_RW;
         default:
             assert (0);
@@ -733,8 +742,8 @@ void UtilIOSendTCP (Connection *conn, Packet *pak)
     {
         /* cannot handle two pakets in transit - tough luck */
         conn->connect = 0;
-        if (conn->close)
-            conn->close (conn);
+//        if (conn->clo se)
+//            conn->clo se (conn);
         return;
     }
 

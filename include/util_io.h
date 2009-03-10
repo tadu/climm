@@ -86,6 +86,8 @@ struct Dispatcher_s
 #endif
 };
 
+void UtilIOClose (Connection *conn);
+
 void    UtilIOConnectF   (Connection *conn);
 int     UtilIOError      (Connection *conn);
 Packet *UtilIOReceiveF   (Connection *conn);

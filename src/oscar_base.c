@@ -177,7 +177,7 @@ void FlapChannel4 (Server *serv, Packet *pak)
         if (tlv[8].nr == 5)
             s_repl (&serv->passwd, NULL);
         
-        serv->conn->dispatcher->funcs->f_close (serv->conn, serv->conn->dispatcher);
+        UtilIOClose (serv->conn);
         TLVD (tlv);
         tlv = NULL;
     }
@@ -376,8 +376,7 @@ Packet *UtilIOReceiveTCP2 (Connection *conn)
     else
     {
         UtilIOShowDisconnect (conn, rc);
-
-        conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
+        UtilIOClose (conn);
 
         PacketD (conn->incoming);
         conn->incoming = NULL;
@@ -422,8 +421,7 @@ void UtilIOSendTCP2 (Connection *conn, Packet *pak)
         return;
 
     UtilIOShowDisconnect (conn, rce);
-
-    conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
+    UtilIOClose (conn);
 
     PacketD (conn->incoming);
     conn->incoming = NULL;

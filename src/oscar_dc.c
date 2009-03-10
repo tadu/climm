@@ -291,7 +291,7 @@ void TCPDispatchMain (Connection *list)
     if (!peer)
     {
         rl_print (i18n (1914, "Can't allocate connection structure.\n"));
-        list->dispatcher->funcs->f_close (list, list->dispatcher);
+        UtilIOClose (list);
         return;
     }
 
@@ -1102,7 +1102,6 @@ void TCPClose (Connection *peer)
         assert (peer->oscar_file->type == TYPE_FILE);
         ConnectionD (peer->oscar_file);
     }
-    
     if (peer->sok != -1)
     {
         if (peer->connect & CONNECT_MASK && prG->verbose)
@@ -1115,7 +1114,7 @@ void TCPClose (Connection *peer)
                 rl_printf (i18n (1843, "Closing socket %d.\n"), peer->sok);
         }
     }
-    peer->dispatcher->funcs->f_close (peer, peer->dispatcher);
+    UtilIOClose (peer);
     peer->connect = connect;
     peer->oscar_our_session = 0;
     if (peer->incoming)
@@ -1519,7 +1518,7 @@ static void PeerCallbackReceiveAdvanced (Event *event)
             /* Could not figure out how to say good bye to licq correctly.
              * That's why we do a simple close.
              */
-            event->conn->dispatcher->funcs->f_close (event->conn, event->conn->dispatcher);
+            UtilIOClose (event->conn);
             break;
         default:
             DebugH (DEB_SSL, "SSL state on receive %d\n", event->conn->ssl_status);

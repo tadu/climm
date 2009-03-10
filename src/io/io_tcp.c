@@ -132,12 +132,9 @@ static Conn_Func io_listen_tcp_func = {
 void IOConnectTCP (Connection *conn)
 {
     assert (conn);
+    UtilIOClose (conn);
     conn->connect &= ~CONNECT_SELECT_R & ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
     conn->connect |= CONNECT_SELECT_A;
-    if (conn->dispatcher && conn->dispatcher->funcs && conn->dispatcher->funcs->f_close)
-        conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
-    if (conn->dispatcher)
-       free (conn->dispatcher);
     conn->dispatcher = calloc (1, sizeof (Dispatcher));
     if (!conn->dispatcher)
         return;
@@ -148,12 +145,9 @@ void IOConnectTCP (Connection *conn)
 void IOListenTCP (Connection *conn)
 {
     assert (conn);
+    UtilIOClose (conn);
     conn->connect &= ~CONNECT_SELECT_R & ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
     conn->connect |= CONNECT_SELECT_A;
-    if (conn->dispatcher && conn->dispatcher->funcs && conn->dispatcher->funcs->f_close)
-        conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
-    if (conn->dispatcher)
-       free (conn->dispatcher);
     conn->dispatcher = calloc (1, sizeof (Dispatcher));
     if (!conn->dispatcher)
         return;
