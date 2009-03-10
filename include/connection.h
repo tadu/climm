@@ -32,7 +32,6 @@ struct Connection_s
     Dispatcher *dispatcher;   /* pointer to extra data for dispatching    */
     
 #if ENABLE_SSL
-    gnutls_session ssl;       /* The SSL data structure                   */
     ssl_status_t ssl_status;  /* SSL status (INIT,OK,FAILED,...)          */
 #endif
 
