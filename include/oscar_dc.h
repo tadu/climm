@@ -17,6 +17,7 @@ UBYTE PeerSendMsg      (Connection *list, Contact *cont, UDWORD type, const char
 UBYTE PeerSendMsgFat   (Connection *list, Contact *cont, Message *msg);
 BOOL TCPSendFiles      (Connection *list, Contact *cont, const char *description, const char **file, const char **as, int count);
 BOOL TCPGetAuto        (Connection *list, Contact *cont, UWORD which);
+BOOL TCPSendSSLReq     (Connection *list, Contact *cont);
 
 Connection *PeerFileCreate    (Server *serv);
 BOOL        PeerFileAccept    (Connection *peer, UWORD ackstatus, UDWORD port);

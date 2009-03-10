@@ -51,7 +51,6 @@ extern int h_errno;
 #include "preferences.h"
 #include "util_ui.h"
 #include "util_io.h"
-#include "util_ssl.h"
 #include "conv.h"
 #include "util.h"
 #include "contact.h"
@@ -549,7 +548,7 @@ io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
  */
 Packet *UtilIOReceiveTCP (Connection *conn)
 {
-    ssl_errno_t ssl_rc = 0;
+    int ssl_rc = 0;
     int rc, off, len;
     Packet *pak;
     
@@ -719,7 +718,7 @@ Packet *UtilIOReceiveF (Connection *conn)
 void UtilIOSendTCP (Connection *conn, Packet *pak)
 {
     UBYTE *data;
-    ssl_errno_t ssl_rc = 0;
+    int ssl_rc = 0;
     int rc, bytessend = 0;
     
     assert (0);

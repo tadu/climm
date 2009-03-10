@@ -24,13 +24,13 @@
 #include "packet.h"
 #include "oscar_dc.h"
 #include "util_syntax.h"
-#include "util_ssl.h"
 #include "oscar_snac.h"
 #include "oscar_service.h"
 #include "oscar_icbm.h"
 #include "oscar_base.h"
 #include "io/io_tcp.h"
 #include "io/io_gnutls.h"
+#include "io/io_openssl.h"
 
 #include <unistd.h>
 #include <assert.h>
@@ -52,6 +52,11 @@
 #include <winsock2.h>
 #endif
 
+#ifndef ENABLE_TCL
+#define TCLMessage(from, text) {}
+#define TCLEvent(from, type, data) {}
+#endif
+
 #ifdef ENABLE_SSL
 #define CV_ORIGIN_dcssl (peer->ssl_status == SSL_STATUS_OK ? CV_ORIGIN_ssl : CV_ORIGIN_dc)
 #else
@@ -60,6 +65,8 @@
 
 #define ASSERT_ANY_DIRECT(s)  (assert (s), assert ((s)->type & TYPEF_ANY_DIRECT), assert ((s)->serv), ASSERT_ANY_LISTEN ((s)->serv->oscar_dc))
 #define ASSERT_ANY_LISTEN(s)  (assert (s), assert ((s)->type & TYPEF_ANY_LISTEN), assert ((s)->serv))
+
+#define LICQ_WITHSSL        0x7D800000  /* taken from licq 1.2.7 */
 
 #ifdef ENABLE_PEER2PEER
 
@@ -87,6 +94,8 @@ static BOOL        Decrypt_Pak        (Connection *peer, Packet *pak);
 
 static void TCPSendInitv6 (Connection *peer);
 
+int PeerSSLSupported (Connection *conn DEBUGPARAM);
+#define PeerSSLSupported(c)  PeerSSLSupported(c DEBUGARGS)
 
 /*********************************************/
 
@@ -507,7 +516,7 @@ void TCPDispatchShake (Connection *peer)
                 }
 #ifdef ENABLE_SSL
                 /* outgoing peer connection established */
-                if (peer->type == TYPE_MSGDIRECT && ssl_supported (peer) && peer->ssl_status == SSL_STATUS_REQUEST)
+                if (peer->type == TYPE_MSGDIRECT && peer->ssl_status == SSL_STATUS_REQUEST && PeerSSLSupported (peer))
                     if (!TCPSendSSLReq (peer->serv->oscar_dc, cont)) 
                         rl_printf (i18n (2372, "Could not send SSL request to %s\n"), cont->nick);
 #endif
@@ -1015,6 +1024,70 @@ static void PeerDispatchClose (Connection *conn)
     conn->connect = 0;
     TCPClose (conn);
 }
+
+/*
+ * Check whether peer supports SSL
+ *
+ * Returns 0 if SSL/TLS not supported by peer.
+ */
+#undef PeerSSLSupported
+int PeerSSLSupported (Connection *conn DEBUGPARAM)
+{
+    Contact *cont;
+    UBYTE status_save = conn->ssl_status;
+    
+    if (IOGnuTLSSupported() != IO_GNUTLS_OK && IOOpenSSLSupported() != IO_OPENSSL_OK)
+        return 0;
+    
+    if (conn->ssl_status == SSL_STATUS_OK)
+        return 1;   /* SSL session already established */
+
+    if (conn->ssl_status == SSL_STATUS_FAILED)
+        return 0;   /* ssl handshake with peer already failed. So don't try again */
+
+    conn->ssl_status = SSL_STATUS_FAILED;
+    
+    if (!(conn->type & TYPEF_ANY_PEER))
+        return 0;
+        
+    cont = conn->cont;
+    
+    /* check for peer capabilities
+     * Note: we never initialize SSL for incoming direct connections yet
+     *        in order to avoid mutual SSL init trials among climm peers.
+     */
+    if (!cont)
+        return 0;
+
+    if (!(HAS_CAP (cont->caps, CAP_SIMNEW) || HAS_CAP (cont->caps, CAP_MICQ)
+          || HAS_CAP (cont->caps, CAP_CLIMM) || HAS_CAP (cont->caps, CAP_LICQNEW)
+          || (cont->dc && (cont->dc->id1 & 0xFFFF0000) == LICQ_WITHSSL)))
+    {
+        Debug (DEB_SSL, "%s (%s) is no SSL candidate", cont->nick, cont->screen);
+        TCLEvent (cont, "ssl", "no_candidate");
+        return 0;
+    }
+
+    conn->ssl_status = status_save;
+    Debug (DEB_SSL, "%s (%s) is an SSL candidate", cont->nick, cont->screen);
+    TCLEvent (cont, "ssl", "candidate");
+    return 1;
+}
+
+/* 
+ * Request secure channel in licq's way.
+ */
+BOOL TCPSendSSLReq (Connection *list, Contact *cont)
+{
+    Connection *peer;
+    UBYTE ret;
+
+    ret = PeerSendMsg (list, cont, MSG_SSL_OPEN, "");
+    if ((peer = ServerFindChild (list->serv, cont, TYPE_MSGDIRECT)))
+        peer->ssl_status = SSL_STATUS_REQUEST;
+    return ret;
+}
+
 
 /*
  * Close socket and mark as inactive. If verbose, complain.

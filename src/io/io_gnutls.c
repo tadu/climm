@@ -35,7 +35,6 @@
 
 #include "preferences.h"
 #include "conv.h"
-#include "util_ssl.h"
 #include "util_str.h"
 #include "util_ui.h"
 #include "oscar_dc.h"
@@ -46,6 +45,16 @@
 #include <errno.h>
 
 io_gnutls_err_t io_gnutls_init_ok = IO_GNUTLS_UNINIT;
+
+/* Number of bits climm uses for Diffie-Hellman key exchange of
+ * incoming direct connections. You may change this value.
+ */
+#define DH_OFFER_BITS       768
+/* Number of bits climm enforces as a minimum for DH of outgoing
+ * direct connections.
+ * This value must be less than or equal to 512 in order to work with licq.
+ */
+#define DH_EXPECT_BITS      512
 
 #if ENABLE_GNUTLS
 

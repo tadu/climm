@@ -38,7 +38,6 @@
 #include "util_io.h"
 #include "oscar_base.h" /* IcqToStatus */
 #include "util_tcl.h"
-#include "util_ssl.h"
 #include "util_otr.h"
 #include "util_alias.h"
 #include "cmd_user.h"

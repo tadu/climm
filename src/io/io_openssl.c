@@ -35,7 +35,6 @@
 
 #include "preferences.h"
 #include "conv.h"
-#include "util_ssl.h"
 #include "util_str.h"
 #include "util_ui.h"
 #include "oscar_dc.h"

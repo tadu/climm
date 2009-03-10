@@ -47,7 +47,6 @@
 #include "oscar_dc.h"
 #include "oscar_dc_file.h"
 #include "util_ui.h"
-#include "util_ssl.h"
 #include "preferences.h"
 
 static void SnacCallbackType2Ack (Event *event);
