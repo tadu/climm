@@ -5,17 +5,18 @@
 
 #include "connection.h"
 
-enum io_gnutls_supported {
+typedef enum io_gnutls_err_e {
+    IO_GNUTLS_UNINIT = -1,
     IO_GNUTLS_OK = 0,
     IO_GNUTLS_NOMEM,
     IO_GNUTLS_NOLIB,
     IO_GNUTLS_INIT
-};
+} io_gnutls_err_t;
 
 #if ENABLE_GNUTLS
-char        IOGnuTLSSupported (void);
-int         IOGnuTLSOpen (Connection *conn, char is_client);
-const char *IOGnuTLSInitError (void);
+io_gnutls_err_t IOGnuTLSSupported (void);
+io_gnutls_err_t IOGnuTLSOpen (Connection *conn, char is_client);
+const char     *IOGnuTLSInitError (void);
 #else
 #define IOGnuTLSSupported() IO_GNUTLS_NOLIB
 #define IOGnuTLSOpen(c,i)

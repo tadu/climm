@@ -80,8 +80,8 @@ static void iks_climm_TClose (Connection *conn)
 
 static int iks_climm_TSend (Connection *conn, const char *data, size_t len)
 {
-    int rc = conn->funcs->f_write (conn, conn->dispatcher, data, len);
-    if (rc < 0)
+    io_err_t rc = conn->funcs->f_write (conn, conn->dispatcher, data, len);
+    if (rc != IO_OK)
         return IKS_NET_RWERR;
     return IKS_OK;
 }
@@ -89,7 +89,7 @@ static int iks_climm_TSend (Connection *conn, const char *data, size_t len)
 static int iks_climm_TRecv (Connection *conn, char *data, size_t len, int timeout)
 {
     int rc = conn->funcs->f_read (conn, conn->dispatcher, data, len);
-    if (!rc)
+    if (rc == IO_OK)
     {
         errno = EAGAIN;
         return -1;

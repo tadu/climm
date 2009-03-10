@@ -470,7 +470,7 @@ static void UtilIOTOConn (Event *event)
 #define ECONNRESET 0x424242
 #endif
 
-void UtilIOShowDisconnect (Connection *conn, int rc)
+void UtilIOShowDisconnect (Connection *conn, io_err_t rc)
 {
     switch (rc) {
         case IO_CLOSED:
@@ -493,8 +493,9 @@ void UtilIOShowDisconnect (Connection *conn, int rc)
     }
 }
 
-int UtilIOShowError (Connection *conn, int rc)
+io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
 {
+    int e = errno;
     switch (rc) {
         const char *t = NULL;
     
@@ -527,13 +528,12 @@ int UtilIOShowError (Connection *conn, int rc)
             if (prG->verbose || (conn->serv && conn == conn->serv->conn))
             {
                 Contact *cont = conn->cont;
-                rc = errno;
                 rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (9999, "Opening connection to %s:%s%ld%s "),
                           s_wordquote (conn->server), COLQUOTE, UD2UL (conn->port), COLNONE);
                 rl_print (i18n (1949, "failed:\n"));
                 rl_printf ("%s [%d]\n",
-                    s_sprintf  ("%s: %s (%d).", t, conn->funcs->f_err (conn, conn->dispatcher), rc),
+                    s_sprintf  ("%s: %s (%d).", t, conn->funcs->f_err (conn, conn->dispatcher), e),
                     __LINE__);
             }
             conn->funcs->f_close (conn, conn->dispatcher);

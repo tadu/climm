@@ -254,21 +254,23 @@ void TCPDispatchMain (Connection *list)
 {
     Connection *peer;
     int rc;
+    io_err_t rce;
  
     ASSERT_ANY_LISTEN(list);
     
     if (~list->connect & CONNECT_OK)
     {
         rc = list->funcs->f_accept (list, list->dispatcher, NULL);
-        rc = UtilIOShowError (list, rc);
-        if (rc == IO_CONNECTED)
+        assert (rc < 0);
+        rce = UtilIOShowError (list, rc);
+        if (rce == IO_CONNECTED)
         {
             list->connect |= CONNECT_OK;
             if (list->type == TYPE_MSGLISTEN && list->serv && list->serv->type == TYPE_SERVER
                 && (list->serv->conn->connect & CONNECT_OK))
                 SnacCliSetstatus (list->serv, ims_online, 2);
         }
-        else if (rc != IO_OK)
+        else if (rce != IO_OK)
             list->connect = CONNECT_FAIL;
         return;
     }
@@ -287,8 +289,8 @@ void TCPDispatchMain (Connection *list)
     rc = list->funcs->f_accept (list, list->dispatcher, peer);
     if  (rc <= 0)
     {
-        rc = UtilIOShowError (list, rc);
-        switch (rc)
+        rce = UtilIOShowError (list, rc);
+        switch (rce)
         {
             case IO_OK:
             case IO_RW:
@@ -316,6 +318,7 @@ void TCPDispatchConn (Connection *peer)
 {
     Contact *cont;
     int rc;
+    io_err_t rce;
     
     ASSERT_ANY_DIRECT (peer);
 
@@ -326,8 +329,9 @@ void TCPDispatchConn (Connection *peer)
     }
     
     rc = peer->funcs->f_read (peer, peer->dispatcher, NULL, 0);
-    rc = UtilIOShowError (peer, rc);
-    if (rc == IO_CONNECTED)
+    assert (rc < 0);
+    rce = UtilIOShowError (peer, rc);
+    if (rce == IO_CONNECTED)
     {
         if (prG->verbose)
         {
@@ -350,9 +354,9 @@ void TCPDispatchConn (Connection *peer)
         return;
         
     }
-    else if (rc == IO_OK)
+    else if (rce == IO_OK)
         return;
-    else if (rc == IO_RW && peer->connect == 0)
+    else if (rce == IO_RW && peer->connect == 0)
     {
         peer->connect = 2;
         peer->ip      = cont->dc->ip_loc;
@@ -583,7 +587,7 @@ static void TCPDispatchPeer (Connection *peer)
             }
         }
 
-        UtilIOSelectInit(0, 100000);
+        UtilIOSelectInit (0, 100000);
         UtilIOSelectAdd (peer->sok, READFDS);
         UtilIOSelect();
     }

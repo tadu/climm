@@ -65,11 +65,11 @@ static inline struct hostent *gethostbyname(const char *name)
 
 #define BACKLOG 10
 
-static void  io_tcp_open  (Connection *c, Dispatcher *d);
-static int   io_tcp_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
-static int   io_tcp_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
-static void  io_tcp_close (Connection *c, Dispatcher *d);
-static char *io_tcp_err   (Connection *c, Dispatcher *d);
+static void     io_tcp_open  (Connection *c, Dispatcher *d);
+static int      io_tcp_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
+static io_err_t io_tcp_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
+static void     io_tcp_close (Connection *c, Dispatcher *d);
+static char    *io_tcp_err   (Connection *c, Dispatcher *d);
 
 static int   io_listen_tcp_accept(Connection *c, Dispatcher *d, Connection *cn);
 static void  io_listen_tcp_open  (Connection *c, Dispatcher *d);
@@ -334,7 +334,7 @@ static void io_listen_tcp_open (Connection *conn, Dispatcher *d)
     d->flags = FLAG_CONNECTED;
 }
 
-static int io_tcp_connecting (Connection *conn, Dispatcher *d)
+static io_err_t io_tcp_connecting (Connection *conn, Dispatcher *d)
 {
     if (d->flags == FLAG_CONNECTED)
     {
@@ -453,6 +453,7 @@ static int io_tcp_read (Connection *conn, Dispatcher *d, char *buf, size_t count
 {
     fd_set fds;
     struct timeval tv;
+    io_err_t rce;
     int rc;
     
     if (d->flags != FLAG_OPEN)
@@ -460,9 +461,9 @@ static int io_tcp_read (Connection *conn, Dispatcher *d, char *buf, size_t count
     
     if (conn->connect & CONNECT_SELECT_W)
     {
-        rc = io_tcp_write (conn, d, NULL, 0);
-        if (rc < 0)
-            return rc;
+        rce = io_tcp_write (conn, d, NULL, 0);
+        if (rce != IO_OK)
+            return rce;
     }
     
     tv.tv_sec = 0;
@@ -493,7 +494,7 @@ static int io_tcp_read (Connection *conn, Dispatcher *d, char *buf, size_t count
     return IO_RW;
 }
 
-static int io_tcp_appendbuf (Connection *conn, Dispatcher *d, const char *buf, size_t count)
+static io_err_t io_tcp_appendbuf (Connection *conn, Dispatcher *d, const char *buf, size_t count)
 {
     char *newbuf;
     conn->connect |= CONNECT_SELECT_W;
@@ -512,15 +513,16 @@ static int io_tcp_appendbuf (Connection *conn, Dispatcher *d, const char *buf, s
     return IO_OK;
 }
 
-static int io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, size_t len)
+static io_err_t io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, size_t len)
 {
+    io_err_t rce;
     int rc;
     
     if (d->flags != FLAG_OPEN)
     {
-        rc = io_tcp_connecting (conn, d);
-        if (rc != IO_CONNECTED)
-            return rc;
+        rce = io_tcp_connecting (conn, d);
+        if (rce != IO_CONNECTED)
+            return rce;
     }
     if (d->outlen)
     {

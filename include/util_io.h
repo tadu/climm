@@ -22,40 +22,9 @@ typedef enum {
 #endif
 
 typedef struct Dispatcher_s Dispatcher;
-                            
-typedef struct Conn_Func_s
-{
-    int   (*f_accept)(Connection *c, Dispatcher *d, Connection *newc);
-    int   (*f_read)  (Connection *c, Dispatcher *d, char *buf, size_t count);
-    int   (*f_write) (Connection *c, Dispatcher *d, const char *buf, size_t count);
-    void  (*f_close) (Connection *c, Dispatcher *d);
-    char *(*f_err)   (Connection *c, Dispatcher *d);
-} Conn_Func;
 
-struct Dispatcher_s
-{
-/* io_tcp + io_gnutls */
-    size_t err;
-    int    d_errno;
-    char  *lasterr;
-/* io_tcp */
-    UWORD  flags;
-    size_t outlen;
-    char  *outbuf;
-/* io_gnutls */
-#if ENABLE_SSL
-    Connection *conn;
-    Dispatcher *next;
-    Conn_Func *next_funcs;
-    gnutls_session ssl;       /* The SSL data structure                   */
-/*    ssl_status_t ssl_status;  / * SSL status (INIT,OK,FAILED,...)          */
-#endif
-};
-
-enum io_err {
-    IO_OK = 0,
-
-    IO_NO_PARAM = -1000,
+typedef enum io_err_e {
+    IO_NO_PARAM = -12,
     IO_NO_MEM,
     IO_NO_SOCKET,
     IO_NO_NONBLOCK,
@@ -71,7 +40,39 @@ enum io_err {
     IO_CLOSED,
     IO_RW,
     
-    IO_MAX
+    IO_OK = 0
+} io_err_t;
+
+typedef struct Conn_Func_s
+{
+    int      (*f_accept)(Connection *c, Dispatcher *d, Connection *newc);
+    int      (*f_read)  (Connection *c, Dispatcher *d, char *buf, size_t count);
+    io_err_t (*f_write) (Connection *c, Dispatcher *d, const char *buf, size_t count);
+    void     (*f_close) (Connection *c, Dispatcher *d);
+    char    *(*f_err)   (Connection *c, Dispatcher *d);
+} Conn_Func;
+
+#include "io/io_gnutls.h"
+
+struct Dispatcher_s
+{
+/* io_tcp + io_gnutls */
+    int    d_errno;
+    char  *lasterr;
+/* io_tcp */
+    io_err_t err;
+    UWORD  flags;
+    size_t outlen;
+    char  *outbuf;
+/* io_gnutls */
+#if ENABLE_SSL
+    io_gnutls_err_t gnutls_err;
+    Connection *conn;
+    Dispatcher *next;
+    Conn_Func *next_funcs;
+    gnutls_session ssl;       /* The SSL data structure                   */
+/*    ssl_status_t ssl_status;  / * SSL status (INIT,OK,FAILED,...)          */
+#endif
 };
 
 void    UtilIOConnectF   (Connection *conn);
@@ -79,8 +80,8 @@ int     UtilIOError      (Connection *conn);
 Packet *UtilIOReceiveF   (Connection *conn);
 strc_t  UtilIOReadline   (FILE *fd);
 
-void    UtilIOShowDisconnect (Connection *conn, int rc);
-int     UtilIOShowError (Connection *conn, int rc);
+void     UtilIOShowDisconnect (Connection *conn, io_err_t rc);
+io_err_t UtilIOShowError (Connection *conn, io_err_t rc);
 
 void    UtilIOSelectInit (int sec, int usec);
 void    UtilIOSelectAdd  (FD_T sok, int nr);
