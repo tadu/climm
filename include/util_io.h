@@ -13,11 +13,12 @@ typedef enum {
     SSL_STATUS_REQUEST,  /* SSL session has been requested   */
     SSL_STATUS_HANDSHAKE /* SSL session handshake is ongoing */
 } ssl_status_t;
+
 #if ENABLE_GNUTLS
 #include <gnutls/gnutls.h>
-#else
+#endif
+#if ENABLE_OPENSSL
 #include <openssl/ssl.h>
-#define gnutls_session SSL *
 #endif
 #endif
 
@@ -53,6 +54,7 @@ typedef struct Conn_Func_s
 } Conn_Func;
 
 #include "io/io_gnutls.h"
+#include "io/io_openssl.h"
 
 struct Dispatcher_s
 {
@@ -64,14 +66,23 @@ struct Dispatcher_s
     UWORD  flags;
     size_t outlen;
     char  *outbuf;
-/* io_gnutls */
 #if ENABLE_SSL
+/* io_gnutls */
+#if ENABLE_GNUTLS
     io_gnutls_err_t gnutls_err;
+    gnutls_session ssl;       /* The SSL data structure                   */
+#endif
+/* io_openssl */
+#if ENABLE_OPENSSL
+    io_openssl_err_t openssl_err;
+    SSL *openssl;
+#endif
+/* io_gnutls + io_openssl */
     Connection *conn;
     Dispatcher *next;
     Conn_Func *next_funcs;
-    gnutls_session ssl;       /* The SSL data structure                   */
 /*    ssl_status_t ssl_status;  / * SSL status (INIT,OK,FAILED,...)          */
+
 #endif
 };
 
