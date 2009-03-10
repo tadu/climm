@@ -8,8 +8,8 @@ $(DESTDIR)$(bindir)/micq:
 	$(MKDIR_P) "$(DESTDIR)$(bindir)"
 	-ln -s climm $(DESTDIR)$(bindir)/micq
 
-bin_PROGRAMS = climm @IKS_BIN@ # icqsyn icqprx
-EXTRA_PROGRAMS = climmX icqprx icqsyn
+bin_PROGRAMS = climm # icqsyn icqprx
+EXTRA_PROGRAMS = icqprx icqsyn
 
 AM_CFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include
 AM_CXXFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include
@@ -19,17 +19,7 @@ climm_SOURCES = autopackage_prefix.c conv.c file_util.c im_response.c climm.c \
        msg_queue.c util_tabs.c i18n.c util_table.c contact.c oscar_dc.c packet.c \
        cmd_user.c preferences.c util_io.c util_str.c util_parse.c \
        util_syntax.c util_rl.c util_alias.c connection.c oscar_dc_file.c \
-       oscar_base.c oscar_tlv.c oscar_snac.c io/io_tcp.c io/io_gnutls.c \
-       oscar_service.c oscar_location.c oscar_contact.c oscar_icbm.c \
-       oscar_bos.c oscar_roster.c oscar_oldicq.c oscar_register.c  \
-       remote.c os.c util_tcl.c util_ssl.c im_icq8.c buildmark.c util_otr.c
-
-climmX_SOURCES = autopackage_prefix.c conv.c file_util.c im_response.c climm.c \
-       im_request.c util.c util_opts.c util_ui.c mreadline.c \
-       msg_queue.c util_tabs.c i18n.c util_table.c contact.c oscar_dc.c packet.c \
-       cmd_user.c preferences.c util_io.c util_str.c util_parse.c \
-       util_syntax.c util_rl.c util_alias.c connection.c oscar_dc_file.c \
-       oscar_base.c oscar_tlv.c oscar_snac.c io/io_tcp.c io/io_gnutls.c \
+       oscar_base.c oscar_tlv.c oscar_snac.c io/io_tcp.c io/io_gnutls.c io/io_openssl.c \
        oscar_service.c oscar_location.c oscar_contact.c oscar_icbm.c \
        oscar_bos.c oscar_roster.c oscar_oldicq.c oscar_register.c  \
        remote.c os.c util_tcl.c util_ssl.c im_icq8.c buildmark.c util_otr.c xmpp_base.c
@@ -37,18 +27,9 @@ climmX_SOURCES = autopackage_prefix.c conv.c file_util.c im_response.c climm.c \
 icqsyn_SOURCES = icqsyn.c conv.c packet.c util_str.c util_syntax.c
 icqprx_SOURCES = icqprx.c
 
-EXTRA_LIBRARIES = libclimmmsn.a libclimmxmpp.a
-noinst_LIBRARIES = @LIBMSN@ @LIBXMPP@
+climm_LDADD = @LIBOBJS@ @LIBICONV@ @LIBOTR_LIBS@ @LIBGNUTLS_LIBS@ @LIBGCRYPT_LIBS@ @LIBTCL_LIBS@ @BINRELOC_LIBS@ @IKS_LIBS@
 
-libclimmmsn_a_SOURCES = msn_base.cpp
-
-libclimmxmpp_a_SOURCES = jabber_base.cpp
-
-climm_LDADD = @LIBOBJS@ @LIBICONV@ @L_LIBMSN@ @L_LIBXMPP@ @LIBOTR_LIBS@ @LIBGNUTLS_LIBS@ @LIBGCRYPT_LIBS@ @XMPP_LIBS@ @LIBTCL_LIBS@ @BINRELOC_LIBS@
-
-climmX_LDADD = @LIBOBJS@ @LIBICONV@ @L_LIBMSN@ @LIBOTR_LIBS@ @LIBGNUTLS_LIBS@ @LIBGCRYPT_LIBS@ @LIBTCL_LIBS@ @BINRELOC_LIBS@ @IKS_LIBS@
-
-$(climm_SOURCES): @LIBOBJS@ @LIBMSN@
+$(climm_SOURCES): @LIBOBJS@
 
 snprintf.o: snprintf.c
 snprintf.c: snprintf.h

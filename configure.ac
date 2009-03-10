@@ -38,23 +38,23 @@ AC_SYS_LARGEFILE
 
 # Check for arguments.
 
-AC_ARG_ENABLE([peer2peer], AC_HELP_STRING([--disable-peer2peer], [disable peer to peer connections]),
+AC_ARG_ENABLE([peer2peer], AC_HELP_STRING([--disable-peer2peer], [disable Oscar peer to peer connections]),
               ac_arg_use_dc=$enableval, ac_arg_use_dc=yes)
 AC_ARG_ENABLE([iconv], AC_HELP_STRING([--disable-iconv], [do not use iconv() at all]),
               ac_arg_use_iconv=$enableval, ac_arg_use_iconv=yes)
 AC_ARG_ENABLE([iconvrepl], AC_HELP_STRING([--enable-iconvrepl], [compile in iconv() replacement fallbacks]),
               ac_arg_use_iconvrepl=$enableval, ac_arg_use_iconvrepl=no)
-AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable remote control FIFO]),
+AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable scripting FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
-AC_ARG_ENABLE([xmpp], AC_HELP_STRING([--enable-xmpp], [enable XMPP (Jabber) chat network (BETA) (set to iksemel to also create binary using libiksemel)]),
+AC_ARG_ENABLE([xmpp], AC_HELP_STRING([--enable-xmpp], [enable XMPP (Jabber) chat network using libiksemel (BETA)]),
               ac_arg_use_xmpp=$enableval, ac_arg_use_xmpp=auto)
-AC_ARG_ENABLE([msn], AC_HELP_STRING([--enable-msn], [enable MSN chat network (NOT YET IMPLEMENTED)]),
-              ac_arg_use_msn=$enableval, ac_arg_use_msn=auto)
+dnl AC_ARG_ENABLE([msn], AC_HELP_STRING([--enable-msn], [enable MSN chat network (NOT YET IMPLEMENTED)]),
+dnl               ac_arg_use_msn=$enableval, ac_arg_use_msn=auto)
 AC_ARG_ENABLE([tcl], AC_HELP_STRING([--disable-tcl], [disable Tcl scripting]),
               ac_arg_use_tcl=$enableval, ac_arg_use_tcl=auto)
 AC_ARG_ENABLE([ssl], AC_HELP_STRING([--disable-ssl], [disable SSL encryption]),
               ac_arg_use_ssl=$enableval, ac_arg_use_ssl=auto)
-AC_ARG_ENABLE([ssl], AC_HELP_STRING([[[[--enable-ssl=gnutls,openssl]]]], [choose SSL library]))
+AC_ARG_ENABLE([ssl], AC_HELP_STRING([[[[--enable-ssl=gnutls,openssl,gnutls+openssl]]]], [choose SSL library]))
 AC_ARG_ENABLE([otr], AC_HELP_STRING([--disable-otr], [disable OTR encryption support]),
               ac_arg_use_otr=$enableval, ac_arg_use_otr=auto)
 
@@ -93,7 +93,7 @@ else
     AC_SUBST(BINRELOC_LIBS,[ ])
 fi
 
-if test "x$ac_arg_use_dc" != "xno"; then
+if test "x$ac_arg_use_dc" != "xno" || test "x$ac_arg_use_xmpp" != "xno"; then
   if test "x$ac_arg_use_ssl" != "xno"; then
     ac_use_ssl=no
     if test "x$ac_arg_use_ssl" != "xopenssl"; then
@@ -108,24 +108,34 @@ if test "x$ac_arg_use_dc" != "xno"; then
         LIBS="$temp_LIBS"
       fi
     fi
-    if test "x$ac_use_ssl" = "xno"; then
+    if test "x$ac_use_ssl" = "xno" || test "x$ac_arg_use_ssl" = "xgnutls+openssl"; then
       if test "x$ac_arg_use_ssl" != "xgnutls"; then
-        AC_CHECK_HEADERS([openssl/ssl.h], [ac_use_ssl=openssl])
+        ac_use_openssl=no
+        AC_CHECK_HEADERS([openssl/ssl.h], [ac_use_openssl=openssl])
         temp_LIBS="$LIBS"
-        AC_CHECK_LIB([crypto], [DH_free], , [ac_use_ssl=no])
-        AC_CHECK_LIB([ssl], [SSL_new], , [ac_use_ssl=no
+        AC_CHECK_LIB([crypto], [DH_free], , [ac_use_openssl=no])
+        AC_CHECK_LIB([ssl], [SSL_new], , [ac_use_openssl=no
                                           LIBS="$temp_LIBS"])
+        if test "x$ac_use_ssl" = "xno"; then
+          ac_use_ssl=$ac_use_openssl
+        else
+          ac_use_ssl=$ac_use_ssl+$ac_use_openssl
+        fi
       fi
-    fi
-    if test "x$ac_use_ssl$ac_arg_use_autopackage" = xopensslyes; then
-      AC_MSG_FAILURE([cannot use OpenSSL with autopackage])
     fi
     if test "x$ac_use_ssl" = "xno"; then
       case "$ac_arg_use_ssl" in
-        gnutls)  AC_MSG_FAILURE([cannot find GnuTLS library]) ;;
-        openssl) AC_MSG_FAILURE([cannot find OpenSSL library]) ;;
-        yes)     AC_MSG_FAILURE([cannot find any SSL library]) ;;
-        *)       AC_MSG_WARN([cannot find a suitable SSL library -- encrypted connection support disabled]) ;;
+        gnutls)         AC_MSG_FAILURE([cannot find GnuTLS library]) ;;
+        openssl)        AC_MSG_FAILURE([cannot find OpenSSL library]) ;;
+        yes)            AC_MSG_FAILURE([cannot find any SSL library]) ;;
+        *)              AC_MSG_WARN([cannot find a suitable SSL library -- encrypted connection support disabled]) ;;
+      esac
+    fi
+    if test "x$ac_arg_use_ssl" = "gnutls+openssl";  then
+      case "$ac_use_ssl" in
+        gnutls)         AC_MSG_FAILURE([cannot find OpenSSL library]) ;;
+        openssl)        AC_MSG_FAILURE([cannot find GnuTLS library]) ;;
+        *)              AC_MSG_FAILURE([cannot find neither GnuTLS nor OpenSSL library]) ;;
       esac
     fi
     ac_arg_use_ssl=$ac_use_ssl
@@ -138,7 +148,7 @@ if test "x$ac_arg_use_otr" != "xno"; then
     ac_use_otr=no
     temp_LIBS="$LIBS"
     temp_CFLAGS="$CFLAGS"
-    if test "x$ac_arg_use_ssl" != "xgnutls"; then
+    if test "x$ac_arg_use_ssl" != "xgnutls" && test "x$ac_arg_use_ssl" != "xgnutls+openssl"; then
         AM_PATH_LIBGCRYPT(, ac_use_otr=maybe, ac_use_otr=no)
         CFLAGS="$LIBGCRYPT_CFLAGS $CFLAGS"
     else
@@ -348,73 +358,71 @@ else
   ac_arg_use_remote=none
 fi
 
-AC_LANG([C++])
-AC_PROG_CXX
-if test "x$ac_arg_use_msn" = "xyes"; then
-  AC_SUBST(LIBMSN, "libclimmmsn.a", [Static lib to link if MSN is enabled])
-  AC_SUBST(L_LIBMSN, "-L. -lclimmmsn -lmsn -lstdc++", [Static lib link option to link if MSN is enabled])
-  AC_DEFINE(ENABLE_MSN, 1, [Enable MSN chat network using libmsn])
-  AC_CHECK_HEADERS(sstream,,
-    [AC_CHECK_HEADERS(strstream,,
-        AC_MSG_ERROR([Your libstdc++ doesn't have the sstream or strstream classes]))])
-else
-  ac_arg_use_msn=no
-fi
-AC_LANG([C])
+dnl AC_LANG([C++])
+dnl AC_PROG_CXX
+dnl if test "x$ac_arg_use_msn" = "xyes"; then
+dnl   AC_SUBST(LIBMSN, "libclimmmsn.a", [Static lib to link if MSN is enabled])
+dnl   AC_SUBST(L_LIBMSN, "-L. -lclimmmsn -lmsn -lstdc++", [Static lib link option to link if MSN is enabled])
+dnl   AC_DEFINE(ENABLE_MSN, 1, [Enable MSN chat network using libmsn])
+dnl   AC_CHECK_HEADERS(sstream,,
+dnl     [AC_CHECK_HEADERS(strstream,,
+dnl         AC_MSG_ERROR([Your libstdc++ doesn't have the sstream or strstream classes]))])
+dnl else
+dnl   ac_arg_use_msn=no
+dnl fi
+dnl AC_LANG([C])
 
 if test "x$ac_arg_use_xmpp" != "xno"; then
-  if test "x$ac_arg_use_ssl" != "xgnutls"; then
+  if test "x$ac_arg_use_ssl" != "xgnutls" && test "x$ac_arg_use_ssl" != "xgnutls+openssl"; then
     AC_MSG_CHECKING([XMPP])
     AC_MSG_RESULT([no, GnuTLS missing])
     ac_use_xmpp=no
-  else
-    PKG_CHECK_MODULES(XMPP, gloox, ac_use_xmpp=yes, ac_use_xmpp=no)
   fi
-
-  if test "x$ac_use_xmpp" = xno && test "x$ac_arg_use_xmpp" != xauto && test "x$ac_arg_use_xmpp" != xiksemel; then
-    AC_MSG_FAILURE([cannot find XMPP library libgloox])
-  fi
-  if test "x$ac_arg_use_xmpp" = xiksemel; then
-    PKG_CHECK_MODULES(IKS, iksemel, ac_use_xmpp=yes, ac_use_xmpp=no)
-    if test "x$ac_use_xmpp" = xno; then
-      AC_MSG_FAILURE([cannot find XMPP library libiksemel])
-    fi
+  PKG_CHECK_MODULES(IKS, iksemel, ac_use_xmpp=yes, ac_use_xmpp=no)
+  
+  if test "x$ac_use_xmpp" = xyes; then
     AC_DEFINE(ENABLE_IKS, 1, [Enable XMPP chat network using iksemel])
     ac_iksemel_version=`pkg-config --modversion iksemel | tr . " "`
     ac_iksemel_version=`printf 0x%02x%02x $ac_iksemel_version`
+    AC_DEFINE_UNQUOTED(LIBIKS_VERSION, $ac_iksemel_version, [libiksemel version])
+    ac_use_xmpp=yes
+  fi
+
+  if test "x$ac_arg_use_xmpp" = xyes; then
+    if test "x$ac_use_xmpp" = xno; then
+      AC_MSG_FAILURE([cannot find XMPP library libiksemel])
+    fi
     if test "1${ac_iksemel_version#??}" -lt 10103;  then
       AC_MSG_FAILURE([cannot find XMPP library libiksemel version 1.3 or newer, found: $ac_iksemel_version])
     fi
-    AC_DEFINE_UNQUOTED(LIBIKS_VERSION, $ac_iksemel_version, [libiksemel version])
-    AC_SUBST(IKS_BIN, climmX, [binary using libiksemel if requested])
-    ac_use_xmpp=libgloox+libiksemel
   fi
+  if test "1${ac_iksemel_version#??}" -lt 10103;  then
+    AC_MSG_WARN([cannot find XMPP library libiksemel version 1.3 or newer, found: $ac_iksemel_version])
+    ac_use_xmpp=no
+  fi
+
   ac_arg_use_xmpp=$ac_use_xmpp;
   if test "x$ac_arg_use_xmpp" != xno; then
-    AC_SUBST(LIBXMPP, "libclimmxmpp.a", [Static lib to link if XMPP is enabled])
-    AC_SUBST(L_LIBXMPP, "-L. -lclimmxmpp", [Static lib link option to link if XMPP is enabled])
     AC_DEFINE(ENABLE_XMPP, 1, [Enable XMPP chat network])
-    ac_gloox_version=`pkg-config --modversion gloox | sed "s/^\([[0-9]]*\)\.\([[0-9]]*\)\.\([[0-9]]*\).*/\1 \2 \3/"`
-    ac_gloox_version=`printf 0x%02x%02x%02x $ac_gloox_version`
-    AC_DEFINE_UNQUOTED(LIBGLOOX_VERSION, $ac_gloox_version, [libgloox version])
-    if test "x$ac_use_autopackage" = xyes; then
-      XMPP_LIBS="-lgloox -lstdc++"
-    fi
   fi
 fi
 
 if test "x$ac_arg_use_dc" = "xyes"; then
-  AC_DEFINE(ENABLE_PEER2PEER, 1, [Whether to enable peer to peer connections])
+  AC_DEFINE(ENABLE_PEER2PEER, 1, [Whether to enable Oscar peer to peer connections])
 fi
 
 if test "x$ac_arg_use_remote" = "xyes"; then
-  AC_DEFINE(ENABLE_REMOTECONTROL, 1, [Whether to enable remote control FIFO])
+  AC_DEFINE(ENABLE_REMOTECONTROL, 1, [Whether to enable scripting FIFO])
 fi
 
-if test "x$ac_arg_use_ssl" = "xgnutls"; then
+if test "x$ac_arg_use_ssl" = "xgnutls+openssl"; then
   AC_DEFINE(ENABLE_SSL, 1, [Whether to use the SSL extension])
   AC_DEFINE(ENABLE_GNUTLS, 1, [Whether to use GnuTLS for SSL/TLS support])
-elif test "x$ac_arg_use_ssl" = "xopenssl"; then
+  AC_DEFINE(ENABLE_OPENSSL, 1, [Whether to use OpenSSL for SSL/TLS support])
+elif test "x$ac_arg_use_ssl" = "xgnutls"; then
+  AC_DEFINE(ENABLE_SSL, 1, [Whether to use the SSL extension])
+  AC_DEFINE(ENABLE_GNUTLS, 1, [Whether to use GnuTLS for SSL/TLS support])
+elif test "x$ac_arg_use_ssl" = "xopenssl";  then
   AC_DEFINE(ENABLE_SSL, 1, [Whether to enable SSL/TLS support])
   AC_DEFINE(ENABLE_OPENSSL, 1, [Whether to use OpenSSL for SSL/TLS support])
 fi
@@ -623,11 +631,11 @@ fi
 
 AC_MSG_CHECKING([whether to enable XMPP chat network (BETA)])
 AC_MSG_RESULT([$ac_arg_use_xmpp])
-AC_MSG_CHECKING([whether to enable MSN chat network (EXPERIMENTAL BROKEN INCOMPLETE)])
-AC_MSG_RESULT([$ac_arg_use_msn])
-AC_MSG_CHECKING([whether to enable peer to peer connections])
+dnl AC_MSG_CHECKING([whether to enable MSN chat network (EXPERIMENTAL BROKEN INCOMPLETE)])
+dnl AC_MSG_RESULT([$ac_arg_use_msn])
+AC_MSG_CHECKING([whether to enable Oscar peer to peer connections])
 AC_MSG_RESULT([$ac_arg_use_dc])
-AC_MSG_CHECKING([whether to enable remote control FIFO])
+AC_MSG_CHECKING([whether to enable scripting FIFO])
 AC_MSG_RESULT([$ac_arg_use_remote])
 AC_MSG_CHECKING([whether to enable Tcl scripting])
 AC_MSG_RESULT([$ac_arg_use_tcl])
