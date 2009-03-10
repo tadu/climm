@@ -1,7 +1,8 @@
 /*
- * TLS Diffie Hellmann extension.
+ * TLS Diffie Hellmann extension. (GnuTLS part)
  *
  * climm TLS extension Copyright (C) © 2003-2007 Roman Hoog Antink
+ * Reorganized for new i/o schema by Rüdiger Kuhlmann
  *
  * This extension is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -26,7 +27,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  *
- * $Id: util_ssl.c 2524 2008-03-08 21:08:36Z kuhlmann $
+ * $Id: util_ssl.c 2723 2009-03-10 21:44:18Z kuhlmann $
  */
 
 #include "climm.h"
