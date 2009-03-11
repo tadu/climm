@@ -33,6 +33,9 @@ typedef enum io_err_e {
     IO_OK = 0
 } io_err_t;
 
+void        UtilIOConnectTCP (Connection *conn);
+void        UtilIOListenTCP  (Connection *conn);
+
 int         UtilIOAccept (Connection *conn, Connection *newc);
 int         UtilIORead   (Connection *conn, char *buf, size_t count);
 io_err_t    UtilIOWrite  (Connection *conn, const char *buf, size_t count);

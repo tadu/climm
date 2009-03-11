@@ -61,7 +61,6 @@
 #include "oscar_dc.h"
 #include "conv.h"
 #include "oscar_base.h"
-#include "io/io_tcp.h"
 #include "oscar_dc_file.h"
 
 static void PeerFileDispatchClose   (Connection *ffile);
@@ -101,7 +100,7 @@ Connection *PeerFileCreate (Server *serv)
         rl_printf (i18n (2519, "Opening file listener connection at %slocalhost%s:%s%ld%s... "),
                   COLQUOTE, COLNONE, COLQUOTE, UD2UL (flist->port), COLNONE);
 
-    IOConnectTCP (flist);
+    UtilIOConnectTCP (flist);
     
     return flist;
 }

@@ -60,7 +60,6 @@
 #include "preferences.h"
 #include "oscar_dc_file.h"
 #include "os.h"
-#include "io/io_tcp.h"
 
 static jump_conn_f XMPPCallbackDispatch;
 static jump_conn_f XMPPCallbackClose;
@@ -176,7 +175,7 @@ Event *ConnectionInitXMPPServer (Server *serv)
         event = QueueEnqueueData (serv->conn, QUEUE_DEP_WAITLOGIN, 0, time (NULL) + 5,
                                   NULL, serv->conn->cont, NULL, &XMPPCallBackTimeout);
 
-    IOConnectTCP (serv->conn);
+    UtilIOConnectTCP (serv->conn);
     return event;
 }
 

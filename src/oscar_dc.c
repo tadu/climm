@@ -28,7 +28,6 @@
 #include "oscar_service.h"
 #include "oscar_icbm.h"
 #include "oscar_base.h"
-#include "io/io_tcp.h"
 #include "io/io_gnutls.h"
 #include "io/io_openssl.h"
 
@@ -127,7 +126,7 @@ Event *ConnectionInitPeer (Connection *list)
     list->port        = ConnectionPrefVal (list->serv, CO_OSCAR_DC_PORT);
     list->cont        = list->serv->conn->cont;
 
-    IOListenTCP (list);
+    UtilIOListenTCP (list);
     return NULL;
 }
 
@@ -189,7 +188,7 @@ BOOL TCPDirectOpen (Connection *list, Contact *cont)
                   s_wordquote (s_ip (peer->ip)), COLQUOTE, UD2UL (peer->port), COLNONE);
         rl_printf ("\n");
     }
-    IOConnectTCP (peer);
+    UtilIOConnectTCP (peer);
     return TRUE;
 }
 
@@ -375,7 +374,7 @@ void TCPDispatchConn (Connection *peer)
                       s_wordquote (s_ip (peer->ip)), COLQUOTE, UD2UL (peer->port), COLNONE);
         }
         rl_printf ("\n");
-        IOConnectTCP (peer);
+        UtilIOConnectTCP (peer);
     }
     else
     {

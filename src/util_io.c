@@ -38,10 +38,21 @@
 #include "connection.h"
 #include "util_io.h"
 #include "io/io_private.h"
+#include "io/io_tcp.h"
 #include "conv.h"
 #include "util.h"
 #include "contact.h"
 #include "packet.h"
+
+void UtilIOConnectTCP (Connection *conn)
+{
+    return IOConnectTCP (conn);
+}
+
+void UtilIOListenTCP  (Connection *conn)
+{
+    return IOListenTCP (conn);
+}
 
 int UtilIOAccept (Connection *conn, Connection *newc)
 {

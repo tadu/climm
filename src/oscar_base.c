@@ -53,7 +53,6 @@
 #include "conv.h"
 #include "oscar_dc.h"
 #include "im_request.h"
-#include "io/io_tcp.h"
 
 static void FlapChannel1 (Server *serv, Packet *pak);
 static void FlapSave (Server *serv, Packet *pak, BOOL in);
@@ -196,7 +195,7 @@ void FlapChannel4 (Server *serv, Packet *pak)
 
         serv->conn->connect = 8;
         serv->oscar_tlv = tlv;
-        IOConnectTCP (serv->conn);
+        UtilIOConnectTCP (serv->conn);
         rl_printf ("\n");
     }
 }
@@ -597,7 +596,7 @@ Event *ConnectionInitOscarServer (Server *serv)
               !cont ? i18n (2513, "new UIN") : cont->nick ? cont->nick 
               : cont->screen, COLNONE);
 
-    IOConnectTCP (serv->conn);
+    UtilIOConnectTCP (serv->conn);
     rl_printf ("\n");
     if ((v = ConnectionPrefVal (serv, CO_OSCAR_DC_MODE)))
     {
