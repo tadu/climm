@@ -35,12 +35,12 @@
 #include <stdarg.h>
 #include "preferences.h"
 #include "util_ui.h"
+#include "connection.h"
 #include "util_io.h"
 #include "io/io_private.h"
 #include "conv.h"
 #include "util.h"
 #include "contact.h"
-#include "connection.h"
 #include "packet.h"
 
 int UtilIOAccept (Connection *conn, Connection *newc)

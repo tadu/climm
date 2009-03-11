@@ -10,6 +10,7 @@
 #include "util_io.h"
 
 typedef void (jump_conn_f)(Connection *conn);
+typedef struct Dispatcher_s Dispatcher;
 
 struct Connection_s
 {

@@ -13,6 +13,15 @@
 #include "io/io_gnutls.h"
 #include "io/io_openssl.h"
 
+typedef struct Conn_Func_s
+{
+    int         (* const f_accept)(Connection *c, Dispatcher *d, Connection *newc);
+    int         (* const f_read)  (Connection *c, Dispatcher *d, char *buf, size_t count);
+    io_err_t    (* const f_write) (Connection *c, Dispatcher *d, const char *buf, size_t count);
+    void        (* const f_close) (Connection *c, Dispatcher *d);
+    const char *(* const f_err)   (Connection *c, Dispatcher *d);
+} Conn_Func;
+
 struct Dispatcher_s
 {
     Conn_Func *funcs;

@@ -13,8 +13,6 @@ typedef enum {
     SSL_STATUS_HANDSHAKE /* SSL session handshake is ongoing */
 } ssl_status_t;
 
-typedef struct Dispatcher_s Dispatcher;
-
 typedef enum io_err_e {
     IO_NO_PARAM = -12,
     IO_NO_MEM,
@@ -34,15 +32,6 @@ typedef enum io_err_e {
     
     IO_OK = 0
 } io_err_t;
-
-typedef struct Conn_Func_s
-{
-    int         (* const f_accept)(Connection *c, Dispatcher *d, Connection *newc);
-    int         (* const f_read)  (Connection *c, Dispatcher *d, char *buf, size_t count);
-    io_err_t    (* const f_write) (Connection *c, Dispatcher *d, const char *buf, size_t count);
-    void        (* const f_close) (Connection *c, Dispatcher *d);
-    const char *(* const f_err)   (Connection *c, Dispatcher *d);
-} Conn_Func;
 
 int         UtilIOAccept (Connection *conn, Connection *newc);
 int         UtilIORead   (Connection *conn, char *buf, size_t count);
