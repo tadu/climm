@@ -15,7 +15,6 @@ struct Packet_s
     UDWORD   flags;
 
     UWORD    rpos, wpos, tpos;
-    UBYTE    socks[10];
     UBYTE    data[PacketMaxData];
 };
 
