@@ -80,7 +80,7 @@ static void iks_climm_TClose (Connection *conn)
 
 static int iks_climm_TSend (Connection *conn, const char *data, size_t len)
 {
-    io_err_t rc = conn->dispatcher->funcs->f_write (conn, conn->dispatcher, data, len);
+    io_err_t rc = UtilIOWrite (conn, data, len);
     if (rc != IO_OK)
         return IKS_NET_RWERR;
     return IKS_OK;
@@ -88,7 +88,7 @@ static int iks_climm_TSend (Connection *conn, const char *data, size_t len)
 
 static int iks_climm_TRecv (Connection *conn, char *data, size_t len, int timeout)
 {
-    int rc = conn->dispatcher->funcs->f_read (conn, conn->dispatcher, data, len);
+    int rc = UtilIORead (conn, data, len);
     if (rc == IO_OK)
     {
         errno = EAGAIN;
@@ -1052,7 +1052,8 @@ static void XMPPCallbackDispatch (Connection *conn)
     assert (conn->sok >= 0);
     if (!(conn->connect & (CONNECT_OK | 4)))
     {
-        rc = UtilIOShowError (conn, conn->dispatcher->funcs->f_read (conn, conn->dispatcher, NULL, 0));
+        rc = UtilIORead (conn, NULL, 0);
+        rc = UtilIOShowError (conn, rc);
         switch (rc) {
             case IO_RW:
             case IO_OK:

@@ -41,6 +41,7 @@
 #include "connection.h"
 #include "contact.h"
 #include "packet.h"
+#include "io/io_private.h"
 #include "io/io_openssl.h"
 
 #include <errno.h>
@@ -53,7 +54,7 @@ static void             io_openssl_open  (Connection *c, Dispatcher *d, char is_
 static int              io_openssl_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
 static io_err_t         io_openssl_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
 static void             io_openssl_close (Connection *c, Dispatcher *d);
-static char            *io_openssl_err   (Connection *c, Dispatcher *d);
+static const char      *io_openssl_err   (Connection *c, Dispatcher *d);
 static io_openssl_err_t io_openssl_seterr (io_openssl_err_t err, int opensslerr, const char *msg);
 static void             io_openssl_setconnerr (Dispatcher *d, io_openssl_err_t err, int opensslerr, const char *msg);
 static char            *io_openssl_lasterr = NULL;
@@ -229,7 +230,7 @@ static void io_openssl_setconnerr (Dispatcher *d, io_openssl_err_t err, int open
     s_repl (&d->lasterr, s_sprintf ("%s [%d] %s [%d]", msg, err, "OpenSSL error", opensslerr));
 }
 
-static char *io_openssl_err (Connection *conn, Dispatcher *d)
+static const char *io_openssl_err (Connection *conn, Dispatcher *d)
 {
     return d->lasterr;
 }

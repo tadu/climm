@@ -41,6 +41,7 @@
 #include "connection.h"
 #include "contact.h"
 #include "packet.h"
+#include "io/io_private.h"
 #include "io/io_gnutls.h"
 #include <errno.h>
 
@@ -62,7 +63,7 @@ static void            io_gnutls_open  (Connection *c, Dispatcher *d, char is_cl
 static int             io_gnutls_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
 static io_err_t        io_gnutls_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
 static void            io_gnutls_close (Connection *c, Dispatcher *d);
-static char           *io_gnutls_err   (Connection *c, Dispatcher *d);
+static const char     *io_gnutls_err   (Connection *c, Dispatcher *d);
 static io_gnutls_err_t io_gnutls_seterr (io_gnutls_err_t err, int gnutlserr, const char *msg);
 static void            io_gnutls_setconnerr (Dispatcher *d, io_gnutls_err_t err, int gnutlserr, const char *msg);
 static char           *io_gnutls_lasterr = NULL;
@@ -176,7 +177,7 @@ static void io_gnutls_setconnerr (Dispatcher *d, io_gnutls_err_t err, int gnutls
     s_repl (&d->lasterr, s_sprintf ("%s [%d] %s [%d]", msg, err, gnutls_strerror (gnutlserr), gnutlserr));
 }
 
-static char *io_gnutls_err (Connection *conn, Dispatcher *d)
+static const char *io_gnutls_err (Connection *conn, Dispatcher *d)
 {
     return d->lasterr;
 }

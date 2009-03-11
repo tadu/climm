@@ -45,6 +45,7 @@
 #include "remote.h"
 #include "os.h"
 #include "io/io_gnutls.h"
+#include "io/io_openssl.h"
 
 #define CLIMM_ICON_1 "   " GREEN "_" SGR0 "     "
 #define CLIMM_ICON_2 " " GREEN "_/ \\_" SGR0 "   "

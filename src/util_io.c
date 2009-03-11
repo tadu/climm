@@ -20,263 +20,55 @@
 #if HAVE_SYS_UN_H
 #include <sys/un.h>
 #endif
-#if HAVE_NETDB_H
-#include <netdb.h>
-#endif
 #include <fcntl.h>
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 #include <assert.h>
-#if HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-#if HAVE_ARPA_INET_H
-#include <arpa/inet.h>
-#endif
-#if HAVE_WINSOCK2_H
-#include <winsock2.h>
-#endif
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
-#if !HAVE_DECL_H_ERRNO
-extern int h_errno;
-#endif
 #include <signal.h>
 #include <stdarg.h>
 #include "preferences.h"
 #include "util_ui.h"
 #include "util_io.h"
+#include "io/io_private.h"
 #include "conv.h"
 #include "util.h"
 #include "contact.h"
 #include "connection.h"
 #include "packet.h"
 
-#ifndef HAVE_HSTRERROR
-const char *hstrerror (int rc)
+int UtilIOAccept (Connection *conn, Connection *newc)
 {
-    return "";
+    return conn->dispatcher->funcs->f_accept (conn, conn->dispatcher, newc);
 }
-#endif
 
-#ifndef HAVE_GETHOSTBYNAME
-struct hostent *gethostbyname(const char *name)
+int UtilIORead (Connection *conn, char *buf, size_t count)
 {
-    return NULL;
+    return conn->dispatcher->funcs->f_read (conn, conn->dispatcher, buf, count);
 }
-#endif
 
-#define BACKLOG 10
-
-static void UtilIOTOConn (Event *event);
-static void UtilIOConnectCallback (Connection *conn);
+io_err_t UtilIOWrite (Connection *conn, const char *buf, size_t count)
+{
+    return conn->dispatcher->funcs->f_write (conn, conn->dispatcher, buf, count);
+}
 
 void UtilIOClose (Connection *conn)
 {
     if (conn && conn->dispatcher && conn->dispatcher->funcs && conn->dispatcher->funcs->f_close)
         conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
     assert (!conn || conn->sok < 0);
-    assert (!conn || conn->connect == 0);
     assert (!conn || !conn->dispatcher);
 }
 
-#ifdef __AMIGA__
-#define CONN_CHECK_EXTRA   if (rc == 11) return;  /* UAE sucks */
-#else
-#define CONN_CHECK_EXTRA   
-#endif
-#define CONN_FAIL(s)  { const char *t = s;      \
-                        if (t) if (prG->verbose || (conn->serv && conn == conn->serv->conn)) \
-                            rl_printf    ("%s [%d]\n", t, __LINE__);  \
-                        EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip)); \
-                        if (conn->sok > 0)          \
-                          sockclose (conn->sok);     \
-                        conn->sok = -1;               \
-                        conn->connect += 2;            \
-                        conn->dispatch (conn);           \
-                        return; }
-#define CONN_FAIL_RC(s) { int rc = errno;                  \
-                          if (prG->verbose || (conn->serv && conn == conn->serv->conn)) \
-                          rl_print (i18n (1949, "failed:\n"));\
-                          CONN_FAIL (s_sprintf  ("%s: %s (%d).", s, strerror (rc), rc)) }
-#define CONN_CHECK(s) { if (rc == -1) { rc = errno;            \
-                          if (rc == EAGAIN) return;             \
-                          CONN_CHECK_EXTRA                       \
-                          CONN_FAIL (s_sprintf  ("%s: %s (%d).", s, strerror (rc), rc)) } }
-#define CONN_OK         { conn->connect++;                          \
-                          EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip)); \
-                          conn->dispatch (conn);                        \
-                          return; }
-
-/*
- * Connect to conn->server, or conn->ip, or opens port for listening
- *
- * Usage: conn->dispatch will be called with conn->connect++ if ok,
- * conn->connect+=2 if fail.
- */
-#undef UtilIOConnectTCP
-void UtilIOConnectTCP (Connection *conn DEBUGPARAM)
+const char *UtilIOErr (Connection *conn)
 {
-    int rc, rce;
-    socklen_t length;
-    struct sockaddr_in sin;
-    struct hostent *host;
-    char *origserver = NULL;
-    UDWORD origport = 0, origip = 0;
-    assert(0);
-    
-    Debug (DEB_IO, "UtilIOConnectCallback: %x", conn->connect);
-
-    errno = 0;
-    conn->sok = socket (AF_INET, SOCK_STREAM, 0);
-    if (conn->sok < 0)
-        CONN_FAIL_RC (i18n (1638, "Couldn't create socket"));
-#if HAVE_FCNTL
-    rc = fcntl (conn->sok, F_GETFL, 0);
-    if (rc != -1)
-        rc = fcntl (conn->sok, F_SETFL, rc | O_NONBLOCK);
-#elif defined(HAVE_IOCTLSOCKET)
-    origip = 1;
-    rc = ioctlsocket (conn->sok, FIONBIO, &origip);
-#endif
-    if (rc == -1)
-        CONN_FAIL_RC (i18n (1950, "Couldn't set socket nonblocking"));
-    if (conn->server || conn->ip || ConnectionPrefVal (conn->serv, CO_S5USE))
-    {
-        if (ConnectionPrefVal (conn->serv, CO_S5USE) && ConnectionPrefStr (conn->serv, CO_S5HOST))
-        {
-            origserver = conn->server;
-            origip     = conn->ip;
-            origport   = conn->port;
-            conn->server = strdup (ConnectionPrefStr (conn->serv, CO_S5HOST));
-            conn->port   = ConnectionPrefVal (conn->serv, CO_S5PORT);
-            conn->ip     = -1;
-        }
-
-        sin.sin_family = AF_INET;
-        sin.sin_port = htons (conn->port);
-
-        if (conn->server)
-            conn->ip = htonl (inet_addr (conn->server));
-        if (conn->ip + 1 == 0 && conn->server)
-        {
-            host = gethostbyname (conn->server);
-            if (!host)
-            {
-                rc = h_errno;
-                CONN_FAIL (s_sprintf (i18n (1951, "Can't find hostname %s: %s (%d)."), conn->server, hstrerror (rc), rc));
-            }
-            sin.sin_addr = *((struct in_addr *) host->h_addr);
-            conn->ip = ntohl (sin.sin_addr.s_addr);
-        }
-        sin.sin_addr.s_addr = htonl (conn->ip);
-        
-        if (ConnectionPrefVal (conn->serv, CO_S5USE))
-        {
-            free (conn->server);
-            conn->server = origserver;
-            conn->port   = origport;
-            conn->ip     = origip;
-        }
-
-        rc = connect (conn->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
-        rce = rc < 0 ? errno : 0;
-
-        length = sizeof (struct sockaddr);
-        getsockname (conn->sok, (struct sockaddr *) &sin, &length);
-        conn->our_local_ip = ntohl (sin.sin_addr.s_addr);
-        if (conn->serv && conn->serv->oscar_dc && (conn->serv->type == TYPE_SERVER))
-            conn->serv->oscar_dc->our_local_ip = conn->our_local_ip;
-
-        if (rc >= 0)
-        {
-            rl_print ("");
-            if (prG->verbose || (conn->serv && conn == conn->serv->conn))
-                if (rl_pos () > 0)
-                     rl_print (i18n (1634, "ok.\n"));
-            if (ConnectionPrefVal (conn->serv, CO_S5USE))
-            {
-                QueueEnqueueData (conn, QUEUE_CON_TIMEOUT, conn->ip,
-                                  time (NULL) + 10, NULL,
-                                  conn->cont, NULL, &UtilIOTOConn);
-                conn->dispatch = &UtilIOConnectCallback;
-                conn->connect |= CONNECT_SOCKS_ADD;
-                UtilIOConnectCallback (conn);
-                return;
-            }
-            CONN_OK
-        }
-
-#ifdef __AMIGA__
-        if (rce == EINPROGRESS || rce == 115) /* UAE sucks */
-#elif defined(EINPROGRESS)
-        if (rce == EINPROGRESS)
-#elif defined(WSAEINPROGRESS)
-        if (!rce || rce == WSAEINPROGRESS)
-#else
-        rce = 1;
-        if (0)
-#endif
-        {
-            rl_print ("");
-            if (prG->verbose || (conn->serv && conn == conn->serv->conn))
-                if (rl_pos () > 0)
-                    rl_print ("\n");
-            QueueEnqueueData (conn, QUEUE_CON_TIMEOUT, conn->ip,
-                              time (NULL) + 10, NULL,
-                              conn->cont, NULL, &UtilIOTOConn);
-            conn->dispatch = &UtilIOConnectCallback;
-            conn->connect |= CONNECT_SELECT_W | CONNECT_SELECT_X;
-            return;
-        }
-        else
-        {
-            errno = rce;
-            CONN_FAIL_RC (i18n (1952, "Couldn't open connection"));
-        }
-    }
-    else
-    {
-        sin.sin_family = AF_INET;
-        sin.sin_port = htons (conn->port);
-        sin.sin_addr.s_addr = INADDR_ANY;
-
-        if (bind (conn->sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
-        {
-#if defined(EADDRINUSE)
-            while ((rc = errno) == EADDRINUSE && conn->port)
-            {
-                rc = 0;
-                sin.sin_port = htons (++conn->port);
-                if (bind (conn->sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) == 0)
-                    break;
-                rc = errno;
-            }
-#endif
-            if (rc)
-            {
-                errno = rc;
-                CONN_FAIL_RC (i18n (1953, "couldn't bind socket to free port"));
-            }
-        }
-
-        if (listen (conn->sok, BACKLOG) < 0)
-            CONN_FAIL_RC (i18n (1954, "unable to listen on socket"));
-
-        length = sizeof (struct sockaddr);
-        getsockname (conn->sok, (struct sockaddr *) &sin, &length);
-        conn->port = ntohs (sin.sin_port);
-        s_repl (&conn->server, "localhost");
-        if (prG->verbose || conn->type == TYPE_MSGLISTEN)
-            if (rl_pos () > 0)
-                rl_print (i18n (1634, "ok.\n"));
-        CONN_OK
-    }
+    return conn->dispatcher->funcs->f_err (conn, conn->dispatcher);
 }
 
 #define CONNS_FAIL_RC(s) { int rc = errno;            \
@@ -338,136 +130,6 @@ int UtilIOError (Connection *conn)
         rc = errno;
 
     return rc;
-}
-
-/*
- * Continue connecting.
- */
-static void UtilIOConnectCallback (Connection *conn)
-{
-    int rc, eno = 0, len;
-    char buf[60];
-
-    assert (0);
-    while (1)
-    {
-        eno = 0;
-        rc = 0;
-        DebugH (DEB_IO, "UtilIOConnectCallback: %x", conn->connect);
-        switch ((eno = conn->connect / CONNECT_SOCKS_ADD) % 7)
-        {
-            case 0:
-                if ((rc = UtilIOError (conn)))
-                    CONN_FAIL (s_sprintf ("%s: %s (%d).", i18n (1955, "Connection failed"), strerror (rc), rc));
-
-                conn->connect += CONNECT_SOCKS_ADD;
-            case 1:
-                if (!ConnectionPrefVal (conn->serv, CO_S5USE))
-                    CONN_OK
-
-                conn->connect += CONNECT_SOCKS_ADD;
-                conn->connect |= CONNECT_SELECT_R;
-                conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
-                if (ConnectionPrefVal (conn->serv, CO_S5NAME) && ConnectionPrefVal (conn->serv, CO_S5PASS))
-                    sockwrite (conn->sok, "\x05\x02\x02\x00", 4);
-                else
-                    sockwrite (conn->sok, "\x05\x01\x00", 3);
-                return;
-            case 2:
-                rc = sockread (conn->sok, buf, 2);
-                CONN_CHECK (i18n (1601, "[SOCKS] General SOCKS server failure"));
-                if (buf[0] != 5 || !(buf[1] == 0 || (buf[1] == 2 && ConnectionPrefVal (conn->serv, CO_S5NAME) && ConnectionPrefVal (conn->serv, CO_S5PASS))))
-                    CONN_FAIL (i18n (1599, "[SOCKS] Authentication method incorrect"));
-
-                conn->connect += CONNECT_SOCKS_ADD;
-                if (buf[1] == 2)
-                {
-                    snprintf (buf, sizeof (buf), "%c%c%s%c%s%n", 1, (char) strlen (ConnectionPrefStr (conn->serv, CO_S5NAME)), 
-                              ConnectionPrefStr (conn->serv, CO_S5NAME), (char) strlen (ConnectionPrefStr (conn->serv, CO_S5PASS)), ConnectionPrefStr (conn->serv, CO_S5NAME), &len);
-                    sockwrite (conn->sok, buf, len);
-                    return;
-                }
-                conn->connect += CONNECT_SOCKS_ADD;
-                continue;
-            case 3:
-                rc = sockread (conn->sok, buf, 2);
-                CONN_CHECK (i18n (1601, "[SOCKS] General SOCKS server failure"));
-                if (rc != 2 || buf[1])
-                    CONN_FAIL  (i18n (1600, "[SOCKS] Authorization failure"));
-                conn->connect += CONNECT_SOCKS_ADD;
-            case 4:
-                if (conn->server)
-                    snprintf (buf, sizeof (buf), "%c%c%c%c%c%s%c%c%n", 5, 1, 0, 3, (char)strlen (conn->server),
-                              conn->server, (char)(conn->port >> 8), (char)(conn->port & 255), &len);
-                else if (conn->ip)
-                    snprintf (buf, sizeof (buf), "%c%c%c%c%c%c%c%c%c%c%n", 5, 1, 0, 1, (char)(conn->ip >> 24),
-                              (char)(conn->ip >> 16), (char)(conn->ip >> 8), (char)conn->ip,
-                              (char)(conn->port >> 8), (char)(conn->port & 255), &len);
-                else
-                    snprintf (buf, sizeof (buf), "%c%c%c%c%c%c%c%c%c%c%n", 5, 2, 0, 1, 0,0,0,0,
-                              eno & 8 ? 0 : (char)(conn->port >> 8),
-                              eno & 8 ? 0 : (char)(conn->port & 255), &len); 
-                sockwrite (conn->sok, buf, len);
-                conn->connect += CONNECT_SOCKS_ADD;
-                return;
-            case 5:
-                rc = sockread (conn->sok, buf, 10);
-                CONN_CHECK (i18n (1601, "[SOCKS] General SOCKS server failure"));
-                if (rc != 10 || buf[3] != 1)
-                    CONN_FAIL (i18n (1601, "[SOCKS] General SOCKS server failure"));
-                if (buf[1] == 4 && conn->port && !(eno & 8))
-                {
-                    conn->connect &= ~CONNECT_SOCKS;
-                    conn->connect |= 8 * CONNECT_SOCKS_ADD;
-                    EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip));
-                    UtilIOConnectTCP (conn DEBUGNONE);
-                    return;
-                }
-                if (buf[1])
-                    CONN_FAIL (s_sprintf (i18n (1958, "[SOCKS] Connection request refused (%d)"), buf[1]));
-                if (!conn->server && !conn->ip)
-                {
-                    conn->our_outside_ip = ntohl (*(UDWORD *)(&buf[4]));
-                    conn->port = ntohs (*(UWORD *)(&buf[8]));
-                    if (conn->serv && conn->serv->oscar_dc)
-                        conn->serv->oscar_dc->our_local_ip = conn->our_outside_ip;
-                }
-                conn->connect &= ~CONNECT_SOCKS;
-                CONN_OK
-            default:
-                assert (0);
-        }
-    }
-}
-
-/*
- * Does SOCKS5 handshake for incoming connection
- */
-void UtilIOSocksAccept (Connection *conn)
-{
-    char buf[60];
-    int rc;
-
-    rc = sockread (conn->sok, buf, 10);
-    CONN_CHECK (i18n (1601, "[SOCKS] General SOCKS server failure"));
-    if (rc != 10 || buf[3] != 1)
-        CONN_FAIL (i18n (1601, "[SOCKS] General SOCKS server failure"));
-}
-
-/*
- * Handles timeout on TCP connect
- */
-static void UtilIOTOConn (Event *event)
-{
-     Connection *conn = event->conn;
-     EventD (event);
-     if (conn)
-#if defined (ETIMEDOUT)
-         CONN_FAIL (s_sprintf ("%s: %s (%d).", i18n (1955, "Connection failed"),
-                    strerror (ETIMEDOUT), ETIMEDOUT));
-#else
-         CONN_FAIL (s_sprintf ("%s: connection timed out", i18n (1955, "Connection failed")));
-#endif
 }
 
 #ifndef ECONNRESET
@@ -547,107 +209,6 @@ io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
     }
 }
 
-
-/*
- * Receive a packet via TCP.
- */
-Packet *UtilIOReceiveTCP (Connection *conn)
-{
-    int ssl_rc = 0;
-    int rc, off, len;
-    Packet *pak;
-    
-    assert (0);
-    
-    if (!(conn->connect & CONNECT_MASK))
-        return NULL;
-    
-    if (!(pak = conn->incoming))
-    {
-        conn->incoming = pak = PacketC ();
-        memset (pak->data, 0, 6);
-    }
-    
-    if (conn->serv && conn->serv->conn == conn)
-    {
-        len = off = 6;
-        if (pak->len >= off)
-            len = PacketReadAtB2 (pak, 4) + 6;
-    }
-    else
-    {
-        len = off = 2;
-        if (pak->len >= off)
-            len = PacketReadAt2 (pak, 0) + 2;
-    }
-    while (1)
-    {
-        errno = 0;
-        if (len < 0 || len > PacketMaxData)
-        {
-            rc = ENOMEM;
-            break;
-        }
-#if defined(SIGPIPE)
-        signal (SIGPIPE, SIG_IGN);
-#endif
-        rc = 0;
-//        ssl_rc = dc_read (conn, pak->data + pak->len, len - pak->len);
-        if (ssl_rc <= 0)
-        {
-            if (!ssl_rc)
-                rc = UtilIOError (conn);
-            else
-                rc = errno;
-            if (rc == EAGAIN)
-                return NULL;
-#ifdef __AMIGA__
-            if (rc == 11)         /* UAE sucks */
-                return NULL;
-#endif
-            if (!rc)
-                rc = ECONNRESET;
-            break;
-        }
-        pak->len += ssl_rc;
-        if (pak->len < len)
-            return NULL;
-        if (len == off)
-            return NULL;
-        conn->incoming = NULL;
-        if (off == 2)
-        {
-            pak->len -= 2;
-            memmove (pak->data, pak->data + 2, pak->len);
-        }
-        return pak;
-    }
-
-    PacketD (pak);
-//    dc_close (conn);
-    conn->sok = -1;
-    conn->incoming = NULL;
-
-//    if ((rc && rc != ECONNRESET) || !conn->reco nnect)
-    {
-        if (prG->verbose || (conn->serv && conn == conn->serv->conn))
-        {
-            Contact *cont;
-            if ((cont = conn->cont))
-            {
-                rl_log_for (cont->nick, COLCONTACT);
-//                rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), dc_strerror (conn, ssl_rc, rc), ssl_rc, rc);
-            }
-        }
-        conn->connect = 0;
-    }
-//    if (conn->reco nnect)
-//        conn->reco nnect (conn);
-//    else
-        conn->connect = 0;
-    return NULL;
-}
-
 #if ENABLE_REMOTECONTROL
 /*
  * Receives a line from a FIFO socket.
@@ -716,82 +277,6 @@ Packet *UtilIOReceiveF (Connection *conn)
     return NULL;
 }
 #endif
-
-/*
- * Send packet via TCP. Consumes packet.
- */
-void UtilIOSendTCP (Connection *conn, Packet *pak)
-{
-    UBYTE *data;
-    int ssl_rc = 0;
-    int rc, bytessend = 0;
-    
-    assert (0);
-
-    data = (void *) &pak->data;
-    
-//    if (!conn->outgo ing)
-//        conn->outgo ing = pak;
-//    else if (!pak)
-//        pak = conn->outgo ing;
-//    else
-    {
-        /* cannot handle two pakets in transit - tough luck */
-        conn->connect = 0;
-//        if (conn->clo se)
-//            conn->clo se (conn);
-        return;
-    }
-
-    while (1)
-    {
-        errno = 0;
-
-        for ( ; pak->len > pak->rpos; pak->rpos += bytessend)
-        {
-//            bytessend = ssl_rc = dc_write (conn, data + pak->rpos, pak->len - pak->rpos);
-            if (ssl_rc <= 0)
-                break;
-        }
-        if (bytessend <= 0)
-            break;
-        
-        PacketD (pak);
-        conn->stat_pak_sent++;
-        return;
-    }
-    
-    rc = errno;
-    
-    if (bytessend < 0 && rc == EAGAIN)
-    {
-        conn->connect |= CONNECT_SELECT_W;
-        return;
-    }
-
-    PacketD (pak);
-//    dc_close (conn);
-    conn->sok = -1;
-
-//    if ((rc && rc != ECONNRESET) || !conn->reco nnect)
-    {
-        if (prG->verbose || (conn->serv && conn == conn->serv->conn))
-        {
-            Contact *cont;
-            
-            if ((cont = conn->cont))
-            {
-                rl_log_for (cont->nick, COLCONTACT);
-//                rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), dc_strerror (conn, ssl_rc, rc), ssl_rc, rc);
-            }
-        }
-        conn->connect = 0;
-    }
-//    if (conn->reco nnect)
-//        conn->reco nnect (conn);
-//    else
-        conn->connect = 0;
-}
 
 /*
  * Read a complete line from a fd.

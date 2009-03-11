@@ -2,9 +2,6 @@
 #ifndef CLIMM_IO_OPENSSL_H
 #define CLIMM_IO_OPENSSL_H 1
 
-
-#include "connection.h"
-
 typedef enum io_openssl_err_e {
     IO_OPENSSL_UNINIT = -1,
     IO_OPENSSL_OK = 0,

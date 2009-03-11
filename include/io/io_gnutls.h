@@ -2,9 +2,6 @@
 #ifndef CLIMM_IO_GNUTLS_H
 #define CLIMM_IO_GNUTLS_H 1
 
-
-#include "connection.h"
-
 typedef enum io_gnutls_err_e {
     IO_GNUTLS_UNINIT = -1,
     IO_GNUTLS_OK = 0,

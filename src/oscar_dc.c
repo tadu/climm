@@ -268,7 +268,7 @@ void TCPDispatchMain (Connection *list)
     
     if (~list->connect & CONNECT_OK)
     {
-        rc = list->dispatcher->funcs->f_accept (list, list->dispatcher, NULL);
+        rc = UtilIOAccept (list, NULL);
         assert (rc < 0);
         rce = UtilIOShowError (list, rc);
         if (rce == IO_CONNECTED)
@@ -294,7 +294,7 @@ void TCPDispatchMain (Connection *list)
         return;
     }
 
-    rc = list->dispatcher->funcs->f_accept (list, list->dispatcher, peer);
+    rc = UtilIOAccept (list, peer);
     if  (rc <= 0)
     {
         rce = UtilIOShowError (list, rc);
@@ -336,7 +336,7 @@ void TCPDispatchConn (Connection *peer)
         return;
     }
     
-    rc = peer->dispatcher->funcs->f_read (peer, peer->dispatcher, NULL, 0);
+    rc = UtilIORead (peer, NULL, 0);
     assert (rc < 0);
     rce = UtilIOShowError (peer, rc);
     if (rce == IO_CONNECTED)

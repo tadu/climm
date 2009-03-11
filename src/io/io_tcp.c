@@ -78,6 +78,7 @@ extern int h_errno;
 #include <assert.h>
 
 #include "connection.h"
+#include "io/io_private.h"
 #include "io/io_tcp.h"
 
 #ifndef HAVE_HSTRERROR
@@ -96,11 +97,11 @@ static inline struct hostent *gethostbyname(const char *name)
 
 #define BACKLOG 10
 
-static void     io_tcp_open  (Connection *c, Dispatcher *d);
-static int      io_tcp_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
-static io_err_t io_tcp_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
-static void     io_tcp_close (Connection *c, Dispatcher *d);
-static char    *io_tcp_err   (Connection *c, Dispatcher *d);
+static void        io_tcp_open  (Connection *c, Dispatcher *d);
+static int         io_tcp_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
+static io_err_t    io_tcp_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
+static void        io_tcp_close (Connection *c, Dispatcher *d);
+static const char *io_tcp_err   (Connection *c, Dispatcher *d);
 
 static int   io_listen_tcp_accept(Connection *c, Dispatcher *d, Connection *cn);
 static void  io_listen_tcp_open  (Connection *c, Dispatcher *d);
@@ -167,7 +168,7 @@ static void io_tcp_to (Event *event)
     conn->dispatcher->flags = FLAG_TIMEOUT;
 }
 
-static char *io_tcp_err (Connection *conn, Dispatcher *d)
+static const char *io_tcp_err (Connection *conn, Dispatcher *d)
 {
      return d->lasterr;
 }

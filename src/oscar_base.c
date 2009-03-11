@@ -351,7 +351,7 @@ Packet *UtilIOReceiveTCP2 (Connection *conn)
     if  (len < off)
         len = off + 1;
     
-    rc = conn->dispatcher->funcs->f_read (conn, conn->dispatcher, (char *)(pak->data + pak->len), len - pak->len);
+    rc = UtilIORead (conn, (char *)(pak->data + pak->len), len - pak->len);
     if (rc >= 0)
     {
         pak->len += rc;
@@ -405,7 +405,7 @@ void UtilIOSendTCP2 (Connection *conn, Packet *pak)
     
     if (!(conn->connect & CONNECT_MASK))
     {
-        rc = conn->dispatcher->funcs->f_read (conn, conn->dispatcher, NULL, 0);
+        rc = UtilIORead (conn, NULL, 0);
         assert (rc < 0);
         rce = UtilIOShowError (conn, rc);
         if (rce == IO_CONNECTED)
@@ -415,7 +415,7 @@ void UtilIOSendTCP2 (Connection *conn, Packet *pak)
         return;
     }
 
-    rce = conn->dispatcher->funcs->f_write (conn, conn->dispatcher, (const char *)pak->data, pak->len);
+    rce = UtilIOWrite (conn, (const char *)pak->data, pak->len);
     PacketD (pak);
     
     if (rce == IO_OK)
@@ -687,7 +687,7 @@ void SrvCallBackReceive (Connection *conn)
 
     if (!(conn->connect & (1 | CONNECT_OK)))
     {
-        int rc = conn->dispatcher->funcs->f_read (conn, conn->dispatcher, NULL, 0);
+        int rc = UtilIORead (conn, NULL, 0);
         assert (rc < 0);
         io_err_t rce = UtilIOShowError (conn, rc);
         if (rce == IO_CONNECTED)

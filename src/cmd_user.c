@@ -49,6 +49,8 @@
 #include "util_alias.h"
 #include "util_otr.h"
 #include "jabber_base.h"
+#include "io/io_gnutls.h"
+#include "io/io_openssl.h"
 
 #define MAX_STR_BUF 256                 /* buffer length for history */
 #define DEFAULT_HISTORY_COUNT 10        /* count of last messages of history */
