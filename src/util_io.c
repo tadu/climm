@@ -39,6 +39,7 @@
 #include "util_io.h"
 #include "io/io_private.h"
 #include "io/io_tcp.h"
+#include "io/io_socks5.h"
 #include "conv.h"
 #include "util.h"
 #include "contact.h"
@@ -46,11 +47,15 @@
 
 void UtilIOConnectTCP (Connection *conn)
 {
+    if (ConnectionPrefVal (conn->serv, CO_S5USE))
+        return IOConnectSocks5 (conn);
     return IOConnectTCP (conn);
 }
 
 void UtilIOListenTCP  (Connection *conn)
 {
+    if (ConnectionPrefVal (conn->serv, CO_S5USE))
+        return IOListenSocks5 (conn);
     return IOListenTCP (conn);
 }
 
