@@ -30,7 +30,7 @@
  */
 
 /*                         0.6.4.0 */
-#define CLIMM_BUILD_NUM 0x00060400
+#define CLIMM_BUILD_NUM 0x00060401
 
 #include "climm.h"
 #include "buildmark.h"
@@ -167,7 +167,7 @@ const char *BuildAttribution (void)
 }                  
 
 const UDWORD BuildVersionNum = CLIMM_BUILD_NUM;
-const char *BuildVersionText = "$VER: climm " VERSION " " EV EXTRAVERSION "\n(" SVNUPDATE " build " BUILDDATE ")";
+const char *BuildVersionText = "$VER: climm " VERSION " " EV EXTRAVERSION "\n(" SVNUPDATE " build " BUILDDATE ")\n" CONFIGURELINE;
 const char *BuildVersionStr  = VERSION CLIMM_IS_SVN;
 
 /*

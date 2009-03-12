@@ -63,6 +63,7 @@ POSIX=`echo n\  | tail -n 1 2>/dev/null`
 	    | sort | tail -$(POSIX)1 | tr / - | tee .cvsupdate
 	@(date -u "+#define BUILDDATE \"%Y-%m-%d %T %Z\"" || \
 	 date    "+#define BUILDDATE \"%Y-%m-%d %T %Z\"") >> .cvsupdate
+	@grep "^  [$$] " $(top_srcdir)/config.log | head -$(POSIX)1 | tr -d '"' | sed "s,.*,#define CONFIGURELINE \" & \"," >> .cvsupdate
 
 force:
 
