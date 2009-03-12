@@ -336,7 +336,7 @@ void TCPDispatchConn (Connection *peer)
     }
     
     rc = UtilIORead (peer, NULL, 0);
-    assert (rc < 0);
+    assert (rc <= 0);
     rce = UtilIOShowError (peer, rc);
     if (rce == IO_CONNECTED)
     {
