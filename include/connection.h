@@ -107,8 +107,6 @@ struct Server_s
 #define CONNECT_SELECT_R   0x2000
 #define CONNECT_SELECT_W   0x4000
 #define CONNECT_SELECT_X   0x8000
-#define CONNECT_SOCKS_ADD  0x0100
-#define CONNECT_SOCKS      0x0f00
 
 
 Server        *ServerC           (UWORD type DEBUGPARAM);
