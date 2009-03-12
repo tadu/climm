@@ -380,6 +380,7 @@ Packet *UtilIOReceiveTCP2 (Connection *conn)
     {
         TCLEvent (cont, "ssl", "failed handshake");
         rl_printf (i18n (2533, "SSL handshake failed.\n"));
+        UtilIOClose (conn);
     }
     else
     {
