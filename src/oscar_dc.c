@@ -268,7 +268,7 @@ void TCPDispatchMain (Connection *list)
     if (~list->connect & CONNECT_OK)
     {
         rc = UtilIOAccept (list, NULL);
-        assert (rc < 0);
+        assert (rc <= 0);
         rce = UtilIOShowError (list, rc);
         if (rce == IO_CONNECTED)
         {
