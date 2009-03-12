@@ -1046,14 +1046,15 @@ static int XmppStreamHook (Server *serv, int type, iks *node)
 static void XMPPCallbackDispatch (Connection *conn)
 {
     iksparser *prs = conn->serv->xmpp_parser;
+    io_err_t rce;
     int rc;
 
     assert (conn->sok >= 0);
     if (!(conn->connect & (CONNECT_OK | 4)))
     {
         rc = UtilIORead (conn, NULL, 0);
-        rc = UtilIOShowError (conn, rc);
-        switch (rc) {
+        rce = UtilIOShowError (conn, rc);
+        switch (rce) {
             case IO_RW:
             case IO_OK:
                 return;

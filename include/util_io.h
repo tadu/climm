@@ -46,7 +46,6 @@ void    UtilIOConnectF   (Connection *conn);
 Packet *UtilIOReceiveF   (Connection *conn);
 strc_t  UtilIOReadline   (FILE *fd);
 
-void     UtilIOShowDisconnect (Connection *conn, io_err_t rc);
 io_err_t UtilIOShowError (Connection *conn, io_err_t rc);
 
 void    UtilIOSelectInit (int sec, int usec);

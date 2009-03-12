@@ -383,8 +383,7 @@ Packet *UtilIOReceiveTCP2 (Connection *conn)
     }
     else
     {
-        UtilIOShowDisconnect (conn, rc);
-        UtilIOClose (conn);
+        UtilIOShowError (conn, rc);
 
         PacketD (conn->incoming);
         conn->incoming = NULL;
@@ -405,7 +404,7 @@ void UtilIOSendTCP2 (Connection *conn, Packet *pak)
     if (!(conn->connect & CONNECT_MASK))
     {
         rc = UtilIORead (conn, NULL, 0);
-        assert (rc < 0);
+        assert (rc <= 0);
         rce = UtilIOShowError (conn, rc);
         if (rce == IO_CONNECTED)
             conn->connect |= 1;
@@ -420,8 +419,7 @@ void UtilIOSendTCP2 (Connection *conn, Packet *pak)
     if (rce == IO_OK)
         return;
 
-    UtilIOShowDisconnect (conn, rce);
-    UtilIOClose (conn);
+    UtilIOShowError (conn, rce);
 
     PacketD (conn->incoming);
     conn->incoming = NULL;
@@ -687,7 +685,7 @@ void SrvCallBackReceive (Connection *conn)
     if (!(conn->connect & (1 | CONNECT_OK)))
     {
         int rc = UtilIORead (conn, NULL, 0);
-        assert (rc < 0);
+        assert (rc <= 0);
         io_err_t rce = UtilIOShowError (conn, rc);
         if (rce == IO_CONNECTED)
             conn->connect |= 1;

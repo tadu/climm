@@ -152,29 +152,6 @@ int UtilIOError (Connection *conn)
 #define ECONNRESET 0x424242
 #endif
 
-void UtilIOShowDisconnect (Connection *conn, io_err_t rc)
-{
-    switch (rc) {
-        case IO_CLOSED:
-            if (!errno)
-                errno = ECONNRESET;
-        case IO_RW:
-            if (prG->verbose || (conn->serv && conn == conn->serv->conn))
-            {
-                Contact *cont;
-                if ((cont = conn->cont))
-                {
-                    rl_log_for (cont->nick, COLCONTACT);
-                    rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), conn->dispatcher->funcs->f_err (conn, conn->dispatcher), rc, errno);
-                }
-            }
-            UtilIOClose (conn);
-            break;
-        default:
-            assert (0);
-    }
-}
-
 io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
 {
     int e = errno;
@@ -191,8 +168,6 @@ io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
         case IO_OK:
             return IO_OK;
 
-        case IO_RW:
-        case IO_CLOSED:
         case IO_NO_MEM:
         case IO_NO_PARAM:
             assert (0);
@@ -217,6 +192,21 @@ io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
                 rl_printf ("%s [%d]\n",
                     s_sprintf  ("%s: %s (%d).", t, conn->dispatcher->funcs->f_err (conn, conn->dispatcher), e),
                     __LINE__);
+            }
+            UtilIOClose (conn);
+            return IO_RW;
+        case IO_CLOSED:
+            if (!errno)
+                errno = ECONNRESET;
+        case IO_RW:
+            if (prG->verbose || (conn->serv && conn == conn->serv->conn))
+            {
+                Contact *cont;
+                if ((cont = conn->cont))
+                {
+                    rl_log_for (cont->nick, COLCONTACT);
+                    rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), conn->dispatcher->funcs->f_err (conn, conn->dispatcher), rc, errno);
+                }
             }
             UtilIOClose (conn);
             return IO_RW;
