@@ -280,7 +280,7 @@ static void io_tcp_open (Connection *conn, Dispatcher *d)
     if (0)
 #endif
     {
-        QueueEnqueueData (conn, QUEUE_CON_TIMEOUT, conn->ip,
+        QueueEnqueueData (conn, QUEUE_CON_TIMEOUT, 0,
                           time (NULL) + 10, NULL,
                           conn->cont, NULL, &io_tcp_to);
         conn->connect |= CONNECT_SELECT_W | CONNECT_SELECT_X;
@@ -367,7 +367,7 @@ static io_err_t io_tcp_connecting (Connection *conn, Dispatcher *d)
         d->flags = FLAG_OPEN;
         conn->connect |= CONNECT_SELECT_R;
         conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~CONNECT_SELECT_A;
-        EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip));
+        EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, 0));
         return IO_CONNECTED;
     }
 
@@ -414,7 +414,7 @@ static io_err_t io_tcp_connecting (Connection *conn, Dispatcher *d)
             return IO_NO_CONN;
         }
         d->flags = FLAG_OPEN;
-        EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip));
+        EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, 0));
         conn->connect |= CONNECT_SELECT_R;
         conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~CONNECT_SELECT_A;
         return IO_CONNECTED;
@@ -612,7 +612,7 @@ static void io_tcp_close (Connection *conn, Dispatcher *d)
     {
         if (d->outlen)
             free (d->outbuf);
-        EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip));
+        EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, 0));
         free (d);
     }
 }
