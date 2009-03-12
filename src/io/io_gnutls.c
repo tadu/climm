@@ -173,7 +173,7 @@ static void io_gnutls_setconnerr (Dispatcher *d, io_gnutls_err_t err, int gnutls
 {
     d->gnutls_err = err;
     d->d_errno = gnutlserr;
-    DebugH (DEB_SSL, "setting error [connect=%x ssl=%d gnutlserr=%d]", d->conn->connect, d->conn->ssl_status, d->gnutls_err);
+    DebugH (DEB_SSL, "setting error [connect=%x ssl=%d err=%d gnutlserr=%d] %s [%s]", d->conn->connect, d->conn->ssl_status, d->gnutls_err, gnutlserr, msg, gnutls_strerror (gnutlserr));
     s_repl (&d->lasterr, s_sprintf ("%s [%d] %s [%d]", msg, err, gnutls_strerror (gnutlserr), gnutlserr));
 }
 
@@ -323,7 +323,7 @@ static io_err_t io_gnutls_write (Connection *conn, Dispatcher *d, const char *bu
     int rc = 0;
     
     if (conn->ssl_status != SSL_STATUS_OK)
-        return io_gnutls_connecting (conn, d);
+        return io_gnutls_appendbuf (conn, d, buf, len);
 
     if (d->outlen)
     {

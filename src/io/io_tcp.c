@@ -547,15 +547,11 @@ static io_err_t io_tcp_appendbuf (Connection *conn, Dispatcher *d, const char *b
 
 static io_err_t io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, size_t len)
 {
-    io_err_t rce;
     int rc;
     
     if (d->flags != FLAG_OPEN)
-    {
-        rce = io_tcp_connecting (conn, d);
-        if (rce != IO_CONNECTED)
-            return rce;
-    }
+        return io_tcp_appendbuf (conn, d, buf, len);
+
     if (d->outlen)
     {
         rc = sockwrite (conn->sok, d->outbuf, d->outlen);

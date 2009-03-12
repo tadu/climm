@@ -407,7 +407,7 @@ static io_err_t io_openssl_write (Connection *conn, Dispatcher *d, const char *b
     int rc = 0;
     
     if (conn->ssl_status != SSL_STATUS_OK)
-        return io_openssl_connecting (conn, d);
+        return io_openssl_appendbuf (conn, d, buf, len);
 
     if (d->outlen)
     {
