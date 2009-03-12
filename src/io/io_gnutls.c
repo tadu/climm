@@ -380,7 +380,6 @@ static void io_gnutls_close (Connection *conn, Dispatcher *d)
             free (d->ssl);
         if (d->outlen)
             free (d->outbuf);
-        EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, conn->ip));
         free (d);
     }
     conn->ssl_status = conn->ssl_status == SSL_STATUS_OK ? SSL_STATUS_NA : SSL_STATUS_FAILED;
