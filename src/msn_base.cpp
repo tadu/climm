@@ -80,7 +80,7 @@ static inline void MyCallbackSetClimm (Connection *conn, CLIMMMSN *msn)
     conn->serv->tlv = (void *)msn;
 }
 
-Event *ConnectionInitMSNServer (Server *serv)
+Event *MSNLogin (Server *serv)
 {
     CLIMMMSN *cb = new CLIMMMSN;
     
@@ -88,7 +88,7 @@ Event *ConnectionInitMSNServer (Server *serv)
     if (!serv->screen || !serv->passwd)
         return NULL;
 
-    rl_printf ("ConnectionInitMSNServer: %p {%s} {%s} {%s} {%lu}\n", serv, serv->screen, serv->passwd, serv->server, serv->port);
+    rl_printf ("MSNLogin: %p {%s} {%s} {%s} {%lu}\n", serv, serv->screen, serv->passwd, serv->server, serv->port);
     
     if (!strchr (serv->screen, '@'))
         return NULL;
@@ -104,7 +104,7 @@ Event *ConnectionInitMSNServer (Server *serv)
     
     cb->mainConnection = new MSN::NotificationServerConnection (serv->screen, serv->passwd, *cb);
     MyCallbackSetMSN (cb->mainConnection, cb);
-    rl_printf ("ConnectionInitMSNServer: %p %p %p\n", serv, cb, cb->mainConnection);
+    rl_printf ("MSNLogin: %p %p %p\n", serv, cb, cb->mainConnection);
     cb->mainConnection->connect (serv->server, serv->port);
     return NULL;
 }

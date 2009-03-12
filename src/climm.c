@@ -707,7 +707,7 @@ int main (int argc, char *argv[])
         {
             if (conn->sok < 0 || !conn->dispatch)
                 continue;
-            if (~conn->connect & CONNECT_SELECT_A && !UtilIOSelectIs (conn->sok, READFDS | WRITEFDS | EXCEPTFDS))
+            if ((~conn->connect & CONNECT_SELECT_A) && !UtilIOSelectIs (conn->sok, READFDS | WRITEFDS | EXCEPTFDS))
                 continue;
             if (conn->dispatch)
                 conn->dispatch (conn);
@@ -725,10 +725,14 @@ int main (int argc, char *argv[])
     OTREnd ();
 #endif
 
+    for (i = 0; (serv = ServerNr (i)); i++)
+        IMLogout (serv);
+
     for (i = 0; (conn = ConnectionNr (i)); i++)
-        if (conn->close)
-            conn->close (conn);
+        UtilIOClose (conn);
+
     QueueRun ();
+
     if (prG->flags & FLAG_AUTOSAVE && uiG.quit == 1)
     {
         int i, j;

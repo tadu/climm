@@ -158,7 +158,6 @@ BOOL TCPDirectOpen (Connection *list, Contact *cont)
     peer->port      = 0;
     peer->cont      = cont;
     peer->oscar_file= NULL;
-    peer->close     = &PeerDispatchClose;
     peer->dispatch  = &TCPDispatchConn;
     s_repl (&peer->server, NULL);
 
@@ -248,10 +247,7 @@ void TCPDispatchReconn (Connection *peer)
         rl_log_for (cont->nick, COLCONTACT);
         rl_print  (i18n (2023, "Direct connection closed by peer.\n"));
     }
-    if (peer->close)
-        peer->close (peer);
-    else
-        TCPClose (peer);
+    TCPClose (peer);
 }
 
 /*
@@ -1121,10 +1117,7 @@ void TCPClose (Connection *peer)
         peer->incoming = NULL;
     }
     if (peer->type == TYPE_FILEDIRECT || !peer->cont)
-    {
-        peer->close = NULL;
         ConnectionD (peer);
-    }
 }
 
 static const char *TCPCmdName (UWORD cmd)

@@ -62,7 +62,6 @@
 #include "os.h"
 
 static jump_conn_f XMPPCallbackDispatch;
-static jump_conn_f XMPPCallbackClose;
 
 static int  iks_climm_TConnect (iksparser *prs, Connection **socketptr, const char *server, int port)
 {
@@ -124,10 +123,9 @@ static void XMPPCallBackTimeout (Event *event)
 void XmppStreamError (Server *serv, const char *text)
 {
     rl_printf ("Stream level error occurred: %s\n", text);
-    XMPPCallbackClose (serv->conn);
 }
 
-Event *ConnectionInitXMPPServer (Server *serv)
+Event *XMPPLogin (Server *serv)
 {
     const char *sp;
     Event *event;
@@ -147,7 +145,7 @@ Event *ConnectionInitXMPPServer (Server *serv)
     if (!serv->conn->server)
         s_repl (&serv->conn->server, strchr (serv->screen, '@') + 1);
     
-    XMPPCallbackClose (serv->conn);
+    XMPPLogout (serv);
 
     s_repl (&serv->xmpp_stamp, "YYYYmmddHHMMSS");
     time_t now = time (NULL);
@@ -160,7 +158,6 @@ Event *ConnectionInitXMPPServer (Server *serv)
     if (!serv->conn->port)
         serv->conn->port = ~0;
 
-    serv->conn->close = &XMPPCallbackClose;
     serv->conn->dispatch = &XMPPCallbackDispatch;
     serv->conn->connect = 0;
 
@@ -1088,21 +1085,19 @@ static void XMPPCallbackDispatch (Connection *conn)
         XmppStreamError (conn->serv, s_sprintf ("failing with error code %d", rc));
 }
 
-static void XMPPCallbackClose (Connection *conn)
+void XMPPLogout (Server *serv)
 {
-    if (!conn)
-        return;
-
-    QueueCancel (conn);
-
-    if (conn->serv->xmpp_parser)
+    if (serv->xmpp_parser)
     {
-        iks_parser_delete (conn->serv->xmpp_parser);
-        conn->serv->xmpp_parser = NULL;
-        conn->serv->xmpp_id = NULL;
-        conn->serv->xmpp_filter = NULL;
+        iksparser *prs = serv->xmpp_parser;
+        serv->xmpp_parser = NULL;
+        iks_disconnect (prs);
+        iks_parser_delete (prs);
+        serv->xmpp_id = NULL;
+        serv->xmpp_filter = NULL;
     }
-    UtilIOClose (conn);
+    QueueCancel (serv->conn);
+    UtilIOClose (serv->conn);
 }
 
 /* **************** */

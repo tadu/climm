@@ -425,12 +425,12 @@ Event *IMLogin (Server *serv)
 {
     switch (serv->type)
     {
-        case TYPE_SERVER:      return ConnectionInitOscarServer (serv);
+        case TYPE_SERVER:      return OscarLogin (serv);
 #ifdef ENABLE_MSN
-        case TYPE_MSN_SERVER:  return ConnectionInitMSNServer (serv);
+        case TYPE_MSN_SERVER:  return MSNLogin (serv);
 #endif
 #ifdef ENABLE_XMPP
-        case TYPE_XMPP_SERVER: return ConnectionInitXMPPServer(serv);
+        case TYPE_XMPP_SERVER: return XMPPLogin (serv);
 #endif
         default:               return NULL;
     }
@@ -490,7 +490,7 @@ void IMCallBackReconn (Connection *conn)
         cont->status = ims_offline;
 }
 
-void  IMConnOpen  (Connection *conn)
+void  IMConnOpen (Connection *conn)
 {
     if      (conn->type == TYPE_REMOTE)    RemoteOpen (conn);
     else if (conn->type == TYPE_MSGDIRECT) ConnectionInitPeer (conn);
@@ -498,3 +498,21 @@ void  IMConnOpen  (Connection *conn)
         rl_printf (i18n (2726, "Don't know how to open connection type %s for #%ld.\n"),
                          ConnectionStrType (conn), 0L);
 }
+
+void IMLogout (Server *serv)
+{
+    rl_printf (i18n (2729, "Logging of from connection %ld.\n"), 0L);
+    switch (serv->type)
+    {
+        case TYPE_SERVER:      return OscarLogout (serv);
+#ifdef ENABLE_MSN
+        case TYPE_MSN_SERVER:  return MSNLogout (serv);
+#endif
+#ifdef ENABLE_XMPP
+        case TYPE_XMPP_SERVER: return XMPPLogout (serv);
+#endif
+        default:
+            return;
+    }
+}
+

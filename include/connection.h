@@ -46,7 +46,6 @@ struct Connection_s
 #define xmpp_file_done   oscar_file_done           /* used for file transfer                   */
 
     jump_conn_f *dispatch;     /* function to call on select()    */
-    jump_conn_f *close;        /* function to call to close       */
 
     UDWORD    stat_pak_sent;
     UDWORD    stat_pak_rcvd;

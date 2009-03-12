@@ -365,15 +365,12 @@ void ConnectionD (Connection *conn DEBUGPARAM)
         return;
 
     Debug (DEB_CONNECT, "===> %p[%d] (%s) closing...", conn, i, ConnectionStrType (conn));
-
-    if (conn->close)
-        conn->close (conn);
+    
+    UtilIOClose (conn);
 
     if ((i = ConnectionFindNr (conn)) == -1)
         return;
 
-    if (conn->sok != -1)
-        sockclose (conn->sok);
     conn->sok     = -1;
     conn->connect = 0;
     conn->serv  = NULL;

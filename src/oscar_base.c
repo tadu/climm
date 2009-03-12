@@ -549,7 +549,7 @@ static const UWORD FlapStartSeqs[] = {
   0x07C9, 0x7339, 0x42A8
 };
 
-Event *ConnectionInitOscarServer (Server *serv)
+Event *OscarLogin (Server *serv)
 {
     Contact *cont;
     Event *event;
@@ -574,7 +574,6 @@ Event *ConnectionInitOscarServer (Server *serv)
     serv->oscar_seq  = rand () % ((sizeof FlapStartSeqs) / (sizeof FlapStartSeqs[0]));
     serv->conn->connect  = 0;
     serv->conn->dispatch = &SrvCallBackReceive;
-    serv->conn->close    = &FlapCliGoodbyeConn;
     s_repl (&serv->conn->server, serv->pref_server);
     if (serv->status == ims_offline)
         serv->status = serv->pref_status;

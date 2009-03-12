@@ -1558,7 +1558,7 @@ static void XMPPCallBackTimeout (Event *event)
     EventD (event);
 }
 
-Event *ConnectionInitXMPPServer (Server *serv)
+Event *XMPPLogin (Server *serv)
 {
     const char *sp;
     Event *event;

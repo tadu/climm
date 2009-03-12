@@ -94,7 +94,6 @@ Connection *PeerFileCreate (Server *serv)
     flist->cont     = serv->oscar_dc->cont;
     flist->port     = ConnectionPrefVal (serv, CO_OSCAR_DC_PORT);
     flist->dispatch = &TCPDispatchMain;
-    flist->close    = &PeerFileDispatchClose;
     
     if (prG->verbose)
         rl_printf (i18n (2519, "Opening file listener connection at %slocalhost%s:%s%ld%s... "),
@@ -181,7 +180,6 @@ UBYTE PeerFileIncAccept (Connection *list, Event *event)
     s_repl (&fpeer->server, NULL);
     fpeer->oscar_file_len       = opt_bytes;
     fpeer->oscar_file_done      = 0;
-    fpeer->close     = &PeerFileDispatchDClose;
 
     IMIntMsgFat (cont, NOW, ims_offline, INT_FILE_ACKING, "", opt_files, 0, opt_bytes);
     
@@ -215,7 +213,6 @@ BOOL PeerFileAccept (Connection *peer, UWORD ackstatus, UDWORD port)
     fpeer->port     = port;
     fpeer->ip       = peer->ip;
     s_repl (&fpeer->server, s_ip (fpeer->ip));
-    fpeer->close    = &PeerFileDispatchDClose;
     
     if (prG->verbose)
         rl_printf (i18n (2520, "Opening file transfer connection to %s:%s%ld%s... \n"),
@@ -383,7 +380,6 @@ void PeerFileDispatch (Connection *fpeer)
                 ffile->connect = CONNECT_OK;
                 ffile->oscar_file_len = len;
                 ffile->oscar_file_done = off;
-                ffile->close = &PeerFileIODispatchClose;
 
                 rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (2162, "Receiving file %s (%s) with %ld bytes as %s.\n"),
@@ -588,7 +584,6 @@ void PeerFileResend (Event *event)
             ConnectionD (fpeer);
             return;
         }
-        ffile->close = &PeerFileIODispatchClose;
         return;
     }
     else if (!fpeer->oscar_file || fpeer->connect & CONNECT_SELECT_W)

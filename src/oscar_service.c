@@ -232,7 +232,7 @@ JUMP_SNAC_F(SnacServerpause)
 #ifdef WIP
     rl_printf ("%s WIP: reconnecting because of serverpause.\n", s_time (NULL));
 #endif
-    ConnectionInitOscarServer(serv);
+    OscarLogin (serv);
     for (i = 0; (cont = ContactIndex (cg, i)); i++)
         cont->status = ims_offline;
 }

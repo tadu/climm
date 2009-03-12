@@ -27,7 +27,9 @@ void    FlapPrint (Packet *pak);
 Packet *UtilIOReceiveTCP2 (Connection *conn);
 void    UtilIOSendTCP2 (Connection *conn, Packet *pak);
 
-Event *ConnectionInitOscarServer (Server *serv);
+Event  *OscarLogin (Server *serv);
+#define OscarLogout(s) FlapCliGoodbye(s)
+
 Server *SrvRegisterUIN (Server *serv, const char *pass);
 
 status_t     IcqToStatus   (UDWORD status);

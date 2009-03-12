@@ -4,7 +4,8 @@
 
 #include "im_request.h"
 
-Event *ConnectionInitXMPPServer (Server *serv);
+Event *XMPPLogin (Server *serv);
+void   XMPPLogout (Server *serv);
 
 UBYTE XMPPSendmsg   (Server *serv, Contact *cont, Message *msg);
 void  XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *msg);
