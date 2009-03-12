@@ -126,7 +126,7 @@ static void io_socks5_open (Connection *conn, Dispatcher *d)
     d->flags = FLAG_CONNECTING;
     d->err = IO_OK;
     
-    if (!(conn->server || conn->ip) || !socks5server || !socks5port)
+    if (!socks5server || !socks5port)
     {
         d->d_errno = errno;
         d->err = IO_NO_PARAM;
