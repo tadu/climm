@@ -25,7 +25,7 @@
 #include "conv.h"
 #include "oscar_service.h"
 #include "oscar_roster.h"
-#include "jabber_base.h"
+#include "xmpp_base.h"
 #include "oscar_base.h"
 #include "msn_base.h"
 #include "util_otr.h"

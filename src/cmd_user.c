@@ -48,7 +48,7 @@
 #include "util_tcl.h"
 #include "util_alias.h"
 #include "util_otr.h"
-#include "jabber_base.h"
+#include "xmpp_base.h"
 #include "io/io_gnutls.h"
 #include "io/io_openssl.h"
 
@@ -4235,15 +4235,20 @@ static JUMP_F(CmdUserConn)
                 if (prG->verbose)
                 {
                     char *t1, *t2, *t3;
-                    rl_printf (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n"),
+                    rl_printf ("    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n",
                          servl->type, servl->conn->sok, t1 = strdup (s_ip (servl->conn->ip)),
-                         servl->conn->connect, t2 = strdup (s_ip (servl->conn->our_local_ip)),
+                         servl->conn->connect & CONNECT_SELECT_A ? "A" : "",
+                         servl->conn->connect & CONNECT_SELECT_R ? "R" : "",
+                         servl->conn->connect & CONNECT_SELECT_W ? "W" : "",
+                         servl->conn->connect & CONNECT_SELECT_X ? "X" : "",
+                         servl->conn->connect,
+                         t2 = strdup (s_ip (servl->conn->our_local_ip)),
                          t3 = strdup (s_ip (servl->conn->our_outside_ip)),
                          UD2UL (servl->conn->oscar_our_session), servl->conn->oscar_dc_seq, servl->oscar_snac_seq);
 #ifdef ENABLE_SSL
-                    rl_printf (i18n (2453, "    at %p parent %p assoc %p ssl %d\n"), servl, servl->conn->serv, servl->oscar_dc, servl->conn->ssl_status);
+                    rl_printf ("    at %p parent %p assoc %p ssl %d\n", servl, servl->conn->serv, servl->oscar_dc, servl->conn->ssl_status);
 #else
-                    rl_printf (i18n (2081, "    at %p parent %p assoc %p\n"), servl, servl->conn->serv, servl->oscar_dc);
+                    rl_printf ("    at %p parent %p assoc %p\n", servl, servl->conn->serv, servl->oscar_dc);
 #endif
                     free (t1);
                     free (t2);
@@ -4271,9 +4276,14 @@ static JUMP_F(CmdUserConn)
                 if (prG->verbose)
                 {
                     char *t1, *t2, *t3;
-                    rl_printf (i18n (1935, "    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n"),
+                    rl_printf (i18n (1935, "    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n"),
                          connl->type, connl->sok, t1 = strdup (s_ip (connl->ip)),
-                         connl->connect, t2 = strdup (s_ip (connl->our_local_ip)),
+                         connl->connect & CONNECT_SELECT_A ? "A" : "",
+                         connl->connect & CONNECT_SELECT_R ? "R" : "",
+                         connl->connect & CONNECT_SELECT_W ? "W" : "",
+                         connl->connect & CONNECT_SELECT_X ? "X" : "",
+                         connl->connect,
+                         t2 = strdup (s_ip (connl->our_local_ip)),
                          t3 = strdup (s_ip (connl->our_outside_ip)),
                          UD2UL (connl->oscar_our_session), connl->oscar_dc_seq, connl->serv ? connl->serv->oscar_snac_seq : 0);
 #ifdef ENABLE_SSL

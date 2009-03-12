@@ -15,7 +15,7 @@ extern "C" {
 #include <winsock2.h>
 #endif
 #include <fcntl.h>
-#include "jabber_base.h"
+#include "xmpp_base.h"
 #include "connection.h"
 #include "contact.h"
 #include "conv.h"

@@ -46,7 +46,7 @@
 #define IKS_SOCK_USER_DATA Connection
 #include <iksemel.h>
 
-#include "jabber_base.h"
+#include "xmpp_base.h"
 #include "connection.h"
 #include "contact.h"
 #include "conv.h"
