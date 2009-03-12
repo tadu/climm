@@ -363,7 +363,7 @@ void TCPDispatchConn (Connection *peer)
     }
     else if (rce == IO_OK)
         return;
-    else if (rce == IO_RW && peer->connect == 0)
+    else if (rce == IO_RW && (peer->connect & 7) == 0)
     {
         peer->connect = 2;
         peer->ip      = cont->dc->ip_loc;
