@@ -650,38 +650,6 @@ void SrvCallBackReceive (Connection *conn)
     Packet *pak;
     Server *serv = conn->serv;
 
-#if 0
-    if (~conn->connect & CONNECT_OK)
-    {
-        switch (conn->connect & 7)
-        {
-            case 0:
-                if (serv->oscar_dc && (~serv->oscar_dc->connect & CONNECT_OK)
-                    && ConnectionPrefVal (serv, CO_OSCAR_DC_MODE) & 32)
-                {
-                    rl_printf ("FIXME: avoiding deadlock\n");
-                    conn->connect &= ~CONNECT_SELECT_R;
-                }
-                else
-            case 1:
-            case 5:
-                /* fall-through */
-                conn->connect |= 4 | CONNECT_SELECT_R;
-                conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~3;
-                return;
-            case 2:
-            case 6:
-                conn->connect = 0;
-                IMCallBackReconn (conn);
-                return;
-            case 4:
-                break;
-            default:
-                assert (0);
-        }
-    }
-#endif
-
     if (!(conn->connect & (1 | CONNECT_OK)))
     {
         int rc = UtilIORead (conn, NULL, 0);

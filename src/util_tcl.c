@@ -41,7 +41,9 @@
 #include "cmd_user.h"
 #include "util_str.h"
 #include "color.h"
-#if HAVE_TCL8_4_TCL_H
+#if HAVE_TCL8_5_TCL_H
+#include <tcl8.5/tcl.h>
+#elif HAVE_TCL8_4_TCL_H
 #include <tcl8.4/tcl.h>
 #elif HAVE_TCL8_3_TCL_H
 #include <tcl8.3/tcl.h>

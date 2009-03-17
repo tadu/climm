@@ -32,5 +32,8 @@ int cb_srv_msg_tcl (Contact *cont, parentmode_t pm, time_t stamp, fat_srv_msg_t 
 #include "cmd_user.h"
 jump_f CmdUserTclScript;
 
+#else
+#define TCLMessage(from, text) {}
+#define TCLEvent(from, type, data) {}
 #endif
 #endif /* CLIMM_UTIL_TCL_H */

@@ -186,11 +186,11 @@ if test "x$ac_arg_use_tcl" != "xno"; then
                                                     LIBTCL_LIBS=$LIBS], [ac_use_tcl=no], [$temp_LIBS])
     fi
   else
-    AC_CHECK_HEADERS([tcl8.4/tcl.h tcl8.3/tcl.h tcl.h], [ac_use_tcl=yes
-                                                         break])
+    AC_CHECK_HEADERS([tcl8.5/tcl.h tcl8.4/tcl.h tcl8.3/tcl.h tcl.h], [ac_use_tcl=yes
+                                                                      break])
     if test "x$ac_use_tcl" = "xyes"; then
-      AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.4 tcl8.3], [ac_use_tcl=yes
-                                                           LIBTCL_LIBS=$LIBS], [ac_use_tcl=no], [$temp_LIBS])
+      AC_SEARCH_LIBS([Tcl_CreateInterp], [tcl8.5 tcl8.4 tcl8.3], [ac_use_tcl=yes
+                                                                  LIBTCL_LIBS=$LIBS], [ac_use_tcl=no], [$temp_LIBS])
     fi
   fi
   LIBS="$temp_LIBS"

@@ -51,11 +51,6 @@
 #include <winsock2.h>
 #endif
 
-#ifndef ENABLE_TCL
-#define TCLMessage(from, text) {}
-#define TCLEvent(from, type, data) {}
-#endif
-
 #ifdef ENABLE_SSL
 #define CV_ORIGIN_dcssl (peer->ssl_status == SSL_STATUS_OK ? CV_ORIGIN_ssl : CV_ORIGIN_dc)
 #else
