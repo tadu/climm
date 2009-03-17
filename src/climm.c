@@ -621,7 +621,7 @@ static void Init (int argc, char *argv[])
         connr->serv = NULL;
         connr->server = strdup (path);
         if (connr->server && *connr->server)
-            RemoteOpen (connr);
+            ScriptingOpen (connr);
     }
 #endif
 }

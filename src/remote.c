@@ -52,12 +52,12 @@
 
 #ifdef ENABLE_REMOTECONTROL
 
-static void RemoteDispatch (Connection *remo);
+static void ScriptingDispatch (Connection *remo);
 
 /*
  * "Logs in" TCP connection by opening listening socket.
  */
-Event *RemoteOpen (Connection *remo)
+Event *ScriptingOpen (Connection *remo)
 {
     const char *path = NULL;
     io_err_t rc;
@@ -82,7 +82,7 @@ Event *RemoteOpen (Connection *remo)
     if (rc == IO_CONNECTED)
     {
         remo->connect |= CONNECT_OK;
-        remo->dispatch = &RemoteDispatch;
+        remo->dispatch = &ScriptingDispatch;
         rl_print (i18n (1634, "ok.\n"));
         return NULL;
     }
@@ -92,7 +92,7 @@ Event *RemoteOpen (Connection *remo)
     return NULL;
 }
 
-static void RemoteDispatch (Connection *remo)
+static void ScriptingDispatch (Connection *remo)
 {
     int rc;
     Packet *pak;

@@ -403,7 +403,6 @@ void IMCliAuth (Contact *cont, const char *text, auth_t how)
             if (!RET_IS_OK (SnacCliSendmsg (cont->serv, cont, 4, msg)))
                 MsgD (msg);
         }
-        else
         {
             if (how == auth_deny)
                 SnacCliAuthorize (cont->serv, cont, 0, text);
@@ -492,7 +491,7 @@ void IMCallBackReconn (Connection *conn)
 
 void  IMConnOpen (Connection *conn)
 {
-    if      (conn->type == TYPE_REMOTE)    RemoteOpen (conn);
+    if      (conn->type == TYPE_REMOTE)    ScriptingOpen (conn);
     else if (conn->type == TYPE_MSGDIRECT) ConnectionInitPeer (conn);
     else
         rl_printf (i18n (2726, "Don't know how to open connection type %s for #%ld.\n"),

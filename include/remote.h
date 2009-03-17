@@ -1,3 +1,3 @@
 
-Event *RemoteOpen (Connection *remo);
+Event *ScriptingOpen (Connection *remo);
 
