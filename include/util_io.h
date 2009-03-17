@@ -42,8 +42,6 @@ io_err_t    UtilIOWrite  (Connection *conn, const char *buf, size_t count);
 void        UtilIOClose  (Connection *conn);
 const char *UtilIOErr    (Connection *conn);
 
-void    UtilIOConnectF   (Connection *conn);
-Packet *UtilIOReceiveF   (Connection *conn);
 strc_t  UtilIOReadline   (FILE *fd);
 
 io_err_t UtilIOShowError (Connection *conn, io_err_t rc);

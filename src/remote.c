@@ -39,6 +39,7 @@
 #if HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
+#include <assert.h>
 #include "util_io.h"
 #include "util_ui.h"
 #include "cmd_user.h"
@@ -47,11 +48,11 @@
 #include "contact.h"
 #include "remote.h"
 #include "preferences.h"
+#include "io/io_fifo.h"
 
 #ifdef ENABLE_REMOTECONTROL
 
 static void RemoteDispatch (Connection *remo);
-static void RemoteClose (Connection *remo);
 
 /*
  * "Logs in" TCP connection by opening listening socket.
@@ -59,6 +60,7 @@ static void RemoteClose (Connection *remo);
 Event *RemoteOpen (Connection *remo)
 {
     const char *path = NULL;
+    io_err_t rc;
 
     if (!OptGetStr (&prG->copts, CO_SCRIPT_PATH, &path) && !remo->server)
     {
@@ -73,34 +75,64 @@ Event *RemoteOpen (Connection *remo)
     rl_printf (i18n (2223, "Opening scripting FIFO at %s... "), s_wordquote (remo->server));
 
     remo->connect     = 0;
-    remo->dispatch    = &RemoteDispatch;
-    remo->ip          = 0;
-    remo->port        = 0;
 
-    UtilIOConnectF (remo);
-    
-    if (remo->connect)
-        remo->connect = CONNECT_OK | CONNECT_SELECT_R;
+    IOConnectFifo (remo);
+    rc = UtilIORead (remo, NULL, 0);
+    assert (rc < 0);
+    if (rc == IO_CONNECTED)
+    {
+        remo->connect |= CONNECT_OK;
+        remo->dispatch = &RemoteDispatch;
+        rl_print (i18n (1634, "ok.\n"));
+        return NULL;
+    }
+    rl_print ("\n");
+    rc = UtilIOShowError (remo, rc);
+    remo->connect = 0;
     return NULL;
 }
 
 static void RemoteDispatch (Connection *remo)
 {
+    int rc;
     Packet *pak;
+    UBYTE *end, *beg;
     
-    while ((pak = UtilIOReceiveF (remo)))
+    if (!(pak = remo->incoming))
+        remo->incoming = pak = PacketC ();
+    remo->connect &= ~CONNECT_SELECT_A;
+    
+    rc = UtilIORead (remo, (char *)(pak->data + pak->len), sizeof (pak->data) - pak->len);
+    if (rc < 0)
     {
-        CmdUser ((const char *)pak->data);
+        rc = UtilIOShowError (remo, rc);
         PacketD (pak);
+        remo->incoming = NULL;
+        UtilIOClose (remo);
+        return;
     }
-}
+    
+    pak->len += rc;
+    pak->data[pak->len] = '\0';
+    if (!(beg = end = (UBYTE *)strpbrk ((const char *)pak->data, "\r\n")))
+        return;
 
-static void RemoteClose (Connection *remo)
-{
-    sockclose (remo->sok);
-    remo->sok = -1;
-    remo->connect = 0;
-    unlink (remo->server);
-}
+    *end = '\0';
+    end++;
+    while (*end && strchr ("\r\n\t ", *end))
+        end++;
 
+    if (*end)
+    {
+        remo->incoming = PacketC ();
+        remo->incoming->len = pak->len - (end - pak->data);
+        memcpy (remo->incoming->data, end, remo->incoming->len);
+        remo->connect |= CONNECT_SELECT_A;
+    }
+    else
+        remo->incoming = NULL;
+
+    CmdUser ((const char *)pak->data);
+    PacketD (pak);
+}
 #endif

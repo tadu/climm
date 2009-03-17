@@ -43,7 +43,6 @@
 #include "conv.h"
 #include "util.h"
 #include "contact.h"
-#include "packet.h"
 
 void UtilIOConnectTCP (Connection *conn)
 {
@@ -86,71 +85,6 @@ const char *UtilIOErr (Connection *conn)
 {
     return conn->dispatcher->funcs->f_err (conn, conn->dispatcher);
 }
-
-#define CONNS_FAIL_RC(s) { int rc = errno;            \
-                           const char *t = s_sprintf ("%s: %s (%d).", s, strerror (rc), rc); \
-                           rl_print (i18n (1949, "failed:\n"));  \
-                           rl_printf ("%s [%d]\n", t, __LINE__);  \
-                           if (conn->sok > 0)             \
-                               sockclose (conn->sok);      \
-                           conn->sok = -1;                  \
-                           conn->connect = 0;                \
-                           return; }
-
-#if ENABLE_REMOTECONTROL
-void UtilIOConnectF (Connection *conn)
-{
-    int rc;
-    
-    if (!conn->server)
-        return;
-
-    unlink (conn->server);
-    if (mkfifo (conn->server, 0600) < 0)
-        CONNS_FAIL_RC (i18n (2226, "Couldn't create FIFO"));
-
-#if defined(O_NONBLOCK)
-    if ((conn->sok = open (conn->server, O_RDWR /*ONLY*/ | O_NONBLOCK)) < 0)
-#else
-    if ((conn->sok = open (conn->server, O_RDWR)) < 0)
-#endif
-        CONNS_FAIL_RC (i18n (2227, "Couldn't open FIFO"));
-
-#if HAVE_FCNTL
-    rc = fcntl (conn->sok, F_GETFL, 0);
-    if (rc != -1)
-        rc = fcntl (conn->sok, F_SETFL, rc | O_NONBLOCK);
-#elif defined(HAVE_IOCTLSOCKET)
-    origip = 1;
-    rc = ioctlsocket(conn->sok, FIONBIO, &origip);
-#endif
-    if (rc == -1)
-        CONNS_FAIL_RC (i18n (2228, "Couldn't set FIFO nonblocking"));
-
-    if (rl_pos () > 0)
-        rl_print (i18n (1634, "ok.\n"));
-
-    conn->connect = CONNECT_OK;
-}
-#endif
-
-int UtilIOError (Connection *conn)
-{
-    int rc;
-    socklen_t length;
-
-    length = sizeof (int);
-#ifdef SO_ERROR
-    if (getsockopt (conn->sok, SOL_SOCKET, SO_ERROR, (void *)&rc, &length) < 0)
-#endif
-        rc = errno;
-
-    return rc;
-}
-
-#ifndef ECONNRESET
-#define ECONNRESET 0x424242
-#endif
 
 io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
 {
@@ -196,8 +130,10 @@ io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
             UtilIOClose (conn);
             return IO_RW;
         case IO_CLOSED:
+#ifdef ECONNRESET
             if (!errno)
                 errno = ECONNRESET;
+#endif
         case IO_RW:
             if (prG->verbose || (conn->serv && conn == conn->serv->conn))
             {
@@ -214,75 +150,6 @@ io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
             assert (0);
     }
 }
-
-#if ENABLE_REMOTECONTROL
-/*
- * Receives a line from a FIFO socket.
- */
-Packet *UtilIOReceiveF (Connection *conn)
-{
-    int rc;
-    Packet *pak;
-    UBYTE *end, *beg;
-    
-    if (!(conn->connect & CONNECT_MASK))
-        return NULL;
-    
-    if (!(pak = conn->incoming))
-        conn->incoming = pak = PacketC ();
-    
-    while (1)
-    {
-        errno = 0;
-#if defined(SIGPIPE)
-        signal (SIGPIPE, SIG_IGN);
-#endif
-        rc = sockread (conn->sok, pak->data + pak->len, sizeof (pak->data) - pak->len);
-        if (rc <= 0)
-        {
-            rc = errno;
-            if (rc == EAGAIN)
-                rc = 0;
-            if (rc)
-                break;
-        }
-        pak->len += rc;
-        pak->data[pak->len] = '\0';
-        if (!(beg = end = (UBYTE *)strpbrk ((const char *)pak->data, "\r\n")))
-            return NULL;
-        while (*end && strchr ("\r\n\t ", *end))
-            end++;
-        *beg = '\0';
-        if (*end)
-        {
-            conn->incoming = PacketC ();
-            conn->incoming->len = pak->len - (end - pak->data);
-            memcpy (conn->incoming->data, end, conn->incoming->len);
-        }
-        else
-            conn->incoming = NULL;
-        pak->len = beg - pak->data;
-        return pak;
-    }
-
-    PacketD (pak);
-    sockclose (conn->sok);
-    conn->sok = -1;
-    conn->incoming = NULL;
-
-    if (prG->verbose)
-    {
-        Contact *cont;
-        if ((cont = conn->cont))
-        {
-            rl_log_for (cont->nick, COLCONTACT);
-            rl_printf (i18n (1878, "Error while reading from socket: %s (%d, %d)\n"), strerror (rc), rc, rc);
-        }
-    }
-    conn->connect = 0;
-    return NULL;
-}
-#endif
 
 /*
  * Read a complete line from a fd.
