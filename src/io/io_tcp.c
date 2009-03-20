@@ -508,7 +508,10 @@ static int io_tcp_read (Connection *conn, Dispatcher *d, char *buf, size_t count
         return IO_RW;
     }
     if (!FD_ISSET  (conn->sok, &fds))
+    {
+        conn->connect |= CONNECT_SELECT_R;
         return IO_OK;
+    }
 #if defined(SIGPIPE)
     signal (SIGPIPE, SIG_IGN);
 #endif
@@ -530,6 +533,8 @@ static io_err_t io_tcp_appendbuf (Connection *conn, Dispatcher *d, const char *b
 {
     char *newbuf;
     conn->connect |= CONNECT_SELECT_W;
+    if (!count)
+        return IO_OK;
     if (d->outlen)
         newbuf = realloc (d->outbuf, d->outlen + count);
     else
@@ -566,8 +571,12 @@ static io_err_t io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, 
             free (d->outbuf);
             d->outbuf = NULL;
             conn->connect &= ~CONNECT_SELECT_W;
-        } else {
-            memmove (d->outbuf, d->outbuf + rc, len - rc);
+        }
+        else if (rc == 0)
+            return IO_CLOSED;
+        else
+        {
+            memmove (d->outbuf, d->outbuf + rc, d->outlen - rc);
             d->outlen -= rc;
             return io_tcp_appendbuf (conn, d, buf, len);
         }
@@ -583,7 +592,7 @@ static io_err_t io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, 
             s_repl (&d->lasterr, strerror (errno));
             return IO_RW;
         }
-        if  (rc == 0)
+        if (rc == 0)
             return IO_CLOSED;
         len -= rc;
         buf += rc;
