@@ -641,7 +641,6 @@ int main (int argc, char *argv[])
     Init (argc, argv);
     while (!uiG.quit)
     {
-
 #if INPUT_BY_POLL
         UtilIOSelectInit (0, 1000);
 #else
@@ -719,6 +718,13 @@ int main (int argc, char *argv[])
         }
 
         QueueRun ();
+
+        for (i = 0; (conn = ConnectionNr (i)); i++)
+            if (conn->connect & CONNECT_SELECT_A && conn->dispatch)
+            {
+                conn->dispatch (conn);
+                i = -1;
+            }
     }
 
 #ifdef ENABLE_OTR
