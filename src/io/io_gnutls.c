@@ -197,9 +197,8 @@ static ssize_t io_gnutls_push (gnutls_transport_ptr_t user_data, const void *buf
     Dispatcher *d = (Dispatcher *) user_data;
     int rc = d->next->funcs->f_write (d->conn, d, buf, len);
     if      (rc == IO_CLOSED)  return 0;
-    else if (rc == IO_OK)      { errno = EAGAIN; return -1; }
-    else if (rc < 0)           return -1;
-    else                       return rc;
+    else if (rc == IO_OK)      return len;
+    else                       return -1;
 }
 
 /*
@@ -209,7 +208,7 @@ static void io_gnutls_open (Connection *conn, Dispatcher *d, char is_client)
     int ret;
     int kx_prio[2] = { GNUTLS_KX_ANON_DH, 0 };
     
-    DebugH (DEB_SSL, "ssl_connect");
+    DebugH (DEB_SSL, "ssl_connect %d", is_client);
 
     conn->ssl_status = SSL_STATUS_HANDSHAKE;
     ret = gnutls_init (&d->ssl, is_client ? GNUTLS_CLIENT : GNUTLS_SERVER);
@@ -226,9 +225,8 @@ static void io_gnutls_open (Connection *conn, Dispatcher *d, char is_client)
     if (ret)
         return io_gnutls_setconnerr (d, IO_GNUTLS_INIT, ret, is_client ? "credentials_set (client)" : "credentials_set (server)");
 
-    if (is_client)
-        /* reduce minimal prime bits expected for licq interoperability */
-        gnutls_dh_set_prime_bits (d->ssl, DH_EXPECT_BITS);
+    /* reduce minimal prime bits expected for licq interoperability */
+    gnutls_dh_set_prime_bits (d->ssl, is_client ? DH_EXPECT_BITS : DH_OFFER_BITS);
 
     gnutls_transport_set_ptr (d->ssl, d);
     gnutls_transport_set_pull_function (d->ssl, &io_gnutls_pull);
@@ -269,6 +267,7 @@ static io_err_t io_gnutls_connecting (Connection *conn, Dispatcher *d)
         DebugH (DEB_SSL, "connected");
 
         conn->ssl_status = SSL_STATUS_OK;
+        conn->connect |= CONNECT_SELECT_R;
         return IO_CONNECTED;
     }
     assert(0);
@@ -287,14 +286,19 @@ static int io_gnutls_read (Connection *conn, Dispatcher *d, char *buf, size_t co
         if (rc < 0)
             return rc;
     }
+    conn->connect &= ~CONNECT_SELECT_A;
 
     rc = gnutls_record_recv (d->ssl, buf, count);
     DebugH (DEB_SSL, "read [connect=%x ssl=%d rc=%d]", conn->connect, conn->ssl_status, rc);
-    if (rc < 0)
+    if (rc < 0 && rc != GNUTLS_E_AGAIN && rc != GNUTLS_E_INTERRUPTED)
     {
         io_gnutls_setconnerr (d, IO_GNUTLS_OK, rc, "read");
         return IO_RW;
     }
+    if (rc < 0)
+        return IO_OK;
+    if (rc > 0)
+        conn->connect |= CONNECT_SELECT_A;
     return rc;
 }
 
@@ -329,11 +333,13 @@ static io_err_t io_gnutls_write (Connection *conn, Dispatcher *d, const char *bu
     {
         rc = gnutls_record_send (d->ssl, d->outbuf, d->outlen);
         DebugH (DEB_SSL, "write old %d [connect=%x ssl=%d rc=%d]", d->outlen, conn->connect, conn->ssl_status, rc);
-        if (rc < 0)
+        if (rc < 0 && rc != GNUTLS_E_AGAIN && rc != GNUTLS_E_INTERRUPTED)
         {
             io_gnutls_setconnerr (d, IO_GNUTLS_OK, rc, "write");
             return IO_RW;
         }
+        if (rc < 0)
+            return io_gnutls_appendbuf (conn, d, buf, len);
         if (rc >= d->outlen)
         {
             d->outlen = 0;
@@ -351,13 +357,16 @@ static io_err_t io_gnutls_write (Connection *conn, Dispatcher *d, const char *bu
     {
         rc = gnutls_record_send (d->ssl, buf, len);
         DebugH (DEB_SSL, "write %d [connect=%x ssl=%d rc=%d]", len, conn->connect, conn->ssl_status, rc);
-        if (rc < 0)
+        if (rc < 0 && rc != GNUTLS_E_AGAIN && rc != GNUTLS_E_INTERRUPTED)
         {
             io_gnutls_setconnerr (d, IO_GNUTLS_OK, rc, "write");
             return IO_RW;
         }
-        len -= rc;
-        buf += rc;
+        if (rc > 0)
+        {
+            len -= rc;
+            buf += rc;
+        }
     }
     if (len <= 0)
         return IO_OK;
@@ -383,6 +392,7 @@ static void io_gnutls_close (Connection *conn, Dispatcher *d)
         free (d);
     }
     conn->ssl_status = conn->ssl_status == SSL_STATUS_OK ? SSL_STATUS_NA : SSL_STATUS_FAILED;
+    conn->connect = 0;
 }
 
 #endif
