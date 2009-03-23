@@ -394,11 +394,11 @@ if test "x$ac_arg_use_xmpp" != "xno"; then
     if test "x$ac_use_xmpp" = xno; then
       AC_MSG_FAILURE([cannot find XMPP library libiksemel])
     fi
-    if test "1${ac_iksemel_version#??}" -lt 10103;  then
+    if test "1${ac_iksemel_version#??}" -lt 10102;  then
       AC_MSG_FAILURE([cannot find XMPP library libiksemel version 1.3 or newer, found: $ac_iksemel_version])
     fi
   fi
-  if test "1${ac_iksemel_version#??}" -lt 10103;  then
+  if test "1${ac_iksemel_version#??}" -lt 10102;  then
     AC_MSG_WARN([cannot find XMPP library libiksemel version 1.3 or newer, found: $ac_iksemel_version])
     ac_use_xmpp=no
   fi
