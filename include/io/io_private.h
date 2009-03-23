@@ -36,12 +36,13 @@ struct Dispatcher_s
 #if ENABLE_SSL
 /* io_gnutls */
 #if ENABLE_GNUTLS
-    io_gnutls_err_t gnutls_err;
+    io_ssl_err_t gnutls_err;
+    gnutls_certificate_credentials cred;
     gnutls_session ssl;       /* The SSL data structure                   */
 #endif
 /* io_openssl */
 #if ENABLE_OPENSSL
-    io_openssl_err_t openssl_err;
+    io_ssl_err_t openssl_err;
     SSL *openssl;
 #endif
 /* io_gnutls + io_openssl */

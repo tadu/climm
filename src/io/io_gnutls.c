@@ -45,7 +45,7 @@
 #include "io/io_gnutls.h"
 #include <errno.h>
 
-io_gnutls_err_t io_gnutls_init_ok = IO_GNUTLS_UNINIT;
+io_ssl_err_t io_gnutls_init_ok = IO_SSL_UNINIT;
 
 /* Number of bits climm uses for Diffie-Hellman key exchange of
  * incoming direct connections. You may change this value.
@@ -59,14 +59,14 @@ io_gnutls_err_t io_gnutls_init_ok = IO_GNUTLS_UNINIT;
 
 #if ENABLE_GNUTLS
 
-static void            io_gnutls_open  (Connection *c, Dispatcher *d, char is_client);
-static int             io_gnutls_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
-static io_err_t        io_gnutls_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
-static void            io_gnutls_close (Connection *c, Dispatcher *d);
-static const char     *io_gnutls_err   (Connection *c, Dispatcher *d);
-static io_gnutls_err_t io_gnutls_seterr (io_gnutls_err_t err, int gnutlserr, const char *msg);
-static void            io_gnutls_setconnerr (Dispatcher *d, io_gnutls_err_t err, int gnutlserr, const char *msg);
-static char           *io_gnutls_lasterr = NULL;
+static void         io_gnutls_open  (Connection *c, Dispatcher *d, char is_client);
+static int          io_gnutls_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
+static io_err_t     io_gnutls_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
+static void         io_gnutls_close (Connection *c, Dispatcher *d);
+static const char  *io_gnutls_err   (Connection *c, Dispatcher *d);
+static io_ssl_err_t io_gnutls_seterr (io_ssl_err_t err, int gnutlserr, const char *msg);
+static void         io_gnutls_setconnerr (Dispatcher *d, io_ssl_err_t err, int gnutlserr, const char *msg);
+static char        *io_gnutls_lasterr = NULL;
 
 #include <gnutls/gnutls.h>
 #include <gcrypt.h>
@@ -88,64 +88,64 @@ static Conn_Func io_gnutls_func = {
     &io_gnutls_err
 };
 
-io_gnutls_err_t IOGnuTLSSupported (void)
+io_ssl_err_t IOGnuTLSSupported (void)
 {
     int ret;
 
-    if (io_gnutls_init_ok != IO_GNUTLS_UNINIT)
+    if (io_gnutls_init_ok != IO_SSL_UNINIT)
         return io_gnutls_init_ok;
 
-    io_gnutls_init_ok = IO_GNUTLS_OK;
+    io_gnutls_init_ok = IO_SSL_OK;
     
     if (!libgnutls_is_present)
-        return io_gnutls_init_ok = IO_GNUTLS_NOLIB;
+        return io_gnutls_init_ok = IO_SSL_NOLIB;
 
     if ((ret = gnutls_global_init ()))
-        return io_gnutls_seterr (IO_GNUTLS_INIT, ret, "gnutls_global_init");
+        return io_gnutls_seterr (IO_SSL_INIT, ret, "gnutls_global_init");
 
     if ((ret = gnutls_anon_allocate_client_credentials (&client_cred)))
-        return io_gnutls_seterr (IO_GNUTLS_INIT, ret, "allocate_credentials (client)");
+        return io_gnutls_seterr (IO_SSL_INIT, ret, "allocate_credentials (client)");
 
     if ((ret = gnutls_anon_allocate_server_credentials (&server_cred)))
-        return io_gnutls_seterr (IO_GNUTLS_INIT, ret, "allocate_credentials (server)");
+        return io_gnutls_seterr (IO_SSL_INIT, ret, "allocate_credentials (server)");
 
     if ((ret = gnutls_dh_params_init (&dh_parm)))
-        return io_gnutls_seterr (IO_GNUTLS_INIT, ret, "DH param init (server)");
+        return io_gnutls_seterr (IO_SSL_INIT, ret, "DH param init (server)");
 
 #if HAVE_DH_GENPARAM2
     if (libgnutls_symbol_is_present ("gnutls_dh_params_generate2"))
     {
         if ((ret = gnutls_dh_params_generate2 (dh_parm, DH_OFFER_BITS)))
-            return io_gnutls_seterr (IO_GNUTLS_INIT, ret, "DH param generate2 (server)");
+            return io_gnutls_seterr (IO_SSL_INIT, ret, "DH param generate2 (server)");
     } else
 #endif
 #if !HAVE_DH_GENPARAM2 || ENABLE_AUTOPACKAGE
     {
         gnutls_datum p1, p2;
         if ((ret = gnutls_dh_params_generate (&p1, &p2, DH_OFFER_BITS)))
-            return io_gnutls_seterr (IO_GNUTLS_INIT, ret, "DH param generate (server)");
+            return io_gnutls_seterr (IO_SSL_INIT, ret, "DH param generate (server)");
         ret = gnutls_dh_params_set (dh_parm, p1, p2, DH_OFFER_BITS);
         free (p1.data);
         free (p2.data);
         if (ret)
-            return io_gnutls_seterr (IO_GNUTLS_INIT, ret, "DH param set (server)");
+            return io_gnutls_seterr (IO_SSL_INIT, ret, "DH param set (server)");
     }
 #endif
 
     gnutls_anon_set_server_dh_params (server_cred, dh_parm);
 
-    io_gnutls_init_ok = IO_GNUTLS_OK;
-    return IO_GNUTLS_OK;
+    io_gnutls_init_ok = IO_SSL_OK;
+    return IO_SSL_OK;
 }
 
-io_gnutls_err_t IOGnuTLSOpen (Connection *conn, char is_client)
+io_ssl_err_t IOGnuTLSOpen (Connection *conn, char is_client)
 {
     Dispatcher *d = calloc (1, sizeof (Dispatcher));
     if (!d)
-        return IO_GNUTLS_NOMEM;
+        return IO_SSL_NOMEM;
 
-    if (io_gnutls_init_ok != IO_GNUTLS_OK)
-        return IO_GNUTLS_NOLIB;
+    if (io_gnutls_init_ok != IO_SSL_OK)
+        return IO_SSL_NOLIB;
 
     conn->connect |= CONNECT_SELECT_A;
     d->next = conn->dispatcher;
@@ -154,7 +154,7 @@ io_gnutls_err_t IOGnuTLSOpen (Connection *conn, char is_client)
     d->conn = conn;
     
     io_gnutls_open (conn, d, is_client);
-    return IO_GNUTLS_OK;
+    return IO_SSL_OK;
 }
 
 const char *IOGnuTLSInitError ()
@@ -162,14 +162,14 @@ const char *IOGnuTLSInitError ()
     return io_gnutls_lasterr;
 }
 
-static io_gnutls_err_t io_gnutls_seterr (io_gnutls_err_t err, int gnutlserr, const char *msg)
+static io_ssl_err_t io_gnutls_seterr (io_ssl_err_t err, int gnutlserr, const char *msg)
 {
     io_gnutls_init_ok = err;
     s_repl (&io_gnutls_lasterr, s_sprintf ("%s [%d] %s [%d]", msg, err, gnutls_strerror (gnutlserr), gnutlserr));
     return io_gnutls_init_ok;
 }
 
-static void io_gnutls_setconnerr (Dispatcher *d, io_gnutls_err_t err, int gnutlserr, const char *msg)
+static void io_gnutls_setconnerr (Dispatcher *d, io_ssl_err_t err, int gnutlserr, const char *msg)
 {
     d->gnutls_err = err;
     d->d_errno = gnutlserr;
@@ -213,7 +213,7 @@ static void io_gnutls_open (Connection *conn, Dispatcher *d, char is_client)
     conn->ssl_status = SSL_STATUS_HANDSHAKE;
     ret = gnutls_init (&d->ssl, is_client ? GNUTLS_CLIENT : GNUTLS_SERVER);
     if (ret)
-        return io_gnutls_setconnerr (d, IO_GNUTLS_INIT, ret, is_client ? "failed init (client)" : "failend init (server)");
+        return io_gnutls_setconnerr (d, IO_SSL_INIT, ret, is_client ? "failed init (client)" : "failend init (server)");
         
     gnutls_set_default_priority (d->ssl);
     gnutls_kx_set_priority (d->ssl, kx_prio);
@@ -223,7 +223,7 @@ static void io_gnutls_open (Connection *conn, Dispatcher *d, char is_client)
     else
         ret = gnutls_credentials_set (d->ssl, GNUTLS_CRD_ANON, server_cred);
     if (ret)
-        return io_gnutls_setconnerr (d, IO_GNUTLS_INIT, ret, is_client ? "credentials_set (client)" : "credentials_set (server)");
+        return io_gnutls_setconnerr (d, IO_SSL_INIT, ret, is_client ? "credentials_set (client)" : "credentials_set (server)");
 
     /* reduce minimal prime bits expected for licq interoperability */
     gnutls_dh_set_prime_bits (d->ssl, is_client ? DH_EXPECT_BITS : DH_OFFER_BITS);
@@ -237,7 +237,7 @@ static io_err_t io_gnutls_connecting (Connection *conn, Dispatcher *d)
 {
     DebugH (DEB_SSL, "connecting [connect=%x ssl=%d gnutlserr=%d]", conn->connect, conn->ssl_status, d->gnutls_err);
 
-    if (conn->connect & CONNECT_SELECT_A && d->gnutls_err == IO_GNUTLS_INIT)
+    if (conn->connect & CONNECT_SELECT_A && d->gnutls_err == IO_SSL_INIT)
         return IO_RW;
 
     if (conn->ssl_status == SSL_STATUS_FAILED
@@ -259,7 +259,7 @@ static io_err_t io_gnutls_connecting (Connection *conn, Dispatcher *d)
 
         if (ret)
         {
-            io_gnutls_setconnerr (d, IO_GNUTLS_OK, ret, "handshake");
+            io_gnutls_setconnerr (d, IO_SSL_OK, ret, "handshake");
             conn->ssl_status = SSL_STATUS_FAILED;
             return IO_RW;
         }
@@ -292,7 +292,7 @@ static int io_gnutls_read (Connection *conn, Dispatcher *d, char *buf, size_t co
     DebugH (DEB_SSL, "read [connect=%x ssl=%d rc=%d]", conn->connect, conn->ssl_status, rc);
     if (rc < 0 && rc != GNUTLS_E_AGAIN && rc != GNUTLS_E_INTERRUPTED)
     {
-        io_gnutls_setconnerr (d, IO_GNUTLS_OK, rc, "read");
+        io_gnutls_setconnerr (d, IO_SSL_OK, rc, "read");
         return IO_RW;
     }
     if (rc < 0)
@@ -335,7 +335,7 @@ static io_err_t io_gnutls_write (Connection *conn, Dispatcher *d, const char *bu
         DebugH (DEB_SSL, "write old %d [connect=%x ssl=%d rc=%d]", d->outlen, conn->connect, conn->ssl_status, rc);
         if (rc < 0 && rc != GNUTLS_E_AGAIN && rc != GNUTLS_E_INTERRUPTED)
         {
-            io_gnutls_setconnerr (d, IO_GNUTLS_OK, rc, "write");
+            io_gnutls_setconnerr (d, IO_SSL_OK, rc, "write");
             return IO_RW;
         }
         if (rc < 0)
@@ -359,7 +359,7 @@ static io_err_t io_gnutls_write (Connection *conn, Dispatcher *d, const char *bu
         DebugH (DEB_SSL, "write %d [connect=%x ssl=%d rc=%d]", len, conn->connect, conn->ssl_status, rc);
         if (rc < 0 && rc != GNUTLS_E_AGAIN && rc != GNUTLS_E_INTERRUPTED)
         {
-            io_gnutls_setconnerr (d, IO_GNUTLS_OK, rc, "write");
+            io_gnutls_setconnerr (d, IO_SSL_OK, rc, "write");
             return IO_RW;
         }
         if (rc > 0)

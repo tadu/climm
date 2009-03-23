@@ -1025,7 +1025,7 @@ int PeerSSLSupported (Connection *conn DEBUGPARAM)
     Contact *cont;
     UBYTE status_save = conn->ssl_status;
     
-    if (IOGnuTLSSupported() != IO_GNUTLS_OK && IOOpenSSLSupported() != IO_OPENSSL_OK)
+    if (IOGnuTLSSupported() != IO_SSL_OK && IOOpenSSLSupported() != IO_SSL_OK)
         return 0;
     
     if (conn->ssl_status == SSL_STATUS_OK)
@@ -1489,9 +1489,9 @@ static void PeerCallbackReceiveAdvanced (Event *event)
     switch (event->conn->ssl_status)
     {
         case SSL_STATUS_INIT:
-            if (IOGnuTLSSupported () == IO_GNUTLS_OK)
+            if (IOGnuTLSSupported () == IO_SSL_OK)
                 IOGnuTLSOpen (event->conn, 0);
-            else if (IOOpenSSLSupported () == IO_OPENSSL_OK)
+            else if (IOOpenSSLSupported () == IO_SSL_OK)
                 IOOpenSSLOpen (event->conn, 0);
             break;
         case SSL_STATUS_CLOSE:
@@ -1619,9 +1619,9 @@ static void TCPCallBackReceive (Event *event)
                 case MSG_SSL_OPEN:
                     if (!ostat && !strcmp (tmp, "1"))
                     {
-                        if (IOGnuTLSSupported () == IO_GNUTLS_OK)
+                        if (IOGnuTLSSupported () == IO_SSL_OK)
                             IOGnuTLSOpen (peer, 1);
-                        else if (IOOpenSSLSupported () == IO_OPENSSL_OK)
+                        else if (IOOpenSSLSupported () == IO_SSL_OK)
                             IOOpenSSLOpen (peer, 1);
                     }
                     else

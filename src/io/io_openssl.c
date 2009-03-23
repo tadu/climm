@@ -46,18 +46,18 @@
 
 #include <errno.h>
 
-io_openssl_err_t io_openssl_init_ok = IO_OPENSSL_UNINIT;
+io_ssl_err_t io_openssl_init_ok = IO_SSL_UNINIT;
 
 #if ENABLE_OPENSSL
 
-static void             io_openssl_open  (Connection *c, Dispatcher *d, char is_client);
-static int              io_openssl_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
-static io_err_t         io_openssl_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
-static void             io_openssl_close (Connection *c, Dispatcher *d);
-static const char      *io_openssl_err   (Connection *c, Dispatcher *d);
-static io_openssl_err_t io_openssl_seterr (io_openssl_err_t err, int opensslerr, const char *msg);
-static void             io_openssl_setconnerr (Dispatcher *d, io_openssl_err_t err, int opensslerr, const char *msg);
-static char            *io_openssl_lasterr = NULL;
+static void         io_openssl_open  (Connection *c, Dispatcher *d, char is_client);
+static int          io_openssl_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
+static io_err_t     io_openssl_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
+static void         io_openssl_close (Connection *c, Dispatcher *d);
+static const char  *io_openssl_err   (Connection *c, Dispatcher *d);
+static io_ssl_err_t io_openssl_seterr (io_ssl_err_t err, int opensslerr, const char *msg);
+static void         io_openssl_setconnerr (Dispatcher *d, io_ssl_err_t err, int opensslerr, const char *msg);
+static char        *io_openssl_lasterr = NULL;
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -160,15 +160,15 @@ static void openssl_info_callback (SSL *s, int where, int ret)
     }
 }
 
-io_openssl_err_t IOOpenSSLSupported (void)
+io_ssl_err_t IOOpenSSLSupported (void)
 {
     int ret;
 
-    if (io_openssl_init_ok >= IO_OPENSSL_OK)
+    if (io_openssl_init_ok >= IO_SSL_OK)
         return io_openssl_init_ok;
 
     if (!libopenssl_is_present)
-        return io_openssl_init_ok = IO_OPENSSL_NOLIB;
+        return io_openssl_init_ok = IO_SSL_NOLIB;
 
     DH *dh;
     SSL_library_init();
@@ -184,20 +184,20 @@ io_openssl_err_t IOOpenSSLSupported (void)
 
     dh = get_dh512 ();
     if (!dh)
-        return io_openssl_seterr (IO_OPENSSL_INIT, ret, "openssl_global_init");
+        return io_openssl_seterr (IO_SSL_INIT, ret, "openssl_global_init");
     SSL_CTX_set_tmp_dh (gSSL_CTX, dh);
     DH_free (dh);
-    return IO_OPENSSL_OK;
+    return IO_SSL_OK;
 }
 
-io_openssl_err_t IOOpenSSLOpen (Connection *conn, char is_client)
+io_ssl_err_t IOOpenSSLOpen (Connection *conn, char is_client)
 {
     Dispatcher *d = calloc (1, sizeof (Dispatcher));
     if (!d)
-        return IO_OPENSSL_NOMEM;
+        return IO_SSL_NOMEM;
 
     if (!io_openssl_init_ok)
-        return IO_OPENSSL_NOLIB;
+        return IO_SSL_NOLIB;
 
     conn->connect |= CONNECT_SELECT_A;
     d->next = conn->dispatcher;
@@ -206,7 +206,7 @@ io_openssl_err_t IOOpenSSLOpen (Connection *conn, char is_client)
     d->conn = conn;
     
     io_openssl_open (conn, d, is_client);
-    return IO_OPENSSL_OK;
+    return IO_SSL_OK;
 }
 
 const char *IOOpenSSLInitError ()
@@ -214,18 +214,18 @@ const char *IOOpenSSLInitError ()
     return io_openssl_lasterr;
 }
 
-static io_openssl_err_t io_openssl_seterr (io_openssl_err_t err, int opensslerr, const char *msg)
+static io_ssl_err_t io_openssl_seterr (io_ssl_err_t err, int opensslerr, const char *msg)
 {
     io_openssl_init_ok = err;
     s_repl (&io_openssl_lasterr, s_sprintf ("%s [%d] %s [%d]", msg, err, "OpenSSL error", opensslerr));
     return io_openssl_init_ok;
 }
 
-static void io_openssl_setconnerr (Dispatcher *d, io_openssl_err_t err, int opensslerr, const char *msg)
+static void io_openssl_setconnerr (Dispatcher *d, io_ssl_err_t err, int opensslerr, const char *msg)
 {
     d->openssl_err = err;
     d->d_errno = opensslerr;
-    if (err == IO_OPENSSL_INIT)
+    if (err == IO_SSL_INIT)
         d->conn->connect |= CONNECT_SELECT_A;
     s_repl (&d->lasterr, s_sprintf ("%s [%d] %s [%d]", msg, err, "OpenSSL error", opensslerr));
 }
@@ -279,7 +279,7 @@ static void io_openssl_open (Connection *conn, Dispatcher *d, char is_client)
 
 static io_err_t io_openssl_connecting (Connection *conn, Dispatcher *d)
 {
-    if (conn->connect & CONNECT_SELECT_A && d->openssl_err == IO_OPENSSL_INIT)
+    if (conn->connect & CONNECT_SELECT_A && d->openssl_err == IO_SSL_INIT)
         return IO_RW;
 
     if (conn->ssl_status == SSL_STATUS_FAILED
@@ -315,11 +315,11 @@ static io_err_t io_openssl_connecting (Connection *conn, Dispatcher *d)
                 return IO_OK;
 
             case SSL_ERROR_SSL:
-                io_openssl_setconnerr (d, IO_OPENSSL_OK, err_i, "internal error (handshake)");
+                io_openssl_setconnerr (d, IO_SSL_OK, err_i, "internal error (handshake)");
                 conn->ssl_status = SSL_STATUS_FAILED;
                 return IO_RW;
             default:
-                io_openssl_setconnerr (d, IO_OPENSSL_OK, err_i, "other error (handshake)");
+                io_openssl_setconnerr (d, IO_SSL_OK, err_i, "other error (handshake)");
                 conn->ssl_status = SSL_STATUS_FAILED;
                 return IO_RW;
         }
@@ -368,16 +368,16 @@ static int io_openssl_read (Connection *conn, Dispatcher *d, char *buf, size_t c
             conn->connect &= ~CONNECT_SELECT_W;
             return IO_OK;
         case SSL_ERROR_SSL:
-            io_openssl_setconnerr (d, IO_OPENSSL_OK, rc, "error ssl");
+            io_openssl_setconnerr (d, IO_SSL_OK, rc, "error ssl");
             return IO_RW;
         case SSL_ERROR_SYSCALL:
-            io_openssl_setconnerr (d, IO_OPENSSL_OK, rc, "error syscall");
+            io_openssl_setconnerr (d, IO_SSL_OK, rc, "error syscall");
             return IO_RW;
         case SSL_ERROR_ZERO_RETURN:
-            io_openssl_setconnerr (d, IO_OPENSSL_OK, rc, "zero return");
+            io_openssl_setconnerr (d, IO_SSL_OK, rc, "zero return");
             return IO_CLOSED;
         default:
-            io_openssl_setconnerr (d, IO_OPENSSL_OK, rc, "other error");
+            io_openssl_setconnerr (d, IO_SSL_OK, rc, "other error");
             return IO_RW;
     }
 }
@@ -430,10 +430,10 @@ static io_err_t io_openssl_write (Connection *conn, Dispatcher *d, const char *b
                     conn->connect &= ~CONNECT_SELECT_W;
                     break;
                 case SSL_ERROR_SYSCALL:
-                    io_openssl_setconnerr (d, IO_OPENSSL_OK, rc, "error syscall (write)");
+                    io_openssl_setconnerr (d, IO_SSL_OK, rc, "error syscall (write)");
                     return IO_RW;
                 default:
-                    io_openssl_setconnerr (d, IO_OPENSSL_OK, rc, "other error (write)");
+                    io_openssl_setconnerr (d, IO_SSL_OK, rc, "other error (write)");
                     return IO_RW;
             }
             rc = 0;
@@ -472,10 +472,10 @@ static io_err_t io_openssl_write (Connection *conn, Dispatcher *d, const char *b
                     conn->connect &= ~CONNECT_SELECT_W;
                     break;
                 case SSL_ERROR_SYSCALL:
-                    io_openssl_setconnerr (d, IO_OPENSSL_OK, rc, "error syscall (write)");
+                    io_openssl_setconnerr (d, IO_SSL_OK, rc, "error syscall (write)");
                     return IO_RW;
                 default:
-                    io_openssl_setconnerr (d, IO_OPENSSL_OK, rc, "other error (write)");
+                    io_openssl_setconnerr (d, IO_SSL_OK, rc, "other error (write)");
                     return IO_RW;
             }
             rc = 0;

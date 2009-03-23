@@ -3,6 +3,14 @@
 #ifndef CLIMM_UTIL_IO_H
 #define CLIMM_UTIL_IO_H
 
+typedef enum io_ssl_err_e {
+  IO_SSL_UNINIT = -1,
+  IO_SSL_OK = 0,
+  IO_SSL_NOMEM,
+  IO_SSL_NOLIB,
+  IO_SSL_INIT
+} io_ssl_err_t;
+
 typedef enum {
     SSL_STATUS_NA,       /* unknown / nothing done yet       */
     SSL_STATUS_FAILED,   /* SSL handshake with peer failed   */

@@ -474,17 +474,17 @@ static void Init (int argc, char *argv[])
 
 #ifdef ENABLE_SSL
     {
-        io_gnutls_err_t rcgnutls = IOGnuTLSSupported ();
-        io_openssl_err_t rcopenssl = rcgnutls == IO_GNUTLS_OK ? IO_OPENSSL_NOLIB : IOOpenSSLSupported ();
+        io_ssl_err_t rcgnutls = IOGnuTLSSupported ();
+        io_ssl_err_t rcopenssl = rcgnutls == IO_SSL_OK ? IO_SSL_NOLIB : IOOpenSSLSupported ();
         
-        if (rcgnutls != IO_GNUTLS_OK && rcopenssl != IO_OPENSSL_OK)
+        if (rcgnutls != IO_SSL_OK && rcopenssl != IO_SSL_OK)
         {
-            if (rcgnutls == IO_GNUTLS_INIT)
+            if (rcgnutls == IO_SSL_INIT)
             {
                 rl_printf (i18n (2374, "SSL error: %s [%d]\n"), IOGnuTLSInitError (), 0);
                 rl_printf (i18n (2371, "SSL init failed.\n"));
             }
-            else if (rcopenssl == IO_OPENSSL_INIT)
+            else if (rcopenssl == IO_SSL_INIT)
             {
                 rl_printf (i18n (2374, "SSL error: %s [%d]\n"), IOOpenSSLInitError (), 0);
                 rl_printf (i18n (2371, "SSL init failed.\n"));
