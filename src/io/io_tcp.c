@@ -81,6 +81,13 @@ extern int h_errno;
 #include "io/io_private.h"
 #include "io/io_tcp.h"
 
+#if 0
+#include "util_ui.h"
+#else
+#undef DebugH
+#define DebugH(...)
+#endif
+
 #ifndef HAVE_HSTRERROR
 static inline const char *hstrerror (int rc)
 {
@@ -137,6 +144,7 @@ void IOConnectTCP (Connection *conn)
     conn->connect &= ~CONNECT_SELECT_R & ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
     conn->connect |= CONNECT_SELECT_A;
     conn->dispatcher = calloc (1, sizeof (Dispatcher));
+    DebugH (DEB_TCP, "conn %p connect %p", conn, conn->dispatcher);
     if (!conn->dispatcher)
         return;
     conn->dispatcher->funcs = &io_tcp_func;
@@ -150,6 +158,7 @@ void IOListenTCP (Connection *conn)
     conn->connect &= ~CONNECT_SELECT_R & ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
     conn->connect |= CONNECT_SELECT_A;
     conn->dispatcher = calloc (1, sizeof (Dispatcher));
+    DebugH (DEB_TCP, "conn %p listen %p", conn, conn->dispatcher);
     if (!conn->dispatcher)
         return;
     conn->dispatcher->funcs = &io_listen_tcp_func;
@@ -163,6 +172,7 @@ static void io_tcp_to (Event *event)
 {
     Connection *conn = event->conn;
     EventD (event);
+    DebugH (DEB_TCP, "conn %p timeout", conn);
     conn->connect &= ~CONNECT_SELECT_R & ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
     conn->connect |= CONNECT_SELECT_A;
     conn->dispatcher->flags = FLAG_TIMEOUT;
@@ -183,9 +193,11 @@ static char io_tcp_makesocket (Connection *conn, Dispatcher *d)
     {
         d->d_errno = errno;
         d->err = IO_NO_SOCKET;
+        DebugH (DEB_TCP, "conn %p socket %d err %d %s", conn, conn->sok, errno, strerror (errno));
         s_repl (&d->lasterr, strerror (errno));
         return 0;
     }
+    DebugH (DEB_TCP, "conn %p socket %d", conn, conn->sok);
 #if HAVE_FCNTL
     rc = fcntl (conn->sok, F_GETFL, 0);
     if (rc != -1)
@@ -199,6 +211,7 @@ static char io_tcp_makesocket (Connection *conn, Dispatcher *d)
         close (conn->sok);
         conn->sok = -1;
         d->d_errno = errno;
+        DebugH (DEB_TCP, "conn %p socket %d err %d %s", conn, conn->sok, errno, strerror (errno));
         d->err = IO_NO_NONBLOCK;
         s_repl (&d->lasterr, strerror (rc));
         return 0;
@@ -223,9 +236,12 @@ static void io_tcp_open (Connection *conn, Dispatcher *d)
     {
         d->d_errno = errno;
         d->err = IO_NO_PARAM;
+        DebugH (DEB_TCP, "conn %p open param err %d %s", conn, errno, strerror (errno));
         s_repl (&d->lasterr, "");
         return;
     }
+    
+    DebugH (DEB_TCP, "conn %p open", conn);
 
     if (!io_tcp_makesocket (conn, d))
         return;
@@ -264,6 +280,7 @@ static void io_tcp_open (Connection *conn, Dispatcher *d)
     if (rc >= 0)
     {
         d->flags = FLAG_CONNECTED;
+        DebugH (DEB_TCP, "conn %p open ok", conn);
         conn->connect |= CONNECT_SELECT_R | CONNECT_SELECT_A;
         conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X;
         return;
@@ -285,6 +302,7 @@ static void io_tcp_open (Connection *conn, Dispatcher *d)
                           conn->cont, NULL, &io_tcp_to);
         conn->connect |= CONNECT_SELECT_W | CONNECT_SELECT_X;
         conn->connect &= ~CONNECT_SELECT_R & ~CONNECT_SELECT_A;
+        DebugH (DEB_TCP, "conn %p connecting", conn);
         d->flags = FLAG_CONNECTING;
         return;
     }
@@ -343,6 +361,8 @@ static void io_listen_tcp_open (Connection *conn, Dispatcher *d)
         }
     }
 
+    DebugH (DEB_TCP, "conn %p bind ok", conn);
+
     if (listen (conn->sok, BACKLOG) < 0)
     {
         close (conn->sok);
@@ -352,6 +372,7 @@ static void io_listen_tcp_open (Connection *conn, Dispatcher *d)
         s_repl (&d->lasterr, strerror (rc));
         return;
     }
+    DebugH (DEB_TCP, "conn %p listen ok", conn);
 
     length = sizeof (struct sockaddr);
     getsockname (conn->sok, (struct sockaddr *) &sin, &length);
@@ -360,10 +381,31 @@ static void io_listen_tcp_open (Connection *conn, Dispatcher *d)
     d->flags = FLAG_CONNECTED;
 }
 
+static int io_is_select (Connection *conn, int i)
+{
+    int rc;
+    fd_set fds;
+    struct timeval tv;
+    
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
+    FD_ZERO (&fds);
+    FD_SET (conn->sok, &fds);
+    rc = select (conn->sok + 1, i ? NULL : &fds, i ? &fds : NULL, NULL, &tv);
+    if (rc < 0 && (errno == EAGAIN || errno == EINTR))
+        return 0;
+    if (rc < 0)
+        return rc;
+    if (!FD_ISSET  (conn->sok, &fds))
+        return 0;
+    return 1;
+}
+
 static io_err_t io_tcp_connecting (Connection *conn, Dispatcher *d)
 {
     if (d->flags == FLAG_CONNECTED)
     {
+        DebugH (DEB_TCP, "conn %p connecting connected", conn);
         d->flags = FLAG_OPEN;
         conn->connect |= CONNECT_SELECT_R;
         conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~CONNECT_SELECT_A;
@@ -372,10 +414,14 @@ static io_err_t io_tcp_connecting (Connection *conn, Dispatcher *d)
     }
 
     if (d->flags == FLAG_CLOSED)
+    {
+        DebugH (DEB_TCP, "conn %p connecting closed", conn);
         return IO_CLOSED;
+    }
     
     if (d->flags == FLAG_TIMEOUT)
     {
+        DebugH (DEB_TCP, "conn %p connecting timeout", conn);
         close (conn->sok);
         conn->sok = -1;
         d->flags = FLAG_CLOSED;
@@ -391,12 +437,29 @@ static io_err_t io_tcp_connecting (Connection *conn, Dispatcher *d)
     {
         int rc;
         socklen_t length;
-        
+
         if (d->err)
         {
+            DebugH (DEB_TCP, "conn %p connecting err %d %s", conn, d->d_errno, strerror (d->d_errno));
             d->flags = FLAG_CLOSED;
             errno = d->d_errno;
             return d->err;
+        }
+
+        rc = io_is_select (conn, 1);
+        if (rc == 0)
+        {
+            DebugH (DEB_TCP, "conn %p connecting no select", conn);
+            return IO_OK;
+        }
+        if (rc < 0)
+        {
+            d->flags = FLAG_CLOSED;
+            d->d_errno  = errno;
+            s_repl (&d->lasterr, strerror (errno));
+            DebugH (DEB_TCP, "conn %p connecting err %d %s", conn, d->d_errno, strerror (d->d_errno));
+            errno = d->d_errno;
+            return IO_RW;
         }
         
         /* not reached  for listening connection  */
@@ -411,9 +474,11 @@ static io_err_t io_tcp_connecting (Connection *conn, Dispatcher *d)
             conn->sok = -1;
             d->flags = FLAG_CLOSED;
             s_repl (&d->lasterr, strerror (rc));
+            DebugH (DEB_TCP, "conn %p connecting err %d %s", conn, rc, d->lasterr);
             return IO_NO_CONN;
         }
         d->flags = FLAG_OPEN;
+        DebugH (DEB_TCP, "conn %p connecting now connected", conn);
         EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, 0));
         conn->connect |= CONNECT_SELECT_R;
         conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~CONNECT_SELECT_A;
@@ -443,6 +508,8 @@ static int io_listen_tcp_accept (Connection *conn, Dispatcher *d, Connection *ne
     if (sok <= 0)
         return IO_OK;
 
+    DebugH (DEB_TCP, "conn %p listen got %d", conn, sok);
+
 #if HAVE_FCNTL
     rc = fcntl (sok, F_GETFL, 0);
     if (rc != -1)
@@ -459,6 +526,7 @@ static int io_listen_tcp_accept (Connection *conn, Dispatcher *d, Connection *ne
         d->d_errno = errno;
         d->err = IO_NO_NONBLOCK;
         s_repl (&d->lasterr, strerror (errno));
+        DebugH (DEB_TCP, "conn %p listen got %d err %d %s", conn, sok, d->d_errno, d->lasterr);
         return IO_NO_NONBLOCK;
     }
 
@@ -472,21 +540,23 @@ static int io_listen_tcp_accept (Connection *conn, Dispatcher *d, Connection *ne
         d->d_errno = errno;
         d->err = IO_NO_NONBLOCK;
         s_repl (&d->lasterr, strerror (errno));
+        DebugH (DEB_TCP, "conn %p listen got %d err %d %s", conn, sok, d->d_errno, d->lasterr);
         return IO_NO_MEM;
     }
     newconn->dispatcher->funcs = &io_tcp_func;
     newconn->port = ntohs (sin.sin_port);
     s_repl (&newconn->server, "local??host");
     d->flags = FLAG_OPEN;
+    DebugH (DEB_TCP, "conn %p listen got %d for %p", conn, sok, newconn);
     return sok;
 }
 
 static int io_tcp_read (Connection *conn, Dispatcher *d, char *buf, size_t count)
 {
-    fd_set fds;
-    struct timeval tv;
     io_err_t rce;
     int rc;
+
+    DebugH (DEB_TCP, "conn %p read", conn);
     
     if (d->flags != FLAG_OPEN)
         return io_tcp_connecting (conn, d);
@@ -496,25 +566,18 @@ static int io_tcp_read (Connection *conn, Dispatcher *d, char *buf, size_t count
         rce = io_tcp_write (conn, d, NULL, 0);
         if (rce != IO_OK)
             return rce;
+        DebugH (DEB_TCP, "conn %p write from read done", conn);
     }
-    
-    tv.tv_sec = 0;
-    tv.tv_usec = 0;
-    FD_ZERO (&fds);
-    FD_SET (conn->sok, &fds);
-    rc = select (conn->sok + 1, &fds, NULL, NULL, &tv);
-    if (rc < 0 && (errno == EAGAIN || errno == EINTR))
-    {
-        conn->connect |= CONNECT_SELECT_R;
-        return IO_OK;
-    }
+    rc = io_is_select (conn, 0);
     if (rc < 0)
     {
         s_repl (&d->lasterr, strerror (errno));
+        DebugH (DEB_TCP, "conn %p read err %d %d %s", conn, rc, errno, strerror (errno));
         return IO_RW;
     }
-    if (!FD_ISSET  (conn->sok, &fds))
+    if (rc == 0)
     {
+        DebugH (DEB_TCP, "conn %p read no select", conn);
         conn->connect |= CONNECT_SELECT_R;
         return IO_OK;
     }
@@ -523,15 +586,23 @@ static int io_tcp_read (Connection *conn, Dispatcher *d, char *buf, size_t count
 #endif
     rc = sockread (conn->sok, buf, count);
     if (rc > 0)
+    {
+        DebugH (DEB_TCP, "conn %p read got %d of %d bytes\n%s", conn, rc, count, conn->dispatcher == d ? s_dump (buf, rc) : "");
         return rc;
+    }
     if (rc == 0)
+    {
+        DebugH (DEB_TCP, "conn %p read closed", conn);
         return IO_CLOSED;
+    }
     if (errno == EAGAIN || errno == EINTR)
     {
         conn->connect |= CONNECT_SELECT_R;
+        DebugH (DEB_TCP, "conn %p read again", conn);
         return IO_OK;
     }
     s_repl (&d->lasterr, strerror (errno));
+    DebugH (DEB_TCP, "conn %p read err %d %s", conn, errno, d->lasterr);
     return IO_RW;
 }
 
@@ -539,6 +610,7 @@ static io_err_t io_tcp_appendbuf (Connection *conn, Dispatcher *d, const char *b
 {
     char *newbuf;
     conn->connect |= CONNECT_SELECT_W;
+    DebugH (DEB_TCP, "conn %p append %d to %d", conn, count, d->outlen);
     if (!count)
         return IO_OK;
     if (d->outlen)
@@ -560,6 +632,8 @@ static io_err_t io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, 
 {
     int rc;
     
+    DebugH (DEB_TCP, "conn %p write", conn);
+    
     if (d->flags != FLAG_OPEN)
         return io_tcp_appendbuf (conn, d, buf, len);
 
@@ -568,6 +642,7 @@ static io_err_t io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, 
         rc = sockwrite (conn->sok, d->outbuf, d->outlen);
         if (rc < 0)
         {
+            DebugH (DEB_TCP, "conn %p write buf err %d %s", conn, errno, strerror (errno));
             s_repl (&d->lasterr, strerror (errno));
             return IO_RW;
         }
@@ -577,12 +652,17 @@ static io_err_t io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, 
             free (d->outbuf);
             d->outbuf = NULL;
             conn->connect &= ~CONNECT_SELECT_W;
+            DebugH (DEB_TCP, "conn %p write buf done %d %d", conn, rc, d->outlen);
         }
         else if (rc == 0)
+        {
+            DebugH (DEB_TCP, "conn %p write buf closed", conn);
             return IO_CLOSED;
+        }
         else
         {
             memmove (d->outbuf, d->outbuf + rc, d->outlen - rc);
+            DebugH (DEB_TCP, "conn %p write buf done %d of %d", conn, rc, d->outlen);
             d->outlen -= rc;
             return io_tcp_appendbuf (conn, d, buf, len);
         }
@@ -595,16 +675,24 @@ static io_err_t io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, 
         rc = sockwrite (conn->sok, buf, len);
         if (rc < 0)
         {
+            DebugH (DEB_TCP, "conn %p write err %d %s", conn, errno, strerror (errno));
             s_repl (&d->lasterr, strerror (errno));
             return IO_RW;
         }
         if (rc == 0)
+        {
+            DebugH (DEB_TCP, "conn %p write closed", conn);
             return IO_CLOSED;
+        }
+        DebugH (DEB_TCP, "conn %p write %d of %d.\n%s", conn, rc, len, conn->dispatcher == d ? s_dump (buf, len) : "");
         len -= rc;
         buf += rc;
     }
     else
+    {
+        DebugH (DEB_TCP, "conn %p write none", conn);
         conn->connect &= ~CONNECT_SELECT_W;
+    }
     if (len <= 0)
         return IO_OK;
     return io_tcp_appendbuf (conn, d, buf, len);
