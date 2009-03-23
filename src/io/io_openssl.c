@@ -239,9 +239,10 @@ static const char *io_openssl_err (Connection *conn, Dispatcher *d)
 static ssize_t io_openssl_pull (openssl_transport_ptr_t user_data, void *buf, size_t len)
 {
     Dispatcher *d = (Dispatcher *) user_data;
-    int rc = d->conn->dispatcher->funcs->f_read (d->conn, d, buf, len);
+    int rc = d->conn->dispatcher->funcs->f_read (d->conn, d->next, buf, len);
     if      (rc == IO_CLOSED)  return 0;
-    else if (rc == IO_OK)      { errno = EAGAIN; return -1; }
+    else if (rc == IO_OK)        { errno = EAGAIN; return -1; }
+    else if (rc == IO_CONNECTED) { errno = EAGAIN; d->conn->connect |= CONNECT_SELECT_A; return -1; }
     else if (rc < 0)           return -1;
     else                       return rc;
 }
@@ -249,9 +250,10 @@ static ssize_t io_openssl_pull (openssl_transport_ptr_t user_data, void *buf, si
 static ssize_t io_openssl_push (openssl_transport_ptr_t user_data, const void *buf, size_t len)
 {
     Dispatcher *d = (Dispatcher *) user_data;
-    int rc = d->conn->dispatcher->funcs->f_write (d->conn, d, buf, len);
+    int rc = d->conn->dispatcher->funcs->f_write (d->conn, d->next, buf, len);
     if      (rc == IO_CLOSED)  return 0;
-    else if (rc == IO_OK)      { errno = EAGAIN; return -1; }
+    else if (rc == IO_OK)        { errno = EAGAIN; return -1; }
+    else if (rc == IO_CONNECTED) { errno = EAGAIN; d->conn->connect |= CONNECT_SELECT_A; return -1; }
     else if (rc < 0)           return -1;
     else                       return rc;
 }
