@@ -87,12 +87,11 @@ static int iks_climm_TSend (Connection *conn, const char *data, size_t len)
 static int iks_climm_TRecv (Connection *conn, char *data, size_t len, int timeout)
 {
     int rc = UtilIORead (conn, data, len);
+    if (rc > 0)
+        return rc;
     if (rc == IO_OK)
-    {
-        errno = EAGAIN;
-        return -1;
-    }
-    return rc;
+        return 0;
+    return -1;
 }
 
 static const ikstransport iks_climm_transport = {
@@ -122,7 +121,8 @@ static void XMPPCallBackTimeout (Event *event)
 
 void XmppStreamError (Server *serv, const char *text)
 {
-    rl_printf ("Stream level error occurred: %s\n", text);
+    rl_printf ("Stream level error occurred: %s [%s]\n", text, UtilIOErr (serv->conn));
+    XMPPLogout (serv);
 }
 
 Event *XMPPLogin (Server *serv)
@@ -970,6 +970,78 @@ static int XmppBindResult (Server *serv, ikspak *pak)
     return IKS_FILTER_EAT;
 }
 
+#if LIBIKS_VERSION < 0x0103 || defined(USE_AUTOPACKAGE)
+/* iksemel (XML parser for Jabber)
+** Copyright (C) 2000-2003 Gurer Ozen <madcat@e-kolay.net>
+** This code is free software; you can redistribute it and/or
+** modify it under the terms of GNU Lesser General Public License.
+*/
+/* copied from libiksemel 1.3 src/base64.c */
+static const char base64_charset[] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+char *replace_iks_base64_encode(const char *buf, int len)
+{
+    char *res, *save;
+    int k, t;
+
+    len = (len > 0) ? (len) : (iks_strlen(buf));
+    save = res = iks_malloc((len*8) / 6 + 4);
+    if (!save) return NULL;
+
+    for (k = 0; k < len/3; ++k) {
+        *res++ = base64_charset[*buf >> 2];
+        t = ((*buf & 0x03) << 4);
+        buf++;
+        *res++ = base64_charset[t | (*buf >> 4)];
+        t = ((*buf & 0x0F) << 2);
+        buf++;
+        *res++ = base64_charset[t | (*buf >> 6)];
+        *res++ = base64_charset[*buf++ & 0x3F];
+    }
+
+    switch (len % 3) {
+        case 2:
+            *res++ = base64_charset[*buf >> 2];
+            t =  ((*buf & 0x03) << 4);
+            buf++;
+            *res++ = base64_charset[t | (*buf >> 4)];
+            *res++ = base64_charset[((*buf++ & 0x0F) << 2)];
+            *res++ = '=';
+            break;
+        case 1:
+            *res++ = base64_charset[*buf >> 2];
+            *res++ = base64_charset[(*buf++ & 0x03) << 4];
+            *res++ = '=';
+            *res++ = '=';
+            break;
+    }
+    *res = 0;
+    return save;
+}
+/* copied from libiksemel 1.3 src/streams.c */
+int replace_iks_start_sasl (iksparser *prs, char *username, char *pass)
+{
+    iks *x;
+    int len = iks_strlen (username) + iks_strlen (pass) + 2;
+    char *s = iks_malloc (80+len);
+    char *base64;
+
+    x = iks_new ("auth");
+    iks_insert_attrib (x, "xmlns", IKS_NS_XMPP_SASL);
+    iks_insert_attrib (x, "mechanism", "PLAIN");
+    sprintf (s, "%c%s%c%s", 0, username, 0, pass);
+    base64 = replace_iks_base64_encode (s, len);
+    iks_insert_cdata (x, base64, 0);
+    iks_free (base64);
+    iks_free (s);
+    iks_send (prs, x);
+    iks_delete (x);
+    return IKS_OK;
+}
+/* END of LGPL code */
+#endif
+
 static int XmppStreamHook (Server *serv, int type, iks *node)
 {
     iksparser *prs = serv->xmpp_parser;
@@ -995,7 +1067,11 @@ static int XmppStreamHook (Server *serv, int type, iks *node)
                 else if (feat & IKS_STREAM_SASL_MD5)
                     iks_start_sasl (prs, IKS_SASL_DIGEST_MD5, serv->xmpp_id->user, serv->passwd);
                 else if (feat & IKS_STREAM_SASL_PLAIN)
+#if LIBIKS_VERSION < 0x0103 || defined(USE_AUTOPACKAGE)
+                    replace_iks_start_sasl (prs, serv->xmpp_id->user, serv->passwd);
+#else
                     iks_start_sasl (prs, IKS_SASL_PLAIN, serv->xmpp_id->user, serv->passwd);
+#endif
                 else
                 {
                     if (feat & (IKS_STREAM_BIND | IKS_STREAM_SESSION))
@@ -1031,7 +1107,8 @@ static int XmppStreamHook (Server *serv, int type, iks *node)
                 XmppStreamError (serv, "sasl authentication failed");
             else if (strcmp ("success", iks_name (node)) == 0)
                 iks_send_header (prs, serv->xmpp_id->server);
-            else {
+            else
+            {
                 ikspak *pak = iks_packet (node);
                 iks_filter_packet (serv->xmpp_filter, pak);
             }
@@ -1081,7 +1158,7 @@ static void XMPPCallbackDispatch (Connection *conn)
         }
     }
     rc = iks_recv (prs, 0);
-    if (rc != IKS_OK)
+    if (rc != IKS_OK && conn->dispatcher)
         XmppStreamError (conn->serv, s_sprintf ("failing with error code %d", rc));
 }
 
