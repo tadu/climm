@@ -86,6 +86,38 @@ const char *UtilIOErr (Connection *conn)
     return conn->dispatcher->funcs->f_err (conn, conn->dispatcher);
 }
 
+io_ssl_err_t UtilIOSSLSupported (void)
+{
+    io_ssl_err_t rcgnutls = IOGnuTLSSupported ();
+    io_ssl_err_t rcopenssl = rcgnutls == IO_SSL_OK ? IO_SSL_NOLIB : IOOpenSSLSupported ();
+
+    if (rcgnutls == IO_SSL_OK || rcopenssl == IO_SSL_OK)
+        return IO_SSL_OK;
+    if (rcgnutls != IO_SSL_NOLIB)
+    {
+        rl_printf (i18n (2374, "SSL error: %s [%d]\n"), IOGnuTLSInitError (), 0);
+        rl_printf (i18n (2371, "SSL init failed.\n"));
+    }
+    if (rcopenssl == IO_SSL_INIT)
+    {
+        rl_printf (i18n (2374, "SSL error: %s [%d]\n"), IOOpenSSLInitError (), 0);
+        rl_printf (i18n (2371, "SSL init failed.\n"));
+    }
+    else
+        rl_printf (i18n (2581, "Install the GnuTLS library and enjoy encrypted connections to peers!\n"));
+    return IO_SSL_NOLIB;
+}
+
+io_ssl_err_t UtilIOSSLOpen (Connection *conn, char is_client)
+{
+    if (IOGnuTLSSupported () == IO_SSL_OK)
+        return IOGnuTLSOpen (conn, is_client);
+    else if (IOOpenSSLSupported () == IO_SSL_OK)
+        return IOOpenSSLOpen (conn, is_client);
+    else
+        return IO_SSL_NOLIB;
+}
+
 io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
 {
     int e = errno;

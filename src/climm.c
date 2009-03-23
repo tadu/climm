@@ -44,8 +44,6 @@
 #include "util_parse.h"
 #include "remote.h"
 #include "os.h"
-#include "io/io_gnutls.h"
-#include "io/io_openssl.h"
 
 #define CLIMM_ICON_1 "   " GREEN "_" SGR0 "     "
 #define CLIMM_ICON_2 " " GREEN "_/ \\_" SGR0 "   "
@@ -473,26 +471,7 @@ static void Init (int argc, char *argv[])
     TabInit ();
 
 #ifdef ENABLE_SSL
-    {
-        io_ssl_err_t rcgnutls = IOGnuTLSSupported ();
-        io_ssl_err_t rcopenssl = rcgnutls == IO_SSL_OK ? IO_SSL_NOLIB : IOOpenSSLSupported ();
-        
-        if (rcgnutls != IO_SSL_OK && rcopenssl != IO_SSL_OK)
-        {
-            if (rcgnutls == IO_SSL_INIT)
-            {
-                rl_printf (i18n (2374, "SSL error: %s [%d]\n"), IOGnuTLSInitError (), 0);
-                rl_printf (i18n (2371, "SSL init failed.\n"));
-            }
-            else if (rcopenssl == IO_SSL_INIT)
-            {
-                rl_printf (i18n (2374, "SSL error: %s [%d]\n"), IOOpenSSLInitError (), 0);
-                rl_printf (i18n (2371, "SSL init failed.\n"));
-            }
-            else
-                rl_printf (i18n (2581, "Install the GnuTLS library and enjoy encrypted connections to peers!\n"));
-        }
-    }
+    UtilIOSSLSupported ();
 #endif
 
 #ifdef ENABLE_OTR

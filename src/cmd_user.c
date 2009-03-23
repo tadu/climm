@@ -49,8 +49,6 @@
 #include "util_alias.h"
 #include "util_otr.h"
 #include "xmpp_base.h"
-#include "io/io_gnutls.h"
-#include "io/io_openssl.h"
 
 #define MAX_STR_BUF 256                 /* buffer length for history */
 #define DEFAULT_HISTORY_COUNT 10        /* count of last messages of history */
@@ -1234,7 +1232,7 @@ static JUMP_F(CmdUserPeer)
                 break;
 #ifdef ENABLE_SSL
             case 8:
-                if (IOGnuTLSSupported () == IO_SSL_OK || IOOpenSSLSupported () == IO_SSL_OK)
+                if (UtilIOSSLSupported () == IO_SSL_OK)
                     for (i = 0; (cont = ContactIndex (cg, i)); i++)
                         TCPSendSSLReq (list, cont);
                 break;

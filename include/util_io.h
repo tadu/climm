@@ -50,6 +50,9 @@ io_err_t    UtilIOWrite  (Connection *conn, const char *buf, size_t count);
 void        UtilIOClose  (Connection *conn);
 const char *UtilIOErr    (Connection *conn);
 
+io_ssl_err_t UtilIOSSLSupported (void);
+io_ssl_err_t UtilIOSSLOpen (Connection *conn, char is_client);
+
 strc_t  UtilIOReadline   (FILE *fd);
 
 io_err_t UtilIOShowError (Connection *conn, io_err_t rc);
