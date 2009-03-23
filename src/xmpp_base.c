@@ -970,74 +970,24 @@ static int XmppBindResult (Server *serv, ikspak *pak)
     return IKS_FILTER_EAT;
 }
 
-#if LIBIKS_VERSION < 0x0103 || defined(USE_AUTOPACKAGE)
-/* iksemel (XML parser for Jabber)
-** Copyright (C) 2000-2003 Gurer Ozen <madcat@e-kolay.net>
-** This code is free software; you can redistribute it and/or
-** modify it under the terms of GNU Lesser General Public License.
-*/
-/* copied from libiksemel 1.3 src/base64.c */
-static const char base64_charset[] =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-char *replace_iks_base64_encode(const char *buf, int len)
+#if LIBIKS_VERSION < 0x0103 || defined(ENABLE_AUTOPACKAGE)
+char *base64_encode (const char *data, int count)
 {
-    char *res, *save;
-    int k, t;
-
-    len = (len > 0) ? (len) : (iks_strlen(buf));
-    save = res = iks_malloc((len*8) / 6 + 4);
-    if (!save) return NULL;
-
-    for (k = 0; k < len/3; ++k) {
-        *res++ = base64_charset[*buf >> 2];
-        t = ((*buf & 0x03) << 4);
-        buf++;
-        *res++ = base64_charset[t | (*buf >> 4)];
-        t = ((*buf & 0x0F) << 2);
-        buf++;
-        *res++ = base64_charset[t | (*buf >> 6)];
-        *res++ = base64_charset[*buf++ & 0x3F];
-    }
-
-    switch (len % 3) {
-        case 2:
-            *res++ = base64_charset[*buf >> 2];
-            t =  ((*buf & 0x03) << 4);
-            buf++;
-            *res++ = base64_charset[t | (*buf >> 4)];
-            *res++ = base64_charset[((*buf++ & 0x0F) << 2)];
-            *res++ = '=';
-            break;
-        case 1:
-            *res++ = base64_charset[*buf >> 2];
-            *res++ = base64_charset[(*buf++ & 0x03) << 4];
-            *res++ = '=';
-            *res++ = '=';
-            break;
-    }
-    *res = 0;
-    return save;
-}
-/* copied from libiksemel 1.3 src/streams.c */
-int replace_iks_start_sasl (iksparser *prs, char *username, char *pass)
-{
-    iks *x;
-    int len = iks_strlen (username) + iks_strlen (pass) + 2;
-    char *s = iks_malloc (80+len);
-    char *base64;
-
-    x = iks_new ("auth");
-    iks_insert_attrib (x, "xmlns", IKS_NS_XMPP_SASL);
-    iks_insert_attrib (x, "mechanism", "PLAIN");
-    sprintf (s, "%c%s%c%s", 0, username, 0, pass);
-    base64 = replace_iks_base64_encode (s, len);
-    iks_insert_cdata (x, base64, 0);
+    char *base64 = iks_base64_encode (data, count);
+    char *b64 = strdup (base64);
+    int len = strlen (b64);
     iks_free (base64);
-    iks_free (s);
-    iks_send (prs, x);
-    iks_delete (x);
-    return IKS_OK;
+    while ((len % 3) && b64[len - 1] == '=')
+      len--;
+    b64[len] = 0;
+    return b64;
+}
+
+void replace_iks_start_sasl (iksparser *prs, char *user, char *password)
+{
+    char *base64 = base64_encode (s_sprintf ("%c%s%c%s", 0, user, 0, password), strlen (user) + strlen (password) + 2);
+    iks_send_raw (prs, s_sprintf ("<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\">%s</auth>", base64));
+    free (base64);
 }
 /* END of LGPL code */
 #endif
