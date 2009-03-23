@@ -417,6 +417,12 @@ static io_err_t io_tcp_connecting (Connection *conn, Dispatcher *d)
         EventD (QueueDequeue (conn, QUEUE_CON_TIMEOUT, 0));
         conn->connect |= CONNECT_SELECT_R;
         conn->connect &= ~CONNECT_SELECT_W & ~CONNECT_SELECT_X & ~CONNECT_SELECT_A;
+        if (d->outlen)
+        {
+            io_err_t rce = io_tcp_write (conn, d, NULL, 0);
+            if (rce != IO_OK)
+                return rce;
+        }
         return IO_CONNECTED;
     }
     assert(0);
@@ -485,7 +491,7 @@ static int io_tcp_read (Connection *conn, Dispatcher *d, char *buf, size_t count
     if (d->flags != FLAG_OPEN)
         return io_tcp_connecting (conn, d);
     
-    if (conn->connect & CONNECT_SELECT_W)
+    if (d->outlen)
     {
         rce = io_tcp_write (conn, d, NULL, 0);
         if (rce != IO_OK)
