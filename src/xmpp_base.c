@@ -144,7 +144,7 @@ Event *XMPPLogin (Server *serv)
     }
     if (!serv->conn->server)
         s_repl (&serv->conn->server, strchr (serv->screen, '@') + 1);
-    
+
     XMPPLogout (serv);
 
     s_repl (&serv->xmpp_stamp, "YYYYmmddHHMMSS");
@@ -173,6 +173,17 @@ Event *XMPPLogin (Server *serv)
                                   NULL, serv->conn->cont, NULL, &XMPPCallBackTimeout);
 
     UtilIOConnectTCP (serv->conn);
+
+    if (serv->conn->port == 443 || serv->conn->port == 5223)
+    {
+        io_ssl_err_t rce = UtilIOSSLOpen (serv->conn, 2);
+        if (rce != IO_SSL_OK)
+        {
+            XmppStreamError (serv, s_sprintf ("ssl error %d %s", rce, UtilIOErr (serv->conn)));
+            QueueDequeue2 (serv->conn, QUEUE_DEP_WAITLOGIN, 0, NULL);
+            return NULL;
+        }
+    }
     return event;
 }
 
@@ -189,7 +200,7 @@ static void XmppSaveLog (Server *serv, const char *text, size_t size, int in)
         DebugH (DEB_XMPPIN, "%s", data);
     else
         DebugH (DEB_XMPPOUT, "%s", data);
-    
+
     if (!ConnectionPrefVal (serv, CO_LOGSTREAM))
         return;
 
@@ -361,7 +372,7 @@ static void sendIqTimeReqs (Event *event)
 static int XmppHandleIqGmail (Server *serv, ikspak *pak)
 {
     iks *mb = find_with_ns_attrib (pak->x, "mailbox", "google:mail:notify");
-    
+
     if (!mb)
         return IKS_FILTER_PASS;
 
@@ -381,7 +392,7 @@ static int XmppHandleIqGmail (Server *serv, ikspak *pak)
         rl_printf (i18n (2739, "Found %d mails for %s.\n"), n, serv->xmpp_id->partial);
     if (!n)
         return IKS_FILTER_EAT;
-    
+
     iks *mb_c;
     const char *ntid = "";
     Contact *cont = serv->conn->cont;
@@ -465,7 +476,7 @@ static int XmppHandleIqDisco (Server *serv, ikspak *pak)
         iks_delete (x);
         return IKS_FILTER_EAT;
     }
-    
+
     return IKS_FILTER_PASS;
 }
 
@@ -758,7 +769,7 @@ static char XmppHandleXEP85 (Server *serv, iks *t, Contact *cfrom, iksid *from, 
 //        CheckInvalid (address);
         ret = 1;
     }
-    
+
     if ((ch = find_with_ns_attrib (t, "active", "http://jabber.org/protocol/chatstates")))
     {
 //        CheckInvalid (active);
@@ -888,7 +899,7 @@ static int XmppHandlePresence (Server *serv, ikspak *pak)
     else if (pak->show == IKS_SHOW_XA)        status = ims_na;
     else if (pak->show == IKS_SHOW_AVAILABLE) status = ims_online;
     else assert (0);
-    
+
     IMOnline (contr, status, imf_none, pak->show, iks_find_cdata (pak->x, "status"));
     return IKS_FILTER_EAT;
 }
@@ -914,7 +925,7 @@ static void XmppLoggedIn (Server *serv)
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleMessage, serv, IKS_RULE_TYPE, IKS_PAK_MESSAGE, IKS_RULE_DONE);
 
     serv->conn->connect = CONNECT_OK | CONNECT_SELECT_R;
-    
+
     XMPPSetstatus (serv, NULL, serv->status, serv->conn->cont->status_message);
 
     iks *x = iks_make_iq (IKS_TYPE_GET, IKS_NS_ROSTER);
@@ -922,10 +933,10 @@ static void XmppLoggedIn (Server *serv)
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqRoster, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_RESULT, IKS_RULE_NS, IKS_NS_ROSTER, IKS_RULE_DONE);
-                                                                    
+
     QueueEnqueueData2 (serv->conn, QUEUE_SRV_KEEPALIVE, 0, 300, NULL, &sendIqTimeReqs, NULL);
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqTime, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_NS, "urn:xmpp:time", IKS_RULE_DONE);
-    
+
     x = iks_make_iq (IKS_TYPE_GET, "http://jabber.org/protocol/disco#info");
     iks_insert_attrib (x, "id", s_sprintf ("disco-%s-%x", serv->xmpp_stamp, serv->xmpp_sequence++));
     iks_insert_attrib (x, "to", serv->xmpp_id->server);
@@ -935,7 +946,7 @@ static void XmppLoggedIn (Server *serv)
 
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqXEP92, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_NS, "jabber:iq:version", IKS_RULE_DONE);
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqXEP12, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_NS, "jabber:iq:last", IKS_RULE_DONE);
-    
+
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDefault, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_DONE);
 }
 
@@ -1082,7 +1093,7 @@ static void XMPPCallbackDispatch (Connection *conn)
             case IO_RW:
             case IO_OK:
                 return;
-            case IO_CONNECTED: 
+            case IO_CONNECTED:
                 rl_print ("");
                 if (prG->verbose || (conn->serv && conn == conn->serv->conn))
                     if (rl_pos () > 0)
@@ -1176,7 +1187,7 @@ UBYTE XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
         return RET_DEFER;
     if (msg->type != MSG_NORM)
         return RET_DEFER;
-    
+
     iks *x = iks_make_msg (IKS_TYPE_CHAT, cont->screen, msg->send_message);
     iks_insert_attrib (x, "id", s_sprintf ("xmpp-%s-%x", serv->xmpp_stamp, ++serv->xmpp_sequence));
     iks_insert_attrib (x, "from", serv->xmpp_id->full);
@@ -1431,7 +1442,7 @@ void CLIMMXMPP::handleMessage (gloox::Stanza *s)
 {
     assert (s);
     assert (s->type() == gloox::StanzaMessage);
-    
+
 #if defined(LIBGLOOX_VERSION) && LIBGLOOX_VERSION >= 0x000900
     gloox::Stanza *t = new gloox::Stanza (s);
 #else
