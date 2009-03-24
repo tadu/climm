@@ -117,7 +117,10 @@ io_ssl_err_t IOGnuTLSSupported (void)
     {
         if ((ret = gnutls_dh_params_generate2 (dh_parm, DH_OFFER_BITS)))
             return io_gnutls_seterr (IO_SSL_INIT, ret, "DH param generate2 (server)");
-    } else
+    }
+#if defined(ENABLE_AUTOPACKAGE)
+    else
+#endif
 #endif
 #if !HAVE_DH_GENPARAM2 || ENABLE_AUTOPACKAGE
     {
@@ -203,36 +206,76 @@ static ssize_t io_gnutls_push (gnutls_transport_ptr_t user_data, const void *buf
     else                       return -1;
 }
 
+#if 0
+void io_gnutls_log (int level, const char *data)
+{
+    DebugH (DEB_SSL, "level %d text %s\n", level, data);
+}
+#endif
+
 /*
  */
 static void io_gnutls_open (Connection *conn, Dispatcher *d, char is_client)
 {
     int ret;
-    int kx_prio[2] = { GNUTLS_KX_ANON_DH, 0 };
-    
     DebugH (DEB_SSL, "ssl_connect %d", is_client);
 
     conn->ssl_status = SSL_STATUS_HANDSHAKE;
     ret = gnutls_init (&d->ssl, is_client ? GNUTLS_CLIENT : GNUTLS_SERVER);
     if (ret)
-        return io_gnutls_setconnerr (d, IO_SSL_INIT, ret, is_client ? "failed init (client)" : "failend init (server)");
-        
-    gnutls_set_default_priority (d->ssl);
-    gnutls_kx_set_priority (d->ssl, kx_prio);
+        return io_gnutls_setconnerr (d, IO_SSL_INIT, ret, is_client ? "failed init (client)" : "failed init (server)");
 
-    if (is_client)
-        ret = gnutls_credentials_set (d->ssl, GNUTLS_CRD_ANON, client_cred);
+#if LIBGNUTLS_VERSION_NUMBER >= 0x020400
+    if (libgnutls_symbol_is_present ("gnutls_priority_set_direct"))
+    {
+        ret = gnutls_priority_set_direct (d->ssl, "NORMAL:+ANON-DH", NULL);
+        if (ret)
+            return io_gnutls_setconnerr (d, IO_SSL_INIT, ret, is_client ? "failed prio (client)" : "failed prio (server)");
+    }
+#if defined(ENABLE_AUTOPACKAGE)
     else
+#endif
+#endif
+#if LIBGNUTLS_VERSION_NUMBER <= 0x020400 || defined (ENABLE_AUTOPACKAGE)
+    {
+        const int kx_prio[] = { GNUTLS_KX_RSA, GNUTLS_KX_ANON_DH, 0 };
+
+        ret = gnutls_set_default_priority (d->ssl);
+        if (ret)
+            return io_gnutls_setconnerr (d, IO_SSL_INIT, ret, is_client ? "failed def prio (client)" : "failed def prio (server)");
+
+        ret = gnutls_kx_set_priority (d->ssl, is_client != 2 ? kx_prio + 1: kx_prio);
+        if (ret)
+            return io_gnutls_setconnerr (d, IO_SSL_INIT, ret, is_client ? "failed key prio (client)" : "failed key prio (server)");
+    }
+#endif
+
+    if (is_client == 2)
+    {
+        gnutls_certificate_allocate_credentials (&d->cred);
+        ret = gnutls_credentials_set (d->ssl, GNUTLS_CRD_CERTIFICATE, &d->cred);
+    }
+    else if (is_client == 1)
+        ret = gnutls_credentials_set (d->ssl, GNUTLS_CRD_ANON, client_cred);
+    else if (is_client == 0)
         ret = gnutls_credentials_set (d->ssl, GNUTLS_CRD_ANON, server_cred);
+    else
+        assert (0);
     if (ret)
         return io_gnutls_setconnerr (d, IO_SSL_INIT, ret, is_client ? "credentials_set (client)" : "credentials_set (server)");
 
     /* reduce minimal prime bits expected for licq interoperability */
-    gnutls_dh_set_prime_bits (d->ssl, is_client ? DH_EXPECT_BITS : DH_OFFER_BITS);
+    if (!is_client)
+        gnutls_dh_set_prime_bits (d->ssl, is_client ? DH_EXPECT_BITS : DH_OFFER_BITS);
 
     gnutls_transport_set_ptr (d->ssl, d);
     gnutls_transport_set_pull_function (d->ssl, &io_gnutls_pull);
     gnutls_transport_set_push_function (d->ssl, &io_gnutls_push);
+    
+#if 0
+    gnutls_global_set_log_function (io_gnutls_log);
+    gnutls_global_set_log_level (10);
+#endif
 }
 
 static io_err_t io_gnutls_connecting (Connection *conn, Dispatcher *d)
