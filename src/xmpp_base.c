@@ -1023,8 +1023,8 @@ static int XmppStreamHook (Server *serv, int type, iks *node)
             if (!strcmp ("stream:features", iks_name (node)))
             {
                 int feat = iks_stream_features (node);
-                if (feat & IKS_STREAM_STARTTLS && !iks_is_secure (prs))
-                    iks_start_tls (prs);
+                if (feat & IKS_STREAM_STARTTLS && UtilIOSSLSupported() == IO_SSL_OK)
+                    iks_send_raw (prs, "<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"/>");
                 else if (feat & IKS_STREAM_SASL_MD5)
                     iks_start_sasl (prs, IKS_SASL_DIGEST_MD5, serv->xmpp_id->user, serv->passwd);
                 else if (feat & IKS_STREAM_SASL_PLAIN)
@@ -1068,6 +1068,17 @@ static int XmppStreamHook (Server *serv, int type, iks *node)
                 XmppStreamError (serv, "sasl authentication failed");
             else if (strcmp ("success", iks_name (node)) == 0)
                 iks_send_header (prs, serv->xmpp_id->server);
+            else if (strcmp ("proceed", iks_name (node)) == 0)
+            {
+                io_ssl_err_t rce = UtilIOSSLOpen (serv->conn, 2);
+                if (rce != IO_SSL_OK)
+                {
+                    XmppStreamError (serv, s_sprintf ("ssl error %d %s", rce, UtilIOErr (serv->conn)));
+                    return IKS_NET_RWERR;
+                }
+                serv->conn->connect &= ~CONNECT_OK & ~4;
+                return IKS_OK;
+            }
             else
             {
                 ikspak *pak = iks_packet (node);
@@ -1098,13 +1109,15 @@ static void XMPPCallbackDispatch (Connection *conn)
                 if (prG->verbose || (conn->serv && conn == conn->serv->conn))
                     if (rl_pos () > 0)
                          rl_print (i18n (1634, "ok.\n"));
-                prs = iks_stream_new (IKS_NS_CLIENT, conn->serv, &XmppStreamHook);
 
+                if (!conn->serv->xmpp_parser)
+                {
+                prs = iks_stream_new (IKS_NS_CLIENT, conn->serv, &XmppStreamHook);
                 conn->serv->xmpp_id = iks_id_new (iks_parser_stack (prs), conn->serv->screen);
                 if (!conn->serv->xmpp_id->resource)
                     conn->serv->xmpp_id = iks_id_new (iks_parser_stack (prs), s_sprintf ("%s@%s/%s", conn->serv->xmpp_id->user, conn->serv->xmpp_id->server, "iks"));
                 iks_set_log_hook (prs, XmppSaveLog);
-                assert  (!conn->serv->xmpp_parser);
+                }
                 conn->serv->xmpp_parser = prs;
                 rc = iks_connect_with (prs, conn->server, conn->port, conn->serv->xmpp_id->server, &iks_climm_transport);
                 if (rc != IKS_OK)
