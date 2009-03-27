@@ -68,12 +68,12 @@ util_md5ctx_t *util_md5_init ()
         gcry_error_t err = gcry_md_open (&ctx->h, GCRY_MD_MD5, 0);
         if (!gcry_err_code (err))
             return ctx;
-        ctx->usegnutls = 0;
     }
 #endif
 #if ENABLE_OPENSSL
     if (libopenssl_is_present)
     {
+        ctx->usegnutls = 0;
         MD5_Init (&ctx->ctx);
         return ctx;
     }
