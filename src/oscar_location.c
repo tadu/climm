@@ -85,7 +85,7 @@ void SnacCliSetuserinfo (Server *serv)
     
     pak = SnacC (serv, 2, 4, 0, 0);
     PacketWriteTLV     (pak, 5);
-    PacketWriteCapID   (pak, CAP_ISICQ);
+    PacketWriteCapID   (pak, CAP_REVCONNREQ);
     PacketWriteCapID   (pak, CAP_SRVRELAY);
     PacketWriteCapID   (pak, CAP_UTF8);
     PacketWriteCapID   (pak, CAP_AIM_INTER);

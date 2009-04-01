@@ -489,7 +489,7 @@ void IMCallBackReconn (Connection *conn)
         cont->status = ims_offline;
 }
 
-void  IMConnOpen (Connection *conn)
+void IMConnOpen (Connection *conn)
 {
     if      (conn->type == TYPE_REMOTE)    ScriptingOpen (conn);
     else if (conn->type == TYPE_MSGDIRECT) ConnectionInitPeer (conn);

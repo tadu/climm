@@ -1219,17 +1219,17 @@ UBYTE PeerSendMsgFat (Connection *list, Contact *cont, Message *msg)
     assert (msg->cont == cont);
     assert (msg->send_message);
 
-    if (!cont->dc || !cont->dc->port)
-    {
-        SnacCliSendIP (list->serv, cont);
-        return RET_DEFER;
-    }
     if (!cont->uin)
         return RET_DEFER;
     if (cont->uin == list->serv->oscar_uin || !(list->connect & CONNECT_MASK))
         return RET_DEFER;
-    if (!cont->dc->ip_loc && !cont->dc->ip_rem)
+    
+    if (!cont->dc || !cont->dc->port || (!cont->dc->ip_loc && !cont->dc->ip_rem))
+    {
+        if (HAS_CAP (cont->caps, CAP_REVCONNREQ))
+            SnacCliSendIP (list->serv, cont);
         return RET_DEFER;
+    }
 
     switch (msg->type & 0xff)
     {
@@ -1250,7 +1250,14 @@ UBYTE PeerSendMsgFat (Connection *list, Contact *cont, Message *msg)
 
     if ((peer = ServerFindChild (list->serv, cont, TYPE_MSGDIRECT)))
         if (peer->connect & CONNECT_FAIL)
+        {
+            if (HAS_CAP (cont->caps, CAP_REVCONNREQ) && ~peer->connect & 1)
+            {
+                SnacCliSendIP (list->serv, cont);
+                peer->connect |= 1;
+            }
             return RET_DEFER;
+        }
 
     if (!peer || ~peer->connect & CONNECT_OK)
     {

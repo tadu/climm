@@ -423,7 +423,7 @@ void SnacCliSendIP (Server *serv, Contact *cont)
       PacketWrite2       (pak, 0);
       PacketWriteB4      (pak, mtime);
       PacketWriteB4      (pak, mid);
-      PacketWriteCapID   (pak, CAP_ISICQ);
+      PacketWriteCapID   (pak, CAP_REVCONNREQ);
       PacketWriteTLV2    (pak, 10, 1);
       PacketWriteB4      (pak, 0x000f0000); /* empty TLV(15) */
       PacketWriteTLV     (pak, 10001);
@@ -567,7 +567,7 @@ UBYTE SnacCliSendmsg (Server *serv, Contact *cont, UBYTE format, Message *msg)
             case MSG_GET_VER:
                 break;
             default:
-                if (!HAS_CAP (cont->caps, CAP_SRVRELAY) || !HAS_CAP (cont->caps, CAP_ISICQ))
+                if (!HAS_CAP (cont->caps, CAP_SRVRELAY) || !HAS_CAP (cont->caps, CAP_REVCONNREQ))
                     return RET_DEFER;
         }
     }
@@ -790,7 +790,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
             
             switch (cap1->id)
             {
-                case CAP_ISICQ:
+                case CAP_REVCONNREQ:
                     if (tlv[i].str.len != 0x1b)
                     {
                         SnacSrvUnknown (event);
@@ -803,18 +803,10 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                         UDWORD sip  = PacketReadB4 (pp);
                         UDWORD sp1  = PacketRead4  (pp);
                         UBYTE  scon = PacketRead1  (pp);
-#ifdef WIP
                         UDWORD sop  = PacketRead4  (pp);
                         UDWORD sp2  = PacketRead4  (pp);
                         UWORD  sver = PacketRead2  (pp);
                         UDWORD sunk = PacketRead4  (pp);
-#else
-                        UWORD sver;
-                               PacketRead4  (pp);
-                               PacketRead4  (pp);
-                        sver = PacketRead2  (pp);
-                               PacketRead4  (pp);
-#endif
                         if (suin != cont->uin)
                         {
                             SnacSrvUnknown (event);
@@ -822,11 +814,13 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                             return;
                         }
                         
-#ifdef WIP
-                        rl_log_for (cont->nick, COLCONTACT);
-                        rl_printf ("FIXMEWIP: updates dc to %s:%ld|%ld|%ld v%d %d seq %ld\n",
-                                  s_ip (sip), UD2UL (sp1), UD2UL (sp2), UD2UL (sop), sver, scon, UD2UL (sunk));
-#endif
+                        if (prG->verbose)
+                        {
+                            rl_log_for (cont->nick, COLCONTACT);
+                            rl_printf (i18n (9999, "Requests reverse connection to %s.\n"),
+                                s_sprintf ("%s:%ld|%ld|%ld v%d %d seq %ld\n",
+                                    s_ip (sip), UD2UL (sp1), UD2UL (sp2), UD2UL (sop), sver, scon, UD2UL (sunk)));
+                        }
                         CONTACT_DC (cont)->ip_rem = sip;
                         cont->dc->port = sp1;
                         cont->dc->type = scon;

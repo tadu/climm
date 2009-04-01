@@ -55,7 +55,7 @@ static Cap caps[CAP_MAX] =
     /* AIM capabilities */
     { CAP_AIM_VOICE,   16, cap_aim "\x41" cap_mid cap_id,       "CAP_AIM_VOICE",   NULL },
     { CAP_AIM_SFILE,   16, cap_aim "\x43" cap_mid cap_id,       "CAP_AIM_SFILE",   NULL },
-    { CAP_ISICQ,       16, cap_aim "\x44" cap_mid cap_id,       "CAP_ISICQ",       NULL },
+    { CAP_REVCONNREQ,  16, cap_aim "\x44" cap_mid cap_id,       "CAP_REVCONNREQ",  NULL },
     { CAP_AIM_IMIMAGE, 16, cap_aim "\x45" cap_mid cap_id,       "CAP_AIM_IMIMAGE", NULL },
     { CAP_AIM_BUDICON, 16, cap_aim "\x46" cap_mid cap_id,       "CAP_AIM_BUDICON", NULL },
     { CAP_AIM_STOCKS,  16, cap_aim "\x47" cap_mid cap_id,       "CAP_AIM_STOCKS",  NULL },
