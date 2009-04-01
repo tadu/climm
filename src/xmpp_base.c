@@ -465,6 +465,8 @@ static int XmppHandleIqDisco (Server *serv, ikspak *pak)
         iks *f = iks_insert (q, "feature");
         iks_insert_attrib (f, "var", "http://jabber.org/protocol/disco#info");
              f = iks_insert (q, "feature");
+        iks_insert_attrib (f, "var", "http://jabber.org/protocol/chatstates");
+             f = iks_insert (q, "feature");
         iks_insert_attrib (f, "var", "jabber:iq:version");
              f = iks_insert (q, "feature");
         iks_insert_attrib (f, "var", "jabber:iq:last");
@@ -509,7 +511,7 @@ static int XmppHandleIqXEP92 (Server *serv, ikspak *pak)
         iks *q = iks_insert (x, "query");
         iks_insert_attrib (q, "xmlns", "jabber:iq:version");
         iks_insert_cdata (iks_insert (q, "name"), "climm", 0);
-        iks_insert_cdata (iks_insert (q, "version"), s_sprintf ("%s [iksemel]", BuildVersionStr), 0);
+        iks_insert_cdata (iks_insert (q, "version"), BuildVersionStr, 0);
         iks_insert_cdata (iks_insert (q, "os"), BuildPlatformStr, 0);
         iks_send (serv->xmpp_parser, x);
         iks_delete (x);
@@ -708,7 +710,7 @@ static void XmppHandleXEP22a (Server *serv, iks *x, Contact *cfrom)
 
 static void XmppHandleXEP22c (Server *serv, iksid *from, char *tof, char *id, char *type)
 {
-    iks *msg  = iks_make_msg (IKS_TYPE_CHAT, tof, NULL);
+    iks *msg  = iks_make_msg (IKS_TYPE_NONE, tof, NULL);
     iks_insert_attrib (msg, "id", s_sprintf ("ack-%s-%x", serv->xmpp_stamp, ++serv->xmpp_sequence));
     iks *x = iks_insert (msg, "x");
     iks_insert_attrib (x, "xmlns", "jabber:x:event");
