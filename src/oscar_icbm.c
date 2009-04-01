@@ -816,10 +816,12 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                         
                         if (prG->verbose)
                         {
+                            char *ip = strdup (s_ip (sip));
                             rl_log_for (cont->nick, COLCONTACT);
-                            rl_printf (i18n (9999, "Requests reverse connection to %s.\n"),
-                                s_sprintf ("%s:%ld|%ld|%ld v%d %d seq %ld\n",
-                                    s_ip (sip), UD2UL (sp1), UD2UL (sp2), UD2UL (sop), sver, scon, UD2UL (sunk)));
+                            rl_printf (i18n (9999, "Incoming reverse connection request to %s.\n"),
+                                s_sprintf ("%s:%ld|%ld|%ld v%d %d seq %ld",
+                                    ip, UD2UL (sp1), UD2UL (sp2), UD2UL (sop), sver, scon, UD2UL (sunk)));
+                            free (ip);
                         }
                         CONTACT_DC (cont)->ip_rem = sip;
                         cont->dc->port = sp1;
@@ -828,6 +830,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                     }
                     PacketD (pp);
                     TLVD (tlv);
+                    TCPDirectOpen (serv->oscar_dc, cont);
                     return;
 
                 case CAP_SRVRELAY:
