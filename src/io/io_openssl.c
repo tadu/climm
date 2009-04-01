@@ -199,6 +199,11 @@ io_ssl_err_t IOOpenSSLOpen (Connection *conn, char is_client)
     if (!io_openssl_init_ok)
         return IO_SSL_NOLIB;
 
+    /* hack:      disallow SSL if we use proxy since we do not
+       %%FIXME%%  have pull/push functions for OpenSSL yet */
+    if (conn->dispatcher->next)
+        return IO_SSL_NOLIB;
+
     conn->connect |= CONNECT_SELECT_A;
     d->next = conn->dispatcher;
     conn->dispatcher = d;
