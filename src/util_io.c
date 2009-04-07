@@ -60,17 +60,23 @@ void UtilIOListenTCP  (Connection *conn)
 
 int UtilIOAccept (Connection *conn, Connection *newc)
 {
-    return conn->dispatcher->funcs->f_accept (conn, conn->dispatcher, newc);
+    if (conn && conn->dispatcher && conn->dispatcher->funcs && conn->dispatcher->funcs && conn->dispatcher->funcs->f_accept)
+        return conn->dispatcher->funcs->f_accept (conn, conn->dispatcher, newc);
+    return IO_NO_CONN;
 }
 
 int UtilIORead (Connection *conn, char *buf, size_t count)
 {
-    return conn->dispatcher->funcs->f_read (conn, conn->dispatcher, buf, count);
+    if (conn && conn->dispatcher && conn->dispatcher->funcs && conn->dispatcher->funcs && conn->dispatcher->funcs->f_read)
+        return conn->dispatcher->funcs->f_read (conn, conn->dispatcher, buf, count);
+    return IO_NO_CONN;
 }
 
 io_err_t UtilIOWrite (Connection *conn, const char *buf, size_t count)
 {
-    return conn->dispatcher->funcs->f_write (conn, conn->dispatcher, buf, count);
+    if (conn && conn->dispatcher && conn->dispatcher->funcs && conn->dispatcher->funcs && conn->dispatcher->funcs->f_write)
+        return conn->dispatcher->funcs->f_write (conn, conn->dispatcher, buf, count);
+    return IO_NO_CONN;
 }
 
 void UtilIOClose (Connection *conn)
