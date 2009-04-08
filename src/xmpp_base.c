@@ -1097,7 +1097,6 @@ static void XMPPCallbackDispatch (Connection *conn)
     io_err_t rce;
     int rc;
 
-    assert (conn->sok >= 0);
     if (!(conn->connect & (CONNECT_OK | 4)))
     {
         rc = UtilIORead (conn, NULL, 0);
