@@ -248,7 +248,7 @@ static void io_tcp_open (Connection *conn, Dispatcher *d)
 
     sin.sin_family = AF_INET;
     sin.sin_port = htons (conn->port);
-
+    
     if (conn->server)
         conn->ip = htonl (inet_addr (conn->server));
     if (conn->ip + 1 == 0 && conn->server)
@@ -606,28 +606,6 @@ static int io_tcp_read (Connection *conn, Dispatcher *d, char *buf, size_t count
     return IO_RW;
 }
 
-static io_err_t io_tcp_appendbuf (Connection *conn, Dispatcher *d, const char *buf, size_t count)
-{
-    char *newbuf;
-    conn->connect |= CONNECT_SELECT_W;
-    DebugH (DEB_TCP, "conn %p append %d to %d", conn, count, d->outlen);
-    if (!count)
-        return IO_OK;
-    if (d->outlen)
-        newbuf = realloc (d->outbuf, d->outlen + count);
-    else
-        newbuf = malloc (count);
-    if (!newbuf)
-    {
-        s_repl (&d->lasterr, "");
-        return IO_NO_MEM;
-    }
-    memcpy (newbuf + d->outlen, buf, count);
-    d->outlen += count;
-    d->outbuf = newbuf;
-    return IO_OK;
-}
-
 static io_err_t io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, size_t len)
 {
     int rc;
@@ -635,7 +613,7 @@ static io_err_t io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, 
     DebugH (DEB_TCP, "conn %p write", conn);
     
     if (d->flags != FLAG_OPEN)
-        return io_tcp_appendbuf (conn, d, buf, len);
+        return io_any_appendbuf (conn, d, buf, len);
 
     if (d->outlen)
     {
@@ -664,7 +642,7 @@ static io_err_t io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, 
             memmove (d->outbuf, d->outbuf + rc, d->outlen - rc);
             DebugH (DEB_TCP, "conn %p write buf done %d of %d", conn, rc, d->outlen);
             d->outlen -= rc;
-            return io_tcp_appendbuf (conn, d, buf, len);
+            return io_any_appendbuf (conn, d, buf, len);
         }
     }
     if (len > 0)
@@ -695,7 +673,7 @@ static io_err_t io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, 
     }
     if (len <= 0)
         return IO_OK;
-    return io_tcp_appendbuf (conn, d, buf, len);
+    return io_any_appendbuf (conn, d, buf, len);
 }
 
 static void io_tcp_close (Connection *conn, Dispatcher *d)

@@ -347,32 +347,12 @@ static int io_gnutls_read (Connection *conn, Dispatcher *d, char *buf, size_t co
     return rc;
 }
 
-static io_err_t io_gnutls_appendbuf (Connection *conn, Dispatcher *d, const char *buf, size_t count)
-{
-    char *newbuf;
-    conn->connect |= CONNECT_SELECT_W;
-    if (d->outlen)
-        newbuf = realloc (d->outbuf, d->outlen + count);
-    else
-        newbuf = malloc (count);
-    if (!newbuf)
-    {
-        s_repl (&d->lasterr, "");
-        return IO_NO_MEM;
-    }
-    DebugH (DEB_SSL, "write saving %d to %d", count, d->outlen);
-    memcpy (newbuf + d->outlen, buf, count);
-    d->outlen += count;
-    d->outbuf = newbuf;
-    return IO_OK;
-}
-
 static io_err_t io_gnutls_write (Connection *conn, Dispatcher *d, const char *buf, size_t len)
 {
     int rc = 0;
     
     if (conn->ssl_status != SSL_STATUS_OK)
-        return io_gnutls_appendbuf (conn, d, buf, len);
+        return io_any_appendbuf (conn, d, buf, len);
 
     if (d->outlen)
     {
@@ -384,7 +364,7 @@ static io_err_t io_gnutls_write (Connection *conn, Dispatcher *d, const char *bu
             return IO_RW;
         }
         if (rc < 0)
-            return io_gnutls_appendbuf (conn, d, buf, len);
+            return io_any_appendbuf (conn, d, buf, len);
         if (rc >= d->outlen)
         {
             d->outlen = 0;
@@ -394,7 +374,7 @@ static io_err_t io_gnutls_write (Connection *conn, Dispatcher *d, const char *bu
         } else {
             memmove (d->outbuf, d->outbuf + rc, len - rc);
             d->outlen -= rc;
-            return io_gnutls_appendbuf (conn, d, buf, len);
+            return io_any_appendbuf (conn, d, buf, len);
         }
     }
 
@@ -415,7 +395,7 @@ static io_err_t io_gnutls_write (Connection *conn, Dispatcher *d, const char *bu
     }
     if (len <= 0)
         return IO_OK;
-    return io_gnutls_appendbuf (conn, d, buf, len);
+    return io_any_appendbuf (conn, d, buf, len);
 }
 
 static void io_gnutls_close (Connection *conn, Dispatcher *d)

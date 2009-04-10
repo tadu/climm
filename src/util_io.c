@@ -79,6 +79,29 @@ io_err_t UtilIOWrite (Connection *conn, const char *buf, size_t count)
     return IO_NO_CONN;
 }
 
+io_err_t io_any_appendbuf (Connection *conn, Dispatcher *d, const char *buf, size_t count)
+{
+    char *newbuf;
+    conn->connect |= CONNECT_SELECT_W;
+    DebugH (DEB_TCP, "conn %p append %d to %d", conn, count, d->outlen);
+    if (!count)
+        return IO_OK;
+    if (d->outlen)
+        newbuf = realloc (d->outbuf, d->outlen + count);
+    else
+        newbuf = malloc (count);
+    if (!newbuf)
+    {
+        s_repl (&d->lasterr, "");
+        return IO_NO_MEM;
+    }
+    memcpy (newbuf + d->outlen, buf, count);
+    d->outlen += count;
+    d->outbuf = newbuf;
+    return IO_OK;
+}
+
+
 void UtilIOClose (Connection *conn)
 {
     if (conn && conn->dispatcher && conn->dispatcher->funcs && conn->dispatcher->funcs->f_close)

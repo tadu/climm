@@ -13,6 +13,8 @@
 #include "io/io_gnutls.h"
 #include "io/io_openssl.h"
 
+io_err_t io_any_appendbuf (Connection *conn, Dispatcher *d, const char *buf, size_t count);
+
 typedef struct Conn_Func_s
 {
     int         (* const f_accept)(Connection *c, Dispatcher *d, Connection *newc);
