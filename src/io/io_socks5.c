@@ -44,26 +44,16 @@
 #include "io/io_socks5.h"
 
 static void        io_socks5_open  (Connection *c, Dispatcher *d);
+static io_err_t    io_socks5_connecting (Connection *conn, Dispatcher *d);
 static int         io_socks5_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
 static io_err_t    io_socks5_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
 static void        io_socks5_close (Connection *c, Dispatcher *d);
 static const char *io_socks5_err   (Connection *c, Dispatcher *d);
 static int         io_socks5_accept(Connection *c, Dispatcher *d, Connection *cn);
 
-enum io_socks5_dispatcher_flags {
-    FLAG_OPEN,
-    FLAG_CONNECTING,
-    FLAG_METHODS_SENT,
-    FLAG_SEND_CRED,
-    FLAG_CRED_SENT,
-    FLAG_SEND_REQ,
-    FLAG_REQ_SENT,
-    FLAG_SEND_REQ_NOPORT,
-    FLAG_REQ_NOPORT_SENT
-};
-
 static Conn_Func io_socks5_func = {
     NULL,
+    &io_socks5_connecting,
     &io_socks5_read,
     &io_socks5_write,
     &io_socks5_close,
@@ -72,6 +62,7 @@ static Conn_Func io_socks5_func = {
 
 static Conn_Func io_listen_socks5_func = {
     &io_socks5_accept,
+    &io_socks5_connecting,
     NULL,
     NULL,
     &io_socks5_close,

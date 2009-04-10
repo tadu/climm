@@ -105,6 +105,7 @@ static inline struct hostent *gethostbyname(const char *name)
 #define BACKLOG 10
 
 static void        io_tcp_open  (Connection *c, Dispatcher *d);
+static io_err_t    io_tcp_connecting (Connection *conn, Dispatcher *d);
 static int         io_tcp_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
 static io_err_t    io_tcp_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
 static void        io_tcp_close (Connection *c, Dispatcher *d);
@@ -113,16 +114,9 @@ static const char *io_tcp_err   (Connection *c, Dispatcher *d);
 static int   io_listen_tcp_accept(Connection *c, Dispatcher *d, Connection *cn);
 static void  io_listen_tcp_open  (Connection *c, Dispatcher *d);
 
-enum io_tcp_dispatcher_flags {
-    FLAG_OPEN,
-    FLAG_CONNECTED,
-    FLAG_CONNECTING,
-    FLAG_TIMEOUT,
-    FLAG_CLOSED
-};
-
 static Conn_Func io_tcp_func = {
     NULL,
+    &io_tcp_connecting,
     &io_tcp_read,
     &io_tcp_write,
     &io_tcp_close,
@@ -131,6 +125,7 @@ static Conn_Func io_tcp_func = {
 
 static Conn_Func io_listen_tcp_func = {
     &io_listen_tcp_accept,
+    &io_tcp_connecting,
     NULL,
     NULL,
     &io_tcp_close,

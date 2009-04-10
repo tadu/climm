@@ -60,6 +60,7 @@ io_ssl_err_t io_gnutls_init_ok = IO_SSL_UNINIT;
 #if ENABLE_GNUTLS
 
 static void         io_gnutls_open  (Connection *c, Dispatcher *d, char is_client);
+static io_err_t     io_gnutls_connecting (Connection *conn, Dispatcher *d);
 static int          io_gnutls_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
 static io_err_t     io_gnutls_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
 static void         io_gnutls_close (Connection *c, Dispatcher *d);
@@ -75,13 +76,9 @@ static gnutls_anon_client_credentials client_cred;
 static gnutls_anon_server_credentials server_cred;
 static gnutls_dh_params dh_parm;
 
-enum io_gnutls_dispatcher_flags {
-    FLAG_OK,
-    FLAG_TIMEOUT
-};
-
 static Conn_Func io_gnutls_func = {
     NULL,
+    &io_gnutls_connecting,
     &io_gnutls_read,
     &io_gnutls_write,
     &io_gnutls_close,

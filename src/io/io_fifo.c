@@ -72,20 +72,14 @@
 #if ENABLE_REMOTECONTROL
 
 static void        io_fifo_open  (Connection *c, Dispatcher *d);
+static io_err_t    io_fifo_connecting (Connection *conn, Dispatcher *d);
 static int         io_fifo_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
 static void        io_fifo_close (Connection *c, Dispatcher *d);
 static const char *io_fifo_err   (Connection *c, Dispatcher *d);
 
-enum io_fifo_dispatcher_flags {
-    FLAG_OPEN,
-    FLAG_CONNECTED,
-    FLAG_CONNECTING,
-    FLAG_TIMEOUT,
-    FLAG_CLOSED
-};
-
 static Conn_Func io_fifo_func = {
     NULL,
+    &io_fifo_connecting,
     &io_fifo_read,
     NULL,
     &io_fifo_close,

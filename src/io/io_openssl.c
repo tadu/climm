@@ -51,6 +51,7 @@ io_ssl_err_t io_openssl_init_ok = IO_SSL_UNINIT;
 #if ENABLE_OPENSSL
 
 static void         io_openssl_open  (Connection *c, Dispatcher *d, char is_client);
+static io_err_t     io_openssl_connecting (Connection *conn, Dispatcher *d);
 static int          io_openssl_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
 static io_err_t     io_openssl_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
 static void         io_openssl_close (Connection *c, Dispatcher *d);
@@ -67,13 +68,9 @@ static char        *io_openssl_lasterr = NULL;
 
 static SSL_CTX *gSSL_CTX;
 
-enum io_openssl_dispatcher_flags {
-    FLAG_OK,
-    FLAG_TIMEOUT
-};
-
 static Conn_Func io_openssl_func = {
     NULL,
+    &io_openssl_connecting,
     &io_openssl_read,
     &io_openssl_write,
     &io_openssl_close,
