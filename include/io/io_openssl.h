@@ -8,7 +8,7 @@ io_ssl_err_t IOOpenSSLOpen (Connection *conn, char is_client);
 const char  *IOOpenSSLInitError (void);
 #else
 #define IOOpenSSLSupported() IO_SSL_NOLIB
-#define IOOpenSSLOpen(c,i)
+#define IOOpenSSLOpen(c,i)   IO_SSL_NOLIB
 #define IOOpenSSLInitError(c) ""
 #endif
 

@@ -8,7 +8,7 @@ io_ssl_err_t IOGnuTLSOpen (Connection *conn, char is_client);
 const char  *IOGnuTLSInitError (void);
 #else
 #define IOGnuTLSSupported() IO_SSL_NOLIB
-#define IOGnuTLSOpen(c,i)
+#define IOGnuTLSOpen(c,i)   IO_SSL_NOLIB
 #define IOGnuTLSInitError(c) ""
 #endif
 
