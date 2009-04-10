@@ -60,22 +60,36 @@ void UtilIOListenTCP  (Connection *conn)
 
 int UtilIOAccept (Connection *conn, Connection *newc)
 {
-    if (conn && conn->dispatcher && conn->dispatcher->funcs && conn->dispatcher->funcs && conn->dispatcher->funcs->f_accept)
-        return conn->dispatcher->funcs->f_accept (conn, conn->dispatcher, newc);
-    return IO_NO_CONN;
+    Dispatcher *d;
+    if (!conn || !conn->dispatcher || !conn->dispatcher->funcs)
+        return IO_NO_CONN;
+    d = conn->dispatcher;
+    if (d->flags != FLAG_OPEN)
+        return d->funcs->f_cting (conn, d);
+    return d->funcs->f_accept (conn, d, newc);
 }
 
 int UtilIORead (Connection *conn, char *buf, size_t count)
 {
-    if (conn && conn->dispatcher && conn->dispatcher->funcs && conn->dispatcher->funcs && conn->dispatcher->funcs->f_read)
-        return conn->dispatcher->funcs->f_read (conn, conn->dispatcher, buf, count);
-    return IO_NO_CONN;
+    Dispatcher *d;
+    if (!conn || !conn->dispatcher || !conn->dispatcher->funcs)
+        return IO_NO_CONN;
+    d = conn->dispatcher;
+    if (d->flags != FLAG_OPEN)
+        return d->funcs->f_cting (conn, d);
+    return d->funcs->f_read (conn, d, buf, count);
 }
 
 io_err_t UtilIOWrite (Connection *conn, const char *buf, size_t count)
 {
-    if (conn && conn->dispatcher && conn->dispatcher->funcs && conn->dispatcher->funcs && conn->dispatcher->funcs->f_write)
-        return conn->dispatcher->funcs->f_write (conn, conn->dispatcher, buf, count);
+    Dispatcher *d;
+    if (!conn || !conn->dispatcher || !conn->dispatcher->funcs)
+        return IO_NO_CONN;
+    d = conn->dispatcher;
+    if (d->flags != FLAG_OPEN)
+        return io_any_appendbuf (conn, d, buf, count);
+    if (d->funcs->f_write)
+        return d->funcs->f_write (conn, d, buf, count);
     return IO_NO_CONN;
 }
 

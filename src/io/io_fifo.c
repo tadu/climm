@@ -182,9 +182,6 @@ static int io_fifo_read (Connection *conn, Dispatcher *d, char *buf, size_t coun
     struct timeval tv;
     int rc;
     
-    if (d->flags != FLAG_OPEN)
-        return io_fifo_connecting (conn, d);
-
     tv.tv_sec = 0;
     tv.tv_usec = 0;
     FD_ZERO (&fds);

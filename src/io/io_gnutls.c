@@ -319,9 +319,6 @@ static int io_gnutls_read (Connection *conn, Dispatcher *d, char *buf, size_t co
 {
     int rc;
 
-    if (conn->ssl_status != SSL_STATUS_OK)
-        return io_gnutls_connecting (conn, d);
-
     if (conn->connect & CONNECT_SELECT_W)
     {
         rc = io_gnutls_write (conn, d, NULL, 0);
@@ -348,9 +345,6 @@ static io_err_t io_gnutls_write (Connection *conn, Dispatcher *d, const char *bu
 {
     int rc = 0;
     
-    if (conn->ssl_status != SSL_STATUS_OK)
-        return io_any_appendbuf (conn, d, buf, len);
-
     if (d->outlen)
     {
         rc = gnutls_record_send (d->ssl, d->outbuf, d->outlen);

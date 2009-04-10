@@ -266,9 +266,6 @@ static int io_socks5_accept (Connection *conn, Dispatcher *d, Connection *newcon
     Dispatcher *nd, *dd;
     int rc, sok;
 
-    if (d->flags != FLAG_OPEN)
-        return io_socks5_connecting (conn, d);
-    
     rc = d->next->funcs->f_read (conn, d->next, d->buf + d->read, 10 - d->read);
     if (rc < 0)
         return io_socks5_seterr (d, rc, d->next->funcs->f_err (conn,  d->next));
@@ -304,21 +301,11 @@ static int io_socks5_accept (Connection *conn, Dispatcher *d, Connection *newcon
 
 static int io_socks5_read (Connection *conn, Dispatcher *d, char *buf, size_t count)
 {
-    if (d->flags != FLAG_OPEN)
-        return io_socks5_connecting (conn, d);
-    
     return d->next->funcs->f_read (conn, d->next, buf, count);
 }
 
 static io_err_t io_socks5_write (Connection *conn, Dispatcher *d, const char *buf, size_t count)
 {
-    if (d->flags != FLAG_OPEN)
-    {
-        io_err_t rce = io_socks5_connecting (conn, d);
-        if (rce != IO_CONNECTED)
-            return rce;
-    }
-    
     return d->next->funcs->f_write (conn, d->next, buf, count);
 }
 

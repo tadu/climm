@@ -494,9 +494,6 @@ static int io_listen_tcp_accept (Connection *conn, Dispatcher *d, Connection *ne
     socklen_t length;
     int rc, sok;
 
-    if (d->flags != FLAG_OPEN)
-        return io_tcp_connecting (conn, d);
-    
     length = sizeof (sin);
     sok = accept (conn->sok, (struct sockaddr *)&sin, &length);
 
@@ -553,9 +550,6 @@ static int io_tcp_read (Connection *conn, Dispatcher *d, char *buf, size_t count
 
     DebugH (DEB_TCP, "conn %p read", conn);
     
-    if (d->flags != FLAG_OPEN)
-        return io_tcp_connecting (conn, d);
-    
     if (d->outlen)
     {
         rce = io_tcp_write (conn, d, NULL, 0);
@@ -607,9 +601,6 @@ static io_err_t io_tcp_write (Connection *conn, Dispatcher *d, const char *buf, 
     
     DebugH (DEB_TCP, "conn %p write", conn);
     
-    if (d->flags != FLAG_OPEN)
-        return io_any_appendbuf (conn, d, buf, len);
-
     if (d->outlen)
     {
         rc = sockwrite (conn->sok, d->outbuf, d->outlen);

@@ -338,9 +338,6 @@ static int io_openssl_read (Connection *conn, Dispatcher *d, char *buf, size_t c
     int rc, tmp;
     Contact *cont = conn->cont;
 
-    if (conn->ssl_status != SSL_STATUS_OK)
-        return io_openssl_connecting (conn, d);
-
     if (conn->connect & CONNECT_SELECT_W)
     {
         rc = io_openssl_write (conn, d, NULL, 0);
@@ -391,9 +388,6 @@ static io_err_t io_openssl_write (Connection *conn, Dispatcher *d, const char *b
     Contact *cont = conn->cont;
     int rc = 0;
     
-    if (conn->ssl_status != SSL_STATUS_OK)
-        return io_any_appendbuf (conn, d, buf, len);
-
     if (d->outlen)
     {
         rc = SSL_write (d->openssl, d->outbuf, d->outlen);
