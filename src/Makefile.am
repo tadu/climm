@@ -21,7 +21,7 @@ climm_SOURCES = autopackage_prefix.c conv.c file_util.c im_response.c climm.c \
        util_syntax.c util_rl.c util_alias.c connection.c oscar_dc_file.c \
        oscar_base.c oscar_tlv.c oscar_snac.c \
        io/io_tcp.c io/io_socks5.c io/io_gnutls.c io/io_openssl.c \
-       io/io_fifo.c \
+       io/io_fifo.c io/io_dns.c \
        oscar_service.c oscar_location.c oscar_contact.c oscar_icbm.c \
        oscar_bos.c oscar_roster.c oscar_oldicq.c oscar_register.c  \
        remote.c os.c util_tcl.c util_md5.c im_icq8.c buildmark.c util_otr.c xmpp_base.c
