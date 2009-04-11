@@ -310,7 +310,7 @@ static io_err_t io_gnutls_connecting (Connection *conn, Dispatcher *d)
 
         d->flags = FLAG_OPEN;
         conn->ssl_status = SSL_STATUS_OK;
-        conn->connect |= CONNECT_SELECT_R;
+        conn->connect |= CONNECT_SELECT_R | CONNECT_SELECT_W;
         return IO_CONNECTED;
     }
     assert(0);

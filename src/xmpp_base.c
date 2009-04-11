@@ -90,7 +90,7 @@ static int iks_climm_TRecv (Connection *conn, char *data, size_t len, int timeou
     int rc = UtilIORead (conn, data, len);
     if (rc > 0)
         return rc;
-    if (rc == IO_OK)
+    if (rc == IO_OK || rc == IO_CONNECTED)
         return 0;
     return -1;
 }
@@ -1130,7 +1130,7 @@ static void XMPPCallbackDispatch (Connection *conn)
                     if (rce != IO_SSL_OK)
                     {
                         XmppStreamError (conn->serv, s_sprintf ("ssl error %d %s", rce, UtilIOErr (conn)));
-                        QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL);
+                        EventD (QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL));
                         return;
                     }
                 }
@@ -1159,6 +1159,8 @@ static void XMPPCallbackDispatch (Connection *conn)
     rc = iks_recv (prs, 0);
     if (rc != IKS_OK && conn->dispatcher)
         XmppStreamError (conn->serv, s_sprintf ("failing with error code %d", rc));
+    if (!conn->dispatcher)
+        IMCallBackReconn (conn);
 }
 
 void XMPPLogout (Server *serv)
