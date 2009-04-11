@@ -122,7 +122,7 @@ static void XMPPCallBackTimeout (Event *event)
 
 void XmppStreamError (Server *serv, const char *text)
 {
-    rl_printf ("Stream level error occurred: %s [%s]\n", text, UtilIOErr (serv->conn));
+    rl_printf ("Stream level error occurred: %s [%s]\n", text, UtilIOErr (serv->conn) ? UtilIOErr (serv->conn) : "");
     XMPPLogout (serv);
 }
 
@@ -1008,11 +1008,11 @@ static int XmppStreamHook (Server *serv, int type, iks *node)
     switch (type)
     {
         case IKS_NODE_STOP:
-            XmppStreamError (serv, "server disconnect");
+            XmppStreamError (serv, s_sprintf ("server disconnect [%s]", iks_name (iks_first_tag (node))));
             if (node) iks_delete (node);
             return IKS_NET_DROPPED;
         case IKS_NODE_ERROR:
-            XmppStreamError (serv, "stream error");
+            XmppStreamError (serv, s_sprintf ("stream error [%s]", iks_name (iks_first_tag (node))));
             if (node) iks_delete (node);
             return IKS_NET_DROPPED;
         case IKS_NODE_START:

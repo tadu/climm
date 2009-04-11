@@ -494,13 +494,13 @@ void IMConnOpen (Connection *conn)
     if      (conn->type == TYPE_REMOTE)    ScriptingOpen (conn);
     else if (conn->type == TYPE_MSGDIRECT) ConnectionInitPeer (conn);
     else
-        rl_printf (i18n (2726, "Don't know how to open connection type %s for #%ld.\n"),
-                         ConnectionStrType (conn), 0L);
+        rl_printf (i18n (9999, "Don't know how to open connection type %s for %s.\n"),
+                         ConnectionStrType (conn), conn->cont->screen);
 }
 
 void IMLogout (Server *serv)
 {
-    rl_printf (i18n (2729, "Logging of from connection %ld.\n"), 0L);
+    rl_printf (i18n (9999, "Logging off %s.\n"), serv->conn->cont->screen);
     switch (serv->type)
     {
         case TYPE_SERVER:      return OscarLogout (serv);
