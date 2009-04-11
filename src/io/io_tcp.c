@@ -223,6 +223,7 @@ static void io_tcp_open (Connection *conn, Dispatcher *d)
     socklen_t length;
     struct sockaddr_in sin;
     struct hostent *host;
+    char *servercol;
     
     d->flags = FLAG_CONNECTING;
     d->err = IO_OK;
@@ -240,6 +241,13 @@ static void io_tcp_open (Connection *conn, Dispatcher *d)
 
     if (!io_tcp_makesocket (conn, d))
         return;
+    
+    servercol = conn->server ? strchr (conn->server, ':') : NULL;
+    if (servercol)
+    {
+        *servercol = 0;
+        conn->port = atoi (servercol + 1);
+    }
 
     sin.sin_family = AF_INET;
     sin.sin_port = htons (conn->port);
@@ -262,6 +270,9 @@ static void io_tcp_open (Connection *conn, Dispatcher *d)
         conn->ip = ntohl (sin.sin_addr.s_addr);
     }
     sin.sin_addr.s_addr = htonl (conn->ip);
+    
+    if (servercol)
+        *servercol = ':';
     
     rc = connect (conn->sok, (struct sockaddr *) &sin, sizeof (struct sockaddr));
     rce = rc < 0 ? errno : 0;
