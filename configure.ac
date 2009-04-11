@@ -472,6 +472,9 @@ AC_CHECK_FUNCS([localtime_r timegm timelocal memcmp uname fcntl strchr strtok_r 
                 symlink chmod tcgetattr gettimeofday setlocale select sigprocmask])
 AC_CHECK_FUNCS([memset wcwidth iswalnum iswspace nl_langinfo atoll getpwuid getuid fsync getutent getutxent])
 
+AC_CHECK_LIB(resolv, res_query)
+AC_CHECK_LIB(resolv, __res_query)
+
 if test "x$ac_cv_func_timegm" != xyes; then
     AC_LIBOBJ(timegm)
     AC_CHECK_FUNCS([setenv putenv unsetenv])
