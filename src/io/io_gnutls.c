@@ -308,6 +308,7 @@ static io_err_t io_gnutls_connecting (Connection *conn, Dispatcher *d)
 
         DebugH (DEB_SSL, "connected");
 
+        d->flags = FLAG_OPEN;
         conn->ssl_status = SSL_STATUS_OK;
         conn->connect |= CONNECT_SELECT_R;
         return IO_CONNECTED;

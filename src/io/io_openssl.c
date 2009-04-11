@@ -327,6 +327,7 @@ static io_err_t io_openssl_connecting (Connection *conn, Dispatcher *d)
                 conn->ssl_status = SSL_STATUS_FAILED;
                 return IO_RW;
         }
+        d->flags = FLAG_OPEN;
         conn->ssl_status = SSL_STATUS_OK;
         return IO_CONNECTED;
     }
