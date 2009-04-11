@@ -45,8 +45,6 @@
 
 static void        io_socks5_open  (Connection *c, Dispatcher *d);
 static io_err_t    io_socks5_connecting (Connection *conn, Dispatcher *d);
-static int         io_socks5_read  (Connection *c, Dispatcher *d, char *buf, size_t count);
-static io_err_t    io_socks5_write (Connection *c, Dispatcher *d, const char *buf, size_t count);
 static void        io_socks5_close (Connection *c, Dispatcher *d);
 static const char *io_socks5_err   (Connection *c, Dispatcher *d);
 static int         io_socks5_accept(Connection *c, Dispatcher *d, Connection *cn);
@@ -54,8 +52,8 @@ static int         io_socks5_accept(Connection *c, Dispatcher *d, Connection *cn
 static Conn_Func io_socks5_func = {
     NULL,
     &io_socks5_connecting,
-    &io_socks5_read,
-    &io_socks5_write,
+    NULL,
+    NULL,
     &io_socks5_close,
     &io_socks5_err
 };
@@ -148,14 +146,14 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
 
     if (d->flags == FLAG_CONNECTING)
     {
-        rc = d->next->funcs->f_read (conn, d->next, NULL, 0);
+        rc = io_util_read (conn, d->next, NULL, 0);
         s_repl (&d->lasterr, NULL);
         if (rc != IO_CONNECTED)
             return io_socks5_seterr (d, rc, d->next->funcs->f_err (conn,  d->next));
         if (ConnectionPrefVal (conn->serv, CO_S5NAME) && ConnectionPrefVal (conn->serv, CO_S5PASS))
-            e = d->next->funcs->f_write (conn, d->next, "\x05\x02\x02\x00", 4);            
+            e = io_util_write (conn, d->next, "\x05\x02\x02\x00", 4);            
         else
-            e = d->next->funcs->f_write (conn, d->next, "\x05\x01\x00", 3);
+            e = io_util_write (conn, d->next, "\x05\x01\x00", 3);
         d->read = 0;
         d->flags = FLAG_METHODS_SENT;
         if (e != IO_OK)
@@ -163,7 +161,7 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
     }
     if (d->flags == FLAG_METHODS_SENT)
     {
-        rc = d->next->funcs->f_read (conn, d->next, d->buf + d->read, 2 - d->read);
+        rc = io_util_read (conn, d->next, d->buf + d->read, 2 - d->read);
         if (rc < 0)
             return io_socks5_seterr (d, rc, d->next->funcs->f_err (conn,  d->next));
         d->read += rc;
@@ -181,7 +179,7 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
             return io_socks5_seterr (d, IO_RW, i18n (1599, "[SOCKS] Authentication method incorrect"));
 
         send = s_sprintf ("%c%c%s%c%s%n", 1, (char) strlen (socks5name), socks5name, strlen (socks5pass), socks5pass, &len);
-        e = d->next->funcs->f_write (conn, d->next, send, len);
+        e = io_util_write (conn, d->next, send, len);
         d->flags = FLAG_CRED_SENT;
         d->read = 0;
         if (e != IO_OK)
@@ -189,7 +187,7 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
     }
     if (d->flags == FLAG_CRED_SENT)
     {
-        rc = d->next->funcs->f_read (conn, d->next, d->buf + d->read, 2 - d->read);
+        rc = io_util_read (conn, d->next, d->buf + d->read, 2 - d->read);
         if (rc < 0)
             return io_socks5_seterr (d, rc, d->next->funcs->f_err (conn,  d->next));
         d->read += rc;
@@ -201,7 +199,7 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
     }
     if (d->flags == FLAG_REQ_SENT || d->flags == FLAG_REQ_NOPORT_SENT)
     {
-        rc = d->next->funcs->f_read (conn, d->next, d->buf + d->read, 10 - d->read);
+        rc = io_util_read (conn, d->next, d->buf + d->read, 10 - d->read);
         if (rc < 0)
             return io_socks5_seterr (d, rc, d->next->funcs->f_err (conn,  d->next));
         d->read += rc;
@@ -252,7 +250,7 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
                                    (char)(conn->ip >> 24), (char)(conn->ip >> 16), (char)(conn->ip >> 8), (char)conn->ip,
                                    (char)(conn->port >> 8), (char)(conn->port & 255), &len);
         }
-        e = d->next->funcs->f_write (conn, d->next, send, len);
+        e = io_util_write (conn, d->next, send, len);
         d->read = 0;
         if (e != IO_OK)
             return io_socks5_seterr (d, rc, d->next->funcs->f_err (conn,  d->next));
@@ -266,7 +264,7 @@ static int io_socks5_accept (Connection *conn, Dispatcher *d, Connection *newcon
     Dispatcher *nd, *dd;
     int rc, sok;
 
-    rc = d->next->funcs->f_read (conn, d->next, d->buf + d->read, 10 - d->read);
+    rc = io_util_read (conn, d->next, d->buf + d->read, 10 - d->read);
     if (rc < 0)
         return io_socks5_seterr (d, rc, d->next->funcs->f_err (conn,  d->next));
     d->read += rc;
@@ -297,16 +295,6 @@ static int io_socks5_accept (Connection *conn, Dispatcher *d, Connection *newcon
     s_repl (&newconn->server, "local??host");
     
     return sok;
-}
-
-static int io_socks5_read (Connection *conn, Dispatcher *d, char *buf, size_t count)
-{
-    return d->next->funcs->f_read (conn, d->next, buf, count);
-}
-
-static io_err_t io_socks5_write (Connection *conn, Dispatcher *d, const char *buf, size_t count)
-{
-    return d->next->funcs->f_write (conn, d->next, buf, count);
 }
 
 static void io_socks5_close (Connection *conn, Dispatcher *d)

@@ -58,39 +58,52 @@ void UtilIOListenTCP  (Connection *conn)
     return IOListenTCP (conn);
 }
 
-int UtilIOAccept (Connection *conn, Connection *newc)
+io_err_t io_util_accept (Connection *conn, Dispatcher *d, Connection *newc)
 {
-    Dispatcher *d;
-    if (!conn || !conn->dispatcher || !conn->dispatcher->funcs)
+    if (!d)
         return IO_NO_CONN;
-    d = conn->dispatcher;
     if (d->flags != FLAG_OPEN)
         return d->funcs->f_cting (conn, d);
-    return d->funcs->f_accept (conn, d, newc);
+    if (d->funcs->f_accept)
+        return d->funcs->f_accept (conn, d, newc);
+    return io_util_accept (conn, d->next, newc);
+}
+
+int UtilIOAccept (Connection *conn, Connection *newc)
+{
+    return io_util_accept (conn, conn->dispatcher, newc);
+}
+
+io_err_t io_util_read (Connection *conn, Dispatcher *d, char *buf, size_t count)
+{
+    if (!d)
+        return IO_NO_CONN;
+    if (d->flags != FLAG_OPEN)
+        return d->funcs->f_cting (conn, d);
+    if (d->funcs->f_read)
+        return d->funcs->f_read (conn, d, buf, count);
+    return io_util_read (conn, d->next, buf, count);
 }
 
 int UtilIORead (Connection *conn, char *buf, size_t count)
 {
-    Dispatcher *d;
-    if (!conn || !conn->dispatcher || !conn->dispatcher->funcs)
-        return IO_NO_CONN;
-    d = conn->dispatcher;
-    if (d->flags != FLAG_OPEN)
-        return d->funcs->f_cting (conn, d);
-    return d->funcs->f_read (conn, d, buf, count);
+    return io_util_read (conn, conn->dispatcher, buf, count);
 }
 
-io_err_t UtilIOWrite (Connection *conn, const char *buf, size_t count)
+io_err_t io_util_write (Connection *conn, Dispatcher *d, const char *buf, size_t count)
 {
-    Dispatcher *d;
-    if (!conn || !conn->dispatcher || !conn->dispatcher->funcs)
+    if (!d)
         return IO_NO_CONN;
-    d = conn->dispatcher;
     if (d->flags != FLAG_OPEN)
         return io_any_appendbuf (conn, d, buf, count);
     if (d->funcs->f_write)
         return d->funcs->f_write (conn, d, buf, count);
-    return IO_NO_CONN;
+    return io_util_write (conn, d->next, buf, count);
+}
+
+io_err_t UtilIOWrite (Connection *conn, const char *buf, size_t count)
+{
+    return io_util_write (conn, conn->dispatcher, buf, count);
 }
 
 io_err_t io_any_appendbuf (Connection *conn, Dispatcher *d, const char *buf, size_t count)

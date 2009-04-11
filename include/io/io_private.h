@@ -14,6 +14,9 @@
 #include "io/io_openssl.h"
 
 io_err_t io_any_appendbuf (Connection *conn, Dispatcher *d, const char *buf, size_t count);
+io_err_t io_util_accept (Connection *conn, Dispatcher *d, Connection *newc);
+io_err_t io_util_read (Connection *conn, Dispatcher *d, char *buf, size_t count);
+io_err_t io_util_write (Connection *conn, Dispatcher *d, const char *buf, size_t count);
 
 typedef struct Conn_Func_s
 {
