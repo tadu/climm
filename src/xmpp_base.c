@@ -59,6 +59,7 @@
 #include "buildmark.h"
 #include "preferences.h"
 #include "oscar_dc_file.h"
+#include "io/io_dns.h"
 #include "os.h"
 
 static jump_conn_f XMPPCallbackDispatch;
@@ -127,7 +128,8 @@ void XmppStreamError (Server *serv, const char *text)
 
 Event *XMPPLogin (Server *serv)
 {
-    const char *sp;
+    const char *scrserv, *sp;
+    char *semi;
     Event *event;
 
     assert (serv->type == TYPE_XMPP_SERVER);
@@ -136,14 +138,15 @@ Event *XMPPLogin (Server *serv)
         return NULL;
     if (!strchr (serv->screen, '@'))
     {
-        const char *jid;
-        if (!serv->conn->server)
-            serv->conn->server = strdup ("jabber.com");
-        jid = s_sprintf ("%s@%s", serv->screen, serv->conn->server);
+        const char *jid = s_sprintf ("%s@jabber.com", serv->screen);
         s_repl (&serv->screen, jid);
     }
-    if (!serv->conn->server)
-        s_repl (&serv->conn->server, strchr (serv->screen, '@') + 1);
+    scrserv = strchr (serv->screen, '@') + 1;
+    if (!serv->conn->server || !strcmp (scrserv, serv->conn->server))
+    {
+        const char *rrdns = io_dns_resolve (s_sprintf ("_xmpp-client._tcp.%s", scrserv));
+        s_repl (&serv->conn->server, rrdns ? rrdns : scrserv);
+    }
 
     XMPPLogout (serv);
 
@@ -151,9 +154,14 @@ Event *XMPPLogin (Server *serv)
     time_t now = time (NULL);
     strftime (serv->xmpp_stamp, 15, "%Y%m%d%H%M%S", gmtime (&now));
 
-    sp = s_sprintf ("%s", s_wordquote (s_sprintf ("%s:%lu", serv->conn->server, serv->conn->port)));
+    semi = strchr (serv->conn->server, ';');
+    if (semi)
+        *semi = 0;
+    sp = s_sprintf ("%s", s_wordquote (strchr (serv->conn->server, ':') ? serv->conn->server : s_sprintf ("%s:%lu", serv->conn->server, serv->conn->port)));
     rl_printf (i18n (2620, "Opening XMPP connection for %s at %s...\n"),
         s_wordquote (serv->screen), sp);
+    if (semi)
+        *semi = ';';
 
     if (!serv->conn->port)
         serv->conn->port = ~0;
@@ -173,17 +181,6 @@ Event *XMPPLogin (Server *serv)
                                   NULL, serv->conn->cont, NULL, &XMPPCallBackTimeout);
 
     UtilIOConnectTCP (serv->conn);
-
-    if (serv->conn->port == 443 || serv->conn->port == 5223)
-    {
-        io_ssl_err_t rce = UtilIOSSLOpen (serv->conn, 2);
-        if (rce != IO_SSL_OK)
-        {
-            XmppStreamError (serv, s_sprintf ("ssl error %d %s", rce, UtilIOErr (serv->conn)));
-            QueueDequeue2 (serv->conn, QUEUE_DEP_WAITLOGIN, 0, NULL);
-            return NULL;
-        }
-    }
     return event;
 }
 
@@ -1095,6 +1092,8 @@ static void XMPPCallbackDispatch (Connection *conn)
 {
     iksparser *prs = conn->serv->xmpp_parser;
     io_err_t rce;
+    char *semi;
+    const char *sp;
     int rc;
 
     if (!(conn->connect & (CONNECT_OK | 4)))
@@ -1103,6 +1102,20 @@ static void XMPPCallbackDispatch (Connection *conn)
         rce = UtilIOShowError (conn, rc);
         switch (rce) {
             case IO_RW:
+                semi = strchr (conn->server, ';');
+                if (!semi)
+                    return;
+                memmove (conn->server, semi + 1, strlen (semi));
+                semi = strchr (conn->server, ';');
+                if (semi)
+                    *semi = 0;
+                sp = s_sprintf ("%s", s_wordquote (strchr (conn->server, ':') ? conn->server : s_sprintf ("%s:%lu", conn->server, conn->port)));
+                rl_printf (i18n (2620, "Opening XMPP connection for %s at %s...\n"),
+                    s_wordquote (conn->serv->screen), sp);
+                if (semi)
+                    *semi = ';';
+                UtilIOConnectTCP (conn);
+                return;
             case IO_OK:
                 return;
             case IO_CONNECTED:
@@ -1110,6 +1123,17 @@ static void XMPPCallbackDispatch (Connection *conn)
                 if (prG->verbose || (conn->serv && conn == conn->serv->conn))
                     if (rl_pos () > 0)
                          rl_print (i18n (1634, "ok.\n"));
+
+                if (conn->port == 443 || conn->port == 5223)
+                {
+                    io_ssl_err_t rce = UtilIOSSLOpen (conn, 2);
+                    if (rce != IO_SSL_OK)
+                    {
+                        XmppStreamError (conn->serv, s_sprintf ("ssl error %d %s", rce, UtilIOErr (conn)));
+                        QueueDequeue2 (conn, QUEUE_DEP_WAITLOGIN, 0, NULL);
+                        return;
+                    }
+                }
 
                 if (!conn->serv->xmpp_parser)
                 {
