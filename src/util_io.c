@@ -199,9 +199,9 @@ io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
         case IO_NO_NONBLOCK:
             if (1) t = i18n (1950, "Couldn't set socket nonblocking"); else
         case IO_NO_HOSTNAME:
-            if (1) t = i18n (9999, "Can't find hostname"); else
+            if (1) t = i18n (2743, "Can't find hostname"); else
         case IO_CONN_TO:
-            if (1) t = i18n (9999, "Connection timed out"); else
+            if (1) t = i18n (2744, "Connection timed out"); else
         case IO_NO_CONN:
                    t = i18n (1952, "Couldn't open connection");
             if (prG->verbose || (conn->serv && conn == conn->serv->conn))
@@ -211,7 +211,7 @@ io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
                 if (semi)
                     *semi = 0;
                 rl_log_for (cont->nick, COLCONTACT);
-                rl_printf (i18n (9999, "Opening connection to %s:%s%ld%s "),
+                rl_printf (i18n (2745, "Opening connection to %s:%s%ld%s "),
                           s_wordquote (conn->server), COLQUOTE, UD2UL (conn->port), COLNONE);
                 if (semi)
                     *semi = ';';

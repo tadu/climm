@@ -4274,7 +4274,7 @@ static JUMP_F(CmdUserConn)
                 if (prG->verbose)
                 {
                     char *t1, *t2, *t3;
-                    rl_printf (i18n (1935, "    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n"),
+                    rl_printf (i18n (2746, "    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n"),
                          connl->type, connl->sok, t1 = strdup (s_ip (connl->ip)),
                          connl->connect & CONNECT_SELECT_A ? "A" : "",
                          connl->connect & CONNECT_SELECT_R ? "R" : "",

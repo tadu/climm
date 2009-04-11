@@ -818,7 +818,7 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                         {
                             char *ip = strdup (s_ip (sip));
                             rl_log_for (cont->nick, COLCONTACT);
-                            rl_printf (i18n (9999, "Incoming reverse connection request to %s.\n"),
+                            rl_printf (i18n (2742, "Incoming reverse connection request to %s.\n"),
                                 s_sprintf ("%s:%ld|%ld|%ld v%d %d seq %ld",
                                     ip, UD2UL (sp1), UD2UL (sp2), UD2UL (sop), sver, scon, UD2UL (sunk)));
                             free (ip);
