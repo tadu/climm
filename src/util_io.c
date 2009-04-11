@@ -207,9 +207,14 @@ io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
             if (prG->verbose || (conn->serv && conn == conn->serv->conn))
             {
                 Contact *cont = conn->cont;
+                char *semi = strchr (conn->server, ';');
+                if (semi)
+                    *semi = 0;
                 rl_log_for (cont->nick, COLCONTACT);
                 rl_printf (i18n (9999, "Opening connection to %s:%s%ld%s "),
                           s_wordquote (conn->server), COLQUOTE, UD2UL (conn->port), COLNONE);
+                if (semi)
+                    *semi = ';';
                 rl_print (i18n (1949, "failed:\n"));
                 rl_printf ("%s [%d]\n",
                     s_sprintf  ("%s: %s (%d).", t, conn->dispatcher->funcs->f_err (conn, conn->dispatcher), e),
