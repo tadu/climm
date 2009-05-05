@@ -133,6 +133,7 @@ void UtilIOClose (Connection *conn)
 {
     if (conn && conn->dispatcher && conn->dispatcher->funcs && conn->dispatcher->funcs->f_close)
         conn->dispatcher->funcs->f_close (conn, conn->dispatcher);
+    conn->connect &= ~CONNECT_SELECT_A;
     assert (!conn || conn->sok < 0);
     assert (!conn || !conn->dispatcher);
 }
