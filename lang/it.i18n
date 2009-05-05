@@ -1,5 +1,5 @@
 # $Id$ Italiano (Italian)
-#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 1001:it
 1002:it_IT
@@ -40,9 +40,9 @@
 1047.Dati Extra
 1048:Codice d'errore: %ld\n
 1050.La procedura di login ha avuto successo...\n
-1053:Connesso a %s, in attesa di risposta\n
-1055:Creazione del Socket fallita\n
-1056:Socket creato, tentativo di connessione.\n
+1053.Connesso a %s, in attesa di risposta\n
+1055.Creazione del Socket fallita\n
+1056.Socket creato, tentativo di connessione.\n
 1060:Verbosity level is %ld.\n
 1061:'%s' non riconosciuto come nick name.\n
 1062:Utenti ignorati: 
@@ -501,12 +501,12 @@
 1579:Inserisci l'azienda:
 1587:Inserisci il dipartimento:
 1595:\nLista contatti.\n============================================\n%d Contatti\n
-1596:[SOCKS] Non trovo l'host chiamato %s: %s.
-1597:[SOCKS] Creazione del Socket fallita\n
-1598:[SOCKS] Richiesta di connessione rifiutata
-1599:[SOCKS] Metodo di autentificazione sbagliato
-1600:[SOCKS] Autorizzazione non ottenuta
-1601:[SOCKS] Avaria generale del SOCKS server
+1596.[SOCKS] Non trovo l'host chiamato %s: %s.
+1597.[SOCKS] Creazione del Socket fallita\n
+1598.[SOCKS] Richiesta di connessione rifiutata
+1599.[SOCKS] Metodo di autentificazione sbagliato
+1600.[SOCKS] Autorizzazione non ottenuta
+1601.[SOCKS] Avaria generale del SOCKS server
 1602:Inserisci lo stato:
 1603:Inserisci la posizione:
 1604:Gli utenti dovranno essere in linea?
@@ -520,7 +520,7 @@
 1621:utenti non riportati.
 1622:Vuoi rendere effettivi i cambiamenti? (SI/NO)
 1634:ok.\n
-1637:Non riesco a collegare il socket ad una porta libera\n
+1637.Non riesco a collegare il socket ad una porta libera\n
 1638:Non riesco a creare il socket
 1639.Il nuovo UIN e' %ld!\n
 1640.Non sono riuscito ad aggiornare le informazioni.\n
@@ -619,7 +619,7 @@
 #+#1800:Change the working language to <lang> or display string <nr>.
 #_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Mostra una lista di persone nella tua Lista Contatti in un formato di tipo schermo ampio.
-1807:Ho cancellato i messaggi in arrivo (seq %04x) da %s\n
+1807.Ho cancellato i messaggi in arrivo (seq %04x) da %s\n
 1808:College
 1810:Universita'
 1812:Vecchio luogo di lavoro
@@ -703,7 +703,7 @@
 1929:Non disturbare l'utente [Messaggio Autom]
 1931:La sessione corrente e' chiusa. Provane un'altra o apri questa.\n
 1934:connesso
-1935:    tipo %d socket %d ip %s (%d) su [%s,%s] id %lx/%x/%x\n
+1935.    tipo %d socket %d ip %s (%d) su [%s,%s] id %lx/%x/%x\n
 1936:Inserisci l'eta' minima (18-22,23-29,30-39,40-49,50-59,60-120):
 1937:Inserisci l'eta' massima (22,29,39,49,59,120):
 1938:Inserisci il sesso:
@@ -714,18 +714,18 @@
 1944:(devi richiedere l'autorizzazione)
 1945:Risposta del Meta-Utente sconosciuta
 1947:in ascolto
-1948:Non trovo l'hostname %s: %s.
+1948.Non trovo l'hostname %s: %s.
 1949:fallito:\n
 1950:Non riesco ad impostare il socket di non-bloccaggio
-1951:Non trovo l'hostname %s: %s (%d).
+1951.Non trovo l'hostname %s: %s (%d).
 1952:Non riesco ad aprire la connessione
-1953:non riesco a collegare il socket ad una porta libera
-1954:Incapace di stare in ascolto su un socket
-1955:Connessione fallita
-1958:[SOCKS] Connessione richiesta rifiutata (%d)
+1953.non riesco a collegare il socket ad una porta libera
+1954.Incapace di stare in ascolto su un socket
+1955.Connessione fallita
+1958.[SOCKS] Connessione richiesta rifiutata (%d)
 1960:Inserisci i dati per cercare un utente. Inserisci '.' per iniziare la ricerca.\n
 1961:URL: %s\n
-1966: Connessione rifiutata sulla porta %ld a %s\n
+1966. Connessione rifiutata sulla porta %ld a %s\n
 1967:Piu' informazioni per
 1968.Utente trovato:\n
 1969:non in linea
@@ -797,7 +797,7 @@
 2046:Potresti invece usare la versione 8 per il protocollo di peer-to-peer di ICQ.\n
 2047:Creo la cartella %s.\n
 2048:Salvo le preferenze in %s.\n
-2051:Errore nel socket: %s (%d)\n
+2051.Errore nel socket: %s (%d)\n
 2055:L'utente e' libero per chattare e vuole chattare di tutto.
 2056:getauto [auto] <nick> - Ottieni la risposta automatica dal contatto.\n
 2057:getauto away   <nick> - Ottieni la risposta automatica per 'via' dal contatto.\n
@@ -969,9 +969,9 @@
 #-#2225:controllo remoto
 #+#2225:remote control
 #_#2225:scripting
-2226:Non riesco a creare FIFO
-2227:Non riesco ad aprire FIFO
-2228:Non riesco ad impostare FIFO in non bloccaggio
+2226.Non riesco a creare FIFO
+2227.Non riesco ad aprire FIFO
+2228.Non riesco ad impostare FIFO in non bloccaggio
 #-#2233:autorizzazione rifiutata: %s%s\n
 #+#2233:refused authorization: %s%s\n
 #_#2233:refused authorization: %s%s%s\n
@@ -1097,8 +1097,8 @@
 #-#2375:Stretta di mano SSL avvenuta\n
 #+#2375:SSL handshake ok\n
 #_#2375:SSL handshake ok.\n
-2376:Lettura SSL da %s [ERR=%d]: %s
-2377:Scrittura SSL a %s [ERR=%d]: %s
+2376.Lettura SSL da %s [ERR=%d]: %s
+2377.Scrittura SSL a %s [ERR=%d]: %s
 2378:peer ssl <nick>   - inizia una stretta di mano SSL.\n
 #_#2381:I'll add the author of climm to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
 #_#2383:View your last messages of <contact>. Type 'h' as short command.
@@ -1166,7 +1166,6 @@
 #_#2450:Last %d people you talked with:\n
 #_#2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
 #_#2453:    at %p parent %p assoc %p ssl %d\n
-#_#2454:    open %p reconn %p close %p err %p dispatch %p\n
 #_#2455:About>
 #_#2456:Unknown command %s, type %shelp%s for help.\n
 #_#2457:Unknown configuration file format version %d.\n
@@ -1224,12 +1223,6 @@
 #_#2524:Can't restore terminal modes.\n
 #_#2525:Can't read terminal modes.\n
 #_#2526:Can't modify terminal modes.\n
-#_#2527:OpenSSL internal error: %s:%i\n
-#_#2528:OpenSSL read error: %s\n
-#_#2529:OpenSSL read error %d (unknown)\n
-#_#2530:OpenSSL write error: %s\n
-#_#2531:OpenSSL write error %d (unknown)\n
-#_#2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
 #_#2533:SSL handshake failed.\n
 #_#2534:IP:
 #_#2535:Groups:\n
@@ -1415,10 +1408,8 @@
 #_#2723:conn discard <nr>       Discard server connection <nr>.\n
 #_#2724:conn open <nr>          Open connection <nr>.\n
 #_#2725:Connection #%ld is already open.\n
-#_#2726:Don't know how to open connection type %s for #%ld.\n
 #_#2727:Connection #%ld is a server's main i/o connection.\n
 #_#2728:Discarding server connection %ld completely.\n
-#_#2729:Logging of from connection %ld.\n
 #_#2730:xmpp main i/o
 #_#2731:msn main i/o
 #_#2732:icq main i/o
@@ -1429,3 +1420,10 @@
 #_#2737:Added contact group %s (#%d).\n
 #_#2738:Found %d new mails for %s.\n
 #_#2739:Found %d mails for %s.\n
+#_#2740:Don't know how to open connection type %s for %s.\n
+#_#2741:Logging off %s.\n
+#_#2742:Incoming reverse connection request to %s.\n
+#_#2743:Can't find hostname
+#_#2744:Connection timed out
+#_#2745:Opening connection to %s:%s%ld%s 
+#_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n

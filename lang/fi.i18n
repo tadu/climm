@@ -1,5 +1,5 @@
 # $Id$ Finnish
-#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 #_#1001:<lang>
 #_#1002:<lang_cc>
@@ -43,10 +43,8 @@
 #-#1048:SEQ
 #_#1048:Error code: %ld\n
 1050.Yhteys palvelimeen muodostettu.
-1053:Yhteys muodostettu.  Odotetaan, että %s vastaa.\n
-1055:Soketin luonti ei onnistu.
-#-#1056:Soketti luotu, yritetään yhteyttä.\n
-#+#1056:Socket created attempting to connect\n
+1053.Yhteys muodostettu.  Odotetaan, että %s vastaa.\n
+1055.Soketin luonti ei onnistu.
 #-#1060:Laveustaso %d.\n
 #+#1060:Verbosity level is %d.\n
 #_#1060:Verbosity level is %ld.\n
@@ -54,7 +52,6 @@
 #_#1061:'%s' not recognized as a nick name.\n
 #-#1062:Torjutut käyttäjät: 
 #-#1064:\nUusi status (automaattisesti vaihdettu) on 
-#_#1056:Socket created, attempting to connect.\n
 #_#1062:Users ignored:
 #_#1064:Automatically changed status to %s.\n
 #_#1078:No translation available.
@@ -587,12 +584,6 @@
 #_#1579:Enter company: 
 #_#1587:Enter department: 
 #_#1595:\nContact List.\n============================================\n%d Contacts\n
-#_#1596:[SOCKS] Can't find hostname %s: %s.
-#_#1597:[SOCKS] Socket creation failed\n
-#_#1598:[SOCKS] Connection request refused
-#_#1599:[SOCKS] Authentication method incorrect
-#_#1600:[SOCKS] Authorization failure
-#_#1601:[SOCKS] General SOCKS server failure
 #_#1602:Enter a state:
 #_#1603:Enter position: 
 #_#1604:Should the users be online?
@@ -603,7 +594,6 @@
 #_#1621:users not returned.
 #_#1622:Do you want to apply these changes? (YES/NO)
 #_#1634:ok.\n
-#_#1637:Can't bind socket to free port\n
 #_#1638:Couldn't create socket
 #_#1642:IP:
 #_#1653:Offline
@@ -672,7 +662,6 @@
 #_#1799:High School
 #_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 #_#1801:Displays a list of people on your contact list in a screen wide format.
-#_#1807:Cancelled incoming message (seq %04x) from %s\n
 #_#1808:College
 #_#1810:University
 #_#1812:Past Work Place
@@ -738,7 +727,6 @@
 1929:User is DND [Auto-Message]
 #_#1931:Current session is closed. Try another or open this one.\n
 #_#1934:connected
-#_#1935:    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n
 #_#1936:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
 #_#1937:Enter max age (22,29,39,49,59,120):
 #_#1938:Enter sex:
@@ -749,18 +737,11 @@
 #_#1944:(must request authorization)
 #_#1945:Unknown Meta User response
 #_#1947:listener
-#_#1948:Can't find hostname %s: %s.
 #_#1949:failed:\n
 #_#1950:Couldn't set socket nonblocking
-#_#1951:Can't find hostname %s: %s (%d).
 #_#1952:Couldn't open connection
-#_#1953:couldn't bind socket to free port
-#_#1954:unable to listen on socket
-#_#1955:Connection failed
-#_#1958:[SOCKS] Connection request refused (%d)
 #_#1960:Enter data to search user for. Enter '.' to start the search.\n
 #_#1961:URL: %s\n
-#_#1966: Connection refused on port %ld at %s\n
 #_#1967:More Info for
 #_#1969:offline
 #_#1970:online
@@ -828,7 +809,6 @@
 #_#2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n
 #_#2047:Creating directory %s.\n
 #_#2048:Saving preferences to %s.\n
-#_#2051:Error on socket: %s (%d)\n
 #_#2055:User is ffc and wants to chat about everything.
 #_#2056:getauto [auto] <nick> - Get the auto-response from the contact.\n
 #_#2057:getauto away   <nick> - Get the auto-response for away from the contact.\n
@@ -943,9 +923,6 @@
 #-#2225:fjärrkontroll
 #+#2225:remote control
 #_#2225:scripting
-#_#2226:Couldn't create FIFO
-#_#2227:Couldn't open FIFO
-#_#2228:Couldn't set FIFO nonblocking
 #_#2233:refused authorization: %s%s%s\n
 #_#2234:Message %s discarded - lost session.\n
 #_#2237:Webaware:
@@ -1048,8 +1025,6 @@
 #_#2372:Could not send SSL request to %s\n
 #_#2374:SSL error: %s [%d]\n
 #_#2375:SSL handshake ok.\n
-#_#2376:SSL read from %s [ERR=%d]: %s
-#_#2377:SSL write to %s [ERR=%d]: %s
 #_#2378:peer ssl <nick>   - initiate SSL handshake.\n
 #_#2381:I'll add the author of climm to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
 #_#2383:View your last messages of <contact>. Type 'h' as short command.
@@ -1117,7 +1092,6 @@
 #_#2450:Last %d people you talked with:\n
 #_#2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
 #_#2453:    at %p parent %p assoc %p ssl %d\n
-#_#2454:    open %p reconn %p close %p err %p dispatch %p\n
 #_#2455:About>
 #_#2456:Unknown command %s, type %shelp%s for help.\n
 #_#2457:Unknown configuration file format version %d.\n
@@ -1175,12 +1149,6 @@
 #_#2524:Can't restore terminal modes.\n
 #_#2525:Can't read terminal modes.\n
 #_#2526:Can't modify terminal modes.\n
-#_#2527:OpenSSL internal error: %s:%i\n
-#_#2528:OpenSSL read error: %s\n
-#_#2529:OpenSSL read error %d (unknown)\n
-#_#2530:OpenSSL write error: %s\n
-#_#2531:OpenSSL write error %d (unknown)\n
-#_#2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
 #_#2533:SSL handshake failed.\n
 #_#2534:IP:
 #_#2535:Groups:\n
@@ -1365,10 +1333,8 @@
 #_#2723:conn discard <nr>       Discard server connection <nr>.\n
 #_#2724:conn open <nr>          Open connection <nr>.\n
 #_#2725:Connection #%ld is already open.\n
-#_#2726:Don't know how to open connection type %s for #%ld.\n
 #_#2727:Connection #%ld is a server's main i/o connection.\n
 #_#2728:Discarding server connection %ld completely.\n
-#_#2729:Logging of from connection %ld.\n
 #_#2730:xmpp main i/o
 #_#2731:msn main i/o
 #_#2732:icq main i/o
@@ -1379,3 +1345,10 @@
 #_#2737:Added contact group %s (#%d).\n
 #_#2738:Found %d new mails for %s.\n
 #_#2739:Found %d mails for %s.\n
+#_#2740:Don't know how to open connection type %s for %s.\n
+#_#2741:Logging off %s.\n
+#_#2742:Incoming reverse connection request to %s.\n
+#_#2743:Can't find hostname
+#_#2744:Connection timed out
+#_#2745:Opening connection to %s:%s%ld%s 
+#_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n

@@ -1,5 +1,5 @@
 # $Id$
-#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 1001:de
 1002:de_CH
@@ -42,10 +42,8 @@
 #+#1048:Error code: %d\n
 #_#1048:Error code: %ld\n
 1050.Login erfougrich!
-1053:Uf %s verbunde, warte uf Antwort.\n
-1055:Ha ke Socket chönne erschteue!
-#-#1056:Socket becho, versueche z verbinde...\n
-#+#1056:Socket created attempting to connect\n
+1053.Uf %s verbunde, warte uf Antwort.\n
+1055.Ha ke Socket chönne erschteue!
 #-#1060:Usfüehrlechkeit isch %d.\n
 #+#1060:Verbosity level is %d.\n
 #_#1060:Verbosity level is %ld.\n
@@ -552,12 +550,12 @@
 1579:Firma:
 1587:Abteilig:
 1595:\nKontaktlischte:\n============================================\n%d Kontakte.\n
-1596:[SOCKS] Cha der Rächnername %s ned uflöse: %s.
-1597:[SOCKS] Cha ke Socket erzüge.\n
-1598:[SOCKS] Verbindig verweigeret.\n
-1599:[SOCKS] Outorisationsmethode ungüutig.\n
-1600:[SOCKS] Outorisierig fäugschlage.\n
-1601:[SOCKS] Augemeine SOCKS-Server-Fäuschlag.\n
+1596.[SOCKS] Cha der Rächnername %s ned uflöse: %s.
+1597.[SOCKS] Cha ke Socket erzüge.\n
+1598.[SOCKS] Verbindig verweigeret.\n
+1599.[SOCKS] Outorisationsmethode ungüutig.\n
+1600.[SOCKS] Outorisierig fäugschlage.\n
+1601.[SOCKS] Augemeine SOCKS-Server-Fäuschlag.\n
 1602:Bitte der Schtaat igä:
 1603:Bitte d Position igä: 
 1604:Söu der User online si?
@@ -571,7 +569,7 @@
 1622:Möchtisch die Änderige anwände? (Iu/Nei)
 #-#1634:OK\n
 #_#1634:ok.\n
-1637:Cha der Socket zu kem freie Port verbinde\n
+1637.Cha der Socket zu kem freie Port verbinde\n
 1638:Ha der Verbindigsändpunkt ned chönne erzüge
 1639.Di nöii Usernummere isch %ld!\n
 1640.Aktualisiere vo de Infos fäugschlage.\n
@@ -681,7 +679,7 @@
 #-#1800:Wäut d Schprach <lang> us.
 #_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Zeigt d Kontaktlischte im usfüehrleche Format a.
-1807:Igehendi Nachricht %04x vo %s abbroche.\n
+1807.Igehendi Nachricht %04x vo %s abbroche.\n
 1808:College
 1810:Universität
 1812:Früechere Arbeitsplatz
@@ -777,7 +775,6 @@
 #-#1931:Ke Verbindig zum Server.\n
 #_#1931:Current session is closed. Try another or open this one.\n
 1934:verbunde
-#_#1935:    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n
 1936:Bitte Mindeschtauter igä (18-22,23-29,30-39,40-49,50-59,60-120):
 1937:Bitte Maximauauter igä (22,29,39,49,59,120):
 1938:Bitte Gschlächt igä:
@@ -790,22 +787,16 @@
 1944:(me mues outhorisation beatrage)
 1945:Komisches (unbekannts) Meta-User-Resulatat
 1947:Listener
-1948:Cha der Rächnername %s ned uflöse: %s.
+1948.Cha der Rächnername %s ned uflöse: %s.
 1949:Fäugschlage:\n
 1950:Cha der Verbindigsändpunkt ned ned-blockierend mache
-#-#1951:Cha der Rächnername %s ned uflöse
-#+#1951:Can't find hostname %s
-#_#1951:Can't find hostname %s: %s (%d).
 1952:Cha d Verbindig ned ufboue
-1953:Cha ned mit eme freie Port verchnüpfe
-1954:Cha ned uf eme freie Port lose
-1955:Verbindig fäugschlage
-1958:[SOCKS] Verbindig verweigeret (%d)
+1953.Cha ned mit eme freie Port verchnüpfe
+1954.Cha ned uf eme freie Port lose
+1955.Verbindig fäugschlage
+1958.[SOCKS] Verbindig verweigeret (%d)
 1960:Bitte Suechdate igä. Zum Schtarte "." igä.\n
 1961:URL: %s\n
-#-#1966:Verbindig bim Port %d für %s zrüggwise\n
-#+#1966: Conection Refused on port %d at %s\n
-#_#1966: Connection refused on port %ld at %s\n
 1967:Me Infos für
 1969:offline
 1970:online
@@ -887,7 +878,7 @@
 2046:Du söttisch d Version 8 (schtatt der Version 6) für Diräktverbindige wähle.\n
 2047:Erschteue ds Verzeichnis %s.\n
 2048:Schpichere d Ischteuige in %s.\n
-2051:Fähler am Socket: %s (%d)\n
+2051.Fähler am Socket: %s (%d)\n
 2055:Dä User isch für Ploudereie frei u möcht gärn über aus quatsche
 #-#2056:    auto  <nick> - Hou die outomatischi Antwort vo däm Kontkat
 #_#2056:getauto [auto] <nick> - Get the auto-response from the contact.\n
@@ -1029,9 +1020,6 @@
 #_#2222:Script command '%s' failed: %s (%d).\n
 #_#2223:Opening scripting FIFO at %s... 
 #_#2225:scripting
-#_#2226:Couldn't create FIFO
-#_#2227:Couldn't open FIFO
-#_#2228:Couldn't set FIFO nonblocking
 #_#2233:refused authorization: %s%s%s\n
 #_#2234:Message %s discarded - lost session.\n
 #_#2237:Webaware:
@@ -1134,8 +1122,6 @@
 #_#2372:Could not send SSL request to %s\n
 #_#2374:SSL error: %s [%d]\n
 #_#2375:SSL handshake ok.\n
-#_#2376:SSL read from %s [ERR=%d]: %s
-#_#2377:SSL write to %s [ERR=%d]: %s
 #_#2378:peer ssl <nick>   - initiate SSL handshake.\n
 #_#2381:I'll add the author of climm to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
 #_#2383:View your last messages of <contact>. Type 'h' as short command.
@@ -1203,7 +1189,6 @@
 #_#2450:Last %d people you talked with:\n
 #_#2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
 #_#2453:    at %p parent %p assoc %p ssl %d\n
-#_#2454:    open %p reconn %p close %p err %p dispatch %p\n
 #_#2455:About>
 #_#2456:Unknown command %s, type %shelp%s for help.\n
 #_#2457:Unknown configuration file format version %d.\n
@@ -1261,12 +1246,6 @@
 #_#2524:Can't restore terminal modes.\n
 #_#2525:Can't read terminal modes.\n
 #_#2526:Can't modify terminal modes.\n
-#_#2527:OpenSSL internal error: %s:%i\n
-#_#2528:OpenSSL read error: %s\n
-#_#2529:OpenSSL read error %d (unknown)\n
-#_#2530:OpenSSL write error: %s\n
-#_#2531:OpenSSL write error %d (unknown)\n
-#_#2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
 #_#2533:SSL handshake failed.\n
 #_#2534:IP:
 #_#2535:Groups:\n
@@ -1452,10 +1431,8 @@
 #_#2723:conn discard <nr>       Discard server connection <nr>.\n
 #_#2724:conn open <nr>          Open connection <nr>.\n
 #_#2725:Connection #%ld is already open.\n
-#_#2726:Don't know how to open connection type %s for #%ld.\n
 #_#2727:Connection #%ld is a server's main i/o connection.\n
 #_#2728:Discarding server connection %ld completely.\n
-#_#2729:Logging of from connection %ld.\n
 #_#2730:xmpp main i/o
 #_#2731:msn main i/o
 #_#2732:icq main i/o
@@ -1466,3 +1443,10 @@
 #_#2737:Added contact group %s (#%d).\n
 #_#2738:Found %d new mails for %s.\n
 #_#2739:Found %d mails for %s.\n
+#_#2740:Don't know how to open connection type %s for %s.\n
+#_#2741:Logging off %s.\n
+#_#2742:Incoming reverse connection request to %s.\n
+#_#2743:Can't find hostname
+#_#2744:Connection timed out
+#_#2745:Opening connection to %s:%s%ld%s 
+#_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n

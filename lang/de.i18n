@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -40,9 +40,9 @@
 1047.Extra-Daten
 1048:Fehlerkode: %ld\n
 1050.Login erfolgreich!
-1053:Nach %s verbunden, warte auf Antwort.\n
-1055:Konnte keinen Socket erstellen.
-1056:Socket erhalten, versuche zu verbinden.\n
+1053.Nach %s verbunden, warte auf Antwort.\n
+1055.Konnte keinen Socket erstellen.
+1056.Socket erhalten, versuche zu verbinden.\n
 1060:Ausführlichkeit is %ld.\n
 1061:"%s" ist kein Spitzname.\n
 1062:ignorierte User:
@@ -505,12 +505,12 @@
 1579:Firma:
 1587:Abteilung:
 1595:\nKontaktliste:\n============================================\n%d Kontakte.\n
-1596:[SOCKS] Kann den Rechnernamen %s nicht auflösen: %s.
-1597:[SOCKS] Kann keinen Socket erzeugen.\n
-1598:[SOCKS] Verbindung verweigert.\n
-1599:[SOCKS] Autorisierungsmethode ungültig.\n
-1600:[SOCKS] Autorisierung fehlgeschlagen.\n
-1601:[SOCKS] Allgemeiner SOCKS-Server-Fehlschlag.\n
+1596.[SOCKS] Kann den Rechnernamen %s nicht auflösen: %s.
+1597.[SOCKS] Kann keinen Socket erzeugen.\n
+1598.[SOCKS] Verbindung verweigert.\n
+1599.[SOCKS] Autorisierungsmethode ungültig.\n
+1600.[SOCKS] Autorisierung fehlgeschlagen.\n
+1601.[SOCKS] Allgemeiner SOCKS-Server-Fehlschlag.\n
 1602:Bitte Staat eingeben:
 1603:Bitte Position eingeben: 
 1604:Soll der Benutzer online sein?
@@ -526,7 +526,7 @@
 1623.Doppeltes Paket %04x.\n
 1632.\nVerbindung instabil. Beende...
 1634:ok.\n
-1637:Kann Kommunikationsendpunkt nicht mit einem freien Anschluß verknüpfen.\n
+1637.Kann Kommunikationsendpunkt nicht mit einem freien Anschluß verknüpfen.\n
 1638:Konnte Verbindungsendpunkt nicht erzeugen
 1639.Die neue Benutzernummer ist %ld!\n
 1640.Aktualisieren der Informationen fehlgeschlagen.\n
@@ -618,7 +618,7 @@
 1799:weiterführende Schule
 1800:Wählt die Sprache (und Zeichenkodierung) <lang> aus, oder zeigt Text <nr> an.
 1801:Zeigt den Status aller Kontakte im breiten Format an.
-1807:Eingehende Nachricht %04x von %s abgebrochen.\n
+1807.Eingehende Nachricht %04x von %s abgebrochen.\n
 1808:Gymnasium
 1810:Universität
 1812:vergangener Arbeitsplatz
@@ -696,7 +696,7 @@
 1929:[Automatische Nachricht] Bitte nicht stören (Do Not Disturb)
 1931:Die aktuelle Verbindung ist geschlossen; bitte eine andere wählen oder diese öffnen.\n
 1934:verbunden
-1935:    Typ %d Socket %d IP %s (%d) auf [%s,%s] Kennung %lx/%x/%x\n
+1935.    Typ %d Socket %d IP %s (%d) auf [%s,%s] Kennung %lx/%x/%x\n
 1936:Bitte Mindestalter eingeben (18-22,23-29,30-39,40-49,50-59,60-120):
 1937:Bitte Maximalalter eingeben (22,29,39,49,59,120):
 1938:Bitte Geschlecht eingeben:
@@ -707,18 +707,18 @@
 1944:(Autorisierung erforderlich)
 1945:Unbekanntes Benutzerinformations-Ergebnis
 1947:Verbindungsannahme
-1948:Kann den Rechnernamen %s nicht auflösen: %s.
+1948.Kann den Rechnernamen %s nicht auflösen: %s.
 1949:fehlgeschlagen:\n
 1950:Kann Verbindungsendpunkt nicht nicht-blockierend machen
-1951:Kann den Rechnernamen %s nicht auflösen: %s (%d).
+1951.Kann den Rechnernamen %s nicht auflösen: %s (%d).
 1952:Kann Verbindung nicht aufbauen
-1953:Kann nicht mit einem freien Port verknüpfen
-1954:Kann nicht auf einem freien Port horchen
-1955:Verbindung fehlgeschlagen
-1958:[SOCKS] Verbindung verweigert (%d)
+1953.Kann nicht mit einem freien Port verknüpfen
+1954.Kann nicht auf einem freien Port horchen
+1955.Verbindung fehlgeschlagen
+1958.[SOCKS] Verbindung verweigert (%d)
 1960:Bitte Suchdaten eingeben. Zum Starten "." eingeben.\n
 1961:URL: %s\n
-1966: Verbindung verweigert zu Anschluß %ld zu %s.\n
+1966. Verbindung verweigert zu Anschluß %ld zu %s.\n
 1967:Mehr Information für
 1968.Benutzer gefunden:\n
 1969:nicht verbunden
@@ -788,7 +788,7 @@
 2046:Sie sollten die Version 8 (statt Version 6) für Direktverbindungen wählen.\n
 2047:Erzeuge Verzeichnis %s.\n
 2048:Speichere Einstellungen in %s.\n
-2051:Fehler am Kommunikationsendpunkt: %s (%d)\n
+2051.Fehler am Kommunikationsendpunkt: %s (%d)\n
 2055:Der Benutzer ist für Plauereien frei und möchte über alles plaudern.
 2056:getauto auto  <nick> - Hole die automatische Antwort von diesem Kontakt.\n
 2057:getauto away  <nick> - Hole die automatische Antwort für "abwesend" von diesem Kontakt.\n
@@ -916,9 +916,9 @@
 2222:Skript-Kommando "%s" fehlgeschlagen: %s (%d).\n
 2223:Öffne Skript-FIFO auf %s... 
 2225:Skript
-2226:Konnte FIFO nicht erschaffen
-2227:Konnte FIFO nicht öffnen
-2228:Konnte FIFO nicht nicht-blockieren machen
+2226.Konnte FIFO nicht erschaffen
+2227.Konnte FIFO nicht öffnen
+2228.Konnte FIFO nicht nicht-blockieren machen
 2233:hat die Autorisierung abgelehnt: %s%s%s\n
 2234:Nachricht "%s" weggeworfen - die Verbindung ist verschwunden.\n
 2236.Informationen über %s%s%s (%ld):\n
@@ -1026,8 +1026,8 @@
 2372:Konnte keine sichere Verbindung zu %s anfordern.\n
 2374:SSL-Fehler: %s (%d).\n
 2375:SSL-Handschlag ok.\n
-2376:SSL-Lesefehler von %s: (%d) %s.
-2377:SSL-Schreibfehler zu %s: (%d) %s.
+2376.SSL-Lesefehler von %s: (%d) %s.
+2377.SSL-Schreibfehler zu %s: (%d) %s.
 2378:peer ssl <nick>   - baue eine gesicherte (SSL) Verbindung auf.\n
 2381:Ich füge den Autor von climm zur Kontaktliste hinzu. Diese Gelegenheit sollte man nicht mißbrauchen - bitte erst den "help"-Befehl benutzen und einen ernsthaften Versuch machen, die Hilfeseiten und die FAQ (häufig gestellte Fragen) zu lesen, und erst danach fragen.\n
 2383:Zeigt die letzten Nachrichten von <contact> an. Kann zu "h" abgekürzt werden.
@@ -1098,7 +1098,7 @@
 2451:history <KontaKt> [<Start> [<Anzahl>]] -- Zeige geloggte Nachrichten von <Kontakt>.\n
 2452.%02d %-20s v%d%s für %s (%lx) bei %s:%ld %s\n
 2453:    bei %p übergeordnet %p zugehörig %p ssl %d\n
-2454:    öffne %p wiederverbinde %p schließe %p fehler %p ausführen %p\n
+2454.    öffne %p wiederverbinde %p schließe %p fehler %p ausführen %p\n
 2455:Über>
 2456:Unbekanntes Kommando %s, tippe %shelp%s für Hilfe.\n
 2457:Unbekanntes Konfigurationsdateiformatsversion %d.\n
@@ -1171,12 +1171,12 @@
 2524:Kann Textfenster-Einstellungen nicht zurücksetzen.\n
 2525:Kann Textfenster-Einstellungen nicht lesen.\n
 2526:Kann Textfenster-Einstellungen nicht verändern.\n
-2527:OpenSSL-interner Fehler: %s:%i\n
-2528:OpenSSL-Lesefehler: %s\n
-2529:OpenSSL-Lesefehler %d (unbekannt)\n
-2530:OpenSSL-Schreibfehler: %s\n
-2531:OpenSSL-Schreibfehler %d (unbekannt)\n
-2532:OpenSSL-Fehler: SSL_RET=%d, SSL_ERR=%d\n
+2527.OpenSSL-interner Fehler: %s:%i\n
+2528.OpenSSL-Lesefehler: %s\n
+2529.OpenSSL-Lesefehler %d (unbekannt)\n
+2530.OpenSSL-Schreibfehler: %s\n
+2531.OpenSSL-Schreibfehler %d (unbekannt)\n
+2532.OpenSSL-Fehler: SSL_RET=%d, SSL_ERR=%d\n
 2533:SSL-Handschlag fehlgeschlagen.\n
 2534:IP-Adresse:
 2535:Gruppen:\n
@@ -1364,10 +1364,9 @@
 2723:conn discard <nr>       Server-Verbindung <nr> komplett entfernen.\n
 2724:conn open <nr>          Verbindung <nr> öffnen.\n
 2725:Verbindung Nummer %ld ist bereits geöffnet.\n
-#_#2726:Don't know how to open connection type %s for #%ld.\n
 2727:Verbindung Nummer %ld ist die Haupt-Verbindung zu einem Server.\n
 2728:Entferne Server-Verbindung %ld vollständig.\n
-2729:Logge von Verbindung %ld aus.\n
+2729.Logge von Verbindung %ld aus.\n
 #_#2730:xmpp main i/o
 #_#2731:msn main i/o
 #_#2732:icq main i/o
@@ -1378,6 +1377,13 @@
 2737:Kontaktgruppe  %s (#%d) hinzugefügt.\n
 2738:Habe %d neue e-Mails für %s gefunden.\n
 2739:Habe %d e-Mails für %s gefunden.\n
+#_#2740:Don't know how to open connection type %s for %s.\n
+#_#2741:Logging off %s.\n
+#_#2742:Incoming reverse connection request to %s.\n
+#_#2743:Can't find hostname
+#_#2744:Connection timed out
+#_#2745:Opening connection to %s:%s%ld%s 
+#_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n
 2999.max.
 # Those are the funny messages. Substract 2000 to get the normal message.
 3620.Du hast zu viele Freunde, wie wär's mit mehr RL?

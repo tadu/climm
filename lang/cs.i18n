@@ -1,5 +1,5 @@
 # $Id$ Czech
-#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:cs
 1002:cs_CZ
@@ -40,9 +40,9 @@
 1047.Extra Data
 1048:Chybový kód: %ld\n
 1050.Uspěšné přihlášení!
-1053:Připojeno k %s, čekám na odpověď\n
-1055:Vytváření socketu selhalo
-1056:Socket vytvořen, zkouším se připojit.\n
+1053.Připojeno k %s, čekám na odpověď\n
+1055.Vytváření socketu selhalo
+1056.Socket vytvořen, zkouším se připojit.\n
 1060:Úroveň hlášení (verbosity level) je %ld.\n
 1061:Nebyla nalezena přezdívka '%s'.\n
 1062:Ignorovaní uživatelé:
@@ -497,12 +497,12 @@
 1579:Vložte společnost:
 1587:Vložte oddělení:
 1595:\nSeznam kontaktů.\n============================================\n%d Kontakty\n
-1596:[SOCKS] Nemohu najít hostname %s: %s.
-1597:[SOCKS] Vytváření socketu selhalo\n
-1598:[SOCKS] Žádost o spojení byla odmítnuta
-1599:[SOCKS] Nesprávná metoda autentizace
-1600:[SOCKS] Selhání autorizace
-1601:[SOCKS] Všeobecné selhání SOCKS serveru
+1596.[SOCKS] Nemohu najít hostname %s: %s.
+1597.[SOCKS] Vytváření socketu selhalo\n
+1598.[SOCKS] Žádost o spojení byla odmítnuta
+1599.[SOCKS] Nesprávná metoda autentizace
+1600.[SOCKS] Selhání autorizace
+1601.[SOCKS] Všeobecné selhání SOCKS serveru
 1602:Vložte stát:
 1603:Vložte pozici:
 1604:Měli by být uživatelé online?
@@ -518,7 +518,7 @@
 1623.Dvojitý packet %04x.\n
 1632.\nNestabilní spojení. Končím....
 1634:v pořádku.\n
-1637:Nemohu přidělit socket volnému portu\n
+1637.Nemohu přidělit socket volnému portu\n
 1638:Nemohu vytvořit socket.
 1639.Nové UIN je %ld!\n
 1640.Aktualizace informací selhala.\n
@@ -608,7 +608,7 @@
 1799:Střední škola
 1800:Změní jazyk (a kódování) na <lang> nebo zobrazí řetězec <nr>.
 1801:Zobrazí seznam lidí ve vašem seznamu kontaktů ve formátu pro široké obrazovky.
-1807:Stornována příchozí zpráva (seq %04x) od %s\n
+1807.Stornována příchozí zpráva (seq %04x) od %s\n
 1808:Vyšší škola
 1810:Univerzita
 1812:Poslední zaměstnání
@@ -688,7 +688,7 @@
 1929:Uživatel nechce být rušen [automatická zpráva]
 1931:Aktuální spojení je ukončeno. Zkuste jiné nebo zopakujte toto.\n
 1934:spojeno
-1935:    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n
+1935.    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n
 1936:Zadejte minimální věk (18-22,23-29,30-39,40-49,50-59,60-120):
 1937:Zadejte maximální věk (22,29,39,49,59,120):
 1938:Zadejte pohlaví:
@@ -699,18 +699,18 @@
 1944:(musíte požádat o autorizaci)
 1945:Neznámé uživatelovo meta (Unknown Meta User) odpověď
 1947:posluchač
-1948:Nemůžu najít hostname %s: %s.
+1948.Nemůžu najít hostname %s: %s.
 1949:selhalo:\n
 #_#1950:Couldn't set socket nonblocking
-1951:Nemohu najít hostname hostname %s: %s (%d).
+1951.Nemohu najít hostname hostname %s: %s (%d).
 1952:Nemohu otevřít spojení
-1953:nemohu svázat socket s volným portem
-1954:neschopný poslouchat na socketu
-1955:Spojení selhalo
-1958:[SOCKS] Žádost o spojení byla odmítnuta (%d)
+1953.nemohu svázat socket s volným portem
+1954.neschopný poslouchat na socketu
+1955.Spojení selhalo
+1958.[SOCKS] Žádost o spojení byla odmítnuta (%d)
 1960:Zadejte údaje pro vyhledání uživatele. Zadejte '.' pro start vyhledávání.\n
 1961:URL: %s\n
-1966: Spojení odmítnuto na portu %ld pro %s\n
+1966. Spojení odmítnuto na portu %ld pro %s\n
 1967:Více informací pro
 1968.Uživatel nalezen:\n
 1969:offline
@@ -780,7 +780,7 @@
 2046:Možná chcete použít protokol verze 8 místo ICQ peer-to-peer protokolu.\n
 2047:Vytvářím adresář %s.\n
 2048:Ukládám nastavení do %s.\n
-2051:Chyba v socketu: %s (%d)\n
+2051.Chyba v socketu: %s (%d)\n
 2055:Uživatel je ffc (volný pro rozhovor) a chce si povídat o všem možnym.
 2056:getauto [auto] <nick> - Získá automatickou odpověď od kontaktu.\n
 2057:getauto away   <nick> - Získá automatickou odpověď pro status 'away' od kontaktu.\n
@@ -908,9 +908,9 @@
 2222:Skriptový příkaz '%s' selhal: %s (%d).\n
 2223:Otvírám skriptování FIFO na %s... 
 2225:probíhá skriptování
-2226:Nemohu vytvořit FIFO
-2227:Nemohu otevřít FIFO
-2228:Nemohu nastavit neblokování FIFO
+2226.Nemohu vytvořit FIFO
+2227.Nemohu otevřít FIFO
+2228.Nemohu nastavit neblokování FIFO
 2233:autorizace zamítnuta: %s%s%s\n
 2234:Zpráva %s vyřazena - ztracené sezení.\n
 2236.Informace pro %s%s%s (%ld):\n
@@ -1024,8 +1024,8 @@
 2372:Nemohu poslat SSL požadavek na %s\n
 2374:SSL chyba: %s [%d]\n
 2375:SSL handshake ok.\n
-2376:SSL čtení z %s [ERR=%d]: %s
-2377:SSL zápis do %s [ERR=%d]: %s
+2376.SSL čtení z %s [ERR=%d]: %s
+2377.SSL zápis do %s [ERR=%d]: %s
 2378:peer ssl <nick>   - zahájí SSL handshake.\n
 2381:Přidám autora climm do vašeho seznamu kontaktů pro vaši potřebu. Nezneužívejte tuto výhodu - prosím používejte příkaz help a snažte se číst manuálové stránky (man climm) a FAQ před kladením zbytečných dotazů.\n
 2383:Zobrazí vaše poslední zprávy pro/od <contact>. Použijte 'h' jako zkratku příkazu.
@@ -1097,7 +1097,6 @@
 2450:Posledních %d lidí se kterými jste hovořil/a:\n
 2451:history <contact> [<last> [<count>]] -- Zobrazí historii kontaktu <contact>.\n
 #_#2453:    at %p parent %p assoc %p ssl %d\n
-#_#2454:    open %p reconn %p close %p err %p dispatch %p\n
 2455:About>
 2456:Neznámý příkaz %s, napište %shelp%s pro nápovědu.\n
 2457:Neznámá verze formátu konfiguračního souboru %d.\n
@@ -1172,12 +1171,12 @@
 2524:Nemohu obnovit módy terminálu.\n
 2525:Nemohu přečíst módy terminálu.\n
 2526:Nemohu změnit módy terminálu.\n
-2527:OpenSSL interní chyba: %s:%i\n
-2528:OpenSSL chyba čtení: %s\n
-2529:OpenSSL chyba čtení %d (neznámé)\n
-2530:OpenSSL chyba zápisu: %s\n
-2531:OpenSSL chyba zápisu %d (neznámé)\n
-2532:OpenSSL chyba: SSL_RET=%d, SSL_ERR=%d\n
+2527.OpenSSL interní chyba: %s:%i\n
+2528.OpenSSL chyba čtení: %s\n
+2529.OpenSSL chyba čtení %d (neznámé)\n
+2530.OpenSSL chyba zápisu: %s\n
+2531.OpenSSL chyba zápisu %d (neznámé)\n
+2532.OpenSSL chyba: SSL_RET=%d, SSL_ERR=%d\n
 2533:SSL handshake (výměna) selhala.\n
 2534:IP:
 2535:Skupiny:\n
@@ -1364,10 +1363,8 @@
 #_#2723:conn discard <nr>       Discard server connection <nr>.\n
 #_#2724:conn open <nr>          Open connection <nr>.\n
 #_#2725:Connection #%ld is already open.\n
-#_#2726:Don't know how to open connection type %s for #%ld.\n
 #_#2727:Connection #%ld is a server's main i/o connection.\n
 #_#2728:Discarding server connection %ld completely.\n
-#_#2729:Logging of from connection %ld.\n
 #_#2730:xmpp main i/o
 #_#2731:msn main i/o
 #_#2732:icq main i/o
@@ -1378,3 +1375,10 @@
 #_#2737:Added contact group %s (#%d).\n
 #_#2738:Found %d new mails for %s.\n
 #_#2739:Found %d mails for %s.\n
+#_#2740:Don't know how to open connection type %s for %s.\n
+#_#2741:Logging off %s.\n
+#_#2742:Incoming reverse connection request to %s.\n
+#_#2743:Can't find hostname
+#_#2744:Connection timed out
+#_#2745:Opening connection to %s:%s%ld%s 
+#_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n

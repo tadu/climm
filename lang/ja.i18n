@@ -1,5 +1,5 @@
 # $Id$ <Japanese in Japanese> (Japanese)
-#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 1001:ja
 1002:ja_JP
@@ -40,9 +40,9 @@
 1047.付加データ
 1048:エラーコード: %ld\n
 1050.ログインに成功しました
-1053:%s に接続します。  応答を待っています\n
-1055:ソケットの作成に失敗しました
-1056:接続に使用するソケットを作成しました
+1053.%s に接続します。  応答を待っています\n
+1055.ソケットの作成に失敗しました
+1056.接続に使用するソケットを作成しました
 1060:詳細表示のレベルは %ld です。\n
 1061:「%s」というニックネームは登録されていません\n
 1062:ユーザは無視しました:
@@ -503,12 +503,12 @@
 1579:会社名を入力してください:
 1587:会社の部署を入力してください:
 1595:\nコンタクトリスト\n============================================\n%d個あります\n
-1596:[SOCKS] ホスト名 %s: %s は見つかりませんでした。
-1597:[SOCKS] ソケットの作成は失敗しました。\n
-1598:[SOCKS] 接続が拒絶されまし
-1599:[SOCKS] ユーザ名かパスワードの指定が不正す
-1600:[SOCKS] 承認に失敗しました
-1601:[SOCKS] 一般的な SOCKS サーバに関するエラーです
+1596.[SOCKS] ホスト名 %s: %s は見つかりませんでした。
+1597.[SOCKS] ソケットの作成は失敗しました。\n
+1598.[SOCKS] 接続が拒絶されまし
+1599.[SOCKS] ユーザ名かパスワードの指定が不正す
+1600.[SOCKS] 承認に失敗しました
+1601.[SOCKS] 一般的な SOCKS サーバに関するエラーです
 1602:都道府県を入力ください:
 1603:場所を入力してください:
 1604:ユーザはオンラインにするべきですか?
@@ -522,7 +522,7 @@
 1621:ユーザは戻ってきていません
 1622:これらの変更を反映させますか? (yes or no)
 1634:ok.\n
-1637:空きポートが見つからないので、ソケット接続を行うことができません\n
+1637.空きポートが見つからないので、ソケット接続を行うことができません\n
 1638:ソケットを作成できません
 1639.新しい UIN は %ld です\n
 1640.ユーザ情報の更新に失敗しました。\n
@@ -621,7 +621,7 @@
 #+#1800:Change the working language to <lang> or display string <nr>.
 #_#1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:幅広フォーマットでコンタクトリストの人たち表示します。
-1807:受信メッセージ(seq %04x)が取り消されました。%s からでした。\n
+1807.受信メッセージ(seq %04x)が取り消されました。%s からでした。\n
 1808:大学
 1810:大学
 1812:以前いた職場
@@ -705,7 +705,7 @@
 1929:ユーザは 邪魔しないで と言っています [自動メッセージ]
 1931:現在のセッションは切断されました。別のセッションを開くか、いまのセッションを再開してください。\n
 1934:接続されました。
-1935:    タイプ %d ソケット %d IP %s (%d)、[%s,%s] id %lx/%x/%x 上\n
+1935.    タイプ %d ソケット %d IP %s (%d)、[%s,%s] id %lx/%x/%x 上\n
 1936:最低年齢(18-22,23-29,30-39,40-49,50-59,60-120)を入力してください:
 1937:最高年齢(22,29,39,49,59,120)を入力してください:
 1938:性別を入力してください:
@@ -716,18 +716,18 @@
 1944:(認証を要求されます)
 1945:未知のメタユーザ応答
 1947:リスナー
-1948:ホスト名 %s: %s を見つけることができせん。
+1948.ホスト名 %s: %s を見つけることができせん。
 1949:失敗しました:\n
 1950:ソケット非ブロッキングをセットすることができませんでした。\n
-1951:ホスト名 %s: %s (%d) を見つけるできません。
+1951.ホスト名 %s: %s (%d) を見つけるできません。
 1952:接続を開始できませんでした
-1953:空いているポートにソケットをリンクすることができませんでした
-1954:ソケットを待ち受けることができません
-1955:接続は失敗しました
-1958:[SOCKS] 続続要求が拒否されました (%d)
+1953.空いているポートにソケットをリンクすることができませんでした
+1954.ソケットを待ち受けることができません
+1955.接続は失敗しました
+1958.[SOCKS] 続続要求が拒否されました (%d)
 1960:ユーザを検索するデータを入力してください。検索を始めるためには「.」を入力してください。\n
 1961:URL: %s\n
-1966:ポート %ld での %s への接続は拒否されました。\n
+1966.ポート %ld での %s への接続は拒否されました。\n
 1967:次のものに関する詳細情報:
 1968.ユーザが見つかりました。\n
 1969:オフライン
@@ -799,7 +799,7 @@
 2046:ICQ のピア・ツー・ピアプロトコル用にはプロトコルバージョン 8 を使いたいかもしれません。\n
 2047:ディレクトリ %s を作成しています。\n
 2048:設定を %s に保存しています。\n
-2051:ソケット上のエラー: %s (%d)\n
+2051.ソケット上のエラー: %s (%d)\n
 2055:ユーザは「チャットしたい!」で、話題はなんでも OK です。
 2056:peer [auto] <ニックネーム> - 相手から自動応答メッセージを取得します。\n
 2057:peer away   <ニックネーム> - 相手から「不在」の自動応答メッセージを取得します。\n
@@ -971,9 +971,9 @@
 #-#2225:リモートコントロール
 #+#2225:remote control
 #_#2225:scripting
-2226:FIFO を作成できません
-2227:FIFO を開くことができません
-2228:FIFO を非ブロッキングに設定できません
+2226.FIFO を作成できません
+2227.FIFO を開くことができません
+2228.FIFO を非ブロッキングに設定できません
 #-#2233:は認証を断りました: %s%s 。\n
 #+#2233:refused authorization: %s%s\n
 #_#2233:refused authorization: %s%s%s\n
@@ -1099,8 +1099,8 @@
 #-#2375:SSL ハンドシェイク OK\n
 #+#2375:SSL handshake ok\n
 #_#2375:SSL handshake ok.\n
-2376:%s [ERR=%d] から SSL 読み込み: %s
-2377:%s [ERR=%d] へ SSL 書き込み: %s
+2376.%s [ERR=%d] から SSL 読み込み: %s
+2377.%s [ERR=%d] へ SSL 書き込み: %s
 2378:peer ssl <ニックネーム>   - SSL ハンドシェイクの初期化。\n
 2381:climmの著者をあなたが便利なようにあなたのコンタクトリストに加えます。この機会を悪用しないでください。質問をする前に、ヘルプコマンドを使ったり、真面目にmanページやFAQを読もうとしてください。\n連づけられませんでした。破棄します。\n
 2383:<ユーザ>からの最後のメッセージを見ます。'h' は短縮されたコマンドです。
@@ -1178,7 +1178,6 @@
 #_#2450:Last %d people you talked with:\n
 #_#2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
 #_#2453:    at %p parent %p assoc %p ssl %d\n
-#_#2454:    open %p reconn %p close %p err %p dispatch %p\n
 #_#2455:About>
 #_#2456:Unknown command %s, type %shelp%s for help.\n
 #_#2457:Unknown configuration file format version %d.\n
@@ -1236,12 +1235,6 @@
 #_#2524:Can't restore terminal modes.\n
 #_#2525:Can't read terminal modes.\n
 #_#2526:Can't modify terminal modes.\n
-#_#2527:OpenSSL internal error: %s:%i\n
-#_#2528:OpenSSL read error: %s\n
-#_#2529:OpenSSL read error %d (unknown)\n
-#_#2530:OpenSSL write error: %s\n
-#_#2531:OpenSSL write error %d (unknown)\n
-#_#2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
 #_#2533:SSL handshake failed.\n
 #_#2534:IP:
 #_#2535:Groups:\n
@@ -1427,10 +1420,8 @@
 #_#2723:conn discard <nr>       Discard server connection <nr>.\n
 #_#2724:conn open <nr>          Open connection <nr>.\n
 #_#2725:Connection #%ld is already open.\n
-#_#2726:Don't know how to open connection type %s for #%ld.\n
 #_#2727:Connection #%ld is a server's main i/o connection.\n
 #_#2728:Discarding server connection %ld completely.\n
-#_#2729:Logging of from connection %ld.\n
 #_#2730:xmpp main i/o
 #_#2731:msn main i/o
 #_#2732:icq main i/o
@@ -1441,3 +1432,10 @@
 #_#2737:Added contact group %s (#%d).\n
 #_#2738:Found %d new mails for %s.\n
 #_#2739:Found %d mails for %s.\n
+#_#2740:Don't know how to open connection type %s for %s.\n
+#_#2741:Logging off %s.\n
+#_#2742:Incoming reverse connection request to %s.\n
+#_#2743:Can't find hostname
+#_#2744:Connection timed out
+#_#2745:Opening connection to %s:%s%ld%s 
+#_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n

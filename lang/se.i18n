@@ -1,5 +1,5 @@
 # $Id$ (Swedish)
-#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:sv
 1002:sv_SE
@@ -40,9 +40,9 @@
 1047.Extra infomation
 1048:Felkod: %ld\n
 1050.Inloggning lyckad!
-1053:Ansluten till %s, väntar på svar\n
-1055:Uppkopplingen misslyckades
-1056:Uppkopplad, försöker ansluta\n
+1053.Ansluten till %s, väntar på svar\n
+1055.Uppkopplingen misslyckades
+1056.Uppkopplad, försöker ansluta\n
 1060:Debugnivån är %ld.\n
 1061:%s är inte ett registrerat namn.\n
 1062:Ignorerade användare:
@@ -497,12 +497,12 @@
 1579:Ange företag:
 1587:Ange avdelning: 
 1595:\nKontaktlista.\n============================================\n%d Kontakter\n
-1596:[SOCKS] Kunde inte hitta värdnamnet %s: %s.
-1597:[SOCKS] Kunde ej skapa anslutning
-1598:[SOCKS] Anslutning nekades
-1599:[SOCKS] Felaktig verifierngsmetod
-1600:[SOCKS] Verifieringsfel
-1601:[SOCKS] Okänt SOCKS server fel
+1596.[SOCKS] Kunde inte hitta värdnamnet %s: %s.
+1597.[SOCKS] Kunde ej skapa anslutning
+1598.[SOCKS] Anslutning nekades
+1599.[SOCKS] Felaktig verifierngsmetod
+1600.[SOCKS] Verifieringsfel
+1601.[SOCKS] Okänt SOCKS server fel
 1602:Ange stat:
 1603:Ange arbetsbefattning:
 1604:Ska användarna vara online?
@@ -518,7 +518,7 @@
 1623.Dubblerat paket %04x.\n
 1632.\nAnslutningen instabil. Avbryter....
 1634:ok.\n
-1637:Kan inte binda anslutningen till ledig port\n
+1637.Kan inte binda anslutningen till ledig port\n
 1638:Kunde inte skapa anslutning
 1639.Det nya ICQ-nummret (UIN) är %ld!\n
 1640.Misslyckades med att uppdatera informationen.\n
@@ -611,7 +611,7 @@
 1799:Högstadiet/gymnasiet
 1800:Ändra arbetsspråk (och kodning) till <språk> eller visa sträng <nr>.
 1801:Visar en lista på användare från din kontaktlista i ett brett format.
-1807:Avbröt inkommande meddelande (seq %04x) från %s\n
+1807.Avbröt inkommande meddelande (seq %04x) från %s\n
 1808:Högskola
 1810:Universitet
 1812:Tidigare arbetsplats
@@ -689,7 +689,7 @@
 1929:Användaren är "stör ej" [Auto-Meddelande]
 1931:Aktiv session är avslutad. Försök med en annan eller öppna denna.\n
 1934:ansluten
-1935:    typ %d anslutning %d ip %s (%d) på [%s, %s] id %lx/%x/%x\n
+1935.    typ %d anslutning %d ip %s (%d) på [%s, %s] id %lx/%x/%x\n
 1936:Ange minimiålder (18-22,23-29,30-39,40-49,50-59,60-120):
 1937:Ange maxålder (22,29,39,49,59,120):
 1938:Ange kön:
@@ -700,18 +700,18 @@
 1944:(måste begära tillåtelse)
 1945:Okänt metaanvändarsvar
 1947:lyssnare
-1948:Kan ej hitta värdnamn %s: %s.
+1948.Kan ej hitta värdnamn %s: %s.
 1949:misslycakdes:\n
 1950:Kunde ej sätta anslutning icke-blockerande
-1951:Kan ej hitta värdnamn %s: %s (%d).
+1951.Kan ej hitta värdnamn %s: %s (%d).
 1952:Kunde ej öppna anslutning
-1953:kunde ej binda anslutning till ledig port
-1954:kunde ej lyssna på anslutning
-1955:Anslutning misslyckades
-1958:[SOCKS] Begärd anslutning nekad (%d)
+1953.kunde ej binda anslutning till ledig port
+1954.kunde ej lyssna på anslutning
+1955.Anslutning misslyckades
+1958.[SOCKS] Begärd anslutning nekad (%d)
 1960:Skriv in data för använding vid sökning av användare. Skriv '.' för att påbörja sökningen.\n
 1961:URL: %s\n
-1966: Anslutning nekad via port %ld på %s\n
+1966. Anslutning nekad via port %ld på %s\n
 1967:Mer information om
 1968.Användare hittad:\n
 1969:ej inloggad
@@ -781,7 +781,7 @@
 2046:Du kan behöva använda protokoll version 8 för ICQ klient-till-klient-protokoll istället.\n
 2047:Skapar katalog %s.\n
 2048:Sparar inställingar i %s.\n
-2051:Fel på anslutning: %s (%d)\n
+2051.Fel på anslutning: %s (%d)\n
 2055:Användaren är "Tillgänglig för chat" och vill chatta om vad som helst.
 2056:getauto [auto] <alias> - Hämta auto-svaret från kontakten.\n
 2057:getauto away   <alias> - Hämta auto-svaret för "borta" för kontakten.\n
@@ -909,9 +909,9 @@
 2222:Skriptkommandot '%s' misslyckades: %s (%d).\n
 2223:Öppnar skriptnings-FIFO på %s... 
 2225:skriptning
-2226:Kunde inte skapa FIFO
-2227:Kunde inte öppna FIFO
-2228:Kunde inte ställa in FIFO som icke-blockerande
+2226.Kunde inte skapa FIFO
+2227.Kunde inte öppna FIFO
+2228.Kunde inte ställa in FIFO som icke-blockerande
 2233:nekade begäran om tillåtelse: %s%s%s\n
 2234:Meddelande %s ignoreras - session förlorad.\n
 2236.Information om %s%s%s (%ld):\n
@@ -1019,8 +1019,8 @@
 2372:Kunde ej skicka SSL begäran till %s\n
 2374:SSL-fel: %s [%d]\n
 2375:SSL-handskakning ok\n
-2376:SSL-läsning från %s [FEL=%d]: %s
-2377:SSL-skrivning till %s [FEL=%d]: %s
+2376.SSL-läsning från %s [FEL=%d]: %s
+2377.SSL-skrivning till %s [FEL=%d]: %s
 2378:peer ssl <alias>  - initalisera SSL-handskakning.\n
 2381:Jag lägger till utvecklaren av climm till din kontaktlista. Missbruka inte denna möjlighet - vänligen använd hjälpkommandot och gör ett allvarligt försök att läsa mansidan och FAQ innan du ställer frågor.\n
 2383:Visa ditt senaste meddelande för <kontakt>. Skriv 'h' som kort-kommando.
@@ -1091,7 +1091,7 @@
 2451:history <kontakt> [<sista> [<antal>]] -- Visa historik för <kontakt>.\n
 2452.%02d %-15s version %d%s för %s (%lx), vid %s:%ld %s\n
 2453:    vid %p förälder %p association %p ssl %d\n
-2454:    öppna %p återöppna %p stäng %p fel %p sända %p\n
+2454.    öppna %p återöppna %p stäng %p fel %p sända %p\n
 2455:Om>
 2456:Okänt kommando %s, skriv %shelp%s för hjälp.\n
 2457:Okänd version av konfigurationsfilsformat %d.\n
@@ -1164,12 +1164,12 @@
 2524:Kan ej återställa terminalmod.\n
 2525:Kan ej läsa terminalmod.\n
 2526:Kan ej modifiera terminalmod.\n
-2527:OpenSSL internt fel: %s:%i\n
-2528:OpenSSL läsfel: %s\n
-2529:OpenSSL läsfel %d (okänt)\n
-2530:OpenSSL skrivfel: %s\n
-2531:OpenSSL skrivfel %d (okänt)\n
-2532:OpenSSL fel: SSL_RET=%d, SSL_FEL=%d\n
+2527.OpenSSL internt fel: %s:%i\n
+2528.OpenSSL läsfel: %s\n
+2529.OpenSSL läsfel %d (okänt)\n
+2530.OpenSSL skrivfel: %s\n
+2531.OpenSSL skrivfel %d (okänt)\n
+2532.OpenSSL fel: SSL_RET=%d, SSL_FEL=%d\n
 2533:SSL-handskakning misslyckades.\n
 2534:IP:
 2535:Grupper:\n
@@ -1357,10 +1357,10 @@
 2723:conn discard <nr>       Ta bort serveranslutning <nr>.\n
 2724:conn open <nr>          Öppna anslutning <nr>.\n
 2725:Anslutning #%ld är redan öppen.\n
-2726:Vet inte hur anslutningstyp %s för #%ld ska öppnas.\n
+2726.Vet inte hur anslutningstyp %s för #%ld ska öppnas.\n
 2727:Anslutning #%ld är en servers huvudsakliga anslutning.\n
 2728:Ta bort serveranslutning %ld fullständigt.\n
-2729:Logga in från anslutning %ld.\n
+2729.Logga in från anslutning %ld.\n
 2730:xmpp huvudsaklig i/o
 2731:msn huvudsaklig i/o
 2732:icq huvudsaklig i/o
@@ -1371,3 +1371,10 @@
 2737:Kontaktgrupp %s (#%d) tillagd.\n
 2738:Hittade %d nya brev till %s.\n
 2739:Hittad %d brev till %s.\n
+#_#2740:Don't know how to open connection type %s for %s.\n
+#_#2741:Logging off %s.\n
+#_#2742:Incoming reverse connection request to %s.\n
+#_#2743:Can't find hostname
+#_#2744:Connection timed out
+#_#2745:Opening connection to %s:%s%ld%s 
+#_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n

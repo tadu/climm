@@ -1,5 +1,5 @@
 # $Id$ English (English)
-#  EN: __.i18n 2656 2009-02-22 19:58:37 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:en
 1002:en_US
@@ -40,9 +40,9 @@
 1047.Extra Data
 1048:Error code: %ld\n
 1050.Login successful!
-1053:Connected to %s, waiting for response\n
-1055:Socket creation failed
-1056:Socket created, attempting to connect.\n
+1053.Connected to %s, waiting for response\n
+1055.Socket creation failed
+1056.Socket created, attempting to connect.\n
 1060:Verbosity level is %ld.\n
 1061:'%s' not recognized as a nick name.\n
 1062:Users ignored:
@@ -495,12 +495,12 @@
 1579:Enter company: 
 1587:Enter department: 
 1595:\nContact List.\n============================================\n%d Contacts\n
-1596:[SOCKS] Can't find hostname %s: %s.
-1597:[SOCKS] Socket creation failed\n
-1598:[SOCKS] Connection request refused
-1599:[SOCKS] Authentication method incorrect
-1600:[SOCKS] Authorization failure
-1601:[SOCKS] General SOCKS server failure
+1596.[SOCKS] Can't find hostname %s: %s.
+1597.[SOCKS] Socket creation failed\n
+1598.[SOCKS] Connection request refused
+1599.[SOCKS] Authentication method incorrect
+1600.[SOCKS] Authorization failure
+1601.[SOCKS] General SOCKS server failure
 1602:Enter a state:
 1603:Enter position: 
 1604:Should the users be online?
@@ -516,7 +516,7 @@
 1623.Double packet %04x.\n
 1632.\nConnection unstable. Exiting....
 1634:ok.\n
-1637:Can't bind socket to free port\n
+1637.Can't bind socket to free port\n
 1638:Couldn't create socket
 1639.The new UIN is %ld!\n
 1640.Failed to update info.\n
@@ -608,7 +608,7 @@
 1799:High School
 1800:Change the working language (and encoding) to <lang> or display string <nr>.
 1801:Displays a list of people on your contact list in a screen wide format.
-1807:Cancelled incoming message (seq %04x) from %s\n
+1807.Cancelled incoming message (seq %04x) from %s\n
 1808:College
 1810:University
 1812:Past Work Place
@@ -686,7 +686,7 @@
 1929:User is dnd [Auto-Message]
 1931:Current session is closed. Try another or open this one.\n
 1934:connected
-1935:    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n
+1935.    type %d socket %d ip %s (%d) on [%s,%s] id %lx/%x/%x\n
 1936:Enter min age (18-22,23-29,30-39,40-49,50-59,60-120):
 1937:Enter max age (22,29,39,49,59,120):
 1938:Enter sex:
@@ -697,18 +697,18 @@
 1944:(must request authorization)
 1945:Unknown Meta User response
 1947:listener
-1948:Can't find hostname %s: %s.
+1948.Can't find hostname %s: %s.
 1949:failed:\n
 1950:Couldn't set socket nonblocking
-1951:Can't find hostname %s: %s (%d).
+1951.Can't find hostname %s: %s (%d).
 1952:Couldn't open connection
-1953:couldn't bind socket to free port
-1954:unable to listen on socket
-1955:Connection failed
-1958:[SOCKS] Connection request refused (%d)
+1953.couldn't bind socket to free port
+1954.unable to listen on socket
+1955.Connection failed
+1958.[SOCKS] Connection request refused (%d)
 1960:Enter data to search user for. Enter '.' to start the search.\n
 1961:URL: %s\n
-1966: Connection refused on port %ld at %s\n
+1966. Connection refused on port %ld at %s\n
 1967:More Info for
 1968.User found:\n
 1969:offline
@@ -778,7 +778,7 @@
 2046:You may want to use protocol version 8 for the ICQ peer-to-peer protocol instead.\n
 2047:Creating directory %s.\n
 2048:Saving preferences to %s.\n
-2051:Error on socket: %s (%d)\n
+2051.Error on socket: %s (%d)\n
 2055:User is ffc and wants to chat about everything.
 2056:getauto [auto] <nick> - Get the auto-response from the contact.\n
 2057:getauto away   <nick> - Get the auto-response for away from the contact.\n
@@ -906,9 +906,9 @@
 2222:Script command '%s' failed: %s (%d).\n
 2223:Opening scripting FIFO at %s... 
 2225:scripting
-2226:Couldn't create FIFO
-2227:Couldn't open FIFO
-2228:Couldn't set FIFO nonblocking
+2226.Couldn't create FIFO
+2227.Couldn't open FIFO
+2228.Couldn't set FIFO nonblocking
 2233:refused authorization: %s%s%s\n
 2234:Message %s discarded - lost session.\n
 2236.Information for %s%s%s (%ld):\n
@@ -1016,8 +1016,8 @@
 2372:Could not send SSL request to %s\n
 2374:SSL error: %s [%d]\n
 2375:SSL handshake ok.\n
-2376:SSL read from %s [ERR=%d]: %s
-2377:SSL write to %s [ERR=%d]: %s
+2376.SSL read from %s [ERR=%d]: %s
+2377.SSL write to %s [ERR=%d]: %s
 2378:peer ssl <nick>   - initiate SSL handshake.\n
 2381:I'll add the author of climm to your contact list for your convenience. Don't abuse this opportunity - please use the help command and make a serious attempt to read the man pages and the FAQ before asking questions.\n
 2383:View your last messages of <contact>. Type 'h' as short command.
@@ -1088,7 +1088,7 @@
 2451:history <contact> [<last> [<count>]] -- Show history of <contact>.\n
 2452.%02d %-15s version %d%s for %s (%lx), at %s:%ld %s\n
 2453:    at %p parent %p assoc %p ssl %d\n
-2454:    open %p reconn %p close %p err %p dispatch %p\n
+2454.    open %p reconn %p close %p err %p dispatch %p\n
 2455:About>
 2456:Unknown command %s, type %shelp%s for help.\n
 2457:Unknown configuration file format version %d.\n
@@ -1161,12 +1161,12 @@
 2524:Can't restore terminal modes.\n
 2525:Can't read terminal modes.\n
 2526:Can't modify terminal modes.\n
-2527:OpenSSL internal error: %s:%i\n
-2528:OpenSSL read error: %s\n
-2529:OpenSSL read error %d (unknown)\n
-2530:OpenSSL write error: %s\n
-2531:OpenSSL write error %d (unknown)\n
-2532:OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
+2527.OpenSSL internal error: %s:%i\n
+2528.OpenSSL read error: %s\n
+2529.OpenSSL read error %d (unknown)\n
+2530.OpenSSL write error: %s\n
+2531.OpenSSL write error %d (unknown)\n
+2532.OpenSSL error: SSL_RET=%d, SSL_ERR=%d\n
 2533:SSL handshake failed.\n
 2534:IP:
 2535:Groups:\n
@@ -1354,10 +1354,10 @@
 2723:conn discard <nr>       Discard server connection <nr>.\n
 2724:conn open <nr>          Open connection <nr>.\n
 2725:Connection #%ld is already open.\n
-2726:Don't know how to open connection type %s for #%ld.\n
+2726.Don't know how to open connection type %s for #%ld.\n
 2727:Connection #%ld is a server's main i/o connection.\n
 2728:Discarding server connection %ld completely.\n
-2729:Logging of from connection %ld.\n
+2729.Logging of from connection %ld.\n
 2730:xmpp main i/o
 2731:msn main i/o
 2732:icq main i/o
@@ -1368,6 +1368,13 @@
 2737:Added contact group %s (#%d).\n
 2738:Found %d new mails for %s.\n
 2739:Found %d mails for %s.\n
+#_#2740:Don't know how to open connection type %s for %s.\n
+#_#2741:Logging off %s.\n
+#_#2742:Incoming reverse connection request to %s.\n
+#_#2743:Can't find hostname
+#_#2744:Connection timed out
+#_#2745:Opening connection to %s:%s%ld%s 
+#_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n
 2999.max
 # Those are the funny messages. Substract 2000 to get the normal message.
 3082.But hey, let's just poke the server again... [try %d out of %d]\n
