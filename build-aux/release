@@ -19,6 +19,7 @@ VERSION=$1
 # debootstrap --variant=buildd --components=main,universe --include=$packages,build-essential hardy    chroot-Ubuntu-8.04-5hardy
 # debootstrap --variant=buildd --components=main,universe --include=$packages                 intrepid chroot-Ubuntu-8.10-6intrepid
 # debootstrap --variant=buildd --components=main,universe --include=$packages                 jaunty   chroot-Ubuntu-9.04-7jaunty
+# debootstrap --variant=buildd --components=main,universe --include=$packages                 karmic   chroot-Ubuntu-9.10-8karmic
 
 # debootstrap --variant=buildd --components=main,universe --include=$packages,rpm             intrepid chroot-Generic-0generic
 #   autopackage-devel_1.0.10-2_i386.deb alienated from http://ftp.sunsite.dk/projects/autopackage/1.0.10/autopackage-devel-1.0.10-1.i386.rpm
@@ -82,7 +83,7 @@ for distri in \
   Ubuntu-6.06-1dapper:noxmpp:deb Ubuntu-7.10-4gutsy::deb \
   Ubuntu-6.10-2edgy:noxmpp:deb Ubuntu-7.04-3feisty::deb \
   Generic-0generic:autopackage:package \
-  Ubuntu-8.04-5hardy::deb Ubuntu-8.10-6intrepid::deb Ubuntu-9.04-7jaunty::deb \
+  Ubuntu-8.04-5hardy::deb Ubuntu-8.10-6intrepid::deb Ubuntu-9.04-7jaunty::deb Ubuntu-9.10-8karmic::deb \
   Debian-4.0-0etch::deb Debian-5.0-1lenny::deb \
   Generic-0generic:autopackage:deb
 do
