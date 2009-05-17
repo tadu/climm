@@ -38,11 +38,11 @@ cd /tmp
 if [ ! -f climm-$VERSION.tgz ]; then
 rm -rf climm
 rm -rf climm-* climm_*
-svn co http://svn.climm.org/tags/climm${1:+-}${1}/
+svn co http://svn.climm.org/${1:+tags/}climm${1:+-}${1}/
 cd climm${1:+-}$1
 build-aux/prepare
 rm -rf autom4te.cache web doc/html
-rm prepare
+rm build-aux/prepare
 rm -rf `find -type d -name CVS` `find -type d -name .svn`
 find -type f -name .cvsignore -exec rm -rf {} \;
 cp lang/Makefile.am lang/Makefile
@@ -102,6 +102,8 @@ done
 echo "Waiting for builds to finish."
 wait
 echo "Done."
+
+[ -z "$1" ] && exit 0
 
 #
 # final
