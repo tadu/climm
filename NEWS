@@ -51,3 +51,5 @@
    support including gmail command
 2009-02-22: 0.6.4:
    Bug fixes.
+2009-05-17: 0.7:
+   Switch to directly use libiksemel.

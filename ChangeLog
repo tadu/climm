@@ -1,5 +1,230 @@
 -*- coding: utf-8 -*-
 
+2009-05-17: Rüdiger Kuhlmann
+	* i18n: en, de.
+	* 0.7.
+
+2009-05-06: Rüdiger Kuhlmann
+	* io: make sure A flag is not set after close as it would cause the dispatch
+	  function to be called without anything to dispatch on (fixes: #53) 
+	* i18n: automatic lang update
+
+2009-04-11: Rüdiger Kuhlmann
+	* io: fix value of replacement macros for ssl functions
+	* io: avoid code duplication of buffering function
+	* io: merge all kind of dispatcher flags into one enum
+	* io: note connecting function into i/o function table
+	* io: avoid code duplication by handling non-finished connecting centrally
+	* io: set FLAG_OPEN and not only ssl status
+	* io: add functions to handle chained reads/writes/accepts, and define NULL
+	  pointer to just use next chain element 
+	* io: bring in libresolv if needed for res_query()
+	* io: if server name contains :, interpret following characters as port number to use instead
+	* io: if several servers are listed, display only first in error message
+	* io: add simple RR DNS resolver
+	* compile: check for resolv.h
+	* compile: ... io_dns.c
+	* xmpp: use RR DNS if no server is specified (or is the one in the screen name)
+	* xmpp: several cosmetic changes
+	* xmpp: re-connect automatically
+	* xmpp: fix XMPP over SSL
+	* i18n: update i18n strings
+
+2009-04-08: Rüdiger Kuhlmann
+	* io: add extra check to make sure no segfaults happens for IO after close
+	* xmpp: remove failing assert
+
+2009-04-01: Rüdiger Kuhlmann
+	* io: disable SSL over proxy for openssl because our proxy code would
+	  not be called (->helpneeded) 
+	* xmpp: advertise support of XEP85
+	* xmpp: drop [iksemel] tag, we're only using libiksemel now
+	* xmpp: drop type='chat' attribute for acknowledge messages, Google's server doesn't like them there 
+	* oscar: rename CAP_ISICQ to CQP_REVCONNREQ
+	* oscar: only send reverse connection request if peer has CAP_REVCONNREQ
+	* oscar: try to send it only once per peer
+	* oscar: print incoming reverse connection request if verbose 
+	* oscar: actually _do_ the reverse connection
+	* oscar: fixes to output
+
+2009-03-27: Rüdiger Kuhlmann
+	* compile: fix path to prepare
+	* core: fix md5 code for openssl
+
+2009-03-24: Rüdiger Kuhlmann
+	* compile: fix error where depending on configure option code was effectively not compiled in
+	* io: add #defined away logging code
+	* io: if is_client is 2, a possibly non-anonymous client connection is tried 
+	* xmpp: if port is 443 or 5223, immediately start SSL
+	* xmpp: use our own starttls stuff
+
+2009-03-23: Rüdiger Kuhlmann
+	* xmpp: fix recv function return value
+	* xmpp: don't segfault due to logging out twice
+	* xmpp: copy code fixed in libiksemel 1.3 if we use 1.2 
+	* xmpp: allow version 1.2 of libiksemel
+	* xmpp: don't use code from libiksemel 1.3 - work around results of
+	  broken base64() function instead 
+	* io: join io_openssl_err_t and io_gnutls_err_t to one io_ssl_err_t
+	* io: abstract away to util_io.c which ssl lib is used
+	* io: finish pending writes when connection succeeds
+	* io: check for pending writes by their size, not by a writable flag which might get re-set elsewhere 
+	* io: cope with connection not already been connected when starting SSL on it
+	* io: add lots of debug statements (#dfeined out)
+	* io: move select() to single function to make sure we don't think we're connected when we're not 
+
+2009-03-21: Rüdiger Kuhlmann
+	* core: if a connection signals to be scheduled unconditionally, then do
+	  so immediately after queue run (so not to wait until select() timeout has passed) 
+	* io: rc=0 means closed also when writing out buffer
+	* io: wrong length was used for buffer
+	* io: select R when select didn't find anything readable in _both_ cases 
+	* io: properly handle GNUTLS_E_AGAIN and GNUTLS_E_INTERRUPTED also in regular read/write
+	* io: clear ->connection when closing
+	* io: select R when handshake succeeded
+	* io: fix pull function return code translation 
+
+2009-03-17: Rüdiger Kuhlmann
+	* tcl: move defines for disabled tcl to include file instead
+	  of having to duplicate them
+	* tcl: also allow to compile against tcl 8.5 
+	* scripting: move scripting to new i/o scheme
+	* scripting: rename Remote*() to Scripting*()
+
+2009-03-12: Rüdiger Kuhlmann
+	* io: do not use a sequence number - in case conn->ip changes (i.e. socks5)
+	* io: do not check for server or ip - listening connections won't have one
+	* io: merge UtilIOShowDisconnect() into UtilIOShowError()
+	* io: fix an failed assertions
+	* io: don't dequeue events that we didn't enqueue
+	* core: add configure command line to version string
+	* io: if stuff is written before the connection is established, simply
+	  append it to the buffer, otherwise data may get lost 
+	* oscar: fix retry with internal ip
+	* oscar: if SSL handshake failed, close connection
+	* core: remove unused defines
+	* xmpp: rename jabber_base.h to xmpp_base.h
+	* io: drop conn->close hook as we don't need two ways of closing
+	  a connection
+	* core: add IMMLogout() 
+2009-03-11: Rüdiger Kuhlmann
+	* io: consolidate several ->dispatcher->funcs->f_close calls into a new
+	  UtilIOClose() function 
+	* io: remove reconnect hook - handled while noting i/o error in
+	  protocol specific code 
+	* io: remove utilio hook - not used anymore
+	* io: remove outgoing paket pointer - unsused since there now is a
+	  generic output buffer 
+	* io: move dispatcher structure to private io/io_private.h, provide
+	  wrapper functions in util_io.c and use
+	* io: let err function return const
+	* io: remove some unneeded includes 
+	* io: remove unused member
+	* io: make function pointer table private as well
+	* io: let all connection request go throu util_io.c again to prepare for socks5
+	* io: re-add socks5 support
+
+2009-03-10: Rüdiger Kuhlmann
+	* io: also display connection timeout error here
+	* io: do not update IP unless it is neither 0 nor -1
+	* oscar: add function to send IP update (aka reverse connection request)
+	  if a message is to be sent and no direct connection info is availables
+	* oscar: change oscar direct connections to use new i/o scheme as well
+	* oscar: enable use of new i/o scheme for GnuTLS secured direct connections
+	* oscar: comment out / assert(0) code that should not be used anymore 
+	* io: make functions more typesafe by taking enums as parameters / use as return values 
+	* io: gnutls: remove unused timeout function
+	* io: first shot at copying openssl code to new i/o scheme
+	* io: set ssl_status to fail unless it was ok when closing (like in openssl)
+	* io: remove now unused member
+	* compile: add building with both OpenSSL and GnuTLS (useful for autopackage)
+	* compile: remove building of msn
+	* compile: remove building with libgloox 
+	* compile: small fixes to conditional building
+	* io: move funcs pointer to dispatcher structure
+	* io: tiny fixes and debug statements re-added
+	* oscar: remove handling of CANCEL packets (useless)
+	* core: add TCL calls after SSL handshake finished or failed
+	* io: remove all code now in io/io_gnutls and io/io_openssl
+	* core: move md5 functions to src/util_md5 and rename
+	  (they're not related to SSL except they use SSL libs for the
+	  implementation), as they were done by me and not Roman (who
+	  did the actual SSL code))
+	* core: move remaining two functions from util_ssl.c (remove) to
+	  oscar_dc.c and clean up includes 
+
+2009-03-09: Rüdiger Kuhlmann
+	* io: add accept (listening connections) to new i/o scheme
+	* io: change accept() function signature to also contain new connection
+	* io: make sure io_tcp.c only changes the CONNECT_SELECT* flags in ->connect
+	* io: fix push/poll function return value 
+	* io: rename UtilIOFinishConnect() to UtilIOShowError() and pass
+	  error code instead of doing an empty read on its own
+	* io: add some more calls to ->f_close() in error situations
+	* io: hide declarations of functions I want to remove ASAP 
+
+2009-03-08: Rüdiger Kuhlmann
+	* io: use new io/io_tcp also for Oscar server connection
+	* io: code simplification in preparation for changes to i/o functions
+	* io: first version of new GnuTLS i/o layer
+
+2009-03-07: Rüdiger Kuhlmann
+	* io: refactor networking code to make them wrappable for s5/ssl/...
+	* xmpp: ... and use for XMPP
+	* io: CONNECT_SELECT_A = flag to make the main loop call the dispatch
+	  function (used to signal error codes in callbacks that do not return
+	  an error code and to move error code handling to just one place)
+	* io: convenience functions UtilIOShowDisconnect() and
+	  UtilIOFinishConnect() to handle/display error codes 
+
+2009-03-04: Rüdiger Kuhlmann
+	* core: rename members in Connection:
+	    our_seq->oscar_dc_seq/Server.oscar_seq/Server.xmpp_sequence
+	    our_session->oscar_our_session
+	* core: remove stat_real_pak_{sent,rcvd} (no definable difference to stat_pak_*)
+	* io: remove UDP io functions (no use anymore)
+	* core: merge three FooCallBackReconn?() to one IMCallBackreconn()
+	* io: use UtilIOSendTCP() instead of sockwrite in oscar_base.c 
+	* io: remove reconnect hooks that cannot be called
+	* io: remove one hook call that is never used 
+	* io: remove error hooks that cannot be called
+	* io: remove last user of conn->error() by making UtilIOSendTCP cope
+	  with EAGAIN, then remove ->error alltogether;
+	  side-effect: network buffer full will not break the connection
+	  (as long as it is at most one more packet)
+	* io: get rid of conn->c_open similarly, new function IMConnOpen() instead 
+
+2009-03-03: Rüdiger Kuhlmann
+	* xmpp: fix possible null pointer dereference in gmail notification
+	* xmpp: remove usage of void * and set defines for hacked libixemel
+	* xmpp: provide transport to work-around hanging-in-recv()-bug in
+	  libiksemel (Debian#511808) 
+	* compile: move stuff to build-aux subdirectory
+	* core: remove Server->c_open() member and just provide one function to
+	  call the correct function in one place 
+
+2009-03-02: Rüdiger Kuhlmann
+	* xmpp: iksemel updates, 'eat your own dogfood' style
+	* xmpp: implement XEP12 and XEP92
+	* xmpp: re-enable XEP115 and XEP91 processing
+	* xmpp: bring back XEP22 and XEP85 message acks and chat states
+	* xmpp: add gloox tag to version id
+	* compile: also relay iksemel
+
+2009-03-01: Rüdiger Kuhlmann
+	* debug: put debug info into per server directory
+	* xmpp: add XMPP implementation based on libiksemel
+	* compile: fix warning if some options are not enabled
+	* compile: --enable-xmpp=iksemel will now create a second binary
+	* xmpp: use (new) member xmpp_parser instead of xmpp_private for more
+	  type safety
+	* xmpp: bring back all basic stuff, at least superficially
+	* buildsystem: little update: AmigaOS is now also handled by chroot
+
+2009-02-23 Rüdiger Kuhlmann
+	* clean up man page references, fix broken Id: strings and add comment
+	  about EN: line where missing 
+
 2009-02-22 Rüdiger Kuhlmann
 	* 0.6.4
 

@@ -1,6 +1,6 @@
 Summary:		text/line based ICQ client with many features%{?_without_tcl: [no Tcl]}%{?_without_ssl: [no SSL]}%{?_without_xmpp: [no XMPP]}
 Name:			climm
-Version:		0.6.4
+Version:		0.7
 Release:		1%{?_without_tcl:.notcl}%{?_without_ssl:.nossl}%{?_without_xmll:.noxmpp}
 Source:			climm-%{version}.tgz
 URL:			http://www.climm.org/
@@ -83,6 +83,9 @@ test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Sun May 17 2009 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
+- new upstream release 0.7
+
 * Sun Feb 22 2009 Rüdiger Kuhlmann <info@ruediger-kuhlmann.de>
 - new upstream release 0.6.4
 
