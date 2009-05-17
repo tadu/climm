@@ -375,19 +375,17 @@ dnl fi
 dnl AC_LANG([C])
 
 if test "x$ac_arg_use_xmpp" != "xno"; then
+  ac_use_xmpp=yes
+
   if test "x$ac_arg_use_ssl" != "xgnutls" && test "x$ac_arg_use_ssl" != "xgnutls+openssl"; then
     AC_MSG_CHECKING([XMPP])
     AC_MSG_RESULT([no, GnuTLS missing])
     ac_use_xmpp=no
   fi
-  PKG_CHECK_MODULES(IKS, iksemel, ac_use_xmpp=yes, ac_use_xmpp=no)
+
+  PKG_CHECK_MODULES(IKS, iksemel, , ac_use_xmpp=no)
   
   if test "x$ac_use_xmpp" = xyes; then
-    AC_DEFINE(ENABLE_IKS, 1, [Enable XMPP chat network using iksemel])
-    ac_iksemel_version=`pkg-config --modversion iksemel | tr . " "`
-    ac_iksemel_version=`printf 0x%02x%02x $ac_iksemel_version`
-    AC_DEFINE_UNQUOTED(LIBIKS_VERSION, $ac_iksemel_version, [libiksemel version])
-    ac_use_xmpp=yes
   fi
 
   if test "x$ac_arg_use_xmpp" = xyes; then
@@ -406,6 +404,11 @@ if test "x$ac_arg_use_xmpp" != "xno"; then
   ac_arg_use_xmpp=$ac_use_xmpp;
   if test "x$ac_arg_use_xmpp" != xno; then
     AC_DEFINE(ENABLE_XMPP, 1, [Enable XMPP chat network])
+    AC_DEFINE(ENABLE_IKS, 1, [Enable XMPP chat network using iksemel])
+    ac_iksemel_version=`pkg-config --modversion iksemel | tr . " "`
+    ac_iksemel_version=`printf 0x%02x%02x $ac_iksemel_version`
+    AC_DEFINE_UNQUOTED(LIBIKS_VERSION, $ac_iksemel_version, [libiksemel version])
+    ac_use_xmpp=yes
   fi
 fi
 
