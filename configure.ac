@@ -385,9 +385,6 @@ if test "x$ac_arg_use_xmpp" != "xno"; then
 
   PKG_CHECK_MODULES(IKS, iksemel, , ac_use_xmpp=no)
   
-  if test "x$ac_use_xmpp" = xyes; then
-  fi
-
   if test "x$ac_arg_use_xmpp" = xyes; then
     if test "x$ac_use_xmpp" = xno; then
       AC_MSG_FAILURE([cannot find XMPP library libiksemel])
