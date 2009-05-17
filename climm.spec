@@ -64,7 +64,7 @@ test $RPM_BUILD_ROOT != / && rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,0755)
 %doc NEWS AUTHORS FAQ README TODO doc/COPYING-GPLv2
-%doc doc/README.i18n doc/README.logformat doc/README.ssl doc/COPYING doc/example-climm-event-script
+%doc doc/README.i18n doc/README.logformat doc/README.ssl COPYING doc/example-climm-event-script
 %{_bindir}/*
 %{_datadir}/climm
 %if %{?update_menus:1}%{!?update_menus:0}
