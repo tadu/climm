@@ -30,9 +30,7 @@ struct Connection_s
 
     Dispatcher *dispatcher;   /* pointer to extra data for dispatching    */
     
-#if ENABLE_SSL
     ssl_status_t ssl_status;  /* SSL status (INIT,OK,FAILED,...)          */
-#endif
 
     Connection       *oscar_file;  /* associated file saving session           */
     UDWORD    oscar_our_session;    /* session ID                               */
