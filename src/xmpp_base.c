@@ -29,6 +29,7 @@
  * $Id: oscar_base.c 2670 2009-03-01 16:48:03Z kuhlmann $
  */
 
+
 #include "climm.h"
 #include <sys/types.h>
 #include <errno.h>
@@ -40,6 +41,8 @@
 #endif
 #include <fcntl.h>
 #include <assert.h>
+
+#if ENABLE_XMPP
 
 #define IKS_TRANS_USER_DATA Server
 #define IKS_FILTER_USER_DATA Server
@@ -1556,4 +1559,6 @@ void CLIMMXMPP::handleSubscription (gloox::Stanza *s)
 #endif
                s->xml().c_str());
 }
+#endif
+
 #endif
