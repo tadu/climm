@@ -9,7 +9,7 @@ VERSION=$1
 #
 # Ubuntu from chroot
 #
-# packages=joe,libgloox-dev,fakeroot,debhelper,tcl8.4-dev,libotr2-dev
+# packages=joe,libiksemel-dev,fakeroot,debhelper,tcl8.4-dev,libotr2-dev
 # debootstrap --variant=buildd                            --include=$packages                 etch     chroot-Debian-4.0-0etch    http://ftp.de.debian.org/debian
 # debootstrap --variant=buildd                            --include=$packages,build-essential lenny    chroot-Debian-5.0-1lenny   http://ftp.de.debian.org/debian
 # debootstrap --variant=buildd --components=main,universe --include=$packages                 dapper   chroot-Ubuntu-6.06-1dapper
