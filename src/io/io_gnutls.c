@@ -115,11 +115,7 @@ io_ssl_err_t IOGnuTLSSupported (void)
         if ((ret = gnutls_dh_params_generate2 (dh_parm, DH_OFFER_BITS)))
             return io_gnutls_seterr (IO_SSL_INIT, ret, "DH param generate2 (server)");
     }
-#if defined(ENABLE_AUTOPACKAGE)
-    else
-#endif
-#endif
-#if !HAVE_DH_GENPARAM2 || ENABLE_AUTOPACKAGE
+#else
     {
         gnutls_datum p1, p2;
         if ((ret = gnutls_dh_params_generate (&p1, &p2, DH_OFFER_BITS)))
