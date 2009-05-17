@@ -183,7 +183,7 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
         d->flags = FLAG_CRED_SENT;
         d->read = 0;
         if (e != IO_OK)
-            return io_socks5_seterr (d, rc, d->next->funcs->f_err (conn,  d->next));
+            return io_socks5_seterr (d, e, d->next->funcs->f_err (conn,  d->next));
     }
     if (d->flags == FLAG_CRED_SENT)
     {
@@ -253,7 +253,7 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
         e = io_util_write (conn, d->next, send, len);
         d->read = 0;
         if (e != IO_OK)
-            return io_socks5_seterr (d, rc, d->next->funcs->f_err (conn,  d->next));
+            return io_socks5_seterr (d, e, d->next->funcs->f_err (conn,  d->next));
     }
     return IO_OK;
     assert(0);
