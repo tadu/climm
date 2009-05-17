@@ -1368,13 +1368,13 @@
 2737:Added contact group %s (#%d).\n
 2738:Found %d new mails for %s.\n
 2739:Found %d mails for %s.\n
-#_#2740:Don't know how to open connection type %s for %s.\n
-#_#2741:Logging off %s.\n
-#_#2742:Incoming reverse connection request to %s.\n
-#_#2743:Can't find hostname
-#_#2744:Connection timed out
-#_#2745:Opening connection to %s:%s%ld%s 
-#_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n
+2740:Don't know how to open connection type %s for %s.\n
+2741:Logging off %s.\n
+2742:Incoming reverse connection request to %s.\n
+2743:Can't find hostname
+2744:Connection timed out
+2745:Opening connection to %s:%s%ld%s 
+2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n
 2999.max
 # Those are the funny messages. Substract 2000 to get the normal message.
 3082.But hey, let's just poke the server again... [try %d out of %d]\n

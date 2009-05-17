@@ -1377,12 +1377,12 @@
 2737:Kontaktgruppe  %s (#%d) hinzugefügt.\n
 2738:Habe %d neue e-Mails für %s gefunden.\n
 2739:Habe %d e-Mails für %s gefunden.\n
-#_#2740:Don't know how to open connection type %s for %s.\n
-#_#2741:Logging off %s.\n
-#_#2742:Incoming reverse connection request to %s.\n
-#_#2743:Can't find hostname
-#_#2744:Connection timed out
-#_#2745:Opening connection to %s:%s%ld%s 
+2740:Keine Ahnung, wie Verbindungen vom Typ %s (für %s) geöffnet werden können.\n
+2741:Logge aus mit Benutezr %s.\n
+2742:Eingehende umgedrehte Verbindungsanfrage von %s.\n
+2743:Kann Rechnernamen nicht finden:
+2744:Verbindungsaufbau erlitt Zeitüberschreitung
+2745:Öffne Verbindung zu %s:%s%ld%s 
 #_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n
 2999.max.
 # Those are the funny messages. Substract 2000 to get the normal message.
