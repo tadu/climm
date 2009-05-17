@@ -1081,8 +1081,10 @@ BOOL TCPSendSSLReq (Connection *list, Contact *cont)
  */
 void TCPClose (Connection *peer)
 {
+    UWORD connect;
     assert (peer);
-    UWORD connect = (peer->connect & CONNECT_MASK && !(peer->connect & CONNECT_OK)) ? CONNECT_FAIL : 0;
+
+    connect = (peer->connect & CONNECT_MASK && !(peer->connect & CONNECT_OK)) ? CONNECT_FAIL : 0;
     
     if (peer->oscar_file)
     {

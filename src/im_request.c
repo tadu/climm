@@ -491,8 +491,11 @@ void IMCallBackReconn (Connection *conn)
 
 void IMConnOpen (Connection *conn)
 {
+#ifdef ENABLE_REMOTECONTROL
     if      (conn->type == TYPE_REMOTE)    ScriptingOpen (conn);
-    else if (conn->type == TYPE_MSGDIRECT) ConnectionInitPeer (conn);
+    else
+#endif
+    if (conn->type == TYPE_MSGDIRECT) ConnectionInitPeer (conn);
     else
         rl_printf (i18n (2740, "Don't know how to open connection type %s for %s.\n"),
                          ConnectionStrType (conn), conn->cont->screen);

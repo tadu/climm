@@ -653,8 +653,9 @@ void SrvCallBackReceive (Connection *conn)
     if (!(conn->connect & (1 | CONNECT_OK)))
     {
         int rc = UtilIORead (conn, NULL, 0);
+        io_err_t rce;
         assert (rc <= 0);
-        io_err_t rce = UtilIOShowError (conn, rc);
+        rce = UtilIOShowError (conn, rc);
         if (rce == IO_CONNECTED)
             conn->connect |= 1;
         else if (rce != IO_OK)

@@ -9,7 +9,7 @@ const char  *IOOpenSSLInitError (void);
 #else
 #define IOOpenSSLSupported() IO_SSL_NOLIB
 #define IOOpenSSLOpen(c,i)   IO_SSL_NOLIB
-#define IOOpenSSLInitError(c) ""
+#define IOOpenSSLInitError() ""
 #endif
 
 #endif /* CLIMM_IO_TCP_H */

@@ -72,7 +72,7 @@ fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([locale.h langinfo.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h wchar.h wctype.h pwd.h utmp.h utmpx.h values.h resolv.h])
+AC_CHECK_HEADERS([locale.h langinfo.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h wchar.h wctype.h pwd.h utmp.h utmpx.h values.h resolv.h arpa/nameser.h])
 
 if test "x$ac_arg_use_autopackage" = xyes; then
     enable_binreloc=auto
@@ -383,8 +383,10 @@ if test "x$ac_arg_use_xmpp" != "xno"; then
     ac_use_xmpp=no
   fi
 
-  PKG_CHECK_MODULES(IKS, iksemel, ac_iksemel_version=`pkg-config --modversion iksemel | tr . " "`
-    ac_iksemel_version=`printf 0x%02x%02x $ac_iksemel_version`, ac_use_xmpp=no)
+  if test "x$ac_use_xmpp" = xyes; then
+    PKG_CHECK_MODULES(IKS, iksemel, ac_iksemel_version=`pkg-config --modversion iksemel | tr . " "`
+      ac_iksemel_version=`printf 0x%02x%02x $ac_iksemel_version`, ac_use_xmpp=no)
+  fi
 
   if test "x$ac_arg_use_xmpp" = xyes; then
     if test "x$ac_use_xmpp" = xno; then

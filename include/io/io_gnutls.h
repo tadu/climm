@@ -9,7 +9,7 @@ const char  *IOGnuTLSInitError (void);
 #else
 #define IOGnuTLSSupported() IO_SSL_NOLIB
 #define IOGnuTLSOpen(c,i)   IO_SSL_NOLIB
-#define IOGnuTLSInitError(c) ""
+#define IOGnuTLSInitError() ""
 #endif
 
 #endif /* CLIMM_IO_TCP_H */

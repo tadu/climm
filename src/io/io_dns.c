@@ -33,6 +33,12 @@
 #include "climm.h"
 #include "io/io_dns.h"
 
+#if HAVE_NETINET_IN_H 
+#include <netinet/in.h>
+#endif
+#if HAVE_ARPA_NAMESER_H
+#include <arpa/nameser.h>
+#endif
 #if HAVE_RESOLV_H
 #include <resolv.h>
 #endif

@@ -110,7 +110,7 @@ io_err_t io_any_appendbuf (Connection *conn, Dispatcher *d, const char *buf, siz
 {
     char *newbuf;
     conn->connect |= CONNECT_SELECT_W;
-    DebugH (DEB_TCP, "conn %p append %d to %d", conn, count, d->outlen);
+    DebugH (DEB_TCP, "conn %p append %ld to %ld", conn, count, d->outlen);
     if (!count)
         return IO_OK;
     if (d->outlen)
@@ -178,8 +178,9 @@ io_ssl_err_t UtilIOSSLOpen (Connection *conn, char is_client)
 io_err_t UtilIOShowError (Connection *conn, io_err_t rc)
 {
     int e = errno;
+    const char *t = NULL;
+
     switch (rc) {
-        const char *t = NULL;
     
         case IO_CONNECTED: 
             rl_print ("");
