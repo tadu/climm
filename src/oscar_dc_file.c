@@ -267,6 +267,8 @@ void PeerFileDispatch (Connection *fpeer)
     ASSERT_FILEDIRECT (fpeer);
     assert (fpeer->cont);
 
+    cont = fpeer->cont;
+
     if (fpeer->connect & CONNECT_SELECT_W && UtilIOSelectIs (fpeer->sok, WRITEFDS))
     {
         fpeer->connect &= ~CONNECT_SELECT_W;
@@ -284,8 +286,6 @@ void PeerFileDispatch (Connection *fpeer)
 
     if (prG->verbose & DEB_PACKTCP)
         TCPPrint (pak, fpeer, FALSE);
-
-    cont = fpeer->cont;
 
     switch (PacketRead1 (pak))
     {

@@ -331,7 +331,7 @@ static void io_listen_tcp_open (Connection *conn, Dispatcher *d)
 {
     struct sockaddr_in sin;
     socklen_t length;
-    int rc, i;
+    int i;
 
     d->flags = FLAG_CONNECTING;
     d->err = IO_OK;
@@ -346,6 +346,7 @@ static void io_listen_tcp_open (Connection *conn, Dispatcher *d)
     if (bind (conn->sok, (struct sockaddr*)&sin, sizeof (struct sockaddr)) < 0)
     {
 #if defined(EADDRINUSE)
+        int rc;
         i = 0;
         while ((rc = errno) == EADDRINUSE && conn->port  &&++i < 100)
         {
@@ -375,7 +376,7 @@ static void io_listen_tcp_open (Connection *conn, Dispatcher *d)
         conn->sok = -1;
         d->d_errno = errno;
         d->err = IO_NO_LISTEN;
-        s_repl (&d->lasterr, strerror (rc));
+        s_repl (&d->lasterr, strerror (errno));
         return;
     }
     DebugH (DEB_TCP, "conn %p listen ok", conn);

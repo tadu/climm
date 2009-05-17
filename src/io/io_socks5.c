@@ -142,11 +142,11 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
 {
     const char *send;
     io_err_t e;
-    int rc, len;
+    int len;
 
     if (d->flags == FLAG_CONNECTING)
     {
-        rc = io_util_read (conn, d->next, NULL, 0);
+        int rc = io_util_read (conn, d->next, NULL, 0);
         s_repl (&d->lasterr, NULL);
         if (rc != IO_CONNECTED)
             return io_socks5_seterr (d, rc, d->next->funcs->f_err (conn,  d->next));
@@ -161,7 +161,7 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
     }
     if (d->flags == FLAG_METHODS_SENT)
     {
-        rc = io_util_read (conn, d->next, d->buf + d->read, 2 - d->read);
+        int rc = io_util_read (conn, d->next, d->buf + d->read, 2 - d->read);
         if (rc < 0)
             return io_socks5_seterr (d, rc, d->next->funcs->f_err (conn,  d->next));
         d->read += rc;
@@ -187,7 +187,7 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
     }
     if (d->flags == FLAG_CRED_SENT)
     {
-        rc = io_util_read (conn, d->next, d->buf + d->read, 2 - d->read);
+        int rc = io_util_read (conn, d->next, d->buf + d->read, 2 - d->read);
         if (rc < 0)
             return io_socks5_seterr (d, rc, d->next->funcs->f_err (conn,  d->next));
         d->read += rc;
@@ -199,7 +199,7 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
     }
     if (d->flags == FLAG_REQ_SENT || d->flags == FLAG_REQ_NOPORT_SENT)
     {
-        rc = io_util_read (conn, d->next, d->buf + d->read, 10 - d->read);
+        int rc = io_util_read (conn, d->next, d->buf + d->read, 10 - d->read);
         if (rc < 0)
             return io_socks5_seterr (d, rc, d->next->funcs->f_err (conn,  d->next));
         d->read += rc;
@@ -262,7 +262,7 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
 static int io_socks5_accept (Connection *conn, Dispatcher *d, Connection *newconn)
 {
     Dispatcher *nd, *dd;
-    int rc, sok;
+    int rc;
 
     rc = io_util_read (conn, d->next, d->buf + d->read, 10 - d->read);
     if (rc < 0)
@@ -294,7 +294,7 @@ static int io_socks5_accept (Connection *conn, Dispatcher *d, Connection *newcon
     newconn->port = conn->port;
     s_repl (&newconn->server, "local??host");
     
-    return sok;
+    return newconn->sok;
 }
 
 static void io_socks5_close (Connection *conn, Dispatcher *d)

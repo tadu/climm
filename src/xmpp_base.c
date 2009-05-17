@@ -588,7 +588,8 @@ static time_t XmppHandleXEP91 (iks *x)
     if ((delay = find_with_ns_attrib (x, "x", "jabber:x:delay")))
     {
         struct tm;
-        char *dfrom = iks_find_attrib (delay, "from");
+        // char *dfrom = 
+        iks_find_attrib (delay, "from");
         char *stamp = iks_find_attrib (delay, "stamp");
         date = ParseUTCDate (stamp);
 //        if (date != NOW)
