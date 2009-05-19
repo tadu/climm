@@ -216,9 +216,7 @@
 1265:Eritrea
 1266:Estland
 1267:Etiopien
-#-#1268:Makedonien
-#+#1268:F.Y.R.O.M. (Former Yugoslavia)
-#_#1268:Republic of Macedonia (F.Y.R.O.M.)
+1268:Makedonien
 1269:Färöarna
 1270:Falklandsöarna
 1271:Mikronesien
@@ -1371,10 +1369,10 @@
 2737:Kontaktgrupp %s (#%d) tillagd.\n
 2738:Hittade %d nya brev till %s.\n
 2739:Hittad %d brev till %s.\n
-#_#2740:Don't know how to open connection type %s for %s.\n
-#_#2741:Logging off %s.\n
-#_#2742:Incoming reverse connection request to %s.\n
-#_#2743:Can't find hostname
-#_#2744:Connection timed out
-#_#2745:Opening connection to %s:%s%ld%s 
-#_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n
+2740:Vet ej hur uppkopplingstyp %s för %s ska öppnas.\n
+2741:Loggar ut %s.\n
+2742:Inkommande omvänd uppkopplingsbegäran till %s.\n
+2743:Kan ej hitta värdnamn
+2744:Uppkoppling avbröts
+2745:Öppnar uppkoppling till %s:%s%ld%s
+2746:    typ %d anslutning %d ip %s (%s%s%s%s %d) på [%s,%s] id %lx/%x/%x\n
