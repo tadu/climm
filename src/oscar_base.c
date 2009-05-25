@@ -431,8 +431,11 @@ void UtilIOSendTCP2 (Connection *conn, Packet *pak)
 
 void FlapSend (Server *serv, Packet *pak)
 {
-    if (!serv->conn->connect)
+    if (!serv->conn->dispatcher)
+    {
+        PacketD (pak);
         return;
+    }
     
     serv->oscar_seq++;
     serv->oscar_seq &= 0x7fff;
