@@ -110,7 +110,7 @@ io_err_t io_any_appendbuf (Connection *conn, Dispatcher *d, const char *buf, siz
 {
     char *newbuf;
     conn->connect |= CONNECT_SELECT_W;
-    DebugH (DEB_TCP, "conn %p append %ld to %ld", conn, count, d->outlen);
+    DebugH (DEB_TCP, "conn %p append %ld to %ld", conn, (long int)count, (long int)d->outlen);
     if (!count)
         return IO_OK;
     if (d->outlen)
