@@ -63,7 +63,6 @@
 #ifdef ENABLE_PEER2PEER
 
 static void        TCPDispatchPeer    (Connection *peer);
-static void        PeerDispatchClose  (Connection *peer);
 
 static Packet     *TCPReceivePacket   (Connection *peer);
 
@@ -1001,15 +1000,6 @@ static Connection *TCPReceiveInit2 (Connection *peer, Packet *pak)
         peer->connect = 0;
     TCPClose (peer);
     return NULL;
-}
-
-/*
- * Quietly close connection.
- */
-static void PeerDispatchClose (Connection *conn)
-{
-    conn->connect = 0;
-    TCPClose (conn);
 }
 
 /*

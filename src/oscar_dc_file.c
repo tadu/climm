@@ -63,10 +63,6 @@
 #include "oscar_base.h"
 #include "oscar_dc_file.h"
 
-static void PeerFileDispatchClose   (Connection *ffile);
-static void PeerFileDispatchDClose  (Connection *ffile);
-static void PeerFileIODispatchClose (Connection *ffile);
-
 #define FAIL(x) { err = x; break; }
 #define PeerFileClose TCPClose
 
@@ -221,38 +217,6 @@ BOOL PeerFileAccept (Connection *peer, UWORD ackstatus, UDWORD port)
     TCPDispatchConn (fpeer);
     
     return 1;
-}
-
-/*
- * Close a file listener.
- */
-static void PeerFileDispatchClose (Connection *flist)
-{
-    flist->connect = 0;
-    PeerFileClose (flist);
-}
-
-/*
- * Close a file transfer connection.
- */
-static void PeerFileDispatchDClose (Connection *fpeer)
-{
-    fpeer->connect = 0;
-    PeerFileClose (fpeer);
-    ConnectionD (fpeer);
-    ReadLinePromptReset ();
-}
-
-/*
- * Close a file i/o connection.
- */
-static void PeerFileIODispatchClose (Connection *ffile)
-{
-    if (ffile->sok != -1)
-        close (ffile->sok);
-    ffile->sok = -1;
-    ffile->connect = 0;
-    ReadLinePromptReset ();
 }
 
 /*
