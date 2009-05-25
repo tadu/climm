@@ -617,6 +617,8 @@ static void XmppHandleXEP115 (iks *x, Contact *contr)
             node = "GoogleMail";
         else if (!strcmp (node, "http://www.google.com/xmpp/client/caps"))
             node = "GoogleTalk";
+        else if (!strcmp (node, "http://www.android.com/gtalk/client/caps"))
+            node = "Android";
         else if (!strcmp (node, "http://pidgin.im/caps"))
             node = "Pidgin";
         else if (!strcmp (node, "http://gaim.sf.net/caps"))
