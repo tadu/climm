@@ -19,7 +19,7 @@ VERSION=$1
 # debootstrap --variant=buildd --components=main,universe --include=$packages,build-essential hardy    chroot-Ubuntu-8.04-5hardy
 # debootstrap --variant=buildd --components=main,universe --include=$packages                 intrepid chroot-Ubuntu-8.10-6intrepid
 # debootstrap --variant=buildd --components=main,universe --include=$packages                 jaunty   chroot-Ubuntu-9.04-7jaunty
-# debootstrap --variant=buildd --components=main,universe --include=$packages                 karmic   chroot-Ubuntu-9.10-8karmic
+# debootstrap --variant=buildd --components=main,universe --include=$packages,pkg-config      karmic   chroot-Ubuntu-9.10-8karmic
 
 # debootstrap --variant=buildd --components=main,universe --include=$packages,rpm             intrepid chroot-Generic-0generic
 #   autopackage-devel_1.0.10-2_i386.deb alienated from http://ftp.sunsite.dk/projects/autopackage/1.0.10/autopackage-devel-1.0.10-1.i386.rpm
