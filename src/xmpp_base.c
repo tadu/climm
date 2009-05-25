@@ -1,5 +1,5 @@
 /*
- * Implements the XMPP protocol using libiksemel >= 1.3.
+ * Implements the XMPP protocol using libiksemel >= 1.2.
  *
  * climm Copyright (C) © 2001-2009 Rüdiger Kuhlmann
  *
@@ -29,6 +29,12 @@
  * $Id: oscar_base.c 2670 2009-03-01 16:48:03Z kuhlmann $
  */
 
+//#define IKS_TRANS_USER_DATA Server
+//#define IKS_FILTER_USER_DATA Server
+//#define IKS_SOCK_USER_DATA Connection
+#define IKS_TRANS_USER_DATA void
+#define IKS_FILTER_USER_DATA void
+#define IKS_SOCK_USER_DATA void
 
 #include "climm.h"
 #include <sys/types.h>
@@ -44,9 +50,6 @@
 
 #if ENABLE_XMPP
 
-#define IKS_TRANS_USER_DATA Server
-#define IKS_FILTER_USER_DATA Server
-#define IKS_SOCK_USER_DATA Connection
 #include <iksemel.h>
 
 #include "xmpp_base.h"
@@ -67,30 +70,30 @@
 
 static jump_conn_f XMPPCallbackDispatch;
 
-static int  iks_climm_TConnect (iksparser *prs, Connection **socketptr, const char *server, int port)
+static int  iks_climm_TConnect (iksparser *prs, IKS_SOCK_USER_DATA **socketptr, const char *server, int port)
 {
     Server *serv = iks_stream_user_data (prs);
     Connection *conn = serv->conn;
-    *socketptr = conn;
+    *((Connection **)socketptr) = conn;
     return IKS_OK;
 }
 
-static void iks_climm_TClose (Connection *conn)
+static void iks_climm_TClose (IKS_SOCK_USER_DATA *conn)
 {
-    UtilIOClose (conn);
+    UtilIOClose ((Connection *)conn);
 }
 
-static int iks_climm_TSend (Connection *conn, const char *data, size_t len)
+static int iks_climm_TSend (IKS_SOCK_USER_DATA *conn, const char *data, size_t len)
 {
-    io_err_t rc = UtilIOWrite (conn, data, len);
+    io_err_t rc = UtilIOWrite ((Connection *)conn, data, len);
     if (rc != IO_OK)
         return IKS_NET_RWERR;
     return IKS_OK;
 }
 
-static int iks_climm_TRecv (Connection *conn, char *data, size_t len, int timeout)
+static int iks_climm_TRecv (IKS_SOCK_USER_DATA *conn, char *data, size_t len, int timeout)
 {
-    int rc = UtilIORead (conn, data, len);
+    int rc = UtilIORead ((Connection *)conn, data, len);
     if (rc > 0)
         return rc;
     if (rc == IO_OK || rc == IO_CONNECTED)
@@ -187,8 +190,9 @@ Event *XMPPLogin (Server *serv)
     return event;
 }
 
-static void XmppSaveLog (Server *serv, const char *text, size_t size, int in)
+static void XmppSaveLog (IKS_TRANS_USER_DATA *userv, const char *text, size_t size, int in)
 {
+    Server *serv = (Server *)userv;
     const char *data;
     size_t rc;
 
@@ -369,8 +373,9 @@ static void sendIqTimeReqs (Event *event)
 
 /****************** IqHandler **********/
 
-static int XmppHandleIqGmail (Server *serv, ikspak *pak)
+static int XmppHandleIqGmail (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
+    Server *serv = (Server *)fserv;
     iks *mb = find_with_ns_attrib (pak->x, "mailbox", "google:mail:notify");
 
     if (!mb)
@@ -435,8 +440,9 @@ static int XmppHandleIqGmail (Server *serv, ikspak *pak)
     return IKS_FILTER_EAT;
 }
 
-static int XmppHandleIqDisco (Server *serv, ikspak *pak)
+static int XmppHandleIqDisco (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
+    Server *serv = (Server *)fserv;
     if (pak->subtype == IKS_TYPE_RESULT)
     {
         /*  what did we ask for? */
@@ -482,8 +488,9 @@ static int XmppHandleIqDisco (Server *serv, ikspak *pak)
     return IKS_FILTER_PASS;
 }
 
-static int XmppHandleIqXEP12 (Server *serv, ikspak *pak)
+static int XmppHandleIqXEP12 (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
+    Server *serv = (Server *)fserv;
     if (pak->subtype == IKS_TYPE_GET)
     {
         iks *x = iks_new ("iq");
@@ -500,8 +507,9 @@ static int XmppHandleIqXEP12 (Server *serv, ikspak *pak)
     return IKS_FILTER_PASS;
 }
 
-static int XmppHandleIqXEP92 (Server *serv, ikspak *pak)
+static int XmppHandleIqXEP92 (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
+    Server *serv = (Server *)fserv;
     if (pak->subtype == IKS_TYPE_GET)
     {
         iks *x = iks_new ("iq");
@@ -520,18 +528,19 @@ static int XmppHandleIqXEP92 (Server *serv, ikspak *pak)
     return IKS_FILTER_PASS;
 }
 
-static int XmppHandleIqRoster (Server *serv, ikspak *pak)
+static int XmppHandleIqRoster (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
     return IKS_FILTER_EAT;
 }
 
-static int XmppHandleIqTime (Server *serv, ikspak *pak)
+static int XmppHandleIqTime (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
     return IKS_FILTER_EAT;
 }
 
-static int XmppHandleIqDefault (Server *serv, ikspak *pak)
+static int XmppHandleIqDefault (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
+    Server *serv = (Server *)fserv;
     if (pak->subtype == IKS_TYPE_ERROR || pak->subtype == IKS_TYPE_RESULT)
         return IKS_FILTER_PASS;
     iks *x = iks_new ("iq");
@@ -807,8 +816,9 @@ static char XmppHandleXEP85 (Server *serv, iks *t, Contact *cfrom, iksid *from, 
     return 0;
 }
 
-static int XmppHandleMessage (Server *serv, ikspak *pak)
+static int XmppHandleMessage (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
+    Server *serv = (Server *)fserv;
 //    char *toX = iks_find_attrib (pak->x, "to");
 //    iksid *to = iks_id_new (iks_stack (pak->x), toX);
 
@@ -857,17 +867,19 @@ static int XmppHandleMessage (Server *serv, ikspak *pak)
 }
 
 
-static int XmppHandlePresenceErr (Server *serv, ikspak *pak)
+static int XmppHandlePresenceErr (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
     Contact *contb, *contr;
 
+    Server *serv = (Server *)fserv;
     GetBothContacts (pak->from, serv, &contb, &contr, 1);
     IMOffline (contr);
     return IKS_FILTER_EAT;
 }
 
-static int XmppHandlePresence (Server *serv, ikspak *pak)
+static int XmppHandlePresence (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
+    Server *serv = (Server *)fserv;
 //    ContactGroup *tcg;
     Contact *contb, *contr; // , *c;
     status_t status;
@@ -910,8 +922,9 @@ static int XmppHandlePresence (Server *serv, ikspak *pak)
 }
 
 
-static int XmppUnknown (Server *serv, ikspak *pak)
+static int XmppUnknown (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
+    Server *serv = (Server *)fserv;
     XmppSaveLog (serv, iks_string (iks_stack (pak->x), pak->x), 0, 2);
     return IKS_FILTER_EAT;
 }
@@ -955,8 +968,9 @@ static void XmppLoggedIn (Server *serv)
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDefault, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_DONE);
 }
 
-static int XmppSessionResult (Server *serv, ikspak *pak)
+static int XmppSessionResult (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
+    Server *serv = (Server *)fserv;
     if (pak->subtype != IKS_TYPE_RESULT)
         XmppStreamError (serv, s_sprintf ("Couldn't get session %s.", iks_string (iks_stack (pak->x), pak->x)));
     else
@@ -964,8 +978,9 @@ static int XmppSessionResult (Server *serv, ikspak *pak)
     return IKS_FILTER_EAT;
 }
 
-static int XmppBindResult (Server *serv, ikspak *pak)
+static int XmppBindResult (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
+    Server *serv = (Server *)fserv;
     if (pak->subtype == IKS_TYPE_RESULT)
     {
         iks *bind = iks_find_with_attrib (pak->x, "bind", "xmlns", "urn:ietf:params:xml:ns:xmpp-bind");
@@ -987,7 +1002,7 @@ static int XmppBindResult (Server *serv, ikspak *pak)
 }
 
 #if LIBIKS_VERSION < 0x0103 || defined(ENABLE_AUTOPACKAGE)
-char *base64_encode (const char *data, int count)
+static char *base64_encode (const char *data, int count)
 {
     char *base64 = iks_base64_encode (data, count);
     char *b64 = strdup (base64);
@@ -1005,11 +1020,11 @@ void replace_iks_start_sasl (iksparser *prs, char *user, char *password)
     iks_send_raw (prs, s_sprintf ("<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\">%s</auth>", base64));
     free (base64);
 }
-/* END of LGPL code */
 #endif
 
-static int XmppStreamHook (Server *serv, int type, iks *node)
+static int XmppStreamHook (IKS_TRANS_USER_DATA *userv, int type, iks *node)
 {
+    Server *serv = (Server *)userv;
     iksparser *prs = serv->xmpp_parser;
     switch (type)
     {
@@ -1261,7 +1276,7 @@ void XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *ms
         iks *caps = iks_insert (x, "c");
         iks_insert_attrib (caps, "xmlns", "http://jabber.org/protocol/caps");
         iks_insert_attrib (caps, "node", "http://www.climm.org/xmpp/caps");
-        iks_insert_attrib (caps, "ver", s_sprintf ("%s [iksemel]", BuildVersionStr));
+        iks_insert_attrib (caps, "ver", BuildVersionStr);
         iks_insert_cdata (iks_insert (x, "priority"), "5", 0);
     }
     if (cont)
