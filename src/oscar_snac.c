@@ -49,7 +49,7 @@
 #include "connection.h"
 #include "preferences.h"
 
-jump_snac_f SnacSrvUnknown, SnacSrvSetinterval;
+jump_snac_f SnacSrvUnknown, SnacSrvIgnore, SnacSrvSetinterval;
 
 static SNAC SNACS[] = {
     {  1,  1, "SRV_SERVICEERR",      SnacSrvServiceerr},
@@ -60,8 +60,9 @@ static SNAC SNACS[] = {
     {  1, 15, "SRV_REPLYINFO",       SnacSrvReplyinfo},
     {  1, 18, "SRV_MIGRATIONREQ",    SnacServerpause},
     {  1, 19, "SRV_MOTD",            SnacSrvMotd},
+    {  1, 21, "SRV_UNKNOWN",         SnacSrvIgnore },
     {  1, 24, "SRV_FAMILIES2",       SnacSrvFamilies2},
-    {  1, 33, "SRV_BUDDYICON",       NULL },
+    {  1, 33, "SRV_BUDDYICON",       SnacSrvIgnore },
     {  2,  1, "SRV_LOCATIONERR",     SnacSrvLocationerr},
     {  2,  3, "SRV_REPLYLOCATION",   SnacSrvReplylocation},
     {  2,  6, "SRV_USERINFO",        SnacSrvUserinfo},
@@ -259,6 +260,14 @@ void SnacPrint (Packet *pak)
 
     pak->rpos = opos;
 }
+
+/*
+ * STFU.
+ */
+JUMP_SNAC_F(SnacSrvIgnore)
+{
+}
+
 
 /*
  * Any unknown SNAC.

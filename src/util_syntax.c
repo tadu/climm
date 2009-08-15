@@ -49,6 +49,7 @@ static const char *syntable[] = {
     "s1x14s",  "",
     "s1x15s",  "uWW{T[12gp2p]}uWW{T[12gp2p]}",
     "s1x19s",  "WT-",
+    "s1x21s",  "T-",
     "s1x23s",  "D-",
     "s1x24s",  "D-",
     "s1x30s",  "T[12gp2p]-",
