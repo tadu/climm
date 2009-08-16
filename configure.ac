@@ -1,5 +1,3 @@
-
-
 # $Id$ 
 
 # Process this file with autoconf to produce a configure script.
@@ -97,7 +95,10 @@ if test "x$ac_arg_use_dc" != "xno" || test "x$ac_arg_use_xmpp" != "xno"; then
   if test "x$ac_arg_use_ssl" != "xno"; then
     ac_use_ssl=no
     if test "x$ac_arg_use_ssl" != "xopenssl"; then
-      AM_PATH_LIBGNUTLS(0.8.8, ac_use_ssl=gnutls)
+      PKG_CHECK_MODULES(LIBGNUTLS, gnutls > 2, ac_use_ssl=gnutls) 
+      if test "x$ac_use_ssl" = xno; then
+        AM_PATH_LIBGNUTLS(0.8.8, ac_use_ssl=gnutls) 
+      fi
       AM_PATH_LIBGCRYPT(, , ac_use_ssl=no)
       AC_CHECK_HEADERS([gcrypt.h], , ac_use_ssl=no)
       if test "x$ac_use_ssl" = "xgnutls"; then
