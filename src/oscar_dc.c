@@ -156,12 +156,12 @@ BOOL TCPDirectOpen (Connection *list, Contact *cont)
     if (peer->type == TYPE_MSGDIRECT)
         peer->port = cont->dc->port;
 
-    if  (cont->dc->ip_rem && cont->dc->port)
+    if  (cont->dc->ip_rem && cont->dc->port && ~cont->dc->ip_rem)
     {
         peer->connect = 0;
         peer->ip      = cont->dc->ip_rem;
     }
-    else if (cont->dc->ip_loc && cont->dc->port)
+    else if (cont->dc->ip_loc && cont->dc->port && ~cont->dc->ip_loc)
     {
         peer->connect = 2;
         peer->ip      = cont->dc->ip_loc;
@@ -351,7 +351,7 @@ void TCPDispatchConn (Connection *peer)
     }
     else if (rce == IO_OK)
         return;
-    else if (rce == IO_RW && (peer->connect & 7) == 0)
+    else if (rce == IO_RW && (peer->connect & 7) == 0 && cont->dc->ip_loc && ~cont->dc->ip_loc)
     {
         peer->connect = 2;
         peer->ip      = cont->dc->ip_loc;
