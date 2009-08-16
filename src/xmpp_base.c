@@ -722,7 +722,7 @@ static void XmppHandleXEP22a (Server *serv, iks *x, Contact *cfrom)
 
 static void XmppHandleXEP22c (Server *serv, iksid *from, char *tof, char *id, char *type)
 {
-    iks *msg  = iks_make_msg (IKS_TYPE_NONE, tof, NULL);
+    iks *msg  = iks_make_msg (IKS_TYPE_NONE, from->full, NULL);
     iks_insert_attrib (msg, "id", s_sprintf ("ack-%s-%x", serv->xmpp_stamp, ++serv->xmpp_sequence));
     iks *x = iks_insert (msg, "x");
     iks_insert_attrib (x, "xmlns", "jabber:x:event");
