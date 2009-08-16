@@ -289,24 +289,25 @@ BOOL PrefLoad (Preferences *pref)
         case 2:
             pref->enc_loc = ENC_AUTO;
         case 3:
+        case 4:
+        case 5:
+/*        case 6: */
+
+        case AUTOUPDATE_CURRENT:
+        default:
+            pref->autoupdate = AUTOUPDATE_CURRENT;
+
+            /* do idempotent updates always */
             for (i = 0; (serv = ServerNr (i)); i++)
             {
                 cont = ContactFindUIN (serv->contacts, 82274703);
                 if (cont)
                     OptSetVal (&cont->copts, CO_WANTSBL, 0);
             }
-        case 4:
-            for (i = 0; (serv = ServerNr (i)); i++)
-                OptSetVal (&serv->copts, CO_OBEYSBL, 1);
-            pref->autoupdate = 5;
-        case 5:
             for (i = 0; (serv = ServerNr (i)); i++)
                 OptSetVal (&serv->copts, CO_WANTSBL, 1);
-            break;
-
-        case AUTOUPDATE_CURRENT:
-        default:
-            pref->autoupdate = AUTOUPDATE_CURRENT;
+            for (i = 0; (serv = ServerNr (i)); i++)
+                OptUndef (&serv->copts, CO_OBEYSBL);
     }
     
     return ok;

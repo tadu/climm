@@ -342,8 +342,7 @@ JUMP_SNAC_F(SnacSrvReplyroster)
         if (~serv->conn->connect & CONNECT_OK)
             CliFinishLogin (serv);
 
-        if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
-            SnacCliRosterack (serv);
+        SnacCliRosterack (serv);
         event2->callback (event2);
     }
     else
@@ -929,11 +928,7 @@ JUMP_SNAC_F(SnacSrvRosterok)
     if (~serv->conn->connect & CONNECT_OK)
         CliFinishLogin (serv);
 
-    if (ContactGroupPrefVal (serv->contacts, CO_OBEYSBL))
-    {
-        rl_printf ("#\n# Server side contact list activated, authorization restrictions apply.\n#\n");
-        SnacCliRosterack (serv);
-    }
+    SnacCliRosterack (serv);
     event2->callback (event2);
 }
 
