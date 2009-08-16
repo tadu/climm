@@ -66,6 +66,7 @@ static jump_f
     CmdUserAdd, CmdUserRemove, CmdUserAuth, CmdUserURL, CmdUserSave,
     CmdUserTabs, CmdUserLast, CmdUserHistory, CmdUserFind, CmdUserUptime,
     CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
+    CmdUserXmppIq,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserConn, CmdUserContact,
     CmdUserAnyMess, CmdUserGetAuto, CmdUserOpt, CmdUserPrompt;
 
@@ -196,6 +197,7 @@ static jump_t jump[] = {
     { &CmdUserConn,          "login",        0, 202 },
 #ifdef ENABLE_XMPP
     { &CmdUserGmail,         "gmail",        0,   0 },
+    { &CmdUserXmppIq,        "_iq",          0,   0 },
 #endif
 #ifdef ENABLE_PEER2PEER
     { &CmdUserPeer,          "peer",         0,   0 },
@@ -4414,6 +4416,53 @@ static JUMP_F(CmdUserGmail)
     XMPPGoogleMail (uiG.conn, since, q ? q : "");
     return 0;
 }
+
+/*
+ * Send an iq stanza.
+ */
+static JUMP_F(CmdUserXmppIq)
+{
+    OPENCONN;
+    UBYTE ret;
+    strc_t par;
+    Contact *cont;
+    const char *query;
+    
+    if (uiG.conn->type != TYPE_XMPP_SERVER)
+        return 0;
+                
+    if      (s_parsekey (&args, "get"))   data = 1;
+    else if (s_parsekey (&args, "set"))   data = 2;
+    else
+    {
+        rl_print (i18n (9999, "_iq [get|set] <contact> <query> -- Send iq <query> to <contact> of type get or set.\n"));
+        return 0;
+    }
+    
+    if (!(cont = s_parsenick (&args, uiG.conn)))
+    {
+        if ((par = s_parse (&args)))
+            rl_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), par->txt);
+        else
+            rl_print (i18n (9999, "_iq get|set <contact> <query> -- Send iq <query> to <contact> of type get or set.\n"));
+        return 0;
+    }
+    
+    if (!(query = s_parserem (&args)) || !*query)
+    {
+        rl_print (i18n (9999, "_iq get|set <contact> <query> -- Send iq <query> to <contact> of type get or set.\n"));
+        return 0;                                                                                   
+    }
+    
+    ret = XMPPSendIq (uiG.conn, cont, data - 1, query);
+    if (ret != RET_OK)
+        rl_print (i18n (9999, "# message not parsable as xml.\n"));
+    else
+        rl_print (i18n (9999, "# message sent.\n"));
+    return 0;
+}
+
+
 #endif
 
 /*

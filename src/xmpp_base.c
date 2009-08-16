@@ -877,6 +877,14 @@ static int XmppHandlePresenceErr (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
     return IKS_FILTER_EAT;
 }
 
+/*
+ * React to subscription requests.
+ */
+static int XmppHandleSubscription (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
+{
+    return IKS_FILTER_PASS;
+}
+
 static int XmppHandlePresence (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
     Server *serv = (Server *)fserv;
@@ -939,6 +947,7 @@ static void XmppLoggedIn (Server *serv)
     serv->xmpp_filter = iks_filter_new ();
     iks_filter_add_rule (serv->xmpp_filter, XmppUnknown, serv, IKS_RULE_DONE);
     iks_filter_add_rule (serv->xmpp_filter, XmppHandlePresence, serv, IKS_RULE_TYPE, IKS_PAK_PRESENCE, IKS_RULE_DONE);
+    iks_filter_add_rule (serv->xmpp_filter, XmppHandleSubscription, serv, IKS_RULE_TYPE, IKS_PAK_S10N, IKS_RULE_DONE);
     iks_filter_add_rule (serv->xmpp_filter, XmppHandlePresenceErr, serv, IKS_RULE_TYPE, IKS_PAK_S10N, IKS_RULE_SUBTYPE, IKS_TYPE_ERROR, IKS_RULE_DONE);
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleMessage, serv, IKS_RULE_TYPE, IKS_PAK_MESSAGE, IKS_RULE_DONE);
 
@@ -1289,6 +1298,23 @@ void XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *ms
     }
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
+}
+
+UBYTE XMPPSendIq (Server *serv, Contact *cont, int8_t which, const char *msg)
+{
+    int err;
+    iks *child = iks_tree (msg, 0, &err);
+    if (!child)
+        return RET_FAIL;
+    iks *x = iks_new_within ("iq", iks_stack (child));
+    iks_insert_attrib (x, "type", which ? "set" : "get");
+    iks_insert_attrib (x, "id", s_sprintf ("user-%s-%x", serv->xmpp_stamp, ++serv->xmpp_sequence));
+    iks_insert_attrib (x, "from", serv->xmpp_id->full);
+    iks_insert_attrib (x, "to", cont->screen);
+    iks_insert_node (x, child);
+    iks_send (serv->xmpp_parser, x);
+    iks_delete (x);
+    return RET_OK;
 }
 
 void XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const char *msg)
