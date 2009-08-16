@@ -170,12 +170,10 @@ static int cb_srv_msg_hist (Contact *cont, parentmode_t pm, time_t stamp, fat_sr
             HistMsg (cont->serv, cont, stamp, msg->msgtext, HIST_IN);
             break;
         case MSG_AUTH_REQ:
-            break;
         case MSG_AUTH_DENY:
-            break;
         case MSG_AUTH_GRANT:
-            break;
         case MSG_AUTH_ADDED:
+        case MSG_AUTH_DONE:
             break;
         case MSG_EMAIL:
         case MSG_WEB:
@@ -577,22 +575,28 @@ static int cb_srv_msg_tui (Contact *ocont, parentmode_t pm, time_t stamp, fat_sr
                 msg->tmp[5] = msg->tmp[0];
                 msg->tmp[0] = NULL;
             }
-            rl_printf (i18n (2470, "requests authorization: %s\n"), s_msgquote (msg->tmp[5]));
+            if (msg->tmp[5] && *msg->tmp[5])
+                rl_printf (i18n (2470, "requests authorization: %s\n"), s_msgquote (msg->tmp[5]));
+            else
+                rl_printf (i18n (9999, "requests authorization.\n"));
             
-            if (msg->tmp[0] && strlen (msg->tmp[0]))
+            if (msg->tmp[0] && *msg->tmp[0])
                 rl_printf ("%-15s %s\n", "???1:", s_wordquote (msg->tmp[0]));
-            if (msg->tmp[1] && strlen (msg->tmp[1]))
+            if (msg->tmp[1] && *msg->tmp[1])
                 rl_printf ("%-15s %s\n", i18n (1564, "First name:"), s_wordquote (msg->tmp[1]));
-            if (msg->tmp[2] && strlen (msg->tmp[2]))
+            if (msg->tmp[2] && *msg->tmp[2])
                 rl_printf ("%-15s %s\n", i18n (1565, "Last name:"), s_wordquote (msg->tmp[2]));
-            if (msg->tmp[3] && strlen (msg->tmp[3]))
+            if (msg->tmp[3] && *msg->tmp[3])
                 rl_printf ("%-15s %s\n", i18n (1566, "Email address:"), s_wordquote (msg->tmp[3]));
-            if (msg->tmp[4] && strlen (msg->tmp[4]))
+            if (msg->tmp[4] && *msg->tmp[4])
                 rl_printf ("%-15s %s\n", "???5:", s_wordquote (msg->tmp[4]));
             break;
 
         case MSG_AUTH_DENY:
-            rl_printf (i18n (2233, "refused authorization: %s%s%s\n"), COLMESSAGE, COLMSGINDENT, msg->msgtext);
+            if (msg->msgtext)
+                rl_printf (i18n (2233, "refused authorization: %s%s%s\n"), COLMESSAGE, COLMSGINDENT, msg->msgtext);
+            else
+                rl_printf (i18n (9999, "refused authorization.\n"));
             break;
 
         case MSG_AUTH_GRANT:
@@ -611,6 +615,10 @@ static int cb_srv_msg_tui (Contact *ocont, parentmode_t pm, time_t stamp, fat_sr
             rl_printf ("%-15s %s\n", i18n (1564, "First name:"), s_wordquote (msg->tmp[1]));
             rl_printf ("%-15s %s\n", i18n (1565, "Last name:"), s_wordquote (msg->tmp[2]));
             rl_printf ("%-15s %s\n", i18n (1566, "Email address:"), s_wordquote (msg->tmp[3]));
+            break;
+        
+        case MSG_AUTH_DONE:
+            rl_print (i18n (9999, "has removed you from his contact list.\n"));
             break;
 
         case MSG_EMAIL:

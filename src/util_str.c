@@ -502,8 +502,11 @@ const char *s_msgtok (char *txt)
         str = txt;
     if (!str)
         return NULL;
-    if (txt && !*str)
+    if (txt && !*txt)
+    {
+        str = NULL;
         return NULL;
+    }
     p = strchr (t = str, Conv0xFE);
     if (p)
     {

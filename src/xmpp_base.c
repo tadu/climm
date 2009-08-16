@@ -882,7 +882,21 @@ static int XmppHandlePresenceErr (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
  */
 static int XmppHandleSubscription (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
-    return IKS_FILTER_PASS;
+    Server *serv = (Server *)fserv;
+    Contact *contb, *contr;
+    GetBothContacts (pak->from, serv, &contb, &contr, 1);
+
+    if (pak->subtype == IKS_TYPE_SUBSCRIBE)
+        IMSrvMsg (contr, NOW, CV_ORIGIN_v8, MSG_AUTH_REQ, NULL);
+    else if (pak->subtype == IKS_TYPE_SUBSCRIBED)
+        IMSrvMsg (contr, NOW, CV_ORIGIN_v8, MSG_AUTH_GRANT, NULL);
+    else if (pak->subtype == IKS_TYPE_UNSUBSCRIBE)
+        IMSrvMsg (contr, NOW, CV_ORIGIN_v8, MSG_AUTH_DENY, NULL);
+    else if (pak->subtype == IKS_TYPE_UNSUBSCRIBED)
+        IMSrvMsg (contr, NOW, CV_ORIGIN_v8, MSG_AUTH_DONE, NULL);
+    else
+        return IKS_FILTER_PASS;
+    return IKS_FILTER_EAT;
 }
 
 static int XmppHandlePresence (IKS_FILTER_USER_DATA *fserv, ikspak *pak)

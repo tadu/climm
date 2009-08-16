@@ -227,6 +227,7 @@ typedef enum {
 #define MSG_AUTH_REQ      0x06
 #define MSG_AUTH_DENY     0x07
 #define MSG_AUTH_GRANT    0x08
+#define MSG_AUTH_DONE     0x09 /* xmpp */
 #define MSG_AUTH_ADDED    0x0c
 #define MSG_WEB           0x0d
 #define MSG_EMAIL         0x0e
