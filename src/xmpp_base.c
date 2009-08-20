@@ -298,6 +298,12 @@ static iks *find_with_ns_attrib (iks *tag, const char *childname, const char *ch
     return NULL;
 }
 
+#define foreach_subtag(iter,parent,name) \
+    iks *iter; \
+    for (iter = iks_first_tag (parent); iter; iter = iks_next_tag (iter)) \
+        if (iks_type (iter) == IKS_TAG && !strcmp (iks_name (iter), name))
+
+
 static enum ikshowtype StatusToIksstatus (status_t *status)
 {
     switch (*status)
@@ -398,13 +404,10 @@ static int XmppHandleIqGmail (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
     if (!n)
         return IKS_FILTER_EAT;
 
-    iks *mb_c;
     const char *ntid = "";
     Contact *cont = serv->conn->cont;
-    for (mb_c = iks_first_tag (mb); mb_c; mb_c = iks_next_tag (mb_c))
+    foreach_subtag (mb_c, mb, "mail-thread-info")
     {
-        if (iks_type (mb_c) != IKS_TAG || strcmp (iks_name (mb_c), "mail-thread-info"))
-            continue;
         char *sub = iks_find_cdata (mb_c, "subject");
         char *snip = iks_find_cdata (mb_c, "snippet");
         char *dato = iks_find_attrib (mb_c, "date");
@@ -413,11 +416,8 @@ static int XmppHandleIqGmail (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
         rl_printf ("%s ", s_time (&t));
         rl_printf ("%s%s %s%s%s", COLMESSAGE, sub ? sub : "", COLQUOTE, COLSINGLE, snip ? snip : "");
         rl_print ("\n");
-        iks *mb_s_c;
-        for (mb_s_c = iks_first_tag (iks_find (mb_c, "senders")); mb_s_c; mb_s_c = iks_next_tag (mb_s_c))
+        foreach_subtag (mb_s_c, iks_find (mb_c, "senders"), "sender")
         {
-            if (iks_type (mb_s_c) != IKS_TAG || strcmp (iks_name (mb_s_c), "sender"))
-                continue;
             if (!ismail || (iks_find_attrib (mb_s_c, "unread") && !strcmp (iks_find_attrib (mb_s_c, "unread"), "1")))
             {
                 char *email = iks_find_attrib (mb_s_c, "address");
@@ -530,6 +530,55 @@ static int XmppHandleIqXEP92 (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 
 static int XmppHandleIqRoster (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
+    Server *serv = (Server *)fserv;
+    ContactGroup *cg;
+    Contact *cont, *contr, *contb;
+    int i;
+    
+    for (i = 0, cg = serv->contacts; (cont = ContactIndex (cg, i)); i++)
+    {
+        OptSetVal(&cont->copts, CO_ISSBL, 0);
+        OptSetVal(&cont->copts, CO_TO_SBL, 0);
+        OptSetVal(&cont->copts, CO_FROM_SBL, 0);
+        OptSetVal(&cont->copts, CO_ASK_SBL, 0);
+    }
+    foreach_subtag(item_c, pak->query, "item")
+    {
+        char *jid = iks_find_attrib (item_c, "jid");
+        char *subs = iks_find_attrib (item_c, "subscription");
+        char *name = iks_find_attrib (item_c, "name");
+        char *ask = iks_find_attrib (item_c, "ask");
+        
+        if (!jid || !subs)
+            continue;
+        
+        iksid *jjid = iks_id_new (iks_stack (pak->x), jid);
+        GetBothContacts (jjid, serv, &contb, &contr, 1);
+            
+        OptSetVal(&contb->copts, CO_ISSBL, 1);
+        if (!strcmp (subs, "both") || !strcmp (subs, "to"))
+            OptSetVal(&contb->copts, CO_TO_SBL, 1);
+        if (!strcmp (subs, "both") || !strcmp (subs, "from"))
+            OptSetVal(&contb->copts, CO_FROM_SBL, 1);
+        if (ask && !strcmp (ask, "subscribe"))
+            OptSetVal(&contb->copts, CO_ASK_SBL, 1);
+        
+        if (name && !(cont = ContactFindScreen (serv->contacts, name)))
+            ContactAddAlias (contb, name);
+        
+        foreach_subtag(group, item_c, "group")
+        {
+            char *g = iks_cdata (group);
+            if (g && *g)
+            {
+                cg = ContactGroupFind (serv, 0, g);
+                if (!cg)
+                    cg = ContactGroupC (serv, 0, g);
+                if (!ContactHas (cg, contb))
+                    ContactAdd (cg, contb);
+            }
+        }
+    }
     return IKS_FILTER_EAT;
 }
 

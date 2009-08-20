@@ -145,14 +145,18 @@ is fetched for their respective status. Contacts not in any of those
 status will be skipped.
 New for 0.4.10.
 .TP
-.BI auth \ [req|grant|deny|add]\ <contacts>
+.BI auth \ [req|grant|deny|unsub|add]\ <contacts>\ [<msg>]
 Grant or deny all
 .I contacts
 to add you to their list, request from all
 .I contacts
-to allow you to add them to your contact list, or tell
+to allow you to add them to your contact list, unsubscribe from
 .I contacts
-that you added them to your contact list.
+status notifications (XMPP, not ICQ), or tell
+.I contacts
+that you added them to your contact list (ICQ, not XMPP).
+For ICQ, an optional message may accompany some requests.
+New subcommand unsub for 0.7.1.
 .TP
 .BI resend \ <contacts>
 Resend the last message to more
@@ -368,20 +372,80 @@ Another column is added for the
 and
 .B ee*
 group of commands to show the status with regards to the server side contact
-list, as far as it is known:
+list, as far as it is known (new flags for 0.7.1):
 .TP
 .B S
-The contact is in the server side contact list, and should be there.
+The contact is in the server side contact list with mutual authorization, and should be there
+(has the
+.I wantsbl
+flag set).
 .TP
-.B s
-The contact is in the server side contact list, but should not be there.
+.B T
+The contact is in the server side contact list with mutual
+non-authorization, awaited authorization from, and should be there.
 .TP
 .B .
-The contact is not in the server side contact list, but should be there. This usually
-means "authorization required".
+The contact is not in the server side contact list, but should be there.
+.TP
+.B R
+The contact is in the server side contact list receiving presence reports,
+awaited authorization from, and should be there. You may eventually want to
+re-request or deny authorization to archieve mutuality.
+This combination is possible only for XMPP.
+.TP
+.B >
+The contact is in the server side contact list receiving presence reports,
+not awaited authorization from, and should be there. You may want to
+request or deny authorization to archieve mutuality.
+This combination is possible only for XMPP.
+.TP
+.B <
+The contact is in the server side contact list sending presence reports,
+not awaited authorization from, and should be there.
+This combination is possible only for XMPP.
+.TP
+.B -
+The contact is in the server side contact list with mutual
+non-authorization, not awaited authorization from, and should be there.
+This combination is possible only for XMPP.
+.TP
+.B s
+The contact is in the server side contact list with mutual authorization, but should not be there
+(does not have the
+.I wantsbl
+flag set).
+.TP
+.B t
+The contact is in the server side contact list with mutual
+non-authorization, awaited authorization from, but should not be there.
+.TP
+.B R
+The contact is in the server side contact list receiving presence reports,
+awaited authorization from, but should not be there. You may eventually want to
+re-request or deny authorization to archieve mutuality.
+This combination is possible only for XMPP.
 .TP
 .B \'\ \'
-The contact is not in the server side contact list, and is not wanted there.
+(space) The contact is not in the server side contact list, and is not wanted there.
+.TP
+.B \(rs
+The contact is in the server side contact list receiving presence reports,
+not awaited authorization from, but should not be there. You may want to
+request or deny authorization to archieve mutuality.
+This combination is possible only for XMPP.
+.TP
+.B /
+The contact is in the server side contact list sending presence reports,
+not awaited authorization from, but should not be there.
+This combination is possible only for XMPP.
+.TP
+.B \(aq
+The contact is in the server side contact list with mutual
+non-authorization, not awaited authorization from, but should not be there.
+This combination is possible only for XMPP.
+.TP
+.B 1 2 3 4 5 6 7 8 9
+An impossible combination was encountered.
 .RE
 .TP
 .BI e \ [<group>]

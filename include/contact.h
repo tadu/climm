@@ -221,10 +221,6 @@ static inline BOOL ContactIsInv (status_t inv) { return (inv & ims_inv) ? TRUE :
 #define CONT_SEENAUTO  32UL /* has seen auto response. */
 #define CONT_ISEDITED  64UL /* meta data was edited by hand. */
 
-#define CONT_ISSBL    128UL /* contact has been added to server based list */
-#define CONT_REQAUTH  256UL /* contact requires authorization */
-#define CONT_TMPSBL   512UL /* contact tagged for SBL operation */
-
 #define UPF_GENERAL_A   0x0001
 #define UPF_GENERAL_B   0x0002
 #define UPF_WORK        0x0004

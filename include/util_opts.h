@@ -71,7 +71,6 @@ extern struct OptEntry_s OptList[];
 #define CO_ISSBL         (COF_BOOL    | CO_CONTACT | 0x000102UL) /* is on sbl                    */
 #define CO_WANTSBL       (COF_BOOL    | CO_CONTACT | 0x000402UL) /* want it to be on sbl         */
 #define CO_SHADOW        (COF_BOOL    | CO_CONTACT | 0x001002UL) /* don't display in contact list          */
-#define CO_LOCAL         (COF_BOOL    | CO_CONTACT | 0x004002UL) /* do not request status changes for this */
 #define CO_HIDEACK       (COF_BOOL    | CO_CONTACT | 0x010002UL) /* hide when message acknowledge arrives  */
 #define CO_TALKEDTO      (COF_BOOL    | CO_CONTACT | 0x040002UL) /* sent a msg to this contact yet         */
 #define CO_AUTOAUTO      (COF_BOOL    | CO_CONTACT | 0x100002UL) /* autogetauto on status change */
@@ -87,6 +86,12 @@ extern struct OptEntry_s OptList[];
 
 #define CO_SCRIPT        (COF_BOOL    | CO_GLOBAL  | 0x000104UL) /* open a scripting connection       */
 #define CO_S5USE         (COF_BOOL    | CO_SERVER  | 0x000404UL) /* use Socks 5 proxy                 */
+
+#define CO_LOCAL         (COF_BOOL    | CO_CONTACT | 0x000105UL) /* local contact (do not put on roster, don't get/send status) */
+#define CO_ASK_SBL       (COF_BOOL    | CO_CONTACT | 0x000105UL) /* authorization request was sent       */
+#define CO_TO_SBL        (COF_BOOL    | CO_CONTACT | 0x001005UL) /* get presence from contact            */
+#define CO_FROM_SBL      (COF_BOOL    | CO_CONTACT | 0x004005UL) /* send presence to contact             */
+
 
 #define CO_ENCODING      (COF_NUMERIC | CO_CONTACT | 0x06UL) /* the default encoding for this contact */
 #define CO_ENCODINGSTR   (COF_STRING  | CO_CONTACT | 0x07UL) /* the default encoding for this contact */

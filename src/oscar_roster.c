@@ -383,7 +383,7 @@ static void SnacCliRosterbulkone (Server *serv, ContactGroup *cg, Contact *cont,
     if (type == roster_normal && subtype != 10)
     {
         PacketWriteTLVStr   (pak, TLV_NICK, cont->nick);
-        if (cont->oldflags & CONT_REQAUTH)
+        if (ContactPrefVal (cont, CO_ASK_SBL))
         {
             PacketWriteTLV     (pak, TLV_REQAUTH);
             PacketWriteTLVDone (pak);
@@ -492,7 +492,7 @@ void SnacCliRosteraddcontact (Server *serv, Contact *cont, int mode)
     if (!ContactGroupPrefVal (cont->group, CO_ISSBL))
         SnacCliRosteraddgroup (serv, cont->group, 0);
     pak = SnacC (serv, 19, 8, 0, 0);
-    cont->oldflags |= CONT_REQAUTH;
+    OptSetVal (&cont->copts, CO_ASK_SBL, 1);
     SnacCliRosterbulkone (serv, cont->group, cont, pak, roster_normal, 8);
     if (ContactPrefVal (cont, CO_HIDEFROM))
         SnacCliRosterbulkone (serv, NULL, cont, pak, roster_invisible, 8);
@@ -825,7 +825,9 @@ JUMP_SNAC_F(SnacSrvUpdateack)
         case 0xe:
             if (cont)
             {
-                cont->oldflags |= CONT_REQAUTH;
+                OptSetVal (&cont->copts, CO_ASK_SBL, 1);
+                OptSetVal (&cont->copts, CO_TO_SBL, 0);
+                OptSetVal (&cont->copts, CO_FROM_SBL, 0);
                 OptSetVal (&cont->copts, CO_ISSBL, 0);
                 SnacCliRosteraddcontact (serv, cont, 3);
             }
@@ -833,7 +835,9 @@ JUMP_SNAC_F(SnacSrvUpdateack)
         case 10:
             if (cont)
             {
-                cont->oldflags |= CONT_REQAUTH;
+                OptSetVal (&cont->copts, CO_ASK_SBL, 1);
+                OptSetVal (&cont->copts, CO_TO_SBL, 0);
+                OptSetVal (&cont->copts, CO_FROM_SBL, 0);
                 OptSetVal (&cont->copts, CO_ISSBL, 0);
                 rl_printf (i18n (2565, "Contact upload for %s%s%s failed, authorization required.\n"),
                           COLCONTACT, s_quote (cont->nick), COLNONE);
@@ -854,6 +858,11 @@ JUMP_SNAC_F(SnacSrvUpdateack)
             if (cont)
             {
                 OptSetVal (&cont->copts, CO_ISSBL, 1);
+                if (!ContactPrefVal (cont, CO_ASK_SBL))
+                {
+                    OptSetVal (&cont->copts, CO_TO_SBL, 1);
+                    OptSetVal (&cont->copts, CO_FROM_SBL, 1);
+                }
                 rl_printf (i18n (2567, "Contact upload for %s%s%s succeeded.\n"),
                            COLCONTACT, s_quote (cont->nick), COLNONE);
             }

@@ -1744,18 +1744,20 @@ static void __showcontact (Contact *cont, UWORD data)
         if (data & 128)
             rl_printf ("%s        %s", ul, ReadLinePrintWidth (cont->screen, "", nul, &__lenscreen));
         else
+        {
 #endif
+            UBYTE l = 16 * ContactPrefVal (cont, CO_WANTSBL)
+                    +  8 * ContactPrefVal (cont, CO_ISSBL)
+                    +  4 * ContactPrefVal (cont, CO_ASK_SBL)
+                    +  2 * ContactPrefVal (cont, CO_TO_SBL)
+                    +      ContactPrefVal (cont, CO_FROM_SBL);
           rl_printf ("%s%s%c%c%c%2d%c%c%s %s", COLSERVER, ul,
              !cont->group                        ? '#' : ' ',
              ContactPrefVal (cont,  CO_INTIMATE) ? '*' :
               ContactPrefVal (cont, CO_HIDEFROM) ? '-' : ' ',
              ContactPrefVal (cont,  CO_IGNORE)   ? '^' : ' ',
              cont->dc ? cont->dc->version : 0,
-             ContactPrefVal (cont, CO_WANTSBL)  ? 
-               (ContactPrefVal (cont, CO_ISSBL) ? 
-                 (cont->oldflags & CONT_REQAUTH ? 'T' : 'S') : '.') :
-                ContactPrefVal (cont, CO_ISSBL) ?
-                 (cont->oldflags & CONT_REQAUTH ? 't' : 's') : ' ',
+             " 1234567'\\/str89.1234567-><STr89"[l],
              peer ? (
 #ifdef ENABLE_SSL
               peer->connect & CONNECT_OK && peer->ssl_status == SSL_STATUS_OK ? '%' :
@@ -1767,6 +1769,7 @@ static void __showcontact (Contact *cont, UWORD data)
               cont->dc->ip_rem && ~cont->dc->ip_rem ? '^' : ' ',
              nul,
              ReadLinePrintWidth (cont->screen, ul, nul, &__lenscreen));
+        }
     }
 
 #if ENABLE_CONT_HIER
@@ -3329,16 +3332,18 @@ static JUMP_F(CmdUserAuth)
         if      (s_parsekey (&args, "deny"))  data = 2;
         else if (s_parsekey (&args, "req"))   data = 3;
         else if (s_parsekey (&args, "add"))   data = 4;
+        else if (s_parsekey (&args, "unsub")) data = 4;
         else if (s_parsekey (&args, "grant")) data = 5;
         else if (*args)                       data = 5;
         else                                  data = 0;
     }
     if (!data)
     {
-        rl_print (i18n (2119, "auth [grant] <contacts>    - grant authorization.\n"));
-        rl_print (i18n (2120, "auth deny <contacts> <msg> - refuse authorization.\n"));
-        rl_print (i18n (2121, "auth req  <contacts> <msg> - request authorization.\n"));
-        rl_print (i18n (2145, "auth add  <contacts>       - authorized add.\n"));
+        rl_print (i18n (2119, "auth [grant] <contacts> [<msg>] - grant authorization.\n"));
+        rl_print (i18n (2120, "auth deny <contacts> [<msg>]    - refuse/cancel authorization.\n"));
+        rl_print (i18n (2121, "auth req  <contacts> [<msg>]    - request authorization.\n"));
+        rl_print (i18n (2145, "auth add  <contacts>            - authorized add.\n"));
+        rl_print (i18n (9999, "auth unsub <contacts>           - unsubscribe from contact.\n"));
         return 0;
     }
     if (!(cg = s_parselist (&args, uiG.conn)))

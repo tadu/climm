@@ -71,7 +71,12 @@ static Contact *IMRosterCheckCont (Server *serv, RosterEntry *rc)
     {
         OptSetVal (&cont->copts, CO_ISSBL, 1);
         if (rc->reqauth)
-            cont->oldflags |= CONT_REQAUTH;
+            OptSetVal (&cont->copts, CO_ASK_SBL, 1);
+        else
+        {
+            OptSetVal (&cont->copts, CO_FROM_SBL, 1);
+            OptSetVal (&cont->copts, CO_TO_SBL, 1);
+        }
     }
     ContactIDSet (cont, rc->type, rc->id, rc->tag);
     return cont;
@@ -492,7 +497,9 @@ static void IMRosterAddup (Event *event)
             if (ContactPrefVal (cont, CO_WANTSBL) && !ContactPrefVal (cont, CO_IGNORE) && cnt_normal < 25)
             {
                 cnt_normal++;
-                cont->oldflags |= CONT_REQAUTH;
+                OptSetVal (&cont->copts, CO_ASK_SBL, 1);
+                OptSetVal (&cont->copts, CO_TO_SBL, 0);
+                OptSetVal (&cont->copts, CO_FROM_SBL, 0);
                 ContactAdd (cg, cont);
             }
     if (ContactIndex (cg, 0))
@@ -684,7 +691,9 @@ UBYTE IMRoster (Server *serv, int mode)
     for (i = 0, cg = serv->contacts; (cont = ContactIndex (cg, i)); i++)
     {
         OptSetVal(&cont->copts, CO_ISSBL, 0);
-        cont->oldflags &= ~CONT_REQAUTH;
+        OptSetVal(&cont->copts, CO_TO_SBL, 0);
+        OptSetVal(&cont->copts, CO_FROM_SBL, 0);
+        OptSetVal(&cont->copts, CO_ASK_SBL, 0);
         for (ids = cont->ids; ids; ids = ids->next)
             ids->issbl = 0;
     }
