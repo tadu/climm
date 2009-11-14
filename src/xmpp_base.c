@@ -196,7 +196,7 @@ static void XmppSaveLog (IKS_TRANS_USER_DATA *userv, const char *text, size_t si
     const char *data;
     size_t rc;
 
-    data = s_sprintf ("%s%s %s%s\n",
+    data = s_sprintf ("%s%s %s%s ",
         iks_is_secure (serv->xmpp_parser) ? "SSL " :  "", s_now,
         in & 1 ? "<<<" : ">>>", in & 2 ? " residual:" : "");
 
@@ -223,9 +223,14 @@ static void XmppSaveLog (IKS_TRANS_USER_DATA *userv, const char *text, size_t si
 
     rc = write (serv->logfd, data, strlen (data));
 
-    text = s_ind (text);
-    rc = write (serv->logfd, text, strlen (text));
+    char *textnonl = strdup (text);
+    int i;
+    for (i = 0; textnonl[i]; i++)
+        if (textnonl[i] == '\n' || textnonl[i] == '\r')
+            textnonl[i] = ' ';
+    rc = write (serv->logfd, textnonl, strlen (textnonl));
     rc = write (serv->logfd, "\n", 1);
+    free (textnonl);
 }
 
 static void GetBothContacts (iksid *j, Server *conn, Contact **b, Contact **f, char crea)
@@ -532,15 +537,19 @@ static int XmppHandleIqRoster (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
     Server *serv = (Server *)fserv;
     ContactGroup *cg;
-    Contact *cont, *contr, *contb;
+    Contact *contr, *contb;
     int i;
     
-    for (i = 0, cg = serv->contacts; (cont = ContactIndex (cg, i)); i++)
+    if (pak->subtype == IKS_TYPE_RESULT)
     {
-        OptSetVal(&cont->copts, CO_ISSBL, 0);
-        OptSetVal(&cont->copts, CO_TO_SBL, 0);
-        OptSetVal(&cont->copts, CO_FROM_SBL, 0);
-        OptSetVal(&cont->copts, CO_ASK_SBL, 0);
+        Contact *cont;
+        for (i = 0, cg = serv->contacts; (cont = ContactIndex (cg, i)); i++)
+        {
+            OptSetVal(&cont->copts, CO_ISSBL, 0);
+            OptSetVal(&cont->copts, CO_TO_SBL, 0);
+            OptSetVal(&cont->copts, CO_FROM_SBL, 0);
+            OptSetVal(&cont->copts, CO_ASK_SBL, 0);
+        }
     }
     foreach_subtag(item_c, pak->query, "item")
     {
@@ -556,14 +565,11 @@ static int XmppHandleIqRoster (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
         GetBothContacts (jjid, serv, &contb, &contr, 1);
             
         OptSetVal(&contb->copts, CO_ISSBL, 1);
-        if (!strcmp (subs, "both") || !strcmp (subs, "to"))
-            OptSetVal(&contb->copts, CO_TO_SBL, 1);
-        if (!strcmp (subs, "both") || !strcmp (subs, "from"))
-            OptSetVal(&contb->copts, CO_FROM_SBL, 1);
-        if (ask && !strcmp (ask, "subscribe"))
-            OptSetVal(&contb->copts, CO_ASK_SBL, 1);
+        OptSetVal(&contb->copts, CO_TO_SBL, !strcmp (subs, "both") || !strcmp (subs, "to"));
+        OptSetVal(&contb->copts, CO_FROM_SBL, !strcmp (subs, "both") || !strcmp (subs, "from"));
+        OptSetVal(&contb->copts, CO_ASK_SBL, ask && !strcmp (ask, "subscribe"));
         
-        if (name && !(cont = ContactFindScreen (serv->contacts, name)))
+        if (name && !ContactFindScreen (serv->contacts, name))
             ContactAddAlias (contb, name);
         
         foreach_subtag(group, item_c, "group")
@@ -988,6 +994,9 @@ static int XmppHandlePresence (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
     else if (pak->show == IKS_SHOW_AVAILABLE) status = ims_online;
     else assert (0);
 
+    if (!ContactPrefVal (contb, CO_TO_SBL))
+        XMPPAuthorize (serv, contb, auth_req, "auto re-sync");
+
     IMOnline (contr, status, imf_none, pak->show, iks_find_cdata (pak->x, "status"));
     return IKS_FILTER_EAT;
 }
@@ -1023,6 +1032,7 @@ static void XmppLoggedIn (Server *serv)
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqRoster, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_RESULT, IKS_RULE_NS, IKS_NS_ROSTER, IKS_RULE_DONE);
+    iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqRoster, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_SET, IKS_RULE_NS, IKS_NS_ROSTER, IKS_RULE_DONE);
 
     QueueEnqueueData2 (serv->conn, QUEUE_SRV_KEEPALIVE, 0, 300, NULL, &sendIqTimeReqs, NULL);
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqTime, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_NS, "urn:xmpp:time", IKS_RULE_DONE);
@@ -1230,11 +1240,11 @@ static void XMPPCallbackDispatch (Connection *conn)
 
                 if (!conn->serv->xmpp_parser)
                 {
-                prs = iks_stream_new (IKS_NS_CLIENT, conn->serv, &XmppStreamHook);
-                conn->serv->xmpp_id = iks_id_new (iks_parser_stack (prs), conn->serv->screen);
-                if (!conn->serv->xmpp_id->resource)
-                    conn->serv->xmpp_id = iks_id_new (iks_parser_stack (prs), s_sprintf ("%s@%s/%s", conn->serv->xmpp_id->user, conn->serv->xmpp_id->server, "iks"));
-                iks_set_log_hook (prs, XmppSaveLog);
+                    prs = iks_stream_new (IKS_NS_CLIENT, conn->serv, &XmppStreamHook);
+                    conn->serv->xmpp_id = iks_id_new (iks_parser_stack (prs), conn->serv->screen);
+                    if (!conn->serv->xmpp_id->resource)
+                        conn->serv->xmpp_id = iks_id_new (iks_parser_stack (prs), s_sprintf ("%s@%s/%s", conn->serv->xmpp_id->user, conn->serv->xmpp_id->server, "iks"));
+                    iks_set_log_hook (prs, XmppSaveLog);
                 }
                 conn->serv->xmpp_parser = prs;
                 rc = iks_connect_with (prs, conn->server, conn->port, conn->serv->xmpp_id->server, &iks_climm_transport);
