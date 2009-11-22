@@ -1744,8 +1744,8 @@ static void __showcontact (Contact *cont, UWORD data)
         if (data & 128)
             rl_printf ("%s        %s", ul, ReadLinePrintWidth (cont->screen, "", nul, &__lenscreen));
         else
-        {
 #endif
+        {
             UBYTE l = 16 * ContactPrefVal (cont, CO_WANTSBL)
                     +  8 * ContactPrefVal (cont, CO_ISSBL)
                     +  4 * ContactPrefVal (cont, CO_ASK_SBL)
