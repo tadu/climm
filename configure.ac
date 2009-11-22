@@ -44,8 +44,8 @@ AC_ARG_ENABLE([iconvrepl], AC_HELP_STRING([--enable-iconvrepl], [compile in icon
               ac_arg_use_iconvrepl=$enableval, ac_arg_use_iconvrepl=no)
 AC_ARG_ENABLE([remote], AC_HELP_STRING([--disable-remote], [disable scripting FIFO]),
               ac_arg_use_remote=$enableval, ac_arg_use_remote=auto)
-AC_ARG_ENABLE([xmpp], AC_HELP_STRING([--enable-xmpp], [enable XMPP (Jabber) chat network using libiksemel (BETA)]),
-              ac_arg_use_xmpp=$enableval, ac_arg_use_xmpp=auto)
+AC_ARG_ENABLE([xmpp], AC_HELP_STRING([--disable-xmpp], [disable XMPP (Jabber) chat network using libiksemel]),
+              ac_arg_use_xmpp=$enableval, ac_arg_use_xmpp=yes)
 dnl AC_ARG_ENABLE([msn], AC_HELP_STRING([--enable-msn], [enable MSN chat network (NOT YET IMPLEMENTED)]),
 dnl               ac_arg_use_msn=$enableval, ac_arg_use_msn=auto)
 AC_ARG_ENABLE([tcl], AC_HELP_STRING([--disable-tcl], [disable Tcl scripting]),
@@ -70,7 +70,7 @@ fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([locale.h langinfo.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h sys/utsname.h sys/un.h wchar.h wctype.h pwd.h utmp.h utmpx.h values.h resolv.h arpa/nameser.h])
+AC_CHECK_HEADERS([locale.h langinfo.h sys/select.h arpa/inet.h ctype.h errno.h fcntl.h limits.h netdb.h netinet/in.h sys/ioctl.h sys/socket.h sys/time.h sys/wait.h termios.h unistd.h strings.h sys/utsname.h sys/un.h wchar.h wctype.h pwd.h utmp.h utmpx.h values.h resolv.h arpa/nameser.h])
 
 if test "x$ac_arg_use_autopackage" = xyes; then
     enable_binreloc=auto
@@ -107,6 +107,7 @@ if test "x$ac_arg_use_dc" != "xno" || test "x$ac_arg_use_xmpp" != "xno"; then
         LIBS="$LIBGNUTLS_LIBS $LIBGCRYPT_LIBS $LIBS"
         AC_CHECK_FUNC(gnutls_dh_params_generate2, [AC_DEFINE(HAVE_DH_GENPARAM2, 1, [Whether new DH prime generator is available])],)
         LIBS="$temp_LIBS"
+        AC_DEFINE(HAVE_GNUTLS, 1, [whether to use GnuTSL support.])
       fi
     fi
     if test "x$ac_use_ssl" = "xno" || test "x$ac_arg_use_ssl" = "xgnutls+openssl"; then
@@ -379,27 +380,31 @@ if test "x$ac_arg_use_xmpp" != "xno"; then
   ac_use_xmpp=yes
 
   if test "x$ac_arg_use_ssl" != "xgnutls" && test "x$ac_arg_use_ssl" != "xgnutls+openssl"; then
-    AC_MSG_CHECKING([XMPP])
-    AC_MSG_RESULT([no, GnuTLS missing])
-    ac_use_xmpp=no
+    if test "x$ac_arg_use_xmpp" = xyes; then
+      AC_MSG_CHECKING([XMPP])
+      AC_MSG_FAILURE([no, GnuTLS missing])
+    else
+      AC_MSG_CHECKING([XMPP])
+      AC_MSG_RESULT([no, GnuTLS missing])
+      ac_use_xmpp=no
+    fi
   fi
 
   if test "x$ac_use_xmpp" = xyes; then
     PKG_CHECK_MODULES(IKS, iksemel, ac_iksemel_version=`pkg-config --modversion iksemel | tr . " "`
       ac_iksemel_version=`printf 0x%02x%02x $ac_iksemel_version`, ac_use_xmpp=no)
-  fi
 
-  if test "x$ac_arg_use_xmpp" = xyes; then
     if test "x$ac_use_xmpp" = xno; then
-      AC_MSG_FAILURE([cannot find XMPP library libiksemel])
+      AC_MSG_RESULT([no, using replacement])
     fi
-    if test "1${ac_iksemel_version#??}" -lt 10102;  then
-      AC_MSG_FAILURE([cannot find XMPP library libiksemel version 1.3 or newer, found: $ac_iksemel_version])
+
+    if test "x$ac_use_xmpp" = xno || test "1${ac_iksemel_version#??}" -lt 10102 || test "x$ac_arg_use_autopackage" = xyes; then
+      # use our version of iksemel
+      AC_SUBST(IKS_INC, ['-I$(top_srcdir)/iksemel-1.4/include'])
+      AC_SUBST(IKS_LIBS, libiksemel.a)
+      ac_iksemel_version=0x0104
+      ac_use_xmpp=yes
     fi
-  fi
-  if test "1${ac_iksemel_version#??}" -lt 10102;  then
-    AC_MSG_WARN([cannot find XMPP library libiksemel version 1.3 or newer, found: $ac_iksemel_version])
-    ac_use_xmpp=no
   fi
 
   ac_arg_use_xmpp=$ac_use_xmpp;
@@ -441,6 +446,7 @@ fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
+AC_C_INLINE
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_STRUCT_TM
@@ -626,7 +632,7 @@ if test "x$CLIMM_EXTRAVERSION" != "x"; then
 fi
 
 if test "x$ac_use_autopackage" = xyes; then
-    relay_libs="tcl8.4 tcl8.3 gnutls gcrypt gpg-error gloox otr iksemel"
+    relay_libs="tcl8.4 tcl8.3 gnutls gcrypt gpg-error otr iksemel"
     LIBS='`'"$RELAYTOOL --relay '$relay_libs' $LIBS"'`'
     LIBGCRYPT_LIBS='`'"$RELAYTOOL --relay '$relay_libs' $LIBGCRYPT_LIBS"'`'
     LIBGNUTLS_LIBS='`'"$RELAYTOOL --relay '$relay_libs' $LIBGNUTLS_LIBS"'`'
@@ -636,7 +642,7 @@ if test "x$ac_use_autopackage" = xyes; then
     IKS_LIBS='`'"$RELAYTOOL --relay '$relay_libs' $IKS_LIBS"'`'
 fi
 
-AC_MSG_CHECKING([whether to enable XMPP chat network (BETA)])
+AC_MSG_CHECKING([whether to enable XMPP chat network])
 AC_MSG_RESULT([$ac_arg_use_xmpp])
 dnl AC_MSG_CHECKING([whether to enable MSN chat network (EXPERIMENTAL BROKEN INCOMPLETE)])
 dnl AC_MSG_RESULT([$ac_arg_use_msn])

@@ -10,9 +10,10 @@ $(DESTDIR)$(bindir)/micq:
 
 bin_PROGRAMS = climm # icqsyn icqprx
 EXTRA_PROGRAMS = icqprx icqsyn
+EXTRA_LIBRARIES = libiksemel.a
 
-AM_CFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include
-AM_CXXFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include
+AM_CFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include @IKS_INC@
+AM_CXXFLAGS = -DPKGDATADIR='"$(pkgdatadir)"' -I$(top_srcdir)/include @IKS_INC@
 
 climm_SOURCES = autopackage_prefix.c conv.c file_util.c im_response.c climm.c \
        im_request.c util.c util_opts.c util_ui.c mreadline.c \
@@ -30,6 +31,13 @@ icqsyn_SOURCES = icqsyn.c conv.c packet.c util_str.c util_syntax.c
 icqprx_SOURCES = icqprx.c
 
 climm_LDADD = @LIBOBJS@ @LIBICONV@ @LIBOTR_LIBS@ @LIBGNUTLS_LIBS@ @LIBGCRYPT_LIBS@ @LIBTCL_LIBS@ @BINRELOC_LIBS@ @IKS_LIBS@
+
+libiksemel_a_SOURCES = ../iksemel-1.4/src/base64.c ../iksemel-1.4/src/dom.c \
+	../iksemel-1.4/src/filter.c ../iksemel-1.4/src/iks.c \
+	../iksemel-1.4/src/ikstack.c \
+	../iksemel-1.4/src/jabber.c ../iksemel-1.4/src/md5.c \
+	../iksemel-1.4/src/sax.c ../iksemel-1.4/src/sha.c \
+	../iksemel-1.4/src/stream.c ../iksemel-1.4/src/utility.c
 
 $(climm_SOURCES): @LIBOBJS@
 
