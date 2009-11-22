@@ -1,0 +1,44 @@
+
+License:
+========
+
+iksemel is developed and released under GNU Lesser General Public License.
+A copy of the license can be found in the file COPYING. You should read it
+before sending patches to the iksemel, since it is implicitly assumed that
+your patches are also submitted under the LGPL license.
+
+
+General Idea:
+=============
+
+Main goal of the iksemel is removing complexity from programs using the
+library and the library itself. This is the reason why only a subset of XML
+is supported. Some things like UTF16, entity definitons, DTDs will be eventually
+implemented when we found ways to implement them without adding
+too much complexity to the iksemel code. Somewhat external standarts
+(XPath, XQuery, XSLT, vs) will probably not make it into the iksemel.
+
+
+File Layout:
+============
+
+doc/
+* iksemel.texi                Documentation in texinfo format.
+include/
+* common.h                    Internal header for some common definitions.
+* iksemel.h                   Library API
+* finetune.h                  Default memory allocation sizes.
+src/
+* ikstack.c                   Memory management functions.
+* utility.c                   Small string utility functions.
+* iks.c                       XML tree management.
+* sax.c                       SAX parser.
+* dom.c                       DOM parser.
+* stream.c                    Stream parser.
+* sha.c                       SHA1 hash functions.
+* jabber.c                    Jabber utilities.
+* filter.c                    Packet filter for Jabber.
+test/
+(self test programs)
+tools/
+(varius utility programs)
