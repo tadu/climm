@@ -95,7 +95,7 @@ Connection *PeerFileCreate (Server *serv)
         rl_printf (i18n (2519, "Opening file listener connection at %slocalhost%s:%s%ld%s... "),
                   COLQUOTE, COLNONE, COLQUOTE, UD2UL (flist->port), COLNONE);
 
-    UtilIOConnectTCP (flist);
+    UtilIOListenTCP (flist);
     
     return flist;
 }
