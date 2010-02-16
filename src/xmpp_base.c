@@ -1115,6 +1115,8 @@ static int XmppStreamHook (IKS_TRANS_USER_DATA *userv, int type, iks *node)
             if (node) iks_delete (node);
             return IKS_NET_DROPPED;
         case IKS_NODE_ERROR:
+            if (!strcmp (iks_name (iks_first_tag (node)), "conflict"))
+                OptSetVal (&serv->copts, CO_AUTOTAGRES, 1);
             XmppStreamError (serv, s_sprintf ("stream error [%s]", iks_name (iks_first_tag (node))));
             if (node) iks_delete (node);
             return IKS_NET_DROPPED;
@@ -1243,7 +1245,11 @@ static void XMPPCallbackDispatch (Connection *conn)
                     prs = iks_stream_new (IKS_NS_CLIENT, conn->serv, &XmppStreamHook);
                     conn->serv->xmpp_id = iks_id_new (iks_parser_stack (prs), conn->serv->screen);
                     if (!conn->serv->xmpp_id->resource)
-                        conn->serv->xmpp_id = iks_id_new (iks_parser_stack (prs), s_sprintf ("%s@%s/%s", conn->serv->xmpp_id->user, conn->serv->xmpp_id->server, "iks"));
+                        conn->serv->xmpp_id = iks_id_new (iks_parser_stack (prs),
+                            s_sprintf ("%s@%s/climm", conn->serv->xmpp_id->user, conn->serv->xmpp_id->server));
+                    if (ConnectionPrefVal (conn->serv, CO_TAGRESSOURCE) || ConnectionPrefVal (conn->serv, CO_AUTOTAGRES))
+                        conn->serv->xmpp_id = iks_id_new (iks_parser_stack (prs),
+                            s_sprintf ("%s/%s%04X%04X", conn->serv->xmpp_id->partial, conn->serv->xmpp_id->resource, rand() % 0xffff, rand() % 0xffff));
                     iks_set_log_hook (prs, XmppSaveLog);
                 }
                 conn->serv->xmpp_parser = prs;

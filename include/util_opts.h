@@ -86,6 +86,8 @@ extern struct OptEntry_s OptList[];
 
 #define CO_SCRIPT        (COF_BOOL    | CO_GLOBAL  | 0x000104UL) /* open a scripting connection       */
 #define CO_S5USE         (COF_BOOL    | CO_SERVER  | 0x000404UL) /* use Socks 5 proxy                 */
+#define CO_TAGRESSOURCE  (COF_BOOL    | CO_SERVER  | 0x001004UL) /* append random string to ressource to make unique */
+#define CO_AUTOTAGRES    (COF_BOOL    | CO_SERVER  | 0x004004UL) /* append random string to ressource to make unique (automatically set) */
 
 #define CO_LOCAL         (COF_BOOL    | CO_CONTACT | 0x000105UL) /* local contact (do not put on roster, don't get/send status) */
 #define CO_ASK_SBL       (COF_BOOL    | CO_CONTACT | 0x000105UL) /* authorization request was sent       */
