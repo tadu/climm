@@ -39,7 +39,7 @@ libiksemel_a_SOURCES = ../iksemel-1.4/src/base64.c ../iksemel-1.4/src/dom.c \
 	../iksemel-1.4/src/sax.c ../iksemel-1.4/src/sha.c \
 	../iksemel-1.4/src/stream.c ../iksemel-1.4/src/utility.c
 
-$(climm_SOURCES): @LIBOBJS@ @IKS_LIBS@
+$(climm_SOURCES): @LIBOBJS@
 
 snprintf.o: snprintf.c
 snprintf.c: snprintf.h
