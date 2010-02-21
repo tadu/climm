@@ -32,6 +32,8 @@ icqprx_SOURCES = icqprx.c
 
 climm_LDADD = @LIBOBJS@ @LIBICONV@ @LIBOTR_LIBS@ @LIBGNUTLS_LIBS@ @LIBGCRYPT_LIBS@ @LIBTCL_LIBS@ @BINRELOC_LIBS@ @IKS_LIBS@
 
+noinst_LIBRARIES = @IKS_LIBS@
+
 libiksemel_a_SOURCES = ../iksemel-1.4/src/base64.c ../iksemel-1.4/src/dom.c \
 	../iksemel-1.4/src/filter.c ../iksemel-1.4/src/iks.c \
 	../iksemel-1.4/src/ikstack.c \
