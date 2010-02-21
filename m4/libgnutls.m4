@@ -24,7 +24,7 @@ AC_ARG_WITH(libgnutls-prefix,
      fi
   fi
 
-  AC_PATH_PROG(LIBGNUTLS_CONFIG, libgnutls-config, no)
+  AC_PATH_TOOL(LIBGNUTLS_CONFIG, libgnutls-config, no)
   min_libgnutls_version=ifelse([$1], ,0.1.0,$1)
   AC_MSG_CHECKING(for libgnutls - version >= $min_libgnutls_version)
   no_libgnutls=""

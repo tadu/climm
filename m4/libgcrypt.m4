@@ -31,7 +31,7 @@ AC_DEFUN([AM_PATH_LIBGCRYPT],
      fi
   fi
 
-  AC_PATH_PROG(LIBGCRYPT_CONFIG, libgcrypt-config, no)
+  AC_PATH_TOOL(LIBGCRYPT_CONFIG, libgcrypt-config, no)
   tmp=ifelse([$1], ,1:1.2.0,$1)
   if echo "$tmp" | grep ':' >/dev/null 2>/dev/null ; then
      req_libgcrypt_api=`echo "$tmp"     | sed 's/\(.*\):\(.*\)/\1/'`
