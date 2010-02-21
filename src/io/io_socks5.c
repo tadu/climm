@@ -178,7 +178,7 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
         if (!socks5name || !socks5pass)
             return io_socks5_seterr (d, IO_RW, i18n (1599, "[SOCKS] Authentication method incorrect"));
 
-        send = s_sprintf ("%c%c%s%c%s%n", 1, (char) strlen (socks5name), socks5name, strlen (socks5pass), socks5pass, &len);
+        send = s_sprintf ("%c%c%s%c%s%n", 1, (char) strlen (socks5name), socks5name, (char) strlen (socks5pass), socks5pass, &len);
         e = io_util_write (conn, d->next, send, len);
         d->flags = FLAG_CRED_SENT;
         d->read = 0;
