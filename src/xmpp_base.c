@@ -137,6 +137,7 @@ Event *XMPPLogin (Server *serv)
     const char *scrserv, *sp;
     char *semi;
     Event *event;
+    time_t now = time (NULL);
 
     assert (serv->type == TYPE_XMPP_SERVER);
 
@@ -157,7 +158,6 @@ Event *XMPPLogin (Server *serv)
     XMPPLogout (serv);
 
     s_repl (&serv->xmpp_stamp, "YYYYmmddHHMMSS");
-    time_t now = time (NULL);
     strftime (serv->xmpp_stamp, 15, "%Y%m%d%H%M%S", gmtime (&now));
 
     semi = strchr (serv->conn->server, ';');
@@ -194,7 +194,9 @@ static void XmppSaveLog (IKS_TRANS_USER_DATA *userv, const char *text, size_t si
 {
     Server *serv = (Server *)userv;
     const char *data;
+    char *textnonl;
     size_t rc;
+    int i;
 
     data = s_sprintf ("%s%s %s%s ",
         iks_is_secure (serv->xmpp_parser) ? "SSL " :  "", s_now,
@@ -216,6 +218,9 @@ static void XmppSaveLog (IKS_TRANS_USER_DATA *userv, const char *text, size_t si
         dir = s_sprintf ("%sdebug" _OS_PATHSEPSTR "packets.xmpp.%s", PrefUserDir (prG), serv->screen);
         mkdir (dir, 0700);
         file = s_sprintf ("%sdebug" _OS_PATHSEPSTR "packets.xmpp.%s/%lu", PrefUserDir (prG), serv->screen, time (NULL));
+#if !defined(O_SYNC)
+#define O_SYNC 0
+#endif
         serv->logfd = open (file, O_WRONLY | O_CREAT | O_APPEND | O_SYNC, 0600);
     }
     if (serv->logfd < 0)
@@ -223,8 +228,7 @@ static void XmppSaveLog (IKS_TRANS_USER_DATA *userv, const char *text, size_t si
 
     rc = write (serv->logfd, data, strlen (data));
 
-    char *textnonl = strdup (text);
-    int i;
+    textnonl = strdup (text);
     for (i = 0; textnonl[i]; i++)
         if (textnonl[i] == '\n' || textnonl[i] == '\r')
             textnonl[i] = ' ';
@@ -328,12 +332,12 @@ static enum ikshowtype StatusToIksstatus (status_t *status)
 
 static void XmppSendIqGmail (Server *serv, int64_t newer, const char *newertid, const char *query)
 {
-    iks *x = iks_new ("iq");
+    iks *x = iks_new ("iq"), *q;
     iks_insert_attrib (x, "type", "get");
     iks_insert_attrib (x, "to", serv->xmpp_id->partial);
     iks_insert_attrib (x, "id", s_sprintf ("%s-%s-%x", query ? "mailq" : "mail", serv->xmpp_stamp, serv->xmpp_sequence++));
 
-    iks *q = iks_insert (x, "query");
+    q = iks_insert (x, "query");
     iks_insert_attrib (q, "xmlns", "google:mail:notify");
     if (newer != 0)
         iks_insert_attrib (q, "newer-than-time", s_sprintf ("%llu", newer));
@@ -387,14 +391,16 @@ static void sendIqTimeReqs (Event *event)
 static int XmppHandleIqGmail (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
     Server *serv = (Server *)fserv;
+    Contact *cont = serv->conn->cont;
     iks *mb = find_with_ns_attrib (pak->x, "mailbox", "google:mail:notify");
+    char *n_s, *foundnewer;
+    const char *ntid = "";
+    int n = 0, ismail = 0;
 
     if (!mb)
         return IKS_FILTER_PASS;
 
-    int n = 0;
-    int ismail = 0;
-    char *n_s = iks_find_attrib (mb, "total-matched");
+    n_s = iks_find_attrib (mb, "total-matched");
     if (n_s)
         n = atoi (n_s);
 
@@ -409,18 +415,18 @@ static int XmppHandleIqGmail (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
     if (!n)
         return IKS_FILTER_EAT;
 
-    const char *ntid = "";
-    Contact *cont = serv->conn->cont;
+    {
     foreach_subtag (mb_c, mb, "mail-thread-info")
     {
         char *sub = iks_find_cdata (mb_c, "subject");
         char *snip = iks_find_cdata (mb_c, "snippet");
         char *dato = iks_find_attrib (mb_c, "date");
-        ntid = iks_find_attrib (mb_c, "tid");
         time_t t = atoll (dato) / 1000ULL;
+        ntid = iks_find_attrib (mb_c, "tid");
         rl_printf ("%s ", s_time (&t));
         rl_printf ("%s%s %s%s%s", COLMESSAGE, sub ? sub : "", COLQUOTE, COLSINGLE, snip ? snip : "");
         rl_print ("\n");
+        {
         foreach_subtag (mb_s_c, iks_find (mb_c, "senders"), "sender")
         {
             if (!ismail || (iks_find_attrib (mb_s_c, "unread") && !strcmp (iks_find_attrib (mb_s_c, "unread"), "1")))
@@ -429,9 +435,9 @@ static int XmppHandleIqGmail (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
                 char *name = iks_find_attrib (mb_s_c, "name");
                 rl_printf ("            %s%s%s <%s%s%s>\n", COLQUOTE, name ? name : "", COLNONE, COLCONTACT, email ? email : "", COLNONE);
             }
-        }
-    }
-    char *foundnewer = iks_find_attrib (mb, "result-time");
+        }}
+    }}
+    foundnewer = iks_find_attrib (mb, "result-time");
     if (ismail)
     {
         serv->xmpp_gmail_new_newer = atoll (foundnewer);
@@ -466,22 +472,22 @@ static int XmppHandleIqDisco (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
     }
     else if (pak->subtype == IKS_TYPE_GET)
     {
-        iks *x = iks_new ("iq");
+        iks *x = iks_new ("iq"), *q, *f, *i;
         iks_insert_attrib (x, "type", "result");
         iks_insert_attrib (x, "id", pak->id);
         iks_insert_attrib (x, "to", pak->from->full);
-        iks *q = iks_insert (x, "query");
+        q = iks_insert (x, "query");
         iks_insert_attrib (q, "xmlns", "http://jabber.org/protocol/disco#info");
         iks_insert_attrib (q, "node", iks_find_attrib (pak->query, "node"));
-        iks *f = iks_insert (q, "feature");
+        f = iks_insert (q, "feature");
         iks_insert_attrib (f, "var", "http://jabber.org/protocol/disco#info");
-             f = iks_insert (q, "feature");
+        f = iks_insert (q, "feature");
         iks_insert_attrib (f, "var", "http://jabber.org/protocol/chatstates");
-             f = iks_insert (q, "feature");
+        f = iks_insert (q, "feature");
         iks_insert_attrib (f, "var", "jabber:iq:version");
-             f = iks_insert (q, "feature");
+        f = iks_insert (q, "feature");
         iks_insert_attrib (f, "var", "jabber:iq:last");
-        iks *i =  iks_insert (q, "identity");
+        i =  iks_insert (q, "identity");
         iks_insert_attrib (i, "category", "client");
         iks_insert_attrib (i, "type", "console");
         iks_insert_attrib (i, "name", "climm");
@@ -498,11 +504,11 @@ static int XmppHandleIqXEP12 (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
     Server *serv = (Server *)fserv;
     if (pak->subtype == IKS_TYPE_GET)
     {
-        iks *x = iks_new ("iq");
+        iks *x = iks_new ("iq"), *q;
         iks_insert_attrib (x, "type", "result");
         iks_insert_attrib (x, "id", pak->id);
         iks_insert_attrib (x, "to", pak->from->full);
-        iks *q = iks_insert (x, "query");
+        q = iks_insert (x, "query");
         iks_insert_attrib (q, "xmlns", "jabber:iq:last");
         iks_insert_attrib (q, "seconds", s_sprintf ("%ld", uiG.idle_val ? os_DetermineIdleTime (time (NULL), uiG.idle_val) : 0));
         iks_send (serv->xmpp_parser, x);
@@ -517,11 +523,11 @@ static int XmppHandleIqXEP92 (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
     Server *serv = (Server *)fserv;
     if (pak->subtype == IKS_TYPE_GET)
     {
-        iks *x = iks_new ("iq");
+        iks *x = iks_new ("iq"), *q;
         iks_insert_attrib (x, "type", "result");
         iks_insert_attrib (x, "id", pak->id);
         iks_insert_attrib (x, "to", pak->from->full);
-        iks *q = iks_insert (x, "query");
+        q = iks_insert (x, "query");
         iks_insert_attrib (q, "xmlns", "jabber:iq:version");
         iks_insert_cdata (iks_insert (q, "name"), "climm", 0);
         iks_insert_cdata (iks_insert (q, "version"), BuildVersionStr, 0);
@@ -551,17 +557,18 @@ static int XmppHandleIqRoster (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
             OptSetVal(&cont->copts, CO_ASK_SBL, 0);
         }
     }
-    foreach_subtag(item_c, pak->query, "item")
+    { foreach_subtag(item_c, pak->query, "item")
     {
         char *jid = iks_find_attrib (item_c, "jid");
         char *subs = iks_find_attrib (item_c, "subscription");
         char *name = iks_find_attrib (item_c, "name");
         char *ask = iks_find_attrib (item_c, "ask");
+        iksid *jjid;
         
         if (!jid || !subs)
             continue;
         
-        iksid *jjid = iks_id_new (iks_stack (pak->x), jid);
+        jjid = iks_id_new (iks_stack (pak->x), jid);
         GetBothContacts (jjid, serv, &contb, &contr, 1);
             
         OptSetVal(&contb->copts, CO_ISSBL, 1);
@@ -572,7 +579,7 @@ static int XmppHandleIqRoster (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
         if (name && !ContactFindScreen (serv->contacts, name))
             ContactAddAlias (contb, name);
         
-        foreach_subtag(group, item_c, "group")
+        { foreach_subtag(group, item_c, "group")
         {
             char *g = iks_cdata (group);
             if (g && *g)
@@ -583,8 +590,8 @@ static int XmppHandleIqRoster (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
                 if (!ContactHas (cg, contb))
                     ContactAdd (cg, contb);
             }
-        }
-    }
+        }}
+    }}
     return IKS_FILTER_EAT;
 }
 
@@ -596,16 +603,17 @@ static int XmppHandleIqTime (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 static int XmppHandleIqDefault (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
     Server *serv = (Server *)fserv;
+    iks *x, *e, *t, *c;
     if (pak->subtype == IKS_TYPE_ERROR || pak->subtype == IKS_TYPE_RESULT)
         return IKS_FILTER_PASS;
-    iks *x = iks_new ("iq");
+    x = iks_new ("iq");
     iks_insert_attrib (x, "type", "error");
     iks_insert_attrib (x, "id", pak->id);
-    iks *e = iks_insert (x, "error");
+    e = iks_insert (x, "error");
     iks_insert_attrib  (e, "type", "cancel");
-    iks *t = iks_insert (e, "feature-not-implemented");
+    t = iks_insert (e, "feature-not-implemented");
     iks_insert_attrib  (t, "xmlns", "urn:ietf:params:xml:ns:xmpp-stanzas");
-    iks *c = iks_tree (iks_string (iks_stack (x), iks_first_tag (x)), 0, NULL);
+    c = iks_tree (iks_string (iks_stack (x), iks_first_tag (x)), 0, NULL);
     iks_insert_node (x, c);
     iks_send (serv->xmpp_parser, x);
     iks_delete (c);
@@ -655,9 +663,10 @@ static time_t XmppHandleXEP91 (iks *x)
     if ((delay = find_with_ns_attrib (x, "x", "jabber:x:delay")))
     {
         struct tm;
+        char *stamp;
         // char *dfrom = 
         iks_find_attrib (delay, "from");
-        char *stamp = iks_find_attrib (delay, "stamp");
+        stamp = iks_find_attrib (delay, "stamp");
         date = ParseUTCDate (stamp);
 //        if (date != NOW)
 //            DropAttrib (delay, "stamp");
@@ -777,9 +786,9 @@ static void XmppHandleXEP22a (Server *serv, iks *x, Contact *cfrom)
 
 static void XmppHandleXEP22c (Server *serv, iksid *from, char *tof, char *id, char *type)
 {
-    iks *msg  = iks_make_msg (IKS_TYPE_NONE, from->full, NULL);
+    iks *msg  = iks_make_msg (IKS_TYPE_NONE, from->full, NULL), *x;
     iks_insert_attrib (msg, "id", s_sprintf ("ack-%s-%x", serv->xmpp_stamp, ++serv->xmpp_sequence));
-    iks *x = iks_insert (msg, "x");
+    x = iks_insert (msg, "x");
     iks_insert_attrib (x, "xmlns", "jabber:x:event");
     iks_insert (x, type);
     iks_insert_cdata (iks_insert (x, "id"), id, 0);
@@ -890,6 +899,7 @@ static int XmppHandleMessage (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 //    DropAttrib (t, "type");
     time_t delay = -1;
     Contact *contb, *contr;
+    Opt *opt;
 
     GetBothContacts (pak->from, serv, &contb, &contr, 0);
 
@@ -908,7 +918,7 @@ static int XmppHandleMessage (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
         return IKS_FILTER_EAT;
 //    DropAllChilds (t, "body");
 
-    Opt *opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, iks_find_cdata (pak->x, "body"), 0);
+    opt = OptSetVals (NULL, CO_ORIGIN, CV_ORIGIN_v8, CO_MSGTYPE, MSG_NORM, CO_MSGTEXT, iks_find_cdata (pak->x, "body"), 0);
 
 //    if (!subject.empty())
 //        opt = OptSetVals (opt, CO_MSGTYPE, MSG_NORM_SUBJ, CO_SUBJECT, subject.c_str(), 0);
@@ -1014,6 +1024,8 @@ static int XmppUnknown (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 
 static void XmppLoggedIn (Server *serv)
 {
+    iks *x;
+
     if (serv->xmpp_filter)
         iks_filter_delete (serv->xmpp_filter);
     serv->xmpp_filter = iks_filter_new ();
@@ -1027,7 +1039,7 @@ static void XmppLoggedIn (Server *serv)
 
     XMPPSetstatus (serv, NULL, serv->status, serv->conn->cont->status_message);
 
-    iks *x = iks_make_iq (IKS_TYPE_GET, IKS_NS_ROSTER);
+    x = iks_make_iq (IKS_TYPE_GET, IKS_NS_ROSTER);
     iks_insert_attrib (x, "id", s_sprintf ("roster-%s-%x", serv->xmpp_stamp, serv->xmpp_sequence++));
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
@@ -1329,6 +1341,9 @@ static void SnacCallbackXmppCancel (Event *event)
 
 UBYTE XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
 {
+    iks *x, *xx;
+    Event *event;
+
     assert (cont);
     assert (msg->send_message);
 
@@ -1337,10 +1352,10 @@ UBYTE XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
     if (msg->type != MSG_NORM)
         return RET_DEFER;
 
-    iks *x = iks_make_msg (IKS_TYPE_CHAT, cont->screen, msg->send_message);
+    x = iks_make_msg (IKS_TYPE_CHAT, cont->screen, msg->send_message);
     iks_insert_attrib (x, "id", s_sprintf ("xmpp-%s-%x", serv->xmpp_stamp, ++serv->xmpp_sequence));
     iks_insert_attrib (x, "from", serv->xmpp_id->full);
-    iks *xx = iks_insert (x, "x");
+    xx = iks_insert (x, "x");
     iks_insert_attrib (xx, "xmlns", "jabber:x:event");
     iks_insert (xx, "offline");
     iks_insert (xx, "delivered");
@@ -1349,7 +1364,7 @@ UBYTE XMPPSendmsg (Server *serv, Contact *cont, Message *msg)
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
 
-    Event *event = QueueEnqueueData2 (serv->conn, QUEUE_XMPP_RESEND_ACK, serv->xmpp_sequence, 120, msg, &SnacCallbackXmpp, &SnacCallbackXmppCancel);
+    event = QueueEnqueueData2 (serv->conn, QUEUE_XMPP_RESEND_ACK, serv->xmpp_sequence, 120, msg, &SnacCallbackXmpp, &SnacCallbackXmppCancel);
     event->cont = cont;
 
     return RET_OK;
@@ -1382,10 +1397,10 @@ void XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *ms
 UBYTE XMPPSendIq (Server *serv, Contact *cont, int8_t which, const char *msg)
 {
     int err;
-    iks *child = iks_tree (msg, 0, &err);
+    iks *child = iks_tree (msg, 0, &err), *x;
     if (!child)
         return RET_FAIL;
-    iks *x = iks_new_within ("iq", iks_stack (child));
+    x = iks_new_within ("iq", iks_stack (child));
     iks_insert_attrib (x, "type", which ? "set" : "get");
     iks_insert_attrib (x, "id", s_sprintf ("user-%s-%x", serv->xmpp_stamp, ++serv->xmpp_sequence));
     iks_insert_attrib (x, "from", serv->xmpp_id->full);
@@ -1398,14 +1413,15 @@ UBYTE XMPPSendIq (Server *serv, Contact *cont, int8_t which, const char *msg)
 
 void XMPPAuthorize (Server *serv, Contact *cont, auth_t how, const char *msg)
 {
+    iks *x;
     while (cont->parent && cont->parent->serv == cont->serv)
         cont = cont->parent;
 
-    iks *x = iks_make_s10n (how == auth_grant ? IKS_TYPE_SUBSCRIBED
-                          : how == auth_deny  ? IKS_TYPE_UNSUBSCRIBED
-                          : how == auth_req   ? IKS_TYPE_SUBSCRIBE
-                                              : IKS_TYPE_UNSUBSCRIBE,
-                            cont->screen, msg);
+    x = iks_make_s10n (how == auth_grant ? IKS_TYPE_SUBSCRIBED
+                     : how == auth_deny  ? IKS_TYPE_UNSUBSCRIBED
+                     : how == auth_req   ? IKS_TYPE_SUBSCRIBE
+                                         : IKS_TYPE_UNSUBSCRIBE,
+                       cont->screen, msg);
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
 }

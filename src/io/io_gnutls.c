@@ -345,7 +345,7 @@ static io_err_t io_gnutls_write (Connection *conn, Dispatcher *d, const char *bu
     if (d->outlen)
     {
         rc = gnutls_record_send (d->ssl, d->outbuf, d->outlen);
-        DebugH (DEB_SSL, "write old %d [connect=%x ssl=%d rc=%d]", d->outlen, conn->connect, conn->ssl_status, rc);
+        DebugH (DEB_SSL, "write old %d [connect=%x ssl=%d rc=%d]", (int) d->outlen, conn->connect, conn->ssl_status, rc);
         if (rc < 0 && rc != GNUTLS_E_AGAIN && rc != GNUTLS_E_INTERRUPTED)
         {
             io_gnutls_setconnerr (d, IO_SSL_OK, rc, "write");
@@ -369,7 +369,7 @@ static io_err_t io_gnutls_write (Connection *conn, Dispatcher *d, const char *bu
     if (len > 0)
     {
         rc = gnutls_record_send (d->ssl, buf, len);
-        DebugH (DEB_SSL, "write %d [connect=%x ssl=%d rc=%d]", len, conn->connect, conn->ssl_status, rc);
+        DebugH (DEB_SSL, "write %d [connect=%x ssl=%d rc=%d]", (int)  len, conn->connect, conn->ssl_status, rc);
         if (rc < 0 && rc != GNUTLS_E_AGAIN && rc != GNUTLS_E_INTERRUPTED)
         {
             io_gnutls_setconnerr (d, IO_SSL_OK, rc, "write");

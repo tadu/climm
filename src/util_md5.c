@@ -64,8 +64,9 @@ util_md5ctx_t *util_md5_init ()
 #if ENABLE_GNUTLS
     if (libgnutls_is_present)
     {
+        gcry_error_t err;
         ctx->usegnutls = 1;
-        gcry_error_t err = gcry_md_open (&ctx->h, GCRY_MD_MD5, 0);
+        err = gcry_md_open (&ctx->h, GCRY_MD_MD5, 0);
         if (!gcry_err_code (err))
             return ctx;
     }
@@ -103,8 +104,9 @@ int util_md5_final (util_md5ctx_t *ctx, char *buf)
 #if ENABLE_GNUTLS
     if (libgnutls_is_present && ctx->usegnutls)
     {
+        unsigned char *hash;
         gcry_md_final (ctx->h);
-        unsigned char *hash = gcry_md_read (ctx->h, 0);
+        hash = gcry_md_read (ctx->h, 0);
         assert (hash);
         memcpy (buf, hash, 16);
         gcry_md_close (ctx->h);

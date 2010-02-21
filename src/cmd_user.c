@@ -4427,11 +4427,11 @@ static JUMP_F(CmdUserGmail)
  */
 static JUMP_F(CmdUserXmppIq)
 {
-    OPENCONN;
     UBYTE ret;
     strc_t par;
     Contact *cont;
     const char *query;
+    OPENCONN;
     
     if (uiG.conn->type != TYPE_XMPP_SERVER)
         return 0;
