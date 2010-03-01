@@ -9,7 +9,7 @@ ContactGroup *s_parsecg_s   (const char **input, const char *sep, BOOL any, Serv
 ContactGroup *s_parselist_s (const char **input, BOOL rem, BOOL any, Server *serv);
 char         *s_parserem_s  (const char **input, const char *sep);
 
-BOOL          s_parseint_s  (const char **input, UDWORD        *parsed, const char *sep);
+const char   *s_parseint_s  (const char **input, UDWORD        *parsed, const char *sep, int flags);
 BOOL          s_parsekey_s  (const char **input, const char *kw,        const char *sep);
 
 int is_valid_icq_name  (char *user);
@@ -27,7 +27,7 @@ int is_valid_msn_name  (char *user);
 #define s_parselistrem(i,s) s_parselist_s (i, 1, 0, s)
 #define s_parseanylist(i,s) s_parselist_s (i, 0, 1, s)
 #define s_parserem(i)       s_parserem_s  (i, DEFAULT_SEP)
-#define s_parseint(i,p)     s_parseint_s  (i, p, DEFAULT_SEP)
+#define s_parseint(i,p)     s_parseint_s  (i, p, DEFAULT_SEP, 7)
 #define s_parsekey(i,k)     s_parsekey_s  (i, k, DEFAULT_SEP)
 
 #endif /* CLIMM_UTIL_PARSE_H */

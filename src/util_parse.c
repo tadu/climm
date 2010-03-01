@@ -468,42 +468,51 @@ char *s_parserem_s (const char **input, const char *sep)
 /*
  * Parses a number.
  */
-BOOL s_parseint_s (const char **input, UDWORD *parsed, const char *sep)
+const char *s_parseint_s (const char **input, UDWORD *parsed, const char *sep, int flags)
 {
+    static str_s str;
     const char *p = *input;
+    const char *st;
     UDWORD nr, sig;
     
     while (*p && strchr (sep, *p))
         p++;
-    if (*p == '#')
+    *input = p;
+    if (*p == '#' && flags & 4)
     {
         while (*p)
             p++;
     }
-    *input = p;
-    if (!*p || !strchr ("0123456789+-", *p))
+    if (!*p)
     {
         *parsed = 0;
-        return FALSE;
+        return NULL;
     }
 
     nr = 0;
     sig = 1;
 
+    st = p;
     if (*p == '+')
+    {
         p++;
-    if (*p == '-')
+        while (*p == '0')
+            p++;
+        st = p;
+    }
+    else if (*p == '-' && flags & 1)
     {
         sig = -1;
         p++;
     }
+    s_init (&str, st, 0);
 
     while (*p && *p >= '0' && *p <= '9')
     {
         nr = nr * 10 + (*p - '0');
         p++;
     }
-    if (!nr && *p == 'x')
+    if (!nr && *p == 'x' && flags & 2)
     {
         p++;
         while (*p && ((*p >= '0' && *p <= '9') || (*p >= 'a' && *p <= 'f') || (*p >= 'A' && *p <= 'F')))
@@ -515,11 +524,12 @@ BOOL s_parseint_s (const char **input, UDWORD *parsed, const char *sep)
     if (*p && !strchr (sep, *p))
     {
         *parsed = 0;
-        return FALSE;
+        return NULL;
     }
     *input = p;
     *parsed = nr * sig;
-    return TRUE;
+    str.txt[p - st] = 0;
+    return str.txt;
 }
 
 /*
