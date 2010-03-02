@@ -67,6 +67,7 @@
 #include "oscar_dc_file.h"
 #include "io/io_dns.h"
 #include "os.h"
+#include "util_parse.h"
 
 static jump_conn_f XMPPCallbackDispatch;
 
@@ -159,6 +160,8 @@ Event *XMPPLogin (Server *serv)
 
     s_repl (&serv->xmpp_stamp, "YYYYmmddHHMMSS");
     strftime (serv->xmpp_stamp, 15, "%Y%m%d%H%M%S", gmtime (&now));
+    s_repl (&serv->xmpp_privacy_list, NULL);
+    s_repl (&serv->xmpp_privacy_items, NULL);
 
     semi = strchr (serv->conn->server, ';');
     if (semi)
@@ -358,6 +361,215 @@ static void XmppSendIqTime (Server *serv)
     iks_insert_attrib (x, "to", serv->xmpp_id->server);
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
+}
+
+static iks *xmpp_make_iq_privacy (Server *serv, xmpp_priv_t ntype, const char *list)
+{
+    iks *child, *x, *l = NULL;
+    const char *id;
+    const char *type = ntype == p_active ? "active" : ntype == p_default ? "default" : ntype == p_show || ntype == p_show_quiet ? "list" : NULL;
+    id = s_sprintf ("priv-%d-%s-%x", ntype, serv->xmpp_stamp, ++serv->xmpp_sequence);
+    x = iks_new ("iq");
+    iks_insert_attrib (x, "type", ntype == p_active || ntype == p_default ? "set" : "get");
+    iks_insert_attrib (x, "id", id);
+    iks_insert_attrib (x, "from", serv->xmpp_id->full);
+    child = iks_insert (x, "query");
+    iks_insert_attrib (child, "xmlns", "jabber:iq:privacy");
+    if (type)
+        l = iks_insert (child, type);
+    if (l && list)
+        iks_insert_attrib (l, "name", list);
+    return x;
+}
+
+static void XMPPSendIqPrivacy (Server *serv, xmpp_priv_t ntype, const char *list)
+{
+    iks *x = xmpp_make_iq_privacy (serv, ntype, list);
+    iks_send (serv->xmpp_parser, x);
+    iks_delete (x);
+}
+
+static int xmpp_uint_compare (const char *a, const char *b)
+{
+    if (*a == '+')
+        a++;
+    if (*b == '+')
+        b++;
+    while (*a == '0')
+        a++;
+    while (*b == '0')
+        b++;
+    if (strlen (a) < strlen (b))
+        return -1;
+    if (strlen (a) > strlen (b))
+        return 1;
+    while (*a && *b)
+    {
+        if (*a < *b)
+            return -1;
+        if (*a > *b)
+            return -1;
+        a++;
+        b++;
+    }
+    return 0;
+}
+
+static char *xmpp_uint_add (const char *a, const char *b)
+{
+    int la = strlen (a), lb = strlen (b), lo = la + lb + 1;
+    char *op = malloc (la + lb + 2), *ret;
+    int o = 0;
+    op[lo] = 0;
+    
+    while (la && lb)
+    {
+        la--;
+        lb--;
+        o += (a[la] - '0') + (b[lb] - '0');
+        op[--lo] = (o % 10) + '0';
+        o /= 10;
+    }
+    if (lb)
+    {
+        la = lb;
+        a = b;
+    }
+    while (la)
+    {
+        la--;
+        o += (a[la] - '0');
+        op[--lo] = (o % 10) + '0';
+        o /= 10;
+    }
+    if (o)
+        op[--lo] = o + '0';
+    ret = strdup (op + lo);
+    free (op);
+    return ret;
+}
+
+static void XMPPSendIqPrivacyEdit (Server *serv, xmpp_priv_t ntype, const char *list, const char *edit)
+{
+    iks *child, *x, *l = NULL, *old = NULL, *xx;
+    UDWORD ig = 0;
+    UDWORD count = 0;
+    const char *insertiontstr, *id;
+    char *insertionstr;
+    int allow;
+
+    id = s_sprintf ("priv-%d-%s-%x", ntype, serv->xmpp_stamp, ++serv->xmpp_sequence);
+    x = iks_new ("iq");
+    iks_insert_attrib (x, "type", "set");
+    iks_insert_attrib (x, "id", id);
+    iks_insert_attrib (x, "from", serv->xmpp_id->full);
+    child = iks_insert (x, "query");
+    iks_insert_attrib (child, "xmlns", "jabber:iq:privacy");
+    l = iks_insert (child, "list");
+    iks_insert_attrib (l, "name", list);
+    
+    xx = xmpp_make_iq_privacy (serv, p_show, list);
+
+    if (ntype == p_edit)
+    {
+        insertiontstr = s_parseint_s (&edit, &ig, DEFAULT_SEP, 0);
+        if (!insertiontstr || *insertiontstr == 'x' || *insertiontstr == '-')
+            insertiontstr = "0";
+        insertionstr = strdup (insertiontstr);
+        old = iks_tree (serv->xmpp_privacy_items, 0, NULL);
+        { foreach_subtag (item_i, old, "item")
+        {
+            const char *iorder  = iks_find_attrib (item_i, "order");
+            if (iorder && xmpp_uint_compare (iorder, insertionstr) < 0)
+                iks_insert_node (l, iks_copy_within (item_i, iks_stack (l)));
+        }}
+    }
+    
+    while ((s_parsekey (&edit, "allow") && (allow=1)) || (s_parsekey (&edit, "deny") && (allow=2)))
+    {
+        strc_t par;
+        iks *ni = iks_insert (l, "item");
+        char *newsum = xmpp_uint_add (insertionstr, s_sprintf ("%lu", count));
+        iks_insert_attrib (ni, "order", newsum);
+        free (newsum);
+        iks_insert_attrib (ni, "action", allow == 1 ? "allow" : "deny");
+        if (!s_parsekey (&edit, "all"))
+            while (1)
+            {
+                if (s_parsekey_s (&edit, "msg", MULTI_SEP))
+                    iks_insert (ni, "message");
+                else if (s_parsekey_s (&edit, "pin", MULTI_SEP))
+                    iks_insert (ni, "presence-in");
+                else if (s_parsekey_s (&edit, "pout", MULTI_SEP))
+                    iks_insert (ni, "presence-out");
+                else if (s_parsekey_s (&edit, "iq", MULTI_SEP))
+                    iks_insert (ni, "iq");
+                else
+                    break;
+            }
+        if (s_parsekey (&edit, "subscription") || s_parsekey (&edit, "sub"))
+        {
+            iks_insert_attrib (ni, "type", "subscription");
+            if (s_parsekey (&edit, "both"))
+                iks_insert_attrib (ni, "value", "both");
+            else if (s_parsekey (&edit, "to"))
+                iks_insert_attrib (ni, "value", "to");
+            else if (s_parsekey (&edit, "from"))
+                iks_insert_attrib (ni, "value", "from");
+            else {
+                s_parsekey (&edit, "none");
+                iks_insert_attrib (ni, "value", "none");
+            }
+        }
+        else if (s_parsekey (&edit, "group") && (par = s_parse (&edit)))
+        {
+            iks_insert_attrib (ni, "type", "group");
+            iks_insert_attrib (ni, "value", par->txt);
+        }
+        else if ((s_parsekey (&edit, "jid") || 1) && (par = s_parse (&edit)))
+        {
+            iks_insert_attrib (ni, "type", "jid");
+            iks_insert_attrib (ni, "value", par->txt);
+        }
+        count++;
+    }
+    
+    if (ntype == p_edit)
+    {
+        char *shift, *skipstr;
+        const char *skiptstr;
+        if (s_parsekey (&edit, "delete") && (skiptstr = s_parseint_s (&edit, &ig, DEFAULT_SEP, 0)))
+        {
+            char *ninsertionstr = xmpp_uint_add (insertionstr, skiptstr);
+            free (insertionstr);
+            insertionstr = ninsertionstr;
+            skipstr = strdup (skiptstr);
+        }
+        else
+            skipstr = strdup ("0");
+        shift = xmpp_uint_add (skipstr, s_sprintf ("%lu", count));
+        { foreach_subtag (item_i, old, "item")
+        {
+            const char *iorder  = iks_find_attrib (item_i, "order");
+            if (iorder && xmpp_uint_compare (iorder, insertionstr) >= 0)
+            {
+                iks *node = iks_copy_within (item_i, iks_stack (l));
+                char *newsum = xmpp_uint_add (iorder, shift);
+                iks_insert_attrib (node, "order", newsum);
+                free (newsum);
+                iks_insert_node (l, node);
+            }
+        }}
+        free (shift);
+        free (skipstr);
+    }
+    free (insertionstr);
+
+    iks_send (serv->xmpp_parser, x);
+    iks_delete (x);
+
+    iks_send (serv->xmpp_parser, xx);
+    iks_delete (xx);
 }
 
 static void sendIqGmailReqs (Event *event)
@@ -595,6 +807,101 @@ static int XmppHandleIqRoster (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
     return IKS_FILTER_EAT;
 }
 
+static int XmppHandleIqPrivacy (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
+{
+    Server *serv = (Server *)fserv;
+    iks *c;
+    const char *name = NULL;
+    int type = 0;
+    
+    if (strlen (pak->id) > 5 && pak->id[5] >= '1' && pak->id[5] <= '8')
+        type = pak->id[5] - '0';
+    
+    if (pak->subtype == IKS_TYPE_RESULT && type)
+    {
+        if (type == p_list || type == p_list_quiet)
+        {
+            const char *active = NULL, *def = NULL;
+            if ((c = iks_find (pak->query, "active")))
+                active = iks_find_attrib (c, "name");
+            if ((c = iks_find (pak->query, "default")))
+                def    = iks_find_attrib (c, "name");
+            s_repl (&serv->xmpp_privacy_list, NULL);
+            s_repl (&serv->xmpp_privacy_items, NULL);
+            if (type == p_list_quiet)
+                return IKS_FILTER_EAT;
+            if (active)
+                rl_printf (i18n (9999, "Active privacy list: %s\n"), s_wordquote (active));
+            else
+                rl_printf (i18n (9999, "No active privacy list.\n"));
+            if (def)
+                rl_printf (i18n (9999, "Default privacy list: %s\n"), s_wordquote (def));
+            else
+                rl_printf (i18n (9999, "No default privacy list.\n"));
+            { foreach_subtag(item_c, pak->query, "list")
+            {
+                if ((name = iks_find_attrib (item_c, "name")))
+                    rl_printf (i18n (9999, "Available privacy list: %s\n"), s_wordquote (name));
+            }}
+            return IKS_FILTER_EAT;
+        }
+        else if (type == p_show || type == p_show_quiet)
+        {
+            { foreach_subtag(item_c, pak->query, "list")
+            {
+                if (!(name = iks_find_attrib (item_c, "name")))
+                    continue;
+                s_repl (&serv->xmpp_privacy_list, name);
+                s_repl (&serv->xmpp_privacy_items, iks_string (iks_stack (item_c), item_c));
+                if (type == p_show_quiet)
+                    return IKS_FILTER_EAT;
+                rl_printf (i18n (9999, "Listing privacy list: %s\n"), s_wordquote (name));
+                { foreach_subtag(item_i, item_c, "item")
+                {
+                    const char *itype   = iks_find_attrib (item_i, "type");
+                    const char *ivalue  = iks_find_attrib (item_i, "value");
+                    const char *iaction = iks_find_attrib (item_i, "action");
+                    const char *iorder  = iks_find_attrib (item_i, "order");
+                    iks *b_ms = iks_find (item_i, "message");
+                    iks *b_pi = iks_find (item_i, "presence-in");
+                    iks *b_po = iks_find (item_i, "presence-out");
+                    iks *b_iq = iks_find (item_i, "iq");
+                    const char *affects;
+                    if (b_ms || b_pi || b_po || b_iq)
+                    {
+                        affects = s_sprintf ("%s%s%s%s", b_ms ? i18n (9999, "m,") : "", b_pi ? i18n (9999, "pi,") : "", b_po ? i18n (9999, "po,") : "", b_iq ? i18n (9999, "iq,") : "");
+                        affects = s_sprintf ("%*s", strlen (affects) - 1, affects);
+                    }
+                    else
+                        affects = i18n (9999, "all");
+                    
+                    rl_printf ("%-4s %-5s %-5s %-5s %s\n", iorder ? iorder : 0, iaction ? iaction : "", affects, itype ? itype : "", ivalue ? ivalue : "");
+                }}
+            }}
+            return IKS_FILTER_EAT;
+        }
+        else if (type == p_active || type == p_default)
+        {
+            s_repl (&serv->xmpp_privacy_list, NULL);
+            s_repl (&serv->xmpp_privacy_items, NULL);
+            XMPPPrivacy (serv, p_list, NULL, NULL);
+            return IKS_FILTER_EAT;
+        }
+    }
+    else if (pak->subtype == IKS_TYPE_SET)
+    {
+        if ((c = iks_find (pak->query, "list")))
+            name = iks_find_attrib (c, "name");
+        s_repl (&serv->xmpp_privacy_list, NULL);
+        s_repl (&serv->xmpp_privacy_items, NULL);
+        rl_printf (i18n (9999, "Server updates privacy list %s.\n"), s_wordquote (name));
+        return IKS_FILTER_EAT;
+    }
+    
+    rl_printf (i18n (9999, "Message %d <%s> resulted in:\n%s\n"), type, pak->id, iks_string (iks_stack (pak->x), pak->x));
+    return 0;
+}
+
 static int XmppHandleIqTime (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
     return IKS_FILTER_EAT;
@@ -604,8 +911,6 @@ static int XmppHandleIqDefault (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
     Server *serv = (Server *)fserv;
     iks *x, *e, *t, *c;
-    if (pak->subtype == IKS_TYPE_ERROR || pak->subtype == IKS_TYPE_RESULT)
-        return IKS_FILTER_PASS;
     x = iks_new ("iq");
     iks_insert_attrib (x, "type", "error");
     iks_insert_attrib (x, "id", pak->id);
@@ -1058,8 +1363,10 @@ static void XmppLoggedIn (Server *serv)
 
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqXEP92, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_NS, "jabber:iq:version", IKS_RULE_DONE);
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqXEP12, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_NS, "jabber:iq:last", IKS_RULE_DONE);
+    iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqPrivacy, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_NS, "jabber:iq:privacy", IKS_RULE_DONE);
 
-    iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDefault, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_DONE);
+    iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDefault, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_SET, IKS_RULE_DONE);
+    iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDefault, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_GET, IKS_RULE_DONE);
 }
 
 static int XmppSessionResult (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
@@ -1069,6 +1376,13 @@ static int XmppSessionResult (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
         XmppStreamError (serv, s_sprintf ("Couldn't get session %s.", iks_string (iks_stack (pak->x), pak->x)));
     else
         XmppLoggedIn (serv);
+    return IKS_FILTER_EAT;
+}
+
+static int XmppUserResult (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
+{
+    Server *serv = (Server *)fserv;
+    rl_printf (i18n (9999, "Message <%s> resulted in:\n%s\n"), pak->id, iks_string (iks_stack (pak->x), pak->x));
     return IKS_FILTER_EAT;
 }
 
@@ -1394,17 +1708,22 @@ void XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *ms
     iks_delete (x);
 }
 
-UBYTE XMPPSendIq (Server *serv, Contact *cont, int8_t which, const char *msg)
+UBYTE XMPPSendIq (Server *serv, int8_t which, const char *screen, const char *msg)
 {
     int err;
     iks *child = iks_tree (msg, 0, &err), *x;
+    const char *id;
     if (!child)
         return RET_FAIL;
+    id = s_sprintf ("user-%s-%x", serv->xmpp_stamp, ++serv->xmpp_sequence);
+    rl_printf (i18n (9999, "Sending message <%s>.\n"), id);
+    iks_filter_add_rule (serv->xmpp_filter, XmppUserResult, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_ID, id, IKS_RULE_DONE);
     x = iks_new_within ("iq", iks_stack (child));
     iks_insert_attrib (x, "type", which ? "set" : "get");
-    iks_insert_attrib (x, "id", s_sprintf ("user-%s-%x", serv->xmpp_stamp, ++serv->xmpp_sequence));
+    iks_insert_attrib (x, "id", id);
     iks_insert_attrib (x, "from", serv->xmpp_id->full);
-    iks_insert_attrib (x, "to", cont->screen);
+    if (screen && *screen)
+        iks_insert_attrib (x, "to", screen);
     iks_insert_node (x, child);
     iks_send (serv->xmpp_parser, x);
     iks_delete (x);
@@ -1434,6 +1753,30 @@ void XMPPGoogleMail (Server *serv, time_t since, const char *query)
     else
         XmppSendIqGmail (serv, since * 1000ULL, NULL, query);
     s_repl (&serv->xmpp_gmail_query, query);
+}
+
+void XMPPPrivacy (Server *serv, xmpp_priv_t type, const char *list, const char *edit)
+{
+    if (type == p_edit)
+    {
+        if (!list)
+            return;
+        if (!serv->xmpp_privacy_list || strcmp (list, serv->xmpp_privacy_list))
+        {
+            s_repl (&serv->xmpp_privacy_list, NULL);
+            s_repl (&serv->xmpp_privacy_items, NULL);
+        }
+        if (!serv->xmpp_privacy_items)
+        {
+            XMPPPrivacy (serv, p_show_quiet, list, NULL);
+            rl_printf (i18n (9999, "Fetching privacy list to edit (try again)\n"));
+            return;
+        }
+    }
+    if (type == p_edit || type == p_set)
+        XMPPSendIqPrivacyEdit (serv, type, list, edit);
+    else
+        XMPPSendIqPrivacy (serv, type, list);
 }
 
 #if 0

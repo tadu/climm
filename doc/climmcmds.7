@@ -1398,6 +1398,120 @@ contact option. Do a
 if you want to upload all of your contacts.
 .RE
 .TP
+.BI priv \ [<cmd>]\ [<list>]\ [<edits>]
+Show or modify XMPP privacy lists. If no argument is given, assume
+.B list
+command, otherwise assume
+.B show
+command. Available commands are:
+.RS
+.TP
+.B list
+List the active, default and all available privacy lists by name.
+.TP
+.BI active \ [<list>]
+Make
+.I <list>
+the privacy list currently active for this session. If no
+.I <list>
+is given, disable active list, in other words: use the server's
+default privacy handling for this session.
+.TP
+.BI default \ [<list>]
+Make
+.I <list>
+the default privacy list, that is, the privacy list valid at start of each
+client's session or when no client is actually connected. If no
+.I <list>
+is given, disable default list, in other words: use the server's
+default privacy handling at session start or when no client is actually
+connected.
+.TP
+.BI show \ <list>
+Show the given privacy list, for each item in it print out the
+.IR order ,
+the
+.I action
+.RB ( allow
+or
+.BR deny ),
+the affected
+.I part
+.RB ( all ,
+or a comma separated list of
+.B msg
+(messages),
+.B pin
+(inbound presense notification, does not include subscription requests),
+.B pout 
+(outbound presense notifications), or
+.B iq
+(queries)), the
+.I type
+.RB ( jid ,
+.BR group ,
+or
+.BR subscription ),
+and the matched
+.IR value .
+If
+.I type
+is 
+.BR jid ,
+the value is an XMPP id; it may be with or without resource, and with
+or without user. If
+.I type
+is
+.BR subscription ,
+the value will be one of
+.BR both ,
+.BR from ,
+.BR to ,
+or
+.BR none
+(which also includes unknown contacts).
+.br
+Each inbound or outbound stanza is matched by the server against each item,
+in the order given by the
+.I order
+attribute, and the 
+.I action
+attribute of the first match determines whether the stanza is completely
+discarded or actually forwarded.
+.TP
+.BI set \ <list> \ \fR( <action> \ \fR[ <part>\ \fR] <type>\ <value\fR)...
+Replace (or create) the privacy list
+.IR <list> ,
+with each of the listed items in ascending order. The parameters are as in the
+.B show
+command above. If
+.I <part>
+is not given,
+.B all
+is assumed.
+.TP
+.BI edit \ <list>\ <index> \ \fR( <action>\ [<part>]\ <type>\ <value>\fR)...\ [ delete \ <skip>\fR]
+Edit (or create) the privacy list
+.IR <list> ,
+inserting the given listed items in ascending order directly before the item
+with the
+.I <order>
+being equal to
+.IR <index> .
+Delete items up to (excluding)
+.I <order>
+of
+.IR <index> + <skip> .
+If no
+.I <skip>
+is given or if it is zero, none will be deleted. Items with
+.I <order>
+being equal or greater than
+.IR <index> + <skip>
+will be renumbered (to make room for the new items and to avoid
+discontinuency in the numbers).
+.RE
+.TP
 .BI peek \ [<contacts>]\ [all]\ [<contacts>]
 Check for each
 .I contact

@@ -66,7 +66,7 @@ static jump_f
     CmdUserAdd, CmdUserRemove, CmdUserAuth, CmdUserURL, CmdUserSave,
     CmdUserTabs, CmdUserLast, CmdUserHistory, CmdUserFind, CmdUserUptime,
     CmdUserOldSearch, CmdUserSearch, CmdUserUpdate, CmdUserPass,
-    CmdUserXmppIq,
+    CmdUserXmppIq, CmdUserPrivacy,
     CmdUserOther, CmdUserAbout, CmdUserQuit, CmdUserConn, CmdUserContact,
     CmdUserAnyMess, CmdUserGetAuto, CmdUserOpt, CmdUserPrompt;
 
@@ -197,6 +197,7 @@ static jump_t jump[] = {
     { &CmdUserConn,          "login",        0, 202 },
 #ifdef ENABLE_XMPP
     { &CmdUserGmail,         "gmail",        0,   0 },
+    { &CmdUserPrivacy,       "priv",         0,   0 },
     { &CmdUserXmppIq,        "_iq",          0,   0 },
 #endif
 #ifdef ENABLE_PEER2PEER
@@ -4423,13 +4424,48 @@ static JUMP_F(CmdUserGmail)
 }
 
 /*
+ * Modify provacy lists
+ */
+static JUMP_F(CmdUserPrivacy)
+{
+    strc_t par;
+    if (uiG.conn->type != TYPE_XMPP_SERVER)
+        return 0;
+    
+    if (!data)
+    {
+        if      (s_parsekey (&args, "list"))    data = p_list;
+        else if (s_parsekey (&args, "active"))  data = p_active;
+        else if (s_parsekey (&args, "default")) data = p_default;
+        else if (s_parsekey (&args, "show"))    data = p_show;
+        else if (s_parsekey (&args, "set"))     data = p_set;
+        else if (s_parsekey (&args, "edit"))    data = p_edit;
+    }
+    par = s_parse (&args);
+    if (!data && !par)
+    {
+        rl_printf (i18n (9999, "priv [list|active|default|show|edit] [<list>] [<editargs>] -- list and modify XMPP privacy lists.\n"));
+        rl_printf (i18n (9999, "priv list                   -- list active, default and all available privacy list names.\n"));
+        rl_printf (i18n (9999, "priv active  [<list>]       -- set active list.\n"));
+        rl_printf (i18n (9999, "priv default [<list>]       -- set default list.\n"));
+        rl_printf (i18n (9999, "priv show     <list>        -- show given list.\n"));
+        rl_printf (i18n (9999, "priv set  <list> <editargs> -- set given list.\n"));
+        rl_printf (i18n (9999, "priv edit <list> <editargs> -- edit given list.\n"));
+    }
+    else if (!par && (data == p_show || data == p_set || data == p_edit))
+        rl_printf (i18n (9999, "missing list parameter.\n"));
+    else
+        XMPPPrivacy (uiG.conn, data ? data : (par ? p_show : p_list), par ? par->txt : NULL, s_parserem (&args));
+    return 0;
+}
+
+/*
  * Send an iq stanza.
  */
 static JUMP_F(CmdUserXmppIq)
 {
     UBYTE ret;
     strc_t par;
-    Contact *cont;
     const char *query;
     OPENCONN;
     
@@ -4444,26 +4480,20 @@ static JUMP_F(CmdUserXmppIq)
         return 0;
     }
     
-    if (!(cont = s_parsenick (&args, uiG.conn)))
-    {
-        if ((par = s_parse (&args)))
-            rl_printf (i18n (1061, "'%s' not recognized as a nick name.\n"), par->txt);
-        else
-            rl_print (i18n (9999, "_iq get|set <contact> <query> -- Send iq <query> to <contact> of type get or set.\n"));
-        return 0;
-    }
+    par = s_parse (&args);
     
-    if (!(query = s_parserem (&args)) || !*query)
+    if (!par || !(query = s_parserem (&args)) || !*query)
     {
         rl_print (i18n (9999, "_iq get|set <contact> <query> -- Send iq <query> to <contact> of type get or set.\n"));
         return 0;                                                                                   
     }
     
-    ret = XMPPSendIq (uiG.conn, cont, data - 1, query);
+    ret = XMPPSendIq (uiG.conn, data - 1, par->txt, query);
+    
     if (ret != RET_OK)
-        rl_print (i18n (9999, "# message not parsable as xml.\n"));
+        rl_print (i18n (9999, "message not parsable as xml.\n"));
     else
-        rl_print (i18n (9999, "# message sent.\n"));
+        rl_print (i18n (9999, "message sent.\n"));
     return 0;
 }
 

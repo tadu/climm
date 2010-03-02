@@ -4,7 +4,7 @@
 #define CLIMM_UTIL_CONNECTION_H
 
 #include "util_opts.h"
-#if ENABLE_IKS
+#if ENABLE_XMPP
 #include <iksemel.h>
 #endif
 #include "util_io.h"
@@ -71,14 +71,14 @@ struct Server_s
     Opt       copts;
 
 #if ENABLE_XMPP
-    void     *xmpp_private;   /* private data for XMPP connections        */
     UWORD     xmpp_sequence;
-#endif
-#if ENABLE_IKS
     iksparser*xmpp_parser;
     char     *xmpp_stamp;
     iksid    *xmpp_id;
     iksfilter*xmpp_filter;
+    char     *xmpp_privacy_list;
+    char     *xmpp_privacy_items;
+
     char     *xmpp_gmail_new_newertid;
     char     *xmpp_gmail_newertid;
     char     *xmpp_gmail_query;

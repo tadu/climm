@@ -410,7 +410,6 @@ if test "x$ac_arg_use_xmpp" != "xno"; then
   ac_arg_use_xmpp=$ac_use_xmpp;
   if test "x$ac_arg_use_xmpp" != xno; then
     AC_DEFINE(ENABLE_XMPP, 1, [Enable XMPP chat network])
-    AC_DEFINE(ENABLE_IKS, 1, [Enable XMPP chat network using iksemel])
     AC_DEFINE_UNQUOTED(LIBIKS_VERSION, $ac_iksemel_version, [libiksemel version])
     ac_use_xmpp=yes
   fi
