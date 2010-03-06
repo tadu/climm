@@ -1367,6 +1367,12 @@ static void XmppLoggedIn (Server *serv)
 
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDefault, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_SET, IKS_RULE_DONE);
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDefault, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_GET, IKS_RULE_DONE);
+    
+    {
+        const char *list = ConnectionPrefStr (serv, CO_XMPP_PRIV);
+        if (list)
+            XMPPSendIqPrivacy (serv, p_active, list);
+    }
 }
 
 static int XmppSessionResult (IKS_FILTER_USER_DATA *fserv, ikspak *pak)

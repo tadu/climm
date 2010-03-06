@@ -1048,12 +1048,12 @@ Identify as the given user to the socks 5 proxy. New for 0.6.4.
 .BI s5_pass \ string\ connection
 Authenticate with the given password to the socks 5 proxy. New for 0.6.4.
 .TP
-.BI oscar_dc_port \ integer\ connection
+.BI oscar_dc_port \ integer\ connection[ICQ]
 Define the minimum port to listen for incoming direct connection when using
 the oscar protocol. If the given port is in used, the port number actually
 used is increased until a free one is found. New for 0.6.4.
 .TP
-.BI oscar_dc_mode \ integer\ connection
+.BI oscar_dc_mode \ integer\ connection[ICQ]
 .RS
 This integer is for flags how to handle direct connections:
 .TP
@@ -1081,6 +1081,15 @@ New for 0.6.3.
 .BI logstream \ boolean\ connection
 Log all data sent over the connection to the server into a file in
 BASEDIR/debug/.
+.TP
+.BI privacylist \ string\ connection[XMPP]
+After login, select the given privacy list as the active list for this
+session. If the list is empty, select no privacy list as active. Otherwise,
+the default privacy list will be the active one.
+.RE
+.RS
+New for 0.7.1.
+.RE
 .TP
 .BI ignore \ boolean\ contact
 Whether to ignore all messages from this contact.

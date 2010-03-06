@@ -101,6 +101,7 @@ struct OptEntry_s OptList[] = {
   { "s5_host",       CO_S5HOST        },
   { "s5_name",       CO_S5NAME        },
   { "s5_pass",       CO_S5PASS        },
+  { "privacylist",   CO_XMPP_PRIV     },
 #ifdef ENABLE_OTR
   { "otrpolicy",     CO_OTRPOLICY     },
 #endif

@@ -130,6 +130,7 @@ extern struct OptEntry_s OptList[];
 #define CO_S5PORT        (COF_NUMERIC | CO_SERVER  | 0x51UL) /* the Socks 5 port */
 #define CO_S5NAME        (COF_STRING  | CO_SERVER  | 0x52UL) /* the Socks 5 user name */
 #define CO_S5PASS        (COF_STRING  | CO_SERVER  | 0x53UL) /* the Socks 5 user password */
+#define CO_XMPP_PRIV     (COF_STRING  | CO_SERVER  | 0x54UL) /* XMPP privacy list to enable during login */
 
 #define CO_COLORNONE     (COF_COLOR   | CO_GLOBAL  | 0x80UL) /* the escape sequence to print for no color              */
 #define CO_COLORSERVER   (COF_COLOR   | CO_GLOBAL  | 0x81UL) /* the escape sequence to print for server message        */
