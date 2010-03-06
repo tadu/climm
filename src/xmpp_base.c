@@ -832,14 +832,14 @@ static int XmppHandleIqPrivacy (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
             if (type == p_list_quiet)
                 return IKS_FILTER_EAT;
             if (active)
-                rl_printf (i18n (9999, "Active privacy list: %s.\n"), s_wordquote (active));
+                rl_printf (i18n (2761, "Active privacy list: %s.\n"), s_wordquote (active));
             else
-                rl_printf (i18n (9999, "No active privacy list.\n"));
+                rl_printf (i18n (2762, "No active privacy list.\n"));
             if (def)
-                rl_printf (i18n (9999, "Default privacy list: %s.\n"), s_wordquote (def));
+                rl_printf (i18n (2763, "Default privacy list: %s.\n"), s_wordquote (def));
             else
-                rl_printf (i18n (9999, "No default privacy list.\n"));
-            rl_print (i18n (9999, "Available privacy lists: "));
+                rl_printf (i18n (2764, "No default privacy list.\n"));
+            rl_print (i18n (2765, "Available privacy lists: "));
             { foreach_subtag(item_c, pak->query, "list")
             {
                 if (!(name = iks_find_attrib (item_c, "name")))
@@ -859,7 +859,7 @@ static int XmppHandleIqPrivacy (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
                 s_repl (&serv->xmpp_privacy_items, iks_string (iks_stack (item_c), item_c));
                 if (type == p_show_quiet)
                     return IKS_FILTER_EAT;
-                rl_printf (i18n (9999, "Listing privacy list: %s.\n"), s_wordquote (name));
+                rl_printf (i18n (2766, "Listing privacy list: %s.\n"), s_wordquote (name));
                 { foreach_subtag(item_i, item_c, "item")
                 {
                     const char *itype   = iks_find_attrib (item_i, "type");
@@ -898,7 +898,7 @@ static int XmppHandleIqPrivacy (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
             name = iks_find_attrib (c, "name");
         s_repl (&serv->xmpp_privacy_list, NULL);
         s_repl (&serv->xmpp_privacy_items, NULL);
-        rl_printf (i18n (9999, "Server updates privacy list %s.\n"), s_wordquote (name));
+        rl_printf (i18n (2767, "Server updates privacy list %s.\n"), s_wordquote (name));
         return IKS_FILTER_EAT;
     }
     return 0;
@@ -1390,7 +1390,7 @@ static int XmppSessionResult (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 static int XmppUserResult (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
     Server *serv = (Server *)fserv;
-    rl_printf (i18n (9999, "Message %s resulted in:\n%s\n"), pak->id, iks_string (iks_stack (pak->x), pak->x));
+    rl_printf (i18n (2768, "Message %s resulted in:\n%s\n"), pak->id, iks_string (iks_stack (pak->x), pak->x));
     return IKS_FILTER_EAT;
 }
 
@@ -1724,7 +1724,7 @@ UBYTE XMPPSendIq (Server *serv, int8_t which, const char *screen, const char *ms
     if (!child)
         return RET_FAIL;
     id = s_sprintf ("user-%s-%x", serv->xmpp_stamp, ++serv->xmpp_sequence);
-    rl_printf (i18n (9999, "Sending message %s.\n"), id);
+    rl_printf (i18n (2769, "Sending message %s.\n"), id);
     iks_filter_add_rule (serv->xmpp_filter, XmppUserResult, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_ID, id, IKS_RULE_DONE);
     x = iks_new_within ("iq", iks_stack (child));
     iks_insert_attrib (x, "type", which ? "set" : "get");
@@ -1777,7 +1777,7 @@ void XMPPPrivacy (Server *serv, xmpp_priv_t type, const char *list, const char *
         if (!serv->xmpp_privacy_items)
         {
             XMPPPrivacy (serv, p_show_quiet, list, NULL);
-            rl_printf (i18n (9999, "Fetching privacy list (was not cached), please try again.\n"));
+            rl_printf (i18n (2770, "Fetching privacy list (was not cached), please try again.\n"));
             return;
         }
     }

@@ -3344,7 +3344,7 @@ static JUMP_F(CmdUserAuth)
         rl_print (i18n (2120, "auth deny <contacts> [<msg>]    - refuse/cancel authorization.\n"));
         rl_print (i18n (2121, "auth req  <contacts> [<msg>]    - request authorization.\n"));
         rl_print (i18n (2145, "auth add  <contacts>            - authorized add.\n"));
-        rl_print (i18n (9999, "auth unsub <contacts>           - unsubscribe from contact.\n"));
+        rl_print (i18n (2747, "auth unsub <contacts>           - unsubscribe from contact.\n"));
         return 0;
     }
     if (!(cg = s_parselist (&args, uiG.conn)))
@@ -4444,16 +4444,16 @@ static JUMP_F(CmdUserPrivacy)
     par = s_parse (&args);
     if (!data && !par)
     {
-        rl_printf (i18n (9999, "priv [list|active|default|show|edit] [<list>] [<editargs>] -- list and modify XMPP privacy lists.\n"));
-        rl_printf (i18n (9999, "priv list                   -- list active, default and all available privacy list names.\n"));
-        rl_printf (i18n (9999, "priv active  [<list>]       -- set active list.\n"));
-        rl_printf (i18n (9999, "priv default [<list>]       -- set default list.\n"));
-        rl_printf (i18n (9999, "priv show     <list>        -- show given list.\n"));
-        rl_printf (i18n (9999, "priv set  <list> <editargs> -- set given list.\n"));
-        rl_printf (i18n (9999, "priv edit <list> <editargs> -- edit given list.\n"));
+        rl_printf (i18n (2748, "priv [list|active|default|show|edit] [<list>] [<editargs>] -- list and modify XMPP privacy lists.\n"));
+        rl_printf (i18n (2749, "priv list                   -- list active, default and all available privacy list names.\n"));
+        rl_printf (i18n (2750, "priv active  [<list>]       -- set active list.\n"));
+        rl_printf (i18n (2751, "priv default [<list>]       -- set default list.\n"));
+        rl_printf (i18n (2752, "priv show     <list>        -- show given list.\n"));
+        rl_printf (i18n (2753, "priv set  <list> <editargs> -- set given list.\n"));
+        rl_printf (i18n (2754, "priv edit <list> <editargs> -- edit given list.\n"));
     }
     else if (!par && (data == p_show || data == p_set || data == p_edit))
-        rl_printf (i18n (9999, "This subcommand requires a list parameter.\n"));
+        rl_printf (i18n (2755, "This subcommand requires a list parameter.\n"));
     else
         XMPPPrivacy (uiG.conn, data ? data : (par ? p_show : p_list), par ? par->txt : NULL, s_parserem (&args));
     return 0;
@@ -4476,7 +4476,7 @@ static JUMP_F(CmdUserXmppIq)
     else if (s_parsekey (&args, "set"))   data = 2;
     else
     {
-        rl_print (i18n (9999, "_iq get|set <contact> <query> -- Send iq <query> to <contact> of type get or set.\n"));
+        rl_print ("_iq get|set <contact> <query> -- Send iq <query> to <contact> of type get or set.\n");
         return 0;
     }
     
@@ -4484,16 +4484,16 @@ static JUMP_F(CmdUserXmppIq)
     
     if (!par || !(query = s_parserem (&args)) || !*query)
     {
-        rl_print (i18n (9999, "_iq get|set <contact> <query> -- Send iq <query> to <contact> of type get or set.\n"));
+        rl_print ("_iq get|set <contact> <query> -- Send iq <query> to <contact> of type get or set.\n");
         return 0;                                                                                   
     }
     
     ret = XMPPSendIq (uiG.conn, data - 1, par->txt, query);
     
     if (ret != RET_OK)
-        rl_print (i18n (9999, "Query not parsable as xml.\n"));
+        rl_print (i18n (2756, "Query not parsable as xml.\n"));
     else
-        rl_print (i18n (9999, "Query sent.\n"));
+        rl_print (i18n (2757, "Query sent.\n"));
     return 0;
 }
 
