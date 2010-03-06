@@ -1,5 +1,5 @@
 # $Id$ Czech
-#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2853 2010-03-06 20:23:44 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:cs
 1002:cs_CZ
@@ -831,9 +831,9 @@
 2116:Nebyla určena nová přezdívka (nick).\n
 2117.%ld přidán jako %s.\n
 2118:Přetečení paměti.\n
-2119:auth [grant] <contacts>    - povolí autorizaci.\n
-2120:auth deny <contacts> <msg> - zamítne autorizaci.\n
-2121:auth req  <contacts> <msg> - požádá o autorizaci.\n
+2119:auth [grant] <contacts> [<msg>] - povolí autorizaci.\n
+2120:auth deny <contacts> [<msg>]    - zamítne autorizaci.\n
+2121:auth req  <contacts> [<msg>]    - požádá o autorizaci.\n
 2122:Poznámka: Použijte 'save' pro uložení nového hesla na disk.\n
 2123:%sSyntax error%s: Příliš málo parametrů: %s\n
 2124:%sSyntax error%s: Není celé číslo: %s\n
@@ -849,7 +849,7 @@
 2140:Změna náhodné chatovací skupiny byla %s%s%s.\n
 2141:Vyhledávání %sselhalo%s.\n
 2142:Přímé spojení s %s není možné.\n
-2145:auth add  <contacts>       - potvrdit přidání autorizace.\n
+2145:auth add  <contacts>            - potvrdit přidání autorizace.\n
 2146.'%s' je už alias pro '%s' (%ld).\n
 2147.'%s' (%ld) je už použito jako nick.\n
 2148.Přidáno '%s' jako alias pro '%s' (%ld).\n
@@ -1382,3 +1382,25 @@
 #_#2744:Connection timed out
 #_#2745:Opening connection to %s:%s%ld%s 
 #_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n
+#_#2747:auth unsub <contacts>           - unsubscribe from contact.\n
+#_#2748:priv [list|active|default|show|edit] [<list>] [<editargs>] -- list and modify XMPP privacy lists.\n
+#_#2749:priv list                   -- list active, default and all available privacy list names.\n
+#_#2750:priv active  [<list>]       -- set active list.\n
+#_#2751:priv default [<list>]       -- set default list.\n
+#_#2752:priv show     <list>        -- show given list.\n
+#_#2753:priv set  <list> <editargs> -- set given list.\n
+#_#2754:priv edit <list> <editargs> -- edit given list.\n
+#_#2755:This subcommand requires a list parameter.\n
+#_#2756:Query not parsable as xml.\n
+#_#2757:Query sent.\n
+2758:žádá autorizaci.\n
+2759:autorizace zamítnuta.\n
+#_#2760:has removed you from his contact list.\n
+#_#2761:Active privacy list: %s.\n
+#_#2762:No active privacy list.\n
+#_#2763:Default privacy list: %s.\n
+#_#2764:No default privacy list.\n
+#_#2765:Available privacy lists: 
+#_#2766:Listing privacy list: %s.\n
+#_#2767:Server updates privacy list %s.\n
+#_#2768:Fetching privacy list (was not cached), please try again.\n

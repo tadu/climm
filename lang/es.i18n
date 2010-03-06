@@ -1,5 +1,5 @@
 # $Id$ castellano (Spanish)
-#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2853 2010-03-06 20:23:44 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 1001:es
 1002:es
@@ -902,13 +902,13 @@
 2118:Memoria insuficiente.\n
 #-#2119:auth [grant] <nick>    - otorga autorización.\n
 #+#2119:auth [grant] <nick>    - grant authorization.\n
-#_#2119:auth [grant] <contacts>    - grant authorization.\n
+#_#2119:auth [grant] <contacts> [<msg>] - grant authorization.\n
 #-#2120:auth deny <nick> <msg> - niega autorización.\n
 #+#2120:auth deny <nick> <msg> - refuse authorization.\n
-#_#2120:auth deny <contacts> <msg> - refuse authorization.\n
+#_#2120:auth deny <contacts> [<msg>]    - refuse/cancel authorization.\n
 #-#2121:auth req  <nick> <msg> - pide autorización.\n
 #+#2121:auth req  <nick> <msg> - request authorization.\n
-#_#2121:auth req  <contacts> <msg> - request authorization.\n
+#_#2121:auth req  <contacts> [<msg>]    - request authorization.\n
 2122:Nota: necesitas grabar mediante el comando 'save' para guardar la nueva clave al disco.\n
 #-#2123:%sError de sintaxis%s: muy pocos argumentos: '%s'\n
 #+#2123:%sSyntax error%s: Too few arguments: '%s'\n
@@ -930,7 +930,7 @@
 2142:Conexión directa con %s no es posible.\n
 #-#2145:auth add  <nick>       - agrega pidiendo autorizacion.\n
 #+#2145:auth add  <nick>       - authorized add.\n
-#_#2145:auth add  <contacts>       - authorized add.\n
+#_#2145:auth add  <contacts>            - authorized add.\n
 2146.'%s' ya existe como un alias para '%s' (%ld).\n
 2147.'%s' (%ld) ya esta siendo usado como un nick.\n
 2148.Se agrego '%s' como un alias para '%s' (%ld).\n
@@ -1459,3 +1459,25 @@
 #_#2744:Connection timed out
 #_#2745:Opening connection to %s:%s%ld%s 
 #_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n
+#_#2747:auth unsub <contacts>           - unsubscribe from contact.\n
+#_#2748:priv [list|active|default|show|edit] [<list>] [<editargs>] -- list and modify XMPP privacy lists.\n
+#_#2749:priv list                   -- list active, default and all available privacy list names.\n
+#_#2750:priv active  [<list>]       -- set active list.\n
+#_#2751:priv default [<list>]       -- set default list.\n
+#_#2752:priv show     <list>        -- show given list.\n
+#_#2753:priv set  <list> <editargs> -- set given list.\n
+#_#2754:priv edit <list> <editargs> -- edit given list.\n
+#_#2755:This subcommand requires a list parameter.\n
+#_#2756:Query not parsable as xml.\n
+#_#2757:Query sent.\n
+#_#2758:requests authorization.\n
+#_#2759:refused authorization.\n
+#_#2760:has removed you from his contact list.\n
+#_#2761:Active privacy list: %s.\n
+#_#2762:No active privacy list.\n
+#_#2763:Default privacy list: %s.\n
+#_#2764:No default privacy list.\n
+#_#2765:Available privacy lists: 
+#_#2766:Listing privacy list: %s.\n
+#_#2767:Server updates privacy list %s.\n
+#_#2768:Fetching privacy list (was not cached), please try again.\n

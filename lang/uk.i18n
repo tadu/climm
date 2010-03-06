@@ -1,5 +1,5 @@
 # $Id$ (Ukrainian)
-#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2853 2010-03-06 20:23:44 <-- NEVER TOUCH THIS - it's updated automatically
 #_#1000:UTF-8
 1001:uk
 1002:uk_UA
@@ -830,9 +830,15 @@
 2116:Не задано нового ніку.\n
 2117.%ld додано як %s.\n
 2118:Не вистачає пам'яті.\n
-2119:auth [grant] <контакти>    - авторизувати.\n
-2120:auth deny <контакти> <msg> - відмовити в авторизації.\n
-2121:auth req  <контакти> <msg> - запитати авторизацію.\n
+#-#2119:auth [grant] <контакти>    - авторизувати.\n
+#+#2119:auth [grant] <contacts>    - grant authorization.\n
+#_#2119:auth [grant] <contacts> [<msg>] - grant authorization.\n
+#-#2120:auth deny <контакти> <msg> - відмовити в авторизації.\n
+#+#2120:auth deny <contacts> <msg> - refuse authorization.\n
+#_#2120:auth deny <contacts> [<msg>]    - refuse/cancel authorization.\n
+#-#2121:auth req  <контакти> <msg> - запитати авторизацію.\n
+#+#2121:auth req  <contacts> <msg> - request authorization.\n
+#_#2121:auth req  <contacts> [<msg>]    - request authorization.\n
 2122:Увага: Ви повинні виконати 'save' для збереження вашого паролю.\n
 2123:%sСинтаксична помилка%s: Замало аргументів: %s\n
 2124:%sСинтаксична помилка%s: Не є цілим числом: %s\n
@@ -849,7 +855,9 @@
 2140:Зміна випадкової групи - %s%s%s.\n
 2141:Пошук %sне вдався%s.\n
 2142:Пряме з'єднання з %s не можливе.\n
-2145:auth add  <контакти>       - авторизоване додавання.\n
+#-#2145:auth add  <контакти>       - авторизоване додавання.\n
+#+#2145:auth add  <contacts>       - authorized add.\n
+#_#2145:auth add  <contacts>            - authorized add.\n
 2146.'%s' вже є синонімом до '%s' (%ld).\n
 2147.'%s' (%ld) вже використано як нік.\n
 2148.Додано '%s' як синонім для '%s' (%ld).\n
@@ -1373,3 +1381,25 @@
 #_#2744:Connection timed out
 #_#2745:Opening connection to %s:%s%ld%s 
 #_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n
+#_#2747:auth unsub <contacts>           - unsubscribe from contact.\n
+#_#2748:priv [list|active|default|show|edit] [<list>] [<editargs>] -- list and modify XMPP privacy lists.\n
+#_#2749:priv list                   -- list active, default and all available privacy list names.\n
+#_#2750:priv active  [<list>]       -- set active list.\n
+#_#2751:priv default [<list>]       -- set default list.\n
+#_#2752:priv show     <list>        -- show given list.\n
+#_#2753:priv set  <list> <editargs> -- set given list.\n
+#_#2754:priv edit <list> <editargs> -- edit given list.\n
+#_#2755:This subcommand requires a list parameter.\n
+#_#2756:Query not parsable as xml.\n
+#_#2757:Query sent.\n
+2758:Запроси авторизації.\n
+2759:відмовив у авторизації.\n
+#_#2760:has removed you from his contact list.\n
+#_#2761:Active privacy list: %s.\n
+#_#2762:No active privacy list.\n
+#_#2763:Default privacy list: %s.\n
+#_#2764:No default privacy list.\n
+#_#2765:Available privacy lists: 
+#_#2766:Listing privacy list: %s.\n
+#_#2767:Server updates privacy list %s.\n
+#_#2768:Fetching privacy list (was not cached), please try again.\n

@@ -1,5 +1,5 @@
 # $Id$ (Swedish)
-#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2853 2010-03-06 20:23:44 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:sv
 1002:sv_SE
@@ -828,9 +828,9 @@
 2116:Inget nytt alias angivet.\n
 2117.%ld tillagt som %s.\n
 2118:Slut på minne.\n
-2119:auth [grant] <kontakter>    - ge begärd tillåtelse.\n
-2120:auth deny <kontakter> <msg> - avslå begärd tillåtelse.\n
-2121:auth req  <kontakter> <msg> - begär tillåtelse.\n
+2119:auth [grant] <kontakter> [<msg>] - ge begärd tillåtelse.\n
+2120:auth deny <kontakter> [<msg>]    - avslå begärd tillåtelse.\n
+2121:auth req  <kontakter> [<msg>]    - begär tillåtelse.\n
 2122:Notera: Du måste spara med kommandot 'save' för att skpara det nya lösenordet till disk.\n
 2123:%sSyntaxfel%s: För få parametrar: '%s'\n
 2124:%sSyntaxfel%s: Inte ett heltal: '%s'\n
@@ -847,7 +847,7 @@
 2140:Slumpmssig chatgruppsförändring var %s%s%s.\n
 2141:Sökningen %sfailed%s.\n
 2142:Direkt-anslutning till %s är inte möjlig att upprätta.\n
-2145:auth add  <kontakter>  - lägg till och begär tillåtelse.\n
+2145:auth add  <kontakter>            - lägg till och begär tillåtelse.\n
 2146.'%s' är redan ett alias för '%s' (%ld).\n
 2147.'%s' (%ld) är redan använt som ett alias.\n
 2148.Adderade '%s' som ett alias för '%s' (%ld).\n
@@ -1376,3 +1376,25 @@
 2744:Uppkoppling avbröts
 2745:Öppnar uppkoppling till %s:%s%ld%s
 2746:    typ %d anslutning %d ip %s (%s%s%s%s %d) på [%s,%s] id %lx/%x/%x\n
+#_#2747:auth unsub <contacts>           - unsubscribe from contact.\n
+#_#2748:priv [list|active|default|show|edit] [<list>] [<editargs>] -- list and modify XMPP privacy lists.\n
+#_#2749:priv list                   -- list active, default and all available privacy list names.\n
+#_#2750:priv active  [<list>]       -- set active list.\n
+#_#2751:priv default [<list>]       -- set default list.\n
+#_#2752:priv show     <list>        -- show given list.\n
+#_#2753:priv set  <list> <editargs> -- set given list.\n
+#_#2754:priv edit <list> <editargs> -- edit given list.\n
+#_#2755:This subcommand requires a list parameter.\n
+#_#2756:Query not parsable as xml.\n
+#_#2757:Query sent.\n
+2758:begär tillåtelse.\n
+2759:nekade begäran om tillåtelse.\n
+#_#2760:has removed you from his contact list.\n
+#_#2761:Active privacy list: %s.\n
+#_#2762:No active privacy list.\n
+#_#2763:Default privacy list: %s.\n
+#_#2764:No default privacy list.\n
+#_#2765:Available privacy lists: 
+#_#2766:Listing privacy list: %s.\n
+#_#2767:Server updates privacy list %s.\n
+#_#2768:Fetching privacy list (was not cached), please try again.\n

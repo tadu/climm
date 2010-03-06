@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n 2852 2010-03-06 18:43:39 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2853 2010-03-06 20:23:44 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -1395,9 +1395,9 @@
 2755:Dieses Unter-Kommando benötigt einen <Liste>-Parameter.\n
 2756:Anfrage ist kein gültiges XML.\n
 2757:Anfrage abgeschickt.\n
-#_#2758:requests authorization.\n
-#_#2759:refused authorization.\n
-#_#2760:has removed you from his contact list.\n
+2758:wünscht Autorisierung.\n
+2759:hat die Autorisierung abgelehnt.\n
+2760:hat Sie aus seiner Kontaktliste entfernt.\n
 2761:Aktive Privatsphärenliste: %s.\n
 2762:Keine aktive Privatsphärenliste.\n
 2763:Standardmäßige Privatsphärenliste: %s.\n

@@ -1,5 +1,5 @@
 # $Id$ Chinese/Taiwan (中文)
-#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2853 2010-03-06 20:23:44 <-- NEVER TOUCH THIS - it's updated automatically
 #-#1000:big5
 #+#1000:iso-8859-1
 #_#1000:UTF-8
@@ -864,13 +864,13 @@
 2118:記憶體不足。\n
 #-#2119:auth [grant] <nick>    - 允許授權。\n
 #+#2119:auth [grant] <nick>    - grant authorization.\n
-#_#2119:auth [grant] <contacts>    - grant authorization.\n
+#_#2119:auth [grant] <contacts> [<msg>] - grant authorization.\n
 #-#2120:auth deny <nick> <msg> - 拒絕授權。\n
 #+#2120:auth deny <nick> <msg> - refuse authorization.\n
-#_#2120:auth deny <contacts> <msg> - refuse authorization.\n
+#_#2120:auth deny <contacts> [<msg>]    - refuse/cancel authorization.\n
 #-#2121:auth req  <nick> <msg> - 要求授權。\n
 #+#2121:auth req  <nick> <msg> - request authorization.\n
-#_#2121:auth req  <contacts> <msg> - request authorization.\n
+#_#2121:auth req  <contacts> [<msg>]    - request authorization.\n
 2122:注意: 要用 'save' 來把密碼寫到磁碟上。\n
 #-#2123:%s語法錯誤%s: 太少參數: '%s'\n
 #+#2123:%sSyntax error%s: Too few arguments: '%s'\n
@@ -893,7 +893,7 @@
 2142:無法與 %s 作直接連線。\n
 #-#2145:auth add  <nick>       - 授權後加入。\n
 #+#2145:auth add  <nick>       - authorized add.\n
-#_#2145:auth add  <contacts>       - authorized add.\n
+#_#2145:auth add  <contacts>            - authorized add.\n
 2146.'%s' 已是 '%s' 的化名 (%ld)。\n
 2147.'%s' (%ld) 已是一個 nick。\n
 2148.加了 '%s' 為 '%s' 的化名 (%ld)。\n
@@ -1429,3 +1429,25 @@
 #_#2744:Connection timed out
 #_#2745:Opening connection to %s:%s%ld%s 
 #_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n
+#_#2747:auth unsub <contacts>           - unsubscribe from contact.\n
+#_#2748:priv [list|active|default|show|edit] [<list>] [<editargs>] -- list and modify XMPP privacy lists.\n
+#_#2749:priv list                   -- list active, default and all available privacy list names.\n
+#_#2750:priv active  [<list>]       -- set active list.\n
+#_#2751:priv default [<list>]       -- set default list.\n
+#_#2752:priv show     <list>        -- show given list.\n
+#_#2753:priv set  <list> <editargs> -- set given list.\n
+#_#2754:priv edit <list> <editargs> -- edit given list.\n
+#_#2755:This subcommand requires a list parameter.\n
+#_#2756:Query not parsable as xml.\n
+#_#2757:Query sent.\n
+#_#2758:requests authorization.\n
+#_#2759:refused authorization.\n
+#_#2760:has removed you from his contact list.\n
+#_#2761:Active privacy list: %s.\n
+#_#2762:No active privacy list.\n
+#_#2763:Default privacy list: %s.\n
+#_#2764:No default privacy list.\n
+#_#2765:Available privacy lists: 
+#_#2766:Listing privacy list: %s.\n
+#_#2767:Server updates privacy list %s.\n
+#_#2768:Fetching privacy list (was not cached), please try again.\n

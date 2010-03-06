@@ -1,5 +1,5 @@
 # $Id$ English (English)
-#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2853 2010-03-06 20:23:44 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:ru
 1002:ru_RU
@@ -829,9 +829,9 @@
 2116:Не указан новый ник.\n
 2117.%ld добавлен как "%s".\n
 2118:Недостаточно памяти.\n
-2119:auth [grant] <контакты>          - авторизовать контакты.\n
-2120:auth deny <контакты> <сообщение> - отказать в авторизации.\n
-2121:auth req  <контакты> <сообщение> - запросить авторизацию.\n
+2119:auth [grant] <контакты> [<сообщение>] - авторизовать контакты.\n
+2120:auth deny <контакты> [<сообщение>]    - отказать в авторизации.\n
+2121:auth req  <контакты> [<сообщение>]    - запросить авторизацию.\n
 2122:Внимание: Вам необходимо выполнить "save" для сохранения новых паролей на диск.\n
 2123:%sОшибка синтаксиса%s: Слишком мало параметров: %s\n
 2124:%sОшибка синтаксиса%s: Не целое число: %s\n
@@ -848,7 +848,7 @@
 2140:Смена случайной чат-группы: %s%s%s.\n
 2141:Поиск %sнеудачен%s.\n
 2142:Прямое соединение с %s невозможно.\n
-2145:auth add  <контакты>       - авторизованное добавление.\n
+2145:auth add  <контакты>                  - авторизованное добавление.\n
 2146."%s" уже является псевдонимом "%s" (%ld).\n
 2147."%s" (%ld) уже использован как ник.\n
 2148.Добавлен псевдоним "%s" для "%s" (%ld).\n
@@ -1376,6 +1376,28 @@
 #_#2744:Connection timed out
 #_#2745:Opening connection to %s:%s%ld%s 
 #_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n
+#_#2747:auth unsub <contacts>           - unsubscribe from contact.\n
+#_#2748:priv [list|active|default|show|edit] [<list>] [<editargs>] -- list and modify XMPP privacy lists.\n
+#_#2749:priv list                   -- list active, default and all available privacy list names.\n
+#_#2750:priv active  [<list>]       -- set active list.\n
+#_#2751:priv default [<list>]       -- set default list.\n
+#_#2752:priv show     <list>        -- show given list.\n
+#_#2753:priv set  <list> <editargs> -- set given list.\n
+#_#2754:priv edit <list> <editargs> -- edit given list.\n
+#_#2755:This subcommand requires a list parameter.\n
+#_#2756:Query not parsable as xml.\n
+#_#2757:Query sent.\n
+2758:запрашивает авторизацию.\n
+2759:отказал в авторизации.\n
+#_#2760:has removed you from his contact list.\n
+#_#2761:Active privacy list: %s.\n
+#_#2762:No active privacy list.\n
+#_#2763:Default privacy list: %s.\n
+#_#2764:No default privacy list.\n
+#_#2765:Available privacy lists: 
+#_#2766:Listing privacy list: %s.\n
+#_#2767:Server updates privacy list %s.\n
+#_#2768:Fetching privacy list (was not cached), please try again.\n
 3010:Туплю [Автоотмазчик]
 3011:Слинял [Автоотмазчик]
 3012:Трудяга [Автоотмазчик]
@@ -2184,9 +2206,15 @@
 4116:Не указан новый ник.\n
 4117.%ld добавлен как "%s".\n
 4118:Недостаточно памяти.\n
-4119:auth [grant] <суслики>          - авторизовать сусликов.\n
-4120:auth deny <суслики> <сообщение> - отказать в авторизации.\n
-4121:auth req  <суслики> <сообщение> - запросить авторизацию.\n
+#-#4119:auth [grant] <суслики>          - авторизовать сусликов.\n
+#+#4119:auth [grant] <contacts>    - grant authorization.\n
+#_#4119:auth [grant] <contacts> [<msg>] - grant authorization.\n
+#-#4120:auth deny <суслики> <сообщение> - отказать в авторизации.\n
+#+#4120:auth deny <contacts> <msg> - refuse authorization.\n
+#_#4120:auth deny <contacts> [<msg>]    - refuse/cancel authorization.\n
+#-#4121:auth req  <суслики> <сообщение> - запросить авторизацию.\n
+#+#4121:auth req  <contacts> <msg> - request authorization.\n
+#_#4121:auth req  <contacts> [<msg>]    - request authorization.\n
 4122:Внимание: Вам необходимо выполнить "save" для сохранения новых паролей на диск.\n
 4123:%sОшибка синтаксиса%s: Слишком мало параметров: %s\n
 4124:%sОшибка синтаксиса%s: Не целое число: %s\n
@@ -2203,7 +2231,9 @@
 4140:Смена случайной чат-группы: %s%s%s.\n
 4141:Поиск %sнеудачен%s.\n
 4142:Прямое соединение с %s невозможно.\n
-4145:auth add  <суслики>       - авторизованное добавление.\n
+#-#4145:auth add  <суслики>       - авторизованное добавление.\n
+#+#4145:auth add  <contacts>       - authorized add.\n
+#_#4145:auth add  <contacts>            - authorized add.\n
 4146."%s" уже является псевдонимом "%s" (%ld).\n
 4147."%s" (%ld) уже использован как ник.\n
 4148.Добавлен псевдоним "%s" для "%s" (%ld).\n
