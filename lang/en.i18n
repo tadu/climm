@@ -1,5 +1,5 @@
 # $Id$ English (English)
-#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2852 2010-03-06 18:43:39 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:en
 1002:en_US
@@ -827,9 +827,9 @@
 2116:No new nick name given.\n
 2117.%ld added as %s.\n
 2118:Out of memory.\n
-2119:auth [grant] <contacts>    - grant authorization.\n
-2120:auth deny <contacts> <msg> - refuse authorization.\n
-2121:auth req  <contacts> <msg> - request authorization.\n
+2119:auth [grant] <contacts> [<msg>] - grant authorization.\n
+2120:auth deny <contacts> [<msg>]    - refuse/cancel authorization.\n
+2121:auth req  <contacts> [<msg>]    - request authorization.\n
 2122:Note: You need to 'save' to write new password to disc.\n
 2123:%sSyntax error%s: Too few arguments: %s\n
 2124:%sSyntax error%s: Not an integer: %s\n
@@ -846,7 +846,7 @@
 2140:Random chat group change was %s%s%s.\n
 2141:Search %sfailed%s.\n
 2142:Direct connection with %s not possible.\n
-2145:auth add  <contacts>       - authorized add.\n
+2145:auth add  <contacts>            - authorized add.\n
 2146.'%s' is already an alias for '%s' (%ld).\n
 2147.'%s' (%ld) is already used as a nick.\n
 2148.Added '%s' as an alias for '%s' (%ld).\n
@@ -1375,6 +1375,28 @@
 2744:Connection timed out
 2745:Opening connection to %s:%s%ld%s 
 2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n
+2747:auth unsub <contacts>           - unsubscribe from contact.\n
+2748:priv [list|active|default|show|edit] [<list>] [<editargs>] -- list and modify XMPP privacy lists.\n
+2749:priv list                   -- list active, default and all available privacy list names.\n
+2750:priv active  [<list>]       -- set active list.\n
+2751:priv default [<list>]       -- set default list.\n
+2752:priv show     <list>        -- show given list.\n
+2753:priv set  <list> <editargs> -- set given list.\n
+2754:priv edit <list> <editargs> -- edit given list.\n
+2755:This subcommand requires a list parameter.\n
+2756:Query not parsable as xml.\n
+2757:Query sent.\n
+2758:requests authorization.\n
+2759:refused authorization.\n
+2760:has removed you from his contact list.\n
+2761:Active privacy list: %s.\n
+2762:No active privacy list.\n
+2763:Default privacy list: %s.\n
+2764:No default privacy list.\n
+2765:Available privacy lists: 
+2766:Listing privacy list: %s.\n
+2767:Server updates privacy list %s.\n
+2768:Fetching privacy list (was not cached), please try again.\n
 2999.max
 # Those are the funny messages. Substract 2000 to get the normal message.
 3082.But hey, let's just poke the server again... [try %d out of %d]\n

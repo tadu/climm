@@ -1390,7 +1390,7 @@ static int XmppSessionResult (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 static int XmppUserResult (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
     Server *serv = (Server *)fserv;
-    rl_printf (i18n (2768, "Message %s resulted in:\n%s\n"), pak->id, iks_string (iks_stack (pak->x), pak->x));
+    rl_printf ("Message %s resulted in:\n%s\n", pak->id, iks_string (iks_stack (pak->x), pak->x));
     return IKS_FILTER_EAT;
 }
 
@@ -1724,7 +1724,6 @@ UBYTE XMPPSendIq (Server *serv, int8_t which, const char *screen, const char *ms
     if (!child)
         return RET_FAIL;
     id = s_sprintf ("user-%s-%x", serv->xmpp_stamp, ++serv->xmpp_sequence);
-    rl_printf (i18n (2769, "Sending message %s.\n"), id);
     iks_filter_add_rule (serv->xmpp_filter, XmppUserResult, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_ID, id, IKS_RULE_DONE);
     x = iks_new_within ("iq", iks_stack (child));
     iks_insert_attrib (x, "type", which ? "set" : "get");
@@ -1777,7 +1776,7 @@ void XMPPPrivacy (Server *serv, xmpp_priv_t type, const char *list, const char *
         if (!serv->xmpp_privacy_items)
         {
             XMPPPrivacy (serv, p_show_quiet, list, NULL);
-            rl_printf (i18n (2770, "Fetching privacy list (was not cached), please try again.\n"));
+            rl_printf (i18n (2768, "Fetching privacy list (was not cached), please try again.\n"));
             return;
         }
     }

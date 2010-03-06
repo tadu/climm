@@ -1,5 +1,5 @@
 # $Id$ Deutsch (German)
-#  EN: __.i18n 2788 2009-04-11 22:05:30 <-- NEVER TOUCH THIS - it's updated automatically
+#  EN: __.i18n 2852 2010-03-06 18:43:39 <-- NEVER TOUCH THIS - it's updated automatically
 1000:UTF-8
 1001:de
 1002:de_DE
@@ -837,9 +837,9 @@
 2116:Kein neuer Spitzname gegeben.\n
 2117.%ld als %s hinzugefügt.\n
 2118:Kein Speicher mehr vorhanden.\n
-2119:auth [grant] <Kontakt>      - autorisieren.\n
-2120:auth deny <Kontakt> <Warum> - Autorisierung ablehnen.\n
-2121:auth req  <Kontakt> <Warum> - Autorisierung anfragen.\n
+2119:auth [grant] <Kontakt> [<Warum>] - autorisieren.\n
+2120:auth deny <Kontakt> [<Warum>]    - Autorisierung ablehnen.\n
+2121:auth req  <Kontakt> [<Warum>]    - Autorisierung anfragen.\n
 2122:Hinweis: Die Paßwort-Änderung muß mittels "save" abgespeichert werden.\n
 2123:%sSyntax-Fehler%s: Zu wenige Argumente: %s\n
 2124:%sSyntax-Fehler%s: Keine ganze Zahl: %s\n
@@ -856,7 +856,7 @@
 2140:Interessengruppenänderung war %s%s%s.\n
 2141:Suche %sfehlgeschlagen%s.\n
 2142:Direkt-Verbindung mit %s nicht möglich.\n
-2145:auth add  <Kontakt>         - Nach Autorisierung hinzugefügt.\n
+2145:auth add  <Kontakt>              - Nach Autorisierung hinzugefügt.\n
 2146."%s" ist bereits ein Zweit-Name für "%s" (%ld).\n
 2147."%s" (%ld) wird bereits als Spitzname verwendet.\n
 2148."%s" ist jetzt ein Zweit-Name für "%s" (%ld).\n
@@ -1384,6 +1384,28 @@
 2744:Verbindungsaufbau erlitt Zeitüberschreitung
 2745:Öffne Verbindung zu %s:%s%ld%s 
 #_#2746:    type %d socket %d ip %s (%s%s%s%s %d) on [%s,%s] id %lx/%x/%x\n
+2747:auth unsub <Kontakt>             - Von Kontakt abmelden.\n
+2748:priv [list|active|default|show|edit] [<Liste>] [<Änderungen>] -- Privatsphärenlisten verwalten.\n
+2749:priv list                      -- Benennt die aktive, die standardmäßige und alle verfügbaren Listen.\n
+2750:priv active  [<Liste>]         -- Wählt die aktive Liste aus.\n
+2751:priv default [<Liste>]         -- Wählt die standardmäßige Liste aus.\n
+2752:priv show     <Liste>          -- Zeigt die angegebene Liste an.\n
+2753:priv set  <Liste> <Änderungen> -- Legt die angegebene Liste neu an.\n
+2754:priv edit <Liste> <Änderungen> -- Ändert die angegebene Liste.\n
+2755:Dieses Unter-Kommando benötigt einen <Liste>-Parameter.\n
+2756:Anfrage ist kein gültiges XML.\n
+2757:Anfrage abgeschickt.\n
+#_#2758:requests authorization.\n
+#_#2759:refused authorization.\n
+#_#2760:has removed you from his contact list.\n
+2761:Aktive Privatsphärenliste: %s.\n
+2762:Keine aktive Privatsphärenliste.\n
+2763:Standardmäßige Privatsphärenliste: %s.\n
+2764:Keine standardmäßige Privatsphärenliste.\n
+2765:Verfügbare Privatsphärenlisten: 
+2766:Zeige Privatsphärenliste %s an:\n
+2767:Der Server hat die Privatsphärenlisten aktualisiert.\n
+2768:Hole Privatsphärenliste (war nicht zwischengespeichert), bitte nochmal versuchen.\n
 2999.max.
 # Those are the funny messages. Substract 2000 to get the normal message.
 3620.Du hast zu viele Freunde, wie wär's mit mehr RL?
