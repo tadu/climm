@@ -114,6 +114,8 @@ Server        *ServerFindScreen  (UWORD type, const char *screen);
 Connection    *ServerChild       (Server *serv, Contact *cont, UWORD type DEBUGPARAM);
 Connection    *ServerFindChild   (const Server *parent, const Contact *cont, UWORD type);
 const char    *ServerStrType     (Server *conn);
+val_t          ServerPrefVal     (Server *conn, UDWORD flag);
+const char    *ServerPrefStr     (Server *conn, UDWORD flag);
 
 Connection    *ConnectionC       (UWORD type DEBUGPARAM);
 void           ConnectionD       (Connection *conn DEBUGPARAM);
@@ -121,8 +123,6 @@ Connection    *ConnectionNr      (int i);
 const char    *ConnectionStrType (Connection *conn);
 const char    *ConnectionServerType  (UWORD type);
 UWORD          ConnectionServerNType (const char *type, char del);
-val_t          ConnectionPrefVal (Server *conn, UDWORD flag);
-const char    *ConnectionPrefStr (Server *conn, UDWORD flag);
 
 #define ConnectionC(t)       ConnectionC (t DEBUGARGS)
 #define ConnectionD(c)       ConnectionD (c DEBUGARGS)

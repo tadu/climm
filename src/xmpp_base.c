@@ -210,7 +210,7 @@ static void XmppSaveLog (IKS_TRANS_USER_DATA *userv, const char *text, size_t si
     else
         DebugH (DEB_XMPPOUT, "%s", data);
 
-    if (!ConnectionPrefVal (serv, CO_LOGSTREAM))
+    if (!ServerPrefVal (serv, CO_LOGSTREAM))
         return;
 
     if (serv->logfd < 0)
@@ -1371,7 +1371,7 @@ static void XmppLoggedIn (Server *serv)
     iks_filter_add_rule (serv->xmpp_filter, XmppHandleIqDefault, serv, IKS_RULE_TYPE, IKS_PAK_IQ, IKS_RULE_SUBTYPE, IKS_TYPE_GET, IKS_RULE_DONE);
     
     {
-        const char *list = ConnectionPrefStr (serv, CO_XMPP_PRIV);
+        const char *list = ServerPrefStr (serv, CO_XMPP_PRIV);
         if (list)
             XMPPSendIqPrivacy (serv, p_active, list);
     }
@@ -1581,7 +1581,7 @@ static void XMPPCallbackDispatch (Connection *conn)
                     if (!conn->serv->xmpp_id->resource)
                         conn->serv->xmpp_id = iks_id_new (iks_parser_stack (prs),
                             s_sprintf ("%s@%s/climm", conn->serv->xmpp_id->user, conn->serv->xmpp_id->server));
-                    if (ConnectionPrefVal (conn->serv, CO_TAGRESSOURCE) || ConnectionPrefVal (conn->serv, CO_AUTOTAGRES))
+                    if (ServerPrefVal (conn->serv, CO_TAGRESSOURCE) || ServerPrefVal (conn->serv, CO_AUTOTAGRES))
                         conn->serv->xmpp_id = iks_id_new (iks_parser_stack (prs),
                             s_sprintf ("%s/%s%04X%04X", conn->serv->xmpp_id->partial, conn->serv->xmpp_id->resource, rand() % 0xffff, rand() % 0xffff));
                     iks_set_log_hook (prs, XmppSaveLog);

@@ -46,14 +46,14 @@
 
 void UtilIOConnectTCP (Connection *conn)
 {
-    if (ConnectionPrefVal (conn->serv, CO_S5USE))
+    if (ServerPrefVal (conn->serv, CO_S5USE))
         return IOConnectSocks5 (conn);
     return IOConnectTCP (conn);
 }
 
 void UtilIOListenTCP  (Connection *conn)
 {
-    if (ConnectionPrefVal (conn->serv, CO_S5USE))
+    if (ServerPrefVal (conn->serv, CO_S5USE))
         return IOListenSocks5 (conn);
     return IOListenTCP (conn);
 }

@@ -1005,19 +1005,19 @@ Open a scripting FIFO to accept commands as if entered through the command line.
 The FIFO to open for those commands. If not set and scripting is on, BASDIR/scripting
 will be used.
 .TP
-.BI webaware \ boolean\ connection[ICQ]
+.BI webaware \ boolean\ server[ICQ]
 Whether the current status should be visible on the web site.
 .TP
-.BI hideip \ boolean\ connection[ICQ]
+.BI hideip \ boolean\ server[ICQ]
 Whether to hide the (local) IP address towards other users.
 .TP
-.BI dcauth \ boolean\ connection[ICQ]
+.BI dcauth \ boolean\ server[ICQ]
 Whether authorized contacts can see the (remote) IP address.
 .TP
-.BI dccont \ boolean\ connection[ICQ]
+.BI dccont \ boolean\ server[ICQ]
 Whether contacts can see the (remote) IP address.
 .TP
-.BI countaway \ boolean\ connection
+.BI countaway \ boolean\ server
 If set, incoming messages will be counted and their originators shown
 if the status is manually changed to anything other than
 .I online
@@ -1033,27 +1033,27 @@ or
 (with or without
 .IR invisible ).
 .TP
-.BI s5_use \ boolean\ connection
+.BI s5_use \ boolean\ server
 Enable the use of a socks 5 proxy. New for 0.6.4.
 .TP
-.BI s5_host \ string\ connection
+.BI s5_host \ string\ server
 Connect to socks 5 proxy on the given host. New for 0.6.4.
 .TP
-.BI s5_port \ integer\ connection
+.BI s5_port \ integer\ server
 Connect to socks 5 proxy listening on the given port number. New for 0.6.4.
 .TP
-.BI s5_name \ string\ connection
+.BI s5_name \ string\ server
 Identify as the given user to the socks 5 proxy. New for 0.6.4.
 .TP
-.BI s5_pass \ string\ connection
+.BI s5_pass \ string\ server
 Authenticate with the given password to the socks 5 proxy. New for 0.6.4.
 .TP
-.BI oscar_dc_port \ integer\ connection[ICQ]
-Define the minimum port to listen for incoming direct connection when using
+.BI oscar_dc_port \ integer\ server[ICQ]
+Define the minimum port to listen for incoming direct connections when using
 the oscar protocol. If the given port is in used, the port number actually
 used is increased until a free one is found. New for 0.6.4.
 .TP
-.BI oscar_dc_mode \ integer\ connection[ICQ]
+.BI oscar_dc_mode \ integer\ server[ICQ]
 .RS
 This integer is for flags how to handle direct connections:
 .TP
@@ -1078,11 +1078,11 @@ Create and open a peer to peer connection.
 New for 0.6.3.
 .RE
 .TP
-.BI logstream \ boolean\ connection
+.BI logstream \ boolean\ server
 Log all data sent over the connection to the server into a file in
 BASEDIR/debug/.
 .TP
-.BI privacylist \ string\ connection[XMPP]
+.BI privacylist \ string\ server[XMPP]
 After login, select the given privacy list as the active list for this
 session. If the list is empty, select no privacy list as active. Otherwise,
 the default privacy list will be the active one.
@@ -1198,10 +1198,10 @@ or all options of contact group
 .IR group .
 New for 0.5.
 .TP
-.BI optconnection \ [<option>\ [<value>]]
-Set or display connection option
+.BI optserv \ [<option>\ [<value>]]
+Set or display server option
 .IR option .
-New for 0.5.
+Renamed for 0.7.1, old name new in 0.5.
 .TP
 .BI optglobal \ [<option>\ [<value>]]
 Set or display global option

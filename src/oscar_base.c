@@ -450,7 +450,7 @@ void FlapSend (Server *serv, Packet *pak)
         rl_print (COLEXDENT "\r");
     }
     
-    if (ConnectionPrefVal (serv, CO_LOGSTREAM))
+    if (ServerPrefVal (serv, CO_LOGSTREAM))
         FlapSave (serv, pak, FALSE);
     
     serv->conn->stat_pak_sent++;
@@ -602,7 +602,7 @@ Event *OscarLogin (Server *serv)
 
     UtilIOConnectTCP (serv->conn);
     rl_printf ("\n");
-    if ((v = ConnectionPrefVal (serv, CO_OSCAR_DC_MODE)))
+    if ((v = ServerPrefVal (serv, CO_OSCAR_DC_MODE)))
     {
         Connection *conn = serv->oscar_dc;
         if (!conn)
@@ -687,7 +687,7 @@ void SrvCallBackReceive (Connection *conn)
         FlapPrint (pak);
         rl_print (COLEXDENT "\r");
     }
-    if (ConnectionPrefVal (serv, CO_LOGSTREAM))
+    if (ServerPrefVal (serv, CO_LOGSTREAM))
         FlapSave (serv, pak, TRUE);
     
     QueueEnqueueData (conn, QUEUE_FLAP, pak->id, time (NULL),

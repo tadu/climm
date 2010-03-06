@@ -532,7 +532,7 @@ void SnacCliSetrandom (Server *serv, UWORD group)
         PacketWriteB4 (pak, 0);
         PacketWriteB4 (pak, 0);
         PacketWrite1  (pak, serv->oscar_dc && serv->oscar_dc->connect & CONNECT_OK
-                            ? ConnectionPrefVal (serv, CO_OSCAR_DC_MODE) & 15 : 0);
+                            ? ServerPrefVal (serv, CO_OSCAR_DC_MODE) & 15 : 0);
         PacketWrite2  (pak, serv->oscar_dc && serv->oscar_dc->connect & CONNECT_OK
                             ? serv->oscar_dc->version : 0);
         PacketWriteB4 (pak, 0);

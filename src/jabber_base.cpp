@@ -1017,13 +1017,13 @@ void CLIMMXMPP::handleLog (gloox::LogLevel level, gloox::LogArea area, const std
     }
     if (area == gloox::LogAreaXmlIncoming)
     {
-        if (ConnectionPrefVal (m_serv, CO_LOGSTREAM))
+        if (ServerPrefVal (m_serv, CO_LOGSTREAM))
             CLIMMXMPPSave (m_serv, message.c_str(), 1);
         DebugH (DEB_XMPPIN, "%s/%s: %s", lt, la, message.c_str());
     }
     else if (area == gloox::LogAreaXmlOutgoing)
     {
-        if (ConnectionPrefVal (m_serv, CO_LOGSTREAM))
+        if (ServerPrefVal (m_serv, CO_LOGSTREAM))
             CLIMMXMPPSave (m_serv, message.c_str(), 0);
         DebugH (DEB_XMPPOUT, "%s/%s: %s", lt, la, message.c_str());
     }

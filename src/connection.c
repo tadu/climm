@@ -490,7 +490,7 @@ UWORD ConnectionServerNType (const char *type, char del)
 /*
  * Query an option for a contact group
  */
-val_t ConnectionPrefVal (Server *serv, UDWORD flag)
+val_t ServerPrefVal (Server *serv, UDWORD flag)
 {
     val_t res = 0;
     if (serv->contacts && OptGetVal (&serv->copts, flag, &res))
@@ -503,7 +503,7 @@ val_t ConnectionPrefVal (Server *serv, UDWORD flag)
 /*
  * Query an option for a contact group
  */
-const char *ConnectionPrefStr (Server *serv, UDWORD flag)
+const char *ServerPrefStr (Server *serv, UDWORD flag)
 {
     const char *res = 0;
     if (serv->contacts && OptGetStr (&serv->copts, flag, &res))

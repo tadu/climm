@@ -88,7 +88,7 @@ Connection *PeerFileCreate (Server *serv)
     flist->oscar_dc_seq  = -1;
     flist->version  = serv->oscar_dc->version;
     flist->cont     = serv->oscar_dc->cont;
-    flist->port     = ConnectionPrefVal (serv, CO_OSCAR_DC_PORT);
+    flist->port     = ServerPrefVal (serv, CO_OSCAR_DC_PORT);
     flist->dispatch = &TCPDispatchMain;
     
     if (prG->verbose)

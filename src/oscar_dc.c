@@ -115,7 +115,7 @@ Event *ConnectionInitPeer (Connection *list)
     list->oscar_our_session = 0;
     list->ip          = 0;
     s_repl (&list->server, NULL);
-    list->port        = ConnectionPrefVal (list->serv, CO_OSCAR_DC_PORT);
+    list->port        = ServerPrefVal (list->serv, CO_OSCAR_DC_PORT);
     list->cont        = list->serv->conn->cont;
 
     UtilIOListenTCP (list);
@@ -714,7 +714,7 @@ static void TCPSendInitv6 (Connection *peer)
     PacketWrite4  (pak, peer->serv->oscar_uin);      /* our UIN          */
     PacketWriteB4 (pak, peer->serv->conn->our_outside_ip); /* our (remote) IP  */
     PacketWriteB4 (pak, peer->serv->conn->our_local_ip);   /* our (local)  IP  */
-    PacketWrite1  (pak, ConnectionPrefVal (peer->serv, CO_OSCAR_DC_MODE) & 15);               /* connection type  */
+    PacketWrite1  (pak, ServerPrefVal (peer->serv, CO_OSCAR_DC_MODE) & 15);               /* connection type  */
     PacketWrite4  (pak, peer->serv->oscar_dc->port);           /* our (other) port */
     PacketWrite4  (pak, peer->oscar_our_session);          /* session id       */
 
@@ -764,7 +764,7 @@ static void TCPSendInit (Connection *peer)
     PacketWrite4  (pak, peer->serv->oscar_uin);      /* our UIN          */
     PacketWriteB4 (pak, peer->serv->conn->our_outside_ip); /* our (remote) IP  */
     PacketWriteB4 (pak, peer->serv->conn->our_local_ip);   /* our (local)  IP  */
-    PacketWrite1  (pak, ConnectionPrefVal (peer->serv, CO_OSCAR_DC_MODE) & 15);               /* connection type  */
+    PacketWrite1  (pak, ServerPrefVal (peer->serv, CO_OSCAR_DC_MODE) & 15);               /* connection type  */
     PacketWrite4  (pak, peer->serv->oscar_dc->port);           /* our (other) port */
     PacketWrite4  (pak, peer->oscar_our_session);          /* session id       */
     PacketWrite4  (pak, 0x00000050);

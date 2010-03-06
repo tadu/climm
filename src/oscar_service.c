@@ -357,11 +357,11 @@ void SnacCliSetstatus (Server *serv, status_t status, UWORD action)
     UDWORD ostat = IcqFromStatus (status);
     statusflag_t flags = imf_none;
     
-    if (ConnectionPrefVal (serv, CO_WEBAWARE))
+    if (ServerPrefVal (serv, CO_WEBAWARE))
         flags |= imf_web;
-    if (ConnectionPrefVal (serv, CO_DCAUTH))
+    if (ServerPrefVal (serv, CO_DCAUTH))
         flags |= imf_dcauth;
-    if (ConnectionPrefVal (serv, CO_DCCONT))
+    if (ServerPrefVal (serv, CO_DCCONT))
         flags |= imf_dccont;
     
     ostat |= IcqFromFlags (flags);
@@ -383,11 +383,11 @@ void SnacCliSetstatus (Server *serv, status_t status, UWORD action)
     {
         PacketWriteB2 (pak, 0x0c); /* TLV 0C */
         PacketWriteB2 (pak, 0x25);
-        PacketWriteB4 (pak, ConnectionPrefVal (serv, CO_HIDEIP) ? 0 : serv->conn->our_local_ip);
+        PacketWriteB4 (pak, ServerPrefVal (serv, CO_HIDEIP) ? 0 : serv->conn->our_local_ip);
         if (serv->oscar_dc && serv->oscar_dc->connect & CONNECT_OK)
         {
             PacketWriteB4 (pak, serv->oscar_dc->port);
-            PacketWrite1  (pak, ConnectionPrefVal (serv, CO_OSCAR_DC_MODE) & 15);
+            PacketWrite1  (pak, ServerPrefVal (serv, CO_OSCAR_DC_MODE) & 15);
             PacketWriteB2 (pak, serv->oscar_dc->version);
             PacketWriteB4 (pak, serv->oscar_dc->oscar_our_session);
         }

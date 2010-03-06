@@ -107,8 +107,8 @@ static io_err_t io_socks5_seterr (Dispatcher *d, io_err_t err, const char *msg)
  */
 static void io_socks5_open (Connection *conn, Dispatcher *d)
 {
-    const char *socks5server = ConnectionPrefStr (conn->serv, CO_S5HOST);
-    UDWORD      socks5port   = ConnectionPrefVal (conn->serv, CO_S5PORT);
+    const char *socks5server = ServerPrefStr (conn->serv, CO_S5HOST);
+    UDWORD      socks5port   = ServerPrefVal (conn->serv, CO_S5PORT);
     char *origserver = conn->server;
     UDWORD origport = conn->port, origip = conn->ip;
     
@@ -150,7 +150,7 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
         s_repl (&d->lasterr, NULL);
         if (rc != IO_CONNECTED)
             return io_socks5_seterr (d, rc, d->next->funcs->f_err (conn,  d->next));
-        if (ConnectionPrefVal (conn->serv, CO_S5NAME) && ConnectionPrefVal (conn->serv, CO_S5PASS))
+        if (ServerPrefVal (conn->serv, CO_S5NAME) && ServerPrefVal (conn->serv, CO_S5PASS))
             e = io_util_write (conn, d->next, "\x05\x02\x02\x00", 4);            
         else
             e = io_util_write (conn, d->next, "\x05\x01\x00", 3);
@@ -173,8 +173,8 @@ static io_err_t io_socks5_connecting (Connection *conn, Dispatcher *d)
     }
     if (d->flags == FLAG_SEND_CRED)
     {
-        const char *socks5name = ConnectionPrefStr (conn->serv, CO_S5NAME);
-        const char *socks5pass = ConnectionPrefStr (conn->serv, CO_S5PASS);
+        const char *socks5name = ServerPrefStr (conn->serv, CO_S5NAME);
+        const char *socks5pass = ServerPrefStr (conn->serv, CO_S5PASS);
         if (!socks5name || !socks5pass)
             return io_socks5_seterr (d, IO_RW, i18n (1599, "[SOCKS] Authentication method incorrect"));
 
