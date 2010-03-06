@@ -33,6 +33,8 @@
 #include "climm.h"
 #include "io/io_dns.h"
 
+/* OS X needs a compatibility flag for the resolver */
+#define BIND_8_COMPAT 1
 #if HAVE_NETINET_IN_H 
 #include <netinet/in.h>
 #endif
