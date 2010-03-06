@@ -4453,7 +4453,7 @@ static JUMP_F(CmdUserPrivacy)
         rl_printf (i18n (9999, "priv edit <list> <editargs> -- edit given list.\n"));
     }
     else if (!par && (data == p_show || data == p_set || data == p_edit))
-        rl_printf (i18n (9999, "missing list parameter.\n"));
+        rl_printf (i18n (9999, "This subcommand requires a list parameter.\n"));
     else
         XMPPPrivacy (uiG.conn, data ? data : (par ? p_show : p_list), par ? par->txt : NULL, s_parserem (&args));
     return 0;
@@ -4476,7 +4476,7 @@ static JUMP_F(CmdUserXmppIq)
     else if (s_parsekey (&args, "set"))   data = 2;
     else
     {
-        rl_print (i18n (9999, "_iq [get|set] <contact> <query> -- Send iq <query> to <contact> of type get or set.\n"));
+        rl_print (i18n (9999, "_iq get|set <contact> <query> -- Send iq <query> to <contact> of type get or set.\n"));
         return 0;
     }
     
@@ -4491,9 +4491,9 @@ static JUMP_F(CmdUserXmppIq)
     ret = XMPPSendIq (uiG.conn, data - 1, par->txt, query);
     
     if (ret != RET_OK)
-        rl_print (i18n (9999, "message not parsable as xml.\n"));
+        rl_print (i18n (9999, "Query not parsable as xml.\n"));
     else
-        rl_print (i18n (9999, "message sent.\n"));
+        rl_print (i18n (9999, "Query sent.\n"));
     return 0;
 }
 
