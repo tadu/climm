@@ -26,7 +26,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  *
- * $Id: oscar_base.c 2670 2009-03-01 16:48:03Z kuhlmann $
+ * $Id$
  */
 
 //#define IKS_TRANS_USER_DATA Server

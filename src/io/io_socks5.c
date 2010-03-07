@@ -26,7 +26,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  *
- * $Id: util_ssl.c 2723 2009-03-10 21:44:18Z kuhlmann $
+ * $Id$
  */
 
 #include "climm.h"

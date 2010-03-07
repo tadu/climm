@@ -1,4 +1,4 @@
-/* $Id: util_io.h 2727 2009-03-10 23:07:39Z kuhlmann $ */
+/* $Id$ */
 
 #ifndef CLIMM_IO_PRIVATE_H
 #define CLIMM_IO_PRIVATE_H

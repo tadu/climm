@@ -1,4 +1,4 @@
-/* $Id: util_ssl.h 2711 2009-03-10 00:20:14Z kuhlmann $ */
+/* $Id$ */
 
 #ifndef CLIMM_UTIL_MD5_H
 #define CLIMM_UTIL_MD5_H

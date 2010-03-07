@@ -1,4 +1,4 @@
-/* $Id: climm.h 2312 2007-06-04 22:22:03Z kuhlmann $ */
+/* $Id$ */
 
 #ifndef CLIMM_H
 #define CLIMM_H

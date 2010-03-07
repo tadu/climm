@@ -1,4 +1,4 @@
-/* $Id: climm.c 2299 2007-05-29 22:57:38Z kuhlmann $ */
+/* $Id$ */
 /* Copyright
  * This file may be distributed under version 2 of the GPL licence.
  */
