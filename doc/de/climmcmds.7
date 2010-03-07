@@ -1,10 +1,9 @@
 .\" $Id: climmcmds.7 2072 2005-12-11 20:57:34Z kuhlmann $ -*- nroff -*-
-.\"  EN: climmcmds.7 1000 2007-07-12 00:00:00Z ,v 1.49
-.\"      ^^ <version of English man page this is in sync with>
+.\"  EN: climmcmds.7 2293 2007-05-12 22:36:21Z
+.\"  ^^ no Id:       ^^^^ <version of English man page this is in sync with>
 .TH CLIMM 7 climm DE
 .SH NAME
-.B climm
-\- interaktive Befehle
+.B climm \- interaktive Befehle
 .SH BESCHREIBUNG
 Diese Hilfeseite beschreibt die Befehle, die aus climm heraus verwendet
 werden k\(:onnen. Diese Seite enth\(:alt prinzipiell dieselben Informationen wie
@@ -77,8 +76,8 @@ das Gegen\(:uber eingestellten Kodierung, oder, falls keine eingestellt ist,
 mit der als Standard f\(:ur andere eingestellten Kodierung verschickt.
 type-1, type-4 und Offline-Nachrichten k\(:onnen nicht mit ihrer
 Kodierung markiert werden, deshalb h\(:angt die korrekte \(:Ubertragung
-von 8bit-Zeichen (also insbesondere Umlauten) von der korrekten
-Einstellung ab.
+von 8bit-Zeichen (also insbesondere Umlauten) von korrekten Einstellung
+und Heuristiken ab.
 .TP
 .BI a \ [<Nachricht>]
 Schickt eine Nachricht zur gleichen Person wie die letzte Nachricht.
@@ -152,7 +151,7 @@ Kontakte, die dabei nicht einen der genannten Stati haben, werden
 \(:ubersprungen.
 Neu seit 0.4.10.
 .TP
-.BI auth \ [req|grant|deny|add]\ <Kontakte>
+.BI auth \ [req|grant|deny|unsub|add]\ <Kontakte>\ [<Nachricht>]
 Erlaubt es allen
 .IR <Kontakten> ,
 Sie zu ihrer Kontaktliste hinzuzuf\(:ugen
@@ -160,9 +159,15 @@ Sie zu ihrer Kontaktliste hinzuzuf\(:ugen
 verbietet dies
 .RB ( deny ),
 beantragt dies
-.RB ( req )
-oder teilt das Hinzuf\(:ugen nach Autorisierung mit
-.RB ( add ).
+.RB ( req ),
+teilt das Hinzuf\(:ugen nach Autorisierung mit
+.RB ( add )
+(nur ICQ, nicht XMPP)
+oder bestellt Statusmeldungen von diesem Kontakten ab
+.RB ( unsub )
+(nur XMPP, nicht ICQ).
+Bei ICQ kann einigen der Befehle eine optionale Nachricht mitgegeben werden.
+Neues Unterkommando unsub seit 0.7.1.
 .TP
 .BI resend \ <Kontakte>
 Schickt die letzte Nachricht erneut an weitere
@@ -225,36 +230,69 @@ Eingebaute Abk\(:urzung f\(:ur
 .IR conn\ login .
 \(:Offnet die erste Server-Verbindung.
 .TP
-.B online
-Wechsel in den Status "verbunden".
-.TP
-.BI away \ [<Nachricht>]
-Wechselt in den Status "abwesend". Setzt optional die automatische Antwort tempor\(:ar auf
+.BI online\  [ for \ <Kontakte>]\ [<Nachricht>]
+Wechselt in den Status "verbunden",
+oder wechsle den Status nur f\(:ur die angegebenen Kontakte auf "verbunden"
+und setze optional die Statusmeldung f\(:ur diese auf
 .IR Nachricht .
 .TP
-.BI na \ [<Nachricht>]
-Wechselt in den Status "nicht verf\(:ugbar". Setzt optional die automatische Antwort tempor\(:ar auf
+.BI away\  [ for \ <Kontakte>]\ [<Nachricht>]
+Wechselt in den Status "abwesend" und setzt optional
+die Statusmeldung und die automatische tempor\(:ar auf
+.IR Nachricht ,
+oder wechsle den Status nur f\(:ur die angegebenen Kontakte auf "abwesend"
+und setzt optional die Statusmeldung f\(:ur diese auf
 .IR Nachricht .
 .TP
-.BI occ \ [<Nachricht>]
-Wechselt in den Status "besch\(:aftigt". Setzt optional die automatische Antwort tempor\(:ar auf
+.BI na\  [ for \ <Kontakte>]\ [<Nachricht>]
+Wechselt in den Status "nicht verf\(:ugbar" und setzt optional
+die Statusmeldung und die automatische tempor\(:ar auf
+.IR Nachricht ,
+oder wechsle den Status nur f\(:ur die angegebenen Kontakte auf "nicht verf\(:ugbar"   
+und setzt optional die Statusmeldung f\(:ur diese auf
 .IR Nachricht .
 .TP
-.BI dnd \ [<Nachricht>]
-Wechselt in den Status "nicht st\(:oren". Setzt optional die automatische Antwort tempor\(:ar auf
+.BI occ\  [ for \ <Kontakte>]\ [<Nachricht>]
+Wechselt in den Status "besch\(:aftigt" und setzt optional
+die Statusmeldung und die automatische tempor\(:ar auf
+.IR Nachricht ,
+oder wechsle den Status nur f\(:ur die angegebenen Kontakte auf "besch\(:aftigt"
+und setzt optional die Statusmeldung f\(:ur diese auf
 .IR Nachricht .
 .TP
-.BI ffc \ [<Nachricht>]
-Wechselt in den Status "frei f\(:ur Plaudereien". Setzt optional die automatische Antwort tempor\(:ar auf
+.BI dnd\  [ for \ <Kontakte>]\ [<Nachricht>]
+Wechselt in den Status "nicht st\(:oren" und setzt optional
+die Statusmeldung und die automatische tempor\(:ar auf
+.IR Nachricht ,
+oder wechsle den Status nur f\(:ur die angegebenen Kontakte auf "nicht st\(:oren"
+und setzt optional die Statusmeldung f\(:ur diese auf
 .IR Nachricht .
 .TP
-.B inv
-Wechselt in den Status "unsichtbar".
+.BI ffc\  [ for \ <Kontakte>]\ [<Nachricht>]
+Wechselt in den Status "frei f\(:ur Plaudereien" und setzt optional
+die Statusmeldung und die automatische tempor\(:ar auf
+.IR Nachricht ,
+oder wechsle den Status nur f\(:ur die angegebenen Kontakte auf "frei f\(:ur Plaudereien"
+und setzt optional die Statusmeldung f\(:ur diese auf
+.IR Nachricht .
 .TP
-.BI change \ [<Nummer>\ [<Nachricht>]]
+.BI inv\  [ for \ <Kontakte>]\ [<Nachricht>]
+Wechselt in den Status "unsichtbar" und setzt optional
+die Statusmeldung und die automatische tempor\(:ar auf
+.IR Nachricht ,
+oder wechsle den Status nur f\(:ur die angegebenen Kontakte auf "frei f\(:ur
+Plaudereien"
+und setzt optional die Statusmeldung f\(:ur diese auf
+.IR Nachricht .
+.TP
+.BI change \ [<Nummer>\ [ for \ <Kontakte>]\ [<Nachricht>]]
 Wechselt in den Status
 .IR Nummer ,
-und setze optional die automatische Antwort f\(:ur diesen Status auf
+und setzt optional
+die Statusmeldung und die automatische tempor\(:ar auf
+.IR Nachricht ,
+oder wechsle den Status nur f\(:ur die angegebenen Kontakte
+und setzt optional die Statusmeldung f\(:ur diese auf
 .IR Nachricht .
 Ohne eine Nummer: liste die verf\(:ugbaren Nummern auf.
 .SH BEFEHLE ZUM SUCHEN UND ANZEIGEN ANDERER BENUTZER
@@ -333,20 +371,99 @@ Eine weitere Spalte wird von den Befehlen, die mit
 und
 .B ee
 beginnen, ausgegeben, die Informationen \(:uber die serverseitige Kontaktliste ausgeben,
-soweit dies bekannt ist:
+soweit dies bekannt ist (neue f\(:ur 0.7.1):
 .TP
 .B S
-Der Kontakt ist auf der serverseitigen Kontaktliste, und soll da auch sein.
+Der Kontakt ist auf der serverseitigen Kontaktliste
+mit gegenseitiger Autorisierung,
+und soll da auch sein (hat die Option
+.I wantsbl
+gesetzt).
 .TP
-.B s
-Der Kontakt ist auf der serverseitigen Kontaktliste, soll da aber nicht sein.
+.B T
+Der Kontakt ist auf der serverseitigen Kontaktliste
+mit gegenseitiger Nicht-Autorisierung,
+erwartet Autorisierung
+und soll da auch sein.
 .TP
 .B .
-Der Kontakt ist nicht auf der serverseitigen Kontaktliste, soll da aber sein.
-Das bedeutet meistens "Autorisierung erforderlich".
+Der Kontakt ist nicht auf der serverseitigen Kontaktliste,
+sollte da aber sein.
+.TP
+.B R
+Der Kontakt ist auf der serverseitigen Kontaktliste
+und empf\(:angt Statusmeldungen,
+hat eine ausstehende Autorisierungsanfrage bekommen
+und soll da auch sein.
+Durch erneutes Anfragen der Autorisierung oder durch Ablehnen der
+Autorisierung sollte Gegenseitigkeit hergestellt werden.
+Diese Kombination ist nur bei XMPP m\(:oglich.
+.TP
+.B >
+Der Kontakt ist auf der serverseitigen Kontaktliste
+und empf\(:angt Statusmeldungen,
+hat keine ausstehende Autorisierungsanfrage bekommen
+und soll da auch sein. 
+Durch erneutes Anfragen der Autorisierung oder durch Ablehnen der
+Autorisierung sollte Gegenseitigkeit hergestellt werden.
+Diese Kombination ist nur bei XMPP m\(:oglich.
+.TP
+.B <
+Der Kontakt ist auf der serverseitigen Kontaktliste
+und sendet Statusmeldungen,
+hat keine ausstehende Autorisierungsanfrage bekommen
+und soll da auch sein.
+Diese Kombination ist nur bei XMPP m\(:oglich.
+.TP
+.B -
+Der Kontakt ist auf der serverseitigen Kontaktliste
+mit gegenseitiger Nicht-Autorisierung,
+hat keine ausstehende Autorisierungsanfrage bekommen
+und soll da auch sein.
+Diese Kombination ist nur bei XMPP m\(:oglich.
+.TP
+.B s
+Der Kontakt ist auf der serverseitigen Kontaktliste
+mit gegenseitiger Autorisierung,
+soll da aber nicht sein (hat die Option
+.I wantsbl
+nicht gesetzt).
+.TP
+.B t
+Der Kontakt ist auf der serverseitigen Kontaktliste
+mit gegenseitiger Nicht-Autorisierung,
+hat keine ausstehende Autorisierungsanfrage bekommen,
+soll da aber nicht sein.
 .TP
 .B \'\ \'
-Der Kontakt ist nicht auf der serverseitigen Kontaktliste, und soll da auch nicht sein.
+(Leerzeichen) Der Kontakt ist nicht auf der serverseitigen Kontaktliste,
+und soll da auch nicht sein.
+.TP
+.B \(rs
+Der Kontakt ist auf der serverseitigen Kontaktliste
+und empf\(:angt Statusmeldungen,
+hat keine ausstehende Autorisierungsanfrage bekommen,
+soll da aber nicht sein.
+Durch erneutes Anfragen der Autorisierung oder durch Ablehnen der
+Autorisierung sollte Gegenseitigkeit hergestellt werden.
+Diese Kombination ist nur bei XMPP m\(:oglich.
+.TP
+.B /
+Der Kontakt ist auf der serverseitigen Kontaktliste
+und sendet Statusmeldungen,
+hat keine ausstehende Autorisierungsanfrage bekommen,
+soll da aber nicht sein.
+Diese Kombination ist nur bei XMPP m\(:oglich.
+.TP
+.B \(aq
+Der Kontakt ist auf der serverseitigen Kontaktliste
+mit gegenseitiger Nicht-Autorisierung,
+hat keine ausstehende Autorisierungsanfrage bekommen,
+soll da aber nicht sein.
+Diese Kombination ist nur bei XMPP m\(:oglich.
+.TP
+.B 1 2 3 4 5 6 7 8 9
+Eine unm\(:ogliche Kombination ist aufgetreten.
 .RE
 .TP
 .BI e \ [<Kontaktgruppe>]
@@ -356,7 +473,7 @@ Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind. Zeigt auch den eig
 Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind, mit mehr Details.
 .TP
 .BR eg ,\  eeg
-Wie oben, aber sortiere nach Gruppen. Neu seit climm 0.4.10.
+Wie oben, aber sortiere nach Gruppen. Neu seit 0.4.10.
 .TP
 .BR w ,\  ww ,\  wg ,\  wwg
 Wie oben, aber zeige auch Kontakte an, die gerade nicht verbunden sind.
@@ -364,7 +481,7 @@ Wie oben, aber zeige auch Kontakte an, die gerade nicht verbunden sind.
 .BR ev ,\  eev ,\  egv ,\  eegv ,\  wv ,\  wwv ,\  wgv ,\  wwgv
 Wie oben, aber zeige auch versteckte Kontakte an, also solche, die die
 .B shadow
-effektiv gesetzt haben. Neu seit climm 0.5.
+effektiv gesetzt haben. Neu seit 0.5.
 .TP
 .B ewide
 Zeigt alle Kontakte auf der Kontaktliste, die verbunden sind, in einem breiten Format.
@@ -396,6 +513,9 @@ Findet einen zuf\(:alligen Kontakt in der Interessengruppe
 .IR Nummer ,
 oder zeigt alle Interessengruppen an.
 .SH BEFEHLE ZUM VERWALTEN DER KONTAKTLISTE
+Hinweis: es ist n\(:otig, mit
+.B save
+abzuspeichern, um diese \(:Anderungen dauerhaft zu machen.
 .TP
 .BI add \ <Benutzernummer>\ <Spitzname>
 F\(:ugt den Benutzer mit Benutzernummer
@@ -403,10 +523,6 @@ F\(:ugt den Benutzer mit Benutzernummer
 zur Kontaktliste unter dem Namen
 .IR Spitzname
 hinzu.
-.br
-Hinweis: Sie m\(:ussen mit
-.B save
-abspeichern, um diese \(:Anderungen dauerhaft zu machen.
 .TP
 .BI add \ <Spitzname>\ <Zweit-Name>
 .TP
@@ -433,46 +549,58 @@ falls man den Befehl als
 .B addgroup
 aufruft.
 Neu seit 0.4.10.
-.br
-Hinweis: Sie m\(:ussen mit
-.B save
-abspeichern, um diese \(:Anderungen dauerhaft zu machen.
 .TP
-.BI rem \ [all]\ <Kontakte>
-.TP
-.BI remalias \ [all]\ <Kontakte>
+.BI rem \ <Kontakte>
 Entfernt alle in
 .IR Kontakte
 angegebenen Zweit-Namen.
-Wenn dies der einzige Name ist, oder wenn
-.B all
-angegeben wurde, entferne den jeweiligen Kontakt
+Wenn dies der einzige Name ist, entferne den jeweiligen Kontakt
 von der Kontaktliste.
-Neu seit 0.4.10.
 .br
-Hinweis: Sie m\(:ussen mit
-.B save
-abspeichern, um diese \(:Anderungen dauerhaft zu machen.
+Hinweis: dieses Kommando hat eine andere Bedeutung, falls das
+erste Argument der Name einer Gruppe ist. Um also alle Kontakte
+einer Gruppe zu meinen, darf diese nicht an erster Stelle angegeben
+sein; man k\(:onnte z.B. ein Mitglied der Gruppe zuerst angeben.
 .TP
-.BI rem \ [all]\ <Gruppe>
+.BI remalias \ <Kontakte>
+Entfernt alle in
+.IR Kontakte
+angegebenen Zweit-Namen.
+Ge\(:andert in 0.6.3.
+.TP
+.BI rem\ all \ <Kontakte>
+.TP
+.BI remcont \ <Kontakte>
+Entferne alle angegebenen Kontakte vollst\(:andig von der Kontaktliste.
+.br
+Neu (remcont) seit 0.6.3.
+.br
+Hinweis: das Kommando
+.B rem
+hat eine andere Bedeutung, falls das
+erste Argument der Name einer Gruppe ist. Um also alle Kontakte
+einer Gruppe zu meinen, darf diese nicht an erster Stelle angegeben
+sein; man k\(:onnte z.B. ein Mitglied der Gruppe zuerst angeben.
 .TP
 .BI rem \ <Gruppe>\ <Kontakte>
-.TP
-.BI remgroup \ [all]\ <Gruppe>
 .TP
 .BI remgroup \ <Gruppe>\ <Kontakte>
 Entferne alle Kontakte in
 .IR Kontakte
 aus der Kontaktgruppe
-.IR Gruppe ,
-oder entferne diese Gruppe vollst\(:andig, falls
-.B all
-angegeben ist.
-Neu seit 0.4.10.
-.br
-Hinweis: Sie m\(:ussen mit
-.B save
-abspeichern, um diese \(:Anderungen dauerhaft zu machen.
+.IR Gruppe .
+Ge\(:andert in 0.6.3.
+.TP
+.BI rem \ all\ <Gruppe>
+.TP
+.BI remgroup \ all\ <Gruppe>
+Entferne alle Kontakte aus der Kontaktgruppe
+.IR Gruppe .
+Weitere Argumente werden stillschweigend ignoriert.
+Falls
+.B remgroup all
+benutzt worden ist, entferne diese Gruppe vollst\(:andig.
+Ge\(:andert in 0.6.3.
 .TP
 .BI togig \ <Kontakte>
 \(:Andert, ob Nachrichten und Status\(:anderungen der Kontakte
@@ -522,7 +650,7 @@ Ohne Argumente: listet m\(:ogliche Interessengruppen auf.
 .BI reg \ <Pa\(sswort>
 Erzeugt eine neue Benutzernummer mit dem Pa\(sswort
 .IR Pa\(sswort . 
-.SH BEFEHLE ZUM KONFIGURIEREN DES CLIMM ICQ-PROGRAMMS
+.SH BEFEHLE ZUM KONFIGURIEREN DES CLIMM-PROGRAMMS
 .TP
 .BI verbose \ [<verb>]
 Setzt die Ausf\(:uhrlichkeit der Ausgaben von climm auf
@@ -585,6 +713,90 @@ oder aus
 oder verwendet stattdessen das Ereignis-Skript
 .RB ( event ).
 Neue Syntax seit 0.4.10.
+.TP
+.BI prompt\ <BenutzerPrompt>
+Setzt einen benutzerdefinierten Prompt
+.IR BenutzerPrompt .
+Die folgenden Platzhalter werden darin geeignet ersetzt:
+.RS
+.TP
+.B %U
+Die eigene Benutzernummer.
+.TP
+.B %n
+Der eigene Spitzname.
+.TP
+.B %S
+Der eigene Status.
+.TP
+.B %s
+Der eigene Status in Kurzform.
+.TP
+.B %P
+Der Name des Servers.
+.TP
+.B %p
+Der Typ des Servers (icq8, jabber, msn...).
+.TP
+.B %a
+Der letzte Kontakt, dem eine Nachricht geschickt wurde.
+.TP
+.B %r
+Der letzte Kontakt, der eine Nachticht geschickt hat.
+.TP
+.B %t
+Die Zeit im Format HH:MM:SS.
+.TP
+.B %T
+Die Zeit in dem Format, da\(ss durch die Option
+.B prompt_strftime
+bestimmt ist.
+.TP
+.B %%
+Das Prozentzeichen
+.RB ( % ).
+.TP
+.B %[0\-9]c
+Setzt die Vordergrundfarbe auf die angegebene.
+.TP
+.B %[0\-9]C
+Setzt die Hintergrundfarbe auf die angegebene.
+.TP
+.B %[0\-1]b
+Fettdruck. An = 1 (standardm\(:a\(ssig), aus = 0.
+.TP
+.B %[0\-1]u
+Unterstrichen. An = 1 (standardm\(:a\(ssig), aus = 0
+.TP
+.B %[0\-1]i
+Invers oder hell. An = 1 (standardm\(:a\(ssig), aus = 0.
+Vertauscht Vordergrund- und Hintergrundfarben, oder
+w\(:ahlt hellere Farben aus.
+.TP
+.B %d
+Setze alle Farben zur\(:uck.
+.TP
+.B \\\\b
+Ein Zeichen zur\(:uck.
+.TP
+.B \\\\r
+Geht an den Zeilenanfang zur\(:uck.
+.TP
+.B \\\\n
+Neue Zeile.
+.TP
+.B \\\\t
+Horizontaler Tabulator.
+.TP
+.B \\\\e
+Escape-Zeichen (f\(:ur Steuersequenzen).
+.TP
+.B \\\\\\\\
+Backslash.
+.PP
+Beispiel:
+prompt %4c%b%p%d://%1c%b%n%3c/%2c%b%s%8c %t%7c%b>%6c%r%7c%b<%6c%b%a%7c%b>
+.RE
 .TP
 .BI autoaway \ [<Zeit>|on|off]
 Gehe nach
@@ -738,15 +950,15 @@ tabs wurden f\(:ur climm 0.5 entfernt; benutze das
 stattdessen.
 .RE
 .TP
-.BI opt \ [<contact>|<contact\ group>|connection|global\ [<option>\ [<value>]]]
+.BI opt \ [<contact>|<contact\ group>|connection|global\ [<Option>\ [<Wert>]]]
 Setze die Option
-.I option
-für Kontakt
+.I Option
+f\(:ur Kontakt
 .IR contact ,
 Kontaktgruppe
 .IR contact\ group ,
-für die aktuelle Verbindung oder global auf den Wert
-.IR value ,
+f\(:ur die aktuelle Verbindung oder global auf den Wert
+.IR Wert ,
 oder zeige den aktuellen Wert, oder zeige alle Optionen und ihren Wert.
 .br
 Wenn Optionen von Kontakten aufgel\(:ost werden, wird zuerst die Option
@@ -815,19 +1027,90 @@ Die Farbzeichenkette f\(:ur die Ausgabe von Debug-Meldungen.
 .BI colorquote \ Farbzeichenkette\ global
 Die Farbzeichenkette f\(:ur die Ausgabe von zitiertem Text.
 .TP
-.BI webaware \ An/Aus\ Verbindung
+.BI webaware \ An/Aus\ Server[ICQ]
 Gibt an, ob der aktuelle Status \(:uber das Web einsehbar sein soll.
 .TP
-.BI hideip \ An/Aus\ Verbindung
+.BI hideip \ An/Aus\ Server[ICQ]
 Gibt an, ob die (lokale) IP-Adresse versteckt werden soll.
 .TP
-.BI dcauth \ An/Aus\ Verbindung
+.BI dcauth \ An/Aus\ Server[ICQ]
 Gibt an, ob nur autorisierte Kontakte die (entfernte)
 IP-Adresse sehen d\(:urfen.
 .TP
-.BI dccont \ An/Aus\ Verbindung
+.BI dccont \ An/Aus\ Server[ICQ]
 Gibt an, ob Kontakte die (entferne)
 IP-Adresse sehen d\(:urfen.
+.TP
+.BI awaycount \ An/Aus\ Server
+Falls gesetzt, werden Nachrichten gez\(:ahlt und mit dem Absender im Prompt
+angezeigt, wenn der Status manuell auf irgendetwas anderes als
+.I verbunden
+oder
+.I frei f\(:ur Plaudereien
+(mit oder ohne
+.IR unsichtbar )
+gesetzt wird. Andernfalls passiert das nur, wenn der Status automatisch
+gewechselt wurde.
+Neu seit ?
+.TP  
+.BI s5_use \ An/Aus\ Server
+Benutze einen Socks5-Proxy. Neu seit 0.6.4.
+.TP
+.BI s5_host \ Zeichenkette\ Server
+Benutze diesen Rechner als Socks5-Port. Neu seit 0.6.4.
+.TP
+.BI s5_port \ Ganzzahl\ Server
+Benutze diesen Port auf dem Socks5-Server. Neu seit 0.6.4.
+.TP
+.BI s5_name \ Zeichenkette\ Server
+Benutze diesen Nutzernamen auf dem Socks5-Server. Neu seit 0.6.4.
+.TP
+.BI s5_pass \ Zeichenkette\ Server
+Benutze dieses Pa\(sswort auf dem Socks5-Server. Neu seit 0.6.4.
+.TP
+.BI oscar_dc_port \ Ganzzahl\ Server[ICQ]
+Lege den kleinsten zu verwendenden Port f\(:ur eingehende Direkt-Verbindungen
+f\(:ur OSCAR-Protokoll fest. Falls der angegebene Port in Benutzung ist,
+erh\(:ohe die Portnummer solange, bis ein freier Port gefunden wurde.
+Neu sei 0.6.4.
+.TP
+.BI oscar_dc_mode \ Ganzzahl\ Server[ICQ]
+.RS
+Diese Ganzzahl besteht aus Flags, die den Umgang mit Direkt-Verbindungen
+angeben:
+.TP
+1
+Wir sind hinter einer Firewall und k\(:onnen keine eingehenden Verbindungen
+annehmen. versuch ist zwecklos.
+.TP
+2  
+Wir sind hinter einer Firewall, k\(:onnen aber keine eingehenden Verbindungen 
+per Socks entgegennehmen.
+.TP
+4  
+Wir sind nicht hinter einer Firewall. Das ist die Voreinstellung.
+.TP
+16 
+Erzeuge eine Verbindung f\(:ur eingehende Direkt-Verbindungen. (Genauer gesagt,
+erzeugt die Verbindung, falls >= 16.) Falls dies nicht gesetzt ist, wird
+die Verbindung angelegt, wenn sie ben\(:otigt wird.
+.TP
+32
+Erzeuge und \(:offne eine Verbindung f\(:ur eingehende Direkt-Verbindungen.
+.RE
+.RS
+Neu seit 0.6.3.
+.RE
+.TP
+.BI logstream \ An/Aus\ Server
+Schreibe alle Daten, die \(:uber eine Verbindung zum Server gehen, in eine
+Datei unter BASEDIR/debug/.
+.TP
+.BI privacylist \ Zeichenkette\ Server[XMPP]
+W\(:ahle unmittelbar nach dem Einloggen die angegebene Liste als die aktive Privatsph\(:arenliste.
+Ist die leere Zeichenkette angegeben, w\(:ahle nach dem Einloggen keine Liste.
+Andernfalls wird die standardm\(:a\(ssige als die aktuelle genommen.
+Neu seit 0.7.1.
 .TP
 .BI ignore \ An/Aus\ Kontakt
 Gibt an, ob alle Nachrichten von diesem Kontakt ignoriert
@@ -872,7 +1155,7 @@ unbest\(:atigte Nachrichten erneut versendet werden.
 .BI wantsbl \ An/Aus\ Kontakt
 Gibt an, ob dieser Kontakt auf die Server-seitige Kontaktliste soll.
 .TP
-.BI peekme \ boolean\ contact
+.BI peekme \ An/Aus\ Kontakt
 Gibt an, ob dieser Kontakt \(:uberpr\(:uft werden soll, wenn der Befehl
 .BR peek\ all \ bzw. \ peekall
 verwendet wird.
@@ -935,31 +1218,31 @@ Die Farbzeichenkette, die ansonsten f\(:ur den Spitznamen dieses Kontakts verwen
 Neu seit 0.5.
 .RE
 .TP
-.BI optcontact \ <contact>\ [<option>\ [<value>]]
+.BI optcontact \ <contact>\ [<Option>\ [<Wert>]]
 Setze oder zeige die Option
-.I option
+.I Option
 oder alle Optionen des Kontaktes
 .IR contact
 an.
 Neu seit 0.5.
 .TP
-.BI optgroup \ <group>\ [<option>\ [<value>]]
+.BI optgroup \ <group>\ [<Option>\ [<Wert>]]
 Setze oder zeige die Option
-.I option
+.I Option
 oder alle Optionen der Kontaktgruppe
 .IR group 
 an.
 Neu seit 0.5.
 .TP
-.BI optconnection \ [<option>\ [<value>]]
+.BI optserv \ [<Option>\ [<Wert>]]
 Setze oder zeige die Option
-.IR option 
-der aktuellen Verbindung an.
-Neu seit 0.5.
+.IR Option 
+der aktuellen Server-Verbindung an.
+Umbenannt in 0.7.1, alter Name neu seit 0.5.
 .TP
-.BI optglobal \ [<option>\ [<value>]]
+.BI optglobal \ [<Option>\ [<Wert>]]
 Setze oder zeige die globale Option
-.IR option
+.IR Option
 an.
 Neu seit 0.5.
 .TP
@@ -1160,6 +1443,132 @@ aber vermeide es, bestehende lokale Kontakte zu ver\(:andern.
 .B import
 Lade Kontakte von der server-seitigen Kontaktliste herunter,
 wobei bestehende lokale Kontakte ver\(:andert werden.
+.RE
+.TP
+.BI priv \ [<Kommando>]\ [<Liste>]\ [<\\(:Anderungen>]
+Zeige oder modifiziere die XMPP-Privatsph\(:arenlisten. Wenn kein Argument
+angegeben ist, nimm
+.B list
+an, andernfalls nimm
+.B show
+an. Verf\(:ugbare Befehle sind:
+.RS
+.TP
+.B list
+Liste die aktive, die standardm\(:a\(ssige und alle verf\(:ugbaren Listen beim Namen.
+.TP
+.BI active \ [<Liste>]
+Mache   
+.I <Liste>
+zur aktiven Privatsph\(:arenliste f\(:ur diese Sitzung. Wenn keine
+.I <Liste>
+angegeben ist, deaktiviere die aktive Liste, in anderen Worten: benutze die
+standardm\(:a\(ssige Handhabung des Servers f\(:ur diese Sitzung.
+.TP
+.BI default \ [<Liste>]
+Mache
+.I <Liste>
+zur standardm\(:a\(ssigen Privatsph\(:arenliste, d.h. zu der Liste, die beim Start
+jeder Sitzung aktiv ist oder wenn gar keine Verbindung zum Server besteht.
+Ist keine
+.I <Liste>
+angegeben, deaktiviere die standardm\(:a\(ssige Liste, in anderen Worten:
+benutze die standardm\(:a\(ssige Handhabung des Servers beim Beginn der
+Sitzung oder wenn gar keine Verbindung zum Server besteht.
+.TP
+.BI show \ <Liste>
+Zeige die angegebene Privatsph\(:arenliste aus, f\(:ur jeden Eintrag gebe aus:
+.IR Reihenfolge ,
+die
+.IR Aktion ,
+also
+.B allow
+(erlauben) oder
+.B deny
+(verbieten), den betroffenen
+.IR Teil ,
+n\(:amlich entweder
+.B all
+(alle Kommunikation), oder eine Komma-separiert Liste aus:
+.B msg
+(Nachrichten),
+.B pin
+(eingehende Statusbenachrichtigungen, was Autorisierungsanfragen nicht
+enth\(:alt),
+.B pout
+(ausgehende Statusbenachrichtigungen), oder
+.B iq 
+(Anfragen)), den
+.IR Typ ,
+also 
+.B jid
+(XMPP-Benutzername),
+.B group
+(Gruppe), oder
+.BR subscription ),
+und den zugeh\(:origen
+.IR Wert .
+Ist 
+.I Typ
+gleich
+.BR jid ,  
+dann ist der Wert ein XMPP-Benutzername; diese kann mit oder ohne Ressource
+und mit oder ohne Benutzer sein.
+Ist
+.I Typ
+gleich
+.BR subscription ,
+dann mu\(ss der Wert eins sein aus
+.BR both
+(gegenseitige Autorisierung),
+.BR from
+(eingegangene Autorisierung),
+.BR to 
+(ausgehende Autorisierung) oder
+.BR none
+(keine Autorisierung, dies enth\(:alt unbekannte Kontakte).
+.br
+Jede ein- und ausgehende Kommunikation wird vom Server gegen jedes Element
+der Liste abgeglichen, und zwar in der durch
+.I Reihenfolge
+vorgegebenen aufsteigenden Reihenfolge. Der erste zutreffende Eintrag
+bestimmt mit dem Attribut
+.IR Aktion ,
+ob die Kommunikation verworfen oder tats\(:achlich weitergeleitet wird.
+.TP
+.BI set \ <Liste> \ \fR( <Aktion> \ \fR[ <Teil>\  \fR] <Typ>\ <Wert\fR)...
+Ersetze (oder erzeuge) die Privatsph\(:arenliste
+.IR <Liste> ,
+mit den angegebenen Eintr\(:agen in aufsteigender Reihenfolge.
+Die Parameter sind dieselben, wie vom
+.BR show -Kommando
+oben ausgegeben. Ist
+.I <Teil>   
+nicht angegeben, wird
+.B all 
+angenommen.
+.TP
+.BI edit \ <Liste>\ <Index> \ \fR( <Aktion>\ [<Teil>]\ <Typ>\ <Wert>\fR)...\ [ delete \ <Sprung>\fR]
+\(:Andere (oder erzeuge) die Privatsph\(:arenliste
+.IR <Liste>
+durch Einf\(:ugen der angegebenen Eintr\(:age in aufsteigender
+Reihenfolge direkt vor dem Eintrag, bei dem
+.I <Reihenfolge>
+identisch zu
+.IR <Index>
+ist.
+L\(:osche Eintr\(:age von bis (ausschlie\(sslich)
+.I <Reihenfolge>
+von
+.IR <Index> + <Sprung> .
+Ist kein
+.I <Sprung> 
+angegeben oder ist es null, wird kein Eintrag gel\(:oscht. Eintr\(:age mit
+.I <Reihenfolge>
+gleich oder gr\(:o\(sser als
+.IR <Index> + <Sprung>
+werden geeignet umnumeriert (um f\(:ur die neuen Eintr\(:age Platz zu machen und
+um Spr\(:unge in der Numerierung zu vermeiden).
 .RE
 .TP
 .BI peek \ [<Kontakte>]\ [all]\ [<Kontakte>]

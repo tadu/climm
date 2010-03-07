@@ -216,7 +216,7 @@ A built\-in shortcut for
 .IR conn\ login .
 Opens the first server connection.
 .TP
-.BI online\  [ for \ <contacts>\ [<message>]]
+.BI online\  [ for \ <contacts>]\ [<message>]
 Change status to 
 .IR online ,
 or change status to
@@ -230,7 +230,7 @@ for them.
 .BI away\  [ for \ <contacts>]\ [<message>]
 Change status to
 .I away
-and optionally set auto response temporarely for this status to
+and optionally set status message and auto response temporarely for this status to
 .IR message ,
 or change status only for given
 .I contacts
@@ -241,7 +241,7 @@ for them.
 .BI na\  [ for \ <contacts>]\ [<message>]
 Change status to
 .IR na\  (not\ available)
-and optionally set auto response temporarely for this status to
+and optionally set status message and auto response temporarely for this status to
 .IR message ,
 or change status only for given
 .I contacts
@@ -252,7 +252,7 @@ for them.
 .BI occ\  [ for \ <contacts>]\ [<message>]
 Change status to
 .IR occ\  (occupied)
-and optionally set auto response temporarely for this status to
+and optionally set status message and auto response temporarely for this status to
 .IR message ,
 or change status only for given
 .I contacts
@@ -263,7 +263,7 @@ for them.
 .BI dnd\  [ for \ <contacts>]\ [<message>]
 Change status to
 .IR dnd\  (do\ not\ disturb)
-and optionally set auto response temporarely for this status to
+and optionally set status message and auto response temporarely for this status to
 .IR message ,
 or change status only for given
 .I contacts
@@ -284,8 +284,8 @@ for them.
 .TP
 .BI inv\  [ for \ <contacts>]\ [<message>]
 Change status to
-.IR inv\  (invisible)
-and optionally set auto response temporarely for this status to
+.I inv
+(invisible) and optionally set auto response temporarely for this status to
 .IR message ,
 or change status only for given
 .I contacts
@@ -418,12 +418,6 @@ flag set).
 .B t
 The contact is in the server side contact list with mutual
 non-authorization, awaited authorization from, but should not be there.
-.TP
-.B R
-The contact is in the server side contact list receiving presence reports,
-awaited authorization from, but should not be there. You may eventually want to
-re-request or deny authorization to archieve mutuality.
-This combination is possible only for XMPP.
 .TP
 .B \'\ \'
 (space) The contact is not in the server side contact list, and is not wanted there.
@@ -1017,7 +1011,7 @@ Whether authorized contacts can see the (remote) IP address.
 .BI dccont \ boolean\ server[ICQ]
 Whether contacts can see the (remote) IP address.
 .TP
-.BI countaway \ boolean\ server
+.BI awaycount \ boolean\ server
 If set, incoming messages will be counted and their originators shown
 if the status is manually changed to anything other than
 .I online

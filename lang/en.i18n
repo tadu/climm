@@ -1396,9 +1396,7 @@
 2765:Available privacy lists: 
 2766:Listing privacy list: %s.\n
 2767:Server updates privacy list %s.\n
-#-#2768:Fetching privacy list (was not cached), please try again.\n
-#+#2768:Message %s resulted in:\n%s\n
-#_#2768:Fetching privacy list (was not cached), please try again.\n
+2768:Fetching privacy list (was not cached), please try again.\n
 2999.max
 # Those are the funny messages. Substract 2000 to get the normal message.
 3082.But hey, let's just poke the server again... [try %d out of %d]\n
