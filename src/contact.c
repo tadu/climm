@@ -199,6 +199,8 @@ void ContactGroupD (ContactGroup *group DEBUGPARAM)
         ContactGroupInit ();
     if (!group)
         return;
+    /* remove cached positions that will become invalid */
+    ContactIndex (group, 0);
     for (i = 1; i < cnt_count && cnt_groups[i]; i++)
         if (cnt_groups[i] == group)
         {
@@ -228,6 +230,8 @@ void ContactGroupSort (ContactGroup *group, contact_sort_func_t sort, int mode)
             ContactGroupInit ();
         group = CONTACTGROUP_GLOBAL;
     }
+    /* remove cached positions that will become invalid */
+    ContactIndex (group, 0);
     orig = group;
     while (found)
     {
@@ -304,11 +308,16 @@ Contact *ContactIndex (ContactGroup *group, int i)
         group = CONTACTGROUP_GLOBAL;
     }
     orig = group;
-    if (old == group && oldoff <= i)
+    if (old && old == group)
     {
-        group = oldpos;
-        i -= oldoff;
-        j = oldoff;
+        if (oldoff <= i)
+        {
+            group = oldpos;
+            i -= oldoff;
+            j = oldoff;
+        }
+        else
+            old = NULL;
     }
     while (group && group->used <= i)
     {
@@ -318,9 +327,12 @@ Contact *ContactIndex (ContactGroup *group, int i)
     }
     if (!group)
         return NULL;
-    old = orig;
-    oldpos = group;
-    oldoff = j;
+    if (j)
+    {
+        old = orig;
+        oldpos = group;
+        oldoff = j;
+    }
     return group->contacts[i];
 }
 
@@ -722,6 +734,9 @@ BOOL ContactAdd (ContactGroup *group, Contact *cont DEBUGPARAM)
     assert (cont);
     assert (!group->serv || group->serv == cont->serv);
 
+    /* remove cached positions that now will become invalid */
+    ContactIndex (group, 0);
+
     while (group->used == MAX_ENTRIES && group->more)
         group = group->more;
     if (group->used == MAX_ENTRIES)
@@ -762,6 +777,8 @@ BOOL ContactRem (ContactGroup *group, Contact *cont DEBUGPARAM)
     ContactGroup *orig = group;
     int i;
 
+    /* remove cached positions that will become invalid */
+    ContactIndex (group, 0);
     while (group)
     {
         for (i = 0; i < group->used; i++)
