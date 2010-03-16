@@ -245,8 +245,9 @@ static void io_gnutls_open (Connection *conn, Dispatcher *d, char is_client)
 
     if (is_client == 2)
     {
-        gnutls_certificate_allocate_credentials (&d->cred);
-        ret = gnutls_credentials_set (d->ssl, GNUTLS_CRD_CERTIFICATE, &d->cred);
+        ret = gnutls_certificate_allocate_credentials (&d->cred);
+        if (!ret)
+            ret = gnutls_credentials_set (d->ssl, GNUTLS_CRD_CERTIFICATE, &d->cred);
     }
     else if (is_client == 1)
         ret = gnutls_credentials_set (d->ssl, GNUTLS_CRD_ANON, client_cred);
@@ -398,8 +399,16 @@ static void io_gnutls_close (Connection *conn, Dispatcher *d)
 
     if (d)
     {
-        if (d->ssl) 
-            free (d->ssl);
+        if (d->ssl)
+        {
+            gnutls_deinit (d->ssl);
+            d->ssl = NULL;
+        }
+        if (d->cred)
+        {
+            gnutls_certificate_free_credentials (d->cred);
+            d->cred = NULL;
+        }
         if (d->outlen)
             free (d->outbuf);
         free (d);
