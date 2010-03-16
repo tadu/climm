@@ -247,7 +247,7 @@ static void io_gnutls_open (Connection *conn, Dispatcher *d, char is_client)
     {
         ret = gnutls_certificate_allocate_credentials (&d->cred);
         if (!ret)
-            ret = gnutls_credentials_set (d->ssl, GNUTLS_CRD_CERTIFICATE, &d->cred);
+            ret = gnutls_credentials_set (d->ssl, GNUTLS_CRD_CERTIFICATE, d->cred);
     }
     else if (is_client == 1)
         ret = gnutls_credentials_set (d->ssl, GNUTLS_CRD_ANON, client_cred);
