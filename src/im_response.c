@@ -868,6 +868,9 @@ void IMOnline (Contact *cont, status_t status, statusflag_t flags, UDWORD native
     
     if (status == cont->status && (status == ims_offline || flags == cont->flags) && (!text || !*text))
         return;
+        
+    if (cont->status_message && text && !strcmp (cont->status_message, text))
+        return;
 
     __IMOnline (cont, status, flags, nativestatus, text, hide);
 }
