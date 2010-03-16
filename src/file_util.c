@@ -149,6 +149,7 @@ Server *PrefNewConnection (UDWORD servertype, const char *user, const char *pass
         OptSetVal (&serv->copts, CO_IGNORE, 0);
     }
 #endif
+    serv->conn->cont = ContactScreen (serv, serv->screen);
     return serv;
 }
 
