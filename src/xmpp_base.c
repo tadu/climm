@@ -1503,7 +1503,10 @@ static int XmppStreamHook (IKS_TRANS_USER_DATA *userv, int type, iks *node)
                 }
             }
             else if (strcmp ("failure", iks_name (node)) == 0)
+            {
+                s_repl (&serv->passwd, NULL);
                 XmppStreamError (serv, "sasl authentication failed");
+            }
             else if (strcmp ("success", iks_name (node)) == 0)
                 iks_send_header (prs, serv->xmpp_id->server);
             else if (strcmp ("proceed", iks_name (node)) == 0)
@@ -1599,7 +1602,9 @@ static void XMPPCallbackDispatch (Connection *conn)
                 assert (0);
         }
     }
+    conn->connect |= 0x40;
     rc = iks_recv (prs, 0);
+    conn->connect &= ~0x40;
     if (rc != IKS_OK && conn->dispatcher)
         XmppStreamError (conn->serv, s_sprintf ("failing with error code %d", rc));
     if (!conn->dispatcher)
@@ -1608,7 +1613,7 @@ static void XMPPCallbackDispatch (Connection *conn)
 
 void XMPPLogout (Server *serv)
 {
-    if (serv->xmpp_parser)
+    if (serv->xmpp_parser && ~serv->conn->connect & 0x40)
     {
         iksparser *prs = serv->xmpp_parser;
         serv->xmpp_parser = NULL;
