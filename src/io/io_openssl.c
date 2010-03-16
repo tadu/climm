@@ -1,7 +1,8 @@
 /*
  * TLS Diffie Hellmann extension. (OpenSSL part)
  *
- * climm TLS extension Copyright (C) © 2003-2007 Roman Hoog Antink
+ * climm TLS extension Copyright (C) © 2003-2007 Roman Hoog Antink,
+ *                                     2009-2010 Rüdiger Kuhlmann
  * Reorganized for new i/o schema by Rüdiger Kuhlmann
  *
  * This extension is free software; you can redistribute it and/or modify it

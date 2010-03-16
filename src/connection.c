@@ -1,7 +1,7 @@
 /*
  * Manages the available connections (note the file is misnamed)
  *
- * climm Copyright (C) © 2001-2007 Rüdiger Kuhlmann
+ * climm Copyright (C) © 2001-2010 Rüdiger Kuhlmann
  *
  * climm is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by

@@ -2,7 +2,7 @@
  * Handles incoming and creates outgoing SNAC packets
  * for the family 21 (old ICQ) commands.
  *
- * climm Copyright (C) © 2001-2007 Rüdiger Kuhlmann
+ * climm Copyright (C) © 2001-2010 Rüdiger Kuhlmann
  *
  * climm is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by

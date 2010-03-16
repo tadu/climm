@@ -1,7 +1,7 @@
 /*
  * Provides a build mark with the current version and current time of compilation.
  *
- * climm Copyright (C) © 2001-2007 Rüdiger Kuhlmann
+ * climm Copyright (C) © 2001-2010 Rüdiger Kuhlmann
  *
  * climm is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -157,7 +157,7 @@ const char *BuildAttribution (void)
     
     baselen += 2 * (*c == '(' ? 2 : 0) + (*ue == 'u' ? 1 : 0);
     
-    name = strdup (s_sprintf ("%s 2001-2007 %sR%sdiger Kuhlmann%s %smicq %s 1998-2000 %sMatthew D. Smith%s\n",
+    name = strdup (s_sprintf ("%s 2001-2010 %sR%sdiger Kuhlmann%s %smicq %s 1998-2000 %sMatthew D. Smith%s\n",
                    c, COLQUOTE, ue, COLNONE, (rl_columns > baselen ? "based on " : ""),
                    c, COLQUOTE, COLNONE));
     full = s_sprintf (i18n (2574, "%sReleased under version 2 of the GNU General Public License (%sGPL v2%s).\n"),

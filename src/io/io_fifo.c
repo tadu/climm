@@ -1,7 +1,7 @@
 /*
  * Basic FIFO I/O layer.
  *
- * climm (C) © 2001-2009 Rüdiger Kuhlmann
+ * climm (C) © 2001-2010 Rüdiger Kuhlmann
  *
  * This extension is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
