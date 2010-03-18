@@ -1713,7 +1713,8 @@ void XMPPSetstatus (Server *serv, Contact *cont, status_t status, const char *ms
         iks_insert_attrib (x, "to", cont->screen);
     else
     {
-        s_repl (&serv->conn->cont->status_message, msg);
+        if (serv->conn->cont->status_message != msg)
+            s_repl (&serv->conn->cont->status_message, msg);
         serv->status = status;
         serv->nativestatus = p;
     }
