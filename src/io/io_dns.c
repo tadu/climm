@@ -57,28 +57,32 @@ typedef struct rrdns_s {
 
 const char *io_dns_resolve (const char *query)
 {
-    unsigned char response[1024], *end, *pos;
+    union {
+      unsigned char buf[1024];
+      HEADER h;
+    } response;
+    unsigned char *end, *pos;
     static str_s str;
     char name[256];
     rrdns_t rrdns[32];
     int count = 0, i, size, qdcount, ancount;
     UWORD type, len, pref, weight, port;
                     
-    size = res_query (query, C_IN, T_SRV, response, sizeof (response));
+    size = res_query (query, C_IN, T_SRV, response.buf, sizeof (response));
     
     if (size <= sizeof (HEADER))
         return NULL;
 
-    qdcount = ntohs (((HEADER *)response)->qdcount);
-    ancount = ntohs (((HEADER *)response)->ancount);
+    qdcount = ntohs (response.h.qdcount);
+    ancount = ntohs (response.h.ancount);
     
-    pos = response + sizeof (HEADER);
-    end = response + size;
+    pos = response.buf + sizeof (HEADER);
+    end = response.buf + size;
 
     /* skip over query */
     while (pos < end && qdcount-- > 0)
     {
-        size = dn_expand (response, end, pos, name, 256);
+        size = dn_expand (response.buf, end, pos, name, 256);
         if (size < 0)
             return NULL;
         pos += size;
@@ -87,7 +91,7 @@ const char *io_dns_resolve (const char *query)
 
     while (pos < end && ancount-- > 0 && count < 32)
     {
-        size = dn_expand (response, end, pos, name, 256);
+        size = dn_expand (response.buf, end, pos, name, 256);
         if (size < 0)
             break;
         pos += size;
@@ -105,7 +109,7 @@ const char *io_dns_resolve (const char *query)
         GETSHORT (weight, pos);
         GETSHORT (port, pos);
 
-        size = dn_expand (response, end, pos, name, 256);
+        size = dn_expand (response.buf, end, pos, name, 256);
         if (size < 0)
             return NULL;
         pos += size;
