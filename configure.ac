@@ -95,7 +95,7 @@ if test "x$ac_arg_use_dc" != "xno" || test "x$ac_arg_use_xmpp" != "xno"; then
   if test "x$ac_arg_use_ssl" != "xno"; then
     ac_use_ssl=no
     if test "x$ac_arg_use_ssl" != "xopenssl"; then
-      PKG_CHECK_MODULES(LIBGNUTLS, gnutls > 2, ac_use_ssl=gnutls) 
+      PKG_CHECK_MODULES(LIBGNUTLS, gnutls > 2, ac_use_ssl=gnutls, ac_use_ssl=no)
       if test "x$ac_use_ssl" = xno; then
         AM_PATH_LIBGNUTLS(0.8.8, ac_use_ssl=gnutls) 
       fi
@@ -391,14 +391,14 @@ if test "x$ac_arg_use_xmpp" != "xno"; then
   fi
 
   if test "x$ac_use_xmpp" = xyes; then
-    PKG_CHECK_MODULES(IKS, iksemel, ac_iksemel_version=`pkg-config --modversion iksemel | tr . " "`
+    PKG_CHECK_MODULES(IKS, iksemel >= 1.2, ac_iksemel_version=`pkg-config --modversion iksemel | tr . " "`
       ac_iksemel_version=`printf 0x%02x%02x $ac_iksemel_version`, ac_use_xmpp=no)
 
     if test "x$ac_use_xmpp" = xno; then
       AC_MSG_RESULT([no, using replacement])
     fi
 
-    if test "x$ac_use_xmpp" = xno || test "1${ac_iksemel_version#??}" -lt 10102 || test "x$ac_arg_use_autopackage" = xyes; then
+    if test "x$ac_use_xmpp" = xno || test "x$ac_arg_use_autopackage" = xyes; then
       # use our version of iksemel
       AC_SUBST(IKS_INC, ['-I$(top_srcdir)/iksemel-1.4/include'])
       AC_SUBST(IKS_LIBS, libiksemel.a)
