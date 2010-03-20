@@ -12,14 +12,16 @@ VERSION=$1
 # packages=joe,libiksemel-dev,fakeroot,debhelper,tcl8.4-dev,libotr2-dev
 # debootstrap --variant=buildd                            --include=$packages                 etch     chroot-Debian-4.0-0etch    http://ftp.de.debian.org/debian
 # debootstrap --variant=buildd                            --include=$packages,build-essential lenny    chroot-Debian-5.0-1lenny   http://ftp.de.debian.org/debian
+# debootstrap --variant=buildd --components=main,universe --include=$packages,pkg-config      squeeze  chroot-Debian-6.0-2squeeze http://ftp.de.debian.org/debian
 # debootstrap --variant=buildd --components=main,universe --include=$packages                 dapper   chroot-Ubuntu-6.06-1dapper
 # debootstrap --variant=buildd --components=main,universe --include=$packages                 edgy     chroot-Ubuntu-6.10-2edgy   http://old-releases.ubuntu.com/ubuntu/
 # debootstrap --variant=buildd --components=main,universe --include=$packages                 feisty   chroot-Ubuntu-7.04-3feisty http://old-releases.ubuntu.com/ubuntu/
-# debootstrap --variant=buildd --components=main,universe --include=$packages,build-essential gutsy    chroot-Ubuntu-7.10-4gutsy
+# debootstrap --variant=buildd --components=main,universe --include=$packages,build-essential gutsy    chroot-Ubuntu-7.10-4gutsy  http://old-releases.ubuntu.com/ubuntu/
 # debootstrap --variant=buildd --components=main,universe --include=$packages,build-essential hardy    chroot-Ubuntu-8.04-5hardy
 # debootstrap --variant=buildd --components=main,universe --include=$packages                 intrepid chroot-Ubuntu-8.10-6intrepid
 # debootstrap --variant=buildd --components=main,universe --include=$packages                 jaunty   chroot-Ubuntu-9.04-7jaunty
 # debootstrap --variant=buildd --components=main,universe --include=$packages,pkg-config      karmic   chroot-Ubuntu-9.10-8karmic
+# debootstrap --variant=buildd --components=main,universe --include=$packages,pkg-config      karmic   chroot-Ubuntu-10.04-9lucid
 
 # debootstrap --variant=buildd --components=main,universe --include=$packages,rpm             intrepid chroot-Generic-0generic
 #   autopackage-devel_1.0.10-2_i386.deb alienated from http://ftp.sunsite.dk/projects/autopackage/1.0.10/autopackage-devel-1.0.10-1.i386.rpm
@@ -63,10 +65,16 @@ fi
 tar -zxf climm-$VERSION.tgz
 cd climm-$VERSION
 export CLIMM_EXTRAVERSION="Official AmigaOS"
-PATH=$PATH:$HOME/Work/install/bin/ ./configure --prefix=/usr --mandir=\${prefix}/share/man/ --host=m68k-unknown-amigaos --disable-dependency-tracking --disable-tcl --disable-ssl --disable-otr
+PATH=$PATH:$HOME/Work/install/bin/ ./configure --prefix=/usr --mandir=\${prefix}/share/man/ --host=m68k-unknown-amigaos --disable-dependency-tracking --enable-ssl --enable-xmpp --disable-tcl --disable-otr
 PATH=$PATH:$HOME/Work/install/bin/ make
 DESTDIR=/tmp/climm-$VERSION/bla
 rm -rf $DESTDIR
+PATH=$PATH:$HOME/Work/install/bin/ make install DESTDIR=$DESTDIR
+m68k-unknown-amigaos-strip $DESTDIR/usr/bin/climm
+mv $DESTDIR/usr/bin/climm $DESTDIR/usr/bin/climm-ssl
+PATH=$PATH:$HOME/Work/install/bin/ make clean
+PATH=$PATH:$HOME/Work/install/bin/ ./configure --prefix=/usr --mandir=\${prefix}/share/man/ --host=m68k-unknown-amigaos --disable-dependency-tracking --disable-ssl --disable-xmpp --disable-tcl --disable-otr
+PATH=$PATH:$HOME/Work/install/bin/ make
 PATH=$PATH:$HOME/Work/install/bin/ make install DESTDIR=$DESTDIR
 m68k-unknown-amigaos-strip $DESTDIR/usr/bin/climm
 mkdir -p $DESTDIR/usr/share/doc/climm/
@@ -76,15 +84,16 @@ cd /tmp
 rm -rf climm-$VERSION
 
 
-
 cd /tmp || exit 1
 for distri in \
   Generic-0generic:autopackage:rpm \
   Ubuntu-6.06-1dapper:noxmpp:deb Ubuntu-7.10-4gutsy::deb \
   Ubuntu-6.10-2edgy:noxmpp:deb Ubuntu-7.04-3feisty::deb \
   Generic-0generic:autopackage:package \
-  Ubuntu-8.04-5hardy::deb Ubuntu-8.10-6intrepid::deb Ubuntu-9.04-7jaunty::deb Ubuntu-9.10-8karmic::deb \
-  Debian-4.0-0etch::deb Debian-5.0-1lenny::deb \
+  Ubuntu-8.04-5hardy::deb Ubuntu-8.10-6intrepid::deb \
+  Ubuntu-9.04-7jaunty::deb Ubuntu-9.10-8karmic::deb \
+  Ubuntu-10.04-9lucid::deb \
+  Debian-4.0-0etch::deb Debian-5.0-1lenny::deb Debian-6.0-2squeeze \
   Generic-0generic:autopackage:deb
 do
   suff=${distri##*:}
