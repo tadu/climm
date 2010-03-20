@@ -68,6 +68,9 @@ install:
 	dh_clean -k
 	dh_testroot
 	$(MAKE) install DESTDIR=`pwd`/debian/climm
+	mkdir -p debian/climm/etc/apt/sources.list.d
+	. /etc/lsb-release && echo "deb http://www.climm.org/deb/ $DISTRIB_CODENAME main" \
+	  > debian/climm/etc/apt/sources.list.d/climm
 
 binary-indep: build install
 
