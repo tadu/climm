@@ -2,12 +2,6 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-install-exec-local: $(DESTDIR)$(bindir)/micq
-
-$(DESTDIR)$(bindir)/micq:
-	$(MKDIR_P) "$(DESTDIR)$(bindir)"
-	-ln -s climm $(DESTDIR)$(bindir)/micq
-
 bin_PROGRAMS = climm # icqsyn icqprx
 EXTRA_PROGRAMS = icqprx icqsyn
 EXTRA_LIBRARIES = libiksemel.a
