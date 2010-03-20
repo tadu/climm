@@ -53,3 +53,7 @@
    Bug fixes.
 2009-05-17: 0.7:
    Switch to directly use libiksemel, i/o layer restructuring.
+2010-03-20: 0.7.1:
+   Lots of XMPP improvements (user interface, new priv command to handle
+   privacy lists, incorporate non-ancient libiksemel, might now work under
+   AmigaOS).

@@ -1,5 +1,98 @@
 -*- coding: utf-8 -*-
 
+2010-03-20: Rüdiger Kuhlmann
+	* 0.7.1
+
+2010-03-18: Rüdiger Kuhlmann
+	* fix another valgrind illegal read
+
+2010-03-16: Rüdiger Kuhlmann
+	* invalidate contact group cache when contact group becomes invalid
+	* make sure server's contact is initialized (causes segfault on initial setup)
+	* ignore duplicated status changes with identical message
+	* properly free up gnutls ressources
+	* avoid freeing xml parser inside of its hooks
+	* avoid reconnect on wrong password
+	* gnutls_credentials_set takes a pointer, not a pointer to a pointer
+	  (fixes ssl related crashes #59) 
+	* update copyright years to 2010 for all files changed there
+
+2010-03-16: Sebastian Rasmussen
+	* i18n: se
+
+2010-03-07: Rüdiger Kuhlmann
+	* add define for OS X resolver
+	* new connection option 'privacylist' to automatically select given list as active
+	* rework i18n regarding privacy lists somewhat
+	* options are per server, not per connection, so rename ConnectionPref{Str,Val}
+	  to ServerPref{Str,Val} and update documentation accordingly 
+	* i18n: C, de, en
+	* man: en, de
+	* fix svn properties to get correct svn id
+	* update reference in de climmcmds accordingly 
+
+2010-03-02: Rüdiger Kuhlmann
+	* apply patch to remove duplicate entries
+	* return matched string from s_parseint_s() and add flags to disallow
+	  negative integers, hex digits resp leading hash signs 
+	* add 'priv' command to handle xmpp privacy lists
+
+2010-02-21: Rüdiger Kuhlmann
+	* with removal of bogus @IKS_LIB@ libixemel.a wasn't build anymore;
+	  make dependacy. related: #60
+	* compiler warning and C98 fixes
+	* use correct config tool for cross-compiling (upstream bug in GnuTLS)
+
+2010-02-17: Rüdiger Kuhlmann
+	* if ressource conflict happens, set a flag before reconnect to append
+	  random digits to the ressource
+	* add savable flag for the same
+	* change default ressource from "iks" to "climm" 
+	* open a _listening_ connection when we want to listen
+	* remove bogus @IKS_LIBS@; fixes: #60
+
+2009-11-23: Rüdiger Kuhlmann
+	* add iksemel 1.4 sources, as distributions mostly ship ancient versions
+	* fix compile error if XMPP was disabled
+	* use our libiksemel copy if no suitable version is found
+	* remove BETA markers for XMPP
+	* enable XMPP by default (not: auto; as too many distributions had it disabled) 
+	* ... and fix missing dependancy
+
+2009-11-14: Rüdiger Kuhlmann
+	* change xmpp logging (all xml on one line now)
+	* react to incoming roster set iq to better sync contact list 
+
+2009-09-03: Rüdiger Kuhlmann
+	* make conn open do the same as conn login would do with the corresponding server 
+
+2009-08-20: Rüdiger Kuhlmann
+	* add auth unsub to unsubscribe from other's presence
+	* extend ui to show subscription status for xmpp and get it from roster responses 
+
+2009-08-16: Rüdiger Kuhlmann
+	* remove obeysbl option - we necessarily do so in any case now
+	* add UI for S10N in xmpp
+	* add undocumented _iq command to send arbitrary set and get iq requests
+	* Fix sender of acks. Fixes: #54
+	* prefer pkg-config over obsolete libgnutls-config; fixes: #56
+	* ignore families 36 and 37 - whatever service they may provide
+	* fix abort() due to connecting to ip 0
+	* ignore SNAC(1,0x15) and SNAC(1,0x21)
+
+2009-05-25: Rüdiger Kuhlmann
+	* fix compiler warning
+	* remove some now unused close functions
+	* remove types matching modified libiksemel that nobody has
+	  (-> go back to void and its type-unsafetyness)
+	* ... and free packet
+	* drop packets to be sent when we're not connected
+	* detect Android
+	* add pkg-config to chroot for karmic
+
+2009-05-19: Sebastian Rasmussen
+	* i18n: se
+
 2009-05-17: Rüdiger Kuhlmann
 	* i18n: en, de.
 	* 0.7.
