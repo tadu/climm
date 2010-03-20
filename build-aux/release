@@ -93,7 +93,7 @@ for distri in \
   Ubuntu-8.04-5hardy::deb Ubuntu-8.10-6intrepid::deb \
   Ubuntu-9.04-7jaunty::deb Ubuntu-9.10-8karmic::deb \
   Ubuntu-10.04-9lucid::deb \
-  Debian-4.0-0etch::deb Debian-5.0-1lenny::deb Debian-6.0-2squeeze \
+  Debian-4.0-0etch::deb Debian-5.0-1lenny::deb Debian-6.0-2squeeze::deb \
   Generic-0generic:autopackage:deb
 do
   suff=${distri##*:}

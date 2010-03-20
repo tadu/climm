@@ -638,7 +638,6 @@ if test "x$ac_use_autopackage" = xyes; then
     LIBOTR_LIBS='`'"$RELAYTOOL --relay '$relay_libs' $LIBOTR_LIBS"'`'
     LIBTCL_LIBS='`'"$RELAYTOOL --relay '$relay_libs' $LIBTCL_LIBS"'`'
     XMPP_LIBS='`'"$RELAYTOOL --relay '$relay_libs' $XMPP_LIBS"'`'
-    IKS_LIBS='`'"$RELAYTOOL --relay '$relay_libs' $IKS_LIBS"'`'
 fi
 
 AC_MSG_CHECKING([whether to enable XMPP chat network])

@@ -102,7 +102,7 @@ static int iks_climm_TRecv (IKS_SOCK_USER_DATA *conn, char *data, size_t len, in
     return -1;
 }
 
-static const ikstransport iks_climm_transport = {
+static ikstransport iks_climm_transport = {
     IKS_TRANSPORT_V1,
     iks_climm_TConnect,
     iks_climm_TSend,
@@ -455,7 +455,7 @@ static void XMPPSendIqPrivacyEdit (Server *serv, xmpp_priv_t ntype, const char *
     UDWORD ig = 0;
     UDWORD count = 0;
     const char *insertiontstr, *id;
-    char *insertionstr;
+    char *insertionstr = strdup ("1");
     int allow;
 
     id = s_sprintf ("priv-%d-%s-%x", ntype, serv->xmpp_stamp, ++serv->xmpp_sequence);
@@ -874,7 +874,7 @@ static int XmppHandleIqPrivacy (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
                     if (b_ms || b_pi || b_po || b_iq)
                     {
                         affects = s_sprintf ("%s%s%s%s", b_ms ? "msg," : "", b_pi ? "pi" : "", b_po ? "po," : "", b_iq ? "iq," : "");
-                        affects = s_sprintf ("%*s", strlen (affects) - 1, affects);
+                        affects = s_sprintf ("%*s", (int)(strlen (affects) - 1), affects);
                     }
                     else
                         affects = "all";
@@ -1389,7 +1389,7 @@ static int XmppSessionResult (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 
 static int XmppUserResult (IKS_FILTER_USER_DATA *fserv, ikspak *pak)
 {
-    Server *serv = (Server *)fserv;
+    /* Server *serv = (Server *)fserv; */
     rl_printf ("Message %s resulted in:\n%s\n", pak->id, iks_string (iks_stack (pak->x), pak->x));
     return IKS_FILTER_EAT;
 }
