@@ -426,7 +426,7 @@ static io_err_t io_openssl_write (Connection *conn, Dispatcher *d, const char *b
             d->outbuf = NULL;
             conn->connect &= ~CONNECT_SELECT_W;
         } else {
-            memmove (d->outbuf, d->outbuf + rc, len - rc);
+            memmove (d->outbuf, d->outbuf + rc, d->outlen - rc);
             d->outlen -= rc;
             return io_any_appendbuf (conn, d, buf, len);
         }

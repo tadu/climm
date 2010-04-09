@@ -179,7 +179,7 @@ static const char *io_gnutls_err (Connection *conn, Dispatcher *d)
     return d->lasterr;
 }
 
-static ssize_t io_gnutls_pull (gnutls_transport_ptr_t user_data, void *buf, size_t len)
+static ssize_t io_gnutls_pull (gnutls_transport_ptr user_data, void *buf, size_t len)
 {
     Dispatcher *d = (Dispatcher *) user_data;
     int rc = io_util_read (d->conn, d->next, buf, len);
@@ -190,7 +190,7 @@ static ssize_t io_gnutls_pull (gnutls_transport_ptr_t user_data, void *buf, size
     else                       return rc;
 }
 
-static ssize_t io_gnutls_push (gnutls_transport_ptr_t user_data, const void *buf, size_t len)
+static ssize_t io_gnutls_push (gnutls_transport_ptr user_data, const void *buf, size_t len)
 {
     Dispatcher *d = (Dispatcher *) user_data;
     int rc = io_util_write (d->conn, d->next, buf, len);
@@ -362,7 +362,7 @@ static io_err_t io_gnutls_write (Connection *conn, Dispatcher *d, const char *bu
             d->outbuf = NULL;
             conn->connect &= ~CONNECT_SELECT_W;
         } else {
-            memmove (d->outbuf, d->outbuf + rc, len - rc);
+            memmove (d->outbuf, d->outbuf + rc, d->outlen - rc);
             d->outlen -= rc;
             return io_any_appendbuf (conn, d, buf, len);
         }
