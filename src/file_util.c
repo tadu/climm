@@ -1628,13 +1628,13 @@ int PrefWriteStatusFile (void)
         fprintf (stf, "\n");
     }
     
-    fprintf (stf, "# Contact groups.");
+    fprintf (stf, "# Contact groups.\n");
     for (k = 1; (cg = ContactGroupIndex (k)); k++)
     {
         if (!cg->serv || cg->serv->contacts == cg)
             continue;
 
-        fprintf (stf, "\n[Group]\n");
+        fprintf (stf, "[Group]\n");
         fprintf (stf, "server %s %s\n", ConnectionServerType (cg->serv->type), cg->serv->screen);
         fprintf (stf, "label %s\n", s_quote (cg->name));
         fprintf (stf, "id %d\n", cg->id);
@@ -1642,6 +1642,7 @@ int PrefWriteStatusFile (void)
 
         for (i = 0; (cont = ContactIndex (cg, i)); i++)
             fprintf (stf, "entry %s\n", s_quote (cont->screen));
+        fprintf (stf, "\n");
     }
 
     if (fclose (stf))
