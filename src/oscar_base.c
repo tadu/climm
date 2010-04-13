@@ -516,18 +516,10 @@ void FlapCliHello (Server *serv)
     FlapSend (serv, pak);
 }
 
-static void FlapCliGoodbyeConn (Connection *conn)
-{
-    if (conn)
-        FlapCliGoodbye (conn->serv);
-}
-
 void FlapCliGoodbye (Server *serv)
 {
     Packet *pak;
     
-    EventD (QueueDequeue2 (serv->conn, QUEUE_DEP_WAITLOGIN, 0, NULL));
-
     if (!(serv->conn->connect & CONNECT_MASK))
         return;
     
