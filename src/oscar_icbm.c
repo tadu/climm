@@ -830,7 +830,8 @@ JUMP_SNAC_F(SnacSrvRecvmsg)
                     }
                     PacketD (pp);
                     TLVD (tlv);
-                    TCPDirectOpen (serv->oscar_dc, cont);
+                    if (serv->oscar_dc)
+                        TCPDirectOpen (serv->oscar_dc, cont);
                     return;
 
                 case CAP_SRVRELAY:
