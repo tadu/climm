@@ -70,11 +70,14 @@ int putlog (Server *serv, time_t stamp, Contact *cont,
     utctime = gmtime (&now);
 
     s_init (&t, "", 100);
-    s_catf (&t, "# %04d%02d%02d%02d%02d%02d%s%.0ld ",
+    s_catf (&t, "# %04d%02d%02d%02d%02d%02d",
         utctime->tm_year + 1900, utctime->tm_mon + 1, 
         utctime->tm_mday, utctime->tm_hour, utctime->tm_min, 
-        utctime->tm_sec, stamp != -1 ? "/" : "", 
-        stamp != NOW ? stamp - now : 0L);
+        utctime->tm_sec);
+    if (stamp != NOW && stamp != now)
+        s_catf (&t, "/%ld ", stamp - now);
+    else
+        s_catc (&t, ' ');
 
     pos = strchr (cont->nick, ' ') ? "\"" : "";
     
